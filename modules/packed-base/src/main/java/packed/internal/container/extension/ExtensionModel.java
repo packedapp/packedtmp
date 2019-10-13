@@ -30,8 +30,7 @@ import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
 import app.packed.container.extension.ExtensionDeclarationException;
 import app.packed.container.extension.ExtensionInstantiationContext;
-import app.packed.container.extension.ExtensionIntrospectionContext;
-import app.packed.container.extension.ExtensionWireletPipeline;
+import app.packed.container.extension.ExtensionWirelet;
 import app.packed.contract.Contract;
 import app.packed.hook.OnHook;
 import packed.internal.hook.HookContainerModel;
@@ -72,7 +71,7 @@ public final class ExtensionModel<T extends Extension> {
     // Can 2 extensions define the same contract???? Don't think so
     // If not we could have a Contract.class->ContractFactory Map and a Contract.of(ContainerSource, Class<T extends
     // Contract>);
-    public final Map<Class<? extends Contract>, BiFunction<?, ? super ExtensionIntrospectionContext, ?>> contracts;
+    public final Map<Class<? extends Contract>, BiFunction<?, ? super ExtensionWirelet.PipelineMap, ?>> contracts;
 
     public final Set<Class<? extends Extension>> dependencies;
 
@@ -92,7 +91,7 @@ public final class ExtensionModel<T extends Extension> {
     /** An optional containing the extension type. To avoid excessive creation of them for {@link Component#extension()}. */
     public final Optional<Class<? extends Extension>> optional;
 
-    final Map<Class<? extends ExtensionWireletPipeline<?, ?, ?>>, BiFunction<?, ?, ?>> pipelines;
+    final Map<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, BiFunction<?, ?, ?>> pipelines;
 
     /**
      * Creates a new extension model from the specified builder.

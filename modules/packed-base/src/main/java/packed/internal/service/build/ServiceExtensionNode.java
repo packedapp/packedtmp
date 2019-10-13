@@ -25,7 +25,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.ExtensionContext;
 import app.packed.container.extension.ExtensionInstantiationContext;
-import app.packed.container.extension.ExtensionIntrospectionContext;
+import app.packed.container.extension.ExtensionWirelet;
 import app.packed.service.Inject;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceContract;
@@ -154,7 +154,6 @@ public final class ServiceExtensionNode {
     public void instantiate() {
         //// Hmmm, det er jo altsaa lidt anderledes
         // Hvis vi vil lave et image...
-
         // Instantiate
         for (ServiceEntry<?> node : resolvedEntries.values()) {
             if (node instanceof ComponentBuildEntry) {
@@ -177,7 +176,7 @@ public final class ServiceExtensionNode {
         // }
     }
 
-    public ServiceContract newServiceContract(ExtensionIntrospectionContext context) {
+    public ServiceContract newServiceContract(ExtensionWirelet.PipelineMap context) {
         // requireNonNull(context);
         return ServiceContract.newContract(c -> {
             if (exporter != null) {

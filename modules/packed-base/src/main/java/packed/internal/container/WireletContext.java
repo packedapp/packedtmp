@@ -25,7 +25,6 @@ import app.packed.container.MutableWireletList;
 import app.packed.container.Wirelet;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionWirelet;
-import app.packed.container.extension.ExtensionWireletPipeline;
 import app.packed.util.Nullable;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
 import packed.internal.container.extension.ExtensionWireletPipelineModel;
@@ -54,7 +53,7 @@ public final class WireletContext {
     ComponentNameWirelet newName;
 
     /** Pipelines for the various extensions. */
-    public final IdentityHashMap<Class<? extends Extension>, List<ExtensionWirelet<?>>> pipelines = new IdentityHashMap<>();
+    final IdentityHashMap<Class<? extends Extension>, List<ExtensionWirelet<?>>> pipelines = new IdentityHashMap<>();
 
     @Nullable
     final WireletContext parent;
@@ -102,12 +101,26 @@ public final class WireletContext {
         }
     }
 
+    private void extensionFixed() {
+        for (var e : pipelines.entrySet()) {
+            Class<? extends Extension> etype = e.getKey();
+            PackedExtensionContext c = pcc.getExtension(etype);
+            if (c == null) {
+                throw new IllegalArgumentException(
+                        "In order to use the wirelet(s) " + e.getValue() + ", " + etype.getSimpleName() + " is required to be installed.");
+            }
+            initialize(c);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     public void initialize(PackedExtensionContext pec) {
         List<ExtensionWirelet<?>> ewp = pipelines.remove(pec.extension().getClass());
-        ExtensionWireletPipelineModel m = ExtensionWireletPipelineModel.ofWirelet((Class<? extends ExtensionWirelet<?>>) ewp.iterator().next().getClass());
-        ExtensionWireletPipeline<?, ?, ?> pip = m.newPipeline(pec.extension(), new MutableWireletList<>(ewp));
-        ModuleAccess.extension().pipelineInitialize(pip);
+        if (ewp != null) {
+            ExtensionWireletPipelineModel m = ExtensionWireletPipelineModel.ofWirelet((Class<? extends ExtensionWirelet<?>>) ewp.iterator().next().getClass());
+            ExtensionWirelet.Pipeline<?, ?, ?> pip = m.newPipeline(pec.extension(), new MutableWireletList<>(ewp));
+            ModuleAccess.extension().pipelineInitialize(pip);
+        }
     }
 
     public static WireletContext create(PackedContainerConfiguration pcc, @Nullable WireletContext existing, Wirelet... wirelets) {
@@ -117,6 +130,9 @@ public final class WireletContext {
         }
         WireletContext wc = new WireletContext(pcc, existing);
         wc.apply(wl);
+        if (existing != null) {
+            wc.extensionFixed();
+        }
         return wc;
     }
 }

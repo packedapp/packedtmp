@@ -26,8 +26,7 @@ import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
 import app.packed.container.extension.ExtensionInstantiationContext;
-import app.packed.container.extension.ExtensionIntrospectionContext;
-import app.packed.container.extension.ExtensionWireletPipeline;
+import app.packed.container.extension.ExtensionWirelet;
 import app.packed.contract.Contract;
 import app.packed.util.Nullable;
 
@@ -40,7 +39,7 @@ public abstract class ExtensionComposerContext {
     // Also, I think we want to do this atomically, so that we do not have half an extension registered somewhere.
     // This means we want to synchronize things.
     // So add all shit, quick validation-> Sync->Validate final -> AddAll ->UnSync
-    public final IdentityHashMap<Class<? extends Contract>, BiFunction<?, ? super ExtensionIntrospectionContext, ?>> contracts = new IdentityHashMap<>();
+    public final IdentityHashMap<Class<? extends Contract>, BiFunction<?, ? super ExtensionWirelet.PipelineMap, ?>> contracts = new IdentityHashMap<>();
 
     /** An action that will be run immediately after an extension has been configured. */
     @Nullable
@@ -55,7 +54,7 @@ public abstract class ExtensionComposerContext {
     @Nullable
     public BiConsumer<? super Extension, ? super Extension> onLinkage;
 
-    public final IdentityHashMap<Class<? extends ExtensionWireletPipeline<?, ?, ?>>, BiFunction<?, ?, ?>> pipelines = new IdentityHashMap<>();
+    public final IdentityHashMap<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, BiFunction<?, ?, ?>> pipelines = new IdentityHashMap<>();
 
     /** This class can only be overridden by another class in this package. */
     ExtensionComposerContext() {}

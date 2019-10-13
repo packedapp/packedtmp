@@ -111,6 +111,11 @@ public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
         public void process(ConfigSite cs, LinkedHashMap<Key<?>, ServiceEntry<?>> newServices) {
             newServices.put(key, new RSESingleton(cs, key, null, instance));
         }
+
+        @Override
+        public String toString() {
+            return "provideInstant(\"" + instance + "\")";
+        }
     }
 
     public abstract void process(ConfigSite cs, LinkedHashMap<Key<?>, ServiceEntry<?>> newServices);

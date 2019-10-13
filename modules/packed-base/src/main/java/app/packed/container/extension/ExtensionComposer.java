@@ -93,7 +93,7 @@ public abstract class ExtensionComposer<E extends Extension> {
      *             if trying to register a contract type that has already been registered with another extension
      */
     protected final <C extends Contract> void exposeContract(Class<C> contractType,
-            BiFunction<? super E, ? super ExtensionIntrospectionContext, C> contractFactory) {
+            BiFunction<? super E, ? super ExtensionWirelet.PipelineMap, C> contractFactory) {
         requireNonNull(contractType, "contractType is null");
         requireNonNull(contractFactory, "contractFactory is null");
         context().contracts.putIfAbsent(contractType, contractFactory);
@@ -175,7 +175,7 @@ public abstract class ExtensionComposer<E extends Extension> {
         context().onLinkage((BiConsumer<? super Extension, ? super Extension>) action);
     }
 
-    protected final <P extends ExtensionWireletPipeline<E, P, W>, W extends ExtensionWirelet<P>> void useWirelets(Class<P> pipelineType,
+    protected final <P extends ExtensionWirelet.Pipeline<E, P, W>, W extends ExtensionWirelet<P>> void useWirelets(Class<P> pipelineType,
             BiFunction<E, MutableWireletList<W>, P> pipelineFactory) {
         requireNonNull(pipelineType, "pipelineType is null");
         requireNonNull(pipelineFactory, "pipelineFactory is null");

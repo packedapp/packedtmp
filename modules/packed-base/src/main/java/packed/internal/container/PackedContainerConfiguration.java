@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -31,6 +32,7 @@ import java.util.function.BiFunction;
 
 import app.packed.artifact.ArtifactDriver;
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentExtension;
 import app.packed.component.Install;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
@@ -42,10 +44,10 @@ import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionInstantiationContext;
-import app.packed.container.extension.ExtensionIntrospectionContext;
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.contract.Contract;
 import app.packed.service.Factory;
+import app.packed.service.ServiceExtension;
 import app.packed.util.Nullable;
 import packed.internal.container.extension.ExtensionModel;
 import packed.internal.container.extension.PackedExtensionContext;
@@ -128,7 +130,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             if (c != null) {
                 c.accept(e.extension(), builder);
             }
-            for (BiFunction<?, ? super ExtensionIntrospectionContext, ?> s : e.model.contracts.values()) {
+            for (BiFunction<?, ? super ExtensionWirelet.PipelineMap, ?> s : e.model.contracts.values()) {
                 // TODO need a context
 
                 Contract con = (Contract) ((BiFunction) s).apply(e.extension(), null);
@@ -186,7 +188,22 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
         installPrepare(State.GET_NAME_INVOKED);
         // We could actually end of installing new extensions...
-        for (PackedExtensionContext e : extensions.values()) {
+
+        // Here we need sorting...
+        LinkedHashSet<Class<? extends Extension>> s = new LinkedHashSet<>();
+        if (extensions.containsKey(ComponentExtension.class)) {
+            s.add(ComponentExtension.class);
+        }
+        if (extensions.containsKey(ServiceExtension.class)) {
+            s.add(ServiceExtension.class);
+        }
+        s.addAll(extensions.keySet());
+        ArrayList<Class<? extends Extension>> l = new ArrayList<>(s);
+        Collections.reverse(l);
+
+        for (Class<? extends Extension> c : l) {
+            PackedExtensionContext e = extensions.get(c);
+            // System.out.println("On Configured " + e.model.extensionType);
             activeExtension = e;
             e.onConfigured();
         }
@@ -201,9 +218,9 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         }
 
         if (wireletContext != null) {
-            for (Class<? extends Extension> c : wireletContext.pipelines.keySet()) {
-                List<ExtensionWirelet<?>> l = wireletContext.pipelines.get(c);
-                throw new IllegalStateException("The wirelets " + l + " requires the extension " + c.getSimpleName() + " to be installed.");
+            for (Class<? extends Extension> cc : wireletContext.pipelines.keySet()) {
+                List<ExtensionWirelet<?>> ll = wireletContext.pipelines.get(cc);
+                throw new IllegalArgumentException("The wirelets " + ll + " requires the extension " + cc.getSimpleName() + " to be installed.");
 
             }
         }
@@ -248,7 +265,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      *            the type of extension to return a context for
      * @return an extension's context, iff on of the specified type is already installed
      * @see #use(Class)
-     * @see #useExtension(Class)
+     * @see #useExtension(PackedExtensionContext, Class)
      */
     @Nullable
     public PackedExtensionContext getExtension(Class<?> extensionType) {
@@ -410,7 +427,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Extension> T use(Class<T> extensionType) {
-        return (T) useExtension(extensionType).extension();
+        return (T) useExtension(null, extensionType).extension();
     }
 
     /**
@@ -423,14 +440,16 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      *             if an extension of the specified type has not already been installed and the container is no longer
      *             configurable
      */
-    public PackedExtensionContext useExtension(Class<? extends Extension> extensionType) {
+    public PackedExtensionContext useExtension(@Nullable PackedExtensionContext user, Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         PackedExtensionContext pec = extensions.get(extensionType);
 
         // We do not use #computeIfAbsent, because extensions might install other extensions via Extension#onAdded.
         // Which will fail with ConcurrentModificationException (see ExtensionDependenciesTest)
         if (pec == null) {
-            checkConfigurable(); // only allow installing new extensions if configurable
+            if (user == null) {
+                checkConfigurable(); // only allow installing new extensions if configurable
+            }
             extensions.put(extensionType, pec = new PackedExtensionContext(this, ExtensionModel.of(extensionType)));
             initializeName(State.EXTENSION_USED, null); // initializes name of container, if not already set
             pec.initialize(this); // initializes the extension

@@ -22,7 +22,6 @@ import java.util.function.BiFunction;
 import app.packed.container.MutableWireletList;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionWirelet;
-import app.packed.container.extension.ExtensionWireletPipeline;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 
 /**
@@ -37,12 +36,12 @@ public final class ExtensionWireletPipelineModel {
         @SuppressWarnings({ "unchecked" })
         @Override
         protected ExtensionWireletPipelineModel computeValue(Class<?> type) {
-            return new ExtensionWireletPipelineModel.Builder((Class<? extends ExtensionWireletPipeline<?, ?, ?>>) type).build();
+            return new ExtensionWireletPipelineModel.Builder((Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>) type).build();
         }
     };
 
     /** An extractor to find the extension the node is build upon. */
-    private static final TypeVariableExtractor EXTENSION_NODE_TV_EXTRACTOR = TypeVariableExtractor.of(ExtensionWireletPipeline.class, 0);
+    private static final TypeVariableExtractor EXTENSION_NODE_TV_EXTRACTOR = TypeVariableExtractor.of(ExtensionWirelet.Pipeline.class, 0);
 
     // /** The method handle used to create a new instance of the extension. */
     // private final MethodHandle constructorNode;
@@ -51,7 +50,7 @@ public final class ExtensionWireletPipelineModel {
 
     public final ExtensionModel<?> extension;
 
-    final Class<? extends ExtensionWireletPipeline<?, ?, ?>> type;
+    final Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>> type;
 
     final BiFunction<?, ?, ?> factory;
 
@@ -72,8 +71,8 @@ public final class ExtensionWireletPipelineModel {
      * @return a new instance
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public ExtensionWireletPipeline<?, ?, ?> newPipeline(Extension node, MutableWireletList<?> wirelets) {
-        return (ExtensionWireletPipeline<?, ?, ?>) ((BiFunction) factory).apply(node, wirelets);
+    public ExtensionWirelet.Pipeline<?, ?, ?> newPipeline(Extension node, MutableWireletList<?> wirelets) {
+        return (ExtensionWirelet.Pipeline<?, ?, ?>) ((BiFunction) factory).apply(node, wirelets);
     }
 
     private static ExtensionWireletPipelineModel of(Class<?> type) {
@@ -86,12 +85,12 @@ public final class ExtensionWireletPipelineModel {
 
     private static class Builder {
 
-        private final Class<? extends ExtensionWireletPipeline<?, ?, ?>> actualType;
+        private final Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>> actualType;
 
         /**
          * @param type
          */
-        private Builder(Class<? extends ExtensionWireletPipeline<?, ?, ?>> type) {
+        private Builder(Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>> type) {
             actualType = requireNonNull(type);
         }
 
@@ -130,7 +129,7 @@ public final class ExtensionWireletPipelineModel {
          */
         @SuppressWarnings("unchecked")
         private ExtensionWireletModel(Class<? extends ExtensionWirelet<?>> type) {
-            Class<? extends ExtensionWireletPipeline<?, ?, ?>> extensionType = (Class<? extends ExtensionWireletPipeline<?, ?, ?>>) EXTENSION_TYPE_EXTRACTOR
+            Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>> extensionType = (Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>) EXTENSION_TYPE_EXTRACTOR
                     .extract(type);
             this.pipeline = ExtensionWireletPipelineModel.of(extensionType);
         }

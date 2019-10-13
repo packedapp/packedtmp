@@ -142,9 +142,16 @@ public final class PackedExtensionContext implements ExtensionContext {
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Extension> T use(Class<T> extensionType) {
-        return pcc.use(extensionType);
+        // TODO check extensionType is in valid types...
+        // We actually need to make this check every time...
+        // Otherwise it could use extensions that someone else has installed.
+        // But itself is not allowed to access
+
+        PackedExtensionContext pec = pcc.useExtension(this, extensionType);
+        return (T) pec.extension;
     }
 }
 

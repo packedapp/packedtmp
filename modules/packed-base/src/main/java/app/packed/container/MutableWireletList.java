@@ -54,4 +54,9 @@ public final class MutableWireletList<W extends Wirelet> implements Iterable<W> 
     public boolean removeIf(Predicate<? super W> filter, Consumer<? super W> action) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public String toString() {
+        return list.toString();
+    }
 }

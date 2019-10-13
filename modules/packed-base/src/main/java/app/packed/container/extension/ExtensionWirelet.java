@@ -15,6 +15,11 @@
  */
 package app.packed.container.extension;
 
+import static java.util.Objects.requireNonNull;
+
+import java.util.Optional;
+
+import app.packed.container.MutableWireletList;
 import app.packed.container.Wirelet;
 
 /**
@@ -23,10 +28,94 @@ import app.packed.container.Wirelet;
  * Extension wirelets that uses the same extension pipeline type are processed in the order they are specified in. No
  * guarantees are made for extension wirelets that define for different extension pipeline types.
  */
-public abstract class ExtensionWirelet<T extends ExtensionWireletPipeline<?, T, ?>> extends Wirelet {
+public abstract class ExtensionWirelet<T extends ExtensionWirelet.Pipeline<?, T, ?>> extends Wirelet {
     // We need this class so we can see which extension the wirelet belongs to...
     // Otherwise, we would not be able to tell the user which extension was missing.
     // When throwing an exception if the wirelet was specified, but the extension was not used
+    /**
+     * Extension wirelet pipelines
+     * 
+     * If a given extension allows specific wirelets to late configure it after. You need to use a pipeline.
+     */
+    // Kan only define one pipeline per extension... Maybe...
+    // Kunne jo godt have @Nullable GreenPipeline, @Nullable BlackPipeline
+    public static abstract class Pipeline<E extends Extension, P extends Pipeline<E, P, W>, W extends ExtensionWirelet<P>> {
+
+        private final E extension;
+
+        /** Any previous pipeline. */
+        private final Optional<P> previous;
+
+        /** A list initially containing the wirelets that was used to create this pipeline. */
+        private final MutableWireletList<W> wirelets;
+
+        protected Pipeline(E extension, MutableWireletList<W> wirelets) {
+            this.extension = requireNonNull(extension, "extension is null");
+            this.wirelets = requireNonNull(wirelets, "wirelets is null");
+            this.previous = Optional.empty();
+        }
+
+        protected Pipeline(P from, MutableWireletList<W> wirelets) {
+            this.extension = from.extension();
+            this.wirelets = requireNonNull(wirelets, "wirelets is null");
+            this.previous = Optional.of(from);
+        }
+
+        /**
+         * Returns the extension this pipeline belongs to.
+         * 
+         * @return the extension this pipeline belongs to
+         */
+        public final E extension() {
+            return extension;
+        }
+
+        /** Invoked by the runtime immediately after the pipeline has been constructed. */
+        protected void onInitialize() {}
+
+        /**
+         * If this pipeline was {@link #spawn(MutableWireletList) spawned} from an existing pipeline, returns the pipeline,
+         * otherwise returns empty.
+         * 
+         * @return any pipeline this pipeline was spawned from
+         */
+        public final Optional<P> previous() {
+            return previous;
+        }
+
+        /**
+         * Spawns a new pipeline from this pipeline. This method is invoked by the runtime whenever
+         * 
+         * @param wirelets
+         *            the wirelets that was used
+         * @return the new pipeline
+         */
+        protected abstract P spawn(MutableWireletList<W> wirelets);
+
+        /**
+         * Returns a list of the wirelets this pipeline contains.
+         * 
+         * @return a list of the wirelets this pipeline contains
+         */
+        public final MutableWireletList<W> wirelets() {
+            return wirelets;
+        }
+
+        @Override
+        public String toString() {
+            return wirelets.toString();
+        }
+    }
+    // Two strategies. Either clone all the contents.
+    // Or recursively call back into parent pipeline
+    // protected abstract T split();
+
+    public interface PipelineMap {
+
+        boolean hasPipelines();
+
+        <T extends ExtensionWirelet.Pipeline<?, ?, ?>> T get(Class<T> pipelineType);
+    }
 }
 
 // Grunden til vi gerne lave callback paa denne maade.

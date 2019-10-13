@@ -24,7 +24,8 @@ import app.packed.container.MutableWireletList;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
 import app.packed.container.extension.ExtensionWirelet;
-import app.packed.container.extension.ExtensionWireletPipeline;
+import app.packed.container.extension.UseExtension;
+import app.packed.service.ServiceExtension;
 
 /**
  *
@@ -34,26 +35,41 @@ public class WTest extends BaseBundle {
     /** {@inheritDoc} */
     @Override
     protected void configure() {
+        use(ServiceExtension.class);
         use(MyExtension.class);
     }
 
     public static void main(String[] args) {
         ArtifactImage ai = ArtifactImage.of(new WTest(), new MyWirelet("hejhej"), new MyWirelet("hejhej3"));
-        App.of(ai, new MyWirelet("XXX"));
+        App.of(ai);
+
+        // Vi instantitere kun en gang.... Fordi, ServiceConfiguration kun kan holde en instans......
+        App.of(ai);
+        // App.of(new WTest());
     }
 
+    @UseExtension(ServiceExtension.class)
     public static class MyExtension extends Extension {
+
         static final class Composer extends ExtensionComposer<MyExtension> {
 
             /** {@inheritDoc} */
             @Override
             protected void configure() {
                 useWirelets(MyPipeline.class, (e, w) -> new MyPipeline(e, w));
+                onConfigured(e -> e.use(ServiceExtension.class).provide(RuntimeService.class));
             }
         }
     }
 
-    static final class MyPipeline extends ExtensionWireletPipeline<MyExtension, MyPipeline, MyWirelet> {
+    public static class RuntimeService {
+        public RuntimeService() {
+            new Exception().printStackTrace();
+            System.out.println("new RuntimeService");
+        }
+    }
+
+    static final class MyPipeline extends ExtensionWirelet.Pipeline<MyExtension, MyPipeline, MyWirelet> {
 
         /**
          * @param extension
@@ -94,6 +110,11 @@ public class WTest extends BaseBundle {
          */
         public MyWirelet(String msg) {
             this.msg = requireNonNull(msg);
+        }
+
+        @Override
+        public String toString() {
+            return "msg(\"" + msg + "\")";
         }
     }
 }

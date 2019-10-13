@@ -82,7 +82,7 @@ public abstract class Extension {
             }
 
             @Override
-            public void pipelineInitialize(ExtensionWireletPipeline<?, ?, ?> pipeline) {
+            public void pipelineInitialize(ExtensionWirelet.Pipeline<?, ?, ?> pipeline) {
                 pipeline.onInitialize();
             }
         });
