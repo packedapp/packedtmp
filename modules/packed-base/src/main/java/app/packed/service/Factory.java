@@ -199,7 +199,7 @@ public class Factory<T> {
      * {@link InjectorConfigurator#provide(Factory)}. This method returns the key for which the factory
      * 
      * Returns the key for which this factory will be registered, this can be overridden, for example, by calling
-     * {@link ComponentServiceConfiguration#as(Key)}.
+     * {@link ServiceComponentConfiguration#as(Key)}.
      *
      * @return the key under which this factory will be registered unless
      * @see #withKey(Key)
@@ -306,7 +306,7 @@ public class Factory<T> {
      * The specified lookup object will always be preferred, even when, for example, being registered with a bundle who has
      * its own lookup object.
      * <p>
-     * If you have split-module class hierachies with am abstract class in one module a concrete class in another module.
+     * If you have split-module class hierachies with an abstract class in one module a concrete class in another module.
      * You can use a {@link BaseSupport} class to register a method handle with the abstract class.
      * 
      * Remember to register the support class via the standard service loading mechanism as outlined in ....

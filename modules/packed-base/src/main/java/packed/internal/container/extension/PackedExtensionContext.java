@@ -24,15 +24,12 @@ import app.packed.config.ConfigSite;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionContext;
 import app.packed.container.extension.ExtensionDeclarationException;
-import app.packed.service.InstantiationMode;
-import app.packed.service.ServiceRequest;
+import app.packed.util.Key;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.module.ModuleAccess;
 import packed.internal.service.ServiceEntry;
-import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
-import packed.internal.service.run.RSE;
-import packed.internal.service.run.RSESingleton;
+import packed.internal.service.run.SingletonRuntimeEntry;
 
 /** The default implementation of {@link ExtensionContext} with addition data only available from inside this module. */
 public final class PackedExtensionContext implements ExtensionContext {
@@ -73,35 +70,11 @@ public final class PackedExtensionContext implements ExtensionContext {
         }
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public ServiceEntry<? extends Extension> serviceEntry(ServiceExtensionNode sen) {
         ServiceEntry<? extends Extension> e = serviceEntry;
         if (e == null) {
-            e = serviceEntry = new BuildEntry<>(sen, ConfigSite.UNKNOWN) {
-                @Override
-                public InstantiationMode instantiationMode() {
-                    return InstantiationMode.SINGLETON;
-                }
-
-                @Override
-                public Extension getInstance(ServiceRequest site) {
-                    return extension;
-                }
-
-                @Override
-                public boolean needsInjectionSite() {
-                    return false;
-                }
-
-                @Override
-                public boolean needsResolving() {
-                    return false;
-                }
-
-                @Override
-                protected RSE<Extension> newRuntimeNode() {
-                    return new RSESingleton<>(this, extension);
-                }
-            };
+            e = serviceEntry = new SingletonRuntimeEntry<Extension>(ConfigSite.UNKNOWN, (Key) Key.of(type()), null, extension);
         }
         return e;
     }

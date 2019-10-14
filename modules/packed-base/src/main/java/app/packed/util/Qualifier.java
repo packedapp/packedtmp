@@ -32,6 +32,7 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Documented
 // TODO rename to KeyQualifier, or Key.Qualifier
+// I like Key.Qualifier
 public @interface Qualifier {}
 
 // dependency resolver, qualifier resolver,

@@ -21,7 +21,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.lifecycle.LifecycleExtension;
 import app.packed.lifecycle.OnStart;
-import app.packed.service.ComponentServiceConfiguration;
+import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.Factory;
 import app.packed.service.Injector;
 import app.packed.service.InjectorConfigurator;
@@ -106,7 +106,7 @@ public abstract class BaseBundle extends Bundle {
         return service().export(key);
     }
 
-    protected final <T> ServiceConfiguration<T> export(ComponentServiceConfiguration<T> configuration) {
+    protected final <T> ServiceConfiguration<T> export(ServiceComponentConfiguration<T> configuration) {
         return service().export(configuration);
     }
 
@@ -191,7 +191,7 @@ public abstract class BaseBundle extends Bundle {
      * @return a service configuration for the service
      * @see InjectorConfigurator#provide(Class)
      */
-    protected final <T> ComponentServiceConfiguration<T> provide(Class<T> implementation) {
+    protected final <T> ServiceComponentConfiguration<T> provide(Class<T> implementation) {
         return service().provide(implementation);
     }
 
@@ -206,7 +206,7 @@ public abstract class BaseBundle extends Bundle {
      *            the factory used for creating the component instance
      * @return the configuration of the component that was installed
      */
-    protected final <T> ComponentServiceConfiguration<T> provide(Factory<T> factory) {
+    protected final <T> ServiceComponentConfiguration<T> provide(Factory<T> factory) {
         return service().provide(factory);
     }
 
@@ -214,7 +214,7 @@ public abstract class BaseBundle extends Bundle {
         service().provideAll(injector, wirelets);
     }
 
-    protected final <T> ComponentServiceConfiguration<T> provideInstance(T instance) {
+    protected final <T> ServiceComponentConfiguration<T> provideInstance(T instance) {
         return service().provideInstance(instance);
     }
 

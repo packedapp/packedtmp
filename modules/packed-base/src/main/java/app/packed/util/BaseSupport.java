@@ -58,6 +58,7 @@ import app.packed.container.Bundle;
  * Invoking any method on this class outside of the {@link #configure()} method will result in an
  * {@link IllegalStateException} being thrown.
  */
+
 public abstract class BaseSupport {
 
     protected final void addSupport(BaseSupport support) {

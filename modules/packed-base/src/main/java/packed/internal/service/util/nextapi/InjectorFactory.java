@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.util.Set;
 
-import app.packed.service.ComponentServiceConfiguration;
+import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.Injector;
 import app.packed.service.Provide;
 import app.packed.util.Key;
@@ -40,7 +40,7 @@ class InjectorFactory {
     }
 
     // ConfigSource is disabled per default
-    protected <T> ComponentServiceConfiguration<T> registerInjectorFactory(Class<T> injectorFactory, Set<Key<?>> keysToInheritFromParent) {
+    protected <T> ServiceComponentConfiguration<T> registerInjectorFactory(Class<T> injectorFactory, Set<Key<?>> keysToInheritFromParent) {
         // key = class, description = Interface factory for xxxxx
         throw new UnsupportedOperationException();
     }

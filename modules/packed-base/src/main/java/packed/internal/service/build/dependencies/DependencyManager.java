@@ -133,7 +133,7 @@ public final class DependencyManager {
 
         for (ServiceEntry<?> se : node.resolvedEntries.values()) {
             BuildEntry<?> entry = (BuildEntry<?>) se;
-            if (entry.needsResolving()) {
+            if (entry.hasUnresolvedDependencies()) {
                 detectCyclesFor.add(entry);
                 List<ServiceDependency> dependencies = entry.dependencies;
                 for (int i = 0; i < dependencies.size(); i++) {

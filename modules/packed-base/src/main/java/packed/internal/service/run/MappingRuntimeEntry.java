@@ -24,14 +24,11 @@ import app.packed.service.ServiceRequest;
 import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
 
-/**
- * A runtime entry that that takes an existing entry and uses a {@link Function} to map the service provided by the
- * entry.
- */
-public final class MappingRuntimeEntry<F, T> extends RSE<T> {
+/** A runtime service entry that takes uses a {@link Function} to map an existing service. */
+public final class MappingRuntimeEntry<F, T> extends RuntimeEntry<T> {
 
     /** The runtime node whose service should mapped. */
-    private final RSE<F> delegate;
+    private final RuntimeEntry<F> delegate;
 
     /** The function that maps the service. */
     private final Function<? super F, ? extends T> function;
@@ -68,7 +65,7 @@ public final class MappingRuntimeEntry<F, T> extends RSE<T> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean needsInjectionSite() {
-        return delegate.needsInjectionSite();
+    public boolean needsServiceRequest() {
+        return delegate.needsServiceRequest();
     }
 }

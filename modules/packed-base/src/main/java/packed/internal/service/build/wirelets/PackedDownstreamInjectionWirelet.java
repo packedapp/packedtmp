@@ -28,8 +28,8 @@ import app.packed.util.Key;
 import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.ServiceWireletPipeline;
 import packed.internal.service.build.export.ExportedBuildEntry;
-import packed.internal.service.run.RSE;
-import packed.internal.service.run.RSESingleton;
+import packed.internal.service.run.RuntimeEntry;
+import packed.internal.service.run.SingletonRuntimeEntry;
 
 /** The common superclass for upstream service wirelets. */
 public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
@@ -83,7 +83,7 @@ public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
         @Override
         public void process(ConfigSite cs, LinkedHashMap<Key<?>, ServiceEntry<?>> newServices) {
             for (var s : newServices.values()) {
-                action.accept((RSE<?>) s);
+                action.accept((RuntimeEntry<?>) s);
             }
         }
     }
@@ -109,7 +109,7 @@ public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         public void process(ConfigSite cs, LinkedHashMap<Key<?>, ServiceEntry<?>> newServices) {
-            newServices.put(key, new RSESingleton(cs, key, null, instance));
+            newServices.put(key, new SingletonRuntimeEntry(cs, key, null, instance));
         }
 
         @Override

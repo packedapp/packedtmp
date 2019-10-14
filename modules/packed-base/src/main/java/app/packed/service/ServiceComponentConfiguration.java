@@ -23,14 +23,11 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 
 /**
- * This configuration represents an entity that is both being registered as a component and as a service at the same
- * time.
+ * This configuration represents an entity that is both a {@link ServiceConfiguration configuration of as service} and a
+ * {@link ComponentConfiguration configuration of as component}.
  * <p>
- * All the methods in this interface is solely added to allow
- * 
- * A component configuration instance is usually obtained by calling one of the install methods on
- * {@link ComponentServiceConfiguration} or {@link BaseBundle} at configuration time. Or one of the install methods on
- * {@link Component} at runtime.
+ * An instance of this interface is usually obtained by calling one of the provide methods on {@link ServiceExtension}
+ * or {@link BaseBundle}.
  * 
  * @see ServiceExtension#provide(Class)
  * @see ServiceExtension#provide(Factory)
@@ -40,7 +37,7 @@ import app.packed.util.Nullable;
  * @see BaseBundle#provide(Factory)
  * @see BaseBundle#provideInstance(Object)
  */
-public interface ComponentServiceConfiguration<T> extends ComponentConfiguration<T>, ServiceConfiguration<T> {
+public interface ServiceComponentConfiguration<T> extends ServiceConfiguration<T>, ComponentConfiguration<T> {
 
     /**
      * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
@@ -52,7 +49,7 @@ public interface ComponentServiceConfiguration<T> extends ComponentConfiguration
      * @see #as(Key)
      */
     @Override
-    default ComponentServiceConfiguration<T> as(Class<? super T> key) {
+    default ServiceComponentConfiguration<T> as(Class<? super T> key) {
         return as(Key.of(key));
     }
 
@@ -66,7 +63,7 @@ public interface ComponentServiceConfiguration<T> extends ComponentConfiguration
      * @see #as(Class)
      */
     @Override
-    ComponentServiceConfiguration<T> as(Key<? super T> key);
+    ServiceComponentConfiguration<T> as(Key<? super T> key);
 
     /**
      * Returns the configuration site where this configuration was created.
@@ -113,9 +110,9 @@ public interface ComponentServiceConfiguration<T> extends ComponentConfiguration
      * @throws UnsupportedOperationException
      *             if the service cannot be lazy
      */
-    ComponentServiceConfiguration<T> lazy();
+    ServiceComponentConfiguration<T> lazy();
 
-    ComponentServiceConfiguration<T> prototype();
+    ServiceComponentConfiguration<T> prototype();
 
     /**
      * Sets the description of this service.
@@ -126,7 +123,7 @@ public interface ComponentServiceConfiguration<T> extends ComponentConfiguration
      * @see #getDescription()
      */
     @Override
-    ComponentServiceConfiguration<T> setDescription(@Nullable String description);
+    ServiceComponentConfiguration<T> setDescription(@Nullable String description);
 
     /**
      * Sets the {@link Component#name() name} of the component. The name must consists only of alphanumeric characters and
@@ -145,7 +142,7 @@ public interface ComponentServiceConfiguration<T> extends ComponentConfiguration
      * @see Component#name()
      */
     @Override
-    ComponentServiceConfiguration<T> setName(String name);
+    ServiceComponentConfiguration<T> setName(String name);
 }
 
 // /**

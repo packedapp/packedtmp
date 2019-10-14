@@ -31,7 +31,7 @@ import packed.internal.util.ThrowableUtil;
 // No params
 // No InjectionSite parameters
 // InjectionSite parameters
-public final class RSNPrototype<T> extends RSE<T> implements Provider<T> {
+public final class PrototypeRuntimeEntry<T> extends RuntimeEntry<T> implements Provider<T> {
 
     /** An empty object array. */
     private final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
@@ -43,12 +43,12 @@ public final class RSNPrototype<T> extends RSE<T> implements Provider<T> {
     /**
      * @param node
      */
-    public RSNPrototype(BuildEntry<T> node, MethodHandle mh) {
+    public PrototypeRuntimeEntry(BuildEntry<T> node, MethodHandle mh) {
         super(node);
         this.mh = requireNonNull(mh);
         this.providers = new Provider[node.dependencies.size()];
         for (int i = 0; i < providers.length; i++) {
-            RSE<?> forReal = node.resolvedDependencies[i].toRuntimeEntry();
+            RuntimeEntry<?> forReal = node.resolvedDependencies[i].toRuntimeEntry();
             ServiceRequest is = null;
             ServiceRequest.of(node.dependencies.get(i));
             providers[i] = () -> forReal.getInstance(is);
@@ -77,7 +77,7 @@ public final class RSNPrototype<T> extends RSE<T> implements Provider<T> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean needsInjectionSite() {
+    public boolean needsServiceRequest() {
         return false;
     }
 

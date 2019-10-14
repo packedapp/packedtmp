@@ -29,7 +29,7 @@ import packed.internal.service.build.BuildEntry;
 
 /** An entry that represents a service at runtime. */
 // BuildEntry does not implements ServiceDescriptor because it is mutable
-public abstract class RSE<T> implements ServiceEntry<T>, ServiceDescriptor {
+public abstract class RuntimeEntry<T> implements ServiceEntry<T>, ServiceDescriptor {
 
     /** The point where this entry was registered. */
     private final ConfigSite configSite;
@@ -41,7 +41,7 @@ public abstract class RSE<T> implements ServiceEntry<T>, ServiceDescriptor {
     /** The key under which the service is available. */
     private final Key<T> key;
 
-    RSE(ConfigSite configSite, Key<T> key, @Nullable String description) {
+    RuntimeEntry(ConfigSite configSite, Key<T> key, @Nullable String description) {
         this.configSite = requireNonNull(configSite);
         this.description = description;
         this.key = requireNonNull(key);
@@ -53,7 +53,7 @@ public abstract class RSE<T> implements ServiceEntry<T>, ServiceDescriptor {
      * @param buildEntry
      *            the build node to create the runtime node from
      */
-    RSE(BuildEntry<T> buildEntry) {
+    RuntimeEntry(BuildEntry<T> buildEntry) {
         this.configSite = requireNonNull(buildEntry.configSite());
         this.description = buildEntry.getDescription();
         this.key = requireNonNull(buildEntry.key());
@@ -82,13 +82,13 @@ public abstract class RSE<T> implements ServiceEntry<T>, ServiceDescriptor {
 
     /** {@inheritDoc} */
     @Override
-    public final boolean needsResolving() {
+    public final boolean hasUnresolvedDependencies() {
         return false;
     }
 
     /** {@inheritDoc} */
     @Override
-    public final RSE<T> toRuntimeEntry() {
+    public final RuntimeEntry<T> toRuntimeEntry() {
         return this; // this entry is already a runtime entry
     }
 

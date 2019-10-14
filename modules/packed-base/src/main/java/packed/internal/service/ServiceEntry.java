@@ -19,18 +19,18 @@ import java.util.Optional;
 
 import app.packed.component.Component;
 import app.packed.config.ConfigSite;
-import app.packed.service.ComponentServiceConfiguration;
+import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceDependency;
 import app.packed.service.ServiceRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.service.build.BuildEntry;
-import packed.internal.service.run.RSE;
+import packed.internal.service.run.RuntimeEntry;
 import packed.internal.util.KeyBuilder;
 
 /**
- * A service node represent the provider of a service either at {@link BuildEntry build-time } or at {@link RSE
+ * A service node represent the provider of a service either at {@link BuildEntry build-time } or at {@link RuntimeEntry
  * runtime-time}.
  *
  * The reason for for separating them into two interfaces to avoid retaining any information that is not strictly needed
@@ -49,7 +49,7 @@ public interface ServiceEntry<T> {
      * Returns the optional description of this service.
      *
      * @return the optional description of this service
-     * @see ComponentServiceConfiguration#setDescription(String)
+     * @see ServiceComponentConfiguration#setDescription(String)
      */
     Optional<String> description();
 
@@ -57,7 +57,7 @@ public interface ServiceEntry<T> {
      * Returns the key that the service is registered with.
      *
      * @return the key that the service is registered with
-     * @see ComponentServiceConfiguration#as(Key)
+     * @see ServiceComponentConfiguration#as(Key)
      */
     Key<?> key();
     //
@@ -79,10 +79,10 @@ public interface ServiceEntry<T> {
      *
      * @return whether or not this node needs a {@link ServiceRequest} instance to be able to deliver a service
      */
-    boolean needsInjectionSite();
+    boolean needsServiceRequest();
 
     // Rename to isResolved
-    boolean needsResolving();
+    boolean hasUnresolvedDependencies();
 
     /**
      * Converts this node to a run-time node if this node is a build-node, otherwise returns this. Build-nodes must always
@@ -90,7 +90,7 @@ public interface ServiceEntry<T> {
      *
      * @return if build node converts to runtime node, if runtime node returns self
      */
-    RSE<T> toRuntimeEntry();
+    RuntimeEntry<T> toRuntimeEntry();
 
     default boolean isPrivate() {
         return key().equals(KeyBuilder.INJECTOR_KEY);// || key().equals(KeyBuilder.CONTAINER_KEY);

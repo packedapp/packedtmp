@@ -23,7 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
 import app.packed.config.ConfigSite;
-import app.packed.service.ComponentServiceConfiguration;
+import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceConfiguration;
 import app.packed.service.ServiceExtension;
 import app.packed.util.Key;
@@ -40,7 +40,7 @@ import packed.internal.util.StringFormatter;
  *
  * @see ServiceExtension#export(Class)
  * @see ServiceExtension#export(Key)
- * @see ServiceExtension#export(ComponentServiceConfiguration)
+ * @see ServiceExtension#export(ServiceComponentConfiguration)
  * @see ServiceExtension#exportAll()
  */
 public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
@@ -51,7 +51,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
 
     /**
      * An entry to this list is added every time the user calls {@link ServiceExtension#export(Class)},
-     * {@link ServiceExtension#export(Key)} or {@link ServiceExtension#export(ComponentServiceConfiguration)}.
+     * {@link ServiceExtension#export(Key)} or {@link ServiceExtension#export(ServiceComponentConfiguration)}.
      */
     @Nullable
     private ArrayList<ExportedBuildEntry<?>> exportedEntries;
@@ -91,15 +91,15 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
      * @param configSite
      *            the config site of the export
      * @return stuff
-     * @see ServiceExtension#export(ComponentServiceConfiguration)
+     * @see ServiceExtension#export(ServiceComponentConfiguration)
      */
-    public <T> ServiceConfiguration<T> export(ComponentServiceConfiguration<T> configuration, ConfigSite configSite) {
+    public <T> ServiceConfiguration<T> export(ServiceComponentConfiguration<T> configuration, ConfigSite configSite) {
         if (!(configuration instanceof PackedProvidedComponentConfiguration)) {
-            throw new IllegalArgumentException("Custom implementations of " + StringFormatter.format(ComponentServiceConfiguration.class)
+            throw new IllegalArgumentException("Custom implementations of " + StringFormatter.format(ServiceComponentConfiguration.class)
                     + " are not allowed, type = " + StringFormatter.format(configuration.getClass()));
         }
         BuildEntry<T> entryToExport = ((PackedProvidedComponentConfiguration<T>) configuration).buildEntry;
-        if (entryToExport.injectorBuilder != node) {
+        if (entryToExport.serviceExtension != node) {
             throw new IllegalArgumentException("The specified configuration was created by another injector extension");
         }
         return export0(new ExportedBuildEntry<>(node, entryToExport, configSite));
@@ -193,12 +193,12 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
                 }
 
                 if (export) {
-                    ExportedBuildEntry<?> existing = resolvedExports.putIfAbsent(entry.key, entry);
+                    ExportedBuildEntry<?> existing = resolvedExports.putIfAbsent(entry.key(), entry);
                     if (existing != null) {
                         if (failingDuplicateExports == null) {
                             failingDuplicateExports = new LinkedHashMap<>();
                         }
-                        LinkedHashSet<ExportedBuildEntry<?>> hs = failingDuplicateExports.computeIfAbsent(entry.key, m -> new LinkedHashSet<>());
+                        LinkedHashSet<ExportedBuildEntry<?>> hs = failingDuplicateExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
                         hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
                         hs.add(entry);
                     }

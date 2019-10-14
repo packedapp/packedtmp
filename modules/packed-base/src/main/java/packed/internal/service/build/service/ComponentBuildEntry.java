@@ -22,30 +22,36 @@ import java.util.List;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.service.ComponentServiceConfiguration;
 import app.packed.service.InjectionException;
 import app.packed.service.InstantiationMode;
 import app.packed.service.Provide;
+import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceDependency;
 import app.packed.service.ServiceRequest;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
-import packed.internal.service.run.RSE;
-import packed.internal.service.run.RSESingleton;
-import packed.internal.service.run.RSNLazy;
-import packed.internal.service.run.RSNPrototype;
+import packed.internal.service.run.RuntimeEntry;
+import packed.internal.service.run.SingletonRuntimeEntry;
+import packed.internal.service.run.LazyRuntimeEntry;
+import packed.internal.service.run.PrototypeRuntimeEntry;
 import packed.internal.util.ThrowableUtil;
 
 /**
  * An entry representing a component node. This node is used for all three binding modes mainly because it makes
- * extending it with {@link ComponentServiceConfiguration} much easier.
+ * extending it with {@link ServiceComponentConfiguration} much easier.
  */
 public final class ComponentBuildEntry<T> extends BuildEntry<T> {
 
     /** An empty object array. */
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
+
+    /** The configuration of the component this build entry belongs to */
+    public final ComponentConfiguration<?> componentConfiguration;
+
+    /** The parent, if this node is the result of a member annotated with {@link Provide}. */
+    private final ComponentBuildEntry<?> declaringEntry;
 
     boolean hasInstanceMembers;
 
@@ -60,15 +66,11 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
     @Nullable
     private MethodHandle mha;
 
-    /** The parent, if this node is the result of a member annotated with {@link Provide}. */
-    private final ComponentBuildEntry<?> parent;
-
-    public final ComponentConfiguration<?> componentConfiguration;
-
     public ComponentBuildEntry(ConfigSite configSite, AtProvides atProvides, MethodHandle mh, ComponentBuildEntry<?> parent) {
-        super(parent.injectorBuilder, configSite, atProvides.dependencies);
+        super(parent.serviceExtension, configSite, atProvides.dependencies);
         this.mha = requireNonNull(mh);
-        this.parent = parent;
+        // Rename to parentDependency??? and have it as null if instance
+        this.declaringEntry = parent;
         this.instantionMode = atProvides.instantionMode;
         this.description = atProvides.description;
         this.componentConfiguration = parent.componentConfiguration;
@@ -77,7 +79,7 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
     public ComponentBuildEntry(ServiceExtensionNode injectorBuilder, ComponentConfiguration<T> cc, InstantiationMode instantionMode, MethodHandle mh,
             List<ServiceDependency> dependencies) {
         super(injectorBuilder, cc.configSite(), dependencies);
-        this.parent = null;
+        this.declaringEntry = null;
         this.instantionMode = requireNonNull(instantionMode);
         this.componentConfiguration = cc;
         // Maaske skal vi bare smide UnsupportedOperationException istedet for???
@@ -103,15 +105,16 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
     public ComponentBuildEntry(ServiceExtensionNode ib, ConfigSite configSite, ComponentConfiguration<T> cc, T instance) {
         super(ib, configSite, List.of());
         this.instance = requireNonNull(instance, "instance is null");
-        this.parent = null;
+        this.declaringEntry = null;
         this.instantionMode = InstantiationMode.SINGLETON;
         this.mha = null;
         this.componentConfiguration = requireNonNull(cc);
     }
 
     @Override
-    public BuildEntry<?> declaringNode() {
-        return parent;
+    @Nullable
+    public BuildEntry<?> declaringEntry() {
+        return declaringEntry;
     }
 
     /** {@inheritDoc} */
@@ -146,14 +149,14 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public final boolean needsInjectionSite() {
-        return hasDependencyOnInjectionSite;
+    public final boolean hasUnresolvedDependencies() {
+        return !dependencies.isEmpty();
     }
 
     /** {@inheritDoc} */
     @Override
-    public final boolean needsResolving() {
-        return !dependencies.isEmpty();
+    public final boolean needsServiceRequest() {
+        return hasDependencyOnInjectionSite;
     }
 
     private T newInstance() {
@@ -182,25 +185,17 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
         return t;
     }
 
-    private MethodHandle toMethodHandle() {
-        MethodHandle mh = mha;
-        if (parent != null && mh.type().parameterCount() != dependencies.size()) {
-            mh = mha = mh.bindTo(parent.getInstance(null));
-        }
-        return mh;
-    }
-
     /** {@inheritDoc} */
     @Override
-    protected final RSE<T> newRuntimeNode() {
+    protected final RuntimeEntry<T> newRuntimeNode() {
         T i = instance;
         if (i != null) {
-            return new RSESingleton<>(this, i);
+            return new SingletonRuntimeEntry<>(this, i);
         }
         if (instantionMode == InstantiationMode.PROTOTYPE) {
-            return new RSNPrototype<>(this, toMethodHandle());
+            return new PrototypeRuntimeEntry<>(this, toMethodHandle());
         } else {
-            return new RSNLazy<>(this, toMethodHandle(), null);
+            return new LazyRuntimeEntry<>(this, toMethodHandle(), null);
         }
     }
 
@@ -212,6 +207,14 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
             throw new InvalidDeclarationException("Cannot @Provides instance members form on services that are registered as prototypes");
         }
         instantiateAs(InstantiationMode.PROTOTYPE);
+    }
+
+    private MethodHandle toMethodHandle() {
+        MethodHandle mh = mha;
+        if (declaringEntry != null && mh.type().parameterCount() != dependencies.size()) {
+            mh = mha = mh.bindTo(declaringEntry.getInstance(null));
+        }
+        return mh;
     }
 }
 // if (parent == null || parent.instantiationMode() == InstantiationMode.SINGLETON || parent.instance != null

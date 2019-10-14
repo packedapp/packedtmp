@@ -29,7 +29,7 @@ import java.util.List;
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Wirelet;
-import app.packed.service.ComponentServiceConfiguration;
+import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.Factory;
 import app.packed.service.Injector;
 import app.packed.service.InstantiationMode;
@@ -134,7 +134,7 @@ public final class ServiceProvidingManager {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> ComponentServiceConfiguration<T> provideFactory(ComponentConfiguration cc, Factory<T> factory, FactoryHandle<T> function) {
+    public <T> ServiceComponentConfiguration<T> provideFactory(ComponentConfiguration cc, Factory<T> factory, FactoryHandle<T> function) {
         ComponentBuildEntry<?> c = componentConfigurationCache.get(cc);// remove??
         if (c == null) {
             MethodHandle mh = ((PackedExtensionContext) node.context()).pcc.lookup.toMethodHandle(function);
@@ -146,7 +146,7 @@ public final class ServiceProvidingManager {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> ComponentServiceConfiguration<T> provideInstance(ComponentConfiguration cc, T instance) {
+    public <T> ServiceComponentConfiguration<T> provideInstance(ComponentConfiguration cc, T instance) {
         // First see if we have already installed the node. This happens in #set if the component container any members
         // annotated with @Provides
         ComponentBuildEntry<?> c = componentConfigurationCache.get(cc);

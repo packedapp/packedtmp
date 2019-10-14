@@ -24,6 +24,7 @@ import app.packed.artifact.app.App;
 /**
  *
  */
+// Hvorfor tager run() en parameter????
 interface ThrowingRunnable<T> {
     void run(T t) throws Throwable;
 }

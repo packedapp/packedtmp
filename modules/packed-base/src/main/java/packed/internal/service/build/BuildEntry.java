@@ -29,7 +29,7 @@ import app.packed.service.ServiceRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.service.ServiceEntry;
-import packed.internal.service.run.RSE;
+import packed.internal.service.run.RuntimeEntry;
 import packed.internal.util.KeyBuilder;
 
 /**
@@ -42,7 +42,7 @@ import packed.internal.util.KeyBuilder;
  */
 public abstract class BuildEntry<T> implements ServiceEntry<T> {
 
-    /** An empty array of nodes */
+    /** An empty array of entries. */
     private static final ServiceEntry<?>[] EMPTY_ARRAY = new ServiceEntry<?>[0];
 
     /** The configuration site of this object. */
@@ -61,28 +61,29 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
 
     /** The injector builder this node belongs to. */
     @Nullable // Is nullable for stages for now
-    public final ServiceExtensionNode injectorBuilder;
+    public final ServiceExtensionNode serviceExtension;
 
     /**
      * The key of the node (optional). Can be null, for example, for a class that is not exposed as a service but has
      * instance methods annotated with {@link Provide}. In which the case the declaring class needs to be constructor
      * injected before the providing method can be invoked.
      */
-    public Key<T> key;
+    @Nullable
+    protected Key<T> key;
 
     /** The resolved dependencies of this node. */
     public final ServiceEntry<?>[] resolvedDependencies;
 
     /** The runtime representation of this node. We cache it, to make sure it is only created once. */
     @Nullable
-    private RSE<T> runtimeNode;
+    private RuntimeEntry<T> runtimeNode;
 
     public BuildEntry(ServiceExtensionNode injectorBuilder, ConfigSite configSite) {
         this(injectorBuilder, configSite, List.of());
     }
 
-    public BuildEntry(ServiceExtensionNode injectorBuilder, ConfigSite configSite, List<ServiceDependency> dependencies) {
-        this.injectorBuilder = injectorBuilder;
+    public BuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite, List<ServiceDependency> dependencies) {
+        this.serviceExtension = serviceExtension;
         this.configSite = requireNonNull(configSite);
         this.dependencies = requireNonNull(dependencies);
         this.resolvedDependencies = dependencies.isEmpty() ? EMPTY_ARRAY : new ServiceEntry<?>[dependencies.size()];
@@ -133,7 +134,7 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
      * @return stuff
      */
     @Nullable
-    public BuildEntry<?> declaringNode() {
+    public BuildEntry<?> declaringEntry() {
         return null;
     }
 
@@ -162,14 +163,14 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
      * @return whether or not this node has any dependencies that needs to be resolved
      */
     @Override
-    public abstract boolean needsResolving();
+    public abstract boolean hasUnresolvedDependencies();
 
     /**
      * Creates a new runtime node from this node.
      *
      * @return the new runtime node
      */
-    protected abstract RSE<T> newRuntimeNode();
+    protected abstract RuntimeEntry<T> newRuntimeNode();
     //
     // protected void onFreeze() {
     // if (key != null) {
@@ -189,8 +190,8 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public final RSE<T> toRuntimeEntry() {
-        RSE<T> runtime = this.runtimeNode;
+    public final RuntimeEntry<T> toRuntimeEntry() {
+        RuntimeEntry<T> runtime = this.runtimeNode;
         return runtime == null ? this.runtimeNode = newRuntimeNode() : runtime;
     }
 

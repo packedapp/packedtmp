@@ -27,10 +27,10 @@ import packed.internal.service.build.BuildEntry;
  * <p>
  * This type is used for exported nodes as well as nodes that are imported from other containers.
  */
-public final class RSEDelegate<T> extends RSE<T> {
+public final class DelegatingRuntimeEntry<T> extends RuntimeEntry<T> {
 
     /** The runtime node to delegate to. */
-    private final RSE<T> delegate;
+    private final RuntimeEntry<T> delegate;
 
     /**
      * Creates a new runtime alias node.
@@ -38,7 +38,7 @@ public final class RSEDelegate<T> extends RSE<T> {
      * @param delegate
      *            the build time alias node to create a runtime node from
      */
-    public RSEDelegate(BuildEntry<T> buildNode, ServiceEntry<T> delegate) {
+    public DelegatingRuntimeEntry(BuildEntry<T> buildNode, ServiceEntry<T> delegate) {
         super(buildNode);
         this.delegate = requireNonNull(delegate.toRuntimeEntry());
     }
@@ -57,7 +57,7 @@ public final class RSEDelegate<T> extends RSE<T> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean needsInjectionSite() {
-        return delegate.needsInjectionSite();
+    public boolean needsServiceRequest() {
+        return delegate.needsServiceRequest();
     }
 }

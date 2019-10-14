@@ -78,10 +78,10 @@ public final class ErrorMessages {
     }
 
     static String format(BuildEntry<?> e) {
-        if (e.declaringNode() == null) {
+        if (e.declaringEntry() == null) {
             return e.configSite().toString();
         }
-        StringBuilder sb = new StringBuilder(e.declaringNode().configSite().toString());
+        StringBuilder sb = new StringBuilder(e.declaringEntry().configSite().toString());
         e.configSite().visit(new ConfigSiteVisitor() {
 
             /** {@inheritDoc} */

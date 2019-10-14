@@ -28,13 +28,13 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
-import packed.internal.service.run.RSE;
-import packed.internal.service.run.RSEDelegate;
+import packed.internal.service.run.RuntimeEntry;
+import packed.internal.service.run.DelegatingRuntimeEntry;
 
-/** A build node specifically used for {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
+/** An entry specifically used for {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
 final class ProvideAllBuildEntry<T> extends BuildEntry<T> {
 
-    /** The node in the 'imported' injector. */
+    /** The entry from the 'imported' injector. */
     final ServiceEntry<T> entry;
 
     /** A wrapper for the 'imported' injector. */
@@ -52,8 +52,8 @@ final class ProvideAllBuildEntry<T> extends BuildEntry<T> {
     /** {@inheritDoc} */
     @Override
     @Nullable
-    public BuildEntry<?> declaringNode() {
-        return (entry instanceof BuildEntry) ? ((BuildEntry<?>) entry).declaringNode() : null;
+    public BuildEntry<?> declaringEntry() {
+        return (entry instanceof BuildEntry) ? ((BuildEntry<?>) entry).declaringEntry() : null;
     }
 
     /** {@inheritDoc} */
@@ -70,19 +70,19 @@ final class ProvideAllBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean needsInjectionSite() {
-        return entry.needsInjectionSite();
+    public boolean needsServiceRequest() {
+        return entry.needsServiceRequest();
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean needsResolving() {
-        return entry.needsResolving();
+    public boolean hasUnresolvedDependencies() {
+        return false;// entry.needsResolving();
     }
 
     /** {@inheritDoc} */
     @Override
-    protected RSE<T> newRuntimeNode() {
-        return new RSEDelegate<T>(this, entry);
+    protected RuntimeEntry<T> newRuntimeNode() {
+        return new DelegatingRuntimeEntry<T>(this, entry);
     }
 }

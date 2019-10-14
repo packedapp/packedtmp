@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import app.packed.config.ConfigSite;
-import app.packed.service.ComponentServiceConfiguration;
 import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceRequest;
 import app.packed.util.Key;
@@ -29,8 +29,8 @@ import app.packed.util.Nullable;
 import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
-import packed.internal.service.run.RSE;
-import packed.internal.service.run.RSEDelegate;
+import packed.internal.service.run.RuntimeEntry;
+import packed.internal.service.run.DelegatingRuntimeEntry;
 
 /**
  * A build entry representing an exported service. Entries at runtime has never any reference to how (or if) they where
@@ -69,7 +69,7 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
      *            the entry to export
      * @param configSite
      *            the config site of the export
-     * @see ServiceExtension#export(ComponentServiceConfiguration)
+     * @see ServiceExtension#export(ServiceComponentConfiguration)
      * @see ServiceExtension#exportAll()
      */
     @SuppressWarnings("unchecked")
@@ -86,8 +86,8 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
     /** {@inheritDoc} */
     @Override
     @Nullable
-    public BuildEntry<?> declaringNode() {
-        return (exportedEntry instanceof BuildEntry) ? ((BuildEntry<?>) exportedEntry).declaringNode() : null;
+    public BuildEntry<?> declaringEntry() {
+        return (exportedEntry instanceof BuildEntry) ? ((BuildEntry<?>) exportedEntry).declaringEntry() : null;
     }
 
     /** {@inheritDoc} */
@@ -104,19 +104,19 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean needsInjectionSite() {
-        return exportedEntry.needsInjectionSite();
+    public boolean needsServiceRequest() {
+        return exportedEntry.needsServiceRequest();
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean needsResolving() {
-        return exportedEntry.needsResolving();
+    public boolean hasUnresolvedDependencies() {
+        return exportedEntry.hasUnresolvedDependencies();
     }
 
     /** {@inheritDoc} */
     @Override
-    protected RSE<T> newRuntimeNode() {
-        return new RSEDelegate<>(this, exportedEntry);
+    protected RuntimeEntry<T> newRuntimeNode() {
+        return new DelegatingRuntimeEntry<>(this, exportedEntry);
     }
 }

@@ -20,7 +20,7 @@ public interface ServiceDescriptor /* extends Taggable */ {
      * Returns the optional description of this service.
      *
      * @return the optional description of this service
-     * @see ComponentServiceConfiguration#setDescription(String)
+     * @see ServiceComponentConfiguration#setDescription(String)
      */
     Optional<String> description();
 
@@ -28,7 +28,7 @@ public interface ServiceDescriptor /* extends Taggable */ {
      * Returns the key that the service is registered with.
      *
      * @return the key that the service is registered with
-     * @see ComponentServiceConfiguration#as(Key)
+     * @see ServiceComponentConfiguration#as(Key)
      */
     Key<?> key();
 }

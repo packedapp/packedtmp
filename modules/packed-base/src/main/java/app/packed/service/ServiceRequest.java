@@ -205,6 +205,7 @@ public interface ServiceRequest /* extends ServiceDependency */ {
      * 
      * @return the component that is requesting the component, or an empty optional if not a component.
      */
+    // What to do at configuration time.... We probably don't have a component at that point...
     Optional<Component> component();
 
     // default Container container() {

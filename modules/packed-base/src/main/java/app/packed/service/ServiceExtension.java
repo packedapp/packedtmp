@@ -110,7 +110,7 @@ public final class ServiceExtension extends Extension {
      *             if the specified configuration object was created by another injection extension instance .
      */
     // TODO provide(Foo.class).export instead????
-    public <T> ServiceConfiguration<T> export(ComponentServiceConfiguration<T> configuration) {
+    public <T> ServiceConfiguration<T> export(ServiceComponentConfiguration<T> configuration) {
         requireNonNull(configuration, "configuration is null");
         checkConfigurable();
         return node.exports().export(configuration, captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
@@ -176,7 +176,7 @@ public final class ServiceExtension extends Extension {
      * 
      * @return a configuration of the service
      */
-    public <T> ComponentServiceConfiguration<T> provide(Class<T> implementation) {
+    public <T> ServiceComponentConfiguration<T> provide(Class<T> implementation) {
         return provide(Factory.findInjectable(implementation));
     }
 
@@ -191,7 +191,7 @@ public final class ServiceExtension extends Extension {
      *            the factory used for creating the component instance
      * @return the configuration of the component that was installed
      */
-    public <T> ComponentServiceConfiguration<T> provide(Factory<T> factory) {
+    public <T> ServiceComponentConfiguration<T> provide(Factory<T> factory) {
         // configurability is checked by ComponentExtension
         return node.provider().provideFactory(use(ComponentExtension.class).install(factory), factory, factory.factory.function);
     }
@@ -231,7 +231,7 @@ public final class ServiceExtension extends Extension {
      *            the instance to bind
      * @return a service configuration for the service
      */
-    public <T> ComponentServiceConfiguration<T> provideInstance(T instance) {
+    public <T> ServiceComponentConfiguration<T> provideInstance(T instance) {
         // configurability is checked by ComponentExtension
         ComponentConfiguration<T> cc = use(ComponentExtension.class).installInstance(instance);
         return node.provider().provideInstance(cc, instance);

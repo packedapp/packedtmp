@@ -23,7 +23,7 @@ import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.service.ComponentServiceConfiguration;
+import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.Factory;
 import app.packed.service.Injector;
 import app.packed.service.InstantiationMode;
@@ -46,20 +46,20 @@ public class ProvideTest {
     public void configSite() throws Throwable {
         Injector inj = Injector.configure(conf -> {
             conf.lookup(MethodHandles.lookup());// The module where letter classes are in are not exported
-            ComponentServiceConfiguration<A> a = conf.provide(A.class);
-            ComponentServiceConfiguration<B> b = conf.provide(Factory.findInjectable(B.class));
-            ComponentServiceConfiguration<C> c = conf.provideInstance(C0);
-            ComponentServiceConfiguration<E> e = conf.provide(E.class).lazy();
-            ComponentServiceConfiguration<F> f = conf.provide(Factory.findInjectable(F.class)).lazy();
-            ComponentServiceConfiguration<H> h = conf.provide(H.class).prototype();
-            ComponentServiceConfiguration<I> i = conf.provide(Factory.findInjectable(I.class)).prototype();
+            ServiceComponentConfiguration<A> a = conf.provide(A.class);
+            ServiceComponentConfiguration<B> b = conf.provide(Factory.findInjectable(B.class));
+            ServiceComponentConfiguration<C> c = conf.provideInstance(C0);
+            ServiceComponentConfiguration<E> e = conf.provide(E.class).lazy();
+            ServiceComponentConfiguration<F> f = conf.provide(Factory.findInjectable(F.class)).lazy();
+            ServiceComponentConfiguration<H> h = conf.provide(H.class).prototype();
+            ServiceComponentConfiguration<I> i = conf.provide(Factory.findInjectable(I.class)).prototype();
         });
     }
 
     @Test
     public void bindInstance() {
         Injector i = Injector.configure(e -> {
-            ComponentServiceConfiguration<A> sc = e.provideInstance(A0);
+            ServiceComponentConfiguration<A> sc = e.provideInstance(A0);
             testConfiguration(sc, InstantiationMode.SINGLETON, Key.of(A.class));
         });
         testSingleton(i, Key.of(A.class), A0);
@@ -77,7 +77,7 @@ public class ProvideTest {
         }
     }
 
-    static void testConfiguration(ComponentServiceConfiguration<?> sc, InstantiationMode instantionMode, Key<?> key) {
+    static void testConfiguration(ServiceComponentConfiguration<?> sc, InstantiationMode instantionMode, Key<?> key) {
 
         assertThat(sc.instantiationMode()).isSameAs(InstantiationMode.SINGLETON);
         // configSite;

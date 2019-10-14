@@ -85,12 +85,12 @@ final class DependencyCycleDetector {
             if (dependency instanceof BuildEntry) {
                 BuildEntry<?> to = (BuildEntry<?>) dependency;
                 // If the dependency is a @Provides method, we need to use the declaring node
-                BuildEntry<?> owner = to.declaringNode();
+                BuildEntry<?> owner = to.declaringEntry();
                 if (owner != null) {
                     to = owner;
                 }
 
-                if (to.needsResolving() && to instanceof ComponentBuildEntry) {
+                if (to.hasUnresolvedDependencies() && to instanceof ComponentBuildEntry) {
                     ComponentBuildEntry<?> ic = (ComponentBuildEntry<?>) to;
                     if (!ic.detectCycleVisited) {
                         dependencies.push(to);

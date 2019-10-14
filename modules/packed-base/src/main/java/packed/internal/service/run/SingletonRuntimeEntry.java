@@ -29,7 +29,7 @@ import packed.internal.service.util.Provider;
  * An runtime service node holding {@link InstantiationMode#SINGLETON} instances. This node also holds
  * {@link InstantiationMode#LAZY} instances that was created at configuration time.
  */
-public final class RSESingleton<T> extends RSE<T> implements Provider<T> {
+public final class SingletonRuntimeEntry<T> extends RuntimeEntry<T> implements Provider<T> {
 
     /** The singleton instance. */
     private final T instance;
@@ -48,7 +48,7 @@ public final class RSESingleton<T> extends RSE<T> implements Provider<T> {
      * @param instance
      *            the singleton instance
      */
-    public RSESingleton(BuildEntry<T> buildNode, T instance) {
+    public SingletonRuntimeEntry(BuildEntry<T> buildNode, T instance) {
         super(buildNode);
         this.instance = requireNonNull(instance);
         this.instantionMode = buildNode.instantiationMode();
@@ -59,7 +59,7 @@ public final class RSESingleton<T> extends RSE<T> implements Provider<T> {
      * @param key
      * @param description
      */
-    public RSESingleton(ConfigSite configSite, Key<T> key, @Nullable String description, T instance) {
+    public SingletonRuntimeEntry(ConfigSite configSite, Key<T> key, @Nullable String description, T instance) {
         super(configSite, key, description);
         this.instance = requireNonNull(instance);
         this.instantionMode = InstantiationMode.SINGLETON;
@@ -85,7 +85,7 @@ public final class RSESingleton<T> extends RSE<T> implements Provider<T> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean needsInjectionSite() {
+    public boolean needsServiceRequest() {
         return false;
     }
 }

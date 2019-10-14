@@ -27,7 +27,7 @@ import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.run.MappingRuntimeEntry;
-import packed.internal.service.run.RSE;
+import packed.internal.service.run.RuntimeEntry;
 
 /**
  * A build entry that that takes an existing entry and uses a {@link Function} to map the service provided by the entry.
@@ -63,19 +63,19 @@ final class MappingBuildEntry<F, T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean needsInjectionSite() {
-        return entryToMap.needsInjectionSite();
+    public boolean needsServiceRequest() {
+        return entryToMap.needsServiceRequest();
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean needsResolving() {
-        return entryToMap.needsResolving();
+    public boolean hasUnresolvedDependencies() {
+        return entryToMap.hasUnresolvedDependencies();
     }
 
     /** {@inheritDoc} */
     @Override
-    protected RSE<T> newRuntimeNode() {
+    protected RuntimeEntry<T> newRuntimeNode() {
         return new MappingRuntimeEntry<>(this, entryToMap, function);
     }
 }

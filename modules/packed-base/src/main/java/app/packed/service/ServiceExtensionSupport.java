@@ -32,11 +32,13 @@ import app.packed.util.Key;
 
 // ServiceMemberOperators, hvis det er det eneste denne klasse laver....
 // Ja ikke ServiceExtensionSupport naar vi ogsaa har ServiceExtension
+
+// Jaja, det er ogsaa den her der styrer exceptions
 class ServiceExtensionSupport {
 
     public static final VarOperator<?> INJECT_FIELD = null;
 
-    public static final MethodOperator<?> INJECT_METHOD = null;
+    public static final MethodOperator<Runnable> INJECT_METHOD = null;
 
     public static final MethodOperator<?> injectMethod(Predicate<? super Key<?>> key) {
         throw new UnsupportedOperationException();
@@ -50,3 +52,5 @@ class ServiceExtensionSupport {
     //// InjectStaticExtension
     //// @OnHook
 }
+//// //AnnotatedMethodHook<ScheduleAtFixedRate> fr)
+//

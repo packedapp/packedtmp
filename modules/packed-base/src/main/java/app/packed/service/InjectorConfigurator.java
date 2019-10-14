@@ -151,7 +151,7 @@ public final class InjectorConfigurator {
      * @return a service configuration for the service
      * @see ServiceExtension#provide(Class)
      */
-    public <T> ComponentServiceConfiguration<T> provide(Class<T> implementation) {
+    public <T> ServiceComponentConfiguration<T> provide(Class<T> implementation) {
         return extension().provide(implementation);
     }
 
@@ -167,7 +167,7 @@ public final class InjectorConfigurator {
      *            the factory to bind
      * @return a service configuration for the service
      */
-    public <T> ComponentServiceConfiguration<T> provide(Factory<T> factory) {
+    public <T> ServiceComponentConfiguration<T> provide(Factory<T> factory) {
         return extension().provide(factory);
     }
 
@@ -230,7 +230,7 @@ public final class InjectorConfigurator {
      *            the instance to bind
      * @return a service configuration for the service
      */
-    public <T> ComponentServiceConfiguration<T> provideInstance(T instance) {
+    public <T> ServiceComponentConfiguration<T> provideInstance(T instance) {
         return extension().provideInstance(instance);
     }
 

@@ -18,7 +18,7 @@ package packed.internal.service.build.export;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
-import app.packed.service.ComponentServiceConfiguration;
+import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceConfiguration;
 import app.packed.service.ServiceExtension;
@@ -30,7 +30,7 @@ import app.packed.util.Nullable;
  * 
  * @see ServiceExtension#export(Class)
  * @see ServiceExtension#export(Key)
- * @see ServiceExtension#export(ComponentServiceConfiguration)
+ * @see ServiceExtension#export(ServiceComponentConfiguration)
  */
 // Move to ExportManager when we key + check configurable has been finalized
 final class ExportedServiceConfiguration<T> implements ServiceConfiguration<T> {
@@ -53,7 +53,7 @@ final class ExportedServiceConfiguration<T> implements ServiceConfiguration<T> {
     public ServiceConfiguration<T> as(@Nullable Key<? super T> key) {
         // TODO, maybe it gets disabled the minute we start analyzing exports???
         // Nah, lige saa snart, vi begynder
-        entry.injectorBuilder.checkExportConfigurable();
+        entry.serviceExtension.checkExportConfigurable();
         entry.as(key);
         return this;
     }
@@ -88,7 +88,7 @@ final class ExportedServiceConfiguration<T> implements ServiceConfiguration<T> {
     @Override
     public ServiceConfiguration<T> setDescription(String description) {
         requireNonNull(description, "description is null");
-        entry.injectorBuilder.checkExportConfigurable();
+        entry.serviceExtension.checkExportConfigurable();
         entry.description = description;
         return this;
     }

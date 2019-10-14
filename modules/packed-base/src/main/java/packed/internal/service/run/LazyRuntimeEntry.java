@@ -28,7 +28,7 @@ import packed.internal.service.util.Provider;
 import packed.internal.util.ThrowableUtil;
 
 /** A lazy runtime node if the service was not requested at configuration time. */
-public final class RSNLazy<T> extends RSE<T> {
+public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> {
 
     /** The lazily instantiated instance. */
     @Nullable
@@ -44,9 +44,9 @@ public final class RSNLazy<T> extends RSE<T> {
      * @param node
      *            the build node to create this node from
      */
-    public RSNLazy(BuildEntry<T> node, MethodHandle mh, @Nullable RSE<T> parent) {
+    public LazyRuntimeEntry(BuildEntry<T> node, MethodHandle mh, @Nullable RuntimeEntry<T> parent) {
         super(node);
-        this.lazy = new Sync(new RSNPrototype<>(node, mh), parent);
+        this.lazy = new Sync(new PrototypeRuntimeEntry<>(node, mh), parent);
     }
 
     /** {@inheritDoc} */
@@ -82,7 +82,7 @@ public final class RSNLazy<T> extends RSE<T> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean needsInjectionSite() {
+    public boolean needsServiceRequest() {
         return false;
     }
 
@@ -96,7 +96,7 @@ public final class RSNLazy<T> extends RSE<T> {
         /** Any failure encountered while creating a new value. */
         private Throwable failure;
 
-        RSE<T> parent;
+        RuntimeEntry<T> parent;
 
         /**
          * Creates a new Sync object
@@ -104,7 +104,7 @@ public final class RSNLazy<T> extends RSE<T> {
          * @param factory
          *            the factory node that will create the value
          */
-        Sync(Provider<T> factory, @Nullable RSE<T> parent) {
+        Sync(Provider<T> factory, @Nullable RuntimeEntry<T> parent) {
             super(1);
             this.factory = requireNonNull(factory);
         }
