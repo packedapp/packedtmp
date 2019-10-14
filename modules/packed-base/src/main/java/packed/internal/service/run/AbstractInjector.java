@@ -22,12 +22,12 @@ import java.util.function.Consumer;
 import app.packed.component.Component;
 import app.packed.service.InjectionException;
 import app.packed.service.Injector;
-import app.packed.service.ServiceDependency;
-import app.packed.service.ServiceRequest;
+import app.packed.service.Dependency;
+import app.packed.service.PrototypeRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import packed.internal.inject.factoryhandle.FieldFactoryHandle;
 import packed.internal.service.ServiceEntry;
-import packed.internal.service.factoryhandle.FieldFactoryHandle;
 import packed.internal.service.util.nextapi.OldAtInject;
 import packed.internal.service.util.nextapi.OldAtInjectGroup;
 
@@ -87,14 +87,14 @@ public abstract class AbstractInjector implements Injector {
         if (n == null) {
             return null;
         }
-        return n.getInstance(ServiceRequest.of(key));
+        return n.getInstance(PrototypeRequest.of(key));
     }
 
     protected final void injectMembers(OldAtInjectGroup descriptor, Object instance, @Nullable Component component) {
         // Inject fields
         if (!descriptor.fields.isEmpty()) {
             for (OldAtInject atInject : descriptor.fields) {
-                ServiceDependency dependency = atInject.dependencies.get(0);
+                Dependency dependency = atInject.dependencies.get(0);
                 FieldFactoryHandle<?> field = (FieldFactoryHandle<?>) atInject.invokable;
                 ServiceEntry<?> node = findNode(dependency.key());
                 if (node != null) {
@@ -128,7 +128,7 @@ public abstract class AbstractInjector implements Injector {
             for (OldAtInject method : descriptor.methods) {
                 Object[] arguments = new Object[method.dependencies.size()];
                 System.out.println(Arrays.toString(arguments));
-                for (ServiceDependency dependency : method.dependencies) {
+                for (Dependency dependency : method.dependencies) {
                     ServiceEntry<?> node = findNode(dependency.key());
                     System.out.println(node);
                 }

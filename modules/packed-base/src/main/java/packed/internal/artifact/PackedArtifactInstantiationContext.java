@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.artifact;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,6 +21,7 @@ import java.util.IdentityHashMap;
 
 import app.packed.container.ContainerConfiguration;
 import app.packed.util.Nullable;
+import packed.internal.container.WireletContext;
 
 /**
  * An instantiation context is created for every delimited tree hierachy.
@@ -43,14 +44,14 @@ import app.packed.util.Nullable;
 
 // Per container, er sgu for besvaergeligt med de der get stuff...
 // Altsaa med mindre vi har behov for at access dem fra andet sted fra
-final class PackedArtifactInstantiationContext {
+public final class PackedArtifactInstantiationContext {
 
     /** All context objects. */
     private final IdentityHashMap<ContainerConfiguration, IdentityHashMap<Class<?>, Object>> map = new IdentityHashMap<>();
 
     public final WireletContext wirelets;
 
-    PackedArtifactInstantiationContext(WireletContext wirelets) {
+    public PackedArtifactInstantiationContext(WireletContext wirelets) {
         this.wirelets = wirelets;
     }
 

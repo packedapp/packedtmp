@@ -21,8 +21,8 @@ import app.packed.component.Component;
 import app.packed.config.ConfigSite;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.InstantiationMode;
-import app.packed.service.ServiceDependency;
-import app.packed.service.ServiceRequest;
+import app.packed.service.Dependency;
+import app.packed.service.PrototypeRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.service.build.BuildEntry;
@@ -66,18 +66,18 @@ public interface ServiceEntry<T> {
     // return () -> getInstance(site);
     // }
 
-    default T getInstance(ServiceDependency dependency, @Nullable Component component) {
-        return getInstance(ServiceRequest.of(dependency));
+    default T getInstance(Dependency dependency, @Nullable Component component) {
+        return getInstance(PrototypeRequest.of(dependency));
     }
 
     InstantiationMode instantiationMode();
 
-    T getInstance(ServiceRequest site);
+    T getInstance(PrototypeRequest site);
 
     /**
-     * Returns whether or not this node needs a {@link ServiceRequest} instance to be able to deliver a service.
+     * Returns whether or not this node needs a {@link PrototypeRequest} instance to be able to deliver a service.
      *
-     * @return whether or not this node needs a {@link ServiceRequest} instance to be able to deliver a service
+     * @return whether or not this node needs a {@link PrototypeRequest} instance to be able to deliver a service
      */
     boolean needsServiceRequest();
 

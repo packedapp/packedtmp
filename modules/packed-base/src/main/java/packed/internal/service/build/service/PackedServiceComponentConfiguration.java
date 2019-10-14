@@ -33,7 +33,7 @@ import packed.internal.service.build.BuildEntry;
 /**
  *
  */
-public final class PackedProvidedComponentConfiguration<T> implements ServiceComponentConfiguration<T> {
+public final class PackedServiceComponentConfiguration<T> implements ServiceComponentConfiguration<T> {
 
     /** The service we are exposing. */
     public final BuildEntry<T> buildEntry;
@@ -47,7 +47,7 @@ public final class PackedProvidedComponentConfiguration<T> implements ServiceCom
      * @param buildEntry
      *            the build entry to wrap
      */
-    public PackedProvidedComponentConfiguration(ComponentConfiguration<T> component, BuildEntry<T> buildEntry) {
+    public PackedServiceComponentConfiguration(ComponentConfiguration<T> component, BuildEntry<T> buildEntry) {
         this.buildEntry = requireNonNull(buildEntry);
         this.component = component;
     }

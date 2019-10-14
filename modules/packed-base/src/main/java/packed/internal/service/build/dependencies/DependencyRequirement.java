@@ -18,10 +18,10 @@ package packed.internal.service.build.dependencies;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
-import app.packed.service.ServiceDependency;
+import app.packed.service.Dependency;
 import app.packed.util.Nullable;
+import packed.internal.inject.hooks.AtInject;
 import packed.internal.service.build.BuildEntry;
-import packed.internal.service.util.AtInject;
 
 /**
  *
@@ -30,7 +30,7 @@ class DependencyRequirement {
 
     final ConfigSite configSite;
 
-    final ServiceDependency dependency;
+    final Dependency dependency;
 
     @Nullable
     final BuildEntry<?> entry;
@@ -38,19 +38,19 @@ class DependencyRequirement {
     AtInject atInject;
     // Contract <- If requirement added via a contract
 
-    DependencyRequirement(ServiceDependency dependency, ConfigSite configSite) {
+    DependencyRequirement(Dependency dependency, ConfigSite configSite) {
         this.dependency = requireNonNull(dependency, "dependency is null");
         this.configSite = requireNonNull(configSite);
         this.entry = null;
     }
 
-    DependencyRequirement(ServiceDependency dependency, BuildEntry<?> entry) {
+    DependencyRequirement(Dependency dependency, BuildEntry<?> entry) {
         this.dependency = requireNonNull(dependency, "dependency is null");
         this.configSite = entry.configSite();
         this.entry = entry;
     }
 
-    DependencyRequirement(ServiceDependency dependency, BuildEntry<?> entry, AtInject atInject) {
+    DependencyRequirement(Dependency dependency, BuildEntry<?> entry, AtInject atInject) {
         this.dependency = requireNonNull(dependency, "dependency is null");
         this.configSite = entry.configSite();
         this.entry = entry;

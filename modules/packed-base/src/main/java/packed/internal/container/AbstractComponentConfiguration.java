@@ -33,6 +33,8 @@ import app.packed.container.ContainerSource;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.feature.FeatureMap;
 import app.packed.util.Nullable;
+import packed.internal.artifact.PackedArtifactBuildContext;
+import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.hook.applicator.DelayedAccessor;

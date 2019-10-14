@@ -17,13 +17,13 @@ package support.assertj.app.packed.inject;
 
 import org.assertj.core.api.AbstractAssert;
 
-import app.packed.service.ServiceDependency;
+import app.packed.service.Dependency;
 import app.packed.util.Key;
 
 /**
  *
  */
-public class KeyAssert extends AbstractAssert<KeyAssert, ServiceDependency> {
+public class KeyAssert extends AbstractAssert<KeyAssert, Dependency> {
 
     public KeyAssert keyIs(Class<?> type) {
         return keyIs(Key.of(type));
@@ -72,11 +72,11 @@ public class KeyAssert extends AbstractAssert<KeyAssert, ServiceDependency> {
         return this;
     }
 
-    public KeyAssert(ServiceDependency actual) {
+    public KeyAssert(Dependency actual) {
         super(actual, KeyAssert.class);
     }
 
-    public static KeyAssert assertThat(ServiceDependency actual) {
+    public static KeyAssert assertThat(Dependency actual) {
         return new KeyAssert(actual);
     }
 

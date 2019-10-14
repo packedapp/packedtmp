@@ -23,7 +23,7 @@ import app.packed.container.Wirelet;
 import app.packed.service.Injector;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceExtension;
-import app.packed.service.ServiceRequest;
+import app.packed.service.PrototypeRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.service.ServiceEntry;
@@ -58,7 +58,7 @@ final class ProvideAllBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ServiceRequest site) {
+    public T getInstance(PrototypeRequest site) {
         return entry.getInstance(site);
     }
 

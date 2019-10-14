@@ -28,7 +28,7 @@ import app.packed.hook.OnHook;
 import app.packed.reflect.FieldDescriptor;
 import app.packed.reflect.MethodDescriptor;
 import app.packed.service.Provide;
-import app.packed.service.ServiceDependency;
+import app.packed.service.Dependency;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import packed.internal.util.ErrorMessageBuilder;
@@ -98,10 +98,10 @@ public final class AtProvidesGroup implements Hook {
             MethodDescriptor method = methodHook.method();
 
             tryAdd0(methodHook.methodHandle(), method, Key.fromMethodReturnType(method.newMethod()), methodHook.annotation(),
-                    ServiceDependency.fromExecutable(method));
+                    Dependency.fromExecutable(method));
         }
 
-        private AtProvides tryAdd0(MethodHandle mh, Member descriptor, Key<?> key, Provide provides, List<ServiceDependency> dependencies) {
+        private AtProvides tryAdd0(MethodHandle mh, Member descriptor, Key<?> key, Provide provides, List<Dependency> dependencies) {
             AtProvides ap = new AtProvides(mh, descriptor, key, provides, dependencies);
             hasInstanceMembers |= !ap.isStaticMember;
             // Check this

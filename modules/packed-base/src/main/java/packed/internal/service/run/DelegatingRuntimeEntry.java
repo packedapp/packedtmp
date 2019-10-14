@@ -18,7 +18,7 @@ package packed.internal.service.run;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.service.InstantiationMode;
-import app.packed.service.ServiceRequest;
+import app.packed.service.PrototypeRequest;
 import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
 
@@ -51,7 +51,7 @@ public final class DelegatingRuntimeEntry<T> extends RuntimeEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ServiceRequest site) {
+    public T getInstance(PrototypeRequest site) {
         return delegate.getInstance(site);
     }
 

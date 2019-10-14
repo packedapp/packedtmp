@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Function;
 
 import app.packed.service.InstantiationMode;
-import app.packed.service.ServiceRequest;
+import app.packed.service.PrototypeRequest;
 import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
 
@@ -47,7 +47,7 @@ public final class MappingRuntimeEntry<F, T> extends RuntimeEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ServiceRequest site) {
+    public T getInstance(PrototypeRequest site) {
         F f = delegate.getInstance(site);
         T t = function.apply(f);
         // TODO Check Type, and not null

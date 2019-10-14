@@ -31,6 +31,8 @@ import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceContract;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import packed.internal.inject.hooks.AtInject;
+import packed.internal.inject.hooks.AtInjectGroup;
 import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.dependencies.DependencyManager;
 import packed.internal.service.build.export.ExportManager;
@@ -38,8 +40,6 @@ import packed.internal.service.build.export.ExportedBuildEntry;
 import packed.internal.service.build.service.ComponentBuildEntry;
 import packed.internal.service.build.service.ServiceProvidingManager;
 import packed.internal.service.run.DefaultInjector;
-import packed.internal.service.util.AtInject;
-import packed.internal.service.util.AtInjectGroup;
 
 /** This class records all service related information for a single box. */
 public final class ServiceExtensionNode {

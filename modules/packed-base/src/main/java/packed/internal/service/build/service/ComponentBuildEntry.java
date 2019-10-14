@@ -26,8 +26,8 @@ import app.packed.service.InjectionException;
 import app.packed.service.InstantiationMode;
 import app.packed.service.Provide;
 import app.packed.service.ServiceComponentConfiguration;
-import app.packed.service.ServiceDependency;
-import app.packed.service.ServiceRequest;
+import app.packed.service.Dependency;
+import app.packed.service.PrototypeRequest;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import packed.internal.service.build.BuildEntry;
@@ -77,7 +77,7 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
     }
 
     public ComponentBuildEntry(ServiceExtensionNode injectorBuilder, ComponentConfiguration<T> cc, InstantiationMode instantionMode, MethodHandle mh,
-            List<ServiceDependency> dependencies) {
+            List<Dependency> dependencies) {
         super(injectorBuilder, cc.configSite(), dependencies);
         this.declaringEntry = null;
         this.instantionMode = requireNonNull(instantionMode);
@@ -119,7 +119,7 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public final T getInstance(ServiceRequest ignore) {
+    public final T getInstance(PrototypeRequest ignore) {
         if (instantionMode == InstantiationMode.PROTOTYPE) {
             return newInstance();
         }

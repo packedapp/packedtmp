@@ -42,11 +42,11 @@ import packed.internal.container.FactoryComponentConfiguration;
 import packed.internal.container.InstantiatedComponentConfiguration;
 import packed.internal.container.WireletList;
 import packed.internal.container.extension.PackedExtensionContext;
-import packed.internal.service.InjectConfigSiteOperations;
+import packed.internal.inject.factoryhandle.FactoryHandle;
+import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ErrorMessages;
 import packed.internal.service.build.ServiceExtensionNode;
-import packed.internal.service.factoryhandle.FactoryHandle;
 import packed.internal.service.run.AbstractInjector;
 
 /**
@@ -142,7 +142,7 @@ public final class ServiceProvidingManager {
         }
         c.as((Key) factory.key());
         providingEntries.add(c);
-        return new PackedProvidedComponentConfiguration<>(cc, (ComponentBuildEntry) c);
+        return new PackedServiceComponentConfiguration<>(cc, (ComponentBuildEntry) c);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -157,7 +157,7 @@ public final class ServiceProvidingManager {
 
         c.as((Key) Key.of(instance.getClass()));
         providingEntries.add(c);
-        return new PackedProvidedComponentConfiguration<>((CoreComponentConfiguration) cc, (ComponentBuildEntry) c);
+        return new PackedServiceComponentConfiguration<>((CoreComponentConfiguration) cc, (ComponentBuildEntry) c);
     }
 
     public HashMap<Key<?>, BuildEntry<?>> resolve() {

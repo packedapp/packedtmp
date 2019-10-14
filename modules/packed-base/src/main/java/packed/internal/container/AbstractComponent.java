@@ -32,10 +32,11 @@ import app.packed.config.ConfigSite;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.feature.FeatureMap;
 import app.packed.util.Nullable;
+import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
 
 /** An abstract base implementation of {@link Component}. */
-abstract class AbstractComponent implements Component {
+public abstract class AbstractComponent implements Component {
 
     /** Any child components this component might have. Is null if we know the component will never have any children. */
     @Nullable
@@ -76,7 +77,7 @@ abstract class AbstractComponent implements Component {
      * @param configuration
      *            the configuration used for creating this component
      */
-    AbstractComponent(@Nullable AbstractComponent parent, AbstractComponentConfiguration<?> configuration, PackedArtifactInstantiationContext ic) {
+    public AbstractComponent(@Nullable AbstractComponent parent, AbstractComponentConfiguration<?> configuration, PackedArtifactInstantiationContext ic) {
         this.parent = parent;
         this.configSite = requireNonNull(configuration.configSite());
         this.description = configuration.getDescription();

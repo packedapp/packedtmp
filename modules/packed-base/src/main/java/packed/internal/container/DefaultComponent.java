@@ -16,6 +16,7 @@
 package packed.internal.container;
 
 import app.packed.component.Component;
+import packed.internal.artifact.PackedArtifactInstantiationContext;
 
 /**
  *

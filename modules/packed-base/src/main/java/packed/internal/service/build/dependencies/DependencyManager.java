@@ -32,7 +32,7 @@ import app.packed.reflect.MethodDescriptor;
 import app.packed.reflect.ParameterDescriptor;
 import app.packed.service.InjectionException;
 import app.packed.service.ServiceContract;
-import app.packed.service.ServiceDependency;
+import app.packed.service.Dependency;
 import app.packed.service.ServiceExtension;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -81,7 +81,7 @@ public final class DependencyManager {
     final HashSet<Key<?>> requiredOptionally = new HashSet<>();
 
     /** A map of all dependencies that could not be resolved */
-    IdentityHashMap<BuildEntry<?>, List<ServiceDependency>> unresolvedDependencies;
+    IdentityHashMap<BuildEntry<?>, List<Dependency>> unresolvedDependencies;
 
     /** A list of all dependencies that have not been resolved */
     private ArrayList<DependencyRequirement> missingDependencies;
@@ -110,7 +110,7 @@ public final class DependencyManager {
      * @see ServiceExtension#require(Key)
      * @see ServiceExtension#requireOptionally(Key)
      */
-    public void require(ServiceDependency dependency, ConfigSite configSite) {
+    public void require(Dependency dependency, ConfigSite configSite) {
         explicitRequirements.add(new DependencyRequirement(dependency, configSite));
     }
 
@@ -135,9 +135,9 @@ public final class DependencyManager {
             BuildEntry<?> entry = (BuildEntry<?>) se;
             if (entry.hasUnresolvedDependencies()) {
                 detectCyclesFor.add(entry);
-                List<ServiceDependency> dependencies = entry.dependencies;
+                List<Dependency> dependencies = entry.dependencies;
                 for (int i = 0; i < dependencies.size(); i++) {
-                    ServiceDependency dependency = dependencies.get(i);
+                    Dependency dependency = dependencies.get(i);
                     ServiceEntry<?> resolveTo = node.resolvedEntries.get(dependency.key());
                     if (resolveTo == null) {
                         Key<?> k = dependency.key();
@@ -183,7 +183,7 @@ public final class DependencyManager {
      * @param entry
      * @param dependency
      */
-    public void recordResolvedDependency(BuildEntry<?> entry, ServiceDependency dependency, @Nullable ServiceEntry<?> resolvedTo, boolean fromParent) {
+    public void recordResolvedDependency(BuildEntry<?> entry, Dependency dependency, @Nullable ServiceEntry<?> resolvedTo, boolean fromParent) {
         requireNonNull(entry);
         requireNonNull(dependency);
         if (resolvedTo != null) {
@@ -213,12 +213,12 @@ public final class DependencyManager {
                     // Long long error message
                     StringBuilder sb = new StringBuilder();
                     sb.append("Cannot resolve dependency for ");
-                    List<ServiceDependency> dependencies = e.entry.dependencies;
+                    List<Dependency> dependencies = e.entry.dependencies;
 
                     if (dependencies.size() == 1) {
                         sb.append("single ");
                     }
-                    ServiceDependency dependency = e.dependency;
+                    Dependency dependency = e.dependency;
                     sb.append("parameter on ");
                     if (dependency.variable() != null) {
 
@@ -254,7 +254,7 @@ public final class DependencyManager {
         }
     }
 
-    public void recordMissingDependency(BuildEntry<?> entry, ServiceDependency dependency, boolean fromParent) {
+    public void recordMissingDependency(BuildEntry<?> entry, Dependency dependency, boolean fromParent) {
 
     }
 }

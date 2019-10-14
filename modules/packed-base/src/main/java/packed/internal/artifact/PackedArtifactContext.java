@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.artifact;
 
 import java.util.LinkedHashMap;
 import java.util.concurrent.CompletableFuture;
@@ -21,6 +21,8 @@ import java.util.concurrent.CompletableFuture;
 import app.packed.artifact.ArtifactContext;
 import app.packed.service.Injector;
 import app.packed.util.Nullable;
+import packed.internal.container.AbstractComponent;
+import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.service.run.DefaultInjector;
 
 /** The default implementation of Container. */
@@ -42,7 +44,7 @@ public final class PackedArtifactContext extends AbstractComponent implements Ar
      * @param instantiationContext
      *            the instantiation context of the container
      */
-    PackedArtifactContext(@Nullable AbstractComponent parent, PackedContainerConfiguration configuration,
+    public PackedArtifactContext(@Nullable AbstractComponent parent, PackedContainerConfiguration configuration,
             PackedArtifactInstantiationContext instantiationContext) {
         super(parent, configuration, instantiationContext);
         Injector i = instantiationContext.get(configuration, DefaultInjector.class);

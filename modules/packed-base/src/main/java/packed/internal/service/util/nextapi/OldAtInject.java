@@ -19,14 +19,14 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.service.ServiceDependency;
-import packed.internal.service.factoryhandle.FactoryHandle;
+import app.packed.service.Dependency;
+import packed.internal.inject.factoryhandle.FactoryHandle;
 
 /** A descriptor of an annotated member that has 0 or more service dependencies. */
 public class OldAtInject {
 
     /** The dependencies (parameters) of the member. */
-    public final List<ServiceDependency> dependencies;
+    public final List<Dependency> dependencies;
 
     /** The invokable member. */
     public final FactoryHandle<?> invokable;
@@ -39,7 +39,7 @@ public class OldAtInject {
      * @param dependencies
      *            a list of dependencies
      */
-    OldAtInject(FactoryHandle<?> invokable, List<ServiceDependency> dependencies) {
+    OldAtInject(FactoryHandle<?> invokable, List<Dependency> dependencies) {
         this.invokable = requireNonNull(invokable);
         this.dependencies = requireNonNull(dependencies);
     }

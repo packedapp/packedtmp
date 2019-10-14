@@ -25,10 +25,10 @@ import java.util.List;
 import app.packed.reflect.FieldDescriptor;
 import app.packed.reflect.MethodDescriptor;
 import app.packed.service.Inject;
-import app.packed.service.ServiceDependency;
+import app.packed.service.Dependency;
 import app.packed.util.Nullable;
-import packed.internal.service.factoryhandle.ExecutableFactoryHandle;
-import packed.internal.service.factoryhandle.FieldFactoryHandle;
+import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
+import packed.internal.inject.factoryhandle.FieldFactoryHandle;
 
 /** A group of injectable fields and methods. */
 public final class OldAtInjectGroup {
@@ -85,7 +85,7 @@ public final class OldAtInjectGroup {
                 }
 
                 fields.add(result = new OldAtInject(new FieldFactoryHandle<>(descriptor).withLookup(lookup),
-                        List.of(ServiceDependency.fromVariable(descriptor))));
+                        List.of(Dependency.fromVariable(descriptor))));
             }
             return result;
         }
@@ -101,7 +101,7 @@ public final class OldAtInjectGroup {
                     methods = new ArrayList<>();
                 }
                 methods.add(result = new OldAtInject(new ExecutableFactoryHandle<>(descriptor).withLookup(lookup),
-                        ServiceDependency.fromExecutable(descriptor)));
+                        Dependency.fromExecutable(descriptor)));
             }
             return result;
         }

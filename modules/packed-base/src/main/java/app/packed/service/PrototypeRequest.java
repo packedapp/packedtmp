@@ -130,7 +130,7 @@ import app.packed.util.Key;
 
 // ComponentPath
 // ConfigSite
-public interface ServiceRequest /* extends ServiceDependency */ {
+public interface PrototypeRequest {
 
     // Vi tager alle annotations med...@SystemProperty(fff) @Foo String xxx
     // Includes any qualifier...
@@ -191,7 +191,7 @@ public interface ServiceRequest /* extends ServiceDependency */ {
      * 
      * @return any dependency this class might have
      */
-    default Optional<ServiceDependency> dependency() {
+    default Optional<Dependency> dependency() {
         throw new UnsupportedOperationException();
     }
 
@@ -212,11 +212,11 @@ public interface ServiceRequest /* extends ServiceDependency */ {
     // throw new UnsupportedOperationException();
     // }
 
-    static ServiceRequest of(ServiceDependency dependency) {
+    static PrototypeRequest of(Dependency dependency) {
         return new ServiceRequestImpl(dependency, null);
     }
 
-    static ServiceRequest of(ServiceDependency dependency, Component componenent) {
+    static PrototypeRequest of(Dependency dependency, Component componenent) {
         return new ServiceRequestImpl(dependency, requireNonNull(componenent, "component is null"));
     }
 
@@ -229,8 +229,8 @@ public interface ServiceRequest /* extends ServiceDependency */ {
      *            the for which injection is requested
      * @return an injection site for the specified injector and key.
      */
-    static ServiceRequest of(Key<?> key) {
-        return new ServiceRequestImpl(ServiceDependency.of(key), null);
+    static PrototypeRequest of(Key<?> key) {
+        return new ServiceRequestImpl(Dependency.of(key), null);
     }
 
     /**
@@ -244,10 +244,10 @@ public interface ServiceRequest /* extends ServiceDependency */ {
      * @param component
      *            the component to which the injector belongs
      * @return an injection site for the specified injector and key and component.
-     * @see #of(ServiceDependency)
+     * @see #of(Dependency)
      */
-    static ServiceRequest of(Key<?> key, Component component) {
-        return new ServiceRequestImpl(ServiceDependency.of(key), requireNonNull(component, "component is null"));
+    static PrototypeRequest of(Key<?> key, Component component) {
+        return new ServiceRequestImpl(Dependency.of(key), requireNonNull(component, "component is null"));
     }
 
     // static {AopReady r = AOPSupport.compile(FooClass.class)}, at runtime r.newInstance(r))// Arghh grimt

@@ -50,6 +50,8 @@ import app.packed.contract.Contract;
 import app.packed.service.Factory;
 import app.packed.service.ServiceExtension;
 import app.packed.util.Nullable;
+import packed.internal.artifact.PackedArtifactContext;
+import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.container.extension.ExtensionModel;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.container.model.ComponentLookup;
@@ -58,8 +60,8 @@ import packed.internal.container.model.ContainerSourceModel;
 import packed.internal.hook.applicator.DelayedAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarFieldDelayerAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarMethodDelayerAccessor;
+import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.module.ModuleAccess;
-import packed.internal.service.InjectConfigSiteOperations;
 
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration<Object> implements ContainerConfiguration {

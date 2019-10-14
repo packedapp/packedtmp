@@ -23,14 +23,14 @@ import app.packed.config.ConfigSite;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceExtension;
-import app.packed.service.ServiceRequest;
+import app.packed.service.PrototypeRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
-import packed.internal.service.run.RuntimeEntry;
 import packed.internal.service.run.DelegatingRuntimeEntry;
+import packed.internal.service.run.RuntimeEntry;
 
 /**
  * A build entry representing an exported service. Entries at runtime has never any reference to how (or if) they where
@@ -59,7 +59,7 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
     ExportedBuildEntry(ServiceExtensionNode builder, Key<T> key, ConfigSite configSite) {
         super(builder, configSite, List.of());
         this.keyToExport = requireNonNull(key);
-        as(key);
+        this.key = requireNonNull(key);
     }
 
     /**
@@ -92,7 +92,7 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ServiceRequest request) {
+    public T getInstance(PrototypeRequest request) {
         return exportedEntry.getInstance(request);
     }
 

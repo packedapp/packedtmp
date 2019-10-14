@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.util;
+package packed.internal.inject.hooks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ import app.packed.hook.OnHook;
 import app.packed.reflect.FieldDescriptor;
 import app.packed.reflect.MethodDescriptor;
 import app.packed.service.Inject;
-import app.packed.service.ServiceDependency;
+import app.packed.service.Dependency;
 
 /**
  *
@@ -66,13 +66,13 @@ public final class AtInjectGroup implements Hook {
         void onFieldInject(AnnotatedFieldHook<Inject> hook) {
             hook.checkNotFinal().checkNotStatic();
             FieldDescriptor field = hook.field();
-            members.add(new AtInject(hook.setter(), field, List.of(ServiceDependency.fromField(field))));
+            members.add(new AtInject(hook.setter(), field, List.of(Dependency.fromField(field))));
         }
 
         @OnHook
         void onMethodProvide(AnnotatedMethodHook<Inject> hook) {
             MethodDescriptor method = hook.method();
-            List<ServiceDependency> dependencies = ServiceDependency.fromExecutable(method);
+            List<Dependency> dependencies = Dependency.fromExecutable(method);
 
             // TestNotStatic... Hmm kan ikke kalde hook.checkNotStatic mere...
 

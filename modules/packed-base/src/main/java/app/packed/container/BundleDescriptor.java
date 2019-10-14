@@ -36,7 +36,7 @@ import app.packed.contract.ContractSet;
 import app.packed.service.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.container.NonInstantiatingArtifactDriver;
+import packed.internal.artifact.NonInstantiatingArtifactDriver;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.module.ModuleAccess;
 

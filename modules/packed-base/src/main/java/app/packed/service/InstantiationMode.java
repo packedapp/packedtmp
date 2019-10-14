@@ -21,6 +21,10 @@ package app.packed.service;
 // lazy, prototype, no_cache
 // Rename Prototype to Many???? The thing is it might be cached
 // ADHOC, VARIABLE, ANY, MANY, PER_REQUEST
+
+// Maybe Service.Mode?
+
+// None -> must be from component
 public enum InstantiationMode {
 
     NONE,

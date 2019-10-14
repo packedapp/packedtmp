@@ -19,11 +19,11 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
 import app.packed.service.InstantiationMode;
-import app.packed.service.ServiceRequest;
+import app.packed.service.PrototypeRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import packed.internal.inject.util.Provider;
 import packed.internal.service.build.BuildEntry;
-import packed.internal.service.util.Provider;
 
 /**
  * An runtime service node holding {@link InstantiationMode#SINGLETON} instances. This node also holds
@@ -73,7 +73,7 @@ public final class SingletonRuntimeEntry<T> extends RuntimeEntry<T> implements P
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ServiceRequest ignore) {
+    public T getInstance(PrototypeRequest ignore) {
         return instance;
     }
 

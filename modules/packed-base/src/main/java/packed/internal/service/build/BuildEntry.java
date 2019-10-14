@@ -23,9 +23,9 @@ import java.util.Optional;
 import app.packed.config.ConfigSite;
 import app.packed.service.Provide;
 import app.packed.service.ServiceConfiguration;
-import app.packed.service.ServiceDependency;
+import app.packed.service.Dependency;
 import app.packed.service.ServiceDescriptor;
-import app.packed.service.ServiceRequest;
+import app.packed.service.PrototypeRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.service.ServiceEntry;
@@ -50,14 +50,14 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
     private final ConfigSite configSite;
 
     /** The dependencies of this node. */
-    public final List<ServiceDependency> dependencies;
+    public final List<Dependency> dependencies;
 
     public String description;
 
     /** A flag used to detect cycles in the dependency graph. */
     public boolean detectCycleVisited;
 
-    /** Whether or this node contains a dependency on {@link ServiceRequest}. */
+    /** Whether or this node contains a dependency on {@link PrototypeRequest}. */
     protected final boolean hasDependencyOnInjectionSite;
 
     /** The injector builder this node belongs to. */
@@ -83,14 +83,14 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
         this(injectorBuilder, configSite, List.of());
     }
 
-    public BuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite, List<ServiceDependency> dependencies) {
+    public BuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite, List<Dependency> dependencies) {
         this.serviceExtension = serviceExtension;
         this.configSite = requireNonNull(configSite);
         this.dependencies = requireNonNull(dependencies);
         this.resolvedDependencies = dependencies.isEmpty() ? EMPTY_ARRAY : new ServiceEntry<?>[dependencies.size()];
         boolean hasDependencyOnInjectionSite = false;
         if (!dependencies.isEmpty()) {
-            for (ServiceDependency e : dependencies) {
+            for (Dependency e : dependencies) {
                 if (e.key().equals(KeyBuilder.INJECTION_SITE_KEY)) {
                     hasDependencyOnInjectionSite = true;
                     break;

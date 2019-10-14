@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.util;
+package packed.internal.inject.hooks;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,7 +24,7 @@ import java.util.List;
 import app.packed.reflect.FieldDescriptor;
 import app.packed.reflect.MethodDescriptor;
 import app.packed.service.Provide;
-import app.packed.service.ServiceDependency;
+import app.packed.service.Dependency;
 
 /** A descriptor for a member annotated with {@link Provide}. */
 public final class AtInject {
@@ -33,12 +33,12 @@ public final class AtInject {
     public final Member member;
 
     /** The dependencies (parameters) of the member. */
-    public final List<ServiceDependency> dependencies;
+    public final List<Dependency> dependencies;
 
     /** A unbound method handle to the underlying field or method. */
     public final MethodHandle methodHandle;
 
-    public AtInject(MethodHandle mh, Member member, List<ServiceDependency> dependencies) {
+    public AtInject(MethodHandle mh, Member member, List<Dependency> dependencies) {
         this.methodHandle = requireNonNull(mh);
         this.dependencies = requireNonNull(dependencies);
         this.member = requireNonNull(member);

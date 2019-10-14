@@ -24,8 +24,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import app.packed.reflect.UncheckedIllegalAccessException;
-import packed.internal.service.factoryhandle.ExecutableFactoryHandle;
-import packed.internal.service.factoryhandle.FactoryHandle;
+import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
+import packed.internal.inject.factoryhandle.FactoryHandle;
 
 /**
  * This class exists because we have to ways to access the members of a component. One with a {@link Lookup} object, and

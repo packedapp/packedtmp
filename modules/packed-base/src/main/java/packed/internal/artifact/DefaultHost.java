@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.artifact;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 import app.packed.artifact.app.App;
+import packed.internal.container.AbstractComponent;
+import packed.internal.container.AbstractComponentConfiguration;
+import packed.internal.container.ComponentHolder;
 
 /**
  *

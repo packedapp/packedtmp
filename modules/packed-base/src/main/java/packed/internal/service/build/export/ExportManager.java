@@ -32,7 +32,7 @@ import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ErrorMessages;
 import packed.internal.service.build.ServiceExtensionNode;
-import packed.internal.service.build.service.PackedProvidedComponentConfiguration;
+import packed.internal.service.build.service.PackedServiceComponentConfiguration;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -94,11 +94,11 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
      * @see ServiceExtension#export(ServiceComponentConfiguration)
      */
     public <T> ServiceConfiguration<T> export(ServiceComponentConfiguration<T> configuration, ConfigSite configSite) {
-        if (!(configuration instanceof PackedProvidedComponentConfiguration)) {
+        if (!(configuration instanceof PackedServiceComponentConfiguration)) {
             throw new IllegalArgumentException("Custom implementations of " + StringFormatter.format(ServiceComponentConfiguration.class)
                     + " are not allowed, type = " + StringFormatter.format(configuration.getClass()));
         }
-        BuildEntry<T> entryToExport = ((PackedProvidedComponentConfiguration<T>) configuration).buildEntry;
+        BuildEntry<T> entryToExport = ((PackedServiceComponentConfiguration<T>) configuration).buildEntry;
         if (entryToExport.serviceExtension != node) {
             throw new IllegalArgumentException("The specified configuration was created by another injector extension");
         }

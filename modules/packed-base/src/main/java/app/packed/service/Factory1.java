@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.TypeLiteral;
-import packed.internal.service.factoryhandle.Factory1FactoryHandle;
+import packed.internal.inject.factoryhandle.Factory1FactoryHandle;
 
 /**
  * A special {@link Factory} type that takes a single dependency as input and uses a {@link Function} to dynamically provide new instances. The input
@@ -78,14 +78,14 @@ import packed.internal.service.factoryhandle.Factory1FactoryHandle;
 public abstract class Factory1<T, R> extends Factory<R> {
 
     /** A cache of extracted type variables and dependencies from subclasses of this class. */
-    private static final ClassValue<Entry<TypeLiteral<?>, List<ServiceDependency>>> CACHE = new ClassValue<>() {
+    private static final ClassValue<Entry<TypeLiteral<?>, List<Dependency>>> CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
-        protected Entry<TypeLiteral<?>, List<ServiceDependency>> computeValue(Class<?> type) {
+        protected Entry<TypeLiteral<?>, List<Dependency>> computeValue(Class<?> type) {
             return new SimpleImmutableEntry<>(TypeLiteral.fromTypeVariable((Class) type, Factory.class, 0),
-                    ServiceDependency.fromTypeVariables((Class) type, Factory1.class, 0));
+                    Dependency.fromTypeVariables((Class) type, Factory1.class, 0));
         }
     };
 
@@ -113,7 +113,7 @@ public abstract class Factory1<T, R> extends Factory<R> {
      */
     @SuppressWarnings("unchecked")
     static <T, R> FactorySupport<R> create(Class<?> implementation, Function<?, ? extends T> function) {
-        Entry<TypeLiteral<?>, List<ServiceDependency>> fs = CACHE.get(implementation);
+        Entry<TypeLiteral<?>, List<Dependency>> fs = CACHE.get(implementation);
         return new FactorySupport<>(new Factory1FactoryHandle<>((TypeLiteral<R>) fs.getKey(), (Function<? super T, ? extends R>) function), fs.getValue());
     }
 }

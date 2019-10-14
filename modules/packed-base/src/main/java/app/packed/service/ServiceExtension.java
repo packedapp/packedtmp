@@ -31,7 +31,7 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.Qualifier;
 import packed.internal.container.WireletList;
-import packed.internal.service.InjectConfigSiteOperations;
+import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.build.ServiceWireletPipeline;
 import packed.internal.service.build.service.AtProvidesGroup;
@@ -256,7 +256,7 @@ public final class ServiceExtension extends Extension {
      */
     public void require(Key<?> key) {
         checkConfigurable();
-        node.dependencies().require(ServiceDependency.of(key), captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE));
+        node.dependencies().require(Dependency.of(key), captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE));
     }
 
     /**
@@ -273,7 +273,7 @@ public final class ServiceExtension extends Extension {
     // MethodChaining does not work with bundles...
     public void requireOptionally(Key<?> key) {
         checkConfigurable();
-        node.dependencies().require(ServiceDependency.ofOptional(key), captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE_OPTIONAL));
+        node.dependencies().require(Dependency.ofOptional(key), captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE_OPTIONAL));
     }
 
     public <T, C> void inject(Key<T> key, ComponentConfiguration<C> into, BiConsumer<? super C, ? super T> action) {

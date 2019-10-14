@@ -28,7 +28,7 @@ import app.packed.service.ServiceExtension;
 import app.packed.util.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.PackedExtensionContext;
-import packed.internal.service.InjectConfigSiteOperations;
+import packed.internal.inject.util.InjectConfigSiteOperations;
 
 /**
  * An extension that provides basic functionality for installing components in a container.

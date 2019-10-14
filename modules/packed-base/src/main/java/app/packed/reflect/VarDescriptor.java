@@ -22,7 +22,7 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 
-import app.packed.service.ServiceDependency;
+import app.packed.service.Dependency;
 import app.packed.util.TypeLiteral;
 
 /**
@@ -106,7 +106,7 @@ public abstract class VarDescriptor implements AnnotatedElement {
     public abstract TypeLiteral<?> getTypeLiteral();
 
     /**
-     * The index of the variable, used when creating {@link ServiceDependency} instances.
+     * The index of the variable, used when creating {@link Dependency} instances.
      * <p>
      * If this variable is a field, this method returns {@code 0}.
      *

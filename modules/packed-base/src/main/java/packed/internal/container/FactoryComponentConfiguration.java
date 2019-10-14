@@ -19,12 +19,14 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
 import app.packed.service.Factory;
+import app.packed.util.Nullable;
 import packed.internal.container.model.ComponentModel;
+import packed.internal.inject.Instantiable;
 
 /**
  *
  */
-public final class FactoryComponentConfiguration<T> extends CoreComponentConfiguration<T> {
+public final class FactoryComponentConfiguration<T> extends CoreComponentConfiguration<T> implements Instantiable {
 
     public final Factory<T> factory;
 
@@ -36,5 +38,12 @@ public final class FactoryComponentConfiguration<T> extends CoreComponentConfigu
     public FactoryComponentConfiguration(ConfigSite configSite, PackedContainerConfiguration containerConfiguration, ComponentModel model, Factory<T> factory) {
         super(configSite, containerConfiguration, model);
         this.factory = requireNonNull(factory);
+    }
+
+    /** {@inheritDoc} */
+    @Nullable
+    @Override
+    public FactoryComponentConfiguration<?> declaringComponent() {
+        return null;
     }
 }

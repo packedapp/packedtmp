@@ -38,13 +38,13 @@ import app.packed.util.BaseSupport;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import app.packed.util.TypeLiteral;
+import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
+import packed.internal.inject.factoryhandle.FactoryHandle;
+import packed.internal.inject.factoryhandle.InstanceFactoryHandle;
+import packed.internal.inject.factoryhandle.MappingFactoryHandle;
 import packed.internal.module.AppPackedInjectAccess;
 import packed.internal.module.ModuleAccess;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
-import packed.internal.service.factoryhandle.ExecutableFactoryHandle;
-import packed.internal.service.factoryhandle.FactoryHandle;
-import packed.internal.service.factoryhandle.InstanceFactoryHandle;
-import packed.internal.service.factoryhandle.MappingFactoryHandle;
 import packed.internal.util.TypeUtil;
 
 /**
@@ -184,7 +184,7 @@ public class Factory<T> {
      * 
      * @return a list of all of the dependencies of this factory
      */
-    public final List<ServiceDependency> dependencies() {
+    public final List<Dependency> dependencies() {
         return factory.dependencies;
     }
 
@@ -407,13 +407,13 @@ final class FactoryFindInjectableExecutable {
     static <T> FactorySupport<T> find(Class<T> implementation) {
         ExecutableDescriptor executable = findExecutable(implementation);
         return new FactorySupport<>(new ExecutableFactoryHandle<>(TypeLiteral.of(implementation), executable, null),
-                ServiceDependency.fromExecutable(executable));
+                Dependency.fromExecutable(executable));
     }
 
     static <T> FactorySupport<T> find(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         ExecutableDescriptor executable = findExecutable(implementation.rawType());
-        return new FactorySupport<>(new ExecutableFactoryHandle<>(implementation, executable, null), ServiceDependency.fromExecutable(executable));
+        return new FactorySupport<>(new ExecutableFactoryHandle<>(implementation, executable, null), Dependency.fromExecutable(executable));
     }
 
     private static ExecutableDescriptor findExecutable(Class<?> type) {
@@ -493,12 +493,12 @@ final class FactorySupport<T> {
     final Key<T> defaultKey;
 
     /** A list of all of this factory's dependencies. */
-    final List<ServiceDependency> dependencies;
+    final List<Dependency> dependencies;
 
     /** The function used to create a new instance. */
     final FactoryHandle<T> function;
 
-    FactorySupport(FactoryHandle<T> function, List<ServiceDependency> dependencies) {
+    FactorySupport(FactoryHandle<T> function, List<Dependency> dependencies) {
         this.dependencies = requireNonNull(dependencies, "dependencies is null");
         this.function = requireNonNull(function);
         this.defaultKey = function.typeLiteral.toKey();

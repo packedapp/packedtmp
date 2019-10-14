@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.artifact;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,9 +21,10 @@ import app.packed.artifact.ArtifactDriver;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
 import app.packed.errorhandling.ErrorMessage;
+import packed.internal.container.PackedContainerConfiguration;
 
 /** The default implementation of {@link ArtifactBuildContext} */
-final class PackedArtifactBuildContext implements ArtifactBuildContext {
+public final class PackedArtifactBuildContext implements ArtifactBuildContext {
 
     /** The artifact's driver. */
     final ArtifactDriver<?> driver;
@@ -39,7 +40,7 @@ final class PackedArtifactBuildContext implements ArtifactBuildContext {
      * @param driver
      *            the driver of the artifact
      */
-    PackedArtifactBuildContext(PackedContainerConfiguration topContainerConfiguration, ArtifactDriver<?> driver) {
+    public PackedArtifactBuildContext(PackedContainerConfiguration topContainerConfiguration, ArtifactDriver<?> driver) {
         this.topContainerConfiguration = requireNonNull(topContainerConfiguration);
         this.driver = requireNonNull(driver);
     }

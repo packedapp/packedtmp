@@ -13,16 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.build.service;
+package packed.internal.artifact;
+
+import app.packed.artifact.ArtifactContext;
+import app.packed.artifact.ArtifactDriver;
 
 /**
  *
  */
-public class Stuff {
+public class NonInstantiatingArtifactDriver<T> extends ArtifactDriver<T> {
 
-    public static void main(String[] args) {
-        for (var v : AtProvidesGroup.class.getDeclaredClasses()) {
-            System.out.println(v.getSimpleName());
-        }
+    /** {@inheritDoc} */
+    @Override
+    protected void configure() {
+        super.configure();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected final T instantiate(ArtifactContext context) {
+        throw new UnsupportedOperationException();
     }
 }

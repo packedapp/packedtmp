@@ -23,7 +23,7 @@ import app.packed.component.Component;
 import app.packed.reflect.ConstructorDescriptor;
 import app.packed.reflect.FieldDescriptor;
 import app.packed.reflect.MethodDescriptor;
-import app.packed.service.ServiceDependency;
+import app.packed.service.Dependency;
 import app.packed.service.ServiceDescriptor;
 
 // RuntimeEnviroment != BuildEnvironment
@@ -72,11 +72,11 @@ interface ComponentDependencyDescriptor {
 
     //// Her traekker vi jo automatisk Context objekter
 
-    Map<FieldDescriptor, ServiceDependency> fields();
+    Map<FieldDescriptor, Dependency> fields();
 
-    Map<ConstructorDescriptor<?>, List<ServiceDependency>> constructor();
+    Map<ConstructorDescriptor<?>, List<Dependency>> constructor();
 
-    Map<MethodDescriptor, List<ServiceDependency>> methods();
+    Map<MethodDescriptor, List<Dependency>> methods();
     // Field -> Dependency
 
     // Method -> *Dependency

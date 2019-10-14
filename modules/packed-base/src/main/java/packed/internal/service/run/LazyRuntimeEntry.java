@@ -21,10 +21,10 @@ import java.lang.invoke.MethodHandle;
 import java.util.concurrent.Semaphore;
 
 import app.packed.service.InstantiationMode;
-import app.packed.service.ServiceRequest;
+import app.packed.service.PrototypeRequest;
 import app.packed.util.Nullable;
+import packed.internal.inject.util.Provider;
 import packed.internal.service.build.BuildEntry;
-import packed.internal.service.util.Provider;
 import packed.internal.util.ThrowableUtil;
 
 /** A lazy runtime node if the service was not requested at configuration time. */
@@ -57,7 +57,7 @@ public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ServiceRequest site) {
+    public T getInstance(PrototypeRequest site) {
         for (;;) {
             T i = instance;
             if (i != null) {
