@@ -28,24 +28,24 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
-import packed.internal.service.run.RuntimeEntry;
 import packed.internal.service.run.DelegatingRuntimeEntry;
+import packed.internal.service.run.RuntimeEntry;
 
 /** An entry specifically used for {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
 final class ProvideAllBuildEntry<T> extends BuildEntry<T> {
 
     /** The entry from the 'imported' injector. */
-    final ServiceEntry<T> entry;
+    private final ServiceEntry<T> entry;
 
     /** A wrapper for the 'imported' injector. */
-    final ProvideAllFromInjector fromInjector;
+    final ProvideAllFromInjector fromInjector; // not used currently
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings("unchecked")
     ProvideAllBuildEntry(ProvideAllFromInjector fromInjector, ServiceEntry<T> entry) {
         super(fromInjector.node, fromInjector.configSite.withParent(entry.configSite()), List.of());
-        this.entry = requireNonNull(entry);
-        this.fromInjector = requireNonNull(fromInjector);
-        this.as((Key) entry.key());
+        this.entry = entry;
+        this.fromInjector = fromInjector;
+        this.key = requireNonNull((Key<T>) entry.key());
         this.description = entry.description().orElse(null);
     }
 
@@ -77,7 +77,7 @@ final class ProvideAllBuildEntry<T> extends BuildEntry<T> {
     /** {@inheritDoc} */
     @Override
     public boolean hasUnresolvedDependencies() {
-        return false;// entry.needsResolving();
+        return false; // services from an never needs to resolved
     }
 
     /** {@inheritDoc} */

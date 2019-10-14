@@ -40,6 +40,7 @@ import packed.internal.util.KeyBuilder;
  * <p>
  * BSEs are never exposed to end-users, but instead wrapped in implementations of {@link ServiceConfiguration}.
  */
+// BuildEntry does not implements ServiceDescriptor because it is mutable, so we
 public abstract class BuildEntry<T> implements ServiceEntry<T> {
 
     /** An empty array of entries. */

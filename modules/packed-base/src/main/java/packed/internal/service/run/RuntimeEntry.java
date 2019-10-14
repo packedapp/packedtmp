@@ -28,7 +28,6 @@ import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
 
 /** An entry that represents a service at runtime. */
-// BuildEntry does not implements ServiceDescriptor because it is mutable
 public abstract class RuntimeEntry<T> implements ServiceEntry<T>, ServiceDescriptor {
 
     /** The point where this entry was registered. */
