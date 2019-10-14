@@ -37,6 +37,7 @@ import app.packed.service.ServiceExtension;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Repeatable(Multiple.class)
+
 // ComponentActivateExtension...
 @interface UseExtension {
 

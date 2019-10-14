@@ -22,7 +22,7 @@ import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import packed.internal.container.model.ComponentLookup;
+import packed.internal.container.ComponentLookup;
 
 /**
  *

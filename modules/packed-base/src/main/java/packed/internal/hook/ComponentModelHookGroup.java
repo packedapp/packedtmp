@@ -33,9 +33,9 @@ import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.HookGroupBuilder;
+import packed.internal.component.ComponentModel;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.ExtensionModel;
-import packed.internal.container.model.ComponentModel;
 import packed.internal.module.ModuleAccess;
 import packed.internal.util.ThrowableUtil;
 

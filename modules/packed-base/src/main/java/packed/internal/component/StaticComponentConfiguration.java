@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.container.model.ComponentModel;
 
 /** A component configuration representing a future static component. */
 public final class StaticComponentConfiguration<T> extends CoreComponentConfiguration<T> {

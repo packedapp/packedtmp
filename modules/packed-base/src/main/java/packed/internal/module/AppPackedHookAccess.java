@@ -22,7 +22,7 @@ import java.lang.reflect.Method;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
-import packed.internal.container.model.ComponentModel;
+import packed.internal.component.ComponentModel;
 
 /** An access class for accessing package private members in app.packed.hook. */
 public interface AppPackedHookAccess extends SecretAccess {

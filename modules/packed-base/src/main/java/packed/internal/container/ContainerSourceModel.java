@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.model;
+package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 
 import app.packed.container.Bundle;
 import app.packed.container.ContainerSource;
+import packed.internal.component.ComponentModel;
 import packed.internal.util.LookupValue;
 
 /** A model of a container source, typically a subclass of {@link Bundle}. */

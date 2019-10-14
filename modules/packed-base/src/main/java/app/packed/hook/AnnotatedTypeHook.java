@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 
-import packed.internal.container.model.ComponentModel;
+import packed.internal.component.ComponentModel;
 
 /** A hook representing a instance whose type is annotated with a specific annotation type. */
 // Kan f.eks. bruges til @Provide, hvor vi i saa fald skal have adgang til en instans.......

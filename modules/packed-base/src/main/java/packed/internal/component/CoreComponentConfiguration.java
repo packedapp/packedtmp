@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import app.packed.config.ConfigSite;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.container.model.ComponentModel;
 
 /**
  *

@@ -21,7 +21,6 @@ import app.packed.config.ConfigSite;
 import app.packed.service.Factory;
 import app.packed.util.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.container.model.ComponentModel;
 import packed.internal.inject.Instantiable;
 
 /**

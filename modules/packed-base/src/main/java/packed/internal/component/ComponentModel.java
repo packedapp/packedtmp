@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.model;
+package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,6 +24,8 @@ import java.util.IdentityHashMap;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.UseExtension;
+import packed.internal.container.ComponentLookup;
+import packed.internal.container.ContainerSourceModel;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.hook.ComponentModelHookGroup;
 import packed.internal.reflect.MemberFinder;
@@ -33,6 +35,7 @@ import packed.internal.util.ThrowableUtil;
  * A model of a container, an instance of this class can only be acquired via
  * {@link ContainerSourceModel#componentModelOf(Class)}.
  */
+
 public final class ComponentModel {
 
     /** The component type. */
@@ -117,7 +120,7 @@ public final class ComponentModel {
          * @param componentType
          *            the type of component
          */
-        Builder(ComponentLookup lookup, Class<?> componentType) {
+        public Builder(ComponentLookup lookup, Class<?> componentType) {
             this.lookup = requireNonNull(lookup);
             this.componentType = requireNonNull(componentType);
         }
@@ -127,7 +130,7 @@ public final class ComponentModel {
          * 
          * @return a new model
          */
-        ComponentModel build() {
+        public ComponentModel build() {
             // Look for type annotations
             for (Annotation a : componentType.getAnnotations()) {
                 Class<? extends Extension>[] extensionTypes = EXTENSION_ACTIVATORS.get(a.annotationType());

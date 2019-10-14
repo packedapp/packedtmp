@@ -17,7 +17,7 @@ package app.packed.hook;
 
 import static java.util.Objects.requireNonNull;
 
-import packed.internal.container.model.ComponentModel;
+import packed.internal.component.ComponentModel;
 
 /**
  * Represent an annotated field on a component instance.

@@ -29,8 +29,8 @@ import app.packed.reflect.FieldDescriptor;
 import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.reflect.VarOperator;
 import app.packed.util.Nullable;
-import packed.internal.container.model.ComponentModel;
-import packed.internal.container.model.ComponentModel.Builder;
+import packed.internal.component.ComponentModel;
+import packed.internal.component.ComponentModel.Builder;
 import packed.internal.hook.applicator.PackedFieldHookApplicator;
 import packed.internal.module.AppPackedHookAccess;
 import packed.internal.module.ModuleAccess;
@@ -59,7 +59,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
 
             /** {@inheritDoc} */
             @Override
-            public <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(packed.internal.container.model.ComponentModel.Builder builder,
+            public <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(packed.internal.component.ComponentModel.Builder builder,
                     Method method, T annotation) {
                 return new AnnotatedMethodHook<>(builder, method, annotation);
             }
