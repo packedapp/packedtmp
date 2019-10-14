@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
+import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.model.ComponentModel;
 
 /**

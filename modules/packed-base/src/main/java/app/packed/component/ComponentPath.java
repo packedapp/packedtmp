@@ -18,7 +18,7 @@ package app.packed.component;
 import java.nio.file.Paths;
 
 import app.packed.util.Nullable;
-import packed.internal.container.PackedComponentPath;
+import packed.internal.component.PackedComponentPath;
 
 /**
  * A component path points to a single component in a hierarchy of components (component system) expressed as a string

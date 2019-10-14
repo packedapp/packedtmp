@@ -28,7 +28,7 @@ import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
 import packed.internal.artifact.NonInstantiatingArtifactDriver;
-import packed.internal.container.ComponentConfigurationToComponentAdaptor;
+import packed.internal.component.ComponentConfigurationToComponentAdaptor;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.WireletContext;
 import packed.internal.module.AppPackedArtifactAccess;

@@ -13,28 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
+import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.model.ComponentModel;
 
-/**
- *
- */
-public final class InstantiatedComponentConfiguration<T> extends CoreComponentConfiguration<T> {
+/** A component configuration representing a future static component. */
+public final class StaticComponentConfiguration<T> extends CoreComponentConfiguration<T> {
 
-    /** The instance */
-    public final T instance;
+    /** The static implementation. */
+    public final Class<T> implementation;
 
     /**
-     * @param site
+     * @param configSite
      * @param containerConfiguration
-     * @param ccd
+     * @param model
      */
-    public InstantiatedComponentConfiguration(ConfigSite site, PackedContainerConfiguration containerConfiguration, ComponentModel ccd, T instance) {
-        super(site, containerConfiguration, ccd);
-        this.instance = requireNonNull(instance);
+    public StaticComponentConfiguration(ConfigSite configSite, PackedContainerConfiguration containerConfiguration, ComponentModel model,
+            Class<T> implementation) {
+        super(configSite, containerConfiguration, model);
+        this.implementation = requireNonNull(implementation);
     }
 }

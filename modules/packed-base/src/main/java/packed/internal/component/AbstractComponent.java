@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
@@ -40,7 +40,7 @@ public abstract class AbstractComponent implements Component {
 
     /** Any child components this component might have. Is null if we know the component will never have any children. */
     @Nullable
-    final Map<String, AbstractComponent> children;
+    public final Map<String, AbstractComponent> children;
 
     /** The configuration site of the component. */
     private final ConfigSite configSite;

@@ -18,9 +18,9 @@ package packed.internal.artifact;
 import java.util.concurrent.ConcurrentHashMap;
 
 import app.packed.artifact.app.App;
-import packed.internal.container.AbstractComponent;
-import packed.internal.container.AbstractComponentConfiguration;
-import packed.internal.container.ComponentHolder;
+import packed.internal.component.AbstractComponent;
+import packed.internal.component.AbstractComponentConfiguration;
+import packed.internal.component.ComponentHolder;
 
 /**
  *

@@ -52,6 +52,11 @@ import app.packed.service.ServiceExtension;
 import app.packed.util.Nullable;
 import packed.internal.artifact.PackedArtifactContext;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
+import packed.internal.component.AbstractComponent;
+import packed.internal.component.AbstractComponentConfiguration;
+import packed.internal.component.FactoryComponentConfiguration;
+import packed.internal.component.InstantiatedComponentConfiguration;
+import packed.internal.component.StaticComponentConfiguration;
 import packed.internal.container.extension.ExtensionModel;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.container.model.ComponentLookup;
@@ -233,7 +238,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     }
 
     @Override
-    void extensionsPrepareInstantiation(PackedArtifactInstantiationContext ic) {
+    protected void extensionsPrepareInstantiation(PackedArtifactInstantiationContext ic) {
         for (PackedExtensionContext e : extensions.values()) {
             if (e.model.onInstantiation != null) {
                 e.model.onInstantiation.accept(e.extension(), new ExtensionInstantiationContext() {
@@ -327,7 +332,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     /** {@inheritDoc} */
     @Override
-    PackedArtifactContext instantiate(AbstractComponent parent, PackedArtifactInstantiationContext ic) {
+    protected PackedArtifactContext instantiate(AbstractComponent parent, PackedArtifactInstantiationContext ic) {
         return new PackedArtifactContext(parent, this, ic);
     }
 

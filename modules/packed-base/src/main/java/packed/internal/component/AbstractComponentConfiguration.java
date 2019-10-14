@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
@@ -36,6 +36,7 @@ import app.packed.util.Nullable;
 import packed.internal.artifact.PackedArtifactBuildContext;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
+import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.hook.applicator.DelayedAccessor;
 
@@ -47,14 +48,14 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
 
     /** Any children of this component (lazily initialized), in order of insertion. */
     @Nullable
-    LinkedHashMap<String, AbstractComponentConfiguration<?>> children;
+    protected LinkedHashMap<String, AbstractComponentConfiguration<?>> children;
 
     /** The configuration site of this component. */
     private final ConfigSite configSite;
 
     /** The component that was last installed. */
     @Nullable
-    CoreComponentConfiguration<?> currentComponent;
+    protected CoreComponentConfiguration<?> currentComponent;
 
     public ArrayList<DelayedAccessor> del = new ArrayList<>();
 
@@ -72,14 +73,14 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
 
     /** The name of the component. */
     @Nullable
-    String name;
+    public String name;
 
     /** The parent of this component, or null if a root component. */
     @Nullable
     public final AbstractComponentConfiguration<?> parent;
 
     /** The state of this configuration. */
-    State state = State.INITIAL;
+    protected State state = State.INITIAL;
 
     public final PackedExtensionContext installedBy;
 
@@ -96,7 +97,7 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
      * @param parent
      *            the parent of the component
      */
-    AbstractComponentConfiguration(ConfigSite configSite, AbstractComponentConfiguration<?> parent) {
+    protected AbstractComponentConfiguration(ConfigSite configSite, AbstractComponentConfiguration<?> parent) {
         this.configSite = requireNonNull(configSite);
         this.parent = requireNonNull(parent);
         this.depth = parent.depth() + 1;
@@ -118,7 +119,7 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
      * @param artifactDriver
      *            the artifact driver used to create the artifact.
      */
-    AbstractComponentConfiguration(ConfigSite configSite, ArtifactDriver<?> artifactDriver) {
+    protected AbstractComponentConfiguration(ConfigSite configSite, ArtifactDriver<?> artifactDriver) {
         this.configSite = requireNonNull(configSite);
         this.parent = null;
         this.depth = 0;
@@ -126,7 +127,7 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
         this.installedBy = null;
     }
 
-    void addChild(AbstractComponentConfiguration<?> configuration) {
+    protected void addChild(AbstractComponentConfiguration<?> configuration) {
         if (children == null) {
             children = new LinkedHashMap<>();
         }
@@ -152,7 +153,7 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
         return depth;
     }
 
-    void extensionsPrepareInstantiation(PackedArtifactInstantiationContext ic) {
+    protected void extensionsPrepareInstantiation(PackedArtifactInstantiationContext ic) {
         if (children != null) {
             for (AbstractComponentConfiguration<?> acc : children.values()) {
                 if (buildContext == acc.buildContext) {
@@ -190,7 +191,7 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
         return result;
     }
 
-    protected String initializeName(State state, String setName) {
+    public String initializeName(State state, String setName) {
         String n = name;
         if (n != null) {
             return n;
@@ -253,7 +254,7 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
 
     }
 
-    abstract AbstractComponent instantiate(AbstractComponent parent, PackedArtifactInstantiationContext ic);
+    protected abstract AbstractComponent instantiate(AbstractComponent parent, PackedArtifactInstantiationContext ic);
 
     /**
      * Returns the path of this configuration. Invoking this method will initialize the name of the component. The component
@@ -301,7 +302,7 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
     }
 
     /** The state of the component configuration */
-    enum State {
+    public enum State {
 
         /** */
         FINAL,

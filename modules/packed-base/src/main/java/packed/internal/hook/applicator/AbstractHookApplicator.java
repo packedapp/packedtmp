@@ -19,7 +19,7 @@ import java.util.function.BiConsumer;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.hook.HookApplicator;
-import packed.internal.container.AbstractComponentConfiguration;
+import packed.internal.component.AbstractComponentConfiguration;
 
 /**
  *

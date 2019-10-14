@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
 import app.packed.service.Factory;
 import app.packed.util.Nullable;
+import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.model.ComponentModel;
 import packed.internal.inject.Instantiable;
 

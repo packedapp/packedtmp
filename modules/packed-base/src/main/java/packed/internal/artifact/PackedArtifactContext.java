@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import app.packed.artifact.ArtifactContext;
 import app.packed.service.Injector;
 import app.packed.util.Nullable;
-import packed.internal.container.AbstractComponent;
+import packed.internal.component.AbstractComponent;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.service.run.DefaultInjector;
 
@@ -30,6 +30,10 @@ import packed.internal.service.run.DefaultInjector;
 /// Which is available to every component in the container.....
 /// Maybe via ComponentContext
 /// Just worried
+
+/// Naehhhh, Det er jo en container....
+// Man skal ikke kunne iterere igennem den jo...
+
 public final class PackedArtifactContext extends AbstractComponent implements ArtifactContext {
 
     private final Injector injector;

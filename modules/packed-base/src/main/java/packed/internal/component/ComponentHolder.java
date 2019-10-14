@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.component;
 
 /**
  * An interface indicating that the object can (potentially) hold other objects. This interface mainly exists to allow
