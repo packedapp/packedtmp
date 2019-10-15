@@ -189,14 +189,29 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
     @Override
     protected final RuntimeEntry<T> newRuntimeNode() {
         T i = instance;
-        if (i != null) {
+        switch (instantionMode) {
+        case SINGLETON:
             return new SingletonRuntimeEntry<>(this, i);
-        }
-        if (instantionMode == InstantiationMode.PROTOTYPE) {
+        case LAZY:
+            if (i != null) {
+                return new LazyRuntimeEntry<>(this, i);
+            } else {
+                return new LazyRuntimeEntry<>(this, toMethodHandle());
+            }
+        default:
             return new PrototypeRuntimeEntry<>(this, toMethodHandle());
-        } else {
-            return new LazyRuntimeEntry<>(this, toMethodHandle());
         }
+        //
+        // T i = instance;
+        // if (i != null) {
+        // return new SingletonRuntimeEntry<>(this, i);
+        // }
+        // if (instantionMode == InstantiationMode.PROTOTYPE) {
+        // return new PrototypeRuntimeEntry<>(this, toMethodHandle());
+        // } else {
+        // return new LazyRuntimeEntry<>(this, toMethodHandle());
+        // }
+
     }
 
     public void prototype() {

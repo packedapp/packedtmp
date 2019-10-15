@@ -29,7 +29,7 @@ import packed.internal.util.ThrowableUtil;
 public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> {
 
     /** The lazily instantiated instance. */
-    private volatile Object instance;
+    public volatile Object instance;
 
     /**
      * Creates a new node
@@ -40,6 +40,11 @@ public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> {
     public LazyRuntimeEntry(BuildEntry<T> node, MethodHandle mh) {
         super(node);
         this.instance = new Sync(new PrototypeRuntimeEntry<>(node, mh));
+    }
+
+    public LazyRuntimeEntry(BuildEntry<T> node, T instance) {
+        super(node);
+        this.instance = requireNonNull(instance);
     }
 
     /** {@inheritDoc} */

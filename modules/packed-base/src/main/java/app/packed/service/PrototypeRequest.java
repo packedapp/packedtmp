@@ -31,7 +31,8 @@ import app.packed.reflect.VarDescriptor;
 import app.packed.util.Key;
 
 /**
- * An instance of this class is available for any component method annotated with {@link Provide}.
+ * An instance of this class is available for any component method annotated with {@link Provide} with
+ * {@link InstantiationMode#PROTOTYPE prototype instantiation mode}.
  * 
  * Whenever a A service requestions has two important parts. What exactly are being requested, is it optional is the
  * service being requested.
@@ -41,9 +42,9 @@ import app.packed.util.Key;
  * <p>
  * This class is typically used together with the {@link Provide} annotation to provide custom injection depending on
  * attributes of the requestor. <pre> {@code  @Provides
- *  public static Logger provideLogger(InjectionSite site) {
- *    if (site.component().isPresent()) {
- *      return Logger.getLogger(site.component().get().getPath().toString());
+ *  public static Logger provideLogger(PrototypeRequest request) {
+ *    if (request.component().isPresent()) {
+ *      return Logger.getLogger(request.component().get().getPath().toString());
  *    } else {
  *      return Logger.getAnonymousLogger();
  *    }
@@ -53,8 +54,8 @@ import app.packed.util.Key;
  * An injection site can also be used to create a factory that is functional equivalent:
  * 
  * <pre> {@code
- *  new Factory1<ProvisionContext, Logger>(
- *    c -> c.component().isPresent() ? Logger.getLogger(site.component().get().getPath().toString()) : Logger.getAnonymousLogger()) {};
+ *  new Factory1<PrototypeRequest, Logger>(
+ *    c -> c.component().isPresent() ? Logger.getLogger(request.component().get().getPath().toString()) : Logger.getAnonymousLogger()) {};
  * }
  * </pre>
  */
@@ -136,11 +137,15 @@ import app.packed.util.Key;
 // (@PrintResolving SomeService)
 //// Kunne vi tage en enum????
 //// NO_DEBUG, DEBUG_LOOK_IN_THREADLOCAL
+
+// Interface vs Class..
+// Interface because we might want an implementation with meta data internally...
+// PackedPrototypeRequest that every entry will read, and log stuff.
 public interface PrototypeRequest {
 
     // Vi tager alle annotations med...@SystemProperty(fff) @Foo String xxx
     // Includes any qualifier...
-    // AnnotatedElement annotations();
+    // AnnotatedElement memberAnnotations();
 
     /**
      * Returns whether or not this dependency is optional.
@@ -201,10 +206,6 @@ public interface PrototypeRequest {
         throw new UnsupportedOperationException();
     }
 
-    // default <T extends Annotation> T qualifier(Class<T> qualifierType) {
-    // throw new UnsupportedOperationException();
-    // }
-
     /**
      * Return the component that is requesting a service. Or an empty optional otherwise, for example, when used via
      * {@link Injector#use(Class)}.
@@ -212,11 +213,10 @@ public interface PrototypeRequest {
      * @return the component that is requesting the component, or an empty optional if not a component.
      */
     // What to do at configuration time.... We probably don't have a component at that point...
-    Optional<Component> component();
 
-    // default Container container() {
-    // throw new UnsupportedOperationException();
-    // }
+    // ComponentPath???, syntes ikke man skal kunne iterere...
+
+    Optional<Component> component();
 
     static PrototypeRequest of(Dependency dependency) {
         return new PrototypeRequestImpl(dependency, null);

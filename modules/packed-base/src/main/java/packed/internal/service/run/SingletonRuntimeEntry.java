@@ -32,7 +32,7 @@ import packed.internal.service.build.BuildEntry;
 public final class SingletonRuntimeEntry<T> extends RuntimeEntry<T> implements Provider<T> {
 
     /** The singleton instance. */
-    private final T instance;
+    public T instance;
 
     /**
      * The binding mode, we save it to distinguish between lazy and non-lazy services. Even if the lazy service was

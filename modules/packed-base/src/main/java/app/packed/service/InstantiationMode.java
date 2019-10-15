@@ -27,7 +27,7 @@ package app.packed.service;
 // None -> must be from component
 public enum InstantiationMode {
 
-    NONE,
+    // NONE,
 
     /**
      * A single instance of the service is created when the injector or container where the entity is registered is created.
