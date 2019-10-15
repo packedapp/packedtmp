@@ -17,9 +17,11 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.List;
+
 import app.packed.config.ConfigSite;
+import app.packed.service.Dependency;
 import app.packed.service.Factory;
-import app.packed.util.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.Instantiable;
 
@@ -41,9 +43,8 @@ public final class FactoryComponentConfiguration<T> extends CoreComponentConfigu
     }
 
     /** {@inheritDoc} */
-    @Nullable
     @Override
-    public FactoryComponentConfiguration<?> declaringComponent() {
-        return null;
+    public List<Dependency> dependencies() {
+        throw new UnsupportedOperationException();
     }
 }

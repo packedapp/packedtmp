@@ -63,8 +63,8 @@ final class MappingBuildEntry<F, T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean needsServiceRequest() {
-        return entryToMap.needsServiceRequest();
+    public boolean requiresRequest() {
+        return entryToMap.requiresRequest();
     }
 
     /** {@inheritDoc} */

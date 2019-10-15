@@ -130,6 +130,12 @@ import app.packed.util.Key;
 
 // ComponentPath
 // ConfigSite
+
+// Den eneste grund til vi ikke sletter denne, er for request traces....
+// Detailed Logging....
+// (@PrintResolving SomeService)
+//// Kunne vi tage en enum????
+//// NO_DEBUG, DEBUG_LOOK_IN_THREADLOCAL
 public interface PrototypeRequest {
 
     // Vi tager alle annotations med...@SystemProperty(fff) @Foo String xxx
@@ -213,11 +219,11 @@ public interface PrototypeRequest {
     // }
 
     static PrototypeRequest of(Dependency dependency) {
-        return new ServiceRequestImpl(dependency, null);
+        return new PrototypeRequestImpl(dependency, null);
     }
 
     static PrototypeRequest of(Dependency dependency, Component componenent) {
-        return new ServiceRequestImpl(dependency, requireNonNull(componenent, "component is null"));
+        return new PrototypeRequestImpl(dependency, requireNonNull(componenent, "component is null"));
     }
 
     /**
@@ -230,7 +236,7 @@ public interface PrototypeRequest {
      * @return an injection site for the specified injector and key.
      */
     static PrototypeRequest of(Key<?> key) {
-        return new ServiceRequestImpl(Dependency.of(key), null);
+        return new PrototypeRequestImpl(Dependency.of(key), null);
     }
 
     /**
@@ -247,7 +253,7 @@ public interface PrototypeRequest {
      * @see #of(Dependency)
      */
     static PrototypeRequest of(Key<?> key, Component component) {
-        return new ServiceRequestImpl(Dependency.of(key), requireNonNull(component, "component is null"));
+        return new PrototypeRequestImpl(Dependency.of(key), requireNonNull(component, "component is null"));
     }
 
     // static {AopReady r = AOPSupport.compile(FooClass.class)}, at runtime r.newInstance(r))// Arghh grimt

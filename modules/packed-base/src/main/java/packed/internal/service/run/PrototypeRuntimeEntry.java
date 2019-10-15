@@ -77,7 +77,7 @@ public final class PrototypeRuntimeEntry<T> extends RuntimeEntry<T> implements P
 
     /** {@inheritDoc} */
     @Override
-    public boolean needsServiceRequest() {
+    public boolean requiresRequest() {
         return false;
     }
 

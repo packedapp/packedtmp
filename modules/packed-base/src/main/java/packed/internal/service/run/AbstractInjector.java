@@ -20,9 +20,9 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.component.Component;
+import app.packed.service.Dependency;
 import app.packed.service.InjectionException;
 import app.packed.service.Injector;
-import app.packed.service.Dependency;
 import app.packed.service.PrototypeRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -98,7 +98,7 @@ public abstract class AbstractInjector implements Injector {
                 FieldFactoryHandle<?> field = (FieldFactoryHandle<?>) atInject.invokable;
                 ServiceEntry<?> node = findNode(dependency.key());
                 if (node != null) {
-                    Object value = node.getInstance(dependency, component);
+                    Object value = node.getInstance(PrototypeRequest.of(dependency, component));
                     value = dependency.wrapIfOptional(value);
                     field.setOnInstance(instance, value);
                 } else if (dependency.isOptional()) {

@@ -82,7 +82,7 @@ public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean needsServiceRequest() {
+    public boolean requiresRequest() {
         return false;
     }
 

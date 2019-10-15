@@ -15,14 +15,10 @@
  */
 package packed.internal.service;
 
-import java.util.Optional;
-
-import app.packed.component.Component;
 import app.packed.config.ConfigSite;
-import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.InstantiationMode;
-import app.packed.service.Dependency;
 import app.packed.service.PrototypeRequest;
+import app.packed.service.ServiceComponentConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.service.build.BuildEntry;
@@ -39,19 +35,29 @@ import packed.internal.util.KeyBuilder;
 public interface ServiceEntry<T> {
 
     /**
-     * Returns the configuration site of this service.
+     * Returns the configuration site of this entry.
      * 
-     * @return the configuration site of this service
+     * @return the configuration site of this entry
      */
     ConfigSite configSite();
 
     /**
-     * Returns the optional description of this service.
-     *
-     * @return the optional description of this service
-     * @see ServiceComponentConfiguration#setDescription(String)
+     * Returns an instance.
+     * 
+     * @param request
+     *            a request if needed by {@link #requiresRequest()}
+     * @return the instance
      */
-    Optional<String> description();
+    T getInstance(@Nullable PrototypeRequest request);
+
+    // Rename to isResolved
+    boolean hasUnresolvedDependencies();
+
+    InstantiationMode instantiationMode();
+
+    default boolean isPrivate() {
+        return key().equals(KeyBuilder.INJECTOR_KEY);// || key().equals(KeyBuilder.CONTAINER_KEY);
+    }
 
     /**
      * Returns the key that the service is registered with.
@@ -60,29 +66,17 @@ public interface ServiceEntry<T> {
      * @see ServiceComponentConfiguration#as(Key)
      */
     Key<?> key();
-    //
-    // default Provider<T> createProvider(Injector injector, Container container, Component component, Key<T> key) {
-    // InjectionSite site = InternalInjectionSite.of(injector, container, component, key);
-    // return () -> getInstance(site);
-    // }
-
-    default T getInstance(Dependency dependency, @Nullable Component component) {
-        return getInstance(PrototypeRequest.of(dependency));
-    }
-
-    InstantiationMode instantiationMode();
-
-    T getInstance(PrototypeRequest site);
 
     /**
      * Returns whether or not this node needs a {@link PrototypeRequest} instance to be able to deliver a service.
+     * <p>
+     * It is unfortunately that we need this method, however, otherwise we would need to create an instance of
+     * {@link PrototypeRequest} every time we requested a service. Including for something as innocent as get(service).
+     * Something people would assume was garbage free.
      *
      * @return whether or not this node needs a {@link PrototypeRequest} instance to be able to deliver a service
      */
-    boolean needsServiceRequest();
-
-    // Rename to isResolved
-    boolean hasUnresolvedDependencies();
+    boolean requiresRequest();
 
     /**
      * Converts this node to a run-time node if this node is a build-node, otherwise returns this. Build-nodes must always
@@ -91,12 +85,21 @@ public interface ServiceEntry<T> {
      * @return if build node converts to runtime node, if runtime node returns self
      */
     RuntimeEntry<T> toRuntimeEntry();
-
-    default boolean isPrivate() {
-        return key().equals(KeyBuilder.INJECTOR_KEY);// || key().equals(KeyBuilder.CONTAINER_KEY);
-    }
 }
 
+// /**
+// * Returns the optional description of this service.
+// *
+// * @return the optional description of this service
+// * @see ServiceComponentConfiguration#setDescription(String)
+// */
+// Optional<String> description();
+
+//
+// default Provider<T> createProvider(Injector injector, Container container, Component component, Key<T> key) {
+// InjectionSite site = InternalInjectionSite.of(injector, container, component, key);
+// return () -> getInstance(site);
+// }
 // default void validateKey(Key<?> key) {}
 
 /// **

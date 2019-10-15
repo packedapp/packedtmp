@@ -15,22 +15,13 @@
  */
 package packed.internal.inject;
 
+import java.util.List;
+
+import app.packed.service.Dependency;
+
 /**
  *
  */
-
-// Either a Component
-// Or a singleton service defined with @Provides
-public interface Instantiable extends WithDependencies {
-
-    // List<ServiceDependency> dependencies
-
-    // Internt er service != di
-
-    // injection of Extension + Instantiation Context != Dependency Injection
-    // Saa vi har maaske altid Dependency Injection enabled...
-    // Men ikke noedvendigvis services...
-
-    // ServiceRequest -> Provides.Request -> Provides.PrototypeRequest
-    // Maybe just PrototypeRequest...
+public interface WithDependencies {
+    List<Dependency> dependencies();
 }

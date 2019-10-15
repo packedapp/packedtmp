@@ -60,6 +60,9 @@ public final class ComponentExtension extends Extension {
      *            the type of instantiate and use as the component instance
      * @return the configuration of the component
      */
+    // Den eneste grund for at de her metoder ikke er paa ComponentConfiguration er actors
+    // Eller i andre situation hvor man ikke vil have at man installere alm componenter..
+    // Men okay. Maaske skal man wrappe det saa. Det er jo let nok at simulere med useParent
     public <T> ComponentConfiguration<T> install(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         return pcc().install(Factory.findInjectable(implementation), captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
@@ -148,6 +151,9 @@ public final class ComponentExtension extends Extension {
     }
 
     public ComponentConfiguration<Void> useParent(String folder) {
+        // Folk vil tro det er en component med navnet man skal bruge...
+
+        // addFolder()??????
 
         // LazyAdd Folder... if extensions do not install anything we shouldnt give a fck
         // useAsParent("Extensions")

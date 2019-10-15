@@ -26,7 +26,7 @@ import app.packed.service.ServiceWirelets;
 import app.packed.util.Key;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceWireletPipeline;
-import packed.internal.service.build.service.ProvideAllFromInjector;
+import packed.internal.service.build.service.ProvideAllFromOtherInjector;
 
 /** The common superclass for upstream service wirelets. */
 public abstract class PackedUpstreamInjectionWirelet extends ServiceWirelet {
@@ -37,7 +37,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ServiceWirelet {
      * @param ii
      *            the imported injector to process
      */
-    public abstract void process(ProvideAllFromInjector ii);
+    public abstract void process(ProvideAllFromOtherInjector ii);
 
     public static class FilterOnKey extends PackedUpstreamInjectionWirelet {
 
@@ -49,7 +49,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ServiceWirelet {
 
         /** {@inheritDoc} */
         @Override
-        public void process(ProvideAllFromInjector ii) {
+        public void process(ProvideAllFromOtherInjector ii) {
             for (Key<?> key : set) {
                 ii.entries.remove(key);
             }
@@ -81,7 +81,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ServiceWirelet {
         /** {@inheritDoc} */
         @SuppressWarnings({ "rawtypes", "unchecked" })
         @Override
-        public void process(ProvideAllFromInjector ii) {
+        public void process(ProvideAllFromOtherInjector ii) {
             if (ii.entries.containsKey(to)) {
                 throw new RuntimeException();
             }
@@ -122,7 +122,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ServiceWirelet {
 
         /** {@inheritDoc} */
         @Override
-        public void process(ProvideAllFromInjector ii) {
+        public void process(ProvideAllFromOtherInjector ii) {
             for (BuildEntry<?> e : ii.entries.values()) {
                 action.accept(e.toDescriptor());
             }

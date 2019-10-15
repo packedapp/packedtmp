@@ -31,7 +31,7 @@ import packed.internal.service.build.wirelets.PackedUpstreamInjectionWirelet;
 import packed.internal.service.run.AbstractInjector;
 
 /** Represents an injector that used via {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
-public final class ProvideAllFromInjector {
+public final class ProvideAllFromOtherInjector {
 
     /** The injector builder from where the service will be provided. */
     public final ServiceExtensionNode node;
@@ -58,14 +58,14 @@ public final class ProvideAllFromInjector {
      * @param wirelets
      *            any wirelets used when importing the injector
      */
-    public ProvideAllFromInjector(ServiceExtensionNode node, ConfigSite configSite, AbstractInjector injector, WireletList wirelets) {
+    public ProvideAllFromOtherInjector(ServiceExtensionNode node, ConfigSite configSite, AbstractInjector injector, WireletList wirelets) {
         this.node = requireNonNull(node);
         this.configSite = requireNonNull(configSite);
         this.injector = requireNonNull(injector);
 
         injector.forEachServiceEntry(e -> {
             if (!e.isPrivate()) { // ignores Injector, and other
-                entries.put(e.key(), new ProvideAllBuildEntry<>(this, e));
+                entries.put(e.key(), new FromOtherInjectorBuildEntry<>(this, e));
             }
         });
 

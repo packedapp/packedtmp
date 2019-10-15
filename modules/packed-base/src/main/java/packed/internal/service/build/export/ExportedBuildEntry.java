@@ -104,8 +104,8 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean needsServiceRequest() {
-        return exportedEntry.needsServiceRequest();
+    public boolean requiresRequest() {
+        return exportedEntry.requiresRequest();
     }
 
     /** {@inheritDoc} */

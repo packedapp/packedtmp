@@ -29,7 +29,7 @@ import app.packed.util.Nullable;
  * An implementation of injection site used, when requesting a service directly through an injector, for example, via
  * {@link Injector#use(Class)}.
  */
-final class ServiceRequestImpl implements PrototypeRequest {
+final class PrototypeRequestImpl implements PrototypeRequest {
 
     /** An optional component, in case the request is via a component's private injector. */
     @Nullable
@@ -38,7 +38,7 @@ final class ServiceRequestImpl implements PrototypeRequest {
     /** The key of the service that was requested */
     private final Dependency dependency;
 
-    ServiceRequestImpl(Dependency dependency, @Nullable Component component) {
+    PrototypeRequestImpl(Dependency dependency, @Nullable Component component) {
         this.dependency = requireNonNull(dependency, "dependency is null");
         this.component = component;
     }

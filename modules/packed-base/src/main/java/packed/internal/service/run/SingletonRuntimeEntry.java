@@ -85,7 +85,7 @@ public final class SingletonRuntimeEntry<T> extends RuntimeEntry<T> implements P
 
     /** {@inheritDoc} */
     @Override
-    public boolean needsServiceRequest() {
+    public boolean requiresRequest() {
         return false;
     }
 }

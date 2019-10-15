@@ -21,11 +21,11 @@ import java.util.List;
 import java.util.Optional;
 
 import app.packed.config.ConfigSite;
+import app.packed.service.Dependency;
+import app.packed.service.PrototypeRequest;
 import app.packed.service.Provide;
 import app.packed.service.ServiceConfiguration;
-import app.packed.service.Dependency;
 import app.packed.service.ServiceDescriptor;
-import app.packed.service.PrototypeRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.service.ServiceEntry;
@@ -137,11 +137,6 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
     @Nullable
     public BuildEntry<?> declaringEntry() {
         return null;
-    }
-
-    @Override
-    public final Optional<String> description() {
-        return Optional.ofNullable(description);
     }
 
     public String getDescription() {

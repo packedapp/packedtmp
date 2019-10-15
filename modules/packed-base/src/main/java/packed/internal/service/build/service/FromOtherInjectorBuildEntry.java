@@ -22,8 +22,8 @@ import java.util.List;
 import app.packed.container.Wirelet;
 import app.packed.service.Injector;
 import app.packed.service.InstantiationMode;
-import app.packed.service.ServiceExtension;
 import app.packed.service.PrototypeRequest;
+import app.packed.service.ServiceExtension;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.service.ServiceEntry;
@@ -32,34 +32,34 @@ import packed.internal.service.run.DelegatingRuntimeEntry;
 import packed.internal.service.run.RuntimeEntry;
 
 /** An entry specifically used for {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
-final class ProvideAllBuildEntry<T> extends BuildEntry<T> {
+final class FromOtherInjectorBuildEntry<T> extends BuildEntry<T> {
 
     /** The entry from the 'imported' injector. */
-    private final ServiceEntry<T> entry;
+    private final RuntimeEntry<T> entry;
 
     /** A wrapper for the 'imported' injector. */
-    final ProvideAllFromInjector fromInjector; // not used currently
+    final ProvideAllFromOtherInjector fromInjector; // not used currently
 
     @SuppressWarnings("unchecked")
-    ProvideAllBuildEntry(ProvideAllFromInjector fromInjector, ServiceEntry<T> entry) {
+    FromOtherInjectorBuildEntry(ProvideAllFromOtherInjector fromInjector, ServiceEntry<T> entry) {
         super(fromInjector.node, fromInjector.configSite.withParent(entry.configSite()), List.of());
-        this.entry = entry;
+        this.entry = (RuntimeEntry<T>) entry;
         this.fromInjector = fromInjector;
         this.key = requireNonNull((Key<T>) entry.key());
-        this.description = entry.description().orElse(null);
+        this.description = this.entry.description().orElse(null);
     }
 
     /** {@inheritDoc} */
     @Override
     @Nullable
     public BuildEntry<?> declaringEntry() {
-        return (entry instanceof BuildEntry) ? ((BuildEntry<?>) entry).declaringEntry() : null;
+        return null;// (entry instanceof BuildEntry) ? ((BuildEntry<?>) entry).declaringEntry() : null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(PrototypeRequest site) {
-        return entry.getInstance(site);
+    public T getInstance(PrototypeRequest request) {
+        return entry.getInstance(request);
     }
 
     /** {@inheritDoc} */
@@ -70,8 +70,8 @@ final class ProvideAllBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean needsServiceRequest() {
-        return entry.needsServiceRequest();
+    public boolean requiresRequest() {
+        return entry.requiresRequest();
     }
 
     /** {@inheritDoc} */

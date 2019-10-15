@@ -71,7 +71,7 @@ public final class ServiceProvidingManager {
     private final ServiceExtensionNode node;
 
     /** All injectors added via {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
-    private ArrayList<ProvideAllFromInjector> provideAll;
+    private ArrayList<ProvideAllFromOtherInjector> provideAll;
 
     /** All explicit added build entries. */
     private final ArrayList<BuildEntry<?>> providingEntries = new ArrayList<>();
@@ -126,11 +126,11 @@ public final class ServiceProvidingManager {
     }
 
     public void provideAll(AbstractInjector injector, ConfigSite configSite, WireletList wirelets) {
-        ArrayList<ProvideAllFromInjector> p = provideAll;
+        ArrayList<ProvideAllFromOtherInjector> p = provideAll;
         if (provideAll == null) {
             p = provideAll = new ArrayList<>(1);
         }
-        p.add(new ProvideAllFromInjector(node, configSite, injector, wirelets));
+        p.add(new ProvideAllFromOtherInjector(node, configSite, injector, wirelets));
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -167,7 +167,7 @@ public final class ServiceProvidingManager {
         resolve0(resolvedServices, providingEntries);
         if (provideAll != null) {
             // All injectors have already had wirelets transform and filter
-            for (ProvideAllFromInjector fromInjector : provideAll) {
+            for (ProvideAllFromOtherInjector fromInjector : provideAll) {
                 resolve0(resolvedServices, fromInjector.entries.values());
             }
         }

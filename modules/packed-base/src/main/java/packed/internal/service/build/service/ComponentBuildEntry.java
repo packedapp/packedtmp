@@ -22,20 +22,20 @@ import java.util.List;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
+import app.packed.service.Dependency;
 import app.packed.service.InjectionException;
 import app.packed.service.InstantiationMode;
+import app.packed.service.PrototypeRequest;
 import app.packed.service.Provide;
 import app.packed.service.ServiceComponentConfiguration;
-import app.packed.service.Dependency;
-import app.packed.service.PrototypeRequest;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
-import packed.internal.service.run.RuntimeEntry;
-import packed.internal.service.run.SingletonRuntimeEntry;
 import packed.internal.service.run.LazyRuntimeEntry;
 import packed.internal.service.run.PrototypeRuntimeEntry;
+import packed.internal.service.run.RuntimeEntry;
+import packed.internal.service.run.SingletonRuntimeEntry;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -155,7 +155,7 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public final boolean needsServiceRequest() {
+    public final boolean requiresRequest() {
         return hasDependencyOnInjectionSite;
     }
 
@@ -166,7 +166,7 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
             params = new Object[size];
             for (int i = 0; i < resolvedDependencies.length; i++) {
                 requireNonNull(resolvedDependencies[i]);
-                params[i] = resolvedDependencies[i].getInstance(dependencies.get(i), null);
+                params[i] = resolvedDependencies[i].getInstance(PrototypeRequest.of(dependencies.get(i)));
             }
         }
         Object o;
