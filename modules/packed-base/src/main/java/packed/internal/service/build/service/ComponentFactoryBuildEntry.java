@@ -169,9 +169,13 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         instantiateAs(InstantiationMode.PROTOTYPE);
     }
 
+    boolean needsInstance() {
+        return declaringEntry != null && mha.type().parameterCount() != dependencies.size();
+    }
+
     private MethodHandle toMethodHandle() {
         MethodHandle mh = mha;
-        if (declaringEntry != null && mh.type().parameterCount() != dependencies.size()) {
+        if (needsInstance()) {
             mh = mha = mh.bindTo(declaringEntry.getInstance(null));
         }
         return mh;
