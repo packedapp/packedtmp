@@ -55,8 +55,7 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
     private InstantiationMode instantionMode;
 
     /** Is null for instance components. */
-    @Nullable
-    private MethodHandle mha;
+    public final MethodHandle mha;
 
     public ComponentFactoryBuildEntry(ConfigSite configSite, AtProvides atProvides, MethodHandle mh, AbstractComponentBuildEntry<?> parent) {
         super(parent.serviceExtension, configSite, atProvides.dependencies, parent, parent.componentConfiguration);
@@ -174,15 +173,8 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         instantiateAs(InstantiationMode.PROTOTYPE);
     }
 
-    boolean needsInstance() {
+    public boolean needsInstance() {
         return declaringEntry != null && mha.type().parameterCount() != dependencies.size();
     }
 
-    public MethodHandle toMethodHandle() {
-        MethodHandle mh = mha;
-        if (needsInstance()) {
-            mh = mha = mh.bindTo(declaringEntry.getInstance(null));
-        }
-        return mh;
-    }
 }

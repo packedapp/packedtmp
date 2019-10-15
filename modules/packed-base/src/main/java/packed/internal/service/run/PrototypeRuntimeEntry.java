@@ -15,8 +15,6 @@
  */
 package packed.internal.service.run;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 
 import app.packed.service.InjectionException;
@@ -45,7 +43,11 @@ public final class PrototypeRuntimeEntry<T> extends RuntimeEntry<T> implements P
      */
     public PrototypeRuntimeEntry(ComponentFactoryBuildEntry<T> node) {
         super(node);
-        this.mh = requireNonNull(node.toMethodHandle());
+        if (node.needsInstance()) {
+            mh = node.mha.bindTo(node.declaringEntry.getInstance(null));
+        } else {
+            this.mh = node.mha;
+        }
         this.providers = new Provider[node.dependencies.size()];
         for (int i = 0; i < providers.length; i++) {
             RuntimeEntry<?> forReal = node.resolvedDependencies[i].toRuntimeEntry();

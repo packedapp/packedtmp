@@ -37,7 +37,7 @@ public abstract class AbstractComponentBuildEntry<T> extends BuildEntry<T> {
 
     /** The parent, if this node is the result of a member annotated with {@link Provide}. */
     @Nullable
-    final AbstractComponentBuildEntry<?> declaringEntry;
+    public final AbstractComponentBuildEntry<?> declaringEntry;
 
     /**
      * @param serviceExtension
