@@ -101,20 +101,18 @@ public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> {
                         // We should not Rethrow it, We need to wrap it in some ProvisionException
                         ThrowableUtil.rethrowErrorOrRuntimeException(failure);
                     }
-                    if (factory != null) {
-                        try {
-                            T newInstance = factory.get();
-                            if (newInstance == null) {
-                                // TODO throw Provision Exception instead
-                                requireNonNull(newInstance, "factory produced a null instance");
-                            }
-                            instance = newInstance;
-                        } catch (RuntimeException | Error e) {
-                            failure = e;
-                            throw e;
-                        } finally {
-                            factory = null;
+                    try {
+                        T newInstance = factory.get();
+                        if (newInstance == null) {
+                            // TODO throw Provision Exception instead
+                            requireNonNull(newInstance, "factory produced a null instance");
                         }
+                        instance = newInstance;
+                    } catch (RuntimeException | Error e) {
+                        failure = e;
+                        throw e;
+                    } finally {
+                        factory = null;
                     }
                 }
             } finally {
