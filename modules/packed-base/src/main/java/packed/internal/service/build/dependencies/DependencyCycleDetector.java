@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import app.packed.service.InjectionException;
 import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
-import packed.internal.service.build.service.ComponentBuildEntry;
+import packed.internal.service.build.service.ComponentFactoryBuildEntry;
 
 /** A utility class that can find cycles in a dependency graph. */
 
@@ -90,8 +90,8 @@ final class DependencyCycleDetector {
                     to = owner;
                 }
 
-                if (to.hasUnresolvedDependencies() && to instanceof ComponentBuildEntry) {
-                    ComponentBuildEntry<?> ic = (ComponentBuildEntry<?>) to;
+                if (to.hasUnresolvedDependencies() && to instanceof ComponentFactoryBuildEntry) {
+                    ComponentFactoryBuildEntry<?> ic = (ComponentFactoryBuildEntry<?>) to;
                     if (!ic.detectCycleVisited) {
                         dependencies.push(to);
                         // See if the component is already on the stack -> A cycle has been detected

@@ -29,7 +29,6 @@ import app.packed.service.PrototypeRequest;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
-import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.run.LazyRuntimeEntry;
 import packed.internal.service.run.PrototypeRuntimeEntry;
@@ -41,7 +40,7 @@ import packed.internal.util.ThrowableUtil;
  * An entry representing a component node. This node is used for all three binding modes mainly because it makes
  * extending it with {@link ServiceComponentConfiguration} much easier.
  */
-public final class ComponentBuildEntry<T> extends AbstractComponentBuildEntry<T> {
+public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildEntry<T> {
 
     /** An empty object array. */
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
@@ -59,49 +58,36 @@ public final class ComponentBuildEntry<T> extends AbstractComponentBuildEntry<T>
     @Nullable
     private MethodHandle mha;
 
-    public ComponentBuildEntry(ConfigSite configSite, AtProvides atProvides, MethodHandle mh, AbstractComponentBuildEntry<?> parent) {
+    public ComponentFactoryBuildEntry(ConfigSite configSite, AtProvides atProvides, MethodHandle mh, AbstractComponentBuildEntry<?> parent) {
         super(parent.serviceExtension, configSite, atProvides.dependencies, parent, parent.componentConfiguration);
-        this.mha = requireNonNull(mh);
-        // Rename to parentDependency??? and have it as null if instance
-        this.instantionMode = atProvides.instantionMode;
         this.description = atProvides.description;
+        this.instantionMode = atProvides.instantionMode;
+        this.mha = requireNonNull(mh);
     }
 
-    public ComponentBuildEntry(ServiceExtensionNode injectorBuilder, ComponentConfiguration<T> cc, InstantiationMode instantionMode, MethodHandle mh,
+    public ComponentFactoryBuildEntry(ServiceExtensionNode injectorBuilder, ComponentConfiguration<T> cc, InstantiationMode instantionMode, MethodHandle mh,
             List<Dependency> dependencies) {
         super(injectorBuilder, cc.configSite(), dependencies, null, cc);
         this.instantionMode = requireNonNull(instantionMode);
-        // Maaske skal vi bare smide UnsupportedOperationException istedet for???
-        // Vi faar jo problemet ved f.eks. CACHE_PER_APP.....
-        // her giver det ikke meningen at faa componenten...
-
-        // if (instantionMode != InstantiationMode.PROTOTYPE && hasDependencyOnInjectionSite) {
-        // throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
-        // }
-        mha = requireNonNull(mh);
-    }
-
-    @Override
-    @Nullable
-    public BuildEntry<?> declaringEntry() {
-        return declaringEntry;
+        this.mha = requireNonNull(mh);
     }
 
     /** {@inheritDoc} */
     @Override
-    public final T getInstance(PrototypeRequest ignore) {
-        if (instantionMode == InstantiationMode.PROTOTYPE) {
+    public T getInstance(PrototypeRequest ignore) {
+        switch (instantionMode) {
+        case PROTOTYPE:
             return newInstance();
+        default:
+            T i = instance;
+            if (i == null) {
+                instance = i = newInstance();
+            }
+            return i;
         }
-
-        T i = instance;
-        if (i == null) {
-            instance = i = newInstance();
-        }
-        return i;
     }
 
-    public ComponentBuildEntry<T> instantiateAs(InstantiationMode mode) {
+    public ComponentFactoryBuildEntry<T> instantiateAs(InstantiationMode mode) {
         requireNonNull(mode, "mode is null");
         this.instantionMode = mode;
         return this;
@@ -109,7 +95,7 @@ public final class ComponentBuildEntry<T> extends AbstractComponentBuildEntry<T>
 
     /** {@inheritDoc} */
     @Override
-    public final InstantiationMode instantiationMode() {
+    public InstantiationMode instantiationMode() {
         return instantionMode;
     }
 
@@ -119,13 +105,13 @@ public final class ComponentBuildEntry<T> extends AbstractComponentBuildEntry<T>
 
     /** {@inheritDoc} */
     @Override
-    public final boolean hasUnresolvedDependencies() {
+    public boolean hasUnresolvedDependencies() {
         return !dependencies.isEmpty();
     }
 
     /** {@inheritDoc} */
     @Override
-    public final boolean requiresPrototypeRequest() {
+    public boolean requiresPrototypeRequest() {
         return hasDependencyOnInjectionSite;
     }
 
@@ -157,7 +143,7 @@ public final class ComponentBuildEntry<T> extends AbstractComponentBuildEntry<T>
 
     /** {@inheritDoc} */
     @Override
-    protected final RuntimeEntry<T> newRuntimeNode() {
+    protected RuntimeEntry<T> newRuntimeNode() {
         T i = instance;
         switch (instantionMode) {
         case SINGLETON:
@@ -171,17 +157,6 @@ public final class ComponentBuildEntry<T> extends AbstractComponentBuildEntry<T>
         default:
             return new PrototypeRuntimeEntry<>(this, toMethodHandle());
         }
-        //
-        // T i = instance;
-        // if (i != null) {
-        // return new SingletonRuntimeEntry<>(this, i);
-        // }
-        // if (instantionMode == InstantiationMode.PROTOTYPE) {
-        // return new PrototypeRuntimeEntry<>(this, toMethodHandle());
-        // } else {
-        // return new LazyRuntimeEntry<>(this, toMethodHandle());
-        // }
-
     }
 
     public void prototype() {
@@ -202,12 +177,3 @@ public final class ComponentBuildEntry<T> extends AbstractComponentBuildEntry<T>
         return mh;
     }
 }
-// if (parent == null || parent.instantiationMode() == InstantiationMode.SINGLETON || parent.instance != null
-// || (function instanceof InvokableMember && !((InvokableMember<?>) function).isMissingInstance())) {
-
-// }
-// // parent==LAZY and not initialized, this.instantionMode=Lazy or Prototype
-// if (true) {
-// throw new Error();
-// }
-// return new RSNLazy<>(this, toMethodHandle(), null);

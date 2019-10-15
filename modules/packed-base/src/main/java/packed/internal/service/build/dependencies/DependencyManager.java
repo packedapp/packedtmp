@@ -40,7 +40,7 @@ import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
-import packed.internal.service.build.service.ComponentBuildEntry;
+import packed.internal.service.build.service.ComponentFactoryBuildEntry;
 import packed.internal.service.run.DefaultInjector;
 
 /**
@@ -142,8 +142,8 @@ public final class DependencyManager {
                     if (resolveTo == null) {
                         Key<?> k = dependency.key();
                         if (!k.hasQualifier() && Extension.class.isAssignableFrom(k.typeLiteral().rawType())) {
-                            if (entry instanceof ComponentBuildEntry) {
-                                Optional<Class<? extends Extension>> op = ((ComponentBuildEntry) entry).componentConfiguration.extension();
+                            if (entry instanceof ComponentFactoryBuildEntry) {
+                                Optional<Class<? extends Extension>> op = ((ComponentFactoryBuildEntry) entry).componentConfiguration.extension();
                                 if (op.isPresent()) {
                                     Class<? extends Extension> cc = op.get();
                                     if (cc == k.typeLiteral().type()) {

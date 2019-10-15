@@ -109,7 +109,7 @@ public final class PackedServiceComponentConfiguration<T> implements ServiceComp
     @Override
     public ServiceComponentConfiguration<T> lazy() {
         component.checkConfigurable();
-        ((ComponentBuildEntry<T>) buildEntry).lazy();
+        ((ComponentFactoryBuildEntry<T>) buildEntry).lazy();
         return this;
     }
 
@@ -123,7 +123,7 @@ public final class PackedServiceComponentConfiguration<T> implements ServiceComp
     @Override
     public ServiceComponentConfiguration<T> prototype() {
         component.checkConfigurable();
-        ((ComponentBuildEntry<T>) buildEntry).prototype();
+        ((ComponentFactoryBuildEntry<T>) buildEntry).prototype();
         return this;
     }
 

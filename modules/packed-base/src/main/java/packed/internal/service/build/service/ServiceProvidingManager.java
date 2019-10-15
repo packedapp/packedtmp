@@ -105,20 +105,20 @@ public final class ServiceProvidingManager {
             Factory<?> factory = ((FactoryComponentConfiguration) cc).factory;
 
             MethodHandle mh = ((PackedExtensionContext) node.context()).pcc.lookup.toMethodHandle(factory.handle());
-            parentNode = new ComponentBuildEntry<>(node, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
+            parentNode = new ComponentFactoryBuildEntry<>(node, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
         }
 
         // If any of the @Provide methods are instance members the parent node needs special treatment.
         // As it needs to be constructed, before the field or method can provide services.
-        if (parentNode instanceof ComponentBuildEntry) {
-            ((ComponentBuildEntry) parentNode).hasInstanceMembers = group.hasInstanceMembers;
+        if (parentNode instanceof ComponentFactoryBuildEntry) {
+            ((ComponentFactoryBuildEntry) parentNode).hasInstanceMembers = group.hasInstanceMembers;
         }
 
         // Add each @Provide as children of the parent node
         for (AtProvides atProvides : group.members) {
             ConfigSite configSite = parentNode.configSite().thenAnnotatedMember(InjectConfigSiteOperations.INJECTOR_PROVIDE, atProvides.provides,
                     atProvides.member);
-            ComponentBuildEntry<?> node = new ComponentBuildEntry<>(configSite, atProvides, atProvides.methodHandle, parentNode);
+            ComponentFactoryBuildEntry<?> node = new ComponentFactoryBuildEntry<>(configSite, atProvides, atProvides.methodHandle, parentNode);
             node.as((Key) atProvides.key);
             providingEntries.add(node);
         }
@@ -140,11 +140,11 @@ public final class ServiceProvidingManager {
         AbstractComponentBuildEntry<?> c = componentConfigurationCache.get(cc);// remove??
         if (c == null) {
             MethodHandle mh = ((PackedExtensionContext) node.context()).pcc.lookup.toMethodHandle(function);
-            c = new ComponentBuildEntry<>(node, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
+            c = new ComponentFactoryBuildEntry<>(node, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
         }
         c.as((Key) factory.key());
         providingEntries.add(c);
-        return new PackedServiceComponentConfiguration<>(cc, (ComponentBuildEntry) c);
+        return new PackedServiceComponentConfiguration<>(cc, (ComponentFactoryBuildEntry) c);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })

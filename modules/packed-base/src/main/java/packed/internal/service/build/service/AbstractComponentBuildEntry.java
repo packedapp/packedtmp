@@ -51,4 +51,9 @@ public abstract class AbstractComponentBuildEntry<T> extends BuildEntry<T> {
         this.componentConfiguration = requireNonNull(componentConfiguration);
     }
 
+    @Override
+    @Nullable
+    public final BuildEntry<?> declaringEntry() {
+        return declaringEntry;
+    }
 }

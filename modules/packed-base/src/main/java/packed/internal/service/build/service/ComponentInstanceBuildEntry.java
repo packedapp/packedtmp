@@ -31,7 +31,7 @@ import packed.internal.service.run.SingletonRuntimeEntry;
 /**
  *
  */
-public class ComponentInstanceBuildEntry<T> extends AbstractComponentBuildEntry<T> {
+public final class ComponentInstanceBuildEntry<T> extends AbstractComponentBuildEntry<T> {
 
     /** The singleton instance. */
     private final T instance;
@@ -59,20 +59,14 @@ public class ComponentInstanceBuildEntry<T> extends AbstractComponentBuildEntry<
 
     /** {@inheritDoc} */
     @Override
-    public InstantiationMode instantiationMode() {
-        return InstantiationMode.SINGLETON;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean requiresPrototypeRequest() {
-        return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public boolean hasUnresolvedDependencies() {
         return false;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public InstantiationMode instantiationMode() {
+        return InstantiationMode.SINGLETON;
     }
 
     /** {@inheritDoc} */
@@ -81,4 +75,9 @@ public class ComponentInstanceBuildEntry<T> extends AbstractComponentBuildEntry<
         return new SingletonRuntimeEntry<>(this, instance);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean requiresPrototypeRequest() {
+        return false;
+    }
 }

@@ -37,7 +37,7 @@ import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.dependencies.DependencyManager;
 import packed.internal.service.build.export.ExportManager;
 import packed.internal.service.build.export.ExportedBuildEntry;
-import packed.internal.service.build.service.ComponentBuildEntry;
+import packed.internal.service.build.service.ComponentFactoryBuildEntry;
 import packed.internal.service.build.service.ServiceProvidingManager;
 import packed.internal.service.run.DefaultInjector;
 
@@ -156,8 +156,8 @@ public final class ServiceExtensionNode {
         // Hvis vi vil lave et image...
         // Instantiate
         for (ServiceEntry<?> node : resolvedEntries.values()) {
-            if (node instanceof ComponentBuildEntry) {
-                ComponentBuildEntry<?> s = (ComponentBuildEntry<?>) node;
+            if (node instanceof ComponentFactoryBuildEntry) {
+                ComponentFactoryBuildEntry<?> s = (ComponentFactoryBuildEntry<?>) node;
                 if (s.instantiationMode() == InstantiationMode.SINGLETON) {
                     s.getInstance(null);// getInstance() caches the new instance, newInstance does not
                 }
