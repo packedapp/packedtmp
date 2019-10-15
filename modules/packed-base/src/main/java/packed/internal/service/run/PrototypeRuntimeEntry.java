@@ -23,7 +23,7 @@ import app.packed.service.InjectionException;
 import app.packed.service.InstantiationMode;
 import app.packed.service.PrototypeRequest;
 import packed.internal.inject.util.Provider;
-import packed.internal.service.build.BuildEntry;
+import packed.internal.service.build.service.ComponentFactoryBuildEntry;
 import packed.internal.util.ThrowableUtil;
 
 /** A runtime service node for prototypes. */
@@ -43,9 +43,9 @@ public final class PrototypeRuntimeEntry<T> extends RuntimeEntry<T> implements P
     /**
      * @param node
      */
-    public PrototypeRuntimeEntry(BuildEntry<T> node, MethodHandle mh) {
+    public PrototypeRuntimeEntry(ComponentFactoryBuildEntry<T> node) {
         super(node);
-        this.mh = requireNonNull(mh);
+        this.mh = requireNonNull(node.toMethodHandle());
         this.providers = new Provider[node.dependencies.size()];
         for (int i = 0; i < providers.length; i++) {
             RuntimeEntry<?> forReal = node.resolvedDependencies[i].toRuntimeEntry();

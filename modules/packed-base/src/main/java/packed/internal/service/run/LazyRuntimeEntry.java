@@ -17,13 +17,12 @@ package packed.internal.service.run;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.util.concurrent.Semaphore;
 
 import app.packed.service.InstantiationMode;
 import app.packed.service.PrototypeRequest;
-import app.packed.util.Nullable;
 import packed.internal.service.build.BuildEntry;
+import packed.internal.service.build.service.ComponentFactoryBuildEntry;
 import packed.internal.util.ThrowableUtil;
 
 /** A lazy runtime node if the service was not requested at configuration time. */
@@ -38,9 +37,9 @@ public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> {
      * @param node
      *            the build node to create this node from
      */
-    public LazyRuntimeEntry(BuildEntry<T> node, MethodHandle mh, @Nullable RuntimeEntry<?> declaringEntry) {
+    public LazyRuntimeEntry(ComponentFactoryBuildEntry<T> node) {
         super(node);
-        this.instance = new Sync(new PrototypeRuntimeEntry<>(node, mh));
+        this.instance = new Sync(new PrototypeRuntimeEntry<>(node));
     }
 
     public LazyRuntimeEntry(BuildEntry<T> node, T instance) {

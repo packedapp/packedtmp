@@ -143,8 +143,7 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         }
         @SuppressWarnings("unchecked")
         T t = (T) result;
-        requireNonNull(t);
-        return t;
+        return requireNonNull(t);
     }
 
     /** {@inheritDoc} */
@@ -158,10 +157,10 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
             if (i != null) {
                 return new LazyRuntimeEntry<>(this, i);
             } else {
-                return new LazyRuntimeEntry<>(this, toMethodHandle(), declaringEntry == null ? null : declaringEntry.toRuntimeEntry());
+                return new LazyRuntimeEntry<>(this);
             }
         default:
-            return new PrototypeRuntimeEntry<>(this, toMethodHandle());
+            return new PrototypeRuntimeEntry<>(this);
         }
     }
 
@@ -179,7 +178,7 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         return declaringEntry != null && mha.type().parameterCount() != dependencies.size();
     }
 
-    private MethodHandle toMethodHandle() {
+    public MethodHandle toMethodHandle() {
         MethodHandle mh = mha;
         if (needsInstance()) {
             mh = mha = mh.bindTo(declaringEntry.getInstance(null));
