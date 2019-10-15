@@ -81,7 +81,7 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
         super(injectorBuilder, cc.configSite(), dependencies);
         this.declaringEntry = null;
         this.instantionMode = requireNonNull(instantionMode);
-        this.componentConfiguration = cc;
+        this.componentConfiguration = requireNonNull(cc);
         // Maaske skal vi bare smide UnsupportedOperationException istedet for???
         // Vi faar jo problemet ved f.eks. CACHE_PER_APP.....
         // her giver det ikke meningen at faa componenten...
@@ -196,7 +196,7 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
             if (i != null) {
                 return new LazyRuntimeEntry<>(this, i);
             } else {
-                return new LazyRuntimeEntry<>(this, toMethodHandle());
+                return new LazyRuntimeEntry<>(this, toMethodHandle(), declaringEntry == null ? null : declaringEntry.toRuntimeEntry());
             }
         default:
             return new PrototypeRuntimeEntry<>(this, toMethodHandle());

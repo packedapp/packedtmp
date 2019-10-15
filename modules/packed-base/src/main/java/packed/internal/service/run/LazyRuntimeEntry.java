@@ -22,6 +22,7 @@ import java.util.concurrent.Semaphore;
 
 import app.packed.service.InstantiationMode;
 import app.packed.service.PrototypeRequest;
+import app.packed.util.Nullable;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.util.ThrowableUtil;
 
@@ -37,7 +38,7 @@ public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> {
      * @param node
      *            the build node to create this node from
      */
-    public LazyRuntimeEntry(BuildEntry<T> node, MethodHandle mh) {
+    public LazyRuntimeEntry(BuildEntry<T> node, MethodHandle mh, @Nullable RuntimeEntry<?> declaringEntry) {
         super(node);
         this.instance = new Sync(new PrototypeRuntimeEntry<>(node, mh));
     }

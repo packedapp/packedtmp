@@ -79,10 +79,6 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
     @Nullable
     private RuntimeEntry<T> runtimeNode;
 
-    public BuildEntry(ServiceExtensionNode injectorBuilder, ConfigSite configSite) {
-        this(injectorBuilder, configSite, List.of());
-    }
-
     public BuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite, List<Dependency> dependencies) {
         this.serviceExtension = serviceExtension;
         this.configSite = requireNonNull(configSite);

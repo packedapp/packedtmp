@@ -17,6 +17,7 @@ package packed.internal.service.build.wirelets;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.List;
 import java.util.function.Function;
 
 import app.packed.config.ConfigSite;
@@ -41,7 +42,7 @@ final class MappingBuildEntry<F, T> extends BuildEntry<T> {
     private final Function<? super F, T> function;
 
     MappingBuildEntry(ServiceExtensionNode node, ConfigSite configSite, ServiceEntry<F> entryToMap, Key<T> toKey, Function<F, T> function) {
-        super(node, configSite);
+        super(node, configSite, List.of());
         this.entryToMap = entryToMap;
         this.function = requireNonNull(function, "function is null");
         this.key = toKey;
