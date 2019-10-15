@@ -117,26 +117,32 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
 
     private T newInstance() {
         Object[] params = EMPTY_OBJECT_ARRAY;
+
         int size = dependencies.size();
-        if (size > 0) {
+        if (needsInstance()) {
+            params = new Object[size + 1];
+            params[0] = declaringEntry.getInstance(null);
+            if (size > 0) {
+                for (int i = 0; i < resolvedDependencies.length; i++) {
+                    params[i + 1] = resolvedDependencies[i].getInstance(PrototypeRequest.of(dependencies.get(i)));
+                }
+            }
+        } else if (size > 0) {
             params = new Object[size];
             for (int i = 0; i < resolvedDependencies.length; i++) {
-                requireNonNull(resolvedDependencies[i]);
                 params[i] = resolvedDependencies[i].getInstance(PrototypeRequest.of(dependencies.get(i)));
             }
         }
-        Object o;
-        MethodHandle mh = toMethodHandle();
 
-        // It would actually be nice with the receiver here as well...
+        Object result;
         try {
-            o = mh.invokeWithArguments(params);
+            result = mha.invokeWithArguments(params);
         } catch (Throwable e) {
             ThrowableUtil.rethrowErrorOrRuntimeException(e);
             throw new InjectionException("foo", e);
         }
         @SuppressWarnings("unchecked")
-        T t = (T) o;
+        T t = (T) result;
         requireNonNull(t);
         return t;
     }
