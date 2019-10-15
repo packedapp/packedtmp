@@ -36,7 +36,7 @@ public final class PrototypeRuntimeEntry<T> extends RuntimeEntry<T> implements P
     /** An empty object array. */
     private final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
-    Provider<?>[] providers;
+    private final Provider<?>[] providers;
 
     private final MethodHandle mh;
 

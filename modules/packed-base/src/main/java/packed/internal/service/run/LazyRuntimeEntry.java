@@ -30,6 +30,8 @@ import packed.internal.util.ThrowableUtil;
 /** A lazy runtime node if the service was not requested at configuration time. */
 public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> {
 
+    // Could put it into 1 field. And we check if instance == Sync
+
     /** The lazily instantiated instance. */
     @Nullable
     private volatile T instance;
