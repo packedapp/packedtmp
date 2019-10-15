@@ -30,15 +30,8 @@ import packed.internal.util.ThrowableUtil;
 /** A lazy runtime node if the service was not requested at configuration time. */
 public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> {
 
-    // Could put it into 1 field. And we check if instance == Sync
-
     /** The lazily instantiated instance. */
-    @Nullable
-    private volatile T instance;
-
-    /** Lazy calculates the value, and is then nulled out. */
-    @Nullable
-    private volatile Sync lazy;
+    private volatile Object instance;
 
     /**
      * Creates a new node
@@ -48,38 +41,26 @@ public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> {
      */
     public LazyRuntimeEntry(BuildEntry<T> node, MethodHandle mh, @Nullable RuntimeEntry<T> parent) {
         super(node);
-        this.lazy = new Sync(new PrototypeRuntimeEntry<>(node, mh), parent);
+        this.instance = new Sync(new PrototypeRuntimeEntry<>(node, mh), parent);
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public T getInstance(PrototypeRequest site) {
+        for (;;) {
+            Object i = instance;
+            if (!(i instanceof LazyRuntimeEntry.Sync)) {
+                return (T) i;
+            }
+            ((LazyRuntimeEntry.Sync) i).tryCreate();
+        }
     }
 
     /** {@inheritDoc} */
     @Override
     public InstantiationMode instantiationMode() {
         return InstantiationMode.LAZY;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public T getInstance(PrototypeRequest site) {
-        for (;;) {
-            T i = instance;
-            if (i != null) {
-                return i;
-            }
-
-            // Lazy calculate the value
-
-            // Where should we check for null????
-            // Also, should
-            Sync l = lazy;
-            if (l != null) {
-                i = l.tryCreate();
-                if (i != null) {
-                    instance = i;
-                    lazy = null;
-                    return i;
-                }
-            }
-        }
     }
 
     /** {@inheritDoc} */
@@ -98,8 +79,6 @@ public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> {
         /** Any failure encountered while creating a new value. */
         private Throwable failure;
 
-        RuntimeEntry<T> parent;
-
         /**
          * Creates a new Sync object
          * 
@@ -113,35 +92,34 @@ public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> {
 
         /**
          * Try and create a new value.
-         * 
-         * @return the newly created value, or null if the value has already been created
          */
-        T tryCreate() {
+        void tryCreate() {
             acquireUninterruptibly();
             try {
-                if (failure != null) {
-                    // We should not Rethrow it, We need to wrap it in some ProvisionException
-                    ThrowableUtil.rethrowErrorOrRuntimeException(failure);
-                }
-                if (factory != null) {
-                    try {
-                        T newInstance = factory.get();
-                        if (newInstance == null) {
-                            // TODO throw Provision Exception instead
-                            requireNonNull(instance, "factory produced a null instance");
+                if (instance == this) {
+                    if (failure != null) {
+                        // We should not Rethrow it, We need to wrap it in some ProvisionException
+                        ThrowableUtil.rethrowErrorOrRuntimeException(failure);
+                    }
+                    if (factory != null) {
+                        try {
+                            T newInstance = factory.get();
+                            if (newInstance == null) {
+                                // TODO throw Provision Exception instead
+                                requireNonNull(newInstance, "factory produced a null instance");
+                            }
+                            instance = newInstance;
+                        } catch (RuntimeException | Error e) {
+                            failure = e;
+                            throw e;
+                        } finally {
+                            factory = null;
                         }
-                        return newInstance;
-                    } catch (RuntimeException | Error e) {
-                        failure = e;
-                        throw e;
-                    } finally {
-                        factory = null;
                     }
                 }
             } finally {
                 release();
             }
-            return null;
         }
     }
 }
