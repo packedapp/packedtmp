@@ -79,7 +79,7 @@ final class FromOtherInjectorBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean requiresRequest() {
-        return entry.requiresRequest();
+    public boolean requiresPrototypeRequest() {
+        return entry.requiresPrototypeRequest();
     }
 }

@@ -57,7 +57,7 @@ public final class DelegatingRuntimeEntry<T> extends RuntimeEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean requiresRequest() {
-        return delegate.requiresRequest();
+    public boolean requiresPrototypeRequest() {
+        return delegate.requiresPrototypeRequest();
     }
 }

@@ -40,8 +40,8 @@ final class MappingBuildEntry<F, T> extends BuildEntry<T> {
     /** The function to apply on the */
     private final Function<? super F, T> function;
 
-    MappingBuildEntry(ServiceExtensionNode injectorBuilder, ServiceEntry<F> entryToMap, Key<T> toKey, Function<F, T> function, ConfigSite configSite) {
-        super(injectorBuilder, configSite);
+    MappingBuildEntry(ServiceExtensionNode node, ConfigSite configSite, ServiceEntry<F> entryToMap, Key<T> toKey, Function<F, T> function) {
+        super(node, configSite);
         this.entryToMap = entryToMap;
         this.function = requireNonNull(function, "function is null");
         this.key = toKey;
@@ -75,7 +75,7 @@ final class MappingBuildEntry<F, T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean requiresRequest() {
-        return entryToMap.requiresRequest();
+    public boolean requiresPrototypeRequest() {
+        return entryToMap.requiresPrototypeRequest();
     }
 }

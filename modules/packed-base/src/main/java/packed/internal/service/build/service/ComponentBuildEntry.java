@@ -155,7 +155,7 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public final boolean requiresRequest() {
+    public final boolean requiresPrototypeRequest() {
         return hasDependencyOnInjectionSite;
     }
 

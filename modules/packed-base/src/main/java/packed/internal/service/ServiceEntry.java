@@ -18,7 +18,6 @@ package packed.internal.service;
 import app.packed.config.ConfigSite;
 import app.packed.service.InstantiationMode;
 import app.packed.service.PrototypeRequest;
-import app.packed.service.ServiceComponentConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.service.build.BuildEntry;
@@ -45,7 +44,7 @@ public interface ServiceEntry<T> {
      * Returns an instance.
      * 
      * @param request
-     *            a request if needed by {@link #requiresRequest()}
+     *            a request if needed by {@link #requiresPrototypeRequest()}
      * @return the instance
      */
     T getInstance(@Nullable PrototypeRequest request);
@@ -60,11 +59,11 @@ public interface ServiceEntry<T> {
     }
 
     /**
-     * Returns the key that the service is registered with.
+     * Returns any key that the entry is registered under. This is null for entries that are available for lookup
      *
-     * @return the key that the service is registered with
-     * @see ServiceComponentConfiguration#as(Key)
+     * @return any key that the entry is registered under.
      */
+    @Nullable
     Key<?> key();
 
     /**
@@ -76,7 +75,11 @@ public interface ServiceEntry<T> {
      *
      * @return whether or not this node needs a {@link PrototypeRequest} instance to be able to deliver a service
      */
-    boolean requiresRequest();
+    // Technically we don't need this any more, after we have settled on a Component, Dependency, Key<?> format
+    // However we keep it for now, because it might make sense to have a backtrack to the defining entity at some point.
+
+    //
+    boolean requiresPrototypeRequest();
 
     /**
      * Converts this node to a run-time node if this node is a build-node, otherwise returns this. Build-nodes must always

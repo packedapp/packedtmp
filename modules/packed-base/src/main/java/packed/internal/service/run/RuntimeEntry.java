@@ -47,9 +47,7 @@ public abstract class RuntimeEntry<T> implements ServiceEntry<T>, ServiceDescrip
      *            the build node to create the runtime node from
      */
     RuntimeEntry(BuildEntry<T> buildEntry) {
-        this.configSite = requireNonNull(buildEntry.configSite());
-        this.description = buildEntry.getDescription();
-        this.key = requireNonNull(buildEntry.key());
+        this(buildEntry.configSite(), buildEntry.getKey(), buildEntry.getDescription());
     }
 
     RuntimeEntry(ConfigSite configSite, Key<T> key, @Nullable String description) {

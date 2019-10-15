@@ -104,8 +104,8 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean requiresRequest() {
-        return exportedEntry.requiresRequest();
+    public boolean requiresPrototypeRequest() {
+        return exportedEntry.requiresPrototypeRequest();
     }
 
     /** {@inheritDoc} */

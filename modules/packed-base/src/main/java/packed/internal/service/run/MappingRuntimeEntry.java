@@ -65,7 +65,7 @@ public final class MappingRuntimeEntry<F, T> extends RuntimeEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean requiresRequest() {
-        return delegate.requiresRequest();
+    public boolean requiresPrototypeRequest() {
+        return delegate.requiresPrototypeRequest();
     }
 }
