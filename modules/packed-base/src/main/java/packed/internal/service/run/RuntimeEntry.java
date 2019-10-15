@@ -40,12 +40,6 @@ public abstract class RuntimeEntry<T> implements ServiceEntry<T>, ServiceDescrip
     /** The key under which the service is available. */
     private final Key<T> key;
 
-    RuntimeEntry(ConfigSite configSite, Key<T> key, @Nullable String description) {
-        this.configSite = requireNonNull(configSite);
-        this.description = description;
-        this.key = requireNonNull(key);
-    }
-
     /**
      * Creates a new runtime node from a build entry.
      *
@@ -56,6 +50,12 @@ public abstract class RuntimeEntry<T> implements ServiceEntry<T>, ServiceDescrip
         this.configSite = requireNonNull(buildEntry.configSite());
         this.description = buildEntry.getDescription();
         this.key = requireNonNull(buildEntry.key());
+    }
+
+    RuntimeEntry(ConfigSite configSite, Key<T> key, @Nullable String description) {
+        this.configSite = requireNonNull(configSite);
+        this.description = description;
+        this.key = requireNonNull(key);
     }
 
     /** {@inheritDoc} */
@@ -70,6 +70,12 @@ public abstract class RuntimeEntry<T> implements ServiceEntry<T>, ServiceDescrip
         return Optional.ofNullable(description);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public final boolean hasUnresolvedDependencies() {
+        return false;
+    }
+
     @Override
     public abstract InstantiationMode instantiationMode();
 
@@ -77,12 +83,6 @@ public abstract class RuntimeEntry<T> implements ServiceEntry<T>, ServiceDescrip
     @Override
     public final Key<T> key() {
         return key;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final boolean hasUnresolvedDependencies() {
-        return false;
     }
 
     /** {@inheritDoc} */

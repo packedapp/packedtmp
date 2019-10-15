@@ -49,22 +49,10 @@ final class MappingBuildEntry<F, T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public InstantiationMode instantiationMode() {
-        return entryToMap.instantiationMode();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public T getInstance(PrototypeRequest site) {
         // Null check..
         F instance = entryToMap.getInstance(site);
         return function.apply(instance);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean requiresRequest() {
-        return entryToMap.requiresRequest();
     }
 
     /** {@inheritDoc} */
@@ -75,7 +63,19 @@ final class MappingBuildEntry<F, T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
+    public InstantiationMode instantiationMode() {
+        return entryToMap.instantiationMode();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     protected RuntimeEntry<T> newRuntimeNode() {
         return new MappingRuntimeEntry<>(this, entryToMap, function);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean requiresRequest() {
+        return entryToMap.requiresRequest();
     }
 }

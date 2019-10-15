@@ -24,9 +24,7 @@ import app.packed.service.Injector;
 import app.packed.service.InstantiationMode;
 import app.packed.service.PrototypeRequest;
 import app.packed.service.ServiceExtension;
-import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.run.DelegatingRuntimeEntry;
 import packed.internal.service.run.RuntimeEntry;
@@ -40,20 +38,19 @@ final class FromOtherInjectorBuildEntry<T> extends BuildEntry<T> {
     /** A wrapper for the 'imported' injector. */
     final ProvideAllFromOtherInjector fromInjector; // not used currently
 
-    @SuppressWarnings("unchecked")
-    FromOtherInjectorBuildEntry(ProvideAllFromOtherInjector fromInjector, ServiceEntry<T> entry) {
+    FromOtherInjectorBuildEntry(ProvideAllFromOtherInjector fromInjector, RuntimeEntry<T> entry) {
         super(fromInjector.node, fromInjector.configSite.withParent(entry.configSite()), List.of());
-        this.entry = (RuntimeEntry<T>) entry;
+        this.entry = entry;
         this.fromInjector = fromInjector;
-        this.key = requireNonNull((Key<T>) entry.key());
-        this.description = this.entry.description().orElse(null);
+        this.key = requireNonNull(entry.key());
+        this.description = entry.description().orElse(null);
     }
 
     /** {@inheritDoc} */
     @Override
     @Nullable
     public BuildEntry<?> declaringEntry() {
-        return null;// (entry instanceof BuildEntry) ? ((BuildEntry<?>) entry).declaringEntry() : null;
+        return null;
     }
 
     /** {@inheritDoc} */
@@ -64,25 +61,25 @@ final class FromOtherInjectorBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public InstantiationMode instantiationMode() {
-        return entry.instantiationMode();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean requiresRequest() {
-        return entry.requiresRequest();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public boolean hasUnresolvedDependencies() {
         return false; // services from an never needs to resolved
     }
 
     /** {@inheritDoc} */
     @Override
+    public InstantiationMode instantiationMode() {
+        return entry.instantiationMode();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     protected RuntimeEntry<T> newRuntimeNode() {
         return new DelegatingRuntimeEntry<T>(this, entry);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean requiresRequest() {
+        return entry.requiresRequest();
     }
 }
