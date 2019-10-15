@@ -37,7 +37,7 @@ public abstract class AbstractComponentBuildEntry<T> extends BuildEntry<T> {
 
     /** The parent, if this node is the result of a member annotated with {@link Provide}. */
     @Nullable
-    final ComponentBuildEntry<?> declaringEntry;
+    final AbstractComponentBuildEntry<?> declaringEntry;
 
     /**
      * @param serviceExtension
@@ -45,7 +45,7 @@ public abstract class AbstractComponentBuildEntry<T> extends BuildEntry<T> {
      * @param dependencies
      */
     public AbstractComponentBuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite, List<Dependency> dependencies,
-            ComponentBuildEntry<?> declaringEntry, ComponentConfiguration<?> componentConfiguration) {
+            AbstractComponentBuildEntry<?> declaringEntry, ComponentConfiguration<?> componentConfiguration) {
         super(serviceExtension, configSite, dependencies);
         this.declaringEntry = declaringEntry;
         this.componentConfiguration = requireNonNull(componentConfiguration);

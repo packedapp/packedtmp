@@ -29,11 +29,11 @@ import java.util.List;
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Wirelet;
-import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.Factory;
 import app.packed.service.Injector;
 import app.packed.service.InstantiationMode;
 import app.packed.service.Provide;
+import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceExtension;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -61,7 +61,7 @@ import packed.internal.service.run.AbstractInjector;
 public final class ServiceProvidingManager {
 
     /** A map used to cache build entries, connect stuff */
-    private final IdentityHashMap<ComponentConfiguration<?>, ComponentBuildEntry<?>> componentConfigurationCache = new IdentityHashMap<>();
+    private final IdentityHashMap<ComponentConfiguration<?>, AbstractComponentBuildEntry<?>> componentConfigurationCache = new IdentityHashMap<>();
 
     /** A map of build entries that provide services with the same key. */
     @Nullable
@@ -97,10 +97,10 @@ public final class ServiceProvidingManager {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void addProvidesGroup(ComponentConfiguration cc, AtProvidesGroup group) {
         // The parent node is not added until #provideFactory or #provideInstance
-        ComponentBuildEntry parentNode;
+        AbstractComponentBuildEntry parentNode;
         if (cc instanceof InstantiatedComponentConfiguration) {
             Object instance = ((InstantiatedComponentConfiguration) cc).instance;
-            parentNode = new ComponentBuildEntry(node, cc.configSite(), cc, instance);
+            parentNode = new ComponentInstanceBuildEntry<>(node, cc.configSite(), cc, instance);
         } else {
             Factory<?> factory = ((FactoryComponentConfiguration) cc).factory;
 
@@ -110,7 +110,9 @@ public final class ServiceProvidingManager {
 
         // If any of the @Provide methods are instance members the parent node needs special treatment.
         // As it needs to be constructed, before the field or method can provide services.
-        parentNode.hasInstanceMembers = group.hasInstanceMembers;
+        if (parentNode instanceof ComponentBuildEntry) {
+            ((ComponentBuildEntry) parentNode).hasInstanceMembers = group.hasInstanceMembers;
+        }
 
         // Add each @Provide as children of the parent node
         for (AtProvides atProvides : group.members) {
@@ -135,7 +137,7 @@ public final class ServiceProvidingManager {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <T> ServiceComponentConfiguration<T> provideFactory(ComponentConfiguration cc, Factory<T> factory, FactoryHandle<T> function) {
-        ComponentBuildEntry<?> c = componentConfigurationCache.get(cc);// remove??
+        AbstractComponentBuildEntry<?> c = componentConfigurationCache.get(cc);// remove??
         if (c == null) {
             MethodHandle mh = ((PackedExtensionContext) node.context()).pcc.lookup.toMethodHandle(function);
             c = new ComponentBuildEntry<>(node, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
@@ -149,15 +151,15 @@ public final class ServiceProvidingManager {
     public <T> ServiceComponentConfiguration<T> provideInstance(ComponentConfiguration cc, T instance) {
         // First see if we have already installed the node. This happens in #set if the component container any members
         // annotated with @Provides
-        ComponentBuildEntry<?> c = componentConfigurationCache.get(cc);
+        AbstractComponentBuildEntry<?> c = componentConfigurationCache.get(cc);
         if (c == null) {
             // No node found, components has no @Provides method, create a new node
-            c = new ComponentBuildEntry<T>(node, cc.configSite(), cc, instance);
+            c = new ComponentInstanceBuildEntry<T>(node, cc.configSite(), cc, instance);
         }
 
         c.as((Key) Key.of(instance.getClass()));
         providingEntries.add(c);
-        return new PackedServiceComponentConfiguration<>((CoreComponentConfiguration) cc, (ComponentBuildEntry) c);
+        return new PackedServiceComponentConfiguration<>((CoreComponentConfiguration) cc, (AbstractComponentBuildEntry) c);
     }
 
     public HashMap<Key<?>, BuildEntry<?>> resolve() {

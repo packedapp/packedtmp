@@ -26,7 +26,6 @@ import app.packed.service.Dependency;
 import app.packed.service.InjectionException;
 import app.packed.service.InstantiationMode;
 import app.packed.service.PrototypeRequest;
-import app.packed.service.Provide;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
@@ -42,16 +41,10 @@ import packed.internal.util.ThrowableUtil;
  * An entry representing a component node. This node is used for all three binding modes mainly because it makes
  * extending it with {@link ServiceComponentConfiguration} much easier.
  */
-public final class ComponentBuildEntry<T> extends BuildEntry<T> {
+public final class ComponentBuildEntry<T> extends AbstractComponentBuildEntry<T> {
 
     /** An empty object array. */
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
-
-    /** The configuration of the component this build entry belongs to */
-    public final ComponentConfiguration<?> componentConfiguration;
-
-    /** The parent, if this node is the result of a member annotated with {@link Provide}. */
-    private final ComponentBuildEntry<?> declaringEntry;
 
     boolean hasInstanceMembers;
 
@@ -66,22 +59,18 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
     @Nullable
     private MethodHandle mha;
 
-    public ComponentBuildEntry(ConfigSite configSite, AtProvides atProvides, MethodHandle mh, ComponentBuildEntry<?> parent) {
-        super(parent.serviceExtension, configSite, atProvides.dependencies);
+    public ComponentBuildEntry(ConfigSite configSite, AtProvides atProvides, MethodHandle mh, AbstractComponentBuildEntry<?> parent) {
+        super(parent.serviceExtension, configSite, atProvides.dependencies, parent, parent.componentConfiguration);
         this.mha = requireNonNull(mh);
         // Rename to parentDependency??? and have it as null if instance
-        this.declaringEntry = parent;
         this.instantionMode = atProvides.instantionMode;
         this.description = atProvides.description;
-        this.componentConfiguration = parent.componentConfiguration;
     }
 
     public ComponentBuildEntry(ServiceExtensionNode injectorBuilder, ComponentConfiguration<T> cc, InstantiationMode instantionMode, MethodHandle mh,
             List<Dependency> dependencies) {
-        super(injectorBuilder, cc.configSite(), dependencies);
-        this.declaringEntry = null;
+        super(injectorBuilder, cc.configSite(), dependencies, null, cc);
         this.instantionMode = requireNonNull(instantionMode);
-        this.componentConfiguration = requireNonNull(cc);
         // Maaske skal vi bare smide UnsupportedOperationException istedet for???
         // Vi faar jo problemet ved f.eks. CACHE_PER_APP.....
         // her giver det ikke meningen at faa componenten...
@@ -90,25 +79,6 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
         // throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
         // }
         mha = requireNonNull(mh);
-    }
-
-    /**
-     * Creates a new node from an instance.
-     * 
-     * @param ib
-     *            the injector builder
-     * @param configSite
-     *            the configuration site
-     * @param instance
-     *            the instance
-     */
-    public ComponentBuildEntry(ServiceExtensionNode ib, ConfigSite configSite, ComponentConfiguration<T> cc, T instance) {
-        super(ib, configSite, List.of());
-        this.instance = requireNonNull(instance, "instance is null");
-        this.declaringEntry = null;
-        this.instantionMode = InstantiationMode.SINGLETON;
-        this.mha = null;
-        this.componentConfiguration = requireNonNull(cc);
     }
 
     @Override
