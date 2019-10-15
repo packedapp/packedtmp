@@ -60,10 +60,6 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
     /** Whether or this node contains a dependency on {@link PrototypeRequest}. */
     protected final boolean hasDependencyOnInjectionSite;
 
-    /** The injector builder this node belongs to. */
-    @Nullable // Is nullable for stages for now
-    public final ServiceExtensionNode serviceExtension;
-
     /**
      * The key of the node (optional). Can be null, for example, for a class that is not exposed as a service but has
      * instance methods annotated with {@link Provide}. In which the case the declaring class needs to be constructor
@@ -78,6 +74,10 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
     /** The runtime representation of this node. We cache it, to make sure it is only created once. */
     @Nullable
     private RuntimeEntry<T> runtimeNode;
+
+    /** The injector builder this node belongs to. */
+    @Nullable // Is nullable for stages for now
+    public final ServiceExtensionNode serviceExtension;
 
     public BuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite, List<Dependency> dependencies) {
         this.serviceExtension = serviceExtension;
@@ -143,12 +143,6 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
         return key;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public final Key<T> key() {
-        return key;
-    }
-
     /**
      * Returns whether or not this node has any dependencies that needs to be resolved.
      *
@@ -156,6 +150,12 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
      */
     @Override
     public abstract boolean hasUnresolvedDependencies();
+
+    /** {@inheritDoc} */
+    @Override
+    public final Key<T> key() {
+        return key;
+    }
 
     /**
      * Creates a new runtime node from this node.

@@ -38,12 +38,15 @@ public final class PrototypeRuntimeEntry<T> extends RuntimeEntry<T> implements P
 
     private final MethodHandle mh;
 
+    Object declaringNode;
+
     /**
      * @param node
      */
     public PrototypeRuntimeEntry(ComponentFactoryBuildEntry<T> node) {
         super(node);
         if (node.needsInstance()) {
+            declaringNode = node.declaringEntry.getInstance(null);
             mh = node.mha.bindTo(node.declaringEntry.getInstance(null));
         } else {
             this.mh = node.mha;

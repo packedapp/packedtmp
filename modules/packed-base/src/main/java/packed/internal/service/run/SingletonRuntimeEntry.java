@@ -33,11 +33,11 @@ public final class SingletonRuntimeEntry<T> extends RuntimeEntry<T> implements P
     @Nullable
     public T instance;
 
-    /**
-     * The binding mode, we save it to distinguish between lazy and non-lazy services. Even if the lazy service was
-     * initialized while building the injector.
-     */
-    private final InstantiationMode instantionMode;
+    // /**
+    // * The binding mode, we save it to distinguish between lazy and non-lazy services. Even if the lazy service was
+    // * initialized while building the injector.
+    // */
+    // private final InstantiationMode instantionMode;
 
     /**
      * Creates a new node.
@@ -50,7 +50,6 @@ public final class SingletonRuntimeEntry<T> extends RuntimeEntry<T> implements P
     public SingletonRuntimeEntry(BuildEntry<T> buildNode, T instance) {
         super(buildNode);
         this.instance = instance;
-        this.instantionMode = buildNode.instantiationMode();
     }
 
     /**
@@ -61,7 +60,6 @@ public final class SingletonRuntimeEntry<T> extends RuntimeEntry<T> implements P
     public SingletonRuntimeEntry(ConfigSite configSite, Key<T> key, @Nullable String description, T instance) {
         super(configSite, key, description);
         this.instance = instance;
-        this.instantionMode = InstantiationMode.SINGLETON;
     }
 
     /** {@inheritDoc} */
@@ -79,7 +77,7 @@ public final class SingletonRuntimeEntry<T> extends RuntimeEntry<T> implements P
     /** {@inheritDoc} */
     @Override
     public InstantiationMode instantiationMode() {
-        return instantionMode;
+        return InstantiationMode.SINGLETON;
     }
 
     /** {@inheritDoc} */

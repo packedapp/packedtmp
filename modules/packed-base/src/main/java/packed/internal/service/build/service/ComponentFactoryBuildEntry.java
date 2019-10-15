@@ -86,6 +86,12 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         }
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean hasUnresolvedDependencies() {
+        return !dependencies.isEmpty();
+    }
+
     public ComponentFactoryBuildEntry<T> instantiateAs(InstantiationMode mode) {
         requireNonNull(mode, "mode is null");
         this.instantionMode = mode;
@@ -102,16 +108,8 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         instantiateAs(InstantiationMode.LAZY);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public boolean hasUnresolvedDependencies() {
-        return !dependencies.isEmpty();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean requiresPrototypeRequest() {
-        return hasDependencyOnInjectionSite;
+    public boolean needsInstance() {
+        return declaringEntry != null && mha.type().parameterCount() != dependencies.size();
     }
 
     private T newInstance() {
@@ -173,8 +171,9 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         instantiateAs(InstantiationMode.PROTOTYPE);
     }
 
-    public boolean needsInstance() {
-        return declaringEntry != null && mha.type().parameterCount() != dependencies.size();
+    /** {@inheritDoc} */
+    @Override
+    public boolean requiresPrototypeRequest() {
+        return hasDependencyOnInjectionSite;
     }
-
 }
