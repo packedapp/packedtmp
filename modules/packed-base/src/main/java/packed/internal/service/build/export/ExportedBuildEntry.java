@@ -21,9 +21,9 @@ import java.util.List;
 
 import app.packed.config.ConfigSite;
 import app.packed.service.InstantiationMode;
+import app.packed.service.PrototypeRequest;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceExtension;
-import app.packed.service.PrototypeRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.service.ServiceEntry;
@@ -117,6 +117,6 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
     /** {@inheritDoc} */
     @Override
     protected RuntimeEntry<T> newRuntimeNode() {
-        return new DelegatingRuntimeEntry<>(this, exportedEntry);
+        return new DelegatingRuntimeEntry<>(this, exportedEntry.toRuntimeEntry());
     }
 }

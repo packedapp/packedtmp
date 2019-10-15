@@ -27,7 +27,9 @@ import app.packed.container.extension.ExtensionDeclarationException;
 import app.packed.util.Key;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.module.ModuleAccess;
+import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
+import packed.internal.service.build.service.RuntimeAdaptorEntry;
 import packed.internal.service.run.SingletonRuntimeEntry;
 
 /** The default implementation of {@link ExtensionContext} with addition data only available from inside this module. */
@@ -45,7 +47,7 @@ public final class PackedExtensionContext implements ExtensionContext {
     /** The configuration of the container the extension is registered in. */
     public final PackedContainerConfiguration pcc;
 
-    private SingletonRuntimeEntry<? extends Extension> serviceEntry;
+    private RuntimeAdaptorEntry<? extends Extension> serviceEntry;
 
     /**
      * Creates a new extension context.
@@ -70,10 +72,10 @@ public final class PackedExtensionContext implements ExtensionContext {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public SingletonRuntimeEntry<? extends Extension> serviceEntry(ServiceExtensionNode sen) {
-        SingletonRuntimeEntry<? extends Extension> e = serviceEntry;
+    public BuildEntry<? extends Extension> serviceEntry(ServiceExtensionNode sen) {
+        RuntimeAdaptorEntry<? extends Extension> e = serviceEntry;
         if (e == null) {
-            e = serviceEntry = new SingletonRuntimeEntry<Extension>(ConfigSite.UNKNOWN, (Key) Key.of(type()), null, extension);
+            e = serviceEntry = new RuntimeAdaptorEntry(sen, new SingletonRuntimeEntry<Extension>(ConfigSite.UNKNOWN, (Key) Key.of(type()), null, extension));
         }
         return e;
     }

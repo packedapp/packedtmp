@@ -15,9 +15,12 @@
  */
 package packed.internal.service;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import app.packed.artifact.app.App;
 import app.packed.container.BaseBundle;
-import app.packed.service.Factory1;
+import app.packed.service.InstantiationMode;
+import app.packed.service.Provide;
 
 /**
  *
@@ -27,12 +30,23 @@ public class TestStuff extends BaseBundle {
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-        provideInstance("foo");
-        install(new Factory1<String, Long>(s -> (long) s.length()) {});
+
+        provideInstance(new AtomicBoolean());
+        install(SingletonField.class);
+        System.out.println("Bte");
     }
 
     public static void main(String[] args) {
         App.of(new TestStuff());
     }
 
+    public static class SingletonField {
+
+        @Provide(instantionMode = InstantiationMode.SINGLETON)
+        Short s = 1;
+
+        public SingletonField(AtomicBoolean b) {
+            b.set(true);
+        }
+    }
 }

@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.service.InstantiationMode;
 import app.packed.service.PrototypeRequest;
-import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
 
 /**
@@ -38,9 +37,9 @@ public final class DelegatingRuntimeEntry<T> extends RuntimeEntry<T> {
      * @param delegate
      *            the build time alias node to create a runtime node from
      */
-    public DelegatingRuntimeEntry(BuildEntry<T> buildNode, ServiceEntry<T> delegate) {
+    public DelegatingRuntimeEntry(BuildEntry<T> buildNode, RuntimeEntry<T> delegate) {
         super(buildNode);
-        this.delegate = requireNonNull(delegate.toRuntimeEntry());
+        this.delegate = requireNonNull(delegate);
     }
 
     /** {@inheritDoc} */
