@@ -22,8 +22,6 @@ import java.util.concurrent.Semaphore;
 
 import app.packed.service.InstantiationMode;
 import app.packed.service.PrototypeRequest;
-import app.packed.util.Nullable;
-import packed.internal.inject.util.Provider;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.util.ThrowableUtil;
 
@@ -39,9 +37,9 @@ public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> {
      * @param node
      *            the build node to create this node from
      */
-    public LazyRuntimeEntry(BuildEntry<T> node, MethodHandle mh, @Nullable RuntimeEntry<T> parent) {
+    public LazyRuntimeEntry(BuildEntry<T> node, MethodHandle mh) {
         super(node);
-        this.instance = new Sync(new PrototypeRuntimeEntry<>(node, mh), parent);
+        this.instance = new Sync(new PrototypeRuntimeEntry<>(node, mh));
     }
 
     /** {@inheritDoc} */
@@ -74,7 +72,7 @@ public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> {
     final class Sync extends Semaphore {
 
         /** The factory used for creating a new instance. */
-        private Provider<T> factory;
+        private PrototypeRuntimeEntry<T> factory;
 
         /** Any failure encountered while creating a new value. */
         private Throwable failure;
@@ -85,7 +83,7 @@ public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> {
          * @param factory
          *            the factory node that will create the value
          */
-        Sync(Provider<T> factory, @Nullable RuntimeEntry<T> parent) {
+        Sync(PrototypeRuntimeEntry<T> factory) {
             super(1);
             this.factory = requireNonNull(factory);
         }
@@ -104,11 +102,12 @@ public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> {
                     try {
                         T newInstance = factory.get();
                         if (newInstance == null) {
+                            // We need to check null and type.... Maybe common method on RuntimeEntry
                             // TODO throw Provision Exception instead
                             requireNonNull(newInstance, "factory produced a null instance");
                         }
                         instance = newInstance;
-                    } catch (RuntimeException | Error e) {
+                    } catch (Throwable e) {
                         failure = e;
                         throw e;
                     } finally {

@@ -195,7 +195,7 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
         if (instantionMode == InstantiationMode.PROTOTYPE) {
             return new PrototypeRuntimeEntry<>(this, toMethodHandle());
         } else {
-            return new LazyRuntimeEntry<>(this, toMethodHandle(), null);
+            return new LazyRuntimeEntry<>(this, toMethodHandle());
         }
     }
 
