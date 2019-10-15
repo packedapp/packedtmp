@@ -27,7 +27,6 @@ import app.packed.container.extension.ExtensionDeclarationException;
 import app.packed.util.Key;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.module.ModuleAccess;
-import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.run.SingletonRuntimeEntry;
 
@@ -46,7 +45,7 @@ public final class PackedExtensionContext implements ExtensionContext {
     /** The configuration of the container the extension is registered in. */
     public final PackedContainerConfiguration pcc;
 
-    private ServiceEntry<? extends Extension> serviceEntry;
+    private SingletonRuntimeEntry<? extends Extension> serviceEntry;
 
     /**
      * Creates a new extension context.
@@ -71,8 +70,8 @@ public final class PackedExtensionContext implements ExtensionContext {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public ServiceEntry<? extends Extension> serviceEntry(ServiceExtensionNode sen) {
-        ServiceEntry<? extends Extension> e = serviceEntry;
+    public SingletonRuntimeEntry<? extends Extension> serviceEntry(ServiceExtensionNode sen) {
+        SingletonRuntimeEntry<? extends Extension> e = serviceEntry;
         if (e == null) {
             e = serviceEntry = new SingletonRuntimeEntry<Extension>(ConfigSite.UNKNOWN, (Key) Key.of(type()), null, extension);
         }
