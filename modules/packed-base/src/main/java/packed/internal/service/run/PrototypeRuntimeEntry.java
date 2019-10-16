@@ -29,7 +29,7 @@ import packed.internal.util.ThrowableUtil;
 // No params
 // No InjectionSite parameters
 // InjectionSite parameters
-public final class PrototypeRuntimeEntry<T> extends RuntimeEntry<T> implements Provider<T> {
+public class PrototypeRuntimeEntry<T> extends RuntimeEntry<T> implements Provider<T> {
 
     /** An empty object array. */
     private final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
@@ -68,22 +68,6 @@ public final class PrototypeRuntimeEntry<T> extends RuntimeEntry<T> implements P
             }
         }
         mh = node.mha;
-
-        // if (node.needsInstance()) {
-        // declaringNode = node.declaringEntry.getInstance(null);
-        // mh = node.mha.bindTo(node.declaringEntry.getInstance(null));
-        // } else {
-        // this.mh = node.mha;
-        // }
-        // this.providers = new Provider[node.dependencies.size()];
-        // for (int i = 0; i < providers.length; i++) {
-        // RuntimeEntry<?> forReal = node.resolvedDependencies[i].toRuntimeEntry();
-        // PrototypeRequest is = null;
-        // PrototypeRequest.of(node.dependencies.get(i));
-        // providers[i] = () -> forReal.getInstance(is);
-        // }
-        // Create local injection site for each parameter.
-        // Wrap them in Function<InjectionSite, O>
     }
 
     /** {@inheritDoc} */
@@ -116,7 +100,7 @@ public final class PrototypeRuntimeEntry<T> extends RuntimeEntry<T> implements P
      * @return the new service instance
      */
     @SuppressWarnings("unchecked")
-    private T newInstance() {
+    final T newInstance() {
         Object[] params = EMPTY_OBJECT_ARRAY;
         if (providers.length > 0) {
             params = new Object[providers.length];

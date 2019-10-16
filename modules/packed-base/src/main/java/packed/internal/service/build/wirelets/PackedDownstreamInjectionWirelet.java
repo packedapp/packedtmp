@@ -25,7 +25,6 @@ import app.packed.config.ConfigSite;
 import app.packed.service.ServiceDescriptor;
 import app.packed.service.ServiceWirelets;
 import app.packed.util.Key;
-import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.ServiceWireletPipeline;
 import packed.internal.service.build.export.ExportedBuildEntry;
 import packed.internal.service.run.RuntimeEntry;
@@ -50,7 +49,7 @@ public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
 
         /** {@inheritDoc} */
         @Override
-        public void process(ConfigSite cs, LinkedHashMap<Key<?>, ServiceEntry<?>> newServices) {
+        public void process(ConfigSite cs, LinkedHashMap<Key<?>, RuntimeEntry<?>> newServices) {
             newServices.keySet().removeAll(set);
         }
     }
@@ -81,9 +80,9 @@ public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
 
         /** {@inheritDoc} */
         @Override
-        public void process(ConfigSite cs, LinkedHashMap<Key<?>, ServiceEntry<?>> newServices) {
+        public void process(ConfigSite cs, LinkedHashMap<Key<?>, RuntimeEntry<?>> newServices) {
             for (var s : newServices.values()) {
-                action.accept((RuntimeEntry<?>) s);
+                action.accept(s);
             }
         }
     }
@@ -108,7 +107,7 @@ public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
-        public void process(ConfigSite cs, LinkedHashMap<Key<?>, ServiceEntry<?>> newServices) {
+        public void process(ConfigSite cs, LinkedHashMap<Key<?>, RuntimeEntry<?>> newServices) {
             newServices.put(key, new SingletonRuntimeEntry(cs, key, null, instance));
         }
 
@@ -118,5 +117,5 @@ public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
         }
     }
 
-    public abstract void process(ConfigSite cs, LinkedHashMap<Key<?>, ServiceEntry<?>> newServices);
+    public abstract void process(ConfigSite cs, LinkedHashMap<Key<?>, RuntimeEntry<?>> newServices);
 }

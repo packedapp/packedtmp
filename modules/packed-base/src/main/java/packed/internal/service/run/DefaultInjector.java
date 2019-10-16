@@ -57,14 +57,11 @@ public final class DefaultInjector extends AbstractInjector {
     /** All services that this injector provides. */
     private final Map<Key<?>, RuntimeEntry<?>> services;
 
-    public DefaultInjector(ConfigSite configSite, @Nullable String description, Map<Key<?>, ServiceEntry<?>> services) {
+    public DefaultInjector(ConfigSite configSite, @Nullable String description, Map<Key<?>, RuntimeEntry<?>> services) {
         this.parent = null;
         this.configSite = requireNonNull(configSite);
         this.description = description;
-        this.services = new LinkedHashMap<>();
-        for (var e : services.entrySet()) {
-            this.services.put(e.getKey(), e.getValue().toRuntimeEntry());
-        }
+        this.services = services;
     }
 
     /** {@inheritDoc} */
@@ -124,7 +121,7 @@ public final class DefaultInjector extends AbstractInjector {
             Optional<StackFrame> sf = STACK_WALKER.walk(e -> e.filter(f -> f.getDeclaringClass() == DefaultInjector.class).findFirst());
             cs = sf.isPresent() ? configSite.thenStackFrame("Injector.Spawn", sf.get()) : ConfigSite.UNKNOWN;
         }
-        LinkedHashMap<Key<?>, ServiceEntry<?>> newServices = new LinkedHashMap<>(services);
+        LinkedHashMap<Key<?>, RuntimeEntry<?>> newServices = new LinkedHashMap<>(services);
         WireletList wl = WireletList.of(wirelets);
         ConfigSite ccs = cs;
         wl.forEach(PackedDownstreamInjectionWirelet.class, w -> w.process(ccs, newServices));

@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.BundleDescriptor;
@@ -41,6 +40,7 @@ import packed.internal.service.build.export.ExportedBuildEntry;
 import packed.internal.service.build.service.ComponentFactoryBuildEntry;
 import packed.internal.service.build.service.ServiceProvidingManager;
 import packed.internal.service.run.DefaultInjector;
+import packed.internal.service.run.RuntimeEntry;
 
 /** This class records all service related information for a single box. */
 public final class ServiceExtensionNode {
@@ -183,8 +183,11 @@ public final class ServiceExtensionNode {
     }
 
     public void onInstantiate(ExtensionInstantiationContext c) {
-        Map<Key<?>, ServiceEntry<?>> snm = resolvedEntries;
+        LinkedHashMap<Key<?>, RuntimeEntry<?>> snm = new LinkedHashMap<>();
         DefaultInjector publicInjector = new DefaultInjector(context().containerConfigSite(), "Internal Descriptor", snm);
+        for (var e : resolvedEntries.entrySet()) {
+            snm.put(e.getKey(), e.getValue().toRuntimeEntry());
+        }
 
         //// Hmmm, det er jo altsaa lidt anderledes
         // Hvis vi vil lave et image...

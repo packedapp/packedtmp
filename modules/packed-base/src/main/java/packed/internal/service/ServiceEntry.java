@@ -77,8 +77,6 @@ public interface ServiceEntry<T> {
      */
     // Technically we don't need this any more, after we have settled on a Component, Dependency, Key<?> format
     // However we keep it for now, because it might make sense to have a backtrack to the defining entity at some point.
-
-    //
     boolean requiresPrototypeRequest();
 
     /**
