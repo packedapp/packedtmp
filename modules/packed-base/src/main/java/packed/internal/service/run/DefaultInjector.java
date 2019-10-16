@@ -34,7 +34,6 @@ import app.packed.util.Nullable;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.WireletList;
 import packed.internal.service.ServiceEntry;
-import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.wirelets.PackedDownstreamInjectionWirelet;
 import packed.internal.util.KeyBuilder;
 
@@ -56,13 +55,16 @@ public final class DefaultInjector extends AbstractInjector {
     final AbstractInjector parent;
 
     /** All services that this injector provides. */
-    private final Map<Key<?>, ServiceEntry<?>> services;
+    private final Map<Key<?>, RuntimeEntry<?>> services;
 
     public DefaultInjector(ConfigSite configSite, @Nullable String description, Map<Key<?>, ServiceEntry<?>> services) {
         this.parent = null;
         this.configSite = requireNonNull(configSite);
         this.description = description;
-        this.services = requireNonNull(services);
+        this.services = new LinkedHashMap<>();
+        for (var e : services.entrySet()) {
+            this.services.put(e.getKey(), e.getValue().toRuntimeEntry());
+        }
     }
 
     /** {@inheritDoc} */
@@ -103,13 +105,9 @@ public final class DefaultInjector extends AbstractInjector {
     }
 
     /** {@inheritDoc} */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Stream<ServiceDescriptor> services() {
-        return (Stream) services.values().stream().filter(e -> !e.key().equals(KeyBuilder.INJECTOR_KEY)).map(e -> {
-            if (e instanceof BuildEntry) {
-                return ((BuildEntry) e).toDescriptor();
-            }
+        return services.values().stream().filter(e -> !e.key().equals(KeyBuilder.INJECTOR_KEY)).map(e -> {
             return e;
         });
     }
