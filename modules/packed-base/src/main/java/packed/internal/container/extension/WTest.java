@@ -63,7 +63,7 @@ public class WTest extends BaseBundle {
             /** {@inheritDoc} */
             @Override
             protected void configure() {
-                addPipeline(MyPipeline.class, (e, w) -> new MyPipeline(e, w));
+                addPipeline(MyPipeline.class, (e, w) -> new MyPipeline(w));
                 onConfigured(e -> e.use(ServiceExtension.class).provide(RuntimeService.class));
                 // onInstantiation((e, c) -> System.out.println("Inst " + c.getPipelin(MyPipeline.class)));
             }
@@ -81,11 +81,10 @@ public class WTest extends BaseBundle {
         String val;
 
         /**
-         * @param extension
          * @param wirelets
          */
-        protected MyPipeline(MyExtension extension, MutableWireletList<MyWirelet> wirelets) {
-            super(extension, wirelets);
+        protected MyPipeline(MutableWireletList<MyWirelet> wirelets) {
+            super(wirelets);
         }
 
         /**

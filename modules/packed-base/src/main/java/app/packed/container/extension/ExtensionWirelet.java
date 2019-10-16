@@ -41,34 +41,30 @@ public abstract class ExtensionWirelet<T extends ExtensionWirelet.Pipeline<?, T,
     // Kunne jo godt have @Nullable GreenPipeline, @Nullable BlackPipeline
     public static abstract class Pipeline<E extends Extension, P extends Pipeline<E, P, W>, W extends ExtensionWirelet<P>> {
 
-        private final E extension;
-
         /** Any previous pipeline. */
         private final Optional<P> previous;
 
         /** A list initially containing the wirelets that was used to create this pipeline. */
         private final MutableWireletList<W> wirelets;
 
-        protected Pipeline(E extension, MutableWireletList<W> wirelets) {
-            this.extension = requireNonNull(extension, "extension is null");
+        protected Pipeline(MutableWireletList<W> wirelets) {
             this.wirelets = requireNonNull(wirelets, "wirelets is null");
             this.previous = Optional.empty();
         }
 
         protected Pipeline(P from, MutableWireletList<W> wirelets) {
-            this.extension = from.extension();
             this.wirelets = requireNonNull(wirelets, "wirelets is null");
             this.previous = Optional.of(from);
         }
 
-        /**
-         * Returns the extension this pipeline belongs to.
-         * 
-         * @return the extension this pipeline belongs to
-         */
-        public final E extension() {
-            return extension;
-        }
+        // /**
+        // * Returns the extension this pipeline belongs to.
+        // *
+        // * @return the extension this pipeline belongs to
+        // */
+        // public final E extension() {
+        // return extension;
+        // }
 
         /** Invoked by the runtime immediately after the pipeline has been constructed. */
         protected void onInitialize() {}

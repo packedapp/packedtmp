@@ -28,11 +28,10 @@ public final class ServiceWireletPipeline extends ExtensionWirelet.Pipeline<Serv
     public final ServiceExtensionNode node;
 
     /**
-     * @param extension
      * @param wirelets
      */
-    public ServiceWireletPipeline(ServiceExtension extension, MutableWireletList<ServiceWirelet> wirelets, ServiceExtensionNode node) {
-        super(extension, wirelets);
+    public ServiceWireletPipeline(MutableWireletList<ServiceWirelet> wirelets, ServiceExtensionNode node) {
+        super(wirelets);
         this.node = requireNonNull(node);
     }
 
@@ -50,10 +49,4 @@ public final class ServiceWireletPipeline extends ExtensionWirelet.Pipeline<Serv
     protected ServiceWireletPipeline spawn(MutableWireletList<ServiceWirelet> wirelets) {
         return new ServiceWireletPipeline(this, wirelets);
     }
-
-    // /** {@inheritDoc} */
-    // @Override
-    // public ServiceWireletPipeline spawn() {
-    // return new ServiceWireletPipeline(node);
-    // }
 }

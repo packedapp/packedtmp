@@ -307,7 +307,7 @@ public final class ServiceExtension extends Extension {
                 p.root().use(ServiceExtension.class).provideInstance("fooo");
             });
 
-            addPipeline(ServiceWireletPipeline.class, (e, w) -> new ServiceWireletPipeline(e, w, e.node));
+            addPipeline(ServiceWireletPipeline.class, (e, w) -> new ServiceWireletPipeline(w, e.node));
             // Dies
 
             // Needing wirelet
