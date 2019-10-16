@@ -151,7 +151,6 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         switch (instantionMode) {
         case SINGLETON:
             return new CachingPrototypeRuntimeEntry<>(this);
-        // return new SingletonRuntimeEntry<>(this, i);
         case LAZY:
             if (i != null) {
                 return new LazyRuntimeEntry<>(this, i);

@@ -196,7 +196,7 @@ public final class ServiceExtensionNode {
             if (node instanceof ComponentFactoryBuildEntry) {
                 ComponentFactoryBuildEntry<?> s = (ComponentFactoryBuildEntry<?>) node;
                 if (s.instantiationMode() == InstantiationMode.SINGLETON) {
-                    s.getInstance(null);// getInstance() caches the new instance, newInstance does not
+                    s.toRuntimeEntry().getInstance(null);
                 }
             }
         }
