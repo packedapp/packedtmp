@@ -215,9 +215,7 @@ public final class ServiceExtensionNode {
             }
         }
 
-        //// Hmmm, det er jo altsaa lidt anderledes
-        // Hvis vi vil lave et image...
-        // Instantiate
+        // Instantiate all singletons...
         for (ServiceEntry<?> node : resolvedEntries.values()) {
             if (node instanceof ComponentFactoryBuildEntry) {
                 ComponentFactoryBuildEntry<?> s = (ComponentFactoryBuildEntry<?>) node;
@@ -227,15 +225,6 @@ public final class ServiceExtensionNode {
             }
         }
 
-        // Okay we are finished, convert all nodes to runtime nodes.
-
-        // Now inject all components...
-
-        // if (exporter != null) {
-        // if (resolvedEntries != exporter.resolvedServiceMap()) {
-        // exporter.resolvedServiceMap().replaceAll((k, v) -> v.toRuntimeEntry());
-        // }
-        // }
         c.put(publicInjector);
     }
 
