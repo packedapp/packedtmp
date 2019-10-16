@@ -26,6 +26,7 @@ import java.util.StringJoiner;
 
 import app.packed.config.ConfigSite;
 import app.packed.container.extension.Extension;
+import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.reflect.ExecutableDescriptor;
 import app.packed.reflect.MethodDescriptor;
 import app.packed.reflect.ParameterDescriptor;
@@ -41,6 +42,8 @@ import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.build.service.ComponentFactoryBuildEntry;
+import packed.internal.service.build.service.RuntimeAdaptorEntry;
+import packed.internal.service.run.SingletonRuntimeEntry;
 
 /**
  * This class manages everything to do with dependencies of components and service for an {@link ServiceExtension}.
@@ -146,10 +149,32 @@ public final class DependencyManager {
                                 }
                             }
                         }
-                        if (!k.hasQualifier() && ExtensionWireletPipelineModel.class.isAssignableFrom(k.typeLiteral().rawType())) {
-
+                        if (!k.hasQualifier() && ExtensionInstantiationContext.class.isAssignableFrom(k.typeLiteral().rawType())) {
+                            if (entry instanceof ComponentFactoryBuildEntry) {
+                                Optional<Class<? extends Extension>> op = ((ComponentFactoryBuildEntry) entry).componentConfiguration.extension();
+                                if (op.isPresent()) {
+                                    BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
+                                            new SingletonRuntimeEntry<String>(ConfigSite.UNKNOWN, (Key) k, "foo", "Ignore"));
+                                    resolveTo = ben;
+                                    node.specials.put(k.typeLiteral().rawType(), ben);
+                                }
+                            }
                         }
 
+                        if (!k.hasQualifier() && ExtensionWireletPipelineModel.class.isAssignableFrom(k.typeLiteral().rawType())) {
+                            // Den virker ikke super godt med det optional....
+
+                            if (entry instanceof ComponentFactoryBuildEntry) {
+                                Optional<Class<? extends Extension>> op = ((ComponentFactoryBuildEntry) entry).componentConfiguration.extension();
+                                if (op.isPresent()) {
+                                    Class<? extends Extension> cc = op.get();
+                                    if (cc == k.typeLiteral().type()) {
+                                        // PackedExtensionContext e = ((PackedExtensionContext) node.context()).pcc.getExtension(cc);
+                                        // resolveTo = e.serviceEntry(node);
+                                    }
+                                }
+                            }
+                        }
                     }
                     recordResolvedDependency(entry, dependency, resolveTo, false);
                     entry.resolvedDependencies[i] = resolveTo;

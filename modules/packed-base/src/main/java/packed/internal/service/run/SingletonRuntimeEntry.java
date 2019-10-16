@@ -15,6 +15,8 @@
  */
 package packed.internal.service.run;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.config.ConfigSite;
 import app.packed.service.InstantiationMode;
 import app.packed.service.PrototypeRequest;
@@ -42,7 +44,7 @@ public final class SingletonRuntimeEntry<T> extends RuntimeEntry<T> implements P
      */
     public SingletonRuntimeEntry(BuildEntry<T> buildNode, @Nullable T instance) {
         super(buildNode);
-        this.instance = instance;
+        this.instance = requireNonNull(instance);
     }
 
     /**
@@ -52,7 +54,7 @@ public final class SingletonRuntimeEntry<T> extends RuntimeEntry<T> implements P
      */
     public SingletonRuntimeEntry(ConfigSite configSite, Key<T> key, @Nullable String description, @Nullable T instance) {
         super(configSite, key, description);
-        this.instance = instance;
+        this.instance = requireNonNull(instance);
     }
 
     /** {@inheritDoc} */

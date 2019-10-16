@@ -20,8 +20,14 @@ import static java.util.Objects.requireNonNull;
 import java.util.IdentityHashMap;
 
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.extension.Extension;
+import app.packed.container.extension.ExtensionDeclarationException;
+import app.packed.container.extension.ExtensionInstantiationContext;
+import app.packed.container.extension.ExtensionWirelet.Pipeline;
 import app.packed.util.Nullable;
+import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.WireletContext;
+import packed.internal.container.extension.PackedExtensionContext;
 
 /**
  * An instantiation context is created for every delimited tree hierachy.
@@ -49,10 +55,47 @@ public final class PackedArtifactInstantiationContext {
     /** All context objects. */
     private final IdentityHashMap<ContainerConfiguration, IdentityHashMap<Class<?>, Object>> map = new IdentityHashMap<>();
 
+    public final IdentityHashMap<Class<? extends Extension>, ExtensionInstantiationContext> instContexts = new IdentityHashMap<>();
+
     public final WireletContext wirelets;
 
     public PackedArtifactInstantiationContext(WireletContext wirelets) {
         this.wirelets = wirelets;
+    }
+
+    public ExtensionInstantiationContext newContext(PackedContainerConfiguration pcc, PackedExtensionContext e) {
+        return new ExtensionInstantiationContext() {
+            @Override
+            public <T extends Pipeline<?, ?, ?>> T getPipelin(Class<T> pipelineType) {
+                // We need to check that someone does not request another extensions pipeline type.
+                if (!e.model.pipelines.containsKey(pipelineType)) {
+                    throw new ExtensionDeclarationException(
+                            "The specified pipeline type is not amongst " + e.type().getSimpleName() + " pipeline types, pipelineType = " + pipelineType);
+                }
+                return wirelets.getPipelin(pipelineType);
+            }
+
+            @Override
+            public Class<?> artifactType() {
+                return PackedArtifactInstantiationContext.this.artifactType();
+            }
+
+            @Nullable
+            @Override
+            public <T> T get(Class<T> type) {
+                return PackedArtifactInstantiationContext.this.get(pcc, type);
+            }
+
+            @Override
+            public void put(Object obj) {
+                PackedArtifactInstantiationContext.this.put(pcc, obj);
+            }
+
+            @Override
+            public <T> T use(Class<T> type) {
+                return PackedArtifactInstantiationContext.this.use(pcc, type);
+            }
+        };
     }
 
     /**

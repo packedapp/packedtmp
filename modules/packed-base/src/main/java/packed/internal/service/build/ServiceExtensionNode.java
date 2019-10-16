@@ -195,7 +195,12 @@ public final class ServiceExtensionNode {
         IdentityHashMap<BuildEntry<?>, RuntimeEntry<?>> transformers = new IdentityHashMap<>();
         for (var e : specials.entrySet()) {
             Object instance;
+
             if (e.getKey() == ExtensionInstantiationContext.class) {
+                // DOES not really work c is the instantiation context for the service
+                // not nessesarily for the one we should inject....
+
+                requireNonNull(c);
                 instance = c;
             } else { // pipeline
                 instance = requireNonNull(c.getPipelin((Class) e.getKey()));

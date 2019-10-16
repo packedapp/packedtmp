@@ -23,6 +23,7 @@ import app.packed.container.BaseBundle;
 import app.packed.container.MutableWireletList;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
+import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.container.extension.UseExtension;
 import app.packed.service.ServiceExtension;
@@ -43,7 +44,9 @@ public class WTest extends BaseBundle {
         ArtifactImage ai = ArtifactImage.of(new WTest(), new MyWirelet("hejhej"), new MyWirelet("hejhej3"));
         App.of(ai);
         App.of(ai, new MyWirelet("A1"), new MyWirelet("A4"));
+
         App.of(ai, new MyWirelet("A2"));
+        System.out.println("-----");
         App.of(ai, new MyWirelet("A4"));
     }
 
@@ -62,14 +65,14 @@ public class WTest extends BaseBundle {
             protected void configure() {
                 addPipeline(MyPipeline.class, (e, w) -> new MyPipeline(e, w));
                 onConfigured(e -> e.use(ServiceExtension.class).provide(RuntimeService.class));
-                onInstantiation((e, c) -> System.out.println("Inst " + c.getPipelin(MyPipeline.class)));
+                // onInstantiation((e, c) -> System.out.println("Inst " + c.getPipelin(MyPipeline.class)));
             }
         }
     }
 
     public static class RuntimeService {
-        public RuntimeService(MyExtension e) {
-            System.out.println("new RuntimeService " + e.i);
+        public RuntimeService(MyExtension e, ExtensionInstantiationContext eis) {
+            System.out.println("new RuntimeService " + e.i + "  " + eis.getPipelin(MyPipeline.class).val);
         }
     }
 

@@ -92,7 +92,7 @@ public final class WireletContext {
         return pcc.name;
     }
 
-    <T extends ExtensionWirelet.Pipeline<?, ?, ?>> T getPipelin(Class<T> pipelineType) {
+    public <T extends ExtensionWirelet.Pipeline<?, ?, ?>> T getPipelin(Class<T> pipelineType) {
         WireletContext wc = this;
         while (wc != null) {
             @SuppressWarnings("unchecked")
