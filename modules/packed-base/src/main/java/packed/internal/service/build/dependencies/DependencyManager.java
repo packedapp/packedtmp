@@ -126,8 +126,7 @@ public final class DependencyManager {
     private void resolveAllDependencies() {
         detectCyclesFor = new ArrayList<>();
 
-        for (BuildEntry<?> se : node.resolvedEntries.values()) {
-            BuildEntry<?> entry = se;
+        for (BuildEntry<?> entry : node.resolvedEntries.values()) {
             if (entry.hasUnresolvedDependencies()) {
                 detectCyclesFor.add(entry);
                 List<Dependency> dependencies = entry.dependencies;

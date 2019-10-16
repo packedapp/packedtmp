@@ -24,10 +24,7 @@ import app.packed.service.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 
-/**
- *
- */
-/** The default implementation of {@link ServiceDescriptor}. */
+/** An implementation of {@link ServiceDescriptor} because {@link BuildEntry} is not immutable. */
 final class PackedServiceDescriptor implements ServiceDescriptor {
 
     /** The configuration site of the service. */
