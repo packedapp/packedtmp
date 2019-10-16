@@ -23,6 +23,9 @@ import app.packed.util.Nullable;
  */
 // Den boer doe, og erstattes af ServiceExtension...
 // Maa ogsaa have Pipeline
+
+// Rename til noget andet???? Saa man ogsaa kan bruge den fra Bundle???
+// Ved ikke hvad vi skal bruge
 public interface ExtensionInstantiationContext {
 
     /**

@@ -57,15 +57,6 @@ public abstract class ExtensionWirelet<T extends ExtensionWirelet.Pipeline<?, T,
             this.previous = Optional.of(from);
         }
 
-        // /**
-        // * Returns the extension this pipeline belongs to.
-        // *
-        // * @return the extension this pipeline belongs to
-        // */
-        // public final E extension() {
-        // return extension;
-        // }
-
         /** Invoked by the runtime immediately after the pipeline has been constructed. */
         protected void onInitialize() {}
 
@@ -113,6 +104,15 @@ public abstract class ExtensionWirelet<T extends ExtensionWirelet.Pipeline<?, T,
         <T extends ExtensionWirelet.Pipeline<?, ?, ?>> T get(Class<T> pipelineType);
     }
 }
+
+// /**
+// * Returns the extension this pipeline belongs to.
+// *
+// * @return the extension this pipeline belongs to
+// */
+// public final E extension() {
+// return extension;
+// }
 
 // Grunden til vi gerne lave callback paa denne maade.
 // Er at vi saa kan eksekvere dem i total order...

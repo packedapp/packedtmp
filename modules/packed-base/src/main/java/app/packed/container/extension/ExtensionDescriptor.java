@@ -91,12 +91,6 @@ public final class ExtensionDescriptor {
         requireNonNull(extensionType, "extensionType is null");
         return new ExtensionDescriptor(ExtensionModel.of(extensionType));
     }
-
-    public static void main(String[] args) {
-        for (var e : System.getProperties().entrySet()) {
-            System.out.println(e);
-        }
-    }
 }
 // A method for transitive dependencies...
 

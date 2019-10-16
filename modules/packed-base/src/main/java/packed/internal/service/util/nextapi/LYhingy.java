@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.service.util.nextapi;
 
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-
-import app.packed.util.Nullable;
 
 /**
  *
@@ -34,7 +32,7 @@ class LYhingy {
 
     final Class<?> type;
 
-    LYhingy(Class<?> type, @Nullable ComponentLookup lookup) {
+    LYhingy(Class<?> type /* , @Nullable ComponentLookup lookup */) {
         this.type = requireNonNull(type);
     }
 

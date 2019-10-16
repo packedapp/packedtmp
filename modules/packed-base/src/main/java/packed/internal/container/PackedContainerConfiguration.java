@@ -170,7 +170,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     }
 
     public PackedArtifactContext doInstantiate(WireletContext wirelets) {
-        // TODO support instantiation wirelets for images
         PackedArtifactInstantiationContext pic = new PackedArtifactInstantiationContext(wirelets);
         extensionsPrepareInstantiation(pic);
 
@@ -286,7 +285,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      *            the type of extension to return a context for
      * @return an extension's context, iff on of the specified type is already installed
      * @see #use(Class)
-     * @see #useExtension(PackedExtensionContext, Class)
+     * @see #useExtension(Class, PackedExtensionContext)
      */
     @Nullable
     public PackedExtensionContext getExtension(Class<?> extensionType) {
@@ -448,7 +447,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Extension> T use(Class<T> extensionType) {
-        return (T) useExtension(null, extensionType).extension();
+        return (T) useExtension(extensionType, null).extension();
     }
 
     /**
@@ -461,15 +460,18 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      *             if an extension of the specified type has not already been installed and the container is no longer
      *             configurable
      */
-    public PackedExtensionContext useExtension(@Nullable PackedExtensionContext user, Class<? extends Extension> extensionType) {
+    public PackedExtensionContext useExtension(Class<? extends Extension> extensionType, @Nullable PackedExtensionContext callingExtension) {
         requireNonNull(extensionType, "extensionType is null");
         PackedExtensionContext pec = extensions.get(extensionType);
 
         // We do not use #computeIfAbsent, because extensions might install other extensions via Extension#onAdded.
         // Which will fail with ConcurrentModificationException (see ExtensionDependenciesTest)
         if (pec == null) {
-            if (user == null) {
-                checkConfigurable(); // only allow installing new extensions if configurable
+            // Checks that we are still configurable
+            if (callingExtension == null) {
+                checkConfigurable();
+            } else {
+                callingExtension.checkConfigurable();
             }
             extensions.put(extensionType, pec = new PackedExtensionContext(this, ExtensionModel.of(extensionType)));
             initializeName(State.EXTENSION_USED, null); // initializes name of container, if not already set

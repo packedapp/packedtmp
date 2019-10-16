@@ -28,6 +28,7 @@ import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
 import packed.internal.artifact.NonInstantiatingArtifactDriver;
+import packed.internal.artifact.PackedArtifactContext;
 import packed.internal.component.ComponentConfigurationToComponentAdaptor;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.WireletContext;
@@ -51,8 +52,9 @@ import packed.internal.module.ModuleAccess;
  * No structural changes... Only whole artifacts
  * 
  * <p>
- * An image can be used to create new instances of {@link app.packed.artifact.app.App}, {@link app.packed.service.Injector},
- * {@link BundleDescriptor} or other artifact images. It can not be used with {@link Bundle#link(Bundle, Wirelet...)}.
+ * An image can be used to create new instances of {@link app.packed.artifact.app.App},
+ * {@link app.packed.service.Injector}, {@link BundleDescriptor} or other artifact images. It can not be used with
+ * {@link Bundle#link(Bundle, Wirelet...)}.
  */
 public final class ArtifactImage implements ContainerSource {
 
@@ -67,24 +69,24 @@ public final class ArtifactImage implements ContainerSource {
         });
     }
 
-    /** The configuration of the root container of the artifact. */
+    /** The configuration of the root container. */
     private final PackedContainerConfiguration pcc;
 
     /** A wirelet context. */
     @Nullable
-    private final WireletContext wireletContext;
+    private final WireletContext wc;
 
     /**
      * Creates a new image from the specified configuration and wirelets.
      * 
-     * @param containerConfiguration
+     * @param pcc
      *            the configuration this image will wrap
-     * @param wireletContext
+     * @param wc
      *            any wirelets for the image configuration or artifact instantiation
      */
-    private ArtifactImage(PackedContainerConfiguration containerConfiguration, @Nullable WireletContext wireletContext) {
-        this.pcc = requireNonNull(containerConfiguration);
-        this.wireletContext = wireletContext;
+    private ArtifactImage(PackedContainerConfiguration pcc, @Nullable WireletContext wc) {
+        this.pcc = requireNonNull(pcc);
+        this.wc = wc;
     }
 
     /**
@@ -99,27 +101,14 @@ public final class ArtifactImage implements ContainerSource {
     /**
      * Returns any description that has been set for the image.
      * <p>
-     * The returned description is always identical to the description of the artifact's root container.
+     * The returned description is always identical to the description of the root container.
      * 
      * @return any description that has been set for the image
      * @see ContainerConfiguration#setDescription(String)
+     * @see Bundle#setDescription(String)
      */
     public Optional<String> description() {
         return Optional.ofNullable(pcc.getDescription());
-    }
-
-    /**
-     * @param <T>
-     *            the type of artifact to instantiate
-     * @param driver
-     *            the artifact driver
-     * @param wirelets
-     *            any wirelets used for instantiation
-     * @return the instantiated artifact
-     */
-    <T> T instantiateArtifact(ArtifactDriver<T> driver, Wirelet... wirelets) {
-        WireletContext wc = WireletContext.create(pcc, wireletContext, wirelets);
-        return driver.instantiate(pcc.doInstantiate(wc));
     }
 
     /**
@@ -131,11 +120,24 @@ public final class ArtifactImage implements ContainerSource {
      * unique among any of the artifact'ssiblings.**@return the name of this artifact
      */
     public String name() {
-        if (wireletContext == null) {
-            return pcc.getName();
-        } else {
-            return wireletContext.name();
-        }
+        return wc == null ? pcc.getName() : wc.name();
+    }
+
+    /**
+     * Instantiates a new artifact using the specified driver.
+     * 
+     * @param <T>
+     *            the type of artifact to instantiate
+     * @param driver
+     *            the artifact driver
+     * @param wirelets
+     *            any wirelets used for instantiation
+     * @return the instantiated artifact
+     */
+    <T> T newArtifact(ArtifactDriver<T> driver, Wirelet... wirelets) {
+        WireletContext newWc = WireletContext.create(pcc, this.wc, wirelets);
+        PackedArtifactContext pac = pcc.doInstantiate(newWc); // Does the actual instantiation
+        return driver.instantiate(pac);
     }
 
     /**
@@ -158,7 +160,7 @@ public final class ArtifactImage implements ContainerSource {
     }
 
     /**
-     * Returns a new artifact image.
+     * Returns a new artifact image by applying the specified wirelets.
      * <p>
      * The specified wirelets are never evaluated until the new image is used to create a new artifact or bundle descriptor.
      * 
@@ -168,7 +170,7 @@ public final class ArtifactImage implements ContainerSource {
      */
     public ArtifactImage with(Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
-        return wirelets.length == 0 ? this : new ArtifactImage(pcc, WireletContext.create(pcc, wireletContext, wirelets));
+        return wirelets.length == 0 ? this : new ArtifactImage(pcc, WireletContext.create(pcc, wc, wirelets));
     }
 
     /**

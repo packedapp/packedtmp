@@ -183,7 +183,7 @@ public final class PackedExtensionContext implements ExtensionContext {
         // Otherwise it could use extensions that someone else has installed.
         // But itself is not allowed to access
 
-        PackedExtensionContext pec = pcc.useExtension(this, extensionType);
+        PackedExtensionContext pec = pcc.useExtension(extensionType, this);
         return (T) pec.extension;
     }
 }

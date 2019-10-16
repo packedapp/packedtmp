@@ -22,11 +22,10 @@ import java.util.function.BiFunction;
 import app.packed.container.MutableWireletList;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionWirelet;
+import app.packed.container.extension.ExtensionWirelet.Pipeline;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 
-/**
- *
- */
+/** A descriptor for an {@link Pipeline}. */
 public final class ExtensionWireletPipelineModel {
 
     /** A cache of values. */
@@ -43,47 +42,73 @@ public final class ExtensionWireletPipelineModel {
     /** An extractor to find the extension the node is build upon. */
     private static final TypeVariableExtractor EXTENSION_NODE_TV_EXTRACTOR = TypeVariableExtractor.of(ExtensionWirelet.Pipeline.class, 0);
 
-    // /** The method handle used to create a new instance of the extension. */
-    // private final MethodHandle constructorNode;
+    /** The extension model for this pipeline. */
+    private final ExtensionModel<?> extension;
 
-    // private final MethodHandle constructorPipeline;
+    /** The factory used for creating new pipeline instances. */
+    private final BiFunction<?, ?, ?> factory;
 
-    public final ExtensionModel<?> extension;
-
-    final Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>> type;
-
-    final BiFunction<?, ?, ?> factory;
+    /** The type of pipeline. */
+    private final Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>> type;
 
     /**
      * @param builder
      */
     @SuppressWarnings("unchecked")
     private ExtensionWireletPipelineModel(Builder builder) {
-        Class<? extends Extension> extensionType = (Class<? extends Extension>) EXTENSION_NODE_TV_EXTRACTOR.extract(builder.actualType);
         this.type = builder.actualType;
+        Class<? extends Extension> extensionType = (Class<? extends Extension>) EXTENSION_NODE_TV_EXTRACTOR.extract(builder.actualType);
         this.extension = ExtensionModel.of(extensionType);
-        factory = requireNonNull(extension.pipelines.get(type));
+        this.factory = requireNonNull(extension.pipelines.get(type));
     }
 
+    /**
+     * Returns the extension model for this pipeline.
+     * 
+     * @return the extension model for this pipeline
+     */
+    public ExtensionModel<?> extension() {
+        return extension;
+    }
+
+    /**
+     * Creates a new pipeline instance.
+     * 
+     * @return a new pipeline instance
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public ExtensionWirelet.Pipeline<?, ?, ?> newPipeline(Extension extension, MutableWireletList<?> wirelets) {
+        return (ExtensionWirelet.Pipeline<?, ?, ?>) ((BiFunction) factory).apply(extension, wirelets);
+    }
+
+    /**
+     * Returns the type of pipeline.
+     * 
+     * @return the type of pipeline
+     */
     public Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>> type() {
         return type;
     }
 
     /**
-     * Creates a new instance.
+     * Returns a model for the specified pipeline type.
      * 
-     * @return a new instance
+     * @param type
+     *            the pipeline type to return a model for.
+     * @return the model
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public ExtensionWirelet.Pipeline<?, ?, ?> newPipeline(Extension node, MutableWireletList<?> wirelets) {
-        return (ExtensionWirelet.Pipeline<?, ?, ?>) ((BiFunction) factory).apply(node, wirelets);
-    }
-
     public static ExtensionWireletPipelineModel of(Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>> type) {
         return CACHE.get(type);
     }
 
-    public static ExtensionWireletPipelineModel ofWirelet(Class<? extends ExtensionWirelet<?>> wireletType) {
+    /**
+     * Returns a model for the specified extension wirelet type.
+     * 
+     * @param wireletType
+     *            the extension wirelet type to return a model for.
+     * @return the model
+     */
+    public static ExtensionWireletPipelineModel ofWireletType(Class<? extends ExtensionWirelet<?>> wireletType) {
         return ExtensionWireletModel.CACHE.get(wireletType).pipeline;
     }
 
