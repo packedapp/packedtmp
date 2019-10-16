@@ -60,9 +60,9 @@ public abstract class AbstractInjector implements Injector {
     }
 
     @Nullable
-    protected abstract <T> ServiceEntry<T> findNode(Key<T> key);
+    protected abstract <T> RuntimeEntry<T> findNode(Key<T> key);
 
-    public abstract void forEachServiceEntry(Consumer<? super ServiceEntry<?>> action);
+    public abstract void forEachServiceEntry(Consumer<? super RuntimeEntry<?>> action);
 
     /** {@inheritDoc} */
     @Override
@@ -83,7 +83,7 @@ public abstract class AbstractInjector implements Injector {
 
     @Nullable
     private <T> T getInstanceOrNull(Key<T> key) {
-        ServiceEntry<T> n = findNode(key);
+        RuntimeEntry<T> n = findNode(key);
         if (n == null) {
             return null;
         }
@@ -96,7 +96,7 @@ public abstract class AbstractInjector implements Injector {
             for (OldAtInject atInject : descriptor.fields) {
                 Dependency dependency = atInject.dependencies.get(0);
                 FieldFactoryHandle<?> field = (FieldFactoryHandle<?>) atInject.invokable;
-                ServiceEntry<?> node = findNode(dependency.key());
+                RuntimeEntry<?> node = findNode(dependency.key());
                 if (node != null) {
                     Object value = node.getInstance(PrototypeRequest.of(dependency, component));
                     value = dependency.wrapIfOptional(value);

@@ -23,18 +23,14 @@ import java.util.List;
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.service.Dependency;
-import app.packed.service.InjectionException;
 import app.packed.service.InstantiationMode;
-import app.packed.service.PrototypeRequest;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.util.InvalidDeclarationException;
-import app.packed.util.Nullable;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.run.CachingPrototypeRuntimeEntry;
 import packed.internal.service.run.LazyRuntimeEntry;
 import packed.internal.service.run.PrototypeRuntimeEntry;
 import packed.internal.service.run.RuntimeEntry;
-import packed.internal.util.ThrowableUtil;
 
 /**
  * An entry representing a component node. This node is used for all three binding modes mainly because it makes
@@ -42,14 +38,7 @@ import packed.internal.util.ThrowableUtil;
  */
 public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildEntry<T> {
 
-    /** An empty object array. */
-    private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
-
     boolean hasInstanceMembers;
-
-    /** The singleton instance, not used for prototypes. */
-    @Nullable
-    private T instance;
 
     /** The instantiation mode of this node. */
     private InstantiationMode instantionMode;
@@ -69,21 +58,6 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         super(injectorBuilder, cc.configSite(), dependencies, null, cc);
         this.instantionMode = requireNonNull(instantionMode);
         this.mha = requireNonNull(mh);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public T getInstance(PrototypeRequest ignore) {
-        switch (instantionMode) {
-        case PROTOTYPE:
-            return newInstance();
-        default:
-            T i = instance;
-            if (i == null) {
-                instance = i = newInstance();
-            }
-            return i;
-        }
     }
 
     /** {@inheritDoc} */
@@ -112,51 +86,15 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         return declaringEntry != null && mha.type().parameterCount() != dependencies.size();
     }
 
-    private T newInstance() {
-        Object[] params = EMPTY_OBJECT_ARRAY;
-
-        int size = dependencies.size();
-        if (needsInstance()) {
-            params = new Object[size + 1];
-            params[0] = declaringEntry.getInstance(null);
-            if (size > 0) {
-                for (int i = 0; i < resolvedDependencies.length; i++) {
-                    params[i + 1] = resolvedDependencies[i].getInstance(PrototypeRequest.of(dependencies.get(i)));
-                }
-            }
-        } else if (size > 0) {
-            params = new Object[size];
-            for (int i = 0; i < resolvedDependencies.length; i++) {
-                params[i] = resolvedDependencies[i].getInstance(PrototypeRequest.of(dependencies.get(i)));
-            }
-        }
-
-        Object result;
-        try {
-            result = mha.invokeWithArguments(params);
-        } catch (Throwable e) {
-            ThrowableUtil.rethrowErrorOrRuntimeException(e);
-            throw new InjectionException("foo", e);
-        }
-        @SuppressWarnings("unchecked")
-        T t = (T) result;
-        toRuntimeEntry().initInstance(t);
-        return requireNonNull(t);
-    }
-
     /** {@inheritDoc} */
     @Override
     protected RuntimeEntry<T> newRuntimeNode() {
-        T i = instance;
         switch (instantionMode) {
         case SINGLETON:
             return new CachingPrototypeRuntimeEntry<>(this);
         case LAZY:
-            if (i != null) {
-                return new LazyRuntimeEntry<>(this, i);
-            } else {
-                return new LazyRuntimeEntry<>(this);
-            }
+
+            return new LazyRuntimeEntry<>(this);
         default:
             return new PrototypeRuntimeEntry<>(this);
         }

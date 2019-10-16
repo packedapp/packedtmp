@@ -22,8 +22,6 @@ import java.util.List;
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.service.InstantiationMode;
-import app.packed.service.PrototypeRequest;
-import app.packed.util.Nullable;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.run.RuntimeEntry;
 import packed.internal.service.run.SingletonRuntimeEntry;
@@ -49,12 +47,6 @@ public final class ComponentInstanceBuildEntry<T> extends AbstractComponentBuild
     public ComponentInstanceBuildEntry(ServiceExtensionNode ib, ConfigSite configSite, ComponentConfiguration<T> cc, T instance) {
         super(ib, configSite, List.of(), null, cc);
         this.instance = requireNonNull(instance, "instance is null");
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public T getInstance(@Nullable PrototypeRequest request) {
-        return instance;
     }
 
     /** {@inheritDoc} */

@@ -33,7 +33,6 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.WireletList;
-import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.wirelets.PackedDownstreamInjectionWirelet;
 import packed.internal.util.KeyBuilder;
 
@@ -91,13 +90,13 @@ public final class DefaultInjector extends AbstractInjector {
     @SuppressWarnings("unchecked")
     @Override
     @Nullable
-    protected <T> ServiceEntry<T> findNode(Key<T> key) {
-        return (ServiceEntry<T>) services.get(key);
+    protected <T> RuntimeEntry<T> findNode(Key<T> key) {
+        return (RuntimeEntry<T>) services.get(key);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void forEachServiceEntry(Consumer<? super ServiceEntry<?>> action) {
+    public void forEachServiceEntry(Consumer<? super RuntimeEntry<?>> action) {
         services.values().forEach(action);
     }
 

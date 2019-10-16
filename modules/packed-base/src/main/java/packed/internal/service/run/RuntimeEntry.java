@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import app.packed.config.ConfigSite;
 import app.packed.service.InstantiationMode;
+import app.packed.service.PrototypeRequest;
 import app.packed.service.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -61,6 +62,15 @@ public abstract class RuntimeEntry<T> implements ServiceEntry<T>, ServiceDescrip
     public final ConfigSite configSite() {
         return configSite;
     }
+
+    /**
+     * Returns an instance.
+     * 
+     * @param request
+     *            a request if needed by {@link #requiresPrototypeRequest()}
+     * @return the instance
+     */
+    public abstract T getInstance(@Nullable PrototypeRequest request);
 
     public void initInstance(T instance) {}
 

@@ -22,7 +22,6 @@ import java.util.function.Function;
 
 import app.packed.config.ConfigSite;
 import app.packed.service.InstantiationMode;
-import app.packed.service.PrototypeRequest;
 import app.packed.util.Key;
 import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
@@ -46,14 +45,6 @@ final class MappingBuildEntry<F, T> extends BuildEntry<T> {
         this.entryToMap = entryToMap;
         this.function = requireNonNull(function, "function is null");
         this.key = toKey;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public T getInstance(PrototypeRequest site) {
-        // Null check..
-        F instance = entryToMap.getInstance(site);
-        return function.apply(instance);
     }
 
     /** {@inheritDoc} */

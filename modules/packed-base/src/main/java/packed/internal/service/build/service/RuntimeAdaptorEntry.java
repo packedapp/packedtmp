@@ -23,7 +23,6 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Wirelet;
 import app.packed.service.Injector;
 import app.packed.service.InstantiationMode;
-import app.packed.service.PrototypeRequest;
 import app.packed.service.ServiceExtension;
 import app.packed.util.Nullable;
 import packed.internal.service.build.BuildEntry;
@@ -49,12 +48,6 @@ public final class RuntimeAdaptorEntry<T> extends BuildEntry<T> {
     @Nullable
     public BuildEntry<?> declaringEntry() {
         return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public T getInstance(PrototypeRequest request) {
-        return entry.getInstance(request);
     }
 
     /** {@inheritDoc} */

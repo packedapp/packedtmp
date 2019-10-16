@@ -21,7 +21,6 @@ import java.util.List;
 
 import app.packed.config.ConfigSite;
 import app.packed.service.InstantiationMode;
-import app.packed.service.PrototypeRequest;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceExtension;
 import app.packed.util.Key;
@@ -88,12 +87,6 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
     @Nullable
     public BuildEntry<?> declaringEntry() {
         return (exportedEntry instanceof BuildEntry) ? ((BuildEntry<?>) exportedEntry).declaringEntry() : null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public T getInstance(PrototypeRequest request) {
-        return exportedEntry.getInstance(request);
     }
 
     /** {@inheritDoc} */

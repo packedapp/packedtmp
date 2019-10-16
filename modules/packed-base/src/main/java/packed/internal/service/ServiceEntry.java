@@ -40,15 +40,6 @@ public interface ServiceEntry<T> {
      */
     ConfigSite configSite();
 
-    /**
-     * Returns an instance.
-     * 
-     * @param request
-     *            a request if needed by {@link #requiresPrototypeRequest()}
-     * @return the instance
-     */
-    T getInstance(@Nullable PrototypeRequest request);
-
     // Rename to isResolved
     boolean hasUnresolvedDependencies();
 
