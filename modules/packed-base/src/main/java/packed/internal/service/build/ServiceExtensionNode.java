@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.BundleDescriptor;
@@ -187,7 +187,7 @@ public final class ServiceExtensionNode {
         LinkedHashMap<Key<?>, RuntimeEntry<?>> snm = new LinkedHashMap<>();
         DefaultInjector publicInjector = new DefaultInjector(context().containerConfigSite(), "Internal Descriptor", snm);
 
-        Map<BuildEntry<?>, RuntimeEntry<?>> transformers = new HashMap<>();
+        IdentityHashMap<BuildEntry<?>, RuntimeEntry<?>> transformers = new IdentityHashMap<>();
         for (var e : resolvedEntries.entrySet()) {
             snm.put(e.getKey(), e.getValue().toRuntimeEntry(transformers));
         }
@@ -205,7 +205,6 @@ public final class ServiceExtensionNode {
         }
 
         // Okay we are finished, convert all nodes to runtime nodes.
-        resolvedEntries.replaceAll((k, v) -> v.toRuntimeEntry(transformers));
 
         // Now inject all components...
 

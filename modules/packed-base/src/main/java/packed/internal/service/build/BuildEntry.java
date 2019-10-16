@@ -71,10 +71,6 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
     /** The resolved dependencies of this node. */
     public final ServiceEntry<?>[] resolvedDependencies;
 
-    /** The runtime representation of this node. We cache it, to make sure it is only created once. */
-    @Nullable
-    private RuntimeEntry<T> runtimeNode;
-
     /** The injector builder this node belongs to. */
     @Nullable // Is nullable for stages for now
     public final ServiceExtensionNode serviceExtension;
@@ -169,9 +165,9 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
     @Override
     public final RuntimeEntry<T> toRuntimeEntry(Map<BuildEntry<?>, RuntimeEntry<?>> entries) {
-        RuntimeEntry<T> runtime = this.runtimeNode;
-        return runtime == null ? this.runtimeNode = newRuntimeNode(entries) : runtime;
+        return (RuntimeEntry<T>) entries.computeIfAbsent(this, k -> k.newRuntimeNode(entries));
     }
 }
