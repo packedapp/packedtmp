@@ -48,7 +48,7 @@ public abstract class InjectorEntry<T> implements ServiceDescriptor {
      *            the build node to create the runtime node from
      */
     InjectorEntry(BuildEntry<T> buildEntry) {
-        this(buildEntry.configSite(), buildEntry.getKey(), buildEntry.getDescription());
+        this(buildEntry.configSite(), buildEntry.key(), buildEntry.getDescription());
     }
 
     InjectorEntry(ConfigSite configSite, Key<T> key, @Nullable String description) {

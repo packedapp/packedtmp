@@ -24,8 +24,8 @@ import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.feature.FeatureMap;
-import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceComponentConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.service.build.BuildEntry;
@@ -89,7 +89,7 @@ public final class PackedServiceComponentConfiguration<T> implements ServiceComp
     @Override
     @Nullable
     public Key<?> getKey() {
-        return buildEntry.getKey();
+        return buildEntry.key();
     }
 
     /** {@inheritDoc} */

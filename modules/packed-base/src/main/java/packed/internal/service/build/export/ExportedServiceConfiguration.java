@@ -75,7 +75,7 @@ final class ExportedServiceConfiguration<T> implements ServiceConfiguration<T> {
     @Override
     @Nullable
     public Key<?> getKey() {
-        return entry.getKey();
+        return entry.key();
     }
 
     /** {@inheritDoc} */

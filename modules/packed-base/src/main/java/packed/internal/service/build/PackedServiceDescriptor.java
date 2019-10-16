@@ -28,10 +28,7 @@ import app.packed.util.Nullable;
  *
  */
 /** The default implementation of {@link ServiceDescriptor}. */
-// We might ditch the interface is future versions, and just have a class.
-// However, for now I think we might like the flexibility of not having.
-// ServiceDescriptor.of
-public final class PackedServiceDescriptor implements ServiceDescriptor {
+final class PackedServiceDescriptor implements ServiceDescriptor {
 
     /** The configuration site of the service. */
     private final ConfigSite configSite;

@@ -134,24 +134,18 @@ public abstract class BuildEntry<T> {
         return description;
     }
 
-    public final Key<T> getKey() {
-        return key;
-    }
-
-    public boolean isPrivate() {
-        return key().equals(KeyBuilder.INJECTOR_KEY);// || key().equals(KeyBuilder.CONTAINER_KEY);
-    }
-
-    public abstract boolean requiresPrototypeRequest();
-
-    public abstract InstantiationMode instantiationMode();
-
     /**
      * Returns whether or not this node has any dependencies that needs to be resolved.
      *
      * @return whether or not this node has any dependencies that needs to be resolved
      */
     public abstract boolean hasUnresolvedDependencies();
+
+    public abstract InstantiationMode instantiationMode();
+
+    public boolean isPrivate() {
+        return key().equals(KeyBuilder.INJECTOR_KEY);// || key().equals(KeyBuilder.CONTAINER_KEY);
+    }
 
     public final Key<T> key() {
         return key;
@@ -163,6 +157,8 @@ public abstract class BuildEntry<T> {
      * @return the new runtime node
      */
     protected abstract InjectorEntry<T> newRuntimeNode(Map<BuildEntry<?>, InjectorEntry<?>> entries);
+
+    public abstract boolean requiresPrototypeRequest();
 
     public final ServiceDescriptor toDescriptor() {
         return new PackedServiceDescriptor(key, configSite, description);
