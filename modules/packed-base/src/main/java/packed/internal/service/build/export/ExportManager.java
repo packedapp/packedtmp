@@ -28,7 +28,6 @@ import app.packed.service.ServiceConfiguration;
 import app.packed.service.ServiceExtension;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ErrorMessages;
 import packed.internal.service.build.ServiceExtensionNode;
@@ -177,7 +176,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
             for (ExportedBuildEntry<?> entry : exportedEntries) {
                 // try and find a matching service entry for key'ed exports via
                 // exportedEntry != null for entries added via InjectionExtension#export(ProvidedComponentConfiguration)
-                ServiceEntry<?> entryToExport = entry.exportedEntry;
+                BuildEntry<?> entryToExport = entry.exportedEntry;
                 boolean export = true;
                 if (entryToExport == null) {
                     entryToExport = node.resolvedEntries.get(entry.keyToExport);
@@ -188,7 +187,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
                         failingUnresolvedKeyedExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>()).add(entry);
                         export = false;
                     } else {
-                        entry.exportedEntry = (ServiceEntry) entryToExport;
+                        entry.exportedEntry = (BuildEntry) entryToExport;
                     }
                 }
 
@@ -214,7 +213,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
         }
 
         if (exportAll != null) {
-            for (ServiceEntry<?> e : node.resolvedEntries.values()) {
+            for (BuildEntry<?> e : node.resolvedEntries.values()) {
                 if (!e.isPrivate()) {
                     if (!resolvedExports.containsKey(e.key())) {
                         resolvedExports.put(e.key(), new ExportedBuildEntry<>(node, e, exportAll));

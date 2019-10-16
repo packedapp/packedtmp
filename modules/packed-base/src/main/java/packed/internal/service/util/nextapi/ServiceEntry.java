@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service;
+package packed.internal.service.util.nextapi;
 
 import java.util.Map;
 
@@ -23,11 +23,11 @@ import app.packed.service.PrototypeRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.service.build.BuildEntry;
-import packed.internal.service.run.RuntimeEntry;
+import packed.internal.service.run.InjectorEntry;
 import packed.internal.util.KeyBuilder;
 
 /**
- * A service node represent the provider of a service either at {@link BuildEntry build-time } or at {@link RuntimeEntry
+ * A service node represent the provider of a service either at {@link BuildEntry build-time } or at {@link InjectorEntry
  * runtime-time}.
  *
  * The reason for for separating them into two interfaces to avoid retaining any information that is not strictly needed
@@ -78,7 +78,7 @@ public interface ServiceEntry<T> {
      *
      * @return if build node converts to runtime node, if runtime node returns self
      */
-    RuntimeEntry<T> toRuntimeEntry(Map<BuildEntry<?>, RuntimeEntry<?>> entries);
+    InjectorEntry<T> toRuntimeEntry(Map<BuildEntry<?>, InjectorEntry<?>> entries);
 }
 
 // /**

@@ -54,9 +54,9 @@ public final class DefaultInjector extends AbstractInjector {
     final AbstractInjector parent;
 
     /** All services that this injector provides. */
-    private final Map<Key<?>, RuntimeEntry<?>> services;
+    private final Map<Key<?>, InjectorEntry<?>> services;
 
-    public DefaultInjector(ConfigSite configSite, @Nullable String description, Map<Key<?>, RuntimeEntry<?>> services) {
+    public DefaultInjector(ConfigSite configSite, @Nullable String description, Map<Key<?>, InjectorEntry<?>> services) {
         this.parent = null;
         this.configSite = requireNonNull(configSite);
         this.description = description;
@@ -90,13 +90,13 @@ public final class DefaultInjector extends AbstractInjector {
     @SuppressWarnings("unchecked")
     @Override
     @Nullable
-    protected <T> RuntimeEntry<T> findNode(Key<T> key) {
-        return (RuntimeEntry<T>) services.get(key);
+    protected <T> InjectorEntry<T> findNode(Key<T> key) {
+        return (InjectorEntry<T>) services.get(key);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void forEachServiceEntry(Consumer<? super RuntimeEntry<?>> action) {
+    public void forEachServiceEntry(Consumer<? super InjectorEntry<?>> action) {
         services.values().forEach(action);
     }
 
@@ -120,7 +120,7 @@ public final class DefaultInjector extends AbstractInjector {
             Optional<StackFrame> sf = STACK_WALKER.walk(e -> e.filter(f -> f.getDeclaringClass() == DefaultInjector.class).findFirst());
             cs = sf.isPresent() ? configSite.thenStackFrame("Injector.Spawn", sf.get()) : ConfigSite.UNKNOWN;
         }
-        LinkedHashMap<Key<?>, RuntimeEntry<?>> newServices = new LinkedHashMap<>(services);
+        LinkedHashMap<Key<?>, InjectorEntry<?>> newServices = new LinkedHashMap<>(services);
         WireletList wl = WireletList.of(wirelets);
         ConfigSite ccs = cs;
         wl.forEach(PackedDownstreamInjectionWirelet.class, w -> w.process(ccs, newServices));

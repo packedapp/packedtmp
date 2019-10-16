@@ -24,11 +24,10 @@ import java.util.function.Function;
 import app.packed.config.ConfigSite;
 import app.packed.service.InstantiationMode;
 import app.packed.util.Key;
-import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
-import packed.internal.service.run.MappingRuntimeEntry;
-import packed.internal.service.run.RuntimeEntry;
+import packed.internal.service.run.MappingInjectorEntry;
+import packed.internal.service.run.InjectorEntry;
 
 /**
  * A build entry that that takes an existing entry and uses a {@link Function} to map the service provided by the entry.
@@ -36,12 +35,12 @@ import packed.internal.service.run.RuntimeEntry;
 final class MappingBuildEntry<F, T> extends BuildEntry<T> {
 
     /** The entry that should be mapped. */
-    final ServiceEntry<F> entryToMap;
+    final BuildEntry<F> entryToMap;
 
     /** The function to apply on the */
     private final Function<? super F, T> function;
 
-    MappingBuildEntry(ServiceExtensionNode node, ConfigSite configSite, ServiceEntry<F> entryToMap, Key<T> toKey, Function<F, T> function) {
+    MappingBuildEntry(ServiceExtensionNode node, ConfigSite configSite, BuildEntry<F> entryToMap, Key<T> toKey, Function<F, T> function) {
         super(node, configSite, List.of());
         this.entryToMap = entryToMap;
         this.function = requireNonNull(function, "function is null");
@@ -62,8 +61,8 @@ final class MappingBuildEntry<F, T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeEntry<T> newRuntimeNode(Map<BuildEntry<?>, RuntimeEntry<?>> entries) {
-        return new MappingRuntimeEntry<>(this, entryToMap.toRuntimeEntry(entries), function);
+    protected InjectorEntry<T> newRuntimeNode(Map<BuildEntry<?>, InjectorEntry<?>> entries) {
+        return new MappingInjectorEntry<>(this, entryToMap.toRuntimeEntry(entries), function);
     }
 
     /** {@inheritDoc} */

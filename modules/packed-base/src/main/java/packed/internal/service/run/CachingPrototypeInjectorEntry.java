@@ -25,14 +25,14 @@ import packed.internal.service.build.service.ComponentFactoryBuildEntry;
 /**
  *
  */
-public class CachingPrototypeRuntimeEntry<T> extends PrototypeRuntimeEntry<T> {
+public class CachingPrototypeInjectorEntry<T> extends PrototypeInjectorEntry<T> {
 
     private T instance;
 
     /**
      * @param node
      */
-    public CachingPrototypeRuntimeEntry(ComponentFactoryBuildEntry<T> node, Map<BuildEntry<?>, RuntimeEntry<?>> entries) {
+    public CachingPrototypeInjectorEntry(ComponentFactoryBuildEntry<T> node, Map<BuildEntry<?>, InjectorEntry<?>> entries) {
         super(node, entries);
     }
 

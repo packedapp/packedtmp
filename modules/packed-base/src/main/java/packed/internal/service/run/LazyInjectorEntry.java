@@ -28,7 +28,7 @@ import packed.internal.service.build.service.ComponentFactoryBuildEntry;
 import packed.internal.util.ThrowableUtil;
 
 /** A lazy runtime node if the service was not requested at configuration time. */
-public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> implements Provider<T> {
+public final class LazyInjectorEntry<T> extends InjectorEntry<T> implements Provider<T> {
 
     /** The lazily instantiated instance. */
     private volatile Object instance;
@@ -39,12 +39,12 @@ public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> implements Provid
      * @param node
      *            the build node to create this node from
      */
-    public LazyRuntimeEntry(ComponentFactoryBuildEntry<T> node, Map<BuildEntry<?>, RuntimeEntry<?>> entries) {
+    public LazyInjectorEntry(ComponentFactoryBuildEntry<T> node, Map<BuildEntry<?>, InjectorEntry<?>> entries) {
         super(node);
-        this.instance = new Sync(new PrototypeRuntimeEntry<>(node, entries));
+        this.instance = new Sync(new PrototypeInjectorEntry<>(node, entries));
     }
 
-    public LazyRuntimeEntry(BuildEntry<T> node, T instance) {
+    public LazyInjectorEntry(BuildEntry<T> node, T instance) {
         super(node);
         this.instance = requireNonNull(instance);
     }
@@ -55,10 +55,10 @@ public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> implements Provid
     public T getInstance(PrototypeRequest site) {
         for (;;) {
             Object i = instance;
-            if (!(i instanceof LazyRuntimeEntry.Sync)) {
+            if (!(i instanceof LazyInjectorEntry.Sync)) {
                 return (T) i;
             }
-            ((LazyRuntimeEntry.Sync) i).tryCreate();
+            ((LazyInjectorEntry.Sync) i).tryCreate();
         }
     }
 
@@ -79,7 +79,7 @@ public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> implements Provid
     final class Sync extends Semaphore {
 
         /** The factory used for creating a new instance. */
-        private PrototypeRuntimeEntry<T> factory;
+        private PrototypeInjectorEntry<T> factory;
 
         /** Any failure encountered while creating a new value. */
         private Throwable failure;
@@ -90,7 +90,7 @@ public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> implements Provid
          * @param factory
          *            the factory node that will create the value
          */
-        Sync(PrototypeRuntimeEntry<T> factory) {
+        Sync(PrototypeInjectorEntry<T> factory) {
             super(1);
             this.factory = requireNonNull(factory);
         }

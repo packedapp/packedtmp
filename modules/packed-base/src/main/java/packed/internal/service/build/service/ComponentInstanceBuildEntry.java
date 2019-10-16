@@ -25,8 +25,8 @@ import app.packed.config.ConfigSite;
 import app.packed.service.InstantiationMode;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
-import packed.internal.service.run.RuntimeEntry;
-import packed.internal.service.run.SingletonRuntimeEntry;
+import packed.internal.service.run.InjectorEntry;
+import packed.internal.service.run.SingletonInjectorEntry;
 
 /**
  *
@@ -65,8 +65,8 @@ public final class ComponentInstanceBuildEntry<T> extends AbstractComponentBuild
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeEntry<T> newRuntimeNode(Map<BuildEntry<?>, RuntimeEntry<?>> entries) {
-        return new SingletonRuntimeEntry<>(this, instance);
+    protected InjectorEntry<T> newRuntimeNode(Map<BuildEntry<?>, InjectorEntry<?>> entries) {
+        return new SingletonInjectorEntry<>(this, instance);
     }
 
     /** {@inheritDoc} */

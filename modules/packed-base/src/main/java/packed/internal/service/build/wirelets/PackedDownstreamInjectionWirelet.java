@@ -27,8 +27,8 @@ import app.packed.service.ServiceWirelets;
 import app.packed.util.Key;
 import packed.internal.service.build.ServiceWireletPipeline;
 import packed.internal.service.build.export.ExportedBuildEntry;
-import packed.internal.service.run.RuntimeEntry;
-import packed.internal.service.run.SingletonRuntimeEntry;
+import packed.internal.service.run.InjectorEntry;
+import packed.internal.service.run.SingletonInjectorEntry;
 
 /** The common superclass for upstream service wirelets. */
 public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
@@ -49,7 +49,7 @@ public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
 
         /** {@inheritDoc} */
         @Override
-        public void process(ConfigSite cs, LinkedHashMap<Key<?>, RuntimeEntry<?>> newServices) {
+        public void process(ConfigSite cs, LinkedHashMap<Key<?>, InjectorEntry<?>> newServices) {
             newServices.keySet().removeAll(set);
         }
     }
@@ -80,7 +80,7 @@ public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
 
         /** {@inheritDoc} */
         @Override
-        public void process(ConfigSite cs, LinkedHashMap<Key<?>, RuntimeEntry<?>> newServices) {
+        public void process(ConfigSite cs, LinkedHashMap<Key<?>, InjectorEntry<?>> newServices) {
             for (var s : newServices.values()) {
                 action.accept(s);
             }
@@ -107,8 +107,8 @@ public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
-        public void process(ConfigSite cs, LinkedHashMap<Key<?>, RuntimeEntry<?>> newServices) {
-            newServices.put(key, new SingletonRuntimeEntry(cs, key, null, instance));
+        public void process(ConfigSite cs, LinkedHashMap<Key<?>, InjectorEntry<?>> newServices) {
+            newServices.put(key, new SingletonInjectorEntry(cs, key, null, instance));
         }
 
         @Override
@@ -117,5 +117,5 @@ public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
         }
     }
 
-    public abstract void process(ConfigSite cs, LinkedHashMap<Key<?>, RuntimeEntry<?>> newServices);
+    public abstract void process(ConfigSite cs, LinkedHashMap<Key<?>, InjectorEntry<?>> newServices);
 }

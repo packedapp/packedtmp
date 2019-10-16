@@ -29,10 +29,10 @@ import app.packed.service.ServiceComponentConfiguration;
 import app.packed.util.InvalidDeclarationException;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
-import packed.internal.service.run.CachingPrototypeRuntimeEntry;
-import packed.internal.service.run.LazyRuntimeEntry;
-import packed.internal.service.run.PrototypeRuntimeEntry;
-import packed.internal.service.run.RuntimeEntry;
+import packed.internal.service.run.CachingPrototypeInjectorEntry;
+import packed.internal.service.run.LazyInjectorEntry;
+import packed.internal.service.run.PrototypeInjectorEntry;
+import packed.internal.service.run.InjectorEntry;
 
 /**
  * An entry representing a component node. This node is used for all three binding modes mainly because it makes
@@ -90,14 +90,14 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeEntry<T> newRuntimeNode(Map<BuildEntry<?>, RuntimeEntry<?>> entries) {
+    protected InjectorEntry<T> newRuntimeNode(Map<BuildEntry<?>, InjectorEntry<?>> entries) {
         switch (instantionMode) {
         case SINGLETON:
-            return new CachingPrototypeRuntimeEntry<>(this, entries);
+            return new CachingPrototypeInjectorEntry<>(this, entries);
         case LAZY:
-            return new LazyRuntimeEntry<>(this, entries);
+            return new LazyInjectorEntry<>(this, entries);
         default:
-            return new PrototypeRuntimeEntry<>(this, entries);
+            return new PrototypeInjectorEntry<>(this, entries);
         }
     }
 

@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.Test;
 
 import app.packed.service.Injector;
-import packed.internal.service.run.RuntimeEntry;
+import packed.internal.service.run.InjectorEntry;
 import support.stubs.Letters.A;
 
 /**
@@ -37,6 +37,6 @@ public class InjectorGetServiceTest {
             c.provide(A.class);
         });
 
-        assertThat(i.getDescriptor(A.class).get()).isInstanceOf(RuntimeEntry.class);
+        assertThat(i.getDescriptor(A.class).get()).isInstanceOf(InjectorEntry.class);
     }
 }

@@ -21,7 +21,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 
 import app.packed.service.InjectionException;
-import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.service.ComponentFactoryBuildEntry;
 
@@ -81,9 +80,9 @@ final class DependencyCycleDetector {
     private static DependencyCycle detectCycle(BuildEntry<?> node, ArrayDeque<BuildEntry<?>> stack, ArrayDeque<BuildEntry<?>> dependencies) {
         stack.push(node);
         for (int i = 0; i < node.resolvedDependencies.length; i++) {
-            ServiceEntry<?> dependency = node.resolvedDependencies[i];
+            BuildEntry<?> dependency = node.resolvedDependencies[i];
             if (dependency instanceof BuildEntry) {
-                BuildEntry<?> to = (BuildEntry<?>) dependency;
+                BuildEntry<?> to = dependency;
                 // If the dependency is a @Provides method, we need to use the declaring node
                 BuildEntry<?> owner = to.declaringEntry();
                 if (owner != null) {

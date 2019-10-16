@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service;
+package packed.internal.service.util.nextapi;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

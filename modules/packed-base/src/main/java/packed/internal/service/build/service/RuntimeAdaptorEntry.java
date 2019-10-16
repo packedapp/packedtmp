@@ -28,16 +28,16 @@ import app.packed.service.ServiceExtension;
 import app.packed.util.Nullable;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
-import packed.internal.service.run.DelegatingRuntimeEntry;
-import packed.internal.service.run.RuntimeEntry;
+import packed.internal.service.run.DelegatingInjectorEntry;
+import packed.internal.service.run.InjectorEntry;
 
 /** An entry specifically used for {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
 public final class RuntimeAdaptorEntry<T> extends BuildEntry<T> {
 
     /** The entry from the 'imported' injector. */
-    private final RuntimeEntry<T> entry;
+    private final InjectorEntry<T> entry;
 
-    public RuntimeAdaptorEntry(ServiceExtensionNode node, RuntimeEntry<T> entry) {
+    public RuntimeAdaptorEntry(ServiceExtensionNode node, InjectorEntry<T> entry) {
         super(node, ConfigSite.UNKNOWN, List.of());
         this.entry = entry;
         this.key = requireNonNull(entry.key());
@@ -65,8 +65,8 @@ public final class RuntimeAdaptorEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeEntry<T> newRuntimeNode(Map<BuildEntry<?>, RuntimeEntry<?>> entries) {
-        return new DelegatingRuntimeEntry<T>(this, entry);
+    protected InjectorEntry<T> newRuntimeNode(Map<BuildEntry<?>, InjectorEntry<?>> entries) {
+        return new DelegatingInjectorEntry<T>(this, entry);
     }
 
     /** {@inheritDoc} */

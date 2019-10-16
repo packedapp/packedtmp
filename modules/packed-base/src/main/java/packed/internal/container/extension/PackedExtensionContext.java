@@ -30,7 +30,7 @@ import packed.internal.module.ModuleAccess;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.build.service.RuntimeAdaptorEntry;
-import packed.internal.service.run.SingletonRuntimeEntry;
+import packed.internal.service.run.SingletonInjectorEntry;
 
 /** The default implementation of {@link ExtensionContext} with addition data only available from inside this module. */
 public final class PackedExtensionContext implements ExtensionContext {
@@ -75,7 +75,7 @@ public final class PackedExtensionContext implements ExtensionContext {
     public BuildEntry<? extends Extension> serviceEntry(ServiceExtensionNode sen) {
         RuntimeAdaptorEntry<? extends Extension> e = serviceEntry;
         if (e == null) {
-            e = serviceEntry = new RuntimeAdaptorEntry(sen, new SingletonRuntimeEntry<Extension>(ConfigSite.UNKNOWN, (Key) Key.of(type()), null, extension));
+            e = serviceEntry = new RuntimeAdaptorEntry(sen, new SingletonInjectorEntry<Extension>(ConfigSite.UNKNOWN, (Key) Key.of(type()), null, extension));
         }
         return e;
     }

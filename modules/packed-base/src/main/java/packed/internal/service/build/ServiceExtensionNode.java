@@ -35,15 +35,14 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.hooks.AtInject;
 import packed.internal.inject.hooks.AtInjectGroup;
-import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.dependencies.DependencyManager;
 import packed.internal.service.build.export.ExportManager;
 import packed.internal.service.build.export.ExportedBuildEntry;
 import packed.internal.service.build.service.ComponentFactoryBuildEntry;
 import packed.internal.service.build.service.ServiceProvidingManager;
 import packed.internal.service.run.DefaultInjector;
-import packed.internal.service.run.RuntimeEntry;
-import packed.internal.service.run.SingletonRuntimeEntry;
+import packed.internal.service.run.InjectorEntry;
+import packed.internal.service.run.SingletonInjectorEntry;
 
 /** This class records all service related information for a single box. */
 public final class ServiceExtensionNode {
@@ -68,7 +67,7 @@ public final class ServiceExtensionNode {
     ServiceProvidingManager provider;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
-    public final LinkedHashMap<Key<?>, ServiceEntry<?>> resolvedEntries = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, BuildEntry<?>> resolvedEntries = new LinkedHashMap<>();
 
     public final LinkedHashMap<Class<?>, BuildEntry<?>> specials = new LinkedHashMap<>();
 
@@ -112,10 +111,8 @@ public final class ServiceExtensionNode {
     public void buildDescriptor(BundleDescriptor.Builder builder) {
         // need to have resolved successfully
         // TODO we should only have build entries here...
-        for (ServiceEntry<?> n : resolvedEntries.values()) {
-            if (n instanceof BuildEntry) {
-                builder.addServiceDescriptor(((BuildEntry<?>) n).toDescriptor());
-            }
+        for (BuildEntry<?> n : resolvedEntries.values()) {
+            builder.addServiceDescriptor(((BuildEntry<?>) n).toDescriptor());
         }
     }
 
@@ -189,10 +186,10 @@ public final class ServiceExtensionNode {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void onInstantiate(ExtensionInstantiationContext c) {
-        LinkedHashMap<Key<?>, RuntimeEntry<?>> snm = new LinkedHashMap<>();
+        LinkedHashMap<Key<?>, InjectorEntry<?>> snm = new LinkedHashMap<>();
         DefaultInjector publicInjector = new DefaultInjector(context().containerConfigSite(), "Internal Descriptor", snm);
 
-        IdentityHashMap<BuildEntry<?>, RuntimeEntry<?>> transformers = new IdentityHashMap<>();
+        IdentityHashMap<BuildEntry<?>, InjectorEntry<?>> transformers = new IdentityHashMap<>();
         for (var e : specials.entrySet()) {
             Object instance;
 
@@ -206,7 +203,7 @@ public final class ServiceExtensionNode {
                 instance = requireNonNull(c.getPipelin((Class) e.getKey()));
             }
             BuildEntry<?> be = e.getValue();
-            transformers.put(be, new SingletonRuntimeEntry<Object>(ConfigSite.UNKNOWN, (Key) be.key, be.description, instance));
+            transformers.put(be, new SingletonInjectorEntry<Object>(ConfigSite.UNKNOWN, (Key) be.key, be.description, instance));
         }
 
         for (var e : resolvedEntries.entrySet()) {
@@ -216,7 +213,7 @@ public final class ServiceExtensionNode {
         }
 
         // Instantiate all singletons...
-        for (ServiceEntry<?> node : resolvedEntries.values()) {
+        for (BuildEntry<?> node : resolvedEntries.values()) {
             if (node instanceof ComponentFactoryBuildEntry) {
                 ComponentFactoryBuildEntry<?> s = (ComponentFactoryBuildEntry<?>) node;
                 if (s.instantiationMode() == InstantiationMode.SINGLETON) {

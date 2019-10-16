@@ -31,7 +31,7 @@ import packed.internal.util.ThrowableUtil;
 // No params
 // No InjectionSite parameters
 // InjectionSite parameters
-public class PrototypeRuntimeEntry<T> extends RuntimeEntry<T> implements Provider<T> {
+public class PrototypeInjectorEntry<T> extends InjectorEntry<T> implements Provider<T> {
 
     /** An empty object array. */
     private final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
@@ -45,7 +45,7 @@ public class PrototypeRuntimeEntry<T> extends RuntimeEntry<T> implements Provide
     /**
      * @param node
      */
-    public PrototypeRuntimeEntry(ComponentFactoryBuildEntry<T> node, Map<BuildEntry<?>, RuntimeEntry<?>> entries) {
+    public PrototypeInjectorEntry(ComponentFactoryBuildEntry<T> node, Map<BuildEntry<?>, InjectorEntry<?>> entries) {
         super(node);
 
         int size = node.dependencies.size();
@@ -54,7 +54,7 @@ public class PrototypeRuntimeEntry<T> extends RuntimeEntry<T> implements Provide
             providers[0] = (Provider<?>) node.declaringEntry.toRuntimeEntry(entries);
             if (size > 0) {
                 for (int i = 0; i < node.resolvedDependencies.length; i++) {
-                    RuntimeEntry<?> forReal = node.resolvedDependencies[i].toRuntimeEntry(entries);
+                    InjectorEntry<?> forReal = node.resolvedDependencies[i].toRuntimeEntry(entries);
                     PrototypeRequest is = null;
                     PrototypeRequest.of(node.dependencies.get(i));
                     providers[i + 1] = () -> forReal.getInstance(is);
@@ -63,7 +63,7 @@ public class PrototypeRuntimeEntry<T> extends RuntimeEntry<T> implements Provide
         } else {
             providers = new Provider[size];
             for (int i = 0; i < node.resolvedDependencies.length; i++) {
-                RuntimeEntry<?> forReal = node.resolvedDependencies[i].toRuntimeEntry(entries);
+                InjectorEntry<?> forReal = node.resolvedDependencies[i].toRuntimeEntry(entries);
                 PrototypeRequest is = null;
                 PrototypeRequest.of(node.dependencies.get(i));
                 providers[i] = () -> forReal.getInstance(is);

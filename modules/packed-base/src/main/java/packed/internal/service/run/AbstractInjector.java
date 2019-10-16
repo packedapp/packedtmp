@@ -54,14 +54,14 @@ public abstract class AbstractInjector implements Injector {
     protected void failedGet(Key<?> key) {}
 
     @Nullable
-    protected <T> RuntimeEntry<T> findNode(Class<T> key) {
+    protected <T> InjectorEntry<T> findNode(Class<T> key) {
         return findNode(Key.of(key));
     }
 
     @Nullable
-    protected abstract <T> RuntimeEntry<T> findNode(Key<T> key);
+    protected abstract <T> InjectorEntry<T> findNode(Key<T> key);
 
-    public abstract void forEachServiceEntry(Consumer<? super RuntimeEntry<?>> action);
+    public abstract void forEachServiceEntry(Consumer<? super InjectorEntry<?>> action);
 
     /** {@inheritDoc} */
     @Override
@@ -82,7 +82,7 @@ public abstract class AbstractInjector implements Injector {
 
     @Nullable
     private <T> T getInstanceOrNull(Key<T> key) {
-        RuntimeEntry<T> n = findNode(key);
+        InjectorEntry<T> n = findNode(key);
         if (n == null) {
             return null;
         }
@@ -95,7 +95,7 @@ public abstract class AbstractInjector implements Injector {
             for (OldAtInject atInject : descriptor.fields) {
                 Dependency dependency = atInject.dependencies.get(0);
                 FieldFactoryHandle<?> field = (FieldFactoryHandle<?>) atInject.invokable;
-                RuntimeEntry<?> node = findNode(dependency.key());
+                InjectorEntry<?> node = findNode(dependency.key());
                 if (node != null) {
                     Object value = node.getInstance(PrototypeRequest.of(dependency, component));
                     value = dependency.wrapIfOptional(value);
@@ -128,7 +128,7 @@ public abstract class AbstractInjector implements Injector {
                 Object[] arguments = new Object[method.dependencies.size()];
                 System.out.println(Arrays.toString(arguments));
                 for (Dependency dependency : method.dependencies) {
-                    RuntimeEntry<?> node = findNode(dependency.key());
+                    InjectorEntry<?> node = findNode(dependency.key());
                     System.out.println(node);
                 }
                 System.out.println("Should have injected " + method);

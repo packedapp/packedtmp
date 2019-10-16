@@ -17,7 +17,6 @@ package packed.internal.service.run;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Map;
 import java.util.Optional;
 
 import app.packed.config.ConfigSite;
@@ -26,11 +25,11 @@ import app.packed.service.PrototypeRequest;
 import app.packed.service.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
+import packed.internal.util.KeyBuilder;
 
 /** An entry that represents a service at runtime. */
-public abstract class RuntimeEntry<T> implements ServiceEntry<T>, ServiceDescriptor {
+public abstract class InjectorEntry<T> implements ServiceDescriptor {
 
     /** The point where this entry was registered. */
     private final ConfigSite configSite;
@@ -48,17 +47,16 @@ public abstract class RuntimeEntry<T> implements ServiceEntry<T>, ServiceDescrip
      * @param buildEntry
      *            the build node to create the runtime node from
      */
-    RuntimeEntry(BuildEntry<T> buildEntry) {
+    InjectorEntry(BuildEntry<T> buildEntry) {
         this(buildEntry.configSite(), buildEntry.getKey(), buildEntry.getDescription());
     }
 
-    RuntimeEntry(ConfigSite configSite, Key<T> key, @Nullable String description) {
+    InjectorEntry(ConfigSite configSite, Key<T> key, @Nullable String description) {
         this.configSite = requireNonNull(configSite);
         this.description = description;
         this.key = requireNonNull(key);
     }
 
-    /** {@inheritDoc} */
     @Override
     public final ConfigSite configSite() {
         return configSite;
@@ -73,19 +71,11 @@ public abstract class RuntimeEntry<T> implements ServiceEntry<T>, ServiceDescrip
      */
     public abstract T getInstance(@Nullable PrototypeRequest request);
 
-    /** {@inheritDoc} */
     @Override
     public final Optional<String> description() {
         return Optional.ofNullable(description);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public final boolean hasUnresolvedDependencies() {
-        return false;
-    }
-
-    @Override
     public abstract InstantiationMode instantiationMode();
 
     /** {@inheritDoc} */
@@ -94,10 +84,10 @@ public abstract class RuntimeEntry<T> implements ServiceEntry<T>, ServiceDescrip
         return key;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public final RuntimeEntry<T> toRuntimeEntry(Map<BuildEntry<?>, RuntimeEntry<?>> entries) {
-        return this; // this entry is already a runtime entry
+    public abstract boolean requiresPrototypeRequest();
+
+    public boolean isPrivate() {
+        return key().equals(KeyBuilder.INJECTOR_KEY);// || key().equals(KeyBuilder.CONTAINER_KEY);
     }
 
     /** {@inheritDoc} */

@@ -26,11 +26,10 @@ import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceExtension;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
-import packed.internal.service.run.DelegatingRuntimeEntry;
-import packed.internal.service.run.RuntimeEntry;
+import packed.internal.service.run.DelegatingInjectorEntry;
+import packed.internal.service.run.InjectorEntry;
 
 /**
  * A build entry representing an exported service. Entries at runtime has never any reference to how (or if) they where
@@ -40,7 +39,7 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
 
     /** The actual entry that is exported. Is initially null for keyed exports, until it is resolved. */
     @Nullable
-    ServiceEntry<T> exportedEntry;
+    BuildEntry<T> exportedEntry;
 
     /** The key under which to export the entry, is null for entry exports. */
     @Nullable
@@ -72,15 +71,14 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
      * @see ServiceExtension#export(ServiceComponentConfiguration)
      * @see ServiceExtension#exportAll()
      */
-    @SuppressWarnings("unchecked")
-    ExportedBuildEntry(ServiceExtensionNode builder, ServiceEntry<T> entryToExport, ConfigSite configSite) {
+    ExportedBuildEntry(ServiceExtensionNode builder, BuildEntry<T> entryToExport, ConfigSite configSite) {
         super(builder, configSite, List.of());
         this.exportedEntry = entryToExport;
         this.keyToExport = null;
         // Export of export, of export????
         // Hvad hvis en eller anden aendrer en key midt i chainen.
         // Slaar det igennem i hele vejen ned.
-        this.key = (Key<T>) entryToExport.key();
+        this.key = entryToExport.key();
     }
 
     /** {@inheritDoc} */
@@ -110,7 +108,7 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeEntry<T> newRuntimeNode(Map<BuildEntry<?>, RuntimeEntry<?>> entries) {
-        return new DelegatingRuntimeEntry<>(this, exportedEntry.toRuntimeEntry(entries));
+    protected InjectorEntry<T> newRuntimeNode(Map<BuildEntry<?>, InjectorEntry<?>> entries) {
+        return new DelegatingInjectorEntry<>(this, exportedEntry.toRuntimeEntry(entries));
     }
 }

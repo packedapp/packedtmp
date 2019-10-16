@@ -28,7 +28,7 @@ import packed.internal.service.build.BuildEntry;
 /**
  * An runtime service node holding {@link InstantiationMode#SINGLETON} instances.
  */
-public final class SingletonRuntimeEntry<T> extends RuntimeEntry<T> implements Provider<T> {
+public final class SingletonInjectorEntry<T> extends InjectorEntry<T> implements Provider<T> {
 
     /** The singleton instance. */
     @Nullable
@@ -42,7 +42,7 @@ public final class SingletonRuntimeEntry<T> extends RuntimeEntry<T> implements P
      * @param instance
      *            the singleton instance
      */
-    public SingletonRuntimeEntry(BuildEntry<T> buildNode, @Nullable T instance) {
+    public SingletonInjectorEntry(BuildEntry<T> buildNode, @Nullable T instance) {
         super(buildNode);
         this.instance = requireNonNull(instance);
     }
@@ -52,7 +52,7 @@ public final class SingletonRuntimeEntry<T> extends RuntimeEntry<T> implements P
      * @param key
      * @param description
      */
-    public SingletonRuntimeEntry(ConfigSite configSite, Key<T> key, @Nullable String description, @Nullable T instance) {
+    public SingletonInjectorEntry(ConfigSite configSite, Key<T> key, @Nullable String description, @Nullable T instance) {
         super(configSite, key, description);
         this.instance = requireNonNull(instance);
     }

@@ -22,14 +22,14 @@ import java.util.Map;
 
 import app.packed.config.ConfigSite;
 import app.packed.service.Dependency;
+import app.packed.service.InstantiationMode;
 import app.packed.service.PrototypeRequest;
 import app.packed.service.Provide;
 import app.packed.service.ServiceConfiguration;
 import app.packed.service.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.service.ServiceEntry;
-import packed.internal.service.run.RuntimeEntry;
+import packed.internal.service.run.InjectorEntry;
 import packed.internal.util.KeyBuilder;
 
 /**
@@ -41,10 +41,10 @@ import packed.internal.util.KeyBuilder;
  * BSEs are never exposed to end-users, but instead wrapped in implementations of {@link ServiceConfiguration}.
  */
 // BuildEntry does not implements ServiceDescriptor because it is mutable, so we
-public abstract class BuildEntry<T> implements ServiceEntry<T> {
+public abstract class BuildEntry<T> {
 
     /** An empty array of entries. */
-    private static final ServiceEntry<?>[] EMPTY_ARRAY = new ServiceEntry<?>[0];
+    private static final BuildEntry<?>[] EMPTY_ARRAY = new BuildEntry<?>[0];
 
     /** The configuration site of this object. */
     private final ConfigSite configSite;
@@ -69,7 +69,7 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
     protected Key<T> key;
 
     /** The resolved dependencies of this node. */
-    public final ServiceEntry<?>[] resolvedDependencies;
+    public final BuildEntry<?>[] resolvedDependencies;
 
     /** The injector builder this node belongs to. */
     @Nullable // Is nullable for stages for now
@@ -79,7 +79,7 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
         this.serviceExtension = serviceExtension;
         this.configSite = requireNonNull(configSite);
         this.dependencies = requireNonNull(dependencies);
-        this.resolvedDependencies = dependencies.isEmpty() ? EMPTY_ARRAY : new ServiceEntry<?>[dependencies.size()];
+        this.resolvedDependencies = dependencies.isEmpty() ? EMPTY_ARRAY : new BuildEntry<?>[dependencies.size()];
         boolean hasDependencyOnInjectionSite = false;
         if (!dependencies.isEmpty()) {
             for (Dependency e : dependencies) {
@@ -103,7 +103,7 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
 
     public final void checkResolved() {
         for (int i = 0; i < resolvedDependencies.length; i++) {
-            ServiceEntry<?> n = resolvedDependencies[i];
+            BuildEntry<?> n = resolvedDependencies[i];
             if (n == null && !dependencies.get(i).isOptional()) {
                 throw new AssertionError("Dependency " + dependencies.get(i) + " was not resolved");
             }
@@ -115,7 +115,6 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
      * 
      * @return the configuration site of this configuration
      */
-    @Override
     public final ConfigSite configSite() {
         return configSite;
     }
@@ -139,16 +138,21 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
         return key;
     }
 
+    public boolean isPrivate() {
+        return key().equals(KeyBuilder.INJECTOR_KEY);// || key().equals(KeyBuilder.CONTAINER_KEY);
+    }
+
+    public abstract boolean requiresPrototypeRequest();
+
+    public abstract InstantiationMode instantiationMode();
+
     /**
      * Returns whether or not this node has any dependencies that needs to be resolved.
      *
      * @return whether or not this node has any dependencies that needs to be resolved
      */
-    @Override
     public abstract boolean hasUnresolvedDependencies();
 
-    /** {@inheritDoc} */
-    @Override
     public final Key<T> key() {
         return key;
     }
@@ -158,16 +162,14 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
      *
      * @return the new runtime node
      */
-    protected abstract RuntimeEntry<T> newRuntimeNode(Map<BuildEntry<?>, RuntimeEntry<?>> entries);
+    protected abstract InjectorEntry<T> newRuntimeNode(Map<BuildEntry<?>, InjectorEntry<?>> entries);
 
     public final ServiceDescriptor toDescriptor() {
         return new PackedServiceDescriptor(key, configSite, description);
     }
 
-    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
-    @Override
-    public final RuntimeEntry<T> toRuntimeEntry(Map<BuildEntry<?>, RuntimeEntry<?>> entries) {
-        return (RuntimeEntry<T>) entries.computeIfAbsent(this, k -> k.newRuntimeNode(entries));
+    public final InjectorEntry<T> toRuntimeEntry(Map<BuildEntry<?>, InjectorEntry<?>> entries) {
+        return (InjectorEntry<T>) entries.computeIfAbsent(this, k -> k.newRuntimeNode(entries));
     }
 }

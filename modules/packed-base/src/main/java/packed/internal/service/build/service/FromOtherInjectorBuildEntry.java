@@ -26,19 +26,19 @@ import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceExtension;
 import app.packed.util.Nullable;
 import packed.internal.service.build.BuildEntry;
-import packed.internal.service.run.DelegatingRuntimeEntry;
-import packed.internal.service.run.RuntimeEntry;
+import packed.internal.service.run.DelegatingInjectorEntry;
+import packed.internal.service.run.InjectorEntry;
 
 /** An entry specifically used for {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
 final class FromOtherInjectorBuildEntry<T> extends BuildEntry<T> {
 
     /** The entry from the 'imported' injector. */
-    private final RuntimeEntry<T> entry;
+    private final InjectorEntry<T> entry;
 
     /** A wrapper for the 'imported' injector. */
     final ProvideAllFromOtherInjector fromInjector; // not used currently
 
-    FromOtherInjectorBuildEntry(ProvideAllFromOtherInjector fromInjector, RuntimeEntry<T> entry) {
+    FromOtherInjectorBuildEntry(ProvideAllFromOtherInjector fromInjector, InjectorEntry<T> entry) {
         super(fromInjector.node, fromInjector.configSite.withParent(entry.configSite()), List.of());
         this.entry = entry;
         this.fromInjector = fromInjector;
@@ -67,8 +67,8 @@ final class FromOtherInjectorBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeEntry<T> newRuntimeNode(Map<BuildEntry<?>, RuntimeEntry<?>> entries) {
-        return new DelegatingRuntimeEntry<T>(this, entry);
+    protected InjectorEntry<T> newRuntimeNode(Map<BuildEntry<?>, InjectorEntry<?>> entries) {
+        return new DelegatingInjectorEntry<T>(this, entry);
     }
 
     /** {@inheritDoc} */

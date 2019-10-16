@@ -38,12 +38,11 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.container.extension.ExtensionWireletPipelineModel;
 import packed.internal.container.extension.PackedExtensionContext;
-import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.build.service.ComponentFactoryBuildEntry;
 import packed.internal.service.build.service.RuntimeAdaptorEntry;
-import packed.internal.service.run.SingletonRuntimeEntry;
+import packed.internal.service.run.SingletonInjectorEntry;
 
 /**
  * This class manages everything to do with dependencies of components and service for an {@link ServiceExtension}.
@@ -127,14 +126,14 @@ public final class DependencyManager {
     private void resolveAllDependencies() {
         detectCyclesFor = new ArrayList<>();
 
-        for (ServiceEntry<?> se : node.resolvedEntries.values()) {
-            BuildEntry<?> entry = (BuildEntry<?>) se;
+        for (BuildEntry<?> se : node.resolvedEntries.values()) {
+            BuildEntry<?> entry = se;
             if (entry.hasUnresolvedDependencies()) {
                 detectCyclesFor.add(entry);
                 List<Dependency> dependencies = entry.dependencies;
                 for (int i = 0; i < dependencies.size(); i++) {
                     Dependency dependency = dependencies.get(i);
-                    ServiceEntry<?> resolveTo = node.resolvedEntries.get(dependency.key());
+                    BuildEntry<?> resolveTo = node.resolvedEntries.get(dependency.key());
                     if (resolveTo == null) {
                         Key<?> k = dependency.key();
                         if (!k.hasQualifier() && Extension.class.isAssignableFrom(k.typeLiteral().rawType())) {
@@ -154,7 +153,7 @@ public final class DependencyManager {
                                 Optional<Class<? extends Extension>> op = ((ComponentFactoryBuildEntry) entry).componentConfiguration.extension();
                                 if (op.isPresent()) {
                                     BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
-                                            new SingletonRuntimeEntry<String>(ConfigSite.UNKNOWN, (Key) k, "foo", "Ignore"));
+                                            new SingletonInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "foo", "Ignore"));
                                     resolveTo = ben;
                                     node.specials.put(k.typeLiteral().rawType(), ben);
                                 }
@@ -205,7 +204,7 @@ public final class DependencyManager {
      * @param entry
      * @param dependency
      */
-    public void recordResolvedDependency(BuildEntry<?> entry, Dependency dependency, @Nullable ServiceEntry<?> resolvedTo, boolean fromParent) {
+    public void recordResolvedDependency(BuildEntry<?> entry, Dependency dependency, @Nullable BuildEntry<?> resolvedTo, boolean fromParent) {
         requireNonNull(entry);
         requireNonNull(dependency);
         if (resolvedTo != null) {
