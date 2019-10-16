@@ -47,28 +47,21 @@ public class PrototypeInjectorEntry<T> extends InjectorEntry<T> implements Provi
     public PrototypeInjectorEntry(ComponentFactoryBuildEntry<T> node, ServiceExtensionInstantiationContext context) {
         super(node);
 
-        int size = node.dependencies.size();
-        if (node.needsInstance()) {
-            providers = new Provider[size + 1];
-            providers[0] = (Provider<?>) node.declaringEntry.toRuntimeEntry(context);
-            if (size > 0) {
-                for (int i = 0; i < node.resolvedDependencies.length; i++) {
-                    InjectorEntry<?> forReal = node.resolvedDependencies[i].toRuntimeEntry(context);
-                    PrototypeRequest is = null;
-                    PrototypeRequest.of(node.dependencies.get(i));
-                    providers[i + 1] = () -> forReal.getInstance(is);
-                }
+        int size = node.resolvedDependencies.length;// .dependencies.size();
+        providers = new Provider[size];
+        for (int i = 0; i < node.resolvedDependencies.length; i++) {
+            InjectorEntry<?> forReal = node.resolvedDependencies[i].toRuntimeEntry(context);
+            PrototypeRequest is = null;
+            if (node.offset >= i) {
+                // System.out.println(node.offset + " " + node.dependencies.size());
+                // PrototypeRequest.of(node.dependencies.get(node.offset + i));
             }
-        } else {
-            providers = new Provider[size];
-            for (int i = 0; i < node.resolvedDependencies.length; i++) {
-                InjectorEntry<?> forReal = node.resolvedDependencies[i].toRuntimeEntry(context);
-                PrototypeRequest is = null;
-                PrototypeRequest.of(node.dependencies.get(i));
-                providers[i] = () -> forReal.getInstance(is);
-            }
+            providers[i] = () -> forReal.getInstance(is);
         }
         mh = node.mha;
+        if (providers.length != mh.type().parameterCount()) {
+            throw new Error(providers.length + "   " + mh.type().parameterCount());
+        }
     }
 
     /** {@inheritDoc} */

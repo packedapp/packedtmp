@@ -22,7 +22,6 @@ import java.util.List;
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.service.Dependency;
-import app.packed.service.Provide;
 import app.packed.util.Nullable;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
@@ -35,10 +34,6 @@ public abstract class AbstractComponentBuildEntry<T> extends BuildEntry<T> {
     /** The configuration of the component this build entry belongs to */
     public final ComponentConfiguration<?> componentConfiguration;
 
-    /** The parent, if this node is the result of a member annotated with {@link Provide}. */
-    @Nullable
-    public final AbstractComponentBuildEntry<?> declaringEntry;
-
     /**
      * @param serviceExtension
      * @param configSite
@@ -46,14 +41,7 @@ public abstract class AbstractComponentBuildEntry<T> extends BuildEntry<T> {
      */
     public AbstractComponentBuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite, List<Dependency> dependencies,
             AbstractComponentBuildEntry<?> declaringEntry, ComponentConfiguration<?> componentConfiguration) {
-        super(serviceExtension, configSite, dependencies);
-        this.declaringEntry = declaringEntry;
+        super(serviceExtension, declaringEntry, configSite, dependencies);
         this.componentConfiguration = requireNonNull(componentConfiguration);
-    }
-
-    @Override
-    @Nullable
-    public final BuildEntry<?> declaringEntry() {
-        return declaringEntry;
     }
 }

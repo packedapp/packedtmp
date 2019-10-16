@@ -130,7 +130,7 @@ public final class DependencyManager {
             if (entry.hasUnresolvedDependencies()) {
                 detectCyclesFor.add(entry);
                 List<Dependency> dependencies = entry.dependencies;
-                for (int i = 0; i < dependencies.size(); i++) {
+                for (int i = entry.offset; i < dependencies.size(); i++) {
                     Dependency dependency = dependencies.get(i);
                     BuildEntry<?> resolveTo = node.resolvedEntries.get(dependency.key());
                     if (resolveTo == null) {

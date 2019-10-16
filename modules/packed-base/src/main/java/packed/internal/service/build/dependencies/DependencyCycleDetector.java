@@ -79,7 +79,7 @@ final class DependencyCycleDetector {
      */
     private static DependencyCycle detectCycle(BuildEntry<?> node, ArrayDeque<BuildEntry<?>> stack, ArrayDeque<BuildEntry<?>> dependencies) {
         stack.push(node);
-        for (int i = 0; i < node.resolvedDependencies.length; i++) {
+        for (int i = node.offset; i < node.resolvedDependencies.length; i++) {
             BuildEntry<?> dependency = node.resolvedDependencies[i];
             if (dependency instanceof BuildEntry) {
                 BuildEntry<?> to = dependency;

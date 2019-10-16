@@ -137,7 +137,7 @@ public final class ServiceProvidingManager {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <T> ServiceComponentConfiguration<T> provideFactory(ComponentConfiguration cc, Factory<T> factory, FactoryHandle<T> function) {
-        AbstractComponentBuildEntry<?> c = componentConfigurationCache.get(cc);// remove??
+        BuildEntry<?> c = componentConfigurationCache.get(cc);// remove??
         if (c == null) {
             MethodHandle mh = ((PackedExtensionContext) node.context()).pcc.lookup.toMethodHandle(function);
             c = new ComponentFactoryBuildEntry<>(node, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
@@ -151,7 +151,7 @@ public final class ServiceProvidingManager {
     public <T> ServiceComponentConfiguration<T> provideInstance(ComponentConfiguration cc, T instance) {
         // First see if we have already installed the node. This happens in #set if the component container any members
         // annotated with @Provides
-        AbstractComponentBuildEntry<?> c = componentConfigurationCache.get(cc);
+        BuildEntry<?> c = componentConfigurationCache.get(cc);
         if (c == null) {
             // No node found, components has no @Provides method, create a new node
             c = new ComponentInstanceBuildEntry<T>(node, cc.configSite(), cc, instance);

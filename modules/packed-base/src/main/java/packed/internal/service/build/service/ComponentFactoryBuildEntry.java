@@ -48,7 +48,7 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
     public final MethodHandle mha;
 
     public ComponentFactoryBuildEntry(ConfigSite configSite, AtProvides atProvides, MethodHandle mh, AbstractComponentBuildEntry<?> parent) {
-        super(parent.serviceExtension, configSite, atProvides.dependencies, parent, parent.componentConfiguration);
+        super(parent.serviceExtension, configSite, atProvides.dependencies, atProvides.isStaticMember ? null : parent, parent.componentConfiguration);
         this.description = atProvides.description;
         this.instantionMode = atProvides.instantionMode;
         this.mha = requireNonNull(mh);
@@ -83,9 +83,9 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         instantiateAs(InstantiationMode.LAZY);
     }
 
-    public boolean needsInstance() {
-        return declaringEntry != null && mha.type().parameterCount() != dependencies.size();
-    }
+    // public boolean needsInstance() {
+    // return declaringEntry != null && mha.type().parameterCount() != dependencies.size();
+    // }
 
     /** {@inheritDoc} */
     @Override

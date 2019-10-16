@@ -28,6 +28,7 @@ import app.packed.service.ServiceConfiguration;
 import app.packed.service.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import packed.internal.service.build.service.AbstractComponentBuildEntry;
 import packed.internal.service.run.InjectorEntry;
 import packed.internal.util.KeyBuilder;
 
@@ -74,12 +75,24 @@ public abstract class BuildEntry<T> {
     @Nullable // Is nullable for stages for now
     public final ServiceExtensionNode serviceExtension;
 
+    public final int offset;
+
     public BuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite, List<Dependency> dependencies) {
+        this(serviceExtension, null, configSite, dependencies);
+    }
+
+    public BuildEntry(@Nullable ServiceExtensionNode serviceExtension, AbstractComponentBuildEntry<?> declaringEntry, ConfigSite configSite,
+            List<Dependency> dependencies) {
         this.serviceExtension = serviceExtension;
+        this.offset = declaringEntry == null ? 0 : 1;
         this.configSite = requireNonNull(configSite);
         this.dependencies = requireNonNull(dependencies);
-        this.resolvedDependencies = dependencies.isEmpty() ? EMPTY_ARRAY : new BuildEntry<?>[dependencies.size()];
+        int depSize = dependencies.size() + offset;
+        this.resolvedDependencies = depSize == 0 ? EMPTY_ARRAY : new BuildEntry<?>[depSize];
         boolean hasDependencyOnInjectionSite = false;
+        if (declaringEntry != null) {
+            resolvedDependencies[0] = declaringEntry;
+        }
         if (!dependencies.isEmpty()) {
             for (Dependency e : dependencies) {
                 if (e.key().equals(KeyBuilder.INJECTION_SITE_KEY)) {
@@ -101,7 +114,7 @@ public abstract class BuildEntry<T> {
     }
 
     public final void checkResolved() {
-        for (int i = 0; i < resolvedDependencies.length; i++) {
+        for (int i = offset; i < resolvedDependencies.length; i++) {
             BuildEntry<?> n = resolvedDependencies[i];
             if (n == null && !dependencies.get(i).isOptional()) {
                 throw new AssertionError("Dependency " + dependencies.get(i) + " was not resolved");
