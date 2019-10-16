@@ -39,8 +39,6 @@ public class PrototypeInjectorEntry<T> extends InjectorEntry<T> implements Provi
 
     private final MethodHandle mh;
 
-    Object declaringNode;
-
     /**
      * @param node
      */

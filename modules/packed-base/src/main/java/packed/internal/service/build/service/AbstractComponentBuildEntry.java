@@ -29,6 +29,7 @@ import packed.internal.service.build.ServiceExtensionNode;
 /**
  *
  */
+// Er den ikke ret doed efterhaanden...
 public abstract class AbstractComponentBuildEntry<T> extends BuildEntry<T> {
 
     /** The configuration of the component this build entry belongs to */

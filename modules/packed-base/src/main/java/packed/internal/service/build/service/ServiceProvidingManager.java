@@ -61,7 +61,7 @@ import packed.internal.service.run.AbstractInjector;
 public final class ServiceProvidingManager {
 
     /** A map used to cache build entries, connect stuff */
-    private final IdentityHashMap<ComponentConfiguration<?>, AbstractComponentBuildEntry<?>> componentConfigurationCache = new IdentityHashMap<>();
+    private final IdentityHashMap<ComponentConfiguration<?>, BuildEntry<?>> componentConfigurationCache = new IdentityHashMap<>();
 
     /** A map of build entries that provide services with the same key. */
     @Nullable
@@ -159,7 +159,7 @@ public final class ServiceProvidingManager {
 
         c.as((Key) Key.of(instance.getClass()));
         providingEntries.add(c);
-        return new PackedServiceComponentConfiguration<>((CoreComponentConfiguration) cc, (AbstractComponentBuildEntry) c);
+        return new PackedServiceComponentConfiguration<>((CoreComponentConfiguration) cc, (BuildEntry) c);
     }
 
     public HashMap<Key<?>, BuildEntry<?>> resolve() {
