@@ -24,20 +24,13 @@ import packed.internal.inject.util.Provider;
 import packed.internal.service.build.BuildEntry;
 
 /**
- * An runtime service node holding {@link InstantiationMode#SINGLETON} instances. This node also holds
- * {@link InstantiationMode#LAZY} instances that was created at configuration time.
+ * An runtime service node holding {@link InstantiationMode#SINGLETON} instances.
  */
 public final class SingletonRuntimeEntry<T> extends RuntimeEntry<T> implements Provider<T> {
 
     /** The singleton instance. */
     @Nullable
-    private T instance;
-
-    // /**
-    // * The binding mode, we save it to distinguish between lazy and non-lazy services. Even if the lazy service was
-    // * initialized while building the injector.
-    // */
-    // private final InstantiationMode instantionMode;
+    private final T instance;
 
     /**
      * Creates a new node.
