@@ -21,15 +21,16 @@ import java.util.concurrent.Semaphore;
 
 import app.packed.service.InstantiationMode;
 import app.packed.service.PrototypeRequest;
+import packed.internal.inject.util.Provider;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.service.ComponentFactoryBuildEntry;
 import packed.internal.util.ThrowableUtil;
 
 /** A lazy runtime node if the service was not requested at configuration time. */
-public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> {
+public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> implements Provider<T> {
 
     /** The lazily instantiated instance. */
-    public volatile Object instance;
+    private volatile Object instance;
 
     /**
      * Creates a new node
@@ -49,6 +50,12 @@ public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> {
 
     @Override
     public void initInstance(T instance) {
+        // This is method is only ever called doing the container construction.
+        // So there is no need to synchronize in order to make sure only one instance is created.
+        // However, if we allow lazy creation, for example, via implementing Provider.
+        // We need some way to make sure exactly one instance is created.
+        // Maybe the container should always just call #getInstance() on this class.
+
         this.instance = requireNonNull(instance);
     }
 
@@ -128,5 +135,11 @@ public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> {
                 release();
             }
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public T get() {
+        return getInstance(null);
     }
 }

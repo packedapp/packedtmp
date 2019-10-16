@@ -144,13 +144,6 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         return requireNonNull(t);
     }
 
-    protected void postProcess(RuntimeEntry<T> entry) {
-        T i = instance;
-        if (i != null) {
-            entry.initInstance(i);
-        }
-    }
-
     /** {@inheritDoc} */
     @Override
     protected RuntimeEntry<T> newRuntimeNode() {
