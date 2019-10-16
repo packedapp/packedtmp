@@ -140,7 +140,15 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         }
         @SuppressWarnings("unchecked")
         T t = (T) result;
+        toRuntimeEntry().initInstance(t);
         return requireNonNull(t);
+    }
+
+    protected void postProcess(RuntimeEntry<T> entry) {
+        T i = instance;
+        if (i != null) {
+            entry.initInstance(i);
+        }
     }
 
     /** {@inheritDoc} */

@@ -47,6 +47,11 @@ public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> {
         this.instance = requireNonNull(instance);
     }
 
+    @Override
+    public void initInstance(T instance) {
+        this.instance = requireNonNull(instance);
+    }
+
     /** {@inheritDoc} */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override

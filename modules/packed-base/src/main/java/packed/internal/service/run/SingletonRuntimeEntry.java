@@ -15,6 +15,8 @@
  */
 package packed.internal.service.run;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.config.ConfigSite;
 import app.packed.service.InstantiationMode;
 import app.packed.service.PrototypeRequest;
@@ -31,7 +33,7 @@ public final class SingletonRuntimeEntry<T> extends RuntimeEntry<T> implements P
 
     /** The singleton instance. */
     @Nullable
-    public T instance;
+    private T instance;
 
     // /**
     // * The binding mode, we save it to distinguish between lazy and non-lazy services. Even if the lazy service was
@@ -47,7 +49,7 @@ public final class SingletonRuntimeEntry<T> extends RuntimeEntry<T> implements P
      * @param instance
      *            the singleton instance
      */
-    public SingletonRuntimeEntry(BuildEntry<T> buildNode, T instance) {
+    public SingletonRuntimeEntry(BuildEntry<T> buildNode, @Nullable T instance) {
         super(buildNode);
         this.instance = instance;
     }
@@ -57,7 +59,7 @@ public final class SingletonRuntimeEntry<T> extends RuntimeEntry<T> implements P
      * @param key
      * @param description
      */
-    public SingletonRuntimeEntry(ConfigSite configSite, Key<T> key, @Nullable String description, T instance) {
+    public SingletonRuntimeEntry(ConfigSite configSite, Key<T> key, @Nullable String description, @Nullable T instance) {
         super(configSite, key, description);
         this.instance = instance;
     }
@@ -72,6 +74,11 @@ public final class SingletonRuntimeEntry<T> extends RuntimeEntry<T> implements P
     @Override
     public T getInstance(PrototypeRequest ignore) {
         return instance;
+    }
+
+    @Override
+    public void initInstance(T instance) {
+        this.instance = requireNonNull(instance);
     }
 
     /** {@inheritDoc} */

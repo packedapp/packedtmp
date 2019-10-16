@@ -16,11 +16,12 @@
 package packed.internal.service.util.nextapi;
 
 /**
- *
+ * The main difference between an injector and this interface is that this interface includes any 'special' keys that
+ * are available.
  */
-// We should not use injector..
-
+// special keys, and not services...... PrototypeRequest is not a service
 interface InjectHelper {
+
     // Context, Helpers and other stuff
 
     // A descriptors of all dependencies that are available for injection...

@@ -62,6 +62,8 @@ public abstract class RuntimeEntry<T> implements ServiceEntry<T>, ServiceDescrip
         return configSite;
     }
 
+    public void initInstance(T instance) {}
+
     /** {@inheritDoc} */
     @Override
     public final Optional<String> description() {

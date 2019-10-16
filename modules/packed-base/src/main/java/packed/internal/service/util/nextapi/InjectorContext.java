@@ -15,7 +15,15 @@
  */
 package packed.internal.service.util.nextapi;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import app.packed.container.BaseBundle;
 import app.packed.service.Injector;
+import app.packed.util.Key;
+import app.packed.util.Qualifier;
 
 /**
  *
@@ -27,6 +35,8 @@ import app.packed.service.Injector;
 
 // We need a clear separation between the outfacing injector and the internal injector...
 
+// export(Injector.class).as(new Key<@Internal Injector>);
+
 // Replace with ContainerContext....
 
 // Containeren har e
@@ -35,4 +45,19 @@ interface InjectorContext extends Injector {
     Injector publicInjector();// Hmm bliver svaer at extende mht til App
 
     // I don't want to call it services.....
+}
+
+@Retention(RetentionPolicy.RUNTIME)
+@Qualifier
+@Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
+@interface Internal {}
+
+class Foo extends BaseBundle {
+
+    /** {@inheritDoc} */
+    @Override
+    protected void configure() {
+        export(Injector.class).as(new Key<@Internal Injector>() {});
+    }
+
 }
