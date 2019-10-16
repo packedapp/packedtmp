@@ -15,8 +15,11 @@
  */
 package packed.internal.service.run;
 
+import java.util.Map;
+
 import app.packed.service.InstantiationMode;
 import app.packed.service.PrototypeRequest;
+import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.service.ComponentFactoryBuildEntry;
 
 /**
@@ -29,8 +32,8 @@ public class CachingPrototypeRuntimeEntry<T> extends PrototypeRuntimeEntry<T> {
     /**
      * @param node
      */
-    public CachingPrototypeRuntimeEntry(ComponentFactoryBuildEntry<T> node) {
-        super(node);
+    public CachingPrototypeRuntimeEntry(ComponentFactoryBuildEntry<T> node, Map<BuildEntry<?>, RuntimeEntry<?>> entries) {
+        super(node, entries);
     }
 
     @Override

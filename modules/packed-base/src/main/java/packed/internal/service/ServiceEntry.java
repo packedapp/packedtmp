@@ -15,6 +15,8 @@
  */
 package packed.internal.service;
 
+import java.util.Map;
+
 import app.packed.config.ConfigSite;
 import app.packed.service.InstantiationMode;
 import app.packed.service.PrototypeRequest;
@@ -76,7 +78,7 @@ public interface ServiceEntry<T> {
      *
      * @return if build node converts to runtime node, if runtime node returns self
      */
-    RuntimeEntry<T> toRuntimeEntry();
+    RuntimeEntry<T> toRuntimeEntry(Map<BuildEntry<?>, RuntimeEntry<?>> entries);
 }
 
 // /**

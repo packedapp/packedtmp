@@ -18,6 +18,7 @@ package packed.internal.service.build.service;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.Map;
 
 import app.packed.config.ConfigSite;
 import app.packed.container.Wirelet;
@@ -64,7 +65,7 @@ public final class RuntimeAdaptorEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeEntry<T> newRuntimeNode() {
+    protected RuntimeEntry<T> newRuntimeNode(Map<BuildEntry<?>, RuntimeEntry<?>> entries) {
         return new DelegatingRuntimeEntry<T>(this, entry);
     }
 

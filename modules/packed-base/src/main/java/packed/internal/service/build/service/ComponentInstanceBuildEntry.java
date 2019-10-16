@@ -18,10 +18,12 @@ package packed.internal.service.build.service;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.Map;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.service.InstantiationMode;
+import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.run.RuntimeEntry;
 import packed.internal.service.run.SingletonRuntimeEntry;
@@ -63,7 +65,7 @@ public final class ComponentInstanceBuildEntry<T> extends AbstractComponentBuild
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeEntry<T> newRuntimeNode() {
+    protected RuntimeEntry<T> newRuntimeNode(Map<BuildEntry<?>, RuntimeEntry<?>> entries) {
         return new SingletonRuntimeEntry<>(this, instance);
     }
 

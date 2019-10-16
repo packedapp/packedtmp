@@ -18,6 +18,7 @@ package packed.internal.service.build;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.Map;
 
 import app.packed.config.ConfigSite;
 import app.packed.service.Dependency;
@@ -161,7 +162,7 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
      *
      * @return the new runtime node
      */
-    protected abstract RuntimeEntry<T> newRuntimeNode();
+    protected abstract RuntimeEntry<T> newRuntimeNode(Map<BuildEntry<?>, RuntimeEntry<?>> entries);
 
     public final ServiceDescriptor toDescriptor() {
         return new PackedServiceDescriptor(key, configSite, description);
@@ -169,8 +170,8 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public final RuntimeEntry<T> toRuntimeEntry() {
+    public final RuntimeEntry<T> toRuntimeEntry(Map<BuildEntry<?>, RuntimeEntry<?>> entries) {
         RuntimeEntry<T> runtime = this.runtimeNode;
-        return runtime == null ? this.runtimeNode = newRuntimeNode() : runtime;
+        return runtime == null ? this.runtimeNode = newRuntimeNode(entries) : runtime;
     }
 }

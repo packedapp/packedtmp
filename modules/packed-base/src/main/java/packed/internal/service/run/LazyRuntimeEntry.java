@@ -17,6 +17,7 @@ package packed.internal.service.run;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Map;
 import java.util.concurrent.Semaphore;
 
 import app.packed.service.InstantiationMode;
@@ -38,9 +39,9 @@ public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> implements Provid
      * @param node
      *            the build node to create this node from
      */
-    public LazyRuntimeEntry(ComponentFactoryBuildEntry<T> node) {
+    public LazyRuntimeEntry(ComponentFactoryBuildEntry<T> node, Map<BuildEntry<?>, RuntimeEntry<?>> entries) {
         super(node);
-        this.instance = new Sync(new PrototypeRuntimeEntry<>(node));
+        this.instance = new Sync(new PrototypeRuntimeEntry<>(node, entries));
     }
 
     public LazyRuntimeEntry(BuildEntry<T> node, T instance) {

@@ -18,6 +18,7 @@ package packed.internal.service.build.export;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.Map;
 
 import app.packed.config.ConfigSite;
 import app.packed.service.InstantiationMode;
@@ -109,7 +110,7 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeEntry<T> newRuntimeNode() {
-        return new DelegatingRuntimeEntry<>(this, exportedEntry.toRuntimeEntry());
+    protected RuntimeEntry<T> newRuntimeNode(Map<BuildEntry<?>, RuntimeEntry<?>> entries) {
+        return new DelegatingRuntimeEntry<>(this, exportedEntry.toRuntimeEntry(entries));
     }
 }

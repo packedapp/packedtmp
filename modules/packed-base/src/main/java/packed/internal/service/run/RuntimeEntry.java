@@ -17,6 +17,7 @@ package packed.internal.service.run;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Map;
 import java.util.Optional;
 
 import app.packed.config.ConfigSite;
@@ -95,7 +96,7 @@ public abstract class RuntimeEntry<T> implements ServiceEntry<T>, ServiceDescrip
 
     /** {@inheritDoc} */
     @Override
-    public final RuntimeEntry<T> toRuntimeEntry() {
+    public final RuntimeEntry<T> toRuntimeEntry(Map<BuildEntry<?>, RuntimeEntry<?>> entries) {
         return this; // this entry is already a runtime entry
     }
 

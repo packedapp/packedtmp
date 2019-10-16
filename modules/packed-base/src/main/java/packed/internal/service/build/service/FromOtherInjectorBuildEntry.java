@@ -18,6 +18,7 @@ package packed.internal.service.build.service;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.Map;
 
 import app.packed.container.Wirelet;
 import app.packed.service.Injector;
@@ -66,7 +67,7 @@ final class FromOtherInjectorBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeEntry<T> newRuntimeNode() {
+    protected RuntimeEntry<T> newRuntimeNode(Map<BuildEntry<?>, RuntimeEntry<?>> entries) {
         return new DelegatingRuntimeEntry<T>(this, entry);
     }
 

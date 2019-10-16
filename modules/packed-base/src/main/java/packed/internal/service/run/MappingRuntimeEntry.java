@@ -21,7 +21,6 @@ import java.util.function.Function;
 
 import app.packed.service.InstantiationMode;
 import app.packed.service.PrototypeRequest;
-import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
 
 /** A runtime service entry that takes uses a {@link Function} to map an existing service. */
@@ -39,9 +38,9 @@ public final class MappingRuntimeEntry<F, T> extends RuntimeEntry<T> {
      * @param delegate
      *            the build time alias node to create a runtime node from
      */
-    public MappingRuntimeEntry(BuildEntry<T> buildNode, ServiceEntry<F> delegate, Function<? super F, ? extends T> function) {
+    public MappingRuntimeEntry(BuildEntry<T> buildNode, RuntimeEntry<F> delegate, Function<? super F, ? extends T> function) {
         super(buildNode);
-        this.delegate = requireNonNull(delegate.toRuntimeEntry());
+        this.delegate = requireNonNull(delegate);
         this.function = requireNonNull(function);
     }
 

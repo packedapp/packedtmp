@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.util.List;
+import java.util.Map;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
@@ -26,6 +27,7 @@ import app.packed.service.Dependency;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.util.InvalidDeclarationException;
+import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.run.CachingPrototypeRuntimeEntry;
 import packed.internal.service.run.LazyRuntimeEntry;
@@ -88,14 +90,14 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeEntry<T> newRuntimeNode() {
+    protected RuntimeEntry<T> newRuntimeNode(Map<BuildEntry<?>, RuntimeEntry<?>> entries) {
         switch (instantionMode) {
         case SINGLETON:
-            return new CachingPrototypeRuntimeEntry<>(this);
+            return new CachingPrototypeRuntimeEntry<>(this, entries);
         case LAZY:
-            return new LazyRuntimeEntry<>(this);
+            return new LazyRuntimeEntry<>(this, entries);
         default:
-            return new PrototypeRuntimeEntry<>(this);
+            return new PrototypeRuntimeEntry<>(this, entries);
         }
     }
 

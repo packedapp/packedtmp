@@ -18,6 +18,7 @@ package packed.internal.service.build.wirelets;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import app.packed.config.ConfigSite;
@@ -61,8 +62,8 @@ final class MappingBuildEntry<F, T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeEntry<T> newRuntimeNode() {
-        return new MappingRuntimeEntry<>(this, entryToMap, function);
+    protected RuntimeEntry<T> newRuntimeNode(Map<BuildEntry<?>, RuntimeEntry<?>> entries) {
+        return new MappingRuntimeEntry<>(this, entryToMap.toRuntimeEntry(entries), function);
     }
 
     /** {@inheritDoc} */
