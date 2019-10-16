@@ -81,7 +81,7 @@ final class DependencyCycleDetector {
         stack.push(node);
         for (int i = node.offset; i < node.resolvedDependencies.length; i++) {
             BuildEntry<?> dependency = node.resolvedDependencies[i];
-            if (dependency instanceof BuildEntry) {
+            if (dependency != null) {
                 BuildEntry<?> to = dependency;
                 // If the dependency is a @Provides method, we need to use the declaring node
                 BuildEntry<?> owner = to.declaringEntry();
