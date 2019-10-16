@@ -48,17 +48,6 @@ public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> implements Provid
         this.instance = requireNonNull(instance);
     }
 
-    @Override
-    public void initInstance(T instance) {
-        // This is method is only ever called doing the container construction.
-        // So there is no need to synchronize in order to make sure only one instance is created.
-        // However, if we allow lazy creation, for example, via implementing Provider.
-        // We need some way to make sure exactly one instance is created.
-        // Maybe the container should always just call #getInstance() on this class.
-
-        this.instance = requireNonNull(instance);
-    }
-
     /** {@inheritDoc} */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
@@ -143,3 +132,14 @@ public final class LazyRuntimeEntry<T> extends RuntimeEntry<T> implements Provid
         return getInstance(null);
     }
 }
+
+// @Override
+// public void initInstance(T instance) {
+// // This is method is only ever called doing the container construction.
+// // So there is no need to synchronize in order to make sure only one instance is created.
+// // However, if we allow lazy creation, for example, via implementing Provider.
+// // We need some way to make sure exactly one instance is created.
+// // Maybe the container should always just call #getInstance() on this class.
+//
+// this.instance = requireNonNull(instance);
+// }

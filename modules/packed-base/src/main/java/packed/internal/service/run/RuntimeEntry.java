@@ -72,8 +72,6 @@ public abstract class RuntimeEntry<T> implements ServiceEntry<T>, ServiceDescrip
      */
     public abstract T getInstance(@Nullable PrototypeRequest request);
 
-    public void initInstance(T instance) {}
-
     /** {@inheritDoc} */
     @Override
     public final Optional<String> description() {

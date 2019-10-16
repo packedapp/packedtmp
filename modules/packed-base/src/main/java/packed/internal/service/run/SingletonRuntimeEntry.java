@@ -15,8 +15,6 @@
  */
 package packed.internal.service.run;
 
-import static java.util.Objects.requireNonNull;
-
 import app.packed.config.ConfigSite;
 import app.packed.service.InstantiationMode;
 import app.packed.service.PrototypeRequest;
@@ -74,11 +72,6 @@ public final class SingletonRuntimeEntry<T> extends RuntimeEntry<T> implements P
     @Override
     public T getInstance(PrototypeRequest ignore) {
         return instance;
-    }
-
-    @Override
-    public void initInstance(T instance) {
-        this.instance = requireNonNull(instance);
     }
 
     /** {@inheritDoc} */

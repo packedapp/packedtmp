@@ -93,7 +93,6 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         case SINGLETON:
             return new CachingPrototypeRuntimeEntry<>(this);
         case LAZY:
-
             return new LazyRuntimeEntry<>(this);
         default:
             return new PrototypeRuntimeEntry<>(this);
