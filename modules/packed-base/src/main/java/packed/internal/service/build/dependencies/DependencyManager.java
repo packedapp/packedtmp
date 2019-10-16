@@ -114,9 +114,6 @@ public final class DependencyManager {
 
     /** Also used for descriptors. */
     public void analyze() {
-        // Injector kan baade vaere en artifact.
-        // Og en del af en artifact...
-
         // If we do not export services into a bundle. We should be able to resolver much quicker..
         resolveAllDependencies();
         DependencyCycleDetector.dependencyCyclesDetect(detectCyclesFor);

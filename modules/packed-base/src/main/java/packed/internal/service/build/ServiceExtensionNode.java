@@ -64,8 +64,6 @@ public final class ServiceExtensionNode {
     @Nullable
     ServiceProvidingManager provider;
 
-    public DefaultInjector publicInjector;
-
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, ServiceEntry<?>> resolvedEntries = new LinkedHashMap<>();
 
@@ -93,7 +91,6 @@ public final class ServiceExtensionNode {
 
     public void build() {
         HashMap<Key<?>, BuildEntry<?>> resolvedServices = provider().resolve();
-
         resolvedServices.values().forEach(e -> resolvedEntries.put(requireNonNull(e.key()), e));
 
         if (exporter != null) {
@@ -152,35 +149,6 @@ public final class ServiceExtensionNode {
         return e;
     }
 
-    public void instantiate() {
-
-        Map<Key<?>, ServiceEntry<?>> snm = resolvedEntries;
-        publicInjector = new DefaultInjector(context().containerConfigSite(), "Internal Descriptor", snm);
-
-        //// Hmmm, det er jo altsaa lidt anderledes
-        // Hvis vi vil lave et image...
-        // Instantiate
-        for (ServiceEntry<?> node : resolvedEntries.values()) {
-            if (node instanceof ComponentFactoryBuildEntry) {
-                ComponentFactoryBuildEntry<?> s = (ComponentFactoryBuildEntry<?>) node;
-                if (s.instantiationMode() == InstantiationMode.SINGLETON) {
-                    s.getInstance(null);// getInstance() caches the new instance, newInstance does not
-                }
-            }
-        }
-
-        // Okay we are finished, convert all nodes to runtime nodes.
-        resolvedEntries.replaceAll((k, v) -> v.toRuntimeEntry());
-
-        // Now inject all components...
-
-        // if (exporter != null) {
-        // if (resolvedEntries != exporter.resolvedServiceMap()) {
-        // exporter.resolvedServiceMap().replaceAll((k, v) -> v.toRuntimeEntry());
-        // }
-        // }
-    }
-
     public ServiceContract newServiceContract(ExtensionWirelet.PipelineMap context) {
         // requireNonNull(context);
         return ServiceContract.newContract(c -> {
@@ -215,7 +183,31 @@ public final class ServiceExtensionNode {
     }
 
     public void onInstantiate(ExtensionInstantiationContext c) {
-        instantiate();
+        Map<Key<?>, ServiceEntry<?>> snm = resolvedEntries;
+        DefaultInjector publicInjector = new DefaultInjector(context().containerConfigSite(), "Internal Descriptor", snm);
+
+        //// Hmmm, det er jo altsaa lidt anderledes
+        // Hvis vi vil lave et image...
+        // Instantiate
+        for (ServiceEntry<?> node : resolvedEntries.values()) {
+            if (node instanceof ComponentFactoryBuildEntry) {
+                ComponentFactoryBuildEntry<?> s = (ComponentFactoryBuildEntry<?>) node;
+                if (s.instantiationMode() == InstantiationMode.SINGLETON) {
+                    s.getInstance(null);// getInstance() caches the new instance, newInstance does not
+                }
+            }
+        }
+
+        // Okay we are finished, convert all nodes to runtime nodes.
+        resolvedEntries.replaceAll((k, v) -> v.toRuntimeEntry());
+
+        // Now inject all components...
+
+        // if (exporter != null) {
+        // if (resolvedEntries != exporter.resolvedServiceMap()) {
+        // exporter.resolvedServiceMap().replaceAll((k, v) -> v.toRuntimeEntry());
+        // }
+        // }
         c.put(publicInjector);
     }
 
