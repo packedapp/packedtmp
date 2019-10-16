@@ -30,10 +30,8 @@ public class TestStuff extends BaseBundle {
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-
         provideInstance(new AtomicBoolean());
-        install(SingletonField.class);
-        System.out.println("Bte");
+        provide(SingletonField.class);
     }
 
     public static void main(String[] args) {

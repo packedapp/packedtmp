@@ -210,7 +210,9 @@ public final class ServiceExtensionNode {
         }
 
         for (var e : resolvedEntries.entrySet()) {
-            snm.put(e.getKey(), e.getValue().toRuntimeEntry(transformers));
+            if (e.getKey() != null) { // only services... should be put there
+                snm.put(e.getKey(), e.getValue().toRuntimeEntry(transformers));
+            }
         }
 
         //// Hmmm, det er jo altsaa lidt anderledes
