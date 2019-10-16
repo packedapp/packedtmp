@@ -79,15 +79,15 @@ final class DependencyCycleDetector {
      */
     private static DependencyCycle detectCycle(BuildEntry<?> node, ArrayDeque<BuildEntry<?>> stack, ArrayDeque<BuildEntry<?>> dependencies) {
         stack.push(node);
-        for (int i = node.offset; i < node.resolvedDependencies.length; i++) {
+        for (int i = 0; i < node.resolvedDependencies.length; i++) {
             BuildEntry<?> dependency = node.resolvedDependencies[i];
+            if (dependency == null) {
+                // System.out.println(node.dependencies);
+                // new Exception().printStackTrace();
+            }
             if (dependency != null) {
                 BuildEntry<?> to = dependency;
                 // If the dependency is a @Provides method, we need to use the declaring node
-                BuildEntry<?> owner = to.declaringEntry();
-                if (owner != null) {
-                    to = owner;
-                }
 
                 if (to.hasUnresolvedDependencies() && to instanceof ComponentFactoryBuildEntry) {
                     ComponentFactoryBuildEntry<?> ic = (ComponentFactoryBuildEntry<?>) to;
