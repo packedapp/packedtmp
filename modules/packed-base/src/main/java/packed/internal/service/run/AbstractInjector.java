@@ -27,7 +27,6 @@ import app.packed.service.PrototypeRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.factoryhandle.FieldFactoryHandle;
-import packed.internal.service.ServiceEntry;
 import packed.internal.service.util.nextapi.OldAtInject;
 import packed.internal.service.util.nextapi.OldAtInjectGroup;
 
@@ -55,7 +54,7 @@ public abstract class AbstractInjector implements Injector {
     protected void failedGet(Key<?> key) {}
 
     @Nullable
-    protected <T> ServiceEntry<T> findNode(Class<T> key) {
+    protected <T> RuntimeEntry<T> findNode(Class<T> key) {
         return findNode(Key.of(key));
     }
 
@@ -129,7 +128,7 @@ public abstract class AbstractInjector implements Injector {
                 Object[] arguments = new Object[method.dependencies.size()];
                 System.out.println(Arrays.toString(arguments));
                 for (Dependency dependency : method.dependencies) {
-                    ServiceEntry<?> node = findNode(dependency.key());
+                    RuntimeEntry<?> node = findNode(dependency.key());
                     System.out.println(node);
                 }
                 System.out.println("Should have injected " + method);

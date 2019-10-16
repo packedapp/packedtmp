@@ -35,6 +35,7 @@ import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import packed.internal.container.extension.ExtensionWireletPipelineModel;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
@@ -145,6 +146,10 @@ public final class DependencyManager {
                                 }
                             }
                         }
+                        if (!k.hasQualifier() && ExtensionWireletPipelineModel.class.isAssignableFrom(k.typeLiteral().rawType())) {
+
+                        }
+
                     }
                     recordResolvedDependency(entry, dependency, resolveTo, false);
                     entry.resolvedDependencies[i] = resolveTo;

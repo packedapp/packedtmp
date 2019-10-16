@@ -68,6 +68,8 @@ public final class ServiceExtensionNode {
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, ServiceEntry<?>> resolvedEntries = new LinkedHashMap<>();
 
+    public final LinkedHashMap<Class<?>, BuildEntry<?>> specials = new LinkedHashMap<>();
+
     /**
      * Creates a new builder.
      * 
