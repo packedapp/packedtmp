@@ -23,6 +23,7 @@ import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 
 import app.packed.component.ComponentConfiguration;
+import app.packed.config.ConfigSite;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.ExtensionContext;
 import app.packed.container.extension.ExtensionInstantiationContext;
@@ -42,6 +43,7 @@ import packed.internal.service.build.service.ComponentFactoryBuildEntry;
 import packed.internal.service.build.service.ServiceProvidingManager;
 import packed.internal.service.run.DefaultInjector;
 import packed.internal.service.run.RuntimeEntry;
+import packed.internal.service.run.SingletonRuntimeEntry;
 
 /** This class records all service related information for a single box. */
 public final class ServiceExtensionNode {
@@ -185,11 +187,23 @@ public final class ServiceExtensionNode {
         }
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void onInstantiate(ExtensionInstantiationContext c) {
         LinkedHashMap<Key<?>, RuntimeEntry<?>> snm = new LinkedHashMap<>();
         DefaultInjector publicInjector = new DefaultInjector(context().containerConfigSite(), "Internal Descriptor", snm);
 
         IdentityHashMap<BuildEntry<?>, RuntimeEntry<?>> transformers = new IdentityHashMap<>();
+        for (var e : specials.entrySet()) {
+            Object instance;
+            if (e.getKey() == ExtensionInstantiationContext.class) {
+                instance = c;
+            } else { // pipeline
+                instance = requireNonNull(c.getPipelin((Class) e.getKey()));
+            }
+            BuildEntry<?> be = e.getValue();
+            transformers.put(be, new SingletonRuntimeEntry<Object>(ConfigSite.UNKNOWN, (Key) be.key, be.description, instance));
+        }
+
         for (var e : resolvedEntries.entrySet()) {
             snm.put(e.getKey(), e.getValue().toRuntimeEntry(transformers));
         }
