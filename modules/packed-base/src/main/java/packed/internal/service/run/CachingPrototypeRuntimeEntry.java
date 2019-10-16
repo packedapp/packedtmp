@@ -15,6 +15,8 @@
  */
 package packed.internal.service.run;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.service.InstantiationMode;
 import app.packed.service.PrototypeRequest;
 import packed.internal.service.build.service.ComponentFactoryBuildEntry;
@@ -36,6 +38,11 @@ public class CachingPrototypeRuntimeEntry<T> extends PrototypeRuntimeEntry<T> {
     @Override
     public T get() {
         return getInstance(null);
+    }
+
+    @Override
+    public void initInstance(T instance) {
+        this.instance = requireNonNull(instance);
     }
 
     @Override

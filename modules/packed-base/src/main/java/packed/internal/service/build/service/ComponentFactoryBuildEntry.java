@@ -30,10 +30,10 @@ import app.packed.service.ServiceComponentConfiguration;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import packed.internal.service.build.ServiceExtensionNode;
+import packed.internal.service.run.CachingPrototypeRuntimeEntry;
 import packed.internal.service.run.LazyRuntimeEntry;
 import packed.internal.service.run.PrototypeRuntimeEntry;
 import packed.internal.service.run.RuntimeEntry;
-import packed.internal.service.run.SingletonRuntimeEntry;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -150,7 +150,8 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         T i = instance;
         switch (instantionMode) {
         case SINGLETON:
-            return new SingletonRuntimeEntry<>(this, i);
+            return new CachingPrototypeRuntimeEntry<>(this);
+        // return new SingletonRuntimeEntry<>(this, i);
         case LAZY:
             if (i != null) {
                 return new LazyRuntimeEntry<>(this, i);
