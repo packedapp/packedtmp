@@ -17,13 +17,13 @@ package packed.internal.service.run;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Map;
 import java.util.concurrent.Semaphore;
 
 import app.packed.service.InstantiationMode;
 import app.packed.service.PrototypeRequest;
 import packed.internal.inject.util.Provider;
 import packed.internal.service.build.BuildEntry;
+import packed.internal.service.build.ServiceExtensionInstantiationContext;
 import packed.internal.service.build.service.ComponentFactoryBuildEntry;
 import packed.internal.util.ThrowableUtil;
 
@@ -39,9 +39,9 @@ public final class LazyInjectorEntry<T> extends InjectorEntry<T> implements Prov
      * @param node
      *            the build node to create this node from
      */
-    public LazyInjectorEntry(ComponentFactoryBuildEntry<T> node, Map<BuildEntry<?>, InjectorEntry<?>> entries) {
+    public LazyInjectorEntry(ComponentFactoryBuildEntry<T> node, ServiceExtensionInstantiationContext context) {
         super(node);
-        this.instance = new Sync(new PrototypeInjectorEntry<>(node, entries));
+        this.instance = new Sync(new PrototypeInjectorEntry<>(node, context));
     }
 
     public LazyInjectorEntry(BuildEntry<T> node, T instance) {

@@ -18,7 +18,6 @@ package packed.internal.service.build;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
-import java.util.Map;
 
 import app.packed.config.ConfigSite;
 import app.packed.service.Dependency;
@@ -156,7 +155,7 @@ public abstract class BuildEntry<T> {
      *
      * @return the new runtime node
      */
-    protected abstract InjectorEntry<T> newRuntimeNode(Map<BuildEntry<?>, InjectorEntry<?>> entries);
+    protected abstract InjectorEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context);
 
     public abstract boolean requiresPrototypeRequest();
 
@@ -165,7 +164,7 @@ public abstract class BuildEntry<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public final InjectorEntry<T> toRuntimeEntry(Map<BuildEntry<?>, InjectorEntry<?>> entries) {
-        return (InjectorEntry<T>) entries.computeIfAbsent(this, k -> k.newRuntimeNode(entries));
+    public final InjectorEntry<T> toRuntimeEntry(ServiceExtensionInstantiationContext context) {
+        return (InjectorEntry<T>) context.transformers.computeIfAbsent(this, k -> k.newRuntimeNode(context));
     }
 }

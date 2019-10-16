@@ -16,13 +16,12 @@
 package packed.internal.service.run;
 
 import java.lang.invoke.MethodHandle;
-import java.util.Map;
 
 import app.packed.service.InjectionException;
 import app.packed.service.InstantiationMode;
 import app.packed.service.PrototypeRequest;
 import packed.internal.inject.util.Provider;
-import packed.internal.service.build.BuildEntry;
+import packed.internal.service.build.ServiceExtensionInstantiationContext;
 import packed.internal.service.build.service.ComponentFactoryBuildEntry;
 import packed.internal.util.ThrowableUtil;
 
@@ -45,16 +44,16 @@ public class PrototypeInjectorEntry<T> extends InjectorEntry<T> implements Provi
     /**
      * @param node
      */
-    public PrototypeInjectorEntry(ComponentFactoryBuildEntry<T> node, Map<BuildEntry<?>, InjectorEntry<?>> entries) {
+    public PrototypeInjectorEntry(ComponentFactoryBuildEntry<T> node, ServiceExtensionInstantiationContext context) {
         super(node);
 
         int size = node.dependencies.size();
         if (node.needsInstance()) {
             providers = new Provider[size + 1];
-            providers[0] = (Provider<?>) node.declaringEntry.toRuntimeEntry(entries);
+            providers[0] = (Provider<?>) node.declaringEntry.toRuntimeEntry(context);
             if (size > 0) {
                 for (int i = 0; i < node.resolvedDependencies.length; i++) {
-                    InjectorEntry<?> forReal = node.resolvedDependencies[i].toRuntimeEntry(entries);
+                    InjectorEntry<?> forReal = node.resolvedDependencies[i].toRuntimeEntry(context);
                     PrototypeRequest is = null;
                     PrototypeRequest.of(node.dependencies.get(i));
                     providers[i + 1] = () -> forReal.getInstance(is);
@@ -63,7 +62,7 @@ public class PrototypeInjectorEntry<T> extends InjectorEntry<T> implements Provi
         } else {
             providers = new Provider[size];
             for (int i = 0; i < node.resolvedDependencies.length; i++) {
-                InjectorEntry<?> forReal = node.resolvedDependencies[i].toRuntimeEntry(entries);
+                InjectorEntry<?> forReal = node.resolvedDependencies[i].toRuntimeEntry(context);
                 PrototypeRequest is = null;
                 PrototypeRequest.of(node.dependencies.get(i));
                 providers[i] = () -> forReal.getInstance(is);

@@ -15,10 +15,16 @@
  */
 package packed.internal.service.build;
 
+import java.util.IdentityHashMap;
+
+import packed.internal.service.run.InjectorEntry;
+
 /**
  *
  */
 public class ServiceExtensionInstantiationContext {
+
+    final IdentityHashMap<BuildEntry<?>, InjectorEntry<?>> transformers = new IdentityHashMap<>();
 
     // private final IdentityHashMap<K, V>
 

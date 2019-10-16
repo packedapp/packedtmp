@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.util.List;
-import java.util.Map;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
@@ -27,12 +26,12 @@ import app.packed.service.Dependency;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.util.InvalidDeclarationException;
-import packed.internal.service.build.BuildEntry;
+import packed.internal.service.build.ServiceExtensionInstantiationContext;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.run.CachingPrototypeInjectorEntry;
+import packed.internal.service.run.InjectorEntry;
 import packed.internal.service.run.LazyInjectorEntry;
 import packed.internal.service.run.PrototypeInjectorEntry;
-import packed.internal.service.run.InjectorEntry;
 
 /**
  * An entry representing a component node. This node is used for all three binding modes mainly because it makes
@@ -90,14 +89,14 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
 
     /** {@inheritDoc} */
     @Override
-    protected InjectorEntry<T> newRuntimeNode(Map<BuildEntry<?>, InjectorEntry<?>> entries) {
+    protected InjectorEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
         switch (instantionMode) {
         case SINGLETON:
-            return new CachingPrototypeInjectorEntry<>(this, entries);
+            return new CachingPrototypeInjectorEntry<>(this, context);
         case LAZY:
-            return new LazyInjectorEntry<>(this, entries);
+            return new LazyInjectorEntry<>(this, context);
         default:
-            return new PrototypeInjectorEntry<>(this, entries);
+            return new PrototypeInjectorEntry<>(this, context);
         }
     }
 

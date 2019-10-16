@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 
 import app.packed.component.ComponentConfiguration;
@@ -189,7 +188,7 @@ public final class ServiceExtensionNode {
         LinkedHashMap<Key<?>, InjectorEntry<?>> snm = new LinkedHashMap<>();
         DefaultInjector publicInjector = new DefaultInjector(context().containerConfigSite(), "Internal Descriptor", snm);
 
-        IdentityHashMap<BuildEntry<?>, InjectorEntry<?>> transformers = new IdentityHashMap<>();
+        ServiceExtensionInstantiationContext con = new ServiceExtensionInstantiationContext();
         for (var e : specials.entrySet()) {
             Object instance;
 
@@ -203,12 +202,12 @@ public final class ServiceExtensionNode {
                 instance = requireNonNull(c.getPipelin((Class) e.getKey()));
             }
             BuildEntry<?> be = e.getValue();
-            transformers.put(be, new SingletonInjectorEntry<Object>(ConfigSite.UNKNOWN, (Key) be.key, be.description, instance));
+            con.transformers.put(be, new SingletonInjectorEntry<Object>(ConfigSite.UNKNOWN, (Key) be.key, be.description, instance));
         }
 
         for (var e : resolvedEntries.entrySet()) {
             if (e.getKey() != null) { // only services... should be put there
-                snm.put(e.getKey(), e.getValue().toRuntimeEntry(transformers));
+                snm.put(e.getKey(), e.getValue().toRuntimeEntry(con));
             }
         }
 
@@ -217,7 +216,7 @@ public final class ServiceExtensionNode {
             if (node instanceof ComponentFactoryBuildEntry) {
                 ComponentFactoryBuildEntry<?> s = (ComponentFactoryBuildEntry<?>) node;
                 if (s.instantiationMode() == InstantiationMode.SINGLETON) {
-                    s.toRuntimeEntry(transformers).getInstance(null);
+                    s.toRuntimeEntry(con).getInstance(null);
                 }
             }
         }

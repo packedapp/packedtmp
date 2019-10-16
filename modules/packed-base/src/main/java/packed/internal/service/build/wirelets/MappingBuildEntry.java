@@ -18,16 +18,16 @@ package packed.internal.service.build.wirelets;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
 import app.packed.config.ConfigSite;
 import app.packed.service.InstantiationMode;
 import app.packed.util.Key;
 import packed.internal.service.build.BuildEntry;
+import packed.internal.service.build.ServiceExtensionInstantiationContext;
 import packed.internal.service.build.ServiceExtensionNode;
-import packed.internal.service.run.MappingInjectorEntry;
 import packed.internal.service.run.InjectorEntry;
+import packed.internal.service.run.MappingInjectorEntry;
 
 /**
  * A build entry that that takes an existing entry and uses a {@link Function} to map the service provided by the entry.
@@ -61,8 +61,8 @@ final class MappingBuildEntry<F, T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected InjectorEntry<T> newRuntimeNode(Map<BuildEntry<?>, InjectorEntry<?>> entries) {
-        return new MappingInjectorEntry<>(this, entryToMap.toRuntimeEntry(entries), function);
+    protected InjectorEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
+        return new MappingInjectorEntry<>(this, entryToMap.toRuntimeEntry(context), function);
     }
 
     /** {@inheritDoc} */

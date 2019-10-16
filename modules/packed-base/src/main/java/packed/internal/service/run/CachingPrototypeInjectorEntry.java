@@ -15,11 +15,9 @@
  */
 package packed.internal.service.run;
 
-import java.util.Map;
-
 import app.packed.service.InstantiationMode;
 import app.packed.service.PrototypeRequest;
-import packed.internal.service.build.BuildEntry;
+import packed.internal.service.build.ServiceExtensionInstantiationContext;
 import packed.internal.service.build.service.ComponentFactoryBuildEntry;
 
 /**
@@ -32,8 +30,8 @@ public class CachingPrototypeInjectorEntry<T> extends PrototypeInjectorEntry<T> 
     /**
      * @param node
      */
-    public CachingPrototypeInjectorEntry(ComponentFactoryBuildEntry<T> node, Map<BuildEntry<?>, InjectorEntry<?>> entries) {
-        super(node, entries);
+    public CachingPrototypeInjectorEntry(ComponentFactoryBuildEntry<T> node, ServiceExtensionInstantiationContext context) {
+        super(node, context);
     }
 
     @Override

@@ -18,12 +18,11 @@ package packed.internal.service.build.service;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
-import java.util.Map;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.service.InstantiationMode;
-import packed.internal.service.build.BuildEntry;
+import packed.internal.service.build.ServiceExtensionInstantiationContext;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.run.InjectorEntry;
 import packed.internal.service.run.SingletonInjectorEntry;
@@ -65,7 +64,7 @@ public final class ComponentInstanceBuildEntry<T> extends AbstractComponentBuild
 
     /** {@inheritDoc} */
     @Override
-    protected InjectorEntry<T> newRuntimeNode(Map<BuildEntry<?>, InjectorEntry<?>> entries) {
+    protected InjectorEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
         return new SingletonInjectorEntry<>(this, instance);
     }
 
