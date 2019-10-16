@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
 
@@ -30,9 +29,9 @@ import app.packed.container.extension.Extension;
 import app.packed.reflect.ExecutableDescriptor;
 import app.packed.reflect.MethodDescriptor;
 import app.packed.reflect.ParameterDescriptor;
+import app.packed.service.Dependency;
 import app.packed.service.InjectionException;
 import app.packed.service.ServiceContract;
-import app.packed.service.Dependency;
 import app.packed.service.ServiceExtension;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -41,7 +40,6 @@ import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.build.service.ComponentFactoryBuildEntry;
-import packed.internal.service.run.DefaultInjector;
 
 /**
  * This class manages everything to do with dependencies of components and service for an {@link ServiceExtension}.
@@ -118,9 +116,6 @@ public final class DependencyManager {
     public void analyze() {
         // Injector kan baade vaere en artifact.
         // Og en del af en artifact...
-
-        Map<Key<?>, ServiceEntry<?>> snm = node.resolvedEntries;
-        node.publicInjector = new DefaultInjector(node.context().containerConfigSite(), "Internal Descriptor", snm);
 
         // If we do not export services into a bundle. We should be able to resolver much quicker..
         resolveAllDependencies();

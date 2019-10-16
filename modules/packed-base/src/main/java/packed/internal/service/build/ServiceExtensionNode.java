@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.BundleDescriptor;
@@ -152,6 +153,10 @@ public final class ServiceExtensionNode {
     }
 
     public void instantiate() {
+
+        Map<Key<?>, ServiceEntry<?>> snm = resolvedEntries;
+        publicInjector = new DefaultInjector(context().containerConfigSite(), "Internal Descriptor", snm);
+
         //// Hmmm, det er jo altsaa lidt anderledes
         // Hvis vi vil lave et image...
         // Instantiate
