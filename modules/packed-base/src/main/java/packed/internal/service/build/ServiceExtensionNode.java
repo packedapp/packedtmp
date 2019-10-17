@@ -46,9 +46,9 @@ import packed.internal.service.run.SingletonInjectorEntry;
 /** This class records all service related information for a single box. */
 public final class ServiceExtensionNode {
 
-    public ServiceExtensionNode parent;
-
-    public ArrayList<ServiceExtensionNode> children;
+    /** Any children of this node. */
+    @Nullable
+    ArrayList<ServiceExtensionNode> children;
 
     private final ExtensionContext context;
 
@@ -60,6 +60,9 @@ public final class ServiceExtensionNode {
     private ExportManager exporter;
 
     private boolean hasFailed;
+
+    /** Any parent of this node. */
+    ServiceExtensionNode parent;
 
     /** A service exporter handles everything to do with exports. */
     @Nullable
@@ -82,14 +85,6 @@ public final class ServiceExtensionNode {
 
     public void addErrorMessage() {
         hasFailed = true;
-    }
-
-    public void link(ServiceExtensionNode child) {
-        child.parent = this;
-        if (children == null) {
-            children = new ArrayList<>(5);
-        }
-        children.add(child);
     }
 
     public void build() {
@@ -148,6 +143,14 @@ public final class ServiceExtensionNode {
             e = exporter = new ExportManager(this);
         }
         return e;
+    }
+
+    public void link(ServiceExtensionNode child) {
+        child.parent = this;
+        if (children == null) {
+            children = new ArrayList<>(5);
+        }
+        children.add(child);
     }
 
     public ServiceContract newServiceContract(ExtensionWirelet.PipelineMap context) {

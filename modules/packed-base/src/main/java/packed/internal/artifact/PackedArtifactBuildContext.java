@@ -63,12 +63,6 @@ public final class PackedArtifactBuildContext implements ArtifactBuildContext {
         return topContainerConfiguration.source.getClass();
     }
 
-    // /** {@inheritDoc} */
-    // @Override
-    // public WireletList wirelets() {
-    // return topContainerConfiguration.wirelets();
-    // }
-
     /** {@inheritDoc} */
     @Override
     public void addError(ErrorMessage message) {

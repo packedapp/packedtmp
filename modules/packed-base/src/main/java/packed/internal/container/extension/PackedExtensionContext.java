@@ -168,6 +168,11 @@ public final class PackedExtensionContext implements ExtensionContext {
     public <T extends Extension> T use(Class<T> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
 
+        // Alternative behavior would be throw an IAE exception
+
+        if (extensionType == extension.getClass()) {
+            return (T) extension;
+        }
         // Unfortunately, we need to check this every time.
         // An alternative would be to cache it in a map for each extension.
         // However this would incur extra memory usage. And if we only request an extension once

@@ -53,6 +53,7 @@ public interface ArtifactBuildContext {
      * @return the source of the top level container
      */
     Class<? extends ContainerSource> sourceType();
+
 }
 
 /**

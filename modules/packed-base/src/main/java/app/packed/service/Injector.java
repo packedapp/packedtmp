@@ -98,6 +98,9 @@ import app.packed.util.Key;
 // Description... hmm its just super helpful...
 // Injector does not have a name. In many cases there are a container behind an Injector.
 // But if, for example, a component has its own injector. That injector does not have a container behind it.
+
+// Do we have an internal injector and an external injector?????
+// Or maybe an Injector and an InternalInjector (which if exportAll is the same???)
 public interface Injector {
 
     /**

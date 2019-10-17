@@ -1,0 +1,6 @@
+Jeg tror vi er endt lidt med det her design fordi.
+
+I sidste ende kan der vaere en yderst extension. Som foerst kan installere services
+i hver eneste container naar hele artifacten er lavet....
+
+F.eks. fordi den laver et faelles objekter der skal med i hver eneste container...

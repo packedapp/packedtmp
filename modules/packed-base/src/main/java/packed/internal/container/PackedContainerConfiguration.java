@@ -54,6 +54,7 @@ import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.component.AbstractComponent;
 import packed.internal.component.AbstractComponentConfiguration;
 import packed.internal.component.ComponentModel;
+import packed.internal.component.CoreComponentConfiguration;
 import packed.internal.component.FactoryComponentConfiguration;
 import packed.internal.component.InstantiatedComponentConfiguration;
 import packed.internal.component.StaticComponentConfiguration;
@@ -91,6 +92,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     /** Any wirelets that was given by the user when creating this configuration. */
     public final WireletContext wireletContext;
+    /** The artifact this component is a part of. */
+    // final PackedArtifactBuildContext artifact;
 
     /**
      * Creates a new container configuration.
@@ -124,6 +127,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         this.source = requireNonNull(bundle);
         this.lookup = this.model = ContainerSourceModel.of(bundle.getClass());
         this.wireletContext = WireletContext.create(this, null, wirelets);
+        // this.artifact=parent.artifact
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -292,6 +296,10 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         requireNonNull(extensionType, "extensionType is null");
         return extensions.get(extensionType);
     }
+
+    /** The component that was last installed. */
+    @Nullable
+    protected CoreComponentConfiguration<?> currentComponent;
 
     public <T> ComponentConfiguration<T> install(Factory<T> factory, ConfigSite configSite) {
         ComponentModel model = lookup.componentModelOf(factory.rawType());

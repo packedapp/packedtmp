@@ -43,8 +43,8 @@ import packed.internal.hook.applicator.DelayedAccessor;
 /** A common superclass for all component configuration classes. */
 public abstract class AbstractComponentConfiguration<T> implements ComponentHolder, ComponentConfiguration<T> {
 
-    /** The build context of the artifact this configuration belongs to. */
-    final PackedArtifactBuildContext buildContext;
+    /** The artifact this component is a part of. */
+    final PackedArtifactBuildContext artifact;
 
     /** Any children of this component (lazily initialized), in order of insertion. */
     @Nullable
@@ -52,10 +52,6 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
 
     /** The configuration site of this component. */
     private final ConfigSite configSite;
-
-    /** The component that was last installed. */
-    @Nullable
-    protected CoreComponentConfiguration<?> currentComponent;
 
     public ArrayList<DelayedAccessor> del = new ArrayList<>();
 
@@ -66,10 +62,11 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
     @Nullable
     private String description;
 
-    private final FeatureMap features = new FeatureMap();
+    /** Any extension this component belongs to. */
+    @Nullable
+    private final PackedExtensionContext extension;
 
-    /** Whether or not the name can be postfix'able. Useful for images only. */
-    boolean isNamePostfixable = false;
+    private final FeatureMap features = new FeatureMap();
 
     /** The name of the component. */
     @Nullable
@@ -81,13 +78,6 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
 
     /** The state of this configuration. */
     protected State state = State.INITIAL;
-
-    public final PackedExtensionContext installedBy;
-
-    @Override
-    public Optional<Class<? extends Extension>> extension() {
-        return installedBy == null ? Optional.empty() : installedBy.model.optional;
-    }
 
     /**
      * Creates a new abstract component configuration
@@ -101,14 +91,13 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
         this.configSite = requireNonNull(configSite);
         this.parent = requireNonNull(parent);
         this.depth = parent.depth() + 1;
-        this.buildContext = parent.buildContext;
+        this.artifact = parent.artifact;
 
         AbstractComponentConfiguration<?> p = parent;
         while (!(p instanceof PackedContainerConfiguration)) {
             p = p.parent;
         }
-        PackedExtensionContext pec = ((PackedContainerConfiguration) p).activeExtension;
-        this.installedBy = pec == null ? null : pec;
+        this.extension = ((PackedContainerConfiguration) p).activeExtension;
     }
 
     /**
@@ -123,8 +112,8 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
         this.configSite = requireNonNull(configSite);
         this.parent = null;
         this.depth = 0;
-        this.buildContext = new PackedArtifactBuildContext((PackedContainerConfiguration) this, artifactDriver);
-        this.installedBy = null;
+        this.artifact = new PackedArtifactBuildContext((PackedContainerConfiguration) this, artifactDriver);
+        this.extension = null;
     }
 
     protected void addChild(AbstractComponentConfiguration<?> configuration) {
@@ -153,10 +142,15 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
         return depth;
     }
 
+    @Override
+    public Optional<Class<? extends Extension>> extension() {
+        return extension == null ? Optional.empty() : extension.model.optional;
+    }
+
     protected void extensionsPrepareInstantiation(PackedArtifactInstantiationContext ic) {
         if (children != null) {
             for (AbstractComponentConfiguration<?> acc : children.values()) {
-                if (buildContext == acc.buildContext) {
+                if (artifact == acc.artifact) {
                     acc.extensionsPrepareInstantiation(ic);
                 }
             }
@@ -304,14 +298,14 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
     /** The state of the component configuration */
     public enum State {
 
+        /** The initial state. */
+        EXTENSION_USED,
+
         /** */
         FINAL,
 
         /** {@link ComponentConfiguration#getName()} or {@link ContainerConfiguration#getName()} has been invoked. */
         GET_NAME_INVOKED,
-
-        /** The initial state. */
-        EXTENSION_USED,
 
         /** The initial state. */
         INITIAL,
