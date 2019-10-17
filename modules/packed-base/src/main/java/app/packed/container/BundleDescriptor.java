@@ -37,7 +37,6 @@ import app.packed.service.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.artifact.BuildOutput;
-import packed.internal.artifact.NonInstantiatingArtifactDriver;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.module.ModuleAccess;
 
@@ -356,16 +355,6 @@ public class BundleDescriptor {
             return this;
         }
     }
-}
-
-/** An dummy artifact driver for creating artifact images. */
-final class BundleDescriptorArtifactDriver extends NonInstantiatingArtifactDriver<ArtifactImage> {
-
-    /** The single instance. */
-    static final BundleDescriptorArtifactDriver INSTANCE = new BundleDescriptorArtifactDriver();
-
-    /** Singleton */
-    private BundleDescriptorArtifactDriver() {}
 }
 
 //
