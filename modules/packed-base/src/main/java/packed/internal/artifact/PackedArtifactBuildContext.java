@@ -47,6 +47,10 @@ public final class PackedArtifactBuildContext implements ArtifactBuildContext {
 
     /** {@inheritDoc} */
     @Override
+    public void addError(ErrorMessage message) {}
+
+    /** {@inheritDoc} */
+    @Override
     public ConfigSite configSite() {
         return topContainerConfiguration.configSite();
     }
@@ -61,12 +65,5 @@ public final class PackedArtifactBuildContext implements ArtifactBuildContext {
     @Override
     public Class<? extends ContainerSource> sourceType() {
         return topContainerConfiguration.source.getClass();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void addError(ErrorMessage message) {
-        // TODO Auto-generated method stub
-
     }
 }

@@ -38,7 +38,11 @@ import app.packed.container.Wirelet;
 //// Host
 
 // Taenker maaske det bliver
+// Hosts are used to connect artifacts....
 
+// deploy -> Artifact... ellers maaske de install alligevel....
+// link -> Container
+// install -> Component
 interface Host {
 
     public static void main(Bundle b) {}

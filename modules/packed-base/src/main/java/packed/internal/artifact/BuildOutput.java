@@ -13,17 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.artifact;
 
-import app.packed.component.Component;
-import packed.internal.artifact.PackedArtifactInstantiationContext;
+import app.packed.artifact.ArtifactDriver;
 
 /**
  *
  */
-final class DefaultComponent extends AbstractComponent implements Component {
+public class BuildOutput {
 
-    DefaultComponent(AbstractComponent container, AbstractComponentConfiguration<?> configuration, PackedArtifactInstantiationContext ic) {
-        super(container, configuration, ic);
+    BuildOutput() {
+
+    }
+
+    public static BuildOutput image() {
+        return new BuildOutput();
+    }
+
+    public static BuildOutput descriptor(Class<?> type) {
+        return new BuildOutput();
+    }
+
+    public static BuildOutput artifact(ArtifactDriver<?> driver) {
+        return new BuildOutput();
     }
 }

@@ -97,9 +97,6 @@ public abstract class AbstractComponent implements Component {
         } else {
             this.name = requireNonNull(configuration.name);
         }
-        // for (FeatureKey<?> fk : configuration.features().keys()) {
-        // Object o = configuration.features().get(fk);
-        // }
     }
 
     /** {@inheritDoc} */

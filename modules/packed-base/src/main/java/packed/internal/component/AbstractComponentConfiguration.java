@@ -42,8 +42,9 @@ import packed.internal.hook.applicator.DelayedAccessor;
 
 /** A common superclass for all component configuration classes. */
 public abstract class AbstractComponentConfiguration<T> implements ComponentHolder, ComponentConfiguration<T> {
+
     /** The artifact this component is a part of. */
-    public final PackedArtifactBuildContext artifact;
+    private final PackedArtifactBuildContext artifact;
 
     /** Any children of this component (lazily initialized), in order of insertion. */
     @Nullable
@@ -52,6 +53,11 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
     /** The configuration site of this component. */
     private final ConfigSite configSite;
 
+    /** The container this component belongs to, or null for the top level container. */
+    @Nullable
+    public final PackedContainerConfiguration container;
+
+    /** Ugly stuff. */
     public ArrayList<DelayedAccessor> del = new ArrayList<>();
 
     /** The depth of the component in the hierarchy (including any parent artifacts). */
@@ -65,19 +71,16 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
     @Nullable
     private final PackedExtensionContext extension;
 
+    /** Annoying features. */
     private final FeatureMap features = new FeatureMap();
 
     /** The name of the component. */
     @Nullable
     public String name;
 
-    /** The parent of this component, or null if a root component. */
+    /** The parent of this component, or null for the top level container. */
     @Nullable
     public final AbstractComponentConfiguration<?> parent;
-
-    /** The container this component belongs to. */
-    @Nullable
-    public final PackedContainerConfiguration container;
 
     /** The state of this configuration. */
     protected State state = State.INITIAL;
@@ -100,10 +103,12 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
     }
 
     /**
-     * A special constructor for configuration of the root container
+     * A special constructor for the top level container.
      * 
      * @param configSite
      *            the configuration site of the component
+     * @param artifactDriver
+     *            the driver of the artifact to create
      */
     protected AbstractComponentConfiguration(ConfigSite configSite, ArtifactDriver<?> artifactDriver) {
         this.configSite = requireNonNull(configSite);
@@ -114,14 +119,31 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
         this.artifact = new PackedArtifactBuildContext((PackedContainerConfiguration) this, artifactDriver);
     }
 
-    protected void addChild(AbstractComponentConfiguration<?> configuration) {
-        if (children == null) {
-            children = new LinkedHashMap<>();
+    /**
+     * Adds the specified child to this component.
+     * 
+     * @param child
+     *            the child to add
+     */
+    protected final void addChild(AbstractComponentConfiguration<?> child) {
+        LinkedHashMap<String, AbstractComponentConfiguration<?>> c = children;
+        if (c == null) {
+            c = children = new LinkedHashMap<>();
         }
-        requireNonNull(configuration.name);
-        children.put(configuration.name, configuration);
+        requireNonNull(child.name);
+        children.put(child.name, child);
     }
 
+    /**
+     * Returns the artifact this component is a part of.
+     * 
+     * @return the artifact this component is a part of
+     */
+    public final PackedArtifactBuildContext artifact() {
+        return artifact;
+    }
+
+    /** {@inheritDoc} */
     @Override
     public final void checkConfigurable() {
         if (state == State.FINAL) {
@@ -129,9 +151,20 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public final ConfigSite configSite() {
         return configSite;
+    }
+
+    /**
+     * Returns the container this component is a part of. Or null if this component is the top level container.
+     * 
+     * @return the container this component is a part of
+     */
+    @Nullable
+    public final PackedContainerConfiguration container() {
+        return container;
     }
 
     /** {@inheritDoc} */
@@ -140,8 +173,9 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
         return depth;
     }
 
+    /** {@inheritDoc} */
     @Override
-    public Optional<Class<? extends Extension>> extension() {
+    public final Optional<Class<? extends Extension>> extension() {
         return extension == null ? Optional.empty() : extension.model.optional;
     }
 
@@ -155,35 +189,38 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public final FeatureMap features() {
         return features;
     }
 
+    /** {@inheritDoc} */
     @Override
     @Nullable
     public final String getDescription() {
         return description;
     }
 
+    /** {@inheritDoc} */
     @Override
     public final String getName() {
         return initializeName(State.GET_NAME_INVOKED, null);
     }
 
-    Map<String, AbstractComponent> initializeChildren(AbstractComponent parent, PackedArtifactInstantiationContext ic) {
+    final Map<String, AbstractComponent> initializeChildren(AbstractComponent parent, PackedArtifactInstantiationContext ic) {
         if (children == null) {
             return null;
         }
-        HashMap<String, AbstractComponent> result = new HashMap<>();
+        HashMap<String, AbstractComponent> result = new HashMap<>(children.size());
         for (AbstractComponentConfiguration<?> acc : children.values()) {
             AbstractComponent ac = acc.instantiate(parent, ic);
             result.put(ac.name(), ac);
         }
-        return result;
+        return Map.copyOf(result);
     }
 
-    public String initializeName(State state, String setName) {
+    public final String initializeName(State state, String setName) {
         String n = name;
         if (n != null) {
             return n;
@@ -219,7 +256,7 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
         return this.name = n;
     }
 
-    private String initializeNameDefaultName() {
+    private final String initializeNameDefaultName() {
         if (this instanceof PackedContainerConfiguration) {
             // I think try and move some of this to ComponentNameWirelet
             @Nullable
@@ -257,9 +294,10 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
     @Override
     public final ComponentPath path() {
         initializeName(State.PATH_INVOKED, null);
-        return PackedComponentPath.of(this);
+        return PackedComponentPath.of(this); // show we weak intern them????
     }
 
+    /** {@inheritDoc} */
     @Override
     public AbstractComponentConfiguration<T> setDescription(String description) {
         requireNonNull(description, "description is null");
@@ -268,6 +306,7 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
         return this;
     }
 
+    /** {@inheritDoc} */
     @Override
     public AbstractComponentConfiguration<T> setName(String name) {
         ComponentNameWirelet.checkName(name);
@@ -294,6 +333,7 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
     }
 
     /** The state of the component configuration */
+    // FirstAction???
     public enum State {
 
         /** The initial state. */
