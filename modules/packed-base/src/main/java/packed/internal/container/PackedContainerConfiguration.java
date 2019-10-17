@@ -92,8 +92,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     /** Any wirelets that was given by the user when creating this configuration. */
     public final WireletContext wireletContext;
-    /** The artifact this component is a part of. */
-    // final PackedArtifactBuildContext artifact;
 
     /**
      * Creates a new container configuration.
@@ -127,7 +125,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         this.source = requireNonNull(bundle);
         this.lookup = this.model = ContainerSourceModel.of(bundle.getClass());
         this.wireletContext = WireletContext.create(this, null, wirelets);
-        // this.artifact=parent.artifact
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

@@ -42,9 +42,8 @@ import packed.internal.hook.applicator.DelayedAccessor;
 
 /** A common superclass for all component configuration classes. */
 public abstract class AbstractComponentConfiguration<T> implements ComponentHolder, ComponentConfiguration<T> {
-
     /** The artifact this component is a part of. */
-    final PackedArtifactBuildContext artifact;
+    public final PackedArtifactBuildContext artifact;
 
     /** Any children of this component (lazily initialized), in order of insertion. */
     @Nullable
@@ -76,6 +75,10 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
     @Nullable
     public final AbstractComponentConfiguration<?> parent;
 
+    /** The container this component belongs to. */
+    @Nullable
+    public final PackedContainerConfiguration container;
+
     /** The state of this configuration. */
     protected State state = State.INITIAL;
 
@@ -92,12 +95,8 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
         this.parent = requireNonNull(parent);
         this.depth = parent.depth() + 1;
         this.artifact = parent.artifact;
-
-        AbstractComponentConfiguration<?> p = parent;
-        while (!(p instanceof PackedContainerConfiguration)) {
-            p = p.parent;
-        }
-        this.extension = ((PackedContainerConfiguration) p).activeExtension;
+        this.container = parent instanceof PackedContainerConfiguration ? (PackedContainerConfiguration) parent : parent.container;
+        this.extension = container.activeExtension;
     }
 
     /**
@@ -105,15 +104,14 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
      * 
      * @param configSite
      *            the configuration site of the component
-     * @param artifactDriver
-     *            the artifact driver used to create the artifact.
      */
     protected AbstractComponentConfiguration(ConfigSite configSite, ArtifactDriver<?> artifactDriver) {
         this.configSite = requireNonNull(configSite);
         this.parent = null;
+        this.container = null;
         this.depth = 0;
-        this.artifact = new PackedArtifactBuildContext((PackedContainerConfiguration) this, artifactDriver);
         this.extension = null;
+        this.artifact = new PackedArtifactBuildContext((PackedContainerConfiguration) this, artifactDriver);
     }
 
     protected void addChild(AbstractComponentConfiguration<?> configuration) {
