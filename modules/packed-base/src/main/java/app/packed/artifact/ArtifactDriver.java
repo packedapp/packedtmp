@@ -22,6 +22,7 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.service.Injector;
+import packed.internal.artifact.BuildOutput;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 
@@ -122,12 +123,12 @@ public abstract class ArtifactDriver<T> {
         if (source instanceof ArtifactImage) {
             return ((ArtifactImage) source).newArtifact(this, wirelets);
         }
-        PackedContainerConfiguration pcc = new PackedContainerConfiguration(this, source, wirelets);
+        PackedContainerConfiguration pcc = new PackedContainerConfiguration(BuildOutput.artifact(this), source, wirelets);
         return instantiate(pcc.doBuild().doInstantiate(pcc.wireletContext));
     }
 
     public final <C> T newArtifact(Function<ContainerConfiguration, C> factory, ArtifactConfigurator<C> configurator, Wirelet... wirelets) {
-        PackedContainerConfiguration pcc = new PackedContainerConfiguration(this, configurator, wirelets);
+        PackedContainerConfiguration pcc = new PackedContainerConfiguration(BuildOutput.artifact(this), configurator, wirelets);
         C c = factory.apply(pcc);
         configurator.configure(c);
         return instantiate(pcc.doBuild().doInstantiate(pcc.wireletContext));

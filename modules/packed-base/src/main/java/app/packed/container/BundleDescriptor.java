@@ -36,6 +36,7 @@ import app.packed.contract.ContractSet;
 import app.packed.service.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import packed.internal.artifact.BuildOutput;
 import packed.internal.artifact.NonInstantiatingArtifactDriver;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.module.ModuleAccess;
@@ -258,7 +259,7 @@ public class BundleDescriptor {
     // For example, we should be able to take an image...
     public static BundleDescriptor of(Bundle bundle) {
         requireNonNull(bundle, "bundle is null");
-        PackedContainerConfiguration conf = new PackedContainerConfiguration(BundleDescriptorArtifactDriver.INSTANCE, bundle);
+        PackedContainerConfiguration conf = new PackedContainerConfiguration(BuildOutput.descriptor(BundleDescriptor.class), bundle);
         conf.doBuild();
         BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
         conf.buildDescriptor(builder);

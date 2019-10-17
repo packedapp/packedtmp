@@ -17,7 +17,6 @@ package packed.internal.artifact;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.artifact.ArtifactDriver;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
 import app.packed.errorhandling.ErrorMessage;
@@ -27,7 +26,7 @@ import packed.internal.container.PackedContainerConfiguration;
 public final class PackedArtifactBuildContext implements ArtifactBuildContext {
 
     /** The artifact's driver. */
-    final ArtifactDriver<?> driver;
+    private final BuildOutput output;
 
     /** The configuration of the artifacts top container. */
     private final PackedContainerConfiguration topContainerConfiguration;
@@ -37,12 +36,12 @@ public final class PackedArtifactBuildContext implements ArtifactBuildContext {
      * 
      * @param topContainerConfiguration
      *            the configuration of the artifact's top container
-     * @param driver
-     *            the driver of the artifact
+     * @param output
+     *            the output of the build process
      */
-    public PackedArtifactBuildContext(PackedContainerConfiguration topContainerConfiguration, ArtifactDriver<?> driver) {
+    public PackedArtifactBuildContext(PackedContainerConfiguration topContainerConfiguration, BuildOutput output) {
         this.topContainerConfiguration = requireNonNull(topContainerConfiguration);
-        this.driver = requireNonNull(driver);
+        this.output = requireNonNull(output);
     }
 
     /** {@inheritDoc} */
@@ -59,6 +58,10 @@ public final class PackedArtifactBuildContext implements ArtifactBuildContext {
     @Override
     public boolean isInstantiating() {
         return false;
+    }
+
+    public BuildOutput output() {
+        return output;
     }
 
     /** {@inheritDoc} */

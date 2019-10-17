@@ -29,7 +29,6 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
-import app.packed.artifact.ArtifactDriver;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.component.Install;
@@ -49,6 +48,7 @@ import app.packed.contract.Contract;
 import app.packed.service.Factory;
 import app.packed.service.ServiceExtension;
 import app.packed.util.Nullable;
+import packed.internal.artifact.BuildOutput;
 import packed.internal.artifact.PackedArtifactContext;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.component.AbstractComponent;
@@ -96,15 +96,15 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /**
      * Creates a new container configuration.
      * 
-     * @param artifactDriver
-     *            the type of artifact driver used for creating the artifact
+     * @param output
+     *            the build output
      * @param source
      *            the source of the container
      * @param wirelets
      *            any wirelets specified by the user
      */
-    public PackedContainerConfiguration(ArtifactDriver<?> artifactDriver, ContainerSource source, Wirelet... wirelets) {
-        super(ConfigSite.captureStack(InjectConfigSiteOperations.INJECTOR_OF), artifactDriver);
+    public PackedContainerConfiguration(BuildOutput output, ContainerSource source, Wirelet... wirelets) {
+        super(ConfigSite.captureStack(InjectConfigSiteOperations.INJECTOR_OF), output);
         this.source = requireNonNull(source);
         this.lookup = this.model = ContainerSourceModel.of(source.getClass());
         this.wireletContext = WireletContext.create(this, null, wirelets);

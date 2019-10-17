@@ -27,7 +27,7 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
-import packed.internal.artifact.NonInstantiatingArtifactDriver;
+import packed.internal.artifact.BuildOutput;
 import packed.internal.artifact.PackedArtifactContext;
 import packed.internal.component.ComponentConfigurationToComponentAdaptor;
 import packed.internal.container.PackedContainerConfiguration;
@@ -189,21 +189,9 @@ public final class ArtifactImage implements ContainerSource {
         if (source instanceof ArtifactImage) {
             return ((ArtifactImage) source).with(wirelets);
         }
-        PackedContainerConfiguration pcc = new PackedContainerConfiguration(ArtifactImageArtifactDriver.INSTANCE, source, wirelets);
+        PackedContainerConfiguration pcc = new PackedContainerConfiguration(BuildOutput.image(), source, wirelets);
         return new ArtifactImage(pcc.doBuild(), pcc.wireletContext);
     }
-}
-
-/** An dummy artifact driver for creating artifact images. */
-// Den bliver kun brugt i forbindelse med build context...
-// Vil godt af med den paa en eller anden maade
-final class ArtifactImageArtifactDriver extends NonInstantiatingArtifactDriver<ArtifactImage> {
-
-    /** The single instance. */
-    static final ArtifactImageArtifactDriver INSTANCE = new ArtifactImageArtifactDriver();
-
-    /** Singleton */
-    private ArtifactImageArtifactDriver() {}
 }
 
 // De kunne jo strength taget vaere metoder paa imaged og ikke wirelets.

@@ -23,7 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import app.packed.artifact.ArtifactDriver;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
@@ -33,6 +32,7 @@ import app.packed.container.ContainerSource;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.feature.FeatureMap;
 import app.packed.util.Nullable;
+import packed.internal.artifact.BuildOutput;
 import packed.internal.artifact.PackedArtifactBuildContext;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
@@ -107,16 +107,16 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
      * 
      * @param configSite
      *            the configuration site of the component
-     * @param artifactDriver
-     *            the driver of the artifact to create
+     * @param output
+     *            the output of the build process
      */
-    protected AbstractComponentConfiguration(ConfigSite configSite, ArtifactDriver<?> artifactDriver) {
+    protected AbstractComponentConfiguration(ConfigSite configSite, BuildOutput output) {
         this.configSite = requireNonNull(configSite);
         this.parent = null;
         this.container = null;
         this.depth = 0;
         this.extension = null;
-        this.artifact = new PackedArtifactBuildContext((PackedContainerConfiguration) this, artifactDriver);
+        this.artifact = new PackedArtifactBuildContext((PackedContainerConfiguration) this, output);
     }
 
     /**
