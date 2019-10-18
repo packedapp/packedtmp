@@ -68,7 +68,7 @@ public final class PackedArtifactInstantiationContext {
             @Override
             public <T extends Pipeline<?, ?, ?>> T getPipelin(Class<T> pipelineType) {
                 // We need to check that someone does not request another extensions pipeline type.
-                if (!e.model.pipelines.containsKey(pipelineType)) {
+                if (!e.model().pipelines.containsKey(pipelineType)) {
                     throw new ExtensionDeclarationException(
                             "The specified pipeline type is not amongst " + e.type().getSimpleName() + " pipeline types, pipelineType = " + pipelineType);
                 }

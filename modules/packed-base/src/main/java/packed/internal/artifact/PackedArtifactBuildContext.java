@@ -71,7 +71,7 @@ public final class PackedArtifactBuildContext implements ArtifactBuildContext {
      *            the context of the extension that was used.
      */
     public void usesExtension(PackedExtensionContext pec) {
-        extensions.extensions.add(pec.model);
+        extensions.extensions.add(pec.model());
     }
 
     public void forEachExtension() {

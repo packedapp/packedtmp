@@ -106,6 +106,7 @@ public abstract class AbstractComponent implements Component {
         if (c == null) {
             return Collections.emptySet();
         }
+        // Right now it is actually immutable
         return Collections.unmodifiableCollection(c.values());
     }
 

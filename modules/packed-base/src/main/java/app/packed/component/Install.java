@@ -36,7 +36,7 @@ import app.packed.service.InjectionException;
 @Retention(RetentionPolicy.RUNTIME)
 
 // Giver kun mening sammen ComponentScan....
-public @interface Install {
+@interface Install {
 
     Class<?> as() default Component.class; // @install(as = Actor.class)
 

@@ -145,7 +145,7 @@ public final class WireletContext {
 
     @SuppressWarnings("unchecked")
     public void initialize(PackedExtensionContext pec) {
-        for (var p : pec.model.pipelines.keySet()) {
+        for (var p : pec.model().pipelines.keySet()) {
             List<ExtensionWirelet<?>> ewp = pipelines.get(p);
             if (ewp != null) {
                 ExtensionWireletPipelineModel m = ExtensionWireletPipelineModel

@@ -176,7 +176,7 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
     /** {@inheritDoc} */
     @Override
     public final Optional<Class<? extends Extension>> extension() {
-        return extension == null ? Optional.empty() : extension.model.optional;
+        return extension == null ? Optional.empty() : extension.model().optional;
     }
 
     protected void extensionsPrepareInstantiation(PackedArtifactInstantiationContext ic) {
@@ -212,6 +212,8 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
         if (children == null) {
             return null;
         }
+        // Hmm, we should probably used LinkedHashMap to retain order.
+        // It just uses so much memory...
         HashMap<String, AbstractComponent> result = new HashMap<>(children.size());
         for (AbstractComponentConfiguration<?> acc : children.values()) {
             AbstractComponent ac = acc.instantiate(parent, ic);

@@ -31,7 +31,6 @@ import java.util.function.BiFunction;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
-import app.packed.component.Install;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
@@ -132,11 +131,11 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         builder.setBundleDescription(getDescription());
         builder.setName(getName());
         for (PackedExtensionContext e : extensions.values()) {
-            BiConsumer<? super Extension, ? super Builder> c = e.model.bundleBuilder;
+            BiConsumer<? super Extension, ? super Builder> c = e.model().bundleBuilder;
             if (c != null) {
                 c.accept(e.extension(), builder);
             }
-            for (BiFunction<?, ? super ExtensionWirelet.PipelineMap, ?> s : e.model.contracts.values()) {
+            for (BiFunction<?, ? super ExtensionWirelet.PipelineMap, ?> s : e.model().contracts.values()) {
                 // TODO need a context
 
                 Contract con = (Contract) ((BiFunction) s).apply(e.extension(), null);
@@ -153,10 +152,10 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     private void configure() {
         if (source instanceof Bundle) {
             Bundle bundle = (Bundle) source;
-            if (bundle.getClass().isAnnotationPresent(Install.class)) {
-                // Hmm don't know about that config site
-                installInstance(bundle, configSite());
-            }
+            // if (bundle.getClass().isAnnotationPresent(Install.class)) {
+            // // Hmm don't know about that config site
+            // // installInstance(bundle, configSite());
+            // }
             ModuleAccess.container().doConfigure(bundle, this);
         }
         // Initializes the name of the container, and sets the state to State.FINAL
@@ -237,8 +236,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     @Override
     protected void extensionsPrepareInstantiation(PackedArtifactInstantiationContext ic) {
         for (PackedExtensionContext e : extensions.values()) {
-            if (e.model.onInstantiation != null) {
-                e.model.onInstantiation.accept(e.extension(), new ExtensionInstantiationContext() {
+            if (e.model().onInstantiation != null) {
+                e.model().onInstantiation.accept(e.extension(), new ExtensionInstantiationContext() {
                     @Override
                     public <T extends Pipeline<?, ?, ?>> T getPipelin(Class<T> pipelineType) {
 

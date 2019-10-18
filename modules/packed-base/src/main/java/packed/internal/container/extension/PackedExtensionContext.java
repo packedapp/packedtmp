@@ -42,7 +42,7 @@ public final class PackedExtensionContext implements ExtensionContext {
     private boolean isConfigurable = true;
 
     /** The model of the extension. */
-    public final ExtensionModel<?> model;
+    private final ExtensionModel<?> model;
 
     /** The configuration of the container the extension is registered in. */
     public final PackedContainerConfiguration pcc;
@@ -71,15 +71,6 @@ public final class PackedExtensionContext implements ExtensionContext {
         }
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public BuildEntry<? extends Extension> serviceEntry(ServiceExtensionNode sen) {
-        RuntimeAdaptorEntry<? extends Extension> e = serviceEntry;
-        if (e == null) {
-            e = serviceEntry = new RuntimeAdaptorEntry(sen, new SingletonInjectorEntry<Extension>(ConfigSite.UNKNOWN, (Key) Key.of(type()), null, extension));
-        }
-        return e;
-    }
-
     /** {@inheritDoc} */
     @Override
     public ConfigSite containerConfigSite() {
@@ -99,10 +90,6 @@ public final class PackedExtensionContext implements ExtensionContext {
      */
     public Extension extension() {
         return extension;
-    }
-
-    public Class<? extends Extension> type() {
-        return model.extensionType;
     }
 
     /**
@@ -159,11 +146,38 @@ public final class PackedExtensionContext implements ExtensionContext {
         }
     }
 
+    /**
+     * Returns the model of the extension.
+     * 
+     * @return the model of the extension
+     */
+    public ExtensionModel<?> model() {
+        return model;
+    }
+
     public void onConfigured() {
         if (model.onConfigured != null) {
             model.onConfigured.accept(extension);
         }
         isConfigurable = false;
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public BuildEntry<? extends Extension> serviceEntry(ServiceExtensionNode sen) {
+        RuntimeAdaptorEntry<? extends Extension> e = serviceEntry;
+        if (e == null) {
+            e = serviceEntry = new RuntimeAdaptorEntry(sen, new SingletonInjectorEntry<Extension>(ConfigSite.UNKNOWN, (Key) Key.of(type()), null, extension));
+        }
+        return e;
+    }
+
+    /**
+     * Returns the type of extension this context wraps.
+     * 
+     * @return the type of extension this context wraps
+     */
+    public Class<? extends Extension> type() {
+        return model.extensionType;
     }
 
     /** {@inheritDoc} */
@@ -172,66 +186,21 @@ public final class PackedExtensionContext implements ExtensionContext {
     public <T extends Extension> T use(Class<T> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
 
-        // Alternative behavior would be throw an IAE exception
-
+        // We allow an extension to use itself, alternative would be to throw an IAE, but why?
         if (extensionType == extension.getClass()) {
             return (T) extension;
         }
-        // Unfortunately, we need to check this every time.
+
+        // We need to check whether or not the extension is allowed to use the specified extension every time.
         // An alternative would be to cache it in a map for each extension.
         // However this would incur extra memory usage. And if we only request an extension once
         // There would be significant overhead to instantiating a new map and caching the extension.
-        // A better solution is that each extension caches the extensions if they want to.
+        // A better solution is that each extension caches the extensions they use (if they want to).
         // This saves a check + map lookup for each additional request.
         if (!model.dependencies.contains(extensionType)) {
             throw new ExtensionDeclarationException("The specified extension type is not among " + model.extensionType.getSimpleName()
                     + " dependencies, extensionType = " + extensionType + ", valid dependencies = " + model.dependencies);
         }
-        // TODO check extensionType is in valid types...
-        // We actually need to make this check every time...
-        // Otherwise it could use extensions that someone else has installed.
-        // But itself is not allowed to access
-
-        PackedExtensionContext pec = pcc.useExtension(extensionType, this);
-        return (T) pec.extension;
+        return (T) pcc.useExtension(extensionType, this).extension;
     }
 }
-
-// /**
-// * Creates a new context and instantiates the extension.
-// *
-// * @param pcc
-// * the container the extension will be registered in
-// * @param extensionType
-// * the type of extension to instantiate
-// * @return the new extension context
-// */
-// public static PackedExtensionContext create(PackedContainerConfiguration pcc, Class<? extends Extension>
-// extensionType) {
-// return new PackedExtensionContext(pcc, ExtensionModel.of(extensionType));
-// }
-// static class DefCon {
-// // Det her med at finde ud af hvordan extensions er relateret....
-//
-// static final Module m = DefCon.class.getModule();
-//
-// // Eneste problem med Base Extensions er at vi skal predetermind en order
-// // Og denne order skal maaske ogsaa vise sig i cc.extension()
-// // Eftersom det er et view. Kraever det en lille smule extra kode...
-//
-// IdentityHashMap<Class<?>, Extension> baseExtensions;
-//
-// IdentityHashMap<Class<?>, Extension> externalExtensions;
-//
-// public <T> T use(Class<T> t) {
-// if (t.getModule() == m) {
-// // get From baseExtensions
-// } else {
-// // getFrom External Dependencies..
-// }
-// // We can actually remove all modules that do not implement #configure()
-//
-// return null;
-// // ideen er selvfolgelig
-// }
-// }
