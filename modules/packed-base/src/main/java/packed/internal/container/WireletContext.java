@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 
-import app.packed.container.MutableWireletList;
 import app.packed.container.Wirelet;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionWirelet;
@@ -106,7 +105,7 @@ public final class WireletContext {
     }
 
     @SuppressWarnings("unchecked")
-    private void apply(WireletList wirelets) {
+    private void apply(FixedWireletList wirelets) {
         for (Wirelet w : wirelets.toArray()) {
             if (w instanceof ExtensionWirelet) {
                 ExtensionWireletPipelineModel pm = ExtensionWireletPipelineModel.ofWireletType((Class<? extends ExtensionWirelet<?>>) w.getClass());
@@ -158,7 +157,7 @@ public final class WireletContext {
     }
 
     public static WireletContext create(PackedContainerConfiguration pcc, @Nullable WireletContext existing, Wirelet... wirelets) {
-        WireletList wl = WireletList.of(wirelets);
+        FixedWireletList wl = FixedWireletList.of(wirelets);
         if (wl.toArray().length == 0) {
             return existing;
         }

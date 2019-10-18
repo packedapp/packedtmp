@@ -27,6 +27,18 @@ import java.lang.annotation.Target;
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+public @interface UseExtension {
+
+    String[] optional() default {};
+
+    /**
+     * Returns the extensions that are used.
+     * 
+     * @return the extensions that are used
+     */
+    Class<? extends Extension>[] value() default {};
+}
+
 // Vi havde en module some target, men det er bare accident waiting to happen
 // En der faar annoteret et modul og glemmer alt om det....
 
@@ -48,19 +60,6 @@ import java.lang.annotation.Target;
 // Hook Class/Interface, for example, @ActivateExtension(LoggingExtension.class) Logger
 
 // RequireExtension, UseExtension, ActivateExtension
-public @interface UseExtension {
-
-    // H
-    String[] optional() default {};
-
-    /**
-     * Returns the extensions that are used.
-     * 
-     * @return the extensions that are used
-     */
-    Class<? extends Extension>[] value() default {};
-}
-
 // final void uses(String... extensionTypes) {
 // // The names will be resolved when composer is created
 //
@@ -68,8 +67,3 @@ public @interface UseExtension {
 // // Hvis den givne extension var der.
 // // Maaske noget a.la. dependOn(String, String instantiateThisClassAndInvokXX)
 // }
-
-@UseExtension(optional = D.sss)
-class D {
-    static final String sss = "SDSD";
-}

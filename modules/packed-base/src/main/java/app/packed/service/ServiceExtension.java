@@ -30,7 +30,7 @@ import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.Qualifier;
-import packed.internal.container.WireletList;
+import packed.internal.container.FixedWireletList;
 import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.build.ServiceWireletPipeline;
@@ -215,7 +215,8 @@ public final class ServiceExtension extends Extension {
                     "Custom implementations of Injector are currently not supported, injector type = " + injector.getClass().getName());
         }
         checkConfigurable();
-        node.provider().provideAll((AbstractInjector) injector, captureStackFrame(InjectConfigSiteOperations.INJECTOR_PROVIDE_ALL), WireletList.of(wirelets));
+        node.provider().provideAll((AbstractInjector) injector, captureStackFrame(InjectConfigSiteOperations.INJECTOR_PROVIDE_ALL),
+                FixedWireletList.of(wirelets));
     }
 
     /**
@@ -304,7 +305,7 @@ public final class ServiceExtension extends Extension {
             exposeDescriptor((e, b) -> e.node.buildDescriptor(b));
 
             onAddPostProcessor(p -> {
-                p.root().use(ServiceExtension.class).provideInstance("fooo");
+                // p.root().use(ServiceExtension.class).provideInstance("fooo");
             });
 
             addPipeline(ServiceWireletPipeline.class, (e, w) -> new ServiceWireletPipeline(w, e.node));

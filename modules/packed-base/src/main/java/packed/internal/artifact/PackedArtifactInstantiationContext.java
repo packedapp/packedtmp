@@ -66,7 +66,7 @@ public final class PackedArtifactInstantiationContext {
     public ExtensionInstantiationContext newContext(PackedContainerConfiguration pcc, PackedExtensionContext e) {
         return new ExtensionInstantiationContext() {
             @Override
-            public <T extends Pipeline<?, ?, ?>> T getPipelin(Class<T> pipelineType) {
+            public <T extends Pipeline<?, ?, ?>> T getPipeline(Class<T> pipelineType) {
                 // We need to check that someone does not request another extensions pipeline type.
                 if (!e.model().pipelines.containsKey(pipelineType)) {
                     throw new ExtensionDeclarationException(
@@ -94,6 +94,11 @@ public final class PackedArtifactInstantiationContext {
             @Override
             public <T> T use(Class<T> type) {
                 return PackedArtifactInstantiationContext.this.use(pcc, type);
+            }
+
+            @Override
+            public boolean isFromImage() {
+                return false;
             }
         };
     }

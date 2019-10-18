@@ -25,8 +25,8 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.ExtensionContext;
+import app.packed.container.extension.ExtensionDescriptorContext;
 import app.packed.container.extension.ExtensionInstantiationContext;
-import app.packed.container.extension.ExtensionWirelet;
 import app.packed.service.Inject;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceContract;
@@ -153,7 +153,7 @@ public final class ServiceExtensionNode {
         children.add(child);
     }
 
-    public ServiceContract newServiceContract(ExtensionWirelet.PipelineMap context) {
+    public ServiceContract newServiceContract(ExtensionDescriptorContext context) {
         // requireNonNull(context);
         return ServiceContract.newContract(c -> {
             if (exporter != null) {
@@ -202,7 +202,7 @@ public final class ServiceExtensionNode {
                 requireNonNull(c);
                 instance = c;
             } else { // pipeline
-                instance = requireNonNull(c.getPipelin((Class) e.getKey()));
+                instance = requireNonNull(c.getPipeline((Class) e.getKey()));
             }
             BuildEntry<?> be = e.getValue();
             con.transformers.put(be, new SingletonInjectorEntry<Object>(ConfigSite.UNKNOWN, (Key) be.key, be.description, instance));

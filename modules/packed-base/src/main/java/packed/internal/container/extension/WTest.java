@@ -20,13 +20,13 @@ import static java.util.Objects.requireNonNull;
 import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
 import app.packed.container.BaseBundle;
-import app.packed.container.MutableWireletList;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
 import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.container.extension.UseExtension;
 import app.packed.service.ServiceExtension;
+import packed.internal.container.MutableWireletList;
 
 /**
  *
@@ -72,7 +72,7 @@ public class WTest extends BaseBundle {
 
     public static class RuntimeService {
         public RuntimeService(MyExtension e, ExtensionInstantiationContext eis) {
-            System.out.println("new RuntimeService " + e.i + "  " + eis.getPipelin(MyPipeline.class).val);
+            System.out.println("new RuntimeService " + e.i + "  " + eis.getPipeline(MyPipeline.class).val);
         }
     }
 

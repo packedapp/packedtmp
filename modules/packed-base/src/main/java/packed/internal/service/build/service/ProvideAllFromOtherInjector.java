@@ -24,7 +24,7 @@ import app.packed.container.Wirelet;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
 import app.packed.util.Key;
-import packed.internal.container.WireletList;
+import packed.internal.container.FixedWireletList;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.build.wirelets.PackedUpstreamInjectionWirelet;
@@ -60,7 +60,7 @@ public final class ProvideAllFromOtherInjector {
      *            any wirelets used when importing the injector
      */
     @SuppressWarnings("unchecked")
-    public ProvideAllFromOtherInjector(ServiceExtensionNode node, ConfigSite configSite, AbstractInjector injector, WireletList wirelets) {
+    public ProvideAllFromOtherInjector(ServiceExtensionNode node, ConfigSite configSite, AbstractInjector injector, FixedWireletList wirelets) {
         this.node = requireNonNull(node);
         this.configSite = requireNonNull(configSite);
         this.injector = requireNonNull(injector);

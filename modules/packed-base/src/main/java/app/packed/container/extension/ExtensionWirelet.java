@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
-import app.packed.container.MutableWireletList;
 import app.packed.container.Wirelet;
+import packed.internal.container.MutableWireletList;
 
 /**
  * Extensions that define their own wirelets must extend this class.
@@ -29,6 +29,7 @@ import app.packed.container.Wirelet;
  * guarantees are made for extension wirelets that define for different extension pipeline types.
  */
 public abstract class ExtensionWirelet<T extends ExtensionWirelet.Pipeline<?, T, ?>> extends Wirelet {
+
     // We need this class so we can see which extension the wirelet belongs to...
     // Otherwise, we would not be able to tell the user which extension was missing.
     // When throwing an exception if the wirelet was specified, but the extension was not used
@@ -70,6 +71,8 @@ public abstract class ExtensionWirelet<T extends ExtensionWirelet.Pipeline<?, T,
             return previous;
         }
 
+        // protected void optimize() <-- called by the runtime to optimize as much as possible
+
         /**
          * Spawns a new pipeline from this pipeline. This method is invoked by the runtime whenever
          * 
@@ -92,16 +95,6 @@ public abstract class ExtensionWirelet<T extends ExtensionWirelet.Pipeline<?, T,
         public String toString() {
             return wirelets.toString();
         }
-    }
-    // Two strategies. Either clone all the contents.
-    // Or recursively call back into parent pipeline
-    // protected abstract T split();
-
-    public interface PipelineMap {
-
-        boolean hasPipelines();
-
-        <T extends ExtensionWirelet.Pipeline<?, ?, ?>> T get(Class<T> pipelineType);
     }
 }
 

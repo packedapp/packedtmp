@@ -122,7 +122,7 @@ public final class ComponentExtension extends Extension {
     private PackedContainerConfiguration pcc() {
         PackedContainerConfiguration p = pcc;
         if (p == null) {
-            p = pcc = ((PackedExtensionContext) context()).pcc;
+            p = pcc = ((PackedExtensionContext) context()).container();
         }
         return p;
     }

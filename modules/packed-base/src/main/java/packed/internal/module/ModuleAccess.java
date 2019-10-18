@@ -54,21 +54,21 @@ public final class ModuleAccess {
     }
 
     /**
-     * Returns an access object for app.packed.container.
-     * 
-     * @return an access object for app.packed.container
-     */
-    public static AppPackedHookAccess hook() {
-        return HookSingletonHolder.INSTANCE;
-    }
-
-    /**
      * Returns an access object for app.packed.container.extension.
      * 
      * @return an access object for app.packed.container.extension
      */
     public static AppPackedExtensionAccess extension() {
         return ExtensionSingletonHolder.INSTANCE;
+    }
+
+    /**
+     * Returns an access object for app.packed.container.
+     * 
+     * @return an access object for app.packed.container
+     */
+    public static AppPackedHookAccess hook() {
+        return HookSingletonHolder.INSTANCE;
     }
 
     /**
@@ -91,21 +91,21 @@ public final class ModuleAccess {
     }
 
     /**
-     * Returns an access object for app.packed.inject.
-     * 
-     * @return an access object for app.packed.inject
-     */
-    public static AppPackedInjectAccess inject() {
-        return InjectSingletonHolder.INSTANCE;
-    }
-
-    /**
      * Returns an access object for app.packed.lifecycle.
      * 
      * @return an access object for app.packed.lifecycle
      */
     public static AppPackedLifecycleAccess lifecycle() {
         return LifecycleSingletonHolder.INSTANCE;
+    }
+
+    /**
+     * Returns an access object for app.packed.service.
+     * 
+     * @return an access object for app.packed.service
+     */
+    public static AppPackedServiceAccess service() {
+        return ServiceSingletonHolder.INSTANCE;
     }
 
     private static <T extends SecretAccess> T singleton(Class<T> accessType, Class<?> initalizeClass) {
@@ -146,13 +146,6 @@ public final class ModuleAccess {
         private static final AppPackedContainerAccess INSTANCE = singleton(AppPackedContainerAccess.class, Bundle.class);
     }
 
-    /** Holder of the {@link AppPackedHookAccess} singleton. */
-    private static class HookSingletonHolder {
-
-        /** The singleton instance. */
-        private static final AppPackedHookAccess INSTANCE = singleton(AppPackedHookAccess.class, AnnotatedFieldHook.class);
-    }
-
     /** Holder of the {@link AppPackedExtensionAccess} singleton. */
     private static class ExtensionSingletonHolder {
 
@@ -160,11 +153,11 @@ public final class ModuleAccess {
         private static final AppPackedExtensionAccess INSTANCE = singleton(AppPackedExtensionAccess.class, Extension.class);
     }
 
-    /** Holder of the {@link AppPackedInjectAccess} singleton. */
-    private static class InjectSingletonHolder {
+    /** Holder of the {@link AppPackedHookAccess} singleton. */
+    private static class HookSingletonHolder {
 
         /** The singleton instance. */
-        private static final AppPackedInjectAccess INSTANCE = singleton(AppPackedInjectAccess.class, Factory.class);
+        private static final AppPackedHookAccess INSTANCE = singleton(AppPackedHookAccess.class, AnnotatedFieldHook.class);
     }
 
     /** Holder of the {@link AppPackedLifecycleAccess} singleton. */
@@ -172,6 +165,13 @@ public final class ModuleAccess {
 
         /** The singleton instance. */
         private static final AppPackedLifecycleAccess INSTANCE = singleton(AppPackedLifecycleAccess.class, RunState.class);
+    }
+
+    /** Holder of the {@link AppPackedServiceAccess} singleton. */
+    private static class ServiceSingletonHolder {
+
+        /** The singleton instance. */
+        private static final AppPackedServiceAccess INSTANCE = singleton(AppPackedServiceAccess.class, Factory.class);
     }
 
     /** Holder of the {@link AppPackedUtilAccess} singleton. */

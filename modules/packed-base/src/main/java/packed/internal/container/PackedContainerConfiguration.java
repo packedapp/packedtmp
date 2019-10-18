@@ -40,8 +40,9 @@ import app.packed.container.ContainerLayer;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.container.extension.Extension;
+import app.packed.container.extension.ExtensionDeclarationException;
+import app.packed.container.extension.ExtensionDescriptorContext;
 import app.packed.container.extension.ExtensionInstantiationContext;
-import app.packed.container.extension.ExtensionWirelet;
 import app.packed.container.extension.ExtensionWirelet.Pipeline;
 import app.packed.contract.Contract;
 import app.packed.service.Factory;
@@ -74,6 +75,10 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** Any child containers of this component (lazily initialized), in order of insertion. */
     @Nullable
     public ArrayList<PackedContainerConfiguration> containers;
+
+    /** The component that was last installed. */
+    @Nullable
+    protected CoreComponentConfiguration<?> currentComponent;
 
     /** All registered extensions, in order of registration. */
     private final LinkedHashMap<Class<? extends Extension>, PackedExtensionContext> extensions = new LinkedHashMap<>();
@@ -119,7 +124,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * @param wirelets
      *            any wirelets specified by the user
      */
-    private PackedContainerConfiguration(PackedContainerConfiguration parent, Bundle bundle, WireletList wirelets) {
+    private PackedContainerConfiguration(PackedContainerConfiguration parent, Bundle bundle, FixedWireletList wirelets) {
         super(parent.configSite().thenCaptureStackFrame(InjectConfigSiteOperations.INJECTOR_OF), parent);
         this.source = requireNonNull(bundle);
         this.lookup = this.model = ContainerSourceModel.of(bundle.getClass());
@@ -135,7 +140,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             if (c != null) {
                 c.accept(e.extension(), builder);
             }
-            for (BiFunction<?, ? super ExtensionWirelet.PipelineMap, ?> s : e.model().contracts.values()) {
+            for (BiFunction<?, ? super ExtensionDescriptorContext, ?> s : e.model().contracts.values()) {
                 // TODO need a context
 
                 Contract con = (Contract) ((BiFunction) s).apply(e.extension(), null);
@@ -239,7 +244,18 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             if (e.model().onInstantiation != null) {
                 e.model().onInstantiation.accept(e.extension(), new ExtensionInstantiationContext() {
                     @Override
-                    public <T extends Pipeline<?, ?, ?>> T getPipelin(Class<T> pipelineType) {
+                    public Class<?> artifactType() {
+                        return ic.artifactType();
+                    }
+
+                    @Nullable
+                    @Override
+                    public <T> T get(Class<T> type) {
+                        return ic.get(PackedContainerConfiguration.this, type);
+                    }
+
+                    @Override
+                    public <T extends Pipeline<?, ?, ?>> T getPipeline(Class<T> pipelineType) {
 
                         // uncommented temporary to get WTest to run.
 
@@ -252,17 +268,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
                     }
 
                     @Override
-                    public Class<?> artifactType() {
-                        return ic.artifactType();
-                    }
-
-                    @Nullable
-                    @Override
-                    public <T> T get(Class<T> type) {
-                        return ic.get(PackedContainerConfiguration.this, type);
-                    }
-
-                    @Override
                     public void put(Object obj) {
                         ic.put(PackedContainerConfiguration.this, obj);
                     }
@@ -270,6 +275,11 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
                     @Override
                     public <T> T use(Class<T> type) {
                         return ic.use(PackedContainerConfiguration.this, type);
+                    }
+
+                    @Override
+                    public boolean isFromImage() {
+                        return false;
                     }
                 });
             }
@@ -292,10 +302,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         requireNonNull(extensionType, "extensionType is null");
         return extensions.get(extensionType);
     }
-
-    /** The component that was last installed. */
-    @Nullable
-    protected CoreComponentConfiguration<?> currentComponent;
 
     public <T> ComponentConfiguration<T> install(Factory<T> factory, ConfigSite configSite) {
         ComponentModel model = lookup.componentModelOf(factory.rawType());
@@ -348,7 +354,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     @Override
     public void link(Bundle bundle, Wirelet... wirelets) {
         requireNonNull(bundle, "bundle is null");
-        WireletList wl = WireletList.of(wirelets);
+        FixedWireletList wl = FixedWireletList.of(wirelets);
 
         // finalize name of this container
         initializeName(State.LINK_INVOKED, null);
@@ -459,10 +465,14 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * 
      * @param extensionType
      *            the type of extension
+     * @param callingExtension
+     *            non-null if it is another extension that is requesting the extension
      * @return the extension's context
      * @throws IllegalStateException
      *             if an extension of the specified type has not already been installed and the container is no longer
      *             configurable
+     * @throws ExtensionDeclarationException
+     *             if the
      */
     public PackedExtensionContext useExtension(Class<? extends Extension> extensionType, @Nullable PackedExtensionContext callingExtension) {
         requireNonNull(extensionType, "extensionType is null");
@@ -477,9 +487,14 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             } else {
                 callingExtension.checkConfigurable();
             }
-            extensions.put(extensionType, pec = new PackedExtensionContext(this, ExtensionModel.of(extensionType)));
+
+            // Retrieves the extension model for the specified extension. This will throw ExtensionDeclarationException
+            // If the extension is not correctly implemented.
+            ExtensionModel<? extends Extension> model = ExtensionModel.of(extensionType);
+
+            extensions.put(extensionType, pec = new PackedExtensionContext(this, model));
             initializeName(State.EXTENSION_USED, null); // initializes name of container, if not already set
-            pec.initialize(this); // initializes the extension
+            pec.initialize(this); // initializes the extension, might use additional new extensions
         }
         return pec;
     }

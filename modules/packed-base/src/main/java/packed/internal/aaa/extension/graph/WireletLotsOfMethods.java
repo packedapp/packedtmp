@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension;
+package packed.internal.aaa.extension.graph;
 
 import java.util.ArrayDeque;
 import java.util.function.Consumer;

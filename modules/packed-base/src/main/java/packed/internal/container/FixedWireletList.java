@@ -26,28 +26,28 @@ import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
 
 /** An immutable list of wirelets. */
-public final class WireletList extends Wirelet {
+public final class FixedWireletList extends Wirelet {
 
     /** An empty wirelet list. */
-    static final WireletList EMPTY = new WireletList();
+    static final FixedWireletList EMPTY = new FixedWireletList();
 
     /** The wirelets we are wrapping. */
     public final Wirelet[] wirelets;
 
-    private WireletList(Wirelet... wirelets) {
+    private FixedWireletList(Wirelet... wirelets) {
         int size = wirelets.length;
         for (int i = 0; i < wirelets.length; i++) {
             Wirelet w = Objects.requireNonNull(wirelets[i]);
-            if (w instanceof WireletList) {
-                size += ((WireletList) w).wirelets.length - 1;
+            if (w instanceof FixedWireletList) {
+                size += ((FixedWireletList) w).wirelets.length - 1;
             }
         }
         Wirelet[] tmp = new Wirelet[size];
         int c = 0;
         for (int i = 0; i < wirelets.length; i++) {
             Wirelet w = wirelets[i];
-            if (w instanceof WireletList) {
-                WireletList wl = (WireletList) w;
+            if (w instanceof FixedWireletList) {
+                FixedWireletList wl = (FixedWireletList) w;
                 for (int j = 0; j < wl.wirelets.length; j++) {
                     tmp[c++] = wl.wirelets[j];
                 }
@@ -148,8 +148,8 @@ public final class WireletList extends Wirelet {
     // return List.of(wirelets).iterator();
     // }
 
-    public WireletList plus(Wirelet... wirelets) {
-        return (WireletList) andThen(wirelets);
+    public FixedWireletList plus(Wirelet... wirelets) {
+        return (FixedWireletList) andThen(wirelets);
     }
     //
     // /**
@@ -210,7 +210,7 @@ public final class WireletList extends Wirelet {
      *
      * @return an empty {@code WireletList}
      */
-    public static WireletList of() {
+    public static FixedWireletList of() {
         return EMPTY;
     }
 
@@ -223,19 +223,19 @@ public final class WireletList extends Wirelet {
      *            the single wirelet
      * @return a {@code WireletList} containing the specified wirelet
      */
-    public static WireletList of(Wirelet wirelet) {
+    public static FixedWireletList of(Wirelet wirelet) {
         requireNonNull(wirelet, "wirelet is null");
-        if (wirelet instanceof WireletList) {
-            return (WireletList) wirelet;
+        if (wirelet instanceof FixedWireletList) {
+            return (FixedWireletList) wirelet;
         }
-        return new WireletList(wirelet); // we might provide optimized versions in the future
+        return new FixedWireletList(wirelet); // we might provide optimized versions in the future
     }
 
-    public static WireletList of(Wirelet... wirelets) {
+    public static FixedWireletList of(Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
         if (wirelets.length == 0) {
             return EMPTY;
         }
-        return new WireletList(wirelets);
+        return new FixedWireletList(wirelets);
     }
 }

@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension;
+package packed.internal.aaa.extension.graph;
 
 import app.packed.container.Wirelet;
+import app.packed.container.extension.Extension;
 import app.packed.util.Nullable;
 
 /**

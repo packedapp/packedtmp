@@ -29,6 +29,7 @@ import app.packed.component.Component;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
 import app.packed.container.extension.ExtensionDeclarationException;
+import app.packed.container.extension.ExtensionDescriptorContext;
 import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.contract.Contract;
@@ -71,7 +72,7 @@ public final class ExtensionModel<T extends Extension> {
     // Can 2 extensions define the same contract???? Don't think so
     // If not we could have a Contract.class->ContractFactory Map and a Contract.of(ContainerSource, Class<T extends
     // Contract>);
-    public final Map<Class<? extends Contract>, BiFunction<?, ? super ExtensionWirelet.PipelineMap, ?>> contracts;
+    public final Map<Class<? extends Contract>, BiFunction<?, ? super ExtensionDescriptorContext, ?>> contracts;
 
     public final Set<Class<? extends Extension>> dependencies;
 
@@ -134,6 +135,11 @@ public final class ExtensionModel<T extends Extension> {
         // With LambdaMetafactory wrapped in a supplier we can get down to 6 ns
         try {
             return (T) constructor.invoke();
+            // if (constructor.type().parameterCount() > 0) {
+            // return (T) constructor.invoke(pec);
+            // } else {
+            //
+            // }
         } catch (Throwable e) {
             ThrowableUtil.rethrowErrorOrRuntimeException(e);
             throw new UndeclaredThrowableException(e);

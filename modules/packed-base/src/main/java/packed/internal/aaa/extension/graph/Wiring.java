@@ -13,25 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension;
+package packed.internal.aaa.extension.graph;
 
 /**
  *
  */
+// Component.java
+// Optional<Wiring> <- is removed, for example, when undeployed...
 
-// UseExtension -> mandatory....
-// Problemet er at UseExtension betyder noget andet paa extension ends
-
-// Why do need to declare extensions..
-// Because we can reference extension from onConfigured();
-// And we have no idea what other extensions they use until we run
-// onConfigured on them,
-
-public @interface ExtensionProperties {
-
-    Class<? extends Extension>[] extensions() default {};
-
-    String[] extensionsOptional() default {};
-
-    boolean viral() default false;
+interface Wiring {
+    boolean isRemoveable();// or isStatic
 }
+
+// WiredContainer/LinkedBundle
+// UnwirableContainer extends WiredContainer

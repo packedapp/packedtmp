@@ -44,9 +44,12 @@ import app.packed.component.Component;
 
 // Hmm ArtifactSource??? Only DynamicContainerSource is a bit of unknown.
 // ArtifactSource type....
-
 // Rename to ContainerSource??? I think it makes more sense....
 public interface ContainerSource {
+
+}
+
+class AdditionalMethods {
 
     static ContainerSource ofRepeatableBundle(Supplier<? extends Bundle> supplier) {
         throw new UnsupportedOperationException();

@@ -23,7 +23,7 @@ import java.util.List;
 import app.packed.artifact.ArtifactImage;
 import app.packed.service.Injector;
 import app.packed.service.InjectorConfigurator;
-import packed.internal.container.WireletList;
+import packed.internal.container.FixedWireletList;
 
 // Wire vs link....
 
@@ -95,7 +95,7 @@ public abstract class Wirelet {
     // run(new XBundle(), Configuration.read("c:/sdad"));
 
     /**
-     * Returns a composed {@code WiringOperation} that performs, in sequence, this operation followed by the {@code after}
+     * Returns a composed {@code Wirelet} that performs, in sequence, this operation followed by the {@code after}
      * operation. If performing either operation throws an exception, it is relayed to the caller of the composed operation.
      * If performing this operation throws an exception, the {@code after} operation will not be performed.
      *
@@ -111,8 +111,8 @@ public abstract class Wirelet {
     public final Wirelet andThen(Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
         ArrayList<Wirelet> l = new ArrayList<>();
-        if (this instanceof WireletList) {
-            l.addAll(List.of(((WireletList) this).wirelets));
+        if (this instanceof FixedWireletList) {
+            l.addAll(List.of(((FixedWireletList) this).wirelets));
         } else {
             l.add(this);
         }
@@ -120,7 +120,7 @@ public abstract class Wirelet {
         // System.err.println();
         // System.err.println(this + " " + List.of(wirelets));
         // System.err.println(l);
-        return WireletList.of(l.toArray(i -> new Wirelet[i]));
+        return FixedWireletList.of(l.toArray(i -> new Wirelet[i]));
     }
 
     // void verify();

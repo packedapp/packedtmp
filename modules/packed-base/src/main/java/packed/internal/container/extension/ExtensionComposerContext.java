@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
+import app.packed.container.extension.ExtensionDescriptorContext;
 import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.contract.Contract;
@@ -39,7 +40,7 @@ public abstract class ExtensionComposerContext {
     // Also, I think we want to do this atomically, so that we do not have half an extension registered somewhere.
     // This means we want to synchronize things.
     // So add all shit, quick validation-> Sync->Validate final -> AddAll ->UnSync
-    public final IdentityHashMap<Class<? extends Contract>, BiFunction<?, ? super ExtensionWirelet.PipelineMap, ?>> contracts = new IdentityHashMap<>();
+    public final IdentityHashMap<Class<? extends Contract>, BiFunction<?, ? super ExtensionDescriptorContext, ?>> contracts = new IdentityHashMap<>();
 
     /** An action that will be run immediately after an extension has been configured. */
     @Nullable

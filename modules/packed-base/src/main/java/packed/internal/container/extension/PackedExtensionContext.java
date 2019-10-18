@@ -32,7 +32,7 @@ import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.build.service.RuntimeAdaptorEntry;
 import packed.internal.service.run.SingletonInjectorEntry;
 
-/** The default implementation of {@link ExtensionContext} with addition data only available from inside this module. */
+/** The default implementation of {@link ExtensionContext} with addition methods only available inside this module. */
 public final class PackedExtensionContext implements ExtensionContext {
 
     /** The extension instance this context wraps. */
@@ -45,7 +45,7 @@ public final class PackedExtensionContext implements ExtensionContext {
     private final ExtensionModel<?> model;
 
     /** The configuration of the container the extension is registered in. */
-    public final PackedContainerConfiguration pcc;
+    private final PackedContainerConfiguration pcc;
 
     private RuntimeAdaptorEntry<? extends Extension> serviceEntry;
 
@@ -69,6 +69,15 @@ public final class PackedExtensionContext implements ExtensionContext {
         if (!isConfigurable) {
             throw new IllegalStateException("This extension (" + extension.getClass().getSimpleName() + ") is no longer configurable");
         }
+    }
+
+    /**
+     * Returns the configuration of the container the extension is registered in.
+     * 
+     * @return the configuration of the container the extension is registered in
+     */
+    public PackedContainerConfiguration container() {
+        return pcc;
     }
 
     /** {@inheritDoc} */

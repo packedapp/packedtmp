@@ -13,22 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.module;
+package app.packed.container.extension;
 
-import app.packed.service.Factory;
-import packed.internal.inject.factoryhandle.FactoryHandle;
+// Two strategies. Either clone all the contents.
+// Or recursively call back into parent pipeline
+// protected abstract T split();
+// Lige nu har vi behov for denne i forbindelse med at lave descriptors...
 
-/** A support class for calling package private methods in the app.packed.inject package. */
-public interface AppPackedInjectAccess extends SecretAccess {
+//Analyze, Model, ..
+public interface ExtensionDescriptorContext {
 
-    /**
-     * Extracts a handle from the specified factory
-     * 
-     * @param <T>
-     *            the type of elements the factory produces
-     * @param factory
-     *            the factory to extract from
-     * @return the handle
-     */
-    <T> FactoryHandle<T> toHandle(Factory<T> factory);
+    boolean hasPipelines();// <---
+
+    <T extends ExtensionWirelet.Pipeline<?, ?, ?>> T get(Class<T> pipelineType);
 }

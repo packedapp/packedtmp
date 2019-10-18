@@ -21,11 +21,13 @@ import app.packed.util.Nullable;
 /**
  *
  */
-// Den boer doe, og erstattes af ServiceExtension...
-// Maa ogsaa have Pipeline
+// It can be injected..
 
-// Rename til noget andet???? Saa man ogsaa kan bruge den fra Bundle???
-// Ved ikke hvad vi skal bruge
+// Have an Extension() method???? and be <E extends Extension>
+// We have som BiConsumer we could change. And simpler injection
+// instead of Extension + Context just have Context
+// getPipeline could also be type safe..
+// Hmm saa syntes jeg alle extension*Context skulle have det
 public interface ExtensionInstantiationContext {
 
     /**
@@ -38,22 +40,17 @@ public interface ExtensionInstantiationContext {
     @Nullable
     <T> T get(Class<T> type);
 
+    @Nullable
+    <T extends ExtensionWirelet.Pipeline<?, ?, ?>> T getPipeline(Class<T> pipelineType);
+
     /**
      * Returns whether or not the artifact is being created from an {@link ArtifactImage}.
      * 
      * @return whether or not the artifact is being created from an {@link ArtifactImage}
      */
-    default boolean isFromImage() {
-        return false;
-    }
+    boolean isFromImage();
 
     void put(Object obj);
 
     <T> T use(Class<T> type);
-
-    default boolean hasPipelines() {
-        throw new UnsupportedOperationException();
-    }
-
-    <T extends ExtensionWirelet.Pipeline<?, ?, ?>> T getPipelin(Class<T> pipelineType);
 }

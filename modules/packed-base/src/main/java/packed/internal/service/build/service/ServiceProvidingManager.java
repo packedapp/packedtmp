@@ -40,7 +40,7 @@ import app.packed.util.Nullable;
 import packed.internal.component.CoreComponentConfiguration;
 import packed.internal.component.FactoryComponentConfiguration;
 import packed.internal.component.InstantiatedComponentConfiguration;
-import packed.internal.container.WireletList;
+import packed.internal.container.FixedWireletList;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.util.InjectConfigSiteOperations;
@@ -104,7 +104,7 @@ public final class ServiceProvidingManager {
         } else {
             Factory<?> factory = ((FactoryComponentConfiguration) cc).factory;
 
-            MethodHandle mh = ((PackedExtensionContext) node.context()).pcc.lookup.toMethodHandle(factory.handle());
+            MethodHandle mh = ((PackedExtensionContext) node.context()).container().lookup.toMethodHandle(factory.handle());
             parentNode = new ComponentFactoryBuildEntry<>(node, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
         }
 
@@ -127,7 +127,7 @@ public final class ServiceProvidingManager {
         componentConfigurationCache.put(cc, parentNode);
     }
 
-    public void provideAll(AbstractInjector injector, ConfigSite configSite, WireletList wirelets) {
+    public void provideAll(AbstractInjector injector, ConfigSite configSite, FixedWireletList wirelets) {
         ArrayList<ProvideAllFromOtherInjector> p = provideAll;
         if (provideAll == null) {
             p = provideAll = new ArrayList<>(1);
@@ -139,7 +139,7 @@ public final class ServiceProvidingManager {
     public <T> ServiceComponentConfiguration<T> provideFactory(ComponentConfiguration cc, Factory<T> factory, FactoryHandle<T> function) {
         BuildEntry<?> c = componentConfigurationCache.get(cc);// remove??
         if (c == null) {
-            MethodHandle mh = ((PackedExtensionContext) node.context()).pcc.lookup.toMethodHandle(function);
+            MethodHandle mh = ((PackedExtensionContext) node.context()).container().lookup.toMethodHandle(function);
             c = new ComponentFactoryBuildEntry<>(node, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
         }
         c.as((Key) factory.key());

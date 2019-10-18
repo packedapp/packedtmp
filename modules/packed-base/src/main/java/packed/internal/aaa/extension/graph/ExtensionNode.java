@@ -13,25 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension;
+package packed.internal.aaa.extension.graph;
 
 /**
  *
  */
+interface ExtensionNode {
 
-// UseExtension -> mandatory....
-// Problemet er at UseExtension betyder noget andet paa extension ends
+    // Ideen er at den kommer med som parameter....
 
-// Why do need to declare extensions..
-// Because we can reference extension from onConfigured();
-// And we have no idea what other extensions they use until we run
-// onConfigured on them,
+    // Forspoerg om parent
+    // forspoerg om children
 
-public @interface ExtensionProperties {
+    // Hav en shared context...
 
-    Class<? extends Extension>[] extensions() default {};
+    // onInstantiated
+    // onConfigured
 
-    String[] extensionsOptional() default {};
+    // postProcess()
+    // buttomUp
 
-    boolean viral() default false;
+    // Service
 }

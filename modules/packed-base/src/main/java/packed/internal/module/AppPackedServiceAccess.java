@@ -13,25 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension.graph;
+package packed.internal.module;
 
-/**
- *
- */
-public interface ExtensionNode {
+import app.packed.service.Factory;
+import packed.internal.inject.factoryhandle.FactoryHandle;
 
-    // Ideen er at den kommer med som parameter....
+/** A support class for calling package private methods in the app.packed.service package. */
+public interface AppPackedServiceAccess extends SecretAccess {
 
-    // Forspoerg om parent
-    // forspoerg om children
-
-    // Hav en shared context...
-
-    // onInstantiated
-    // onConfigured
-
-    // postProcess()
-    // buttomUp
-
-    // Service
+    /**
+     * Extracts a handle from the specified factory
+     * 
+     * @param <T>
+     *            the type of elements the factory produces
+     * @param factory
+     *            the factory to extract from
+     * @return the handle
+     */
+    <T> FactoryHandle<T> toHandle(Factory<T> factory);
 }

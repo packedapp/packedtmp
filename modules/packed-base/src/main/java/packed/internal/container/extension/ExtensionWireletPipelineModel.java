@@ -19,10 +19,10 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.BiFunction;
 
-import app.packed.container.MutableWireletList;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.container.extension.ExtensionWirelet.Pipeline;
+import packed.internal.container.MutableWireletList;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 
 /** A descriptor for an {@link Pipeline}. */

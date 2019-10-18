@@ -18,6 +18,11 @@ package app.packed.container.extension;
 /**
  *
  */
+
+// I sidste ende kommer det nok an paa hvor mange metoder der er...
+
+// Er der 2-3 Saa smider vi dem paa context, ellers
+
 public interface ExtensionTreeNode<E extends Extension> extends ExtensionContext {
 
     E extension();

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,6 +21,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+
+import app.packed.container.Wirelet;
 
 /**
  *

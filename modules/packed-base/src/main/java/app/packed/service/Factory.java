@@ -42,7 +42,7 @@ import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.factoryhandle.InstanceFactoryHandle;
 import packed.internal.inject.factoryhandle.MappingFactoryHandle;
-import packed.internal.module.AppPackedInjectAccess;
+import packed.internal.module.AppPackedServiceAccess;
 import packed.internal.module.ModuleAccess;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.TypeUtil;
@@ -76,7 +76,7 @@ import packed.internal.util.TypeUtil;
 public class Factory<T> {
 
     static {
-        ModuleAccess.initialize(AppPackedInjectAccess.class, new AppPackedInjectAccess() {
+        ModuleAccess.initialize(AppPackedServiceAccess.class, new AppPackedServiceAccess() {
 
             /** {@inheritDoc} */
             @Override

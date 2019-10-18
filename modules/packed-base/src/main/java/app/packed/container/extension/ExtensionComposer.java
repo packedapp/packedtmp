@@ -25,9 +25,8 @@ import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.MutableWireletList;
-import app.packed.container.extension.graph.ExtensionOracle;
 import app.packed.contract.Contract;
+import packed.internal.container.MutableWireletList;
 import packed.internal.container.extension.ExtensionComposerContext;
 
 /**
@@ -101,7 +100,7 @@ public abstract class ExtensionComposer<E extends Extension> {
      *             if trying to register a contract type that has already been registered with another extension
      */
     protected final <C extends Contract> void exposeContract(Class<C> contractType,
-            BiFunction<? super E, ? super ExtensionWirelet.PipelineMap, C> contractFactory) {
+            BiFunction<? super E, ? super ExtensionDescriptorContext, C> contractFactory) {
         requireNonNull(contractType, "contractType is null");
         requireNonNull(contractFactory, "contractFactory is null");
         context().contracts.putIfAbsent(contractType, contractFactory);
@@ -114,7 +113,7 @@ public abstract class ExtensionComposer<E extends Extension> {
 
     protected final void exposeFeature() {}
 
-    protected final void onAddPostProcessor(Consumer<? extends ExtensionOracle<E>> consumer) {
+    protected final void onAddPostProcessor(Consumer<? extends ExtensionTree<E>> consumer) {
 
     }
 

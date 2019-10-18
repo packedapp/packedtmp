@@ -32,7 +32,7 @@ import app.packed.service.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.container.WireletList;
+import packed.internal.container.FixedWireletList;
 import packed.internal.service.build.wirelets.PackedDownstreamInjectionWirelet;
 import packed.internal.util.KeyBuilder;
 
@@ -121,7 +121,7 @@ public final class DefaultInjector extends AbstractInjector {
             cs = sf.isPresent() ? configSite.thenStackFrame("Injector.Spawn", sf.get()) : ConfigSite.UNKNOWN;
         }
         LinkedHashMap<Key<?>, InjectorEntry<?>> newServices = new LinkedHashMap<>(services);
-        WireletList wl = WireletList.of(wirelets);
+        FixedWireletList wl = FixedWireletList.of(wirelets);
         ConfigSite ccs = cs;
         wl.forEach(PackedDownstreamInjectionWirelet.class, w -> w.process(ccs, newServices));
         // TODO Auto-generated method stub

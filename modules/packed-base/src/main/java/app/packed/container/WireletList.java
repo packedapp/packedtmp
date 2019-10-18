@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension.graph;
+package app.packed.container;
 
 /**
  *
  */
-class ExtensionIntegrationModel {
+public interface WireletList<T extends Wirelet> {
 
-    // None
-    // Pit (as in Service)
-    // Viral
 }

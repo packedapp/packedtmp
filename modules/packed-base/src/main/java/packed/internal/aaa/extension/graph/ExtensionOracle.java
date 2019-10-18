@@ -13,17 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package packed.internal.aaa.extension.graph;
+
+import java.util.Set;
+
+import app.packed.container.extension.Extension;
 
 /**
  *
  */
-// Component.java
-// Optional<Wiring> <- is removed, for example, when undeployed...
+interface ExtensionOracle<E extends Extension> {
 
-interface Wiring {
-    boolean isRemoveable();// or isStatic
+    int count();
+
+    E root();
+
+    Set<E> findParentLess();
+
+    Set<E> childrenOf(E extension);
 }
-
-// WiredContainer/LinkedBundle
-// UnwirableContainer extends WiredContainer

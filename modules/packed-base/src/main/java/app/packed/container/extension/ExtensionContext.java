@@ -20,10 +20,10 @@ import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
 
 /**
- * A instance of this interface is available to an extension via {@link Extension#context()}. Since the extension itself
- * defines most methods in this interface via protected final methods. This interface is typically used to be able to
- * provide this methods to code that is not located on the extension implementation. This is typically the case if the
- * extension is too complex to contain in a single class.
+ * A instance of this interface is available to an extension via {@link Extension#context()} or via constructor
+ * injection into the extension. Since the extension itself defines most methods in this interface via protected final
+ * methods. This interface is typically used to be able to provide this methods to code that is not located on the
+ * extension implementation. This is typically the case if the extension is too complex to contain in a single class.
  */
 public interface ExtensionContext {
 
@@ -64,8 +64,8 @@ public interface ExtensionContext {
      *            the type of extension to return
      * @return an extension of the specified type
      * @throws IllegalStateException
-     *             if the underlying container is no longer configurable and an extension of the specified type has not
-     *             already been installed
+     *             if used from the constructor of the container. Or if the underlying container is no longer configurable
+     *             and an extension of the specified type has not already been installed
      */
     <E extends Extension> E use(Class<E> extensionType);
 }

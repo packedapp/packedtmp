@@ -13,29 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension.graph;
-
-import java.util.Set;
-
-import app.packed.container.extension.Extension;
+package packed.internal.aaa.extension.graph;
 
 /**
  *
  */
+class ExtensionIntegrationModel {
 
-// Eneste problem er med super artifacts.
-// Saa hvis vi er et image. kan vi jo foerst finde ud af naar vi instantiere den
-// Men taenker det er mere configuration....
-
-// tjah nah...f.eks. installeringen af en WebServer....
-// Saa maa onstart jo bare blive cancelled.....
-public interface ExtensionOracle<E extends Extension> {
-
-    int count();
-
-    E root();
-
-    Set<E> findParentLess();
-
-    Set<E> childrenOf(E extension);
+    // None
+    // Pit (as in Service)
+    // Viral
 }

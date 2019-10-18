@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension.graph;
+package packed.internal.aaa.extension.graph;
 
 import app.packed.artifact.App;
-import app.packed.component.ComponentStream.Option;
 import app.packed.container.Bundle;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
@@ -25,29 +24,19 @@ import app.packed.service.ServiceExtension;
 /**
  *
  */
-public class Fff extends Bundle {
+class Fff2 extends Bundle {
 
     /** {@inheritDoc} */
     @Override
     protected void configure() {
         use(MyExtension.class);
-
+        link(new OtherB());
         System.out.println(path());
     }
 
     public static void main(String[] args) {
-        App a = App.of(new Fff());
-
-        a.stream().forEach(e -> {
-            System.out.println(e.extension() + " " + e.path());
-        });
-        System.out.println();
-        a.stream().filter(e -> e.extension().isEmpty()).forEach(e -> {
-            System.out.println(e.extension() + " " + e.path());
-        });
+        App.of(new Fff2());
         System.out.println("Bye");
-
-        a.stream(Option.excludeSelf());
     }
 
     public static class OtherB extends Bundle {
@@ -70,6 +59,7 @@ public class Fff extends Bundle {
             @Override
             protected void configure() {
                 onExtensionInstantiated(e -> e.use(ServiceExtension.class).provideInstance(123L));
+                onLinkage((p, c) -> System.out.println("Linking " + p.context().containerPath() + " to " + c.context().containerPath()));
             }
         }
     }
