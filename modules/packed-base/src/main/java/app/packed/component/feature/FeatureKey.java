@@ -34,6 +34,9 @@ public abstract class FeatureKey<T> {
      */
     protected FeatureKey(Class<? extends Extension> extensionType) {
         this.extensionType = requireNonNull(extensionType, "extensionType is null");
+        if (extensionType.getModule() != getClass().getModule()) {
+            throw new IllegalArgumentException("Feature keys must be created in the same module as the extension");
+        }
     }
 
     public Class<? extends Extension> extensionType() {

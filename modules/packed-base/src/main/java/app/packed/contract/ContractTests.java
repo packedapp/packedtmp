@@ -22,7 +22,7 @@ import app.packed.service.ServiceWirelets;
 /**
  *
  */
-public class ContractTests {
+class ContractTests {
     public static void main(String[] args) {
         ServiceContract ic = ServiceContract.newContract(c -> {
             c.addProvides(String.class);

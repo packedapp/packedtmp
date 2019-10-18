@@ -69,6 +69,10 @@ public abstract class ExtensionWirelet<T extends ExtensionWirelet.Pipeline<?, T,
             return previous;
         }
 
+        //// Ideen er egentlig at vi f.eks. kan validere et deploy af et image med givne wirelets.
+        // Saaledes at man kan vente med at instantiere den til man har brug for den...
+        // protected void validate();
+
         // protected void optimize() <-- called by the runtime to optimize as much as possible
 
         /**
