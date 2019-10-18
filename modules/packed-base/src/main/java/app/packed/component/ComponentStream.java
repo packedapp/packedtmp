@@ -23,8 +23,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import app.packed.container.extension.Extension;
-import app.packed.container.extension.feature.AFeature;
+import app.packed.component.feature.AFeature;
+import app.packed.container.Extension;
 
 /**
  * A specialization of the {@link Stream} interface that deals with streams of {@link Component components}. An instance

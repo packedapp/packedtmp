@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension;
+package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
-import app.packed.container.Wirelet;
 import packed.internal.container.MutableWireletList;
 
 /**

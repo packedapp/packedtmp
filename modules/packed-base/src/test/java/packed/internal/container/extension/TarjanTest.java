@@ -19,8 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.container.extension.Extension;
-import app.packed.container.extension.UseExtension;
+import app.packed.container.Extension;
+import app.packed.container.UseExtension;
 
 /**
  *

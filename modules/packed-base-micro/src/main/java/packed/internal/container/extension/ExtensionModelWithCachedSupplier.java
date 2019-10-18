@@ -25,7 +25,7 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.util.function.Supplier;
 
-import app.packed.container.extension.Extension;
+import app.packed.container.Extension;
 import app.packed.reflect.UncheckedIllegalAccessException;
 import packed.internal.util.StringFormatter;
 

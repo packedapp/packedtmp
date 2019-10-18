@@ -165,6 +165,9 @@ public interface ConfigSite {
     static ConfigSite fromAnnotatedField(String operation, FieldDescriptor field, Annotation annotation) {
         return new ConfigSiteSupport.AnnotatedFieldConfigSite(null, operation, field, annotation);
     }
+
+    // Skal vi have en enum Type???
+    //
 }
 // 5 different types
 //

@@ -13,17 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension;
+package app.packed.container;
 
-// Two strategies. Either clone all the contents.
-// Or recursively call back into parent pipeline
-// protected abstract T split();
-// Lige nu har vi behov for denne i forbindelse med at lave descriptors...
+/**
+ *
+ */
 
-//Analyze, Model, ..
-public interface ExtensionDescriptorContext {
+// I sidste ende kommer det nok an paa hvor mange metoder der er...
 
-    boolean hasPipelines();// <---
+// Er der 2-3 Saa smider vi dem paa context, ellers
 
-    <T extends ExtensionWirelet.Pipeline<?, ?, ?>> T get(Class<T> pipelineType);
+public interface ExtensionTreeNode<E extends Extension> extends ExtensionContext {
+
+    E extension();
 }
+////// With Node
+// + No need to have Extension<E extension Extension>
+
+// On ExtensionContext
+// + One less class
+// -

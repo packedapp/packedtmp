@@ -13,23 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension;
+package app.packed.container;
 
 /**
  *
  */
 
-// I sidste ende kommer det nok an paa hvor mange metoder der er...
+// UseExtension -> mandatory....
+// Problemet er at UseExtension betyder noget andet paa extension ends
 
-// Er der 2-3 Saa smider vi dem paa context, ellers
+// Why do need to declare extensions..
+// Because we can reference extension from onConfigured();
+// And we have no idea what other extensions they use until we run
+// onConfigured on them,
 
-public interface ExtensionTreeNode<E extends Extension> extends ExtensionContext {
+public @interface ExtensionProperties {
 
-    E extension();
+    Class<? extends Extension>[] extensions() default {};
+
+    String[] extensionsOptional() default {};
+
+    boolean viral() default false;
 }
-////// With Node
-// + No need to have Extension<E extension Extension>
-
-// On ExtensionContext
-// + One less class
-// -

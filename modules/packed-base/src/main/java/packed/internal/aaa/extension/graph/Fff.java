@@ -18,8 +18,8 @@ package packed.internal.aaa.extension.graph;
 import app.packed.artifact.App;
 import app.packed.component.ComponentStream.Option;
 import app.packed.container.Bundle;
-import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionComposer;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionComposer;
 import app.packed.service.ServiceExtension;
 
 /**

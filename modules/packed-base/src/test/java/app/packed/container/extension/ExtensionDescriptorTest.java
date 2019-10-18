@@ -20,6 +20,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.container.Extension;
+import app.packed.container.ExtensionComposer;
+import app.packed.container.ExtensionDescriptor;
+import app.packed.container.UseExtension;
 import app.packed.contract.Contract;
 
 /** Tests {@link ExtensionDescriptor}. */

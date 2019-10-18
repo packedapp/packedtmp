@@ -15,7 +15,7 @@
  */
 package packed.internal.service.build.wirelets;
 
-import app.packed.container.extension.ExtensionWirelet;
+import app.packed.container.ExtensionWirelet;
 import packed.internal.service.build.ServiceWireletPipeline;
 
 /**

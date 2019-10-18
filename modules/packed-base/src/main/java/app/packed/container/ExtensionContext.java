@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension;
+package app.packed.container;
 
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerConfiguration;
 
 /**
  * A instance of this interface is available to an extension via {@link Extension#context()} or via constructor

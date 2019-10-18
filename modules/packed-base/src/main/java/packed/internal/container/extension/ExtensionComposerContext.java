@@ -23,11 +23,11 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import app.packed.container.BundleDescriptor;
-import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionComposer;
-import app.packed.container.extension.ExtensionDescriptorContext;
-import app.packed.container.extension.ExtensionInstantiationContext;
-import app.packed.container.extension.ExtensionWirelet;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionComposer;
+import app.packed.container.ExtensionDescriptorContext;
+import app.packed.container.ExtensionInstantiationContext;
+import app.packed.container.ExtensionWirelet;
 import app.packed.contract.Contract;
 import app.packed.util.Nullable;
 

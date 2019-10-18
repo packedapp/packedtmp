@@ -30,7 +30,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.artifact.ArtifactImage;
-import app.packed.container.extension.Extension;
 import app.packed.contract.Contract;
 import app.packed.contract.ContractSet;
 import app.packed.service.ServiceDescriptor;

@@ -4,8 +4,7 @@ module app.packed.base {
     exports app.packed.contract; // Maybe API, and then have @Preview @DeprecatedWithReason
     exports app.packed.config;
     exports app.packed.container;
-    exports app.packed.container.extension;
-    exports app.packed.container.extension.feature;
+    exports app.packed.component.feature;
     exports app.packed.errorhandling;
     exports app.packed.hook;
     exports app.packed.service;

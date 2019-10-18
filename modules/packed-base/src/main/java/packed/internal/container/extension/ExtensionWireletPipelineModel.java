@@ -19,9 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.BiFunction;
 
-import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionWirelet;
-import app.packed.container.extension.ExtensionWirelet.Pipeline;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionWirelet;
+import app.packed.container.ExtensionWirelet.Pipeline;
 import packed.internal.container.MutableWireletList;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 

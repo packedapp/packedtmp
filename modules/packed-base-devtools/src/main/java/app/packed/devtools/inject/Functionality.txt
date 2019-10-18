@@ -13,6 +13,3 @@ Extract PrivateInjector from Injector
     
     
 //Masser af static analysis.
-
-//Maaske er det ogsaa denne der skriver native image?
-//Ville ikke vaere lige saa let, men hmmmm det er jo ikke noget functionalitet men skal bruge paa runtime.

@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Optional;
 
-import app.packed.container.extension.UseExtension;
+import app.packed.container.UseExtension;
 import app.packed.util.Key;
 
 /**

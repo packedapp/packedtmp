@@ -13,17 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension.feature;
+package app.packed.container;
 
 /**
  *
  */
-/// How many keys are we talking about???
-// Could have a configure Object.
-public abstract class FeatureKey<T> {
+// foreach, will take each node in top->down manner
+public interface ExtensionTree<E extends Extension> extends Iterable<E> {
 
+    /**
+     * Returns the number of nodes in this tree.
+     * 
+     * @return the number of nodes in this tree
+     */
+    int size();
+
+    int degree();
+
+    // Host...
 }
-// Key design
-// The actual feature class is the key...
-// The key is an abstact class -> We can verify the actual type
-// The key is an instance and we use an Identity HashMap
+
+// Tree Operations
+
+// get Root(s)
+// is Fully connected
+// size()
+
+// Node operations
+// boolean isRoot();
+// Tree connectedTree();
+// root
+// parent
+// children
+// sieblings
+// forEachChild
+// int index.... from [0 to size-1] In order of usage????

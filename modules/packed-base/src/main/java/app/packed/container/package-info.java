@@ -15,7 +15,6 @@
  */
 
 /**
- * Provides a simple component based framework. The framework provides life-cycle control, event notification,
- * dependency injection and service registration/lookup.
+ * Provides a simple component based framework. And extensions
  */
 package app.packed.container;

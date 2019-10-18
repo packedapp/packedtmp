@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.extension.Extension;
+import app.packed.container.Extension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;

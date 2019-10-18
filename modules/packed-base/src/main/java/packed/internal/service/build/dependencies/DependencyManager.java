@@ -25,8 +25,8 @@ import java.util.Optional;
 import java.util.StringJoiner;
 
 import app.packed.config.ConfigSite;
-import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionInstantiationContext;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionInstantiationContext;
 import app.packed.reflect.ExecutableDescriptor;
 import app.packed.reflect.MethodDescriptor;
 import app.packed.reflect.ParameterDescriptor;

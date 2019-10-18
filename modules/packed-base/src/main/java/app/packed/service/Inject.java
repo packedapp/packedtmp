@@ -21,7 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.container.extension.UseExtension;
+import app.packed.container.UseExtension;
 
 /**
  * Unlike many other popular dependency injection frameworks. There are usually no requirements in Packed to use

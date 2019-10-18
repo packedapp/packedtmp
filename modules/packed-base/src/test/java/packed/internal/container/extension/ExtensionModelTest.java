@@ -21,8 +21,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
-import app.packed.container.extension.Extension;
-import app.packed.container.extension.InternalExtensionException;
+import app.packed.container.Extension;
+import app.packed.container.InternalExtensionException;
 
 /** Tests {@link ExtensionModel}. */
 public class ExtensionModelTest {

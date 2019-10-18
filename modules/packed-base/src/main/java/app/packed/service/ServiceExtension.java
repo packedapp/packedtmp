@@ -21,10 +21,10 @@ import java.util.function.BiConsumer;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionComposer;
+import app.packed.container.UseExtension;
 import app.packed.container.Wirelet;
-import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionComposer;
-import app.packed.container.extension.UseExtension;
 import app.packed.hook.OnHook;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;

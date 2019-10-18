@@ -21,8 +21,8 @@ import java.util.function.Consumer;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.BaseBundle;
-import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionComposer;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionComposer;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
 import app.packed.hook.HookApplicator;

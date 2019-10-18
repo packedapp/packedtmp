@@ -17,7 +17,7 @@ package packed.internal.aaa.extension.graph;
 
 import java.util.Set;
 
-import app.packed.container.extension.Extension;
+import app.packed.container.Extension;
 
 /**
  *

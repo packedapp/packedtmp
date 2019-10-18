@@ -18,9 +18,9 @@ package packed.internal.container.extension;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.packed.container.extension.Extension;
-import app.packed.container.extension.InternalExtensionException;
-import app.packed.container.extension.UseExtension;
+import app.packed.container.Extension;
+import app.packed.container.InternalExtensionException;
+import app.packed.container.UseExtension;
 import packed.internal.util.StringFormatter;
 
 /**

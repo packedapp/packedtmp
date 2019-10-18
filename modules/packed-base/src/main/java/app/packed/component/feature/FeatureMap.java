@@ -13,8 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package app.packed.component.feature;
+
+import java.util.IdentityHashMap;
+import java.util.Set;
 
 /**
- * Provides classes needed to write extensions.
+ *
  */
-package app.packed.container.extension;
+
+// Multimap
+// Feature -> Collection
+
+// ProvidedServices... getAll(ProvidedServices.class)
+public final class FeatureMap {
+
+    private final IdentityHashMap<FeatureKey<?>, Object> features = new IdentityHashMap<>();
+
+    @SuppressWarnings("unchecked")
+    public <T> T get(FeatureKey<T> key) {
+        return (T) features.get(key);
+    }
+
+    //// Hmmm
+    public Set<FeatureKey<?>> keys() {
+        return features.keySet();
+    }
+}

@@ -18,10 +18,10 @@ package app.packed.component;
 import java.util.Collection;
 import java.util.Optional;
 
+import app.packed.component.feature.AFeature;
+import app.packed.component.feature.FeatureMap;
 import app.packed.config.ConfigSite;
-import app.packed.container.extension.Extension;
-import app.packed.container.extension.feature.AFeature;
-import app.packed.container.extension.feature.FeatureMap;
+import app.packed.container.Extension;
 
 /**
  * A component is the basic entity in Packed. Much like everything is a is one of the defining features of Unix, and its

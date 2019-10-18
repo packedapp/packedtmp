@@ -20,11 +20,11 @@ import static java.util.Objects.requireNonNull;
 import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
 import app.packed.container.BaseBundle;
-import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionComposer;
-import app.packed.container.extension.ExtensionInstantiationContext;
-import app.packed.container.extension.ExtensionWirelet;
-import app.packed.container.extension.UseExtension;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionComposer;
+import app.packed.container.ExtensionInstantiationContext;
+import app.packed.container.ExtensionWirelet;
+import app.packed.container.UseExtension;
 import app.packed.service.ServiceExtension;
 import packed.internal.container.MutableWireletList;
 

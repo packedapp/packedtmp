@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension;
+package app.packed.container;
 
 import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
@@ -21,8 +21,6 @@ import java.lang.reflect.Modifier;
 import java.util.Optional;
 
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerSource;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.extension.ExtensionComposerContext;
 import packed.internal.module.AppPackedExtensionAccess;

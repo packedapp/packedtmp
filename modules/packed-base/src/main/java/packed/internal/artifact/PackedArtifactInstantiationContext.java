@@ -20,10 +20,10 @@ import static java.util.Objects.requireNonNull;
 import java.util.IdentityHashMap;
 
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.extension.Extension;
-import app.packed.container.extension.InternalExtensionException;
-import app.packed.container.extension.ExtensionInstantiationContext;
-import app.packed.container.extension.ExtensionWirelet.Pipeline;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionInstantiationContext;
+import app.packed.container.InternalExtensionException;
+import app.packed.container.ExtensionWirelet.Pipeline;
 import app.packed.util.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.WireletContext;

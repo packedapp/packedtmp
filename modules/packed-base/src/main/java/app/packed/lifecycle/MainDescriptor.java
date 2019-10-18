@@ -16,7 +16,7 @@
 package app.packed.lifecycle;
 
 import app.packed.component.ComponentPath;
-import app.packed.container.extension.feature.Feature;
+import app.packed.component.feature.Feature;
 
 /**
  *

@@ -21,8 +21,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
 
 import app.packed.container.BaseBundle;
+import app.packed.container.Extension;
 import app.packed.container.Wirelet;
-import app.packed.container.extension.Extension;
 import app.packed.service.Factory;
 import app.packed.service.ServiceExtension;
 import app.packed.util.Nullable;

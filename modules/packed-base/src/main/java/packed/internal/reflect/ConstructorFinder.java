@@ -24,7 +24,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import app.packed.container.extension.InternalExtensionException;
+import app.packed.container.InternalExtensionException;
 import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.NativeImage;
 import packed.internal.util.StringFormatter;

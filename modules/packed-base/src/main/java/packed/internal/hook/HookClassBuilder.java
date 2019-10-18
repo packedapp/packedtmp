@@ -29,8 +29,8 @@ import java.util.IdentityHashMap;
 import java.util.Set;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.extension.ExtensionComposer;
-import app.packed.container.extension.InternalExtensionException;
+import app.packed.container.ExtensionComposer;
+import app.packed.container.InternalExtensionException;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;

@@ -15,7 +15,7 @@
  */
 package packed.internal.config;
 
-import app.packed.container.extension.Extension;
+import app.packed.container.Extension;
 
 /**
  *

@@ -26,9 +26,9 @@ import java.util.stream.Stream;
 import app.packed.component.Component;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
+import app.packed.component.feature.FeatureMap;
 import app.packed.config.ConfigSite;
-import app.packed.container.extension.Extension;
-import app.packed.container.extension.feature.FeatureMap;
+import app.packed.container.Extension;
 
 /**
  *

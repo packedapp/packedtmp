@@ -19,7 +19,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.extension.Extension;
 import app.packed.util.Nullable;
 
 /**

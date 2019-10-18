@@ -17,7 +17,7 @@ package packed.internal.container.extension;
 
 import java.util.function.Supplier;
 
-import app.packed.container.extension.Extension;
+import app.packed.container.Extension;
 
 /**
  * A cache of {@link Extension} implementations. Is mainly used for instantiating new instances of extensions.

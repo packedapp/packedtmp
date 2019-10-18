@@ -21,9 +21,9 @@ import java.util.Optional;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
+import app.packed.component.feature.FeatureMap;
 import app.packed.config.ConfigSite;
-import app.packed.container.extension.Extension;
-import app.packed.container.extension.feature.FeatureMap;
+import app.packed.container.Extension;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.util.Key;

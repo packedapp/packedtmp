@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension.feature;
+package app.packed.component.feature;
 
 import java.util.Optional;
 
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
-import app.packed.container.extension.Extension;
+import app.packed.container.Extension;
 import app.packed.lifecycle.RunState;
 import app.packed.util.Key;
 
@@ -27,6 +27,9 @@ interface CliFeature extends Feature {}
 
 // Would also like to have an overview of resolved items...
 // How everything fits together???
+
+// Det er vel componenter....
+
 interface DependantFeature extends /* ConfiguritonTimeFeature */ Feature {
     // Map<Key, List<ConfigSite>> <--- dependency = Parameter....
 
@@ -42,6 +45,8 @@ interface DependantFeature extends /* ConfiguritonTimeFeature */ Feature {
 // FeatureDescriptor
 public interface Feature {
 
+    FeatureKey<?> featureKey();
+
     // ConfigSite+FeatureType+ComponentPath?????
     // String featureId();
 
@@ -50,8 +55,10 @@ public interface Feature {
     // If there is no direct link to the component.
     Class<? extends Extension> extension();
 
+    // Vi h
     ComponentPath path();
 }
+// Hav en Feature og en ManyFeature?????
 
 interface LifecycleFeature extends Feature {
     RunState state();

@@ -15,19 +15,15 @@
  */
 package app.packed.container;
 
-import java.util.Optional;
+// Two strategies. Either clone all the contents.
+// Or recursively call back into parent pipeline
+// protected abstract T split();
+// Lige nu har vi behov for denne i forbindelse med at lave descriptors...
 
-/**
- *
- */
-// ContainerFuture???
+//Analyze, Model, ..
+public interface ExtensionDescriptorContext {
 
-// Det er ihvertfald Bundle/ContainerConfiguration der returnere den fra link();
-// Den skulle bruges fra Injector til et eller andet....
-interface LinkedBundle {
-    // Path??? Still don't know the rules. Are we safe???-
+    boolean hasPipelines();// <---
 
-    String name();
-
-    Optional<String> description();
+    <T extends ExtensionWirelet.Pipeline<?, ?, ?>> T get(Class<T> pipelineType);
 }

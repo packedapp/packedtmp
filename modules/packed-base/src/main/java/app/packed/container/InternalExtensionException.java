@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension;
+package app.packed.container;
 
 /**
  * An extension thrown to indicate that some part of an an extension was not properly implemented according to the

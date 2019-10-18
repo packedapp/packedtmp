@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension;
+package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,10 +21,6 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-import app.packed.container.Bundle;
-import app.packed.container.BundleDescriptor;
-import app.packed.container.BundleDescriptor.Builder;
-import app.packed.container.ContainerConfiguration;
 import app.packed.contract.Contract;
 import packed.internal.container.MutableWireletList;
 import packed.internal.container.extension.ExtensionComposerContext;
@@ -108,7 +104,7 @@ public abstract class ExtensionComposer<E extends Extension> {
 
     @SuppressWarnings("unchecked")
     protected final void exposeDescriptor(BiConsumer<? super E, ? super BundleDescriptor.Builder> builder) {
-        context().builder = (BiConsumer<? super Extension, ? super Builder>) requireNonNull(builder, "builder is null");
+        context().builder = (BiConsumer<? super Extension, ? super BundleDescriptor.Builder>) requireNonNull(builder, "builder is null");
     }
 
     protected final void exposeFeature() {}

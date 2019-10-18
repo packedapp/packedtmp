@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.container.extension.Extension;
+import app.packed.container.Extension;
 import support.testutil.AbstractArtifactTest;
 
 /** Tests basic functionality of a {@link Extension}. */

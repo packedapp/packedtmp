@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension.feature;
+package app.packed.component.feature;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
@@ -23,8 +23,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.container.extension.Extension;
-import app.packed.container.extension.feature.UseExtensionExtended.Multiple;
+import app.packed.component.feature.UseExtensionExtended.Multiple;
+import app.packed.container.Extension;
 import app.packed.lifecycle.LifecycleExtension;
 import app.packed.lifecycle.OnStart;
 import app.packed.service.Provide;

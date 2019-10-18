@@ -21,8 +21,8 @@ import java.util.function.Supplier;
 
 import app.packed.artifact.App;
 import app.packed.container.ContainerSource;
+import app.packed.container.Extension;
 import app.packed.container.Wirelet;
-import app.packed.container.extension.Extension;
 import app.packed.service.ServiceWirelets;
 
 /**

@@ -13,38 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension;
+package app.packed.component.feature;
+
+import app.packed.container.Extension;
 
 /**
  *
  */
-// foreach, will take each node in top->down manner
-public interface ExtensionTree<E extends Extension> extends Iterable<E> {
+
+// Description
+// Annotation(s)
+
+public final class FeatureDescriptor {
+
+    Class<? extends Extension> extension;
 
     /**
-     * Returns the number of nodes in this tree.
+     * Returns the extension this feature belongs to.
      * 
-     * @return the number of nodes in this tree
+     * @return the extension this feature belongs to
      */
-    int size();
-
-    int degree();
-
-    // Host...
+    public Class<? extends Extension> extension() {
+        return extension;
+    }
 }
-
-// Tree Operations
-
-// get Root(s)
-// is Fully connected
-// size()
-
-// Node operations
-// boolean isRoot();
-// Tree connectedTree();
-// root
-// parent
-// children
-// sieblings
-// forEachChild
-// int index.... from [0 to size-1] In order of usage????

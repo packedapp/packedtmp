@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import app.packed.artifact.ArtifactImage;
 import app.packed.container.Bundle;
-import app.packed.container.extension.Extension;
+import app.packed.container.Extension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.lifecycle.RunState;
 import app.packed.service.Factory;

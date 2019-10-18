@@ -17,7 +17,7 @@ package packed.internal.service.build;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.container.extension.ExtensionWirelet;
+import app.packed.container.ExtensionWirelet;
 import app.packed.service.ServiceExtension;
 import packed.internal.container.MutableWireletList;
 import packed.internal.service.build.wirelets.ServiceWirelet;

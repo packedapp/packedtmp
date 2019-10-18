@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 
+import app.packed.container.Extension;
+import app.packed.container.ExtensionWirelet;
 import app.packed.container.Wirelet;
-import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionWirelet;
 import app.packed.util.Nullable;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
 import packed.internal.container.extension.ExtensionWireletPipelineModel;

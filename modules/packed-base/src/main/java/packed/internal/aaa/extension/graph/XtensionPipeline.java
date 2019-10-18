@@ -15,8 +15,8 @@
  */
 package packed.internal.aaa.extension.graph;
 
+import app.packed.container.Extension;
 import app.packed.container.Wirelet;
-import app.packed.container.extension.Extension;
 import app.packed.util.Nullable;
 
 /**

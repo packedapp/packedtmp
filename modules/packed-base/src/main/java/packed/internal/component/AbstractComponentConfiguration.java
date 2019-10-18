@@ -25,12 +25,12 @@ import java.util.Optional;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
+import app.packed.component.feature.FeatureMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
-import app.packed.container.extension.Extension;
-import app.packed.container.extension.feature.FeatureMap;
+import app.packed.container.Extension;
 import app.packed.util.Nullable;
 import packed.internal.artifact.BuildOutput;
 import packed.internal.artifact.PackedArtifactBuildContext;

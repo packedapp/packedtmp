@@ -21,9 +21,9 @@ import java.util.ArrayList;
 
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
-import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionContext;
-import app.packed.container.extension.InternalExtensionException;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionContext;
+import app.packed.container.InternalExtensionException;
 import app.packed.util.Key;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.module.ModuleAccess;
