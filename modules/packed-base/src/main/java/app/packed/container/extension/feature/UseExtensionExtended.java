@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension.graph;
+package app.packed.container.extension.feature;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
@@ -24,7 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.graph.UseExtension.Multiple;
+import app.packed.container.extension.feature.UseExtensionExtended.Multiple;
 import app.packed.lifecycle.LifecycleExtension;
 import app.packed.lifecycle.OnStart;
 import app.packed.service.Provide;
@@ -39,7 +39,7 @@ import app.packed.service.ServiceExtension;
 @Repeatable(Multiple.class)
 
 // ComponentActivateExtension...
-@interface UseExtension {
+@interface UseExtensionExtended {
 
     Class<? extends Annotation>[] annotatedFields() default {};
 
@@ -57,7 +57,8 @@ import app.packed.service.ServiceExtension;
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @interface Multiple {
-        UseExtension[] value();
+        @SuppressWarnings("exports")
+        UseExtensionExtended[] value();
     }
 }
 // Prop dem paa useExtension...
@@ -65,16 +66,16 @@ import app.packed.service.ServiceExtension;
 // Taeller for.. Det er okay, Paa hooks og extensions er det alligevel kun powerbrugere....
 //
 
-@UseExtension(annotatedFields = Provide.class, extension = ServiceExtension.class)
-@UseExtension(annotatedFields = OnStart.class, instanceOfs = Lifecycle.class, extension = LifecycleExtension.class)
+@UseExtensionExtended(annotatedFields = Provide.class, extension = ServiceExtension.class)
+@UseExtensionExtended(annotatedFields = OnStart.class, instanceOfs = Lifecycle.class, extension = LifecycleExtension.class)
 class MyBundle {}
 
 interface Lifecycle {
     void onStart();
 }
 
-@UseExtension(annotatedFields = Provide.class, extension = ServiceExtension.class)
-@UseExtension(annotatedFields = OnStart.class, instanceOfs = Lifecycle.class, extension = LifecycleExtension.class)
+@UseExtensionExtended(annotatedFields = Provide.class, extension = ServiceExtension.class)
+@UseExtensionExtended(annotatedFields = OnStart.class, instanceOfs = Lifecycle.class, extension = LifecycleExtension.class)
 @interface Foo {
 
 }

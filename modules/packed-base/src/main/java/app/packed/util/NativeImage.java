@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
 // Det er f.eks. extensions der kan faa det...
 // Skal vi have en instance af det?????
 
-// NativeImageHelper, NativeImageSupport
+// NativeImageHelper, NativeImageSupport, NativeImageUtil
 public final class NativeImage {
 
     public void saveMethod(Method m) {}
@@ -50,6 +50,8 @@ public final class NativeImage {
     //
     // }
 
+    // Active_Generating, Active_Executing, Inactive?
+    // Active_Profiling?
     public enum Mode {
 
         /** A mode indicating that we are building are native image. */

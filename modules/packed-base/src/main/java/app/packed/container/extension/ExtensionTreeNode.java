@@ -13,20 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension.tree;
-
-import app.packed.container.extension.Extension;
+package app.packed.container.extension;
 
 /**
  *
  */
+public interface ExtensionTreeNode<E extends Extension> extends ExtensionContext {
 
-// A host is kind of a container I think.... But do I really want to specify
-
-// Connects with a host (if its there...)
-
-// In case we are building an artifact image on
-
-public abstract class HostExtensionConnector<E extends Extension, T> {
-
+    E extension();
 }
+////// With Node
+// + No need to have Extension<E extension Extension>
+
+// On ExtensionContext
+// + One less class
+// -

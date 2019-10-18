@@ -26,10 +26,10 @@ import packed.internal.container.extension.PackedExtensionContext;
 /** The default implementation of {@link ArtifactBuildContext} */
 public final class PackedArtifactBuildContext implements ArtifactBuildContext {
 
-    /** The artifact's driver. */
+    /** The build output. */
     private final BuildOutput output;
 
-    /** The configuration of the artifacts top container. */
+    /** The configuration of the top container. */
     private final PackedContainerConfiguration topContainerConfiguration;
 
     private final ExtensionList extensions = new ExtensionList();

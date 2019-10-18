@@ -29,6 +29,8 @@ public class DefaultHost extends AbstractComponent implements ComponentHolder {
 
     // App is not a component, so can't really use children. Unless, we attach the artifact
     // to the component, which we probably should
+    // We need some kind of wrapper, because we also want to support artifacts.
+    // that are not apps
     final ConcurrentHashMap<String, App> apps = new ConcurrentHashMap<>();
 
     /**
