@@ -22,7 +22,7 @@ import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionDeclarationException;
+import app.packed.container.extension.InternalExtensionException;
 
 /** Tests {@link ExtensionModel}. */
 public class ExtensionModelTest {
@@ -43,7 +43,7 @@ public class ExtensionModelTest {
     public void fails() {
         // abstract class
         AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> ExtensionModel.of(AbstractExtension.class).newInstance());
-        a.isExactlyInstanceOf(ExtensionDeclarationException.class);
+        a.isExactlyInstanceOf(InternalExtensionException.class);
         // TODO test messages
 
         @SuppressWarnings("rawtypes")
@@ -55,11 +55,11 @@ public class ExtensionModelTest {
 
         // inner class
         a = assertThatThrownBy(() -> ExtensionModel.of(InnerClassExtension.class).newInstance());
-        a.isExactlyInstanceOf(ExtensionDeclarationException.class);
+        a.isExactlyInstanceOf(InternalExtensionException.class);
 
         // Takes parameter
         a = assertThatThrownBy(() -> ExtensionModel.of(TakesParameterExtension.class).newInstance());
-        a.isExactlyInstanceOf(ExtensionDeclarationException.class);
+        a.isExactlyInstanceOf(InternalExtensionException.class);
     }
 
     @Test

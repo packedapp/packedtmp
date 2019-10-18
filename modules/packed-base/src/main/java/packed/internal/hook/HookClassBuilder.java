@@ -30,7 +30,7 @@ import java.util.Set;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.ExtensionComposer;
-import app.packed.container.extension.ExtensionDeclarationException;
+import app.packed.container.extension.InternalExtensionException;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
@@ -154,7 +154,7 @@ final class HookClassBuilder {
         for (Class<?> c : extensionType.getDeclaredClasses()) {
             if (c.getSimpleName().equals("Builder")) {
                 if (!HookGroupBuilder.class.isAssignableFrom(c)) {
-                    throw new ExtensionDeclarationException(c.getCanonicalName() + " must extend " + StringFormatter.format(ExtensionComposer.class));
+                    throw new InternalExtensionException(c.getCanonicalName() + " must extend " + StringFormatter.format(ExtensionComposer.class));
                 }
                 groupType = (Class<? extends HookGroupBuilder<?>>) c;
             }

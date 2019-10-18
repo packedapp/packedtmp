@@ -27,16 +27,15 @@ import packed.internal.container.MutableWireletList;
  * 
  * Extension wirelets that uses the same extension pipeline type are processed in the order they are specified in. No
  * guarantees are made for extension wirelets that define for different extension pipeline types.
+ * <p>
+ * We need this class so we can see which extension the wirelet belongs to... Otherwise, we would not be able to tell
+ * the user which extension was missing. When throwing an exception if the wirelet was specified, but the extension was
+ * not used
  */
 public abstract class ExtensionWirelet<T extends ExtensionWirelet.Pipeline<?, T, ?>> extends Wirelet {
 
-    // We need this class so we can see which extension the wirelet belongs to...
-    // Otherwise, we would not be able to tell the user which extension was missing.
-    // When throwing an exception if the wirelet was specified, but the extension was not used
     /**
      * Extension wirelet pipelines
-     * 
-     * If a given extension allows specific wirelets to late configure it after. You need to use a pipeline.
      */
     // Kan only define one pipeline per extension... Maybe...
     // Kunne jo godt have @Nullable GreenPipeline, @Nullable BlackPipeline
@@ -124,12 +123,6 @@ public abstract class ExtensionWirelet<T extends ExtensionWirelet.Pipeline<?, T,
 // Og dependency transformer vi endda.
 // Som foerst bliver linket senere... Dvs vi kan ikke validere, foerend alle links er faerdige.
 // Summasumarum vi maa validere til sidst.
-
-// Ellers skal vi have stages'ene her
-// processBefore()
-// processAfter()
-// ....
-// Vel ikke hvis det er pipelinen der bestemmer....
 
 // HVORFOR ikke bare en metode vi kan invoke fra extension'en?
 // Det virker ikke naar vi image.with(some wirelets)....

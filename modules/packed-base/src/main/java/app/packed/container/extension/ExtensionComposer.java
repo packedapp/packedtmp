@@ -88,7 +88,7 @@ public abstract class ExtensionComposer<E extends Extension> {
      * Exposes a contract of the specified type.
      * <p>
      * If the specified contract factory does not return a non-null object of the specified contract type when invoked, the
-     * runtime will will throw a {@link ExtensionDeclarationException}.
+     * runtime will will throw a {@link InternalExtensionException}.
      * 
      * @param <C>
      *            the type of contract to expose
@@ -96,7 +96,7 @@ public abstract class ExtensionComposer<E extends Extension> {
      *            the type of contract the factory creates
      * @param contractFactory
      *            a factory for creating the contract
-     * @throws ExtensionDeclarationException
+     * @throws InternalExtensionException
      *             if trying to register a contract type that has already been registered with another extension
      */
     protected final <C extends Contract> void exposeContract(Class<C> contractType,

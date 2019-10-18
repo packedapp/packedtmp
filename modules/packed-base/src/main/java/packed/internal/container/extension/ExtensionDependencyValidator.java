@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionDeclarationException;
+import app.packed.container.extension.InternalExtensionException;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -95,7 +95,7 @@ final class ExtensionDependencyValidator {
             this.dependencies = ExtensionUtil.fromUseExtension(extensionType);
             for (Class<? extends Extension> c : dependencies) {
                 if (c == extensionType) {
-                    throw new ExtensionDeclarationException("Extension " + StringFormatter.format(extensionType) + " cannot depend on itself via " + c);
+                    throw new InternalExtensionException("Extension " + StringFormatter.format(extensionType) + " cannot depend on itself via " + c);
                 }
             }
             this.nodes = new Node[dependencies.size()];
@@ -145,7 +145,7 @@ final class ExtensionDependencyValidator {
                     }
                     scc.add(n1.extensionType);
                     if (scc.size() > 1) {
-                        throw new ExtensionDeclarationException("There is a dependency circle between multiple extensions" + scc);
+                        throw new InternalExtensionException("There is a dependency circle between multiple extensions" + scc);
                     }
                 } else {
                     stack.pop();

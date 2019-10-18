@@ -40,7 +40,7 @@ import app.packed.container.ContainerLayer;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionDeclarationException;
+import app.packed.container.extension.InternalExtensionException;
 import app.packed.container.extension.ExtensionDescriptorContext;
 import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.container.extension.ExtensionWirelet.Pipeline;
@@ -472,7 +472,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * @throws IllegalStateException
      *             if an extension of the specified type has not already been installed and the container is no longer
      *             configurable
-     * @throws ExtensionDeclarationException
+     * @throws InternalExtensionException
      *             if the
      */
     public PackedExtensionContext useExtension(Class<? extends Extension> extensionType, @Nullable PackedExtensionContext callingExtension) {

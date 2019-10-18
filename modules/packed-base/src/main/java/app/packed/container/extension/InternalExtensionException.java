@@ -20,7 +20,7 @@ package app.packed.container.extension;
  * extension requirements in packed. As a user of the extension there is normally nothing else you can do, but report
  * the error to the developer of the extension.
  */
-public class ExtensionDeclarationException extends RuntimeException {
+public class InternalExtensionException extends RuntimeException {
 
     /** */
     private static final long serialVersionUID = 1L;
@@ -28,7 +28,7 @@ public class ExtensionDeclarationException extends RuntimeException {
     /**
      * @param message
      */
-    public ExtensionDeclarationException(String message) {
+    public InternalExtensionException(String message) {
         super(message);
     }
 
@@ -36,7 +36,7 @@ public class ExtensionDeclarationException extends RuntimeException {
      * @param message
      * @param cause
      */
-    public ExtensionDeclarationException(String message, Throwable cause) {
+    public InternalExtensionException(String message, Throwable cause) {
         super(message, cause);
     }
 }

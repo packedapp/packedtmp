@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionDeclarationException;
+import app.packed.container.extension.InternalExtensionException;
 import app.packed.container.extension.UseExtension;
 import packed.internal.util.StringFormatter;
 
@@ -36,7 +36,7 @@ public final class ExtensionUtil {
             List<Class<?>> list = USE_DEPENDENCIES_UNCHECKED.get(type);
             for (Class<?> c : list) {
                 if (!Extension.class.isAssignableFrom(c)) {
-                    throw new ExtensionDeclarationException("@" + UseExtension.class.getSimpleName() + " " + StringFormatter.format(type)
+                    throw new InternalExtensionException("@" + UseExtension.class.getSimpleName() + " " + StringFormatter.format(type)
                             + " specified an invalid extension " + StringFormatter.format(c));
                 }
             }
@@ -86,7 +86,7 @@ public final class ExtensionUtil {
      * @param c
      *            the class to
      * @return a list of extensions
-     * @throws ExtensionDeclarationException
+     * @throws InternalExtensionException
      *             if some classes specified via {@link UseExtension#optional()} does not reference an extension type.
      */
     public static final List<Class<? extends Extension>> fromUseExtension(Class<?> c) {

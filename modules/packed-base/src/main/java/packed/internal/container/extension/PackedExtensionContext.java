@@ -23,7 +23,7 @@ import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionContext;
-import app.packed.container.extension.ExtensionDeclarationException;
+import app.packed.container.extension.InternalExtensionException;
 import app.packed.util.Key;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.module.ModuleAccess;
@@ -207,7 +207,7 @@ public final class PackedExtensionContext implements ExtensionContext {
         // A better solution is that each extension caches the extensions they use (if they want to).
         // This saves a check + map lookup for each additional request.
         if (!model.dependencies.contains(extensionType)) {
-            throw new ExtensionDeclarationException("The specified extension type is not among " + model.extensionType.getSimpleName()
+            throw new InternalExtensionException("The specified extension type is not among " + model.extensionType.getSimpleName()
                     + " dependencies, extensionType = " + extensionType + ", valid dependencies = " + model.dependencies);
         }
         return (T) pcc.useExtension(extensionType, this).extension;

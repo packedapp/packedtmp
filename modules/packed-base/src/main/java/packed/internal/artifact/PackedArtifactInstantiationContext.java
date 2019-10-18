@@ -21,7 +21,7 @@ import java.util.IdentityHashMap;
 
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionDeclarationException;
+import app.packed.container.extension.InternalExtensionException;
 import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.container.extension.ExtensionWirelet.Pipeline;
 import app.packed.util.Nullable;
@@ -69,7 +69,7 @@ public final class PackedArtifactInstantiationContext {
             public <T extends Pipeline<?, ?, ?>> T getPipeline(Class<T> pipelineType) {
                 // We need to check that someone does not request another extensions pipeline type.
                 if (!e.model().pipelines.containsKey(pipelineType)) {
-                    throw new ExtensionDeclarationException(
+                    throw new InternalExtensionException(
                             "The specified pipeline type is not amongst " + e.type().getSimpleName() + " pipeline types, pipelineType = " + pipelineType);
                 }
                 return wirelets.getPipelin(pipelineType);

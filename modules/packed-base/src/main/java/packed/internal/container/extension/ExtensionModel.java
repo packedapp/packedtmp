@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 import app.packed.component.Component;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
-import app.packed.container.extension.ExtensionDeclarationException;
+import app.packed.container.extension.InternalExtensionException;
 import app.packed.container.extension.ExtensionDescriptorContext;
 import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.container.extension.ExtensionWirelet;
@@ -198,7 +198,7 @@ public final class ExtensionModel<T extends Extension> {
             for (Class<?> c : extensionType.getDeclaredClasses()) {
                 if (c.getSimpleName().equals("Composer")) {
                     if (!ExtensionComposer.class.isAssignableFrom(c)) {
-                        throw new ExtensionDeclarationException(c.getCanonicalName() + " must extend " + StringFormatter.format(ExtensionComposer.class));
+                        throw new InternalExtensionException(c.getCanonicalName() + " must extend " + StringFormatter.format(ExtensionComposer.class));
                     }
                     composerType = (Class<? extends ExtensionComposer<?>>) c;
                     // composerType = (Class<? extends ExtensionComposer<?>>) COMPOSABLE_EXTENSION_TV_EXTRACTOR.extract(extensionType);
