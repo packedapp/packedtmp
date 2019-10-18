@@ -21,8 +21,10 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
@@ -31,7 +33,7 @@ import java.lang.reflect.Parameter;
  * <p>
  * Unlike the {@link Executable} class, this interface contains no mutable operations, so it can be freely shared.
  */
-public abstract class ExecutableDescriptor implements MemberDescriptor {
+public abstract class ExecutableDescriptor implements Member, AnnotatedElement {
 
     /** The executable */
     final Executable executable;
