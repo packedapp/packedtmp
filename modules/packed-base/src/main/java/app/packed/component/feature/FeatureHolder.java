@@ -25,7 +25,7 @@ import app.packed.service.ServiceDescriptor;
 // configuration time (Descriptor)
 // run time
 // run time via ComponentContext... for example add
-public abstract class FeatureHolder<A, B> {
+abstract class FeatureHolder<A, B> {
 
     FeatureHolder(AFeature<A, B> feature) {
 
@@ -69,5 +69,4 @@ class MyServices extends FeatureHolder<Set<ServiceDescriptor>, Set<ServiceDescri
     protected Set<ServiceDescriptor> getB() {
         return getA();
     }
-
 }

@@ -25,7 +25,7 @@ import app.packed.util.Nullable;
 
 // Dvs. hvis man ikke implementere dette interface, bliver man automatisk siet fra...
 // Omvendt, saa kan folk altid caste en feature til det...
-public interface BuildtimeFeature {
+interface BuildtimeFeature {
 
     // return null to have the feature removed whenever the component is instantiated.
     // Otherwise the runtime will call this method every time a component is instantiated.

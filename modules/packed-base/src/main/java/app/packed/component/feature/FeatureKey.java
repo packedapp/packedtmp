@@ -43,6 +43,7 @@ public abstract class FeatureKey<T> {
     // isRuntime, isBuildTime
     // Reference -> ServiceDescriptor#EXPORTS. ServiceDescriptor#PROVIDES
 
+    // Format() the key knows how to pretty print/format
 }
 // Key design
 // The actual feature class is the key...
