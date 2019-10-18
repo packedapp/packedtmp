@@ -20,7 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.artifact.app.App;
+import app.packed.artifact.App;
 import app.packed.service.Injector;
 
 /**

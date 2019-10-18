@@ -19,7 +19,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import app.packed.artifact.app.App;
+import app.packed.artifact.App;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.container.extension.Extension;

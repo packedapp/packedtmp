@@ -21,6 +21,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
 import app.packed.errorhandling.ErrorMessage;
 import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.container.extension.PackedExtensionContext;
 
 /** The default implementation of {@link ArtifactBuildContext} */
 public final class PackedArtifactBuildContext implements ArtifactBuildContext {
@@ -30,6 +31,8 @@ public final class PackedArtifactBuildContext implements ArtifactBuildContext {
 
     /** The configuration of the artifacts top container. */
     private final PackedContainerConfiguration topContainerConfiguration;
+
+    private final ExtensionList extensions = new ExtensionList();
 
     /**
      * Creates a new build context object.
@@ -60,6 +63,26 @@ public final class PackedArtifactBuildContext implements ArtifactBuildContext {
         return false;
     }
 
+    /**
+     * Registers the specified extension type for first use. This method is invoked the first time an extension is used for
+     * in every container.
+     * 
+     * @param pec
+     *            the context of the extension that was used.
+     */
+    public void usesExtension(PackedExtensionContext pec) {
+        extensions.extensions.add(pec.model);
+    }
+
+    public void forEachExtension() {
+
+    }
+
+    /**
+     * Returns the build output.
+     * 
+     * @return the build output
+     */
     public BuildOutput output() {
         return output;
     }

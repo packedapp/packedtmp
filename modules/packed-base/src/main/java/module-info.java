@@ -1,5 +1,4 @@
 module app.packed.base {
-    exports app.packed.artifact.app;
     exports app.packed.artifact;
     exports app.packed.component;
     exports app.packed.contract;
@@ -9,7 +8,6 @@ module app.packed.base {
     exports app.packed.container.extension.feature;
     exports app.packed.errorhandling;
     exports app.packed.hook;
-    exports app.packed.artifact.host;
     exports app.packed.service;
     exports app.packed.lifecycle;
     exports app.packed.reflect;

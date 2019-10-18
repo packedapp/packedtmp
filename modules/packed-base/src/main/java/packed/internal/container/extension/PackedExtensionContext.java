@@ -150,6 +150,10 @@ public final class PackedExtensionContext implements ExtensionContext {
                 }
             }
 
+            // Registers this context with the artifact build context.
+            // In order to compute a total order among dependencies when
+            // processing the extensions
+            pcc.artifact().usesExtension(this);
         } finally {
             pcc.activeExtension = existing;
         }

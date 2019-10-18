@@ -15,7 +15,7 @@
  */
 package packed.internal.service.build.dependencies;
 
-import app.packed.artifact.app.App;
+import app.packed.artifact.App;
 import app.packed.container.BaseBundle;
 import app.packed.service.Provide;
 

@@ -20,7 +20,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import app.packed.artifact.app.App;
+import app.packed.artifact.App;
 import app.packed.component.Component;
 
 /**

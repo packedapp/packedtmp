@@ -13,21 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact.app;
+package app.packed.artifact;
 
-import app.packed.container.ContainerSource;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  */
-// IDeen er at lave noget der baade er App og Host...
-// Men den kan jo ogsaa misforstaa en Host der holder apps.
+public class AppRunTest {
 
-// Ideet kan en host hold alle slags named containers....
-
-interface AppHost extends App {
-
-    static AppHost of(ContainerSource source) {
-        throw new UnsupportedOperationException();
+    @Test
+    public void it() {
+        //
     }
 }

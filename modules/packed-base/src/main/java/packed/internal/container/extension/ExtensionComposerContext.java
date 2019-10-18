@@ -45,6 +45,10 @@ public abstract class ExtensionComposerContext {
     @Nullable
     public Consumer<? super Extension> onConfiguredAction;
 
+    /** An action that will be run immediately after all bundles have been configured. */
+    @Nullable
+    public Consumer<? super Extension> onCompleteEach;
+
     /** An action that will be run immediately after an extension has been instantiated. */
     @Nullable
     Consumer<? super Extension> onExtensionInstantiatedAction;

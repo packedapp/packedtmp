@@ -15,8 +15,8 @@
  */
 package packed.internal.ztests;
 
+import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
-import app.packed.artifact.app.App;
 import app.packed.container.BaseBundle;
 import app.packed.service.ServiceWirelets;
 

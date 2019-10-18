@@ -17,7 +17,7 @@ package packed.internal.service.util.nextapi;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import app.packed.artifact.app.App;
+import app.packed.artifact.App;
 import app.packed.container.BaseBundle;
 import app.packed.service.InstantiationMode;
 import app.packed.service.Provide;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact.app;
+package app.packed.artifact;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,9 +21,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
-import app.packed.artifact.ArtifactContext;
-import app.packed.artifact.ArtifactDriver;
-import app.packed.artifact.ArtifactImage;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;

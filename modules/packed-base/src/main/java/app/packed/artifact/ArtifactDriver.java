@@ -17,7 +17,6 @@ package app.packed.artifact;
 
 import java.util.function.Function;
 
-import app.packed.artifact.app.App;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;

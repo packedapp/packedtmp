@@ -13,22 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact.app;
+package packed.internal.artifact;
+
+import java.util.LinkedHashSet;
+
+import packed.internal.container.extension.ExtensionModel;
 
 /**
  *
  */
-// IDeen er egentlig at vi kan have tusindvis af apps.
-// Der er connected paa maa og faa...
+final class ExtensionList {
 
-// Maaske via proxy interfaces....
+    final LinkedHashSet<ExtensionModel<?>> extensions = new LinkedHashSet<>();
 
-// Transactional updates.... With Rollback... Installing an app. Failing and the rollback...
+    void sort() {
 
-// Maaske de ikke behoever vaere lokale....????
-//// Maaske vi kan lave noget der kan vaere distribueret...
-//// Ahh sikkert en anden klasse
-// app.packed.base, app.packed.web, app.packed.cluster, app.packed.json
-interface AppMesh {
+    }
 
+    // Skal vaere extension keepe track om dens boern og foraeldre...
+    // Ja.. det goer det simpler
+
+    // Should extensionNode();
+
+    // onLink(BiConsumer, Consumer) <- last consumer processes every root when its finished...
+    // onEachRoot(Extension)
+    // onEach(Extension)
+    // onTree(ExtensionTree)
+
+    // trackHirachi()
+    // trackHirachi()
 }

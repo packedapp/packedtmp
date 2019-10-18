@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.reflect.Member;
 import java.util.Optional;
 
-import app.packed.artifact.app.App;
+import app.packed.artifact.App;
 import app.packed.component.Component;
 import app.packed.component.ComponentContext;
 import app.packed.reflect.ConstructorDescriptor;

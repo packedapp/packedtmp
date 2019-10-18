@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact.app;
+package app.packed.artifact;
 
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,8 +22,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.artifact.app.App;
-import app.packed.artifact.app.PackedApp;
+import app.packed.artifact.App;
+import app.packed.artifact.PackedApp;
 import app.packed.container.BaseBundle;
 import app.packed.container.ContainerConfiguration;
 

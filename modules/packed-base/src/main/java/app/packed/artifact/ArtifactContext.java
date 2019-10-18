@@ -15,7 +15,6 @@
  */
 package app.packed.artifact;
 
-import app.packed.artifact.app.App;
 import app.packed.component.Component;
 import app.packed.component.ComponentContext;
 import app.packed.service.Injector;

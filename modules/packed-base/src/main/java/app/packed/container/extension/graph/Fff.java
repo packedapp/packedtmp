@@ -15,7 +15,7 @@
  */
 package app.packed.container.extension.graph;
 
-import app.packed.artifact.app.App;
+import app.packed.artifact.App;
 import app.packed.component.ComponentStream.Option;
 import app.packed.container.Bundle;
 import app.packed.container.extension.Extension;

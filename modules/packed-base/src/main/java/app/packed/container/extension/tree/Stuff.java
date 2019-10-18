@@ -15,7 +15,7 @@
  */
 package app.packed.container.extension.tree;
 
-import app.packed.artifact.app.App;
+import app.packed.artifact.App;
 import app.packed.container.BaseBundle;
 import app.packed.container.extension.Extension;
 

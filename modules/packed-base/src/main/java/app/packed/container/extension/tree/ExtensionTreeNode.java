@@ -25,3 +25,9 @@ public interface ExtensionTreeNode<E extends Extension> extends ExtensionContext
 
     E extension();
 }
+////// With Node
+// + No need to have Extension<E extension Extension>
+
+// On ExtensionContext
+// + One less class
+// -

@@ -19,9 +19,7 @@ import java.util.IdentityHashMap;
 
 import packed.internal.service.run.InjectorEntry;
 
-/**
- *
- */
+/** A special instantiation context that is created */
 public class ServiceExtensionInstantiationContext {
 
     final IdentityHashMap<BuildEntry<?>, InjectorEntry<?>> transformers = new IdentityHashMap<>();

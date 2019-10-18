@@ -182,4 +182,14 @@ public abstract class ExtensionComposer<E extends Extension> {
     protected final void onLinkage(BiConsumer<? super E, ? super E> action) {
         context().onLinkage((BiConsumer<? super Extension, ? super Extension>) action);
     }
+
+    /**
+     * Will process each extension top down..
+     * 
+     * @param action
+     *            the action to perform
+     */
+    protected final void completeEach(Consumer<? super E> action) {
+
+    }
 }
