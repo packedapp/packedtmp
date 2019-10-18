@@ -58,6 +58,7 @@ import packed.internal.component.CoreComponentConfiguration;
 import packed.internal.component.FactoryComponentConfiguration;
 import packed.internal.component.InstantiatedComponentConfiguration;
 import packed.internal.component.StaticComponentConfiguration;
+import packed.internal.config.ConfigSiteUtil;
 import packed.internal.container.extension.ExtensionModel;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.hook.applicator.DelayedAccessor;
@@ -108,7 +109,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      *            any wirelets specified by the user
      */
     public PackedContainerConfiguration(BuildOutput output, ContainerSource source, Wirelet... wirelets) {
-        super(ConfigSite.captureStack(InjectConfigSiteOperations.INJECTOR_OF), output);
+        super(ConfigSiteUtil.captureStackFrame(InjectConfigSiteOperations.INJECTOR_OF), output);
         this.source = requireNonNull(source);
         this.lookup = this.model = ContainerSourceModel.of(source.getClass());
         this.wireletContext = WireletContext.create(this, null, wirelets);
@@ -125,7 +126,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      *            any wirelets specified by the user
      */
     private PackedContainerConfiguration(PackedContainerConfiguration parent, Bundle bundle, FixedWireletList wirelets) {
-        super(parent.configSite().thenCaptureStackFrame(InjectConfigSiteOperations.INJECTOR_OF), parent);
+        super(ConfigSiteUtil.captureStackFrame(parent.configSite(), InjectConfigSiteOperations.INJECTOR_OF), parent);
         this.source = requireNonNull(bundle);
         this.lookup = this.model = ContainerSourceModel.of(bundle.getClass());
         this.wireletContext = WireletContext.create(this, null, wirelets);

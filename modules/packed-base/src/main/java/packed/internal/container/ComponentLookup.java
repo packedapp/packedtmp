@@ -73,6 +73,9 @@ public interface ComponentLookup {
      * @return a method handle for the unreflected method
      */
     default MethodHandle unreflect(Method method) {
+        if (!ComponentLookup.class.getModule().canRead(method.getDeclaringClass().getModule())) {
+            ComponentLookup.class.getModule().addReads(method.getDeclaringClass().getModule());
+        }
         try {
             Lookup l = MethodHandles.privateLookupIn(method.getDeclaringClass(), lookup());
             return l.unreflect(method);

@@ -137,7 +137,7 @@ public final class ArtifactImage implements ContainerSource {
     <T> T newArtifact(ArtifactDriver<T> driver, Wirelet... wirelets) {
         WireletContext newWc = WireletContext.create(pcc, this.wc, wirelets);
         PackedArtifactContext pac = pcc.doInstantiate(newWc); // Does the actual instantiation
-        return driver.instantiate(pac);
+        return driver.newArtifact(pac);
     }
 
     /**

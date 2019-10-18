@@ -24,7 +24,7 @@ import app.packed.service.Injector;
  * is normally neither exposed or used by end users. Instead it is wrapped in thin facade objects, such as {@link App}
  * or {@link Injector}. Which will delegate all call to this context.
  * <p>
- * An instance of this interface is normally acquired via {@link ArtifactDriver#instantiate(ArtifactContext)}.
+ * An instance of this interface is normally acquired via {@link ArtifactDriver#newArtifact(ArtifactContext)}.
  */
 // Rename to ArtifactContext....
 public interface ArtifactContext extends ComponentContext {

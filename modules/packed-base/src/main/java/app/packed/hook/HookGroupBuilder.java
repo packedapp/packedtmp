@@ -27,9 +27,9 @@ import java.lang.invoke.MethodHandles.Lookup;
 public interface HookGroupBuilder<T extends Hook> {
 
     /**
-     * Invoked by the runtime when all relevant hook methods has been called.
+     * Invoked by the runtime when all relevant methods annotated with {@link OnHook} has been called.
      * 
-     * @return the hook group that should be every time a component instance of the relevant type is encountered.
+     * @return the hook group that was built.
      */
     T build();
 

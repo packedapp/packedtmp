@@ -347,7 +347,7 @@ final class InjectorArtifactDriver extends ArtifactDriver<Injector> {
 
     /** {@inheritDoc} */
     @Override
-    public Injector instantiate(ArtifactContext container) {
+    public Injector newArtifact(ArtifactContext container) {
         return container.injector();
     }
 }

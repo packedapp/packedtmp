@@ -40,11 +40,15 @@ public interface HookApplicator<T> {
 
     // Optimize???? giver det meningen at lave det per component instance??
     // Meget fine grained...
+
     default HookApplicator<T> optimize() {
         throw new UnsupportedOperationException();
     }
 
     // Den er jo ret useful fra en sidecar...
+
+    // Smider dem her paa extension maaske?????
+    // saa man koere extension.onReady(HookApplicator, ComponentConfiguration<?> cc, Consumer<T> consumer)
     void onReady(ComponentConfiguration<?> cc, Consumer<T> consumer);
 
     // Sidecar kan ikke vaere i FieldAccessor, fordi den ikke giver mening for statiske felter

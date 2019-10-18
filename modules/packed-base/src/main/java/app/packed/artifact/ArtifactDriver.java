@@ -44,10 +44,10 @@ import packed.internal.reflect.typevariable.TypeVariableExtractor;
 // We do not generally support this, as people are free to any artifact they may like.
 public abstract class ArtifactDriver<T> {
 
+    private static final TypeVariableExtractor ARTIFACT_DRIVER_TV_EXTRACTOR = TypeVariableExtractor.of(ArtifactDriver.class);
+
     /** The type of artifact this driver produces. */
     private final Class<T> artifactType;
-
-    private static final TypeVariableExtractor ARTIFACT_DRIVER_TV_EXTRACTOR = TypeVariableExtractor.of(ArtifactDriver.class);
 
     /** Creates a new driver. */
     @SuppressWarnings("unchecked")
@@ -70,6 +70,10 @@ public abstract class ArtifactDriver<T> {
     }
 
     protected void configure() {
+        // Kan vi bruge noget af det samme som ComponentExtension...
+        // De regler kan vel bruges paa baadde
+        // extension nivuea, ArtifactNiveau, Bundle Niveau
+
         // configuration
         //// forbidden extensions (lifecycle primarily)
         //// Allow injection of ArtifactInstance (for example, App).
@@ -103,12 +107,12 @@ public abstract class ArtifactDriver<T> {
      *            the runtime context to wrap
      * @return the new artifact
      */
-    protected abstract T instantiate(ArtifactContext context);
+    protected abstract T newArtifact(ArtifactContext context);
 
     /**
      * Creates a new artifact using the specified source.
      * <p>
-     * This method will invoke {@link #instantiate(ArtifactContext)} to create the actual artifact.
+     * This method will invoke {@link #newArtifact(ArtifactContext)} to create the actual artifact.
      * 
      * @param source
      *            the source of the top-level container
@@ -123,13 +127,17 @@ public abstract class ArtifactDriver<T> {
             return ((ArtifactImage) source).newArtifact(this, wirelets);
         }
         PackedContainerConfiguration pcc = new PackedContainerConfiguration(BuildOutput.artifact(this), source, wirelets);
-        return instantiate(pcc.doBuild().doInstantiate(pcc.wireletContext));
+        pcc.doBuild();
+        ArtifactContext pac = pcc.doInstantiate(pcc.wireletContext);
+        return newArtifact(pac);
     }
 
     public final <C> T newArtifact(Function<ContainerConfiguration, C> factory, ArtifactConfigurator<C> configurator, Wirelet... wirelets) {
         PackedContainerConfiguration pcc = new PackedContainerConfiguration(BuildOutput.artifact(this), configurator, wirelets);
         C c = factory.apply(pcc);
         configurator.configure(c);
-        return instantiate(pcc.doBuild().doInstantiate(pcc.wireletContext));
+        pcc.doBuild();
+        ArtifactContext pac = pcc.doInstantiate(pcc.wireletContext);
+        return newArtifact(pac);
     }
 }

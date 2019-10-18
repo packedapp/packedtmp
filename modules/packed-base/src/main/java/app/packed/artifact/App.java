@@ -269,7 +269,7 @@ final class AppArtifactDriver extends ArtifactDriver<App> {
 
     /** {@inheritDoc} */
     @Override
-    public App instantiate(ArtifactContext container) {
+    public App newArtifact(ArtifactContext container) {
         return new PackedApp(container);
     }
 }

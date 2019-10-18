@@ -17,13 +17,13 @@ package app.packed.config;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import app.packed.container.Wirelet;
 import app.packed.reflect.FieldDescriptor;
 import app.packed.reflect.MethodDescriptor;
 import app.packed.util.Nullable;
@@ -52,11 +52,6 @@ import packed.internal.config.ConfigSiteSupport;
 // ConfigSite chain
 // https://api.flutter.dev/flutter/package-stack_trace_stack_trace/Chain-class.html
 
-// It is a interface to save space.
-
-// TODO
-// Intern Stuff
-
 // Remove stack capturing. Anyone who does it must do it themself?
 // How are are we to know
 // Maybe allow it with a filter? Problem is I think we need to canonicalize it.
@@ -71,6 +66,9 @@ public interface ConfigSite {
 
     /** A special configuration site indicating that the actual configuration site could not be determined. */
     ConfigSite UNKNOWN = ConfigSiteSupport.UnknownConfigSite.INSTANCE;
+
+    Wirelet DISABLE_CAPTURE = null;
+    Wirelet ENABLE_CAPTURE = null;
 
     /**
      * Performs the given action on each element in configuration site chain, traversing from the top configuration site.
@@ -133,15 +131,6 @@ public interface ConfigSite {
         return new ConfigSiteSupport.AnnotatedMethodConfigSite(this, cst, method, annotation);
     }
 
-    // TODO maybe people need to implement this them self???
-    default ConfigSite thenCaptureStackFrame(String operation) {
-        if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
-            return UNKNOWN;
-        }
-        Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(ConfigSiteSupport.FILTER).findFirst());
-        return sf.isPresent() ? new ConfigSiteSupport.StackFrameConfigSite(this, operation, sf.get()) : UNKNOWN;
-    }
-
     default ConfigSite thenStackFrame(String operation, StackFrame stackFrame) {
         return new ConfigSiteSupport.StackFrameConfigSite(this, operation, stackFrame);
     }
@@ -168,19 +157,8 @@ public interface ConfigSite {
      */
     ConfigSite withParent(@Nullable ConfigSite newParent);
 
-    static ConfigSite captureStack(String operation) {
-        // capture stack frame vs capture stack
-        // Det eneste er egentlig, om vi vil have en settings saa man kan capture mere end kun en frame..
-        // Men saa skal vi ogsaa rette visitoren.
-        /// Maaske have en captureStackExtended
-        if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
-            return UNKNOWN;
-        }
-        Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(ConfigSiteSupport.FILTER).findFirst());
-        return sf.isPresent() ? new ConfigSiteSupport.StackFrameConfigSite(null, operation, sf.get()) : UNKNOWN;
-    }
-
-    default ConfigSite fromStackFrame(String operation, StackFrame stackFrame) {
+    static ConfigSite fromStackFrame(String operation, StackFrame stackFrame) {
+        // of instead of from????
         return new ConfigSiteSupport.StackFrameConfigSite(null, operation, stackFrame);
     }
 
