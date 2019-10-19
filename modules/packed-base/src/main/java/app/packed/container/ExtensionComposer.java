@@ -29,6 +29,7 @@ import packed.internal.container.extension.ExtensionComposerContext;
  * An extension composer is used for specifying how an extension works.
  */
 // Ville vaere rart at kunne gruppe metoderne efter et system og et prefix
+// I think move to Extension when done... any rename to Composer
 public abstract class ExtensionComposer<E extends Extension> {
 
     /** The context that all calls are delegated to, must only be accessed via {@link #context}. */

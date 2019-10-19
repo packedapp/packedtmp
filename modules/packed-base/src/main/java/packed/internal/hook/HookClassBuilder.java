@@ -35,7 +35,7 @@ import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.Hook;
-import app.packed.hook.InstanceOfHook;
+import app.packed.hook.AssignableToHook;
 import app.packed.hook.OnHook;
 import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.InvalidDeclarationException;
@@ -48,7 +48,7 @@ import packed.internal.util.StringFormatter;
 final class HookClassBuilder {
 
     /** The different types of hooks we allow. */
-    static final Set<Class<?>> HOOK_TYPES = Set.of(AnnotatedFieldHook.class, AnnotatedMethodHook.class, AnnotatedTypeHook.class, InstanceOfHook.class);
+    static final Set<Class<?>> HOOK_TYPES = Set.of(AnnotatedFieldHook.class, AnnotatedMethodHook.class, AnnotatedTypeHook.class, AssignableToHook.class);
 
     public final Class<?> actualType;
 
@@ -101,7 +101,7 @@ final class HookClassBuilder {
             } else if (hookType == AnnotatedTypeHook.class) {
                 onHook(lookup, method, p1, p2, annotatedTypes);
                 return;
-            } else if (hookType == InstanceOfHook.class) {
+            } else if (hookType == AssignableToHook.class) {
                 throw new UnsupportedOperationException();
             } else {
                 onHookGroupx(method, hookType);

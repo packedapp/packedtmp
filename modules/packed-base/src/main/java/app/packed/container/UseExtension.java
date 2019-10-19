@@ -23,6 +23,18 @@ import java.lang.annotation.Target;
 
 /**
  * A meta-annotation that can be placed on annotations...
+ * 
+ * That has a number of uses depending on what types it is placed on
+ * 
+ * Bundle.
+ * 
+ * Extension
+ * 
+ * Annotation, Instances
+ * 
+ * ComponentType??? Ja det er jo saadan hvad InstanceOf
+ * 
+ * Inherited???? Hmmm, Actor
  */
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
@@ -51,8 +63,7 @@ public @interface UseExtension {
 // Extension
 // Hook
 // Bundle (ContainerSource??)
-
-// Components???? HMMMMM.... HMMMM
+// Components???? HMMMMM. HMMMM
 
 // Can be used on
 // Hook Annotations

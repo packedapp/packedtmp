@@ -41,7 +41,9 @@ import packed.internal.component.ComponentModel;
 // InstanceOfHook<List<? extends String>
 
 // Does not currently support generic types...
-public final class InstanceOfHook<T> implements Hook {
+
+// Was InstanceOfHook
+public final class AssignableToHook<T> implements Hook {
 
     /** The builder for the component type. */
     final ComponentModel.Builder builder;
@@ -62,7 +64,7 @@ public final class InstanceOfHook<T> implements Hook {
      * @param actualType
      *            the annotation value
      */
-    InstanceOfHook(ComponentModel.Builder builder, Class<T> hookType, Class<? extends T> actualType) {
+    AssignableToHook(ComponentModel.Builder builder, Class<T> hookType, Class<? extends T> actualType) {
         this.builder = requireNonNull(builder);
         this.hookType = requireNonNull(hookType);
         this.actualType = requireNonNull(actualType);
