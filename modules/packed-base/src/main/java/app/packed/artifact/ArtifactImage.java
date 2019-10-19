@@ -17,6 +17,7 @@ package app.packed.artifact;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Optional;
 
 import app.packed.component.ComponentStream;
@@ -30,10 +31,12 @@ import app.packed.util.Nullable;
 import packed.internal.artifact.BuildOutput;
 import packed.internal.artifact.PackedArtifactContext;
 import packed.internal.component.ComponentConfigurationToComponentAdaptor;
+import packed.internal.container.ContainerSourceModel;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.WireletContext;
 import packed.internal.module.AppPackedArtifactAccess;
 import packed.internal.module.ModuleAccess;
+import packed.internal.util.ThrowableUtil;
 
 /**
  * Artifact images are immutable ahead-of-time configured artifacts. By configuring an artifact ahead of time, the
@@ -52,9 +55,8 @@ import packed.internal.module.ModuleAccess;
  * No structural changes... Only whole artifacts
  * 
  * <p>
- * An image can be used to create new instances of {@link app.packed.artifact.App},
- * {@link app.packed.service.Injector}, {@link BundleDescriptor} or other artifact images. It can not be used with
- * {@link Bundle#link(Bundle, Wirelet...)}.
+ * An image can be used to create new instances of {@link app.packed.artifact.App}, {@link app.packed.service.Injector},
+ * {@link BundleDescriptor} or other artifact images. It can not be used with {@link Bundle#link(Bundle, Wirelet...)}.
  */
 public final class ArtifactImage implements ContainerSource {
 
@@ -191,6 +193,19 @@ public final class ArtifactImage implements ContainerSource {
         }
         PackedContainerConfiguration pcc = new PackedContainerConfiguration(BuildOutput.image(), source, wirelets);
         return new ArtifactImage(pcc.doBuild(), pcc.wireletContext);
+    }
+
+    public static ArtifactImage of(Class<? extends Bundle> bundle, Wirelet... wirelets) {
+        requireNonNull(bundle, "bundle is null");
+        ContainerSourceModel csm = ContainerSourceModel.of(bundle);
+        Bundle b;
+        try {
+            b = (Bundle) csm.emptyConstructor().invoke();
+        } catch (Throwable e) {
+            ThrowableUtil.rethrowErrorOrRuntimeException(e);
+            throw new UndeclaredThrowableException(e);
+        }
+        return of(b, wirelets);
     }
 }
 

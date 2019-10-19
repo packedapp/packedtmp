@@ -67,6 +67,10 @@ public interface ComponentLookup {
         return readable(factory).toMethodHandle();
     }
 
+    default MethodHandle emptyConstructor() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * @param method
      *            the method to unreflect

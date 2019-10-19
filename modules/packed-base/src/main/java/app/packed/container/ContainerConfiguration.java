@@ -75,6 +75,8 @@ public interface ContainerConfiguration extends ComponentConfiguration<Object> {
      */
     void link(Bundle bundle, Wirelet... wirelets);
 
+    void link(Class<? extends Bundle> bundle, Wirelet... wirelets);
+
     /**
      * Registers a {@link Lookup} object that will be used for accessing fields and invoking methods on registered
      * components.
@@ -87,6 +89,8 @@ public interface ContainerConfiguration extends ComponentConfiguration<Object> {
      * @param lookup
      *            the lookup object
      */
+    // If you are creating resulable stuff, you should remember to null the lookup object out.
+    // So child modules do not have the power of the lookup object.
     void lookup(@Nullable Lookup lookup);
 
     /**
