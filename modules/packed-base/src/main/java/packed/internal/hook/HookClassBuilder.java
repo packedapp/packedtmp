@@ -34,7 +34,7 @@ import app.packed.container.InternalExtensionException;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
-import app.packed.hook.HookGroupBuilder;
+import app.packed.hook.Hook;
 import app.packed.hook.InstanceOfHook;
 import app.packed.hook.OnHook;
 import app.packed.reflect.UncheckedIllegalAccessException;
@@ -149,14 +149,14 @@ final class HookClassBuilder {
                     "Cannot use @" + OnHook.class.getSimpleName() + " on a hook group builder, method = " + StringFormatter.format(method));
         }
 
-        Class<? extends HookGroupBuilder<?>> groupType = null;
+        Class<? extends Hook.Builder<?>> groupType = null;
 
         for (Class<?> c : extensionType.getDeclaredClasses()) {
             if (c.getSimpleName().equals("Builder")) {
-                if (!HookGroupBuilder.class.isAssignableFrom(c)) {
+                if (!Hook.Builder.class.isAssignableFrom(c)) {
                     throw new InternalExtensionException(c.getCanonicalName() + " must extend " + StringFormatter.format(ExtensionComposer.class));
                 }
-                groupType = (Class<? extends HookGroupBuilder<?>>) c;
+                groupType = (Class<? extends Hook.Builder<?>>) c;
             }
         }
 
@@ -171,7 +171,7 @@ final class HookClassBuilder {
         NativeImage.registerMethod(method);
 
         groups.put(groupType, mh);
-        HookGroupBuilderModel oha = HookGroupBuilderModel.of(groupType);
+        HookBuilderModel oha = HookBuilderModel.of(groupType);
 
         // TODO we should check that the type matches....
 

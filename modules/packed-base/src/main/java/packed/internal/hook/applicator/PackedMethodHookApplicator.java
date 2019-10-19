@@ -20,9 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
-import app.packed.component.ComponentConfiguration;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.reflect.MethodOperator;
 
@@ -49,11 +47,5 @@ public final class PackedMethodHookApplicator<T> extends AbstractHookApplicator<
     @Override
     protected <S> DelayedAccessor newAccessor(Class<S> sidecarType, BiConsumer<S, T> consumer) {
         return new DelayedAccessor.SidecarMethodDelayerAccessor(this, sidecarType, consumer);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void onReady(ComponentConfiguration<?> cc, Consumer<T> consumer) {
-        throw new UnsupportedOperationException();
     }
 }

@@ -23,12 +23,11 @@ import java.util.List;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
-import app.packed.hook.HookGroupBuilder;
 import app.packed.hook.OnHook;
 import app.packed.reflect.FieldDescriptor;
 import app.packed.reflect.MethodDescriptor;
-import app.packed.service.Provide;
 import app.packed.service.Dependency;
+import app.packed.service.Provide;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import packed.internal.util.ErrorMessageBuilder;
@@ -54,7 +53,7 @@ public final class AtProvidesGroup implements Hook {
     }
 
     /** A builder for {@link AtProvidesGroup}. */
-    public final static class Builder implements HookGroupBuilder<AtProvidesGroup> {
+    public final static class Builder implements Hook.Builder<AtProvidesGroup> {
 
         /** Whether or not there are any non-static providing fields or methods. */
         private boolean hasInstanceMembers;

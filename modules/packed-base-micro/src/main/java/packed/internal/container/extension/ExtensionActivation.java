@@ -39,7 +39,6 @@ import app.packed.container.Extension;
 import app.packed.container.UseExtension;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
-import app.packed.hook.HookGroupBuilder;
 import app.packed.hook.OnHook;
 
 /**
@@ -131,7 +130,7 @@ public class ExtensionActivation {
 
         }
 
-        static class Builder implements HookGroupBuilder<Foo> {
+        static class Builder implements Hook.Builder<Foo> {
             ActivateMyExtension e;
 
             @OnHook

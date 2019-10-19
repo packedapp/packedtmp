@@ -21,9 +21,16 @@ import java.lang.reflect.Type;
  *
  */
 public abstract class TypeConverter<T> {
-    public static final TypeConverter<Type> IDENTITY = null;
-    
+
+    public static final TypeConverter<Type> IDENTITY = new TypeConverter<Type>() {
+
+        @Override
+        public Type convert(Type t) {
+            return t;
+        }
+    };
+
     public static final TypeConverter<Class<?>> RAW = null;
-    
+
     public abstract T convert(Type t);
 }

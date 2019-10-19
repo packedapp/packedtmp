@@ -22,7 +22,6 @@ import app.packed.container.Extension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
-import app.packed.hook.HookGroupBuilder;
 import app.packed.hook.OnHook;
 import app.packed.reflect.MethodOperator;
 import app.packed.reflect.VarOperator;
@@ -53,7 +52,7 @@ public class MyExtension2 extends Extension {
     // context().putIntoInstantiationContext(context, new MySidecar());
     // }
 
-    public static class Agg implements HookGroupBuilder<AXA> {
+    public static class Agg implements Hook.Builder<AXA> {
         private int sum;
 
         private final RuntimeAccessorList<Supplier<Object>> ral = new RuntimeAccessorList<>();

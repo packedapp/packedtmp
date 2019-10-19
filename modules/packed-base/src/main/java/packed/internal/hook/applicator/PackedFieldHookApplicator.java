@@ -20,9 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
-import app.packed.component.ComponentConfiguration;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.reflect.VarOperator;
 
@@ -45,12 +43,6 @@ public final class PackedFieldHookApplicator<T> extends AbstractHookApplicator<T
         }
         this.field = requireNonNull(field);
         this.operator = requireNonNull(operator);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void onReady(ComponentConfiguration<?> cc, Consumer<T> consumer) {
-        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */

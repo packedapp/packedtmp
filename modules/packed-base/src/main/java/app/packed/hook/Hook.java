@@ -15,6 +15,8 @@
  */
 package app.packed.hook;
 
+import java.lang.invoke.MethodHandles.Lookup;
+
 /**
  * A marker interface
  */
@@ -22,4 +24,35 @@ package app.packed.hook;
 // Relations to AOP???
 public interface Hook {
 
+    /**
+     *
+     * Must have at least one method annotated with {@link OnHook}.
+     */
+    interface Builder<T extends Hook> {
+
+        /**
+         * Invoked by the runtime when all relevant methods annotated with {@link OnHook} has been called.
+         * 
+         * @return the hook group that was built.
+         */
+        T build();
+
+        /**
+         * A utility method that tests class that. Mainly used for testing. Instead of needing to spin up a container.
+         * 
+         * @param <T>
+         *            the type of hook group to generate
+         * @param hookType
+         *            the builder type to instantiate
+         * @param caller
+         *            a lookup object that has permissions to instantiate the builder and access its and the targets hookable
+         *            methods.
+         * @param target
+         *            the target class that should be processed be specified
+         * @return a new group
+         */
+        static <T extends Hook> T test(Lookup caller, Class<T> hookType, Class<?> target) {
+            throw new UnsupportedOperationException();
+        }
+    }
 }

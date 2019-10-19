@@ -22,7 +22,7 @@ import java.lang.reflect.Type;
 /**
  *
  */
-//Field, Method, TypeVariable
+// Field, Method, TypeVariable
 // new Type
 public abstract class TypeAnnotationConverter<T> extends TypeConverter<T> {
 
@@ -47,6 +47,7 @@ public abstract class TypeAnnotationConverter<T> extends TypeConverter<T> {
     // https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/annotation/AnnotatedElementUtils.html
 
     static class NoAnnotations implements AnnotatedElement {
+
         static final Annotation[] EMPTY = new Annotation[0];
 
         /** {@inheritDoc} */

@@ -97,6 +97,13 @@ public final class TypeVariableExtractor {
         return result;
     }
 
+    // number of converters must match number of indexes...
+    public Object[] extractAll(Class<?> from, TypeConverter<?>... converters) {
+        requireNonNull(from, "from is null");
+        // Type[] result = new Type[indexes.length];
+        throw new UnsupportedOperationException();
+    }
+
     public <T> Type findTypeParameterFromSuperClass(Class<? extends T> childClass, int typeVariableIndexOnBaseClass) {
         // This method works by first recursively calling all the way down to the first class that extends baseClass.
         // And then we keep going finding out which of the actual type parameters matches the super classes type parameters
@@ -140,13 +147,6 @@ public final class TypeVariableExtractor {
         return pt.getActualTypeArguments()[index];
     }
 
-    // number of converters must match number of indexes...
-    public Object[] extractAll(Class<?> from, TypeConverter<?>... converters) {
-        requireNonNull(from, "from is null");
-        // Type[] result = new Type[indexes.length];
-        throw new UnsupportedOperationException();
-    }
-
     boolean fromInterface0(Class<?> cc, Type[] result) {
         for (Type t : cc.getGenericInterfaces()) {
             if (t instanceof ParameterizedType) {
@@ -170,6 +170,15 @@ public final class TypeVariableExtractor {
             }
         }
         return false;
+    }
+
+    /**
+     * Returns the number of type variables this extractor extracts.
+     * 
+     * @return the number of type variables this extractor extracts
+     */
+    public int size() {
+        return indexes.length;
     }
 
     // If no indexes specified, choose all..

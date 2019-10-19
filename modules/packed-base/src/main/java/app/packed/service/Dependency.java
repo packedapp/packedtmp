@@ -243,7 +243,7 @@ public final class Dependency {
     }
 
     /**
-     * Returns a list of dependencies from the specified executable
+     * Returns a list of dependencies from the specified executable.
      * 
      * @param executable
      *            the executable to return a list of dependencies for

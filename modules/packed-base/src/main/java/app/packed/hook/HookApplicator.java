@@ -16,17 +16,12 @@
 package app.packed.hook;
 
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import app.packed.component.ComponentConfiguration;
 
 /**
  *
  */
-
-// Maybe take sidecar when creating this???
-//// Then we can check that the sidecar is available.. well
-
 // RuntimeMemberOperator
 public interface HookApplicator<T> {
     // Well it also works for instances
@@ -49,10 +44,11 @@ public interface HookApplicator<T> {
 
     // Smider dem her paa extension maaske?????
     // saa man koere extension.onReady(HookApplicator, ComponentConfiguration<?> cc, Consumer<T> consumer)
-    void onReady(ComponentConfiguration<?> cc, Consumer<T> consumer);
+    // void onReady(ComponentConfiguration<?> cc, Consumer<T> consumer);
 
     // Sidecar kan ikke vaere i FieldAccessor, fordi den ikke giver mening for statiske felter
     // Vi skal hellere ikke have en version kun til extension
 
+    // Vil gerne vaek fra at vaere taet knyttet til ComponentConfiguration
     <S> void onReady(ComponentConfiguration<?> cc, Class<S> sidecarType, BiConsumer<S, T> consumer);
 }

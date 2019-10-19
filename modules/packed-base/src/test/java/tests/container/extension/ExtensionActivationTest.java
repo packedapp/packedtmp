@@ -34,7 +34,6 @@ import app.packed.container.UseExtension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
-import app.packed.hook.HookGroupBuilder;
 import app.packed.hook.OnHook;
 import support.testutil.AbstractArtifactTest;
 
@@ -107,7 +106,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
             this.s = s;
         }
 
-        static class Builder implements HookGroupBuilder<Foo> {
+        static class Builder implements Hook.Builder<Foo> {
 
             /** {@inheritDoc} */
             @Override

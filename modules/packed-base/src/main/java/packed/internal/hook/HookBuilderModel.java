@@ -22,7 +22,7 @@ import java.util.Map;
 
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.HookGroupBuilder;
+import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import app.packed.util.InvalidDeclarationException;
 import packed.internal.reflect.ConstructorFinder;
@@ -33,17 +33,17 @@ import packed.internal.util.ThrowableUtil;
 import packed.internal.util.TypeUtil;
 
 /**
- * An {@link HookGroupBuilderModel} wraps
+ * An {@link HookBuilderModel} wraps
  */
-final class HookGroupBuilderModel {
+final class HookBuilderModel {
 
     /** A cache of information for aggregator types. */
-    private static final ClassValue<HookGroupBuilderModel> MODEL_CACHE = new ClassValue<>() {
+    private static final ClassValue<HookBuilderModel> MODEL_CACHE = new ClassValue<>() {
 
         @SuppressWarnings("unchecked")
         @Override
-        protected HookGroupBuilderModel computeValue(Class<?> type) {
-            return new HookGroupBuilderModel.Builder((Class<? extends HookGroupBuilder<?>>) type).build();
+        protected HookBuilderModel computeValue(Class<?> type) {
+            return new HookBuilderModel.Builder((Class<? extends Hook.Builder<?>>) type).build();
         }
     };
 
@@ -71,7 +71,7 @@ final class HookGroupBuilderModel {
      * @param builder
      *            the builder to create a model from
      */
-    private HookGroupBuilderModel(Builder builder) {
+    private HookBuilderModel(Builder builder) {
         this.constructor = ConstructorFinder.find(builder.p.actualType);
         // this.builderType = builder.p.actualType;
         this.groupType = builder.groupType;
@@ -94,10 +94,10 @@ final class HookGroupBuilderModel {
      * 
      * @return a new instance
      */
-    public static HookGroupBuilder<?> newInstance(Class<? extends HookGroupBuilder<?>> type) {
-        HookGroupBuilderModel m = of(type);
+    public static Hook.Builder<?> newInstance(Class<? extends Hook.Builder<?>> type) {
+        HookBuilderModel m = of(type);
         try {
-            return (HookGroupBuilder<?>) m.constructor.invoke();
+            return (Hook.Builder<?>) m.constructor.invoke();
         } catch (Throwable e) {
             ThrowableUtil.rethrowErrorOrRuntimeException(e);
             throw new UndeclaredThrowableException(e);
@@ -111,7 +111,7 @@ final class HookGroupBuilderModel {
      *            the type of hook group builder
      * @return a model for the specified group builder type
      */
-    public static HookGroupBuilderModel of(Class<? extends HookGroupBuilder<?>> type) {
+    public static HookBuilderModel of(Class<? extends Hook.Builder<?>> type) {
         return MODEL_CACHE.get(type);
     }
 
@@ -119,7 +119,7 @@ final class HookGroupBuilderModel {
     private static class Builder {
 
         /** An type variable extractor to extract the type of hook group the builder produces. */
-        private static final TypeVariableExtractor AGGREGATE_BUILDER_TV_EXTRACTOR = TypeVariableExtractor.of(HookGroupBuilder.class);
+        private static final TypeVariableExtractor AGGREGATE_BUILDER_TV_EXTRACTOR = TypeVariableExtractor.of(Hook.Builder.class);
 
         /** The type of hook group the builder produces. */
         private final Class<?> groupType;
@@ -133,19 +133,19 @@ final class HookGroupBuilderModel {
          *            the type of hook group builder
          */
         @SuppressWarnings({ "rawtypes" })
-        private Builder(Class<? extends HookGroupBuilder<?>> builderType) {
+        private Builder(Class<? extends Hook.Builder<?>> builderType) {
             p = new HookClassBuilder(builderType, true);
             this.groupType = (Class) AGGREGATE_BUILDER_TV_EXTRACTOR.extract(builderType);
             TypeUtil.checkClassIsInstantiable(builderType);
         }
 
-        HookGroupBuilderModel build() {
-            MemberFinder.findMethods(HookGroupBuilder.class, p.actualType, m -> p.processMethod(m));
+        HookBuilderModel build() {
+            MemberFinder.findMethods(Hook.Builder.class, p.actualType, m -> p.processMethod(m));
             if (p.annotatedFields.isEmpty() && p.annotatedMethods.isEmpty() && p.annotatedTypes.isEmpty()) {
                 throw new InvalidDeclarationException("Hook aggregator builder '" + StringFormatter.format(p.actualType)
                         + "' must define at least one method annotated with @" + OnHook.class.getSimpleName());
             }
-            return new HookGroupBuilderModel(this);
+            return new HookBuilderModel(this);
         }
 
     }

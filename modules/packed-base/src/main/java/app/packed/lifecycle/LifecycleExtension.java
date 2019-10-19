@@ -26,7 +26,6 @@ import app.packed.container.ExtensionComposer;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
 import app.packed.hook.HookApplicator;
-import app.packed.hook.HookGroupBuilder;
 import app.packed.hook.OnHook;
 import app.packed.reflect.MethodOperator;
 import app.packed.service.ServiceExtension;
@@ -111,7 +110,7 @@ class LifecycleSidecar {
 
 }
 
-final class LifecycleHookAggregator implements HookGroupBuilder<LifecycleHookAggregator>, Hook {
+final class LifecycleHookAggregator implements Hook.Builder<LifecycleHookAggregator>, Hook {
 
     private final ArrayList<AnnotatedMethodHook<Main>> hooks = new ArrayList<>(1);
     HookApplicator<Runnable> applyDelayed;

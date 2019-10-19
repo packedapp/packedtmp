@@ -30,7 +30,6 @@ import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.reflect.VarOperator;
 import app.packed.util.Nullable;
 import packed.internal.component.ComponentModel;
-import packed.internal.component.ComponentModel.Builder;
 import packed.internal.hook.applicator.PackedFieldHookApplicator;
 import packed.internal.module.AppPackedHookAccess;
 import packed.internal.module.ModuleAccess;
@@ -59,14 +58,14 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
 
             /** {@inheritDoc} */
             @Override
-            public <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(packed.internal.component.ComponentModel.Builder builder,
-                    Method method, T annotation) {
+            public <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(packed.internal.component.ComponentModel.Builder builder, Method method,
+                    T annotation) {
                 return new AnnotatedMethodHook<>(builder, method, annotation);
             }
 
             /** {@inheritDoc} */
             @Override
-            public <T extends Annotation> AnnotatedTypeHook<T> newAnnotatedTypeHook(Builder builder, Class<?> type, T annotation) {
+            public <T extends Annotation> AnnotatedTypeHook<T> newAnnotatedTypeHook(ComponentModel.Builder builder, Class<?> type, T annotation) {
                 return new AnnotatedTypeHook<>(builder, type, annotation);
             }
         });
@@ -142,7 +141,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      * @throws UncheckedIllegalAccessException
      *             if access checking failed when accessing the field
      */
-
+    // Do we need the caller????
     public <E> E applyStatic(VarOperator<E> operator) {
         if (!Modifier.isStatic(field.getModifiers())) {
             throw new IllegalArgumentException("Cannot invoke this method on a non-static field " + field);

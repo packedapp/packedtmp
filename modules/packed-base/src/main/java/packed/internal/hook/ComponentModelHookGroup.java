@@ -32,7 +32,7 @@ import app.packed.container.Extension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
-import app.packed.hook.HookGroupBuilder;
+import app.packed.hook.Hook;
 import packed.internal.component.ComponentModel;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.ExtensionModel;
@@ -80,7 +80,7 @@ public final class ComponentModelHookGroup {
         /** The type of extension that will be activated. */
         private final Class<? extends Extension> extensionType;
 
-        final IdentityHashMap<Class<?>, HookGroupBuilder<?>> groupBuilders = new IdentityHashMap<>();
+        final IdentityHashMap<Class<?>, Hook.Builder<?>> groupBuilders = new IdentityHashMap<>();
 
         public Builder(ComponentModel.Builder componentModelBuilder, Class<? extends Extension> extensionType) {
             this.componentModelBuilder = requireNonNull(componentModelBuilder);
@@ -90,7 +90,7 @@ public final class ComponentModelHookGroup {
 
         public ComponentModelHookGroup build() {
 
-            for (Entry<Class<?>, HookGroupBuilder<?>> m : groupBuilders.entrySet()) {
+            for (Entry<Class<?>, Hook.Builder<?>> m : groupBuilders.entrySet()) {
                 MethodHandle mh = con.groups.get(m.getKey());
                 callbacks.add(new HookCallback(mh, m.getValue().build()));
             }
@@ -118,12 +118,12 @@ public final class ComponentModelHookGroup {
                 callbacks.add(new HookCallback(mh, hook));
                 throw new Error();
             } else {
-                processBuilder(mh, (Class<? extends HookGroupBuilder<?>>) owner, hook);
+                processBuilder(mh, (Class<? extends Hook.Builder<?>>) owner, hook);
             }
         }
 
-        private void processBuilder(MethodHandle mh, Class<? extends HookGroupBuilder<?>> builderType, Object hook) {
-            HookGroupBuilder<?> b = groupBuilders.computeIfAbsent(builderType, k -> HookGroupBuilderModel.newInstance(builderType));
+        private void processBuilder(MethodHandle mh, Class<? extends Hook.Builder<?>> builderType, Object hook) {
+            Hook.Builder<?> b = groupBuilders.computeIfAbsent(builderType, k -> HookBuilderModel.newInstance(builderType));
             try {
                 mh.invoke(b, hook);
             } catch (Throwable e) {

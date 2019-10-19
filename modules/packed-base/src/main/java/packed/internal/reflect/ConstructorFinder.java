@@ -28,6 +28,7 @@ import app.packed.container.InternalExtensionException;
 import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.NativeImage;
 import packed.internal.util.StringFormatter;
+import packed.internal.util.ThrowableFactory;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.TypeUtil;
 
@@ -51,6 +52,10 @@ public final class ConstructorFinder {
         }
     }
 
+    public static MethodHandle find(Class<?> onType, Class<?>... parameterTypes) {
+        return find(onType, ThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, parameterTypes);
+    }
+
     /**
      * Finds a constructor (method handle).
      * 
@@ -60,11 +65,11 @@ public final class ConstructorFinder {
      *            the parameter types the constructor must take
      * @return a method handle
      */
-    public static MethodHandle find(Class<?> onType, Class<?>... parameterTypes) {
+    public static <T extends Throwable> MethodHandle find(Class<?> onType, ThrowableFactory<T> tf, Class<?>... parameterTypes) throws T {
         if (Modifier.isAbstract(onType.getModifiers())) {
-            throw new InternalExtensionException("'" + StringFormatter.format(onType) + "' cannot be an abstract class");
+            throw tf.newThrowable("'" + StringFormatter.format(onType) + "' cannot be an abstract class");
         } else if (TypeUtil.isInnerOrLocalClass(onType)) {
-            throw new InternalExtensionException("'" + StringFormatter.format(onType) + "' cannot be an inner or local class");
+            throw tf.newThrowable("'" + StringFormatter.format(onType) + "' cannot be an inner or local class");
         }
 
         // First check that we have a constructor with specified parameters.
@@ -74,9 +79,9 @@ public final class ConstructorFinder {
             constructor = onType.getDeclaredConstructor(parameterTypes);
         } catch (NoSuchMethodException e) {
             if (parameterTypes.length == 0) {
-                throw new InternalExtensionException("'" + StringFormatter.format(onType) + "' must have a no-argument constructor");
+                throw tf.newThrowable("'" + StringFormatter.format(onType) + "' must have a no-argument constructor");
             } else {
-                throw new InternalExtensionException("'" + StringFormatter.format(onType) + "' must have a constructor taking ["
+                throw tf.newThrowable("'" + StringFormatter.format(onType) + "' must have a constructor taking ["
                         + Stream.of(parameterTypes).map(p -> p.getName()).collect(Collectors.joining(",")) + "]");
             }
         }
@@ -86,9 +91,8 @@ public final class ConstructorFinder {
         if (!onType.getModule().isOpen(pckName, THIS_MODULE)) {
             String otherModule = onType.getModule().getName();
             String m = THIS_MODULE.getName();
-            throw new InternalExtensionException("In order to instantiate '" + StringFormatter.format(onType) + "', the module '" + otherModule
-                    + "' must be open to '" + m + "'. This can be done, for example, by adding 'opens " + pckName + " to " + m
-                    + ";' to the module-info.java file of " + otherModule);
+            throw tf.newThrowable("In order to instantiate '" + StringFormatter.format(onType) + "', the module '" + otherModule + "' must be open to '" + m
+                    + "'. This can be done, for example, by adding 'opens " + pckName + " to " + m + ";' to the module-info.java file of " + otherModule);
         }
 
         // Make sure we can read the module where the extension is located.
