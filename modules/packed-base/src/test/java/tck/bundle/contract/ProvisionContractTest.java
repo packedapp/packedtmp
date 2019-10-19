@@ -21,9 +21,9 @@ import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.api.ContractSet;
 import app.packed.container.BaseBundle;
 import app.packed.container.BundleDescriptor;
-import app.packed.contract.ContractSet;
 import app.packed.lang.Key;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;

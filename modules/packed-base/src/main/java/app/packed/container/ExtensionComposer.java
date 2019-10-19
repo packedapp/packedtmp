@@ -21,7 +21,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-import app.packed.contract.Contract;
+import app.packed.api.Contract;
 import packed.internal.container.MutableWireletList;
 import packed.internal.container.extension.ExtensionComposerContext;
 

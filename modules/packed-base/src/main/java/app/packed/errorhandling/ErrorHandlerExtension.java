@@ -30,7 +30,10 @@ import packed.internal.container.PackedContainerConfiguration;
 // Child error handling hiarchies.
 
 // How does it relate to LoggingExtension, LifecycleExtension, Other extensions
-public final class ErrorHandlerExtension extends Extension {
+
+// Taenker sgu den altid er til raadighed
+
+final class ErrorHandlerExtension extends Extension {
 
     /** The configuration of the container. */
     @Nullable

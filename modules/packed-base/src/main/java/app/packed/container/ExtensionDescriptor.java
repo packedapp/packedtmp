@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Set;
 
-import app.packed.contract.Contract;
+import app.packed.api.Contract;
 import packed.internal.container.extension.ExtensionModel;
 
 /**

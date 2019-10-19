@@ -19,6 +19,8 @@ import java.lang.invoke.MethodHandles.Lookup;
 
 /**
  * A marker interface
+ * 
+ * The base hooks available in this package.
  */
 
 // Relations to AOP???

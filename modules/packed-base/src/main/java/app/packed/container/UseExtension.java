@@ -22,6 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * An annotation indicating that the annotated type requires
+ * 
  * A meta-annotation that can be placed on annotations...
  * 
  * That has a number of uses depending on what types it is placed on
@@ -36,11 +38,18 @@ import java.lang.annotation.Target;
  * 
  * Inherited???? Hmmm, Actor
  */
+
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+// RequireExtension?????
 public @interface UseExtension {
 
+    /**
+     * A number of optional extensions. Will be evaluated the first time the annotated type is encountered.
+     * 
+     * @return optional extensions
+     */
     String[] optional() default {};
 
     /**

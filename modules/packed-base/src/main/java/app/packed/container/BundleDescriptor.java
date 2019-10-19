@@ -29,9 +29,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import app.packed.api.Contract;
+import app.packed.api.ContractSet;
 import app.packed.artifact.ArtifactImage;
-import app.packed.contract.Contract;
-import app.packed.contract.ContractSet;
 import app.packed.lang.Key;
 import app.packed.lang.Nullable;
 import app.packed.service.ServiceDescriptor;

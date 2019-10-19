@@ -25,6 +25,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
+import app.packed.api.Contract;
 import app.packed.component.Component;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
@@ -32,7 +33,6 @@ import app.packed.container.ExtensionDescriptorContext;
 import app.packed.container.ExtensionInstantiationContext;
 import app.packed.container.ExtensionWirelet;
 import app.packed.container.InternalExtensionException;
-import app.packed.contract.Contract;
 import app.packed.hook.OnHook;
 import packed.internal.hook.HookContainerModel;
 import packed.internal.module.ModuleAccess;

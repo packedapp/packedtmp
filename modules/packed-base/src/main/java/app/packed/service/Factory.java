@@ -29,7 +29,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.lang.BaseSupport;
 import app.packed.lang.InvalidDeclarationException;
 import app.packed.lang.Key;
 import app.packed.lang.TypeLiteral;
@@ -45,6 +44,7 @@ import packed.internal.inject.factoryhandle.MappingFactoryHandle;
 import packed.internal.module.AppPackedServiceAccess;
 import packed.internal.module.ModuleAccess;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
+import packed.internal.util.BaseSupport;
 import packed.internal.util.TypeUtil;
 
 /**
@@ -306,7 +306,7 @@ public class Factory<T> {
      * The specified lookup object will always be preferred, even when, for example, being registered with a bundle who has
      * its own lookup object.
      * <p>
-     * If you have split-module class hierachies with an abstract class in one module a concrete class in another module.
+     * If you have split-module class hierarchies with an abstract class in one module a concrete class in another module.
      * You can use a {@link BaseSupport} class to register a method handle with the abstract class.
      * 
      * Remember to register the support class via the standard service loading mechanism as outlined in ....
@@ -406,8 +406,7 @@ final class FactoryFindInjectableExecutable {
 
     static <T> FactorySupport<T> find(Class<T> implementation) {
         ExecutableDescriptor executable = findExecutable(implementation);
-        return new FactorySupport<>(new ExecutableFactoryHandle<>(TypeLiteral.of(implementation), executable, null),
-                Dependency.fromExecutable(executable));
+        return new FactorySupport<>(new ExecutableFactoryHandle<>(TypeLiteral.of(implementation), executable, null), Dependency.fromExecutable(executable));
     }
 
     static <T> FactorySupport<T> find(TypeLiteral<T> implementation) {

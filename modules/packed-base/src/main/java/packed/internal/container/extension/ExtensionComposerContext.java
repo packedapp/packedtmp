@@ -22,13 +22,13 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
+import app.packed.api.Contract;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
 import app.packed.container.ExtensionDescriptorContext;
 import app.packed.container.ExtensionInstantiationContext;
 import app.packed.container.ExtensionWirelet;
-import app.packed.contract.Contract;
 import app.packed.lang.Nullable;
 
 /** A context object used for all registration for an {@link ExtensionComposer}. */
