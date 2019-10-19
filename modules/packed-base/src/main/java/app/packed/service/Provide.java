@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 import java.util.Optional;
 
 import app.packed.container.UseExtension;
-import app.packed.util.Key;
+import app.packed.lang.Key;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a service of some kind. A field

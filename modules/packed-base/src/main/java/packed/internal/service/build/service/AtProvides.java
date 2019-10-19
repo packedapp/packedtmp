@@ -22,13 +22,13 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
-import app.packed.reflect.FieldDescriptor;
-import app.packed.reflect.MethodDescriptor;
+import app.packed.lang.Key;
+import app.packed.lang.Nullable;
+import app.packed.lang.reflect.FieldDescriptor;
+import app.packed.lang.reflect.MethodDescriptor;
 import app.packed.service.InstantiationMode;
 import app.packed.service.Provide;
 import app.packed.service.Dependency;
-import app.packed.util.Key;
-import app.packed.util.Nullable;
 
 /** A descriptor for a field or method (member) annotated with {@link Provide}. */
 final class AtProvides {

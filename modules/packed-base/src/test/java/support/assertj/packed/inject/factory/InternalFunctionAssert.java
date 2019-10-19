@@ -17,8 +17,8 @@ package support.assertj.packed.inject.factory;
 
 import org.assertj.core.api.AbstractAssert;
 
-import app.packed.util.Key;
-import app.packed.util.TypeLiteral;
+import app.packed.lang.Key;
+import app.packed.lang.TypeLiteral;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 
 /**

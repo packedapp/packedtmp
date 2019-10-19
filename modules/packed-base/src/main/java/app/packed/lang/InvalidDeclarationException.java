@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.util;
+package app.packed.lang;
 
 /**
  * A runtime exception that is typically thrown when the runtime encounters a structural problems on some object. For

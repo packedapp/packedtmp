@@ -20,12 +20,12 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.component.Component;
+import app.packed.lang.Key;
+import app.packed.lang.Nullable;
 import app.packed.service.Dependency;
 import app.packed.service.InjectionException;
 import app.packed.service.Injector;
 import app.packed.service.PrototypeRequest;
-import app.packed.util.Key;
-import app.packed.util.Nullable;
 import packed.internal.inject.factoryhandle.FieldFactoryHandle;
 import packed.internal.service.util.nextapi.OldAtInject;
 import packed.internal.service.util.nextapi.OldAtInjectGroup;

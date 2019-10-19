@@ -16,9 +16,9 @@
 package packed.internal.util;
 
 import app.packed.component.Component;
+import app.packed.lang.Key;
 import app.packed.service.Injector;
 import app.packed.service.PrototypeRequest;
-import app.packed.util.Key;
 
 /** A builder of keys, mainly useful for creating proper error messages. */
 public final class KeyBuilder {

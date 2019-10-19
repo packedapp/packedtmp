@@ -20,10 +20,10 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import app.packed.container.Wirelet;
+import app.packed.lang.Nullable;
 import app.packed.service.Injector;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceExtension;
-import app.packed.util.Nullable;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionInstantiationContext;
 import packed.internal.service.run.DelegatingInjectorEntry;

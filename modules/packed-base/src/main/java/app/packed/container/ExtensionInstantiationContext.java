@@ -16,7 +16,7 @@
 package app.packed.container;
 
 import app.packed.artifact.ArtifactImage;
-import app.packed.util.Nullable;
+import app.packed.lang.Nullable;
 
 /**
  *

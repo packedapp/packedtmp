@@ -18,10 +18,10 @@ package packed.internal.service.run;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
+import app.packed.lang.Key;
+import app.packed.lang.Nullable;
 import app.packed.service.InstantiationMode;
 import app.packed.service.PrototypeRequest;
-import app.packed.util.Key;
-import app.packed.util.Nullable;
 import packed.internal.inject.util.Provider;
 import packed.internal.service.build.BuildEntry;
 

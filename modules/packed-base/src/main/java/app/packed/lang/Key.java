@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package app.packed.util;
+package app.packed.lang;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
@@ -31,10 +31,10 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
-import app.packed.reflect.FieldDescriptor;
-import app.packed.reflect.MethodDescriptor;
-import app.packed.reflect.ParameterDescriptor;
-import app.packed.util.TypeLiteral.CanonicalizedTypeLiteral;
+import app.packed.lang.TypeLiteral.CanonicalizedTypeLiteral;
+import app.packed.lang.reflect.FieldDescriptor;
+import app.packed.lang.reflect.MethodDescriptor;
+import app.packed.lang.reflect.ParameterDescriptor;
 import packed.internal.inject.util.QualifierHelper;
 import packed.internal.util.AnnotationUtil;
 import packed.internal.util.TypeUtil;

@@ -22,10 +22,10 @@ import java.util.List;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
+import app.packed.lang.InvalidDeclarationException;
 import app.packed.service.Dependency;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceComponentConfiguration;
-import app.packed.util.InvalidDeclarationException;
 import packed.internal.service.build.ServiceExtensionInstantiationContext;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.run.CachingPrototypeInjectorEntry;

@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import app.packed.container.Wirelet;
-import app.packed.util.Nullable;
+import app.packed.lang.Nullable;
 
 /**
  *

@@ -26,7 +26,7 @@ import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
-import app.packed.util.Nullable;
+import app.packed.lang.Nullable;
 import packed.internal.artifact.BuildOutput;
 import packed.internal.artifact.PackedArtifactContext;
 import packed.internal.component.ComponentConfigurationToComponentAdaptor;

@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
-import app.packed.util.Nullable;
+import app.packed.lang.Nullable;
 
 /**
  *

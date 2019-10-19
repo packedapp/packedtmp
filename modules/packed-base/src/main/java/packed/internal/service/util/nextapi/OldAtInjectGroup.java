@@ -22,11 +22,11 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.packed.reflect.FieldDescriptor;
-import app.packed.reflect.MethodDescriptor;
+import app.packed.lang.Nullable;
+import app.packed.lang.reflect.FieldDescriptor;
+import app.packed.lang.reflect.MethodDescriptor;
 import app.packed.service.Inject;
 import app.packed.service.Dependency;
-import app.packed.util.Nullable;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FieldFactoryHandle;
 

@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
-import app.packed.util.Nullable;
+import app.packed.lang.Nullable;
 import packed.internal.module.AppPackedContainerAccess;
 import packed.internal.module.ModuleAccess;
 

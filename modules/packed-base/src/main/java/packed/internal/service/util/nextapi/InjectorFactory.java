@@ -20,9 +20,9 @@ import java.time.LocalDate;
 import java.util.Set;
 
 import app.packed.service.ServiceComponentConfiguration;
+import app.packed.lang.Key;
 import app.packed.service.Injector;
 import app.packed.service.Provide;
-import app.packed.util.Key;
 
 /**
  *

@@ -18,7 +18,7 @@ package packed.internal.service.util.nextapi;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-import app.packed.util.Key;
+import app.packed.lang.Key;
 
 /**
  *

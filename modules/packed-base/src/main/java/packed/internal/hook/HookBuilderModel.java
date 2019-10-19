@@ -24,7 +24,7 @@ import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
-import app.packed.util.InvalidDeclarationException;
+import app.packed.lang.InvalidDeclarationException;
 import packed.internal.reflect.ConstructorFinder;
 import packed.internal.reflect.MemberFinder;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;

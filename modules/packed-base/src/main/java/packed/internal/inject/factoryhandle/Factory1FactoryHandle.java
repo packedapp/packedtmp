@@ -22,8 +22,8 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.function.Function;
 
+import app.packed.lang.TypeLiteral;
 import app.packed.service.Factory1;
-import app.packed.util.TypeLiteral;
 import packed.internal.util.MethodHandleUtil;
 
 /** An internal factory for {@link Factory1}. */

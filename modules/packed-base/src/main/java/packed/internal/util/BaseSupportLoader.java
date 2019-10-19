@@ -18,7 +18,7 @@ package packed.internal.util;
 import java.util.ServiceLoader;
 
 import app.packed.container.Bundle;
-import app.packed.util.BaseSupport;
+import app.packed.lang.BaseSupport;
 
 /**
  *

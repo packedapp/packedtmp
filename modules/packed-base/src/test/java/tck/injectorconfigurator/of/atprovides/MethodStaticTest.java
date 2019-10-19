@@ -22,12 +22,12 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.lang.TypeLiteral;
 import app.packed.service.Factory;
 import app.packed.service.Injector;
 import app.packed.service.InjectorConfigurator;
 import app.packed.service.InstantiationMode;
 import app.packed.service.Provide;
-import app.packed.util.TypeLiteral;
 
 /** Tests {@link Provide#instantionMode()} on static methods. */
 public class MethodStaticTest {

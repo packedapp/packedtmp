@@ -29,7 +29,7 @@ import app.packed.container.ExtensionDescriptorContext;
 import app.packed.container.ExtensionInstantiationContext;
 import app.packed.container.ExtensionWirelet;
 import app.packed.contract.Contract;
-import app.packed.util.Nullable;
+import app.packed.lang.Nullable;
 
 /** A context object used for all registration for an {@link ExtensionComposer}. */
 public abstract class ExtensionComposerContext {

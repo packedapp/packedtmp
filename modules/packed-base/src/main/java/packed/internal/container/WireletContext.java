@@ -24,7 +24,7 @@ import java.util.List;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionWirelet;
 import app.packed.container.Wirelet;
-import app.packed.util.Nullable;
+import app.packed.lang.Nullable;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
 import packed.internal.container.extension.ExtensionWireletPipelineModel;
 import packed.internal.container.extension.PackedExtensionContext;

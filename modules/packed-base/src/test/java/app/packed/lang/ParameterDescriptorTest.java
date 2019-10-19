@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.util;
+package app.packed.lang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static support.assertj.Assertions.npe;
@@ -24,7 +24,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.reflect.ParameterDescriptor;
+import app.packed.lang.Nullable;
+import app.packed.lang.reflect.ParameterDescriptor;
 import packed.internal.util.descriptor.InternalParameterDescriptorTest;
 
 /** Tests {@link ParameterDescriptor}, most of the test are in {@link InternalParameterDescriptorTest}. */

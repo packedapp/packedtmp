@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.reflect;
+package app.packed.lang.reflect;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
@@ -24,7 +24,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 
-import app.packed.util.TypeLiteral;
+import app.packed.lang.TypeLiteral;
 import packed.internal.util.InternalErrorException;
 
 /**

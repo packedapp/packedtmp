@@ -23,10 +23,10 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import app.packed.reflect.MethodDescriptor;
-import app.packed.reflect.MethodOperator;
-import app.packed.reflect.UncheckedIllegalAccessException;
-import app.packed.util.Nullable;
+import app.packed.lang.Nullable;
+import app.packed.lang.reflect.MethodDescriptor;
+import app.packed.lang.reflect.MethodOperator;
+import app.packed.lang.reflect.UncheckedIllegalAccessException;
 import packed.internal.component.ComponentModel;
 import packed.internal.hook.applicator.PackedMethodHookApplicator;
 

@@ -24,12 +24,12 @@ import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
-import app.packed.reflect.FieldDescriptor;
-import app.packed.reflect.MethodDescriptor;
+import app.packed.lang.InvalidDeclarationException;
+import app.packed.lang.Key;
+import app.packed.lang.reflect.FieldDescriptor;
+import app.packed.lang.reflect.MethodDescriptor;
 import app.packed.service.Dependency;
 import app.packed.service.Provide;
-import app.packed.util.InvalidDeclarationException;
-import app.packed.util.Key;
 import packed.internal.util.ErrorMessageBuilder;
 
 /** Information about fields and methods annotated with {@link Provide}. */

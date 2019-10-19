@@ -22,9 +22,9 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import app.packed.util.InvalidDeclarationException;
-import app.packed.util.Nullable;
-import app.packed.util.Qualifier;
+import app.packed.lang.InvalidDeclarationException;
+import app.packed.lang.Nullable;
+import app.packed.lang.Qualifier;
 import packed.internal.util.AnnotationUtil;
 
 /** Limited support for javax.inject classes. */

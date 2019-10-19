@@ -19,7 +19,7 @@ import java.util.function.BiConsumer;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.hook.AnnotatedFieldHook;
-import app.packed.reflect.VarOperator;
+import app.packed.lang.reflect.VarOperator;
 
 /**
  *

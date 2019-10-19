@@ -19,8 +19,8 @@ import java.util.LinkedHashMap;
 import java.util.concurrent.CompletableFuture;
 
 import app.packed.artifact.ArtifactContext;
+import app.packed.lang.Nullable;
 import app.packed.service.Injector;
-import app.packed.util.Nullable;
 import packed.internal.component.AbstractComponent;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.service.run.DefaultInjector;

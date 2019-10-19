@@ -21,9 +21,9 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Member;
 import java.util.List;
 
-import app.packed.reflect.FieldDescriptor;
-import app.packed.reflect.MethodDescriptor;
 import app.packed.service.Provide;
+import app.packed.lang.reflect.FieldDescriptor;
+import app.packed.lang.reflect.MethodDescriptor;
 import app.packed.service.Dependency;
 
 /** A descriptor for a member annotated with {@link Provide}. */

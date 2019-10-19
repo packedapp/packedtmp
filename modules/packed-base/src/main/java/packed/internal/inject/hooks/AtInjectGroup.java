@@ -22,8 +22,8 @@ import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
-import app.packed.reflect.FieldDescriptor;
-import app.packed.reflect.MethodDescriptor;
+import app.packed.lang.reflect.FieldDescriptor;
+import app.packed.lang.reflect.MethodDescriptor;
 import app.packed.service.Dependency;
 import app.packed.service.Inject;
 

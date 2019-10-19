@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import app.packed.container.Bundle;
-import app.packed.util.Key;
+import app.packed.lang.Key;
 
 /**
  * A service contract consists of two parts. A part detailing which services are required in order for owning entity to

@@ -20,9 +20,9 @@ import java.util.Map;
 import java.util.Set;
 
 import app.packed.component.Component;
-import app.packed.reflect.ConstructorDescriptor;
-import app.packed.reflect.FieldDescriptor;
-import app.packed.reflect.MethodDescriptor;
+import app.packed.lang.reflect.ConstructorDescriptor;
+import app.packed.lang.reflect.FieldDescriptor;
+import app.packed.lang.reflect.MethodDescriptor;
 import app.packed.service.Dependency;
 import app.packed.service.ServiceDescriptor;
 

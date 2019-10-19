@@ -18,7 +18,7 @@ package support.stubs.annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import app.packed.util.Qualifier;
+import app.packed.lang.Qualifier;
 
 /**
  * An annotation with with no values for testing.

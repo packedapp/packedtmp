@@ -22,9 +22,9 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.config.ConfigSite;
+import app.packed.lang.Key;
 import app.packed.service.ServiceDescriptor;
 import app.packed.service.ServiceWirelets;
-import app.packed.util.Key;
 import packed.internal.service.build.ServiceWireletPipeline;
 import packed.internal.service.build.export.ExportedBuildEntry;
 import packed.internal.service.run.InjectorEntry;

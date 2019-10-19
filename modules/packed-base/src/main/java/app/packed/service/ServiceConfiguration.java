@@ -17,8 +17,8 @@ package app.packed.service;
 
 import app.packed.config.ConfigSite;
 import app.packed.container.BaseBundle;
-import app.packed.util.Key;
-import app.packed.util.Nullable;
+import app.packed.lang.Key;
+import app.packed.lang.Nullable;
 
 /**
  * A configuration object for a service. An instance of this interface is usually obtained by calling the various

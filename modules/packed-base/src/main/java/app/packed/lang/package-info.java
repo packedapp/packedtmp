@@ -8,4 +8,4 @@
 /**
  * Various utility classes that have multiple uses within this library
  */
-package app.packed.util;
+package app.packed.lang;

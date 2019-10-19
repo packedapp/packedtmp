@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.StringJoiner;
 
 import app.packed.component.ComponentPath;
-import app.packed.util.Nullable;
+import app.packed.lang.Nullable;
 
 /** The default implementation of {@link ComponentPath}. */
 public final class PackedComponentPath implements ComponentPath {

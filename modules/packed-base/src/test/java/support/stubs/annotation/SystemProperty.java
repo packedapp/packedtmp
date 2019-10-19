@@ -21,7 +21,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import app.packed.util.Qualifier;
+import app.packed.lang.Qualifier;
 
 @Retention(RUNTIME)
 /**

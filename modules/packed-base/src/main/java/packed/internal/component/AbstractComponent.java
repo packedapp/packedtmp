@@ -31,7 +31,7 @@ import app.packed.component.ComponentStream;
 import app.packed.component.feature.FeatureMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
-import app.packed.util.Nullable;
+import app.packed.lang.Nullable;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
 

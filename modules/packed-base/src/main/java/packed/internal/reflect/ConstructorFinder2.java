@@ -15,7 +15,11 @@
  */
 package packed.internal.reflect;
 
+import java.lang.invoke.MethodType;
+import java.lang.reflect.Constructor;
+
 import packed.internal.util.StringFormatter;
+import packed.internal.util.ThrowableFactory;
 
 /**
  *
@@ -38,6 +42,14 @@ import packed.internal.util.StringFormatter;
 
 // So ConstructorFinder is probably a bad name..
 public class ConstructorFinder2 {
+
+    static <E extends Throwable, T> Constructor<T> findConstructor(Class<T> type, ThrowableFactory<E> tf, MethodType... types) throws E {
+        // types.length == 0-> EmptyConstructor
+        // Maaske tage et saet????
+        // Fails if more than 1 constructor
+
+        throw new UnsupportedOperationException();
+    }
 
     protected String classIsAbstract(Class<?> cl) {
         return "'" + StringFormatter.format(cl) + "' cannot be an abstract class";

@@ -9,8 +9,8 @@ module app.packed.base {
     exports app.packed.hook;
     exports app.packed.service;
     exports app.packed.lifecycle;
-    exports app.packed.reflect;
-    exports app.packed.util;
+    exports app.packed.lang.reflect;
+    exports app.packed.lang;
 
     // uses app.packed.util.ModuleEnv;
     // provides app.packed.util.ModuleEnv with packed.internal.bundle.DefaultBS;

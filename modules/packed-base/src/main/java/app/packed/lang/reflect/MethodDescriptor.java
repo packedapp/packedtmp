@@ -13,7 +13,7 @@ w * Copyright (c) 2008 Kasper Nielsen.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.reflect;
+package app.packed.lang.reflect;
 
 import static java.util.Objects.requireNonNull;
 
@@ -25,9 +25,9 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 
-import app.packed.util.Key;
-import app.packed.util.Nullable;
-import app.packed.util.TypeLiteral;
+import app.packed.lang.Key;
+import app.packed.lang.Nullable;
+import app.packed.lang.TypeLiteral;
 import packed.internal.util.InternalErrorException;
 import packed.internal.util.StringFormatter;
 

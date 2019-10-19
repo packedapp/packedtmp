@@ -24,9 +24,9 @@ import java.util.function.Predicate;
 
 import app.packed.config.ConfigSite;
 import app.packed.config.ConfigSiteVisitor;
-import app.packed.reflect.FieldDescriptor;
-import app.packed.reflect.MethodDescriptor;
-import app.packed.util.Nullable;
+import app.packed.lang.Nullable;
+import app.packed.lang.reflect.FieldDescriptor;
+import app.packed.lang.reflect.MethodDescriptor;
 
 /** The various implements of {@link ConfigSite}. */
 public interface ConfigSiteSupport {

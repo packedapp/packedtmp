@@ -26,7 +26,7 @@ import java.lang.reflect.Constructor;
 import java.util.function.Supplier;
 
 import app.packed.container.Extension;
-import app.packed.reflect.UncheckedIllegalAccessException;
+import app.packed.lang.reflect.UncheckedIllegalAccessException;
 import packed.internal.util.StringFormatter;
 
 /**

@@ -29,7 +29,7 @@ import app.packed.artifact.ArtifactImage;
 import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
 import app.packed.contract.Contract;
-import app.packed.util.Key;
+import app.packed.lang.Key;
 
 /**
  * A service contract consists of two parts. A part detailing which services are required in order for owning entity to

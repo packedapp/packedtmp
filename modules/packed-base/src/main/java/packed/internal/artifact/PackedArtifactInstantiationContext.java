@@ -24,7 +24,7 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionInstantiationContext;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.ExtensionWirelet.Pipeline;
-import app.packed.util.Nullable;
+import app.packed.lang.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.WireletContext;
 import packed.internal.container.extension.PackedExtensionContext;

@@ -26,8 +26,8 @@ import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
 import app.packed.hook.HookApplicator;
 import app.packed.hook.OnHook;
-import app.packed.reflect.MethodOperator;
-import app.packed.reflect.VarOperator;
+import app.packed.lang.reflect.MethodOperator;
+import app.packed.lang.reflect.VarOperator;
 
 /**
  *

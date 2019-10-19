@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.function.Function;
 
 import app.packed.config.ConfigSite;
+import app.packed.lang.Key;
 import app.packed.service.InstantiationMode;
-import app.packed.util.Key;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionInstantiationContext;
 import packed.internal.service.build.ServiceExtensionNode;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.reflect;
+package app.packed.lang.reflect;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
@@ -28,8 +28,8 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 
-import app.packed.util.Nullable;
-import app.packed.util.TypeLiteral;
+import app.packed.lang.Nullable;
+import app.packed.lang.TypeLiteral;
 import packed.internal.util.InternalErrorException;
 
 /**

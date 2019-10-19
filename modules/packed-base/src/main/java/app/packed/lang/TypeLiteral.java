@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package app.packed.util;
+package app.packed.lang;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
@@ -28,7 +28,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Optional;
 
-import app.packed.reflect.ParameterDescriptor;
+import app.packed.lang.reflect.ParameterDescriptor;
 import packed.internal.module.AppPackedUtilAccess;
 import packed.internal.module.ModuleAccess;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;

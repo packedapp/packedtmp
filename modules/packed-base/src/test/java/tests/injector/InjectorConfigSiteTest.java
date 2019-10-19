@@ -27,10 +27,10 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.config.ConfigSite;
+import app.packed.lang.TypeLiteral;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.Factory;
 import app.packed.service.Injector;
-import app.packed.util.TypeLiteral;
 import packed.internal.inject.util.InjectConfigSiteOperations;
 import support.stubs.Letters.A;
 import support.stubs.Letters.B;

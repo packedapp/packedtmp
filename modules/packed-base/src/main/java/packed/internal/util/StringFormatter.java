@@ -29,7 +29,7 @@ import java.lang.reflect.WildcardType;
 import java.util.List;
 import java.util.StringJoiner;
 
-import app.packed.reflect.MethodDescriptor;
+import app.packed.lang.reflect.MethodDescriptor;
 
 /** A utility class with various formatting routines. */
 public final class StringFormatter {

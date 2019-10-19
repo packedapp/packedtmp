@@ -25,8 +25,8 @@ import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
-import app.packed.util.Nullable;
-import app.packed.util.Qualifier;
+import app.packed.lang.Nullable;
+import app.packed.lang.Qualifier;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via

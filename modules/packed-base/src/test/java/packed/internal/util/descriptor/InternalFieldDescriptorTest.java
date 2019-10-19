@@ -21,7 +21,7 @@ import java.lang.reflect.Field;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.reflect.FieldDescriptor;
+import app.packed.lang.reflect.FieldDescriptor;
 
 /** Tests {@link FieldDescriptor}. */
 public class InternalFieldDescriptorTest extends AbstractDescriptorTest {

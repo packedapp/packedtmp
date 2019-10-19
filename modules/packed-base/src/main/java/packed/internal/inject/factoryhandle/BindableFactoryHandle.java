@@ -17,7 +17,7 @@ package packed.internal.inject.factoryhandle;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.util.TypeLiteral;
+import app.packed.lang.TypeLiteral;
 
 /**
  *

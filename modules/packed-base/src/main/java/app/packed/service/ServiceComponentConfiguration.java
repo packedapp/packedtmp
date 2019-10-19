@@ -19,8 +19,8 @@ import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.BaseBundle;
-import app.packed.util.Key;
-import app.packed.util.Nullable;
+import app.packed.lang.Key;
+import app.packed.lang.Nullable;
 
 /**
  * This configuration represents an entity that is both a {@link ServiceConfiguration configuration of as service} and a

@@ -17,7 +17,7 @@ package packed.internal.service.util.nextapi;
 
 import java.util.Set;
 
-import app.packed.util.Key;
+import app.packed.lang.Key;
 
 /**
  *

@@ -22,8 +22,8 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.service.Factory;
 import app.packed.service.Factory1;
+import app.packed.lang.Key;
 import app.packed.service.Dependency;
-import app.packed.util.Key;
 
 /** Tests {@link Factory1}. */
 public class Factory1Test {

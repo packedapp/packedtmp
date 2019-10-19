@@ -20,8 +20,8 @@ import java.util.Optional;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
+import app.packed.lang.Key;
 import app.packed.lifecycle.RunState;
-import app.packed.util.Key;
 
 interface CliFeature extends Feature {}
 

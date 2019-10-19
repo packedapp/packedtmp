@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.function.Function;
 
-import app.packed.util.TypeLiteral;
+import app.packed.lang.TypeLiteral;
 import packed.internal.util.MethodHandleUtil;
 
 /** A function that maps the result of another function. */

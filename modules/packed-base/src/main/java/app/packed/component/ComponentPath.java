@@ -17,7 +17,7 @@ package app.packed.component;
 
 import java.nio.file.Paths;
 
-import app.packed.util.Nullable;
+import app.packed.lang.Nullable;
 import packed.internal.component.PackedComponentPath;
 
 /**

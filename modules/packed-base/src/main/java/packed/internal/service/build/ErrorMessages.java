@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 
 import app.packed.config.ConfigSite;
 import app.packed.config.ConfigSiteVisitor;
-import app.packed.reflect.MethodDescriptor;
-import app.packed.util.Key;
+import app.packed.lang.Key;
+import app.packed.lang.reflect.MethodDescriptor;
 import packed.internal.config.ConfigSiteJoiner;
 import packed.internal.service.build.export.ExportedBuildEntry;
 import packed.internal.util.StringFormatter;

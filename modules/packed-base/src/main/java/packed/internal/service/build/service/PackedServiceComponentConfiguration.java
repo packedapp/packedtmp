@@ -24,10 +24,10 @@ import app.packed.component.ComponentPath;
 import app.packed.component.feature.FeatureMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
+import app.packed.lang.Key;
+import app.packed.lang.Nullable;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceComponentConfiguration;
-import app.packed.util.Key;
-import app.packed.util.Nullable;
 import packed.internal.service.build.BuildEntry;
 
 /**

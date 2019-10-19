@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.util.Nullable;
+import app.packed.lang.Nullable;
 
 /**
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured via

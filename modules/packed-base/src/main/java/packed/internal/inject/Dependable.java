@@ -17,8 +17,8 @@ package packed.internal.inject;
 
 import java.lang.module.ModuleDescriptor.Provides;
 
-import app.packed.util.Key;
-import app.packed.util.Nullable;
+import app.packed.lang.Key;
+import app.packed.lang.Nullable;
 import packed.internal.component.FactoryComponentConfiguration;
 
 /**

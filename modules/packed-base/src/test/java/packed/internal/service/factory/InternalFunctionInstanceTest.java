@@ -19,7 +19,7 @@ import static support.assertj.Assertions.checkThat;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.util.Key;
+import app.packed.lang.Key;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.factoryhandle.InstanceFactoryHandle;
 

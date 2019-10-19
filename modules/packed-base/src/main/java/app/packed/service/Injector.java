@@ -28,7 +28,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
-import app.packed.util.Key;
+import app.packed.lang.Key;
 
 /**
  * An injector is an immutable holder of services that can be dependency injected or looked up by their type at runtime.

@@ -37,9 +37,9 @@ import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.Hook;
 import app.packed.hook.AssignableToHook;
 import app.packed.hook.OnHook;
-import app.packed.reflect.UncheckedIllegalAccessException;
-import app.packed.util.InvalidDeclarationException;
-import app.packed.util.NativeImage;
+import app.packed.lang.InvalidDeclarationException;
+import app.packed.lang.NativeImage;
+import app.packed.lang.reflect.UncheckedIllegalAccessException;
 import packed.internal.util.StringFormatter;
 
 /**

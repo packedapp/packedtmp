@@ -13,24 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.util;
+package app.packed.lang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.lang.reflect.UncheckedIllegalAccessException;
 import app.packed.service.InjectionException;
 import support.stubs.Throwables.Exception1;
 
 /** Tests {@link InjectionException}. */
-public class InvalidDeclarationExceptionTest {
+public class IllegalAccessRuntimeExceptionTest {
 
     /** Tests the various constructors. */
     @Test
     public void test() {
-        assertThat(new InvalidDeclarationException("foo")).hasNoCause();
-        assertThat(new InvalidDeclarationException("foo")).hasMessage("foo");
-        assertThat(new InvalidDeclarationException("foobar", Exception1.INSTANCE)).hasCause(Exception1.INSTANCE);
-        assertThat(new InvalidDeclarationException("foobar", Exception1.INSTANCE)).hasMessage("foobar");
+        assertThat(new UncheckedIllegalAccessException("foo")).hasNoCause();
+        assertThat(new UncheckedIllegalAccessException("foo")).hasMessage("foo");
+        assertThat(new UncheckedIllegalAccessException("foobar", Exception1.INSTANCE)).hasCause(Exception1.INSTANCE);
+        assertThat(new UncheckedIllegalAccessException("foobar", Exception1.INSTANCE)).hasMessage("foobar");
     }
 }

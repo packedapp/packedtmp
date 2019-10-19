@@ -18,8 +18,8 @@ package app.packed.config;
 import java.lang.StackWalker.StackFrame;
 import java.lang.annotation.Annotation;
 
-import app.packed.reflect.FieldDescriptor;
-import app.packed.reflect.MethodDescriptor;
+import app.packed.lang.reflect.FieldDescriptor;
+import app.packed.lang.reflect.MethodDescriptor;
 
 /**
  * A visitor for the various {@link ConfigSite config sites} that are supported. This visitor can be used to get details

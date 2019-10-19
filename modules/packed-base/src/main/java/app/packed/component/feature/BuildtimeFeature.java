@@ -16,7 +16,7 @@
 package app.packed.component.feature;
 
 import app.packed.component.Component;
-import app.packed.util.Nullable;
+import app.packed.lang.Nullable;
 
 /**
  *

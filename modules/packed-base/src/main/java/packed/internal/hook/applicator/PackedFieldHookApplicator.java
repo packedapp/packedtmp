@@ -22,7 +22,7 @@ import java.lang.reflect.Field;
 import java.util.function.BiConsumer;
 
 import app.packed.hook.AnnotatedFieldHook;
-import app.packed.reflect.VarOperator;
+import app.packed.lang.reflect.VarOperator;
 
 /** A hook applicator for a field */
 public final class PackedFieldHookApplicator<T> extends AbstractHookApplicator<T> {

@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.util;
+package app.packed.lang;
 
-import static app.packed.util.TypeLiteralTest.TL_INTEGER;
-import static app.packed.util.TypeLiteralTest.TL_LIST_WILDCARD;
+import static app.packed.lang.TypeLiteralTest.TL_INTEGER;
+import static app.packed.lang.TypeLiteralTest.TL_LIST_WILDCARD;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static support.assertj.Assertions.npe;
@@ -31,7 +31,9 @@ import java.util.Optional;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
-import app.packed.reflect.MethodDescriptor;
+import app.packed.lang.InvalidDeclarationException;
+import app.packed.lang.Key;
+import app.packed.lang.reflect.MethodDescriptor;
 import support.stubs.annotation.CharQualifier;
 import support.stubs.annotation.CharQualifiers;
 import support.stubs.annotation.IntQualifier;

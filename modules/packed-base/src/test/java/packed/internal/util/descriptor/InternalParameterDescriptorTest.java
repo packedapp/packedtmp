@@ -28,10 +28,10 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.reflect.ParameterDescriptor;
+import app.packed.lang.Nullable;
+import app.packed.lang.TypeLiteral;
+import app.packed.lang.reflect.ParameterDescriptor;
 import app.packed.service.Injector;
-import app.packed.util.Nullable;
-import app.packed.util.TypeLiteral;
 
 /** Tests {@link ParameterDescriptor}. */
 public class InternalParameterDescriptorTest {

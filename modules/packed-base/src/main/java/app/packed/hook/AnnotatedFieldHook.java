@@ -25,10 +25,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import app.packed.reflect.FieldDescriptor;
-import app.packed.reflect.UncheckedIllegalAccessException;
-import app.packed.reflect.VarOperator;
-import app.packed.util.Nullable;
+import app.packed.lang.InvalidDeclarationException;
+import app.packed.lang.Nullable;
+import app.packed.lang.reflect.FieldDescriptor;
+import app.packed.lang.reflect.UncheckedIllegalAccessException;
+import app.packed.lang.reflect.VarOperator;
 import packed.internal.component.ComponentModel;
 import packed.internal.hook.applicator.PackedFieldHookApplicator;
 import packed.internal.module.AppPackedHookAccess;
@@ -141,10 +142,9 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      * @throws UncheckedIllegalAccessException
      *             if access checking failed when accessing the field
      */
-    // Do we need the caller????
     public <E> E applyStatic(VarOperator<E> operator) {
         if (!Modifier.isStatic(field.getModifiers())) {
-            throw new IllegalArgumentException("Cannot invoke this method on a non-static field " + field);
+            throw new UnsupportedOperationException("Cannot invoke this method on a non-static field " + field);
         }
         builder.checkActive(); // we do not want people to invoke this method, after the aggregate has been built
         // Should it be per hook group instead of container model?
@@ -152,53 +152,90 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     }
 
     public AnnotatedFieldHook<T> checkAssignableTo(Class<?> type) {
-        throw new UnsupportedOperationException();
+        requireNonNull(type, "type is null");
+        if (type.isAssignableFrom(field.getType())) {
+            throw new InvalidDeclarationException("OOPS ");
+        }
+        return this;
     }
 
     public AnnotatedFieldHook<T> checkExactType(Class<?> type) {
-        // Jeg tror vi blev enige om at gøre det her...
-        // og ikke i Operatoteren
-        throw new UnsupportedOperationException();
-    }
-
-    public AnnotatedFieldHook<T> checkFinal() {
-        // Methods annotated with @Dooo cannot be static
-        // Methods annotated with @Dooo must be static
-        // Annotations of type @Dooo are not allowed on static methods
-        // Annotations of type @Dooo are only allowed on static methods
-        if (!Modifier.isFinal(field.getModifiers())) {
-
-            // throw new InvalidDeclarationException("Fields annotated with @" + annotationType.getSimpleName() + " must be final,
-            // field = " + field
-            // + ", to resolve remove @" + annotationType.getSimpleName() + " or make the field final");
-            //
-            // throw new InvalidDeclarationException(
-            // ErrorMessageBuilder.of(field).cannot("be static when using the @" + annotationType.getSimpleName() + " annotation")
-            // .toResolve("remove @" + annotationType.getSimpleName() + " or make the field non-static"));
-            //
-            throw new IllegalStateException(
-                    "Fields annotated with @" + annotation.annotationType().getSimpleName() + " must be final, field = " + StringFormatter.format(field));
+        requireNonNull(type, "type is null");
+        if (field.getType() != type) {
+            throw new InvalidDeclarationException("OOPS ");
         }
         return this;
     }
 
+    /**
+     * Checks that the underlying field is final. Throwing an {@link InvalidDeclarationException} if the field is not final.
+     * 
+     * @return this hook
+     * @throws InvalidDeclarationException
+     *             if the underlying field is not final
+     * 
+     * @see Modifier#isFinal(int)
+     */
+    public AnnotatedFieldHook<T> checkFinal() {
+        if (!Modifier.isFinal(field.getModifiers())) {
+            throw new InvalidDeclarationException(failedModifierCheck(false, "final"));
+        }
+        return this;
+    }
+
+    /**
+     * Checks that the underlying field is not final. Throwing an {@link InvalidDeclarationException} if the field is final.
+     * 
+     * @return this hook
+     * @throws InvalidDeclarationException
+     *             if the underlying field is final
+     * 
+     * @see Modifier#isFinal(int)
+     */
     public AnnotatedFieldHook<T> checkNotFinal() {
         if (Modifier.isFinal(field.getModifiers())) {
-            throw new IllegalStateException(
-                    "Fields annotated with @" + annotation.annotationType().getSimpleName() + " must not be final, field = " + StringFormatter.format(field));
-
-            // return "Cannot use @" + annotationType.getSimpleName() + " on final field: " + field + ", to resolve remove @" +
-            // annotationType.getSimpleName()
-            // + " or make the field non-final";
+            throw new InvalidDeclarationException(failedModifierCheck(true, "final"));
         }
         return this;
     }
 
+    /**
+     * Checks that the underlying field is not static. Throwing an {@link InvalidDeclarationException} if the field is
+     * static.
+     * 
+     * @return this hook
+     * @throws InvalidDeclarationException
+     *             if the underlying field is static
+     * 
+     * @see Modifier#isStatic(int)
+     */
     public AnnotatedFieldHook<T> checkNotStatic() {
         if (Modifier.isStatic(field.getModifiers())) {
-            throw new IllegalStateException(
-                    "Fields annotated with @" + annotation.annotationType().getSimpleName() + " must not be static, field = " + StringFormatter.format(field));
+            throw new InvalidDeclarationException(failedModifierCheck(true, "static"));
         }
+        return this;
+    }
+
+    /**
+     * Checks that the underlying field is static. Throwing an {@link InvalidDeclarationException} if the field is not
+     * static.
+     * 
+     * @return this hook
+     * @throws InvalidDeclarationException
+     *             if the underlying field is not static
+     * 
+     * @see Modifier#isStatic(int)
+     */
+    public AnnotatedFieldHook<T> checkStatic() {
+        if (!Modifier.isStatic(field.getModifiers())) {
+            throw new InvalidDeclarationException(failedModifierCheck(false, "static"));
+        }
+        return this;
+    }
+
+    private String failedModifierCheck(boolean isNot, String type) {
+        String msg = (isNot ? "not be " : "be ") + type;
+        return "Fields annotated with @" + annotation.annotationType().getSimpleName() + " must " + msg + ", field = " + StringFormatter.format(field);
         // throw new InvalidDeclarationException(
         // ErrorMessageBuilder.of(field).cannot("be static when using the @" + annotationType.getSimpleName() + " annotation")
         // .toResolve("remove @" + annotationType.getSimpleName() + " or make the field non-static"));
@@ -207,25 +244,19 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
         // field
         // // + ", to resolve remove @"
         // // + annotationType.getSimpleName() + " or make the field non-static");
-        return this;
-    }
+        // Methods annotated with @Dooo cannot be static
+        // Methods annotated with @Dooo must be static
+        // Annotations of type @Dooo are not allowed on static methods
+        // Annotations of type @Dooo are only allowed on static methods
+        // throw new InvalidDeclarationException("Fields annotated with @" + annotationType.getSimpleName() + " must be final,
+        // field = " + field
+        // + ", to resolve remove @" + annotationType.getSimpleName() + " or make the field final");
+        //
+        // throw new InvalidDeclarationException(
+        // ErrorMessageBuilder.of(field).cannot("be static when using the @" + annotationType.getSimpleName() + " annotation")
+        // .toResolve("remove @" + annotationType.getSimpleName() + " or make the field non-static"));
+        //
 
-    /**
-     * Checks that the wrapped field is declared as a static field. Throwing an {@link IllegalStateException} if the field
-     * is not static.
-     * 
-     * @return this hook
-     * @throws IllegalStateException
-     *             if the wrapped field is not a static field
-     * 
-     * @see Modifier#isStatic(int)
-     */
-    public AnnotatedFieldHook<T> checkStatic() {
-        if (!Modifier.isStatic(field.getModifiers())) {
-            throw new IllegalStateException(
-                    "Fields annotated with @" + annotation.annotationType().getSimpleName() + " must be static, field = " + StringFormatter.format(field));
-        }
-        return this;
     }
 
     /**

@@ -18,8 +18,8 @@ package packed.internal.service.build.dependencies;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
+import app.packed.lang.Nullable;
 import app.packed.service.Dependency;
-import app.packed.util.Nullable;
 import packed.internal.inject.hooks.AtInject;
 import packed.internal.service.build.BuildEntry;
 

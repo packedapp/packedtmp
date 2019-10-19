@@ -22,7 +22,7 @@ import java.lang.reflect.Method;
 import java.util.function.BiConsumer;
 
 import app.packed.hook.AnnotatedMethodHook;
-import app.packed.reflect.MethodOperator;
+import app.packed.lang.reflect.MethodOperator;
 
 /**
  *

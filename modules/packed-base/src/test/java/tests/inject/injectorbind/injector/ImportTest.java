@@ -23,9 +23,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import app.packed.container.BaseBundle;
+import app.packed.lang.Qualifier;
 import app.packed.service.Factory1;
 import app.packed.service.Injector;
-import app.packed.util.Qualifier;
 
 /**
  *

@@ -18,12 +18,12 @@ package packed.internal.service.build.export;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
+import app.packed.lang.Key;
+import app.packed.lang.Nullable;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceConfiguration;
 import app.packed.service.ServiceExtension;
-import app.packed.util.Key;
-import app.packed.util.Nullable;
 
 /**
  * An instance of {@link ServiceConfiguration} that is returned to the user when he exports a service

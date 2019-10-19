@@ -21,9 +21,9 @@ import static packed.internal.util.StringFormatter.format;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 
+import app.packed.lang.TypeLiteral;
 import app.packed.service.Factory;
 import app.packed.service.InjectionException;
-import app.packed.util.TypeLiteral;
 
 /**
  * The internal version of the {@link Factory} class.

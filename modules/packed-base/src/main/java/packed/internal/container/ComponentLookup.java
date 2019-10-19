@@ -23,7 +23,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import app.packed.reflect.UncheckedIllegalAccessException;
+import app.packed.lang.reflect.UncheckedIllegalAccessException;
 import packed.internal.component.ComponentModel;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FactoryHandle;

@@ -19,11 +19,11 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Modifier;
 
-import app.packed.reflect.ExecutableDescriptor;
-import app.packed.reflect.MethodDescriptor;
-import app.packed.reflect.UncheckedIllegalAccessException;
+import app.packed.lang.TypeLiteral;
+import app.packed.lang.reflect.ExecutableDescriptor;
+import app.packed.lang.reflect.MethodDescriptor;
+import app.packed.lang.reflect.UncheckedIllegalAccessException;
 import app.packed.service.Factory;
-import app.packed.util.TypeLiteral;
 
 /** The backing class of {@link Factory}. */
 public final class ExecutableFactoryHandle<T> extends FactoryHandle<T> {

@@ -42,7 +42,7 @@ import packed.internal.component.ComponentModel;
 
 // Does not currently support generic types...
 
-// Was InstanceOfHook
+// InstanceOfHook, AssignableToTypeHook
 public final class AssignableToHook<T> implements Hook {
 
     /** The builder for the component type. */

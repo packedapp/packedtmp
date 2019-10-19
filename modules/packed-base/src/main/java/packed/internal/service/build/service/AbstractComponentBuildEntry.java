@@ -21,8 +21,8 @@ import java.util.List;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
+import app.packed.lang.Nullable;
 import app.packed.service.Dependency;
-import app.packed.util.Nullable;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
 

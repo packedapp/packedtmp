@@ -19,6 +19,8 @@ import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
+import app.packed.lang.Key;
+import app.packed.lang.Qualifier;
 import app.packed.lifecycle.LifecycleExtension;
 import app.packed.lifecycle.OnStart;
 import app.packed.service.Factory;
@@ -28,8 +30,6 @@ import app.packed.service.Provide;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceConfiguration;
 import app.packed.service.ServiceExtension;
-import app.packed.util.Key;
-import app.packed.util.Qualifier;
 
 /**
  * A BaseBundle contains shortcut access to common functionality defined by the various extension available in this

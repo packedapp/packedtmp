@@ -16,7 +16,7 @@
 package app.packed.errorhandling;
 
 import app.packed.container.Extension;
-import app.packed.util.Nullable;
+import app.packed.lang.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
 
 /**

@@ -31,7 +31,7 @@ import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
 import app.packed.container.Extension;
-import app.packed.util.Nullable;
+import app.packed.lang.Nullable;
 import packed.internal.artifact.BuildOutput;
 import packed.internal.artifact.PackedArtifactBuildContext;
 import packed.internal.artifact.PackedArtifactInstantiationContext;

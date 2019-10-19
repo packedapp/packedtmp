@@ -23,11 +23,11 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
 import app.packed.config.ConfigSite;
+import app.packed.lang.Key;
+import app.packed.lang.Nullable;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceConfiguration;
 import app.packed.service.ServiceExtension;
-import app.packed.util.Key;
-import app.packed.util.Nullable;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ErrorMessages;
 import packed.internal.service.build.ServiceExtensionNode;
