@@ -117,8 +117,10 @@ public abstract class ExtensionComposer<E extends Extension> {
      * A callback method that is invoked immediately after a container has been successfully configured. This is typically
      * after {@link Bundle#configure()} has returned.
      * <p>
-     * <p>
      * The default implementation of this method does nothing.
+     * 
+     * @param action
+     *            the action to perform
      */
     // If the container contains multiple extensions. They are invoked in reverse order. If E2 has a dependency on E1.
     // E2.onConfigured() will be invoked before E1.onConfigure(). This is done in order to allow extensions to perform

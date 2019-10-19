@@ -32,12 +32,10 @@ import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.TypeUtil;
 
-/**
- * An {@link HookBuilderModel} wraps
- */
+/** An {@link HookBuilderModel} wraps information about a {@link Builder}. */
 final class HookBuilderModel {
 
-    /** A cache of information for aggregator types. */
+    /** A cache of hook builder models. */
     private static final ClassValue<HookBuilderModel> MODEL_CACHE = new ClassValue<>() {
 
         @SuppressWarnings("unchecked")
@@ -60,10 +58,10 @@ final class HookBuilderModel {
     // private final Class<?> builderType;
 
     /** The method handle used to create a new instances. */
-    private final MethodHandle constructor;
+    private final MethodHandle builderConstructor;
 
     /** The type of result the aggregator produces. */
-    private final Class<?> groupType;
+    private final Class<?> hookType;
 
     /**
      * Creates a new model from the specified builder.
@@ -72,9 +70,8 @@ final class HookBuilderModel {
      *            the builder to create a model from
      */
     private HookBuilderModel(Builder builder) {
-        this.constructor = ConstructorFinder.find(builder.p.actualType);
-        // this.builderType = builder.p.actualType;
-        this.groupType = builder.groupType;
+        this.builderConstructor = ConstructorFinder.find(builder.p.actualType);
+        this.hookType = builder.groupType;
         this.annotatedMethods = Map.copyOf(builder.p.annotatedMethods);
         this.annotatedFields = Map.copyOf(builder.p.annotatedFields);
         this.annotatedTypes = Map.copyOf(builder.p.annotatedTypes);
@@ -85,8 +82,8 @@ final class HookBuilderModel {
      * 
      * @return the type of group the builder produces
      */
-    final Class<?> groupType() {
-        return groupType;
+    final Class<?> hookType() {
+        return hookType;
     }
 
     /**
@@ -97,7 +94,7 @@ final class HookBuilderModel {
     public static Hook.Builder<?> newInstance(Class<? extends Hook.Builder<?>> type) {
         HookBuilderModel m = of(type);
         try {
-            return (Hook.Builder<?>) m.constructor.invoke();
+            return (Hook.Builder<?>) m.builderConstructor.invoke();
         } catch (Throwable e) {
             ThrowableUtil.rethrowErrorOrRuntimeException(e);
             throw new UndeclaredThrowableException(e);

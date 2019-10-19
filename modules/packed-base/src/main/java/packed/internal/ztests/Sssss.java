@@ -34,7 +34,7 @@ public class Sssss extends BaseBundle {
     }
 
     public static void main(String[] args) {
-        ArtifactImage ai = ArtifactImage.of(Sssss.class, ServiceWirelets.peekDownstream(e -> System.out.println("Exporting " + e.key())));
+        ArtifactImage ai = ArtifactImage.of(new Sssss(), ServiceWirelets.peekDownstream(e -> System.out.println("Exporting " + e.key())));
         App a = App.of(ai, ServiceWirelets.peekDownstream(e -> System.out.println("ExportingX " + e.key())));
         System.out.println(a);
     }

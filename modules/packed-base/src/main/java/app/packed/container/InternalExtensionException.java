@@ -27,6 +27,7 @@ public class InternalExtensionException extends RuntimeException {
 
     /**
      * @param message
+     *            the message
      */
     public InternalExtensionException(String message) {
         super(message);
@@ -34,7 +35,9 @@ public class InternalExtensionException extends RuntimeException {
 
     /**
      * @param message
+     *            the message
      * @param cause
+     *            the cause
      */
     public InternalExtensionException(String message, Throwable cause) {
         super(message, cause);

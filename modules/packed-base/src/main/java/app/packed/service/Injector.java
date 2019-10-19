@@ -222,6 +222,7 @@ public interface Injector {
      * Returns <code>this</code> if no wirelets are specified.
      * 
      * @param wirelets
+     *            wirelets
      * @return the new injector
      */
     // Skal vi tage en Consumer<?>???? Saa faar vi en klasse med som kan sige noget om man er..

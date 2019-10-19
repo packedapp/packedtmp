@@ -103,6 +103,8 @@ public final class ComponentExtension extends Extension {
      * <p>
      * This method uses the {@link ServiceExtension}.
      * 
+     * @param <T>
+     *            the type of the component
      * @param implementation
      *            the type of instantiate and use as the component instance
      * @return the configuration of the component

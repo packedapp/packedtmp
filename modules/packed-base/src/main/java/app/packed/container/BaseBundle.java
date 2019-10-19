@@ -21,11 +21,11 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.lifecycle.LifecycleExtension;
 import app.packed.lifecycle.OnStart;
-import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.Factory;
 import app.packed.service.Injector;
 import app.packed.service.InjectorConfigurator;
 import app.packed.service.Provide;
+import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceConfiguration;
 import app.packed.service.ServiceExtension;
 import app.packed.util.Key;
@@ -160,6 +160,8 @@ public abstract class BaseBundle extends Bundle {
      * parent. If you wish to have a specific component as a parent, the various install methods on
      * {@link ComponentConfiguration} can be used to specify a specific parent.
      *
+     * @param <T>
+     *            the type of component to install
      * @param instance
      *            the component instance to install
      * @return this configuration

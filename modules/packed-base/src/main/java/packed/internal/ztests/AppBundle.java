@@ -88,7 +88,7 @@ class MyBundle extends AppBundle {
 
 class MyBundle2 extends BaseBundle {
 
-    private static final ArtifactImage IMAGE = ArtifactImage.of(MyBundle2.class);
+    private static final ArtifactImage IMAGE = ArtifactImage.of(new MyBundle2());
 
     @Override
     protected void configure() {

@@ -216,6 +216,7 @@ public final class ServiceContract extends Contract {
      * contract
      * 
      * @param image
+     *            the image to return a contract for
      * @return the contract
      */
     // Or should I return an empty contract???? Hmmmmmmmmmmmm

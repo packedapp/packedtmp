@@ -17,7 +17,6 @@ package app.packed.artifact;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Optional;
 
 import app.packed.component.ComponentStream;
@@ -31,12 +30,10 @@ import app.packed.util.Nullable;
 import packed.internal.artifact.BuildOutput;
 import packed.internal.artifact.PackedArtifactContext;
 import packed.internal.component.ComponentConfigurationToComponentAdaptor;
-import packed.internal.container.ContainerSourceModel;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.WireletContext;
 import packed.internal.module.AppPackedArtifactAccess;
 import packed.internal.module.ModuleAccess;
-import packed.internal.util.ThrowableUtil;
 
 /**
  * Artifact images are immutable ahead-of-time configured artifacts. By configuring an artifact ahead of time, the
@@ -120,6 +117,8 @@ public final class ArtifactImage implements ContainerSource {
      * <p>
      * If no name is explicitly set when creating the artifact, the runtime will generate a name that guaranteed to be
      * unique among any of the artifact'ssiblings.**@return the name of this artifact
+     * 
+     * @return the name
      */
     public String name() {
         return wc == null ? pcc.getName() : wc.name();
@@ -195,18 +194,18 @@ public final class ArtifactImage implements ContainerSource {
         return new ArtifactImage(pcc.doBuild(), pcc.wireletContext);
     }
 
-    public static ArtifactImage of(Class<? extends Bundle> bundle, Wirelet... wirelets) {
-        requireNonNull(bundle, "bundle is null");
-        ContainerSourceModel csm = ContainerSourceModel.of(bundle);
-        Bundle b;
-        try {
-            b = (Bundle) csm.emptyConstructor().invoke();
-        } catch (Throwable e) {
-            ThrowableUtil.rethrowErrorOrRuntimeException(e);
-            throw new UndeclaredThrowableException(e);
-        }
-        return of(b, wirelets);
-    }
+    // public static ArtifactImage of(Class<? extends Bundle> bundle, Wirelet... wirelets) {
+    // requireNonNull(bundle, "bundle is null");
+    // ContainerSourceModel csm = ContainerSourceModel.of(bundle);
+    // Bundle b;
+    // try {
+    // b = (Bundle) csm.emptyConstructor().invoke();
+    // } catch (Throwable e) {
+    // ThrowableUtil.rethrowErrorOrRuntimeException(e);
+    // throw new UndeclaredThrowableException(e);
+    // }
+    // return of(b, wirelets);
+    // }
 }
 
 // De kunne jo strength taget vaere metoder paa imaged og ikke wirelets.

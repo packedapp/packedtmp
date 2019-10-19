@@ -235,9 +235,11 @@ public final class Dependency {
      *            the object to potentially wrap in an optional type @return the specified object if not optional, or a the
      *            specified object in an optional type if optional.
      * 
+     * @return the wrapped object if needed
      * @throws ClassCastException
      *             if this dependency is an optional type and type of this dependency does not match the specified object.
      */
+    @Nullable
     public Object wrapIfOptional(Object object) {
         return optionality.wrapIfOptional(requireNonNull(object, "object is null"));
     }

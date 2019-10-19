@@ -40,8 +40,6 @@ import packed.internal.service.run.AbstractInjector;
 /**
  * This extension provides functionality for service management and dependency injection.
  * 
- * <p>
- * 
  * 
  */
 // Functionality for
