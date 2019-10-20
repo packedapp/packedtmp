@@ -13,16 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hook2;
+package packed.internal.hook.model.testit;
 
-import java.lang.reflect.Method;
+import java.lang.invoke.MethodHandles;
+
+import app.packed.hook.Hook;
+import app.packed.hook.OnHook;
+import packed.internal.container.access.ClassProcessor;
+import packed.internal.hook.model.OnHookSet;
 
 /**
  *
  */
-public class OnHookContainerModelBuilder extends SCCNode {
+public class Stuff {
 
-    public final void onAnnotatedMethod(Method method) {
+    @OnHook
+    private void foo(MyHook h) {
+
+    }
+
+    public static void main(String[] args) {
+        OnHookSet ohs = new OnHookSet(new ClassProcessor(MethodHandles.lookup(), Stuff.class, false));
+        ohs.process();
+    }
+
+    static class MyHook implements Hook {
+
+        @OnHook
+        private void foo(MyHook h) {
+
+        }
 
     }
 }

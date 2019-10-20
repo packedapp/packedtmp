@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hook2;
+package packed.internal.hook.model;
 
 import java.lang.invoke.MethodHandle;
 import java.util.List;
@@ -21,6 +21,8 @@ import java.util.Set;
 
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
+import packed.internal.container.access.ClassProcessor;
+import packed.internal.util.ThrowableFactory;
 
 /**
  * Something that contains methods with {@link OnHook}
@@ -44,4 +46,29 @@ public class OnHookContainerModel {
     public Set<Class<?>> annotatedFieldTargets() {
         return Set.of();
     }
+
+    /**
+     * Returns a model for the specified extension type.
+     * <p>
+     * This method assumes that it has already been established that the specified extension type is open to
+     * 'app.packed.base'
+     * 
+     * @param cp
+     *            the class processor.
+     * @return a container model for the specified extension
+     */
+    public OnHookContainerModel ofExtension(ClassProcessor cp) {
+        throw new UnsupportedOperationException();
+    }
+
+    public OnHookContainerModel ofBundle(ClassProcessor cp) {
+        throw new UnsupportedOperationException();
+    }
+
+    public <T extends Throwable> OnHookContainerModel ofBundle(ClassProcessor cp, ThrowableFactory<T> tf, Class<?>... additionalParameterTypes) throws T {
+        // Eneste problem er nok at vi gerne f.eks. vil skrive the Extension
+        // Mht til ClassProcessor saa vil vi ogsaa gerne have en MaxType... F.eks. Bundle eller Extension..
+        throw new UnsupportedOperationException();
+    }
+
 }

@@ -44,11 +44,13 @@ public class ClassProcessor {
     /** The app.packed.base module. */
     private static final Module THIS_MODULE = ClassProcessor.class.getModule();
 
+    /** The class that can be processed. */
     private final Class<?> clazz;
 
-    private boolean isInitialized;
-
+    /** */
     private final MethodHandles.Lookup lookup;
+
+    private boolean lookupInitialized;
 
     private MethodHandles.Lookup privateLookup;
 
@@ -74,6 +76,10 @@ public class ClassProcessor {
         return clazz;
     }
 
+    public void findMethods(Consumer<? super Method> methodConsumer) {
+        MemberFinder.findMethods(Object.class, clazz, methodConsumer);
+    }
+
     public void findMethodsAndFields(Class<?> baseType, Consumer<? super Method> methodConsumer, Consumer<? super Field> fieldConsumer) {
         MemberFinder.findMethodsAndFields(baseType, clazz, methodConsumer, fieldConsumer);
     }
@@ -84,31 +90,43 @@ public class ClassProcessor {
 
     private <T extends Throwable> Lookup lookup(Member member, ThrowableFactory<T> tf) throws T {
         if (member.getDeclaringClass() != clazz) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Was " + member.getDeclaringClass() + " expecting " + clazz);
         }
-        if (!isInitialized) {
+
+        if (!lookupInitialized) {
             checkPackageOpen(tf);
             // Should we use lookup.getdeclaringClass???
             if (!THIS_MODULE.canRead(clazz.getModule())) {
                 THIS_MODULE.addReads(clazz.getModule());
             }
-            isInitialized = true;
+            lookupInitialized = true;
         }
 
-        // If we already have made a private lookup object, lets just use it.
+        // If we already have made a private lookup object, lets just use it. Even if we might need less access
         MethodHandles.Lookup p = privateLookup;
         if (p != null) {
             return p;
         }
 
+        // See if we need private access, otherwise just return ordinary lookup.
         if (!needsPrivateLookup(member)) {
             return lookup;
         }
+
+        // Create and cache a private lookup.
         try {
-            return p = MethodHandles.privateLookupIn(clazz, lookup);
+            return privateLookup = MethodHandles.privateLookupIn(clazz, lookup);
         } catch (IllegalAccessException e) {
             throw new UncheckedIllegalAccessException("Could not create private lookup", e);
         }
+    }
+
+    public ClassProcessor spawn(Class<?> clazz) {
+        //
+        if (clazz.getModule() != this.clazz.getModule()) {
+            throw new IllegalArgumentException();
+        }
+        return new ClassProcessor(lookup, clazz, registerForNative);
     }
 
     /**
@@ -150,30 +168,50 @@ public class ClassProcessor {
 
     public <T extends Throwable> MethodHandle unreflectGetter(Field field, ThrowableFactory<T> tf) throws T {
         Lookup lookup = lookup(field, tf);
+
+        MethodHandle mh;
         try {
-            return lookup.unreflectGetter(field);
+            mh = lookup.unreflectGetter(field);
         } catch (IllegalAccessException e) {
             throw new UncheckedIllegalAccessException("Could not create a MethodHandle", e);
         }
+
+        if (registerForNative) {
+            NativeImage.registerField(field);
+        }
+        return mh;
     }
 
     public <T extends Throwable> MethodHandle unreflectSetter(Field field, ThrowableFactory<T> tf) throws T {
-
         Lookup lookup = lookup(field, tf);
+
+        MethodHandle mh;
         try {
-            return lookup.unreflectSetter(field);
+            mh = lookup.unreflectSetter(field);
         } catch (IllegalAccessException e) {
             throw new UncheckedIllegalAccessException("Could not create a MethodHandle", e);
         }
+
+        if (registerForNative) {
+            NativeImage.registerField(field);
+        }
+        return mh;
     }
 
     public <T extends Throwable> VarHandle unreflectVarhandle(Field field, ThrowableFactory<T> tf) throws T {
         Lookup lookup = lookup(field, tf);
+
+        VarHandle vh;
         try {
-            return lookup.unreflectVarHandle(field);
+            vh = lookup.unreflectVarHandle(field);
         } catch (IllegalAccessException e) {
             throw new UncheckedIllegalAccessException("Could not create a VarHandle", e);
         }
+
+        if (registerForNative) {
+            NativeImage.registerField(field);
+        }
+        return vh;
     }
 
     private static boolean needsPrivateLookup(Member m) {

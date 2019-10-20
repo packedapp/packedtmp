@@ -15,6 +15,7 @@
  */
 package packed.internal.util;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 
 import app.packed.container.InternalExtensionException;
@@ -22,6 +23,8 @@ import app.packed.container.InternalExtensionException;
 /**
  *
  */
+
+// TODO we can bruge dem som en builder af en slags...
 public abstract class ThrowableFactory<T extends Throwable> {
 
     public static final ThrowableFactory<InternalExtensionException> INTERNAL_EXTENSION_EXCEPTION_FACTORY = new ThrowableFactory<InternalExtensionException>() {
@@ -51,6 +54,11 @@ public abstract class ThrowableFactory<T extends Throwable> {
         StackTraceElement[] ste = Arrays.copyOfRange(stackTrace, 3, stackTrace.length);
         t.setStackTrace(ste);
         return t;
+    }
+
+    public final T newThrowableForMethod(String message, Method method) {
+        // We need to keep track of the depth...
+        return newThrowable(message + " for method  " + method);
     }
 
     public abstract T newThrowable(String message, Throwable cause);

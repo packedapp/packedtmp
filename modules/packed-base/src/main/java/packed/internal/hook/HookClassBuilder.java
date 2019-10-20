@@ -129,16 +129,6 @@ final class HookClassBuilder {
 
         MethodHandle mh = cp.unreflect(method, ThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
 
-        // try {
-        // mh = lookup.unreflect(method);
-        // } catch (IllegalAccessException | InaccessibleObjectException e) {
-        // throw new UncheckedIllegalAccessException("In order to use the extension " +
-        // StringFormatter.format(method.getDeclaringClass()) + ", the module '"
-        // + method.getDeclaringClass().getModule().getName() + "' in which the extension is located must be 'open' to
-        // 'app.packed.base'", e);
-        // }
-        //
-        // NativeImage.registerMethod(method);
         annotations.put(annotationType, mh);
     }
 

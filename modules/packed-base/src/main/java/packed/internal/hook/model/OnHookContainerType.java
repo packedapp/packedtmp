@@ -13,11 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hook2;
+package packed.internal.hook.model;
 
 /**
  *
  */
-public class SCCNode {
+enum OnHookContainerType {
 
+    BUILDER {
+        @Override
+        boolean isValidExtraType(Class<?> clazz) {
+            return false;
+        }
+    },
+    EXTENSION {
+        @Override
+        boolean isValidExtraType(Class<?> clazz) {
+            return false;
+        }
+    },
+    BUNDLE {
+        @Override
+        boolean isValidExtraType(Class<?> clazz) {
+            return false;
+        }
+    };
+
+    abstract boolean isValidExtraType(Class<?> clazz);
+
+    // Could just be a simple Class<?>... additionalParameterTypes
 }
