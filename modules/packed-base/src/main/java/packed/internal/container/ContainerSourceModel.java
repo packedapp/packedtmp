@@ -55,9 +55,6 @@ public final class ContainerSourceModel implements ComponentLookup {
     /** The default lookup object, when the user has specified no Lookup value */
     ComponentLookup defaultLookup;
 
-    /** The default prefix of the container, used if no name has been specified. */
-    private volatile String defaultPrefix;
-
     /** A cache of lookup values, in 99 % of all cases this will hold no more than 1 value. */
     private final LookupValue<PerLookup> lookups = new LookupValue<>() {
 
@@ -84,19 +81,6 @@ public final class ContainerSourceModel implements ComponentLookup {
     @Override
     public ComponentModel componentModelOf(Class<?> componentType) {
         return componentsNoLookup.get(componentType);
-    }
-
-    /**
-     * Returns the default prefix for the container, if no name is explicitly set.
-     * 
-     * @return the default prefix for the container, if no name is explicitly set
-     */
-    public String defaultPrefix() {
-        String d = defaultPrefix;
-        if (d == null) {
-            d = defaultPrefix = sourceType.getSimpleName();
-        }
-        return d;
     }
 
     @Override

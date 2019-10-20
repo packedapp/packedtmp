@@ -29,7 +29,6 @@ import packed.internal.container.ContainerSourceModel;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.access.ClassProcessor;
 import packed.internal.hook.ComponentModelHookGroup;
-import packed.internal.reflect.MemberFinder;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -141,7 +140,7 @@ public final class ComponentModel {
                 }
             }
 
-            MemberFinder.findMethodsAndFields(Object.class, componentType, method -> {
+            cp.findMethodsAndFields(method -> {
                 for (Annotation a : method.getAnnotations()) {
                     Class<? extends Extension>[] extensionTypes = EXTENSION_ACTIVATORS.get(a.annotationType());
                     // See if the component method has any annotations that activates extensions

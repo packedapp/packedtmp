@@ -26,9 +26,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.function.Consumer;
 
 import app.packed.lang.NativeImage;
 import app.packed.lang.reflect.UncheckedIllegalAccessException;
+import packed.internal.reflect.MemberFinder;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableFactory;
 
@@ -42,13 +44,13 @@ public class ClassProcessor {
     /** The app.packed.base module. */
     private static final Module THIS_MODULE = ClassProcessor.class.getModule();
 
-    private final MethodHandles.Lookup lookup;
-
-    private MethodHandles.Lookup privateLookup;
-
     private final Class<?> clazz;
 
     private boolean isInitialized;
+
+    private final MethodHandles.Lookup lookup;
+
+    private MethodHandles.Lookup privateLookup;
 
     private final boolean registerForNative;
 
@@ -58,7 +60,7 @@ public class ClassProcessor {
         this.registerForNative = registerForNative;
     }
 
-    public <T extends Throwable> void checkPackageOpen(ThrowableFactory<T> tf) throws T {
+    private <T extends Throwable> void checkPackageOpen(ThrowableFactory<T> tf) throws T {
         String pckName = clazz.getPackageName();
         if (!clazz.getModule().isOpen(pckName, THIS_MODULE)) {
             String otherModule = clazz.getModule().getName();
@@ -66,6 +68,18 @@ public class ClassProcessor {
             throw tf.newThrowable("In order to access '" + StringFormatter.format(clazz) + "', the module '" + otherModule + "' must be open to '" + m
                     + "'. This can be done, for example, by adding 'opens " + pckName + " to " + m + ";' to the module-info.java file of " + otherModule);
         }
+    }
+
+    public Class<?> clazz() {
+        return clazz;
+    }
+
+    public void findMethodsAndFields(Class<?> baseType, Consumer<? super Method> methodConsumer, Consumer<? super Field> fieldConsumer) {
+        MemberFinder.findMethodsAndFields(baseType, clazz, methodConsumer, fieldConsumer);
+    }
+
+    public void findMethodsAndFields(Consumer<? super Method> methodConsumer, Consumer<? super Field> fieldConsumer) {
+        MemberFinder.findMethodsAndFields(Object.class, clazz, methodConsumer, fieldConsumer);
     }
 
     private <T extends Throwable> Lookup lookup(Member member, ThrowableFactory<T> tf) throws T {
@@ -78,7 +92,10 @@ public class ClassProcessor {
             if (!THIS_MODULE.canRead(clazz.getModule())) {
                 THIS_MODULE.addReads(clazz.getModule());
             }
+            isInitialized = true;
         }
+
+        // If we already have made a private lookup object, lets just use it.
         MethodHandles.Lookup p = privateLookup;
         if (p != null) {
             return p;

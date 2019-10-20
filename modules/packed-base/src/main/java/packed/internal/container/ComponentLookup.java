@@ -30,7 +30,6 @@ public interface ComponentLookup {
 
     ClassProcessor newClassProcessor(Class<?> clazz, boolean registerNatives);
 
-    // componentModel should probably check valid types.... Basically
     ComponentModel componentModelOf(Class<?> componentType);
 
     <T> FactoryHandle<T> readable(FactoryHandle<T> factory);
