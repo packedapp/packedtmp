@@ -110,9 +110,6 @@ public final class ComponentModel {
 
         private boolean isFinished;
 
-        /** A lookup object for the component. */
-        private final ComponentLookup lookup;
-
         public final ClassProcessor cp;
 
         /**
@@ -125,9 +122,7 @@ public final class ComponentModel {
          */
         public Builder(ComponentLookup lookup, Class<?> componentType) {
             this.cp = lookup.newClassProcessor(componentType, true);
-            this.lookup = requireNonNull(lookup);
             this.componentType = requireNonNull(componentType);
-
         }
 
         /**
@@ -176,10 +171,6 @@ public final class ComponentModel {
             if (isFinished) {
                 throw new IllegalStateException("This method cannot be called after the component type has processed");
             }
-        }
-
-        public ComponentLookup lookup() {
-            return lookup;
         }
     }
 }

@@ -16,16 +16,10 @@
 package packed.internal.container;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.VarHandle;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
-import app.packed.lang.reflect.UncheckedIllegalAccessException;
 import packed.internal.component.ComponentModel;
 import packed.internal.container.access.ClassProcessor;
-import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 
 /**
@@ -34,80 +28,14 @@ import packed.internal.inject.factoryhandle.FactoryHandle;
  */
 public interface ComponentLookup {
 
-    default VarHandle acquireVarHandle(Class<?> componentType, Field field) {
-        throw new UnsupportedOperationException();
-    }
-
     ClassProcessor newClassProcessor(Class<?> clazz, boolean registerNatives);
 
     // componentModel should probably check valid types.... Basically
     ComponentModel componentModelOf(Class<?> componentType);
 
-    Lookup lookup();
-
-    default <T> FactoryHandle<T> readable(FactoryHandle<T> factory) {
-        // TODO needs to cached
-
-        // TODO add field...
-        if (factory instanceof ExecutableFactoryHandle) {
-            ExecutableFactoryHandle<T> e = (ExecutableFactoryHandle<T>) factory;
-            if (!e.hasMethodHandle()) {
-                return e.withLookup(lookup());
-            }
-        }
-        return factory;
-    }
-    // Maybe method for acquire
+    <T> FactoryHandle<T> readable(FactoryHandle<T> factory);
 
     default MethodHandle toMethodHandle(FactoryHandle<?> factory) {
         return readable(factory).toMethodHandle();
-    }
-
-    default MethodHandle emptyConstructor() {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * @param method
-     *            the method to unreflect
-     * @return a method handle for the unreflected method
-     */
-    default MethodHandle unreflect(Method method) {
-        if (!ComponentLookup.class.getModule().canRead(method.getDeclaringClass().getModule())) {
-            ComponentLookup.class.getModule().addReads(method.getDeclaringClass().getModule());
-        }
-        try {
-            Lookup l = MethodHandles.privateLookupIn(method.getDeclaringClass(), lookup());
-            return l.unreflect(method);
-        } catch (IllegalAccessException e) {
-            throw new UncheckedIllegalAccessException("stuff", e);
-        }
-    }
-
-    default MethodHandle unreflectGetter(Field field) {
-        try {
-            Lookup l = MethodHandles.privateLookupIn(field.getDeclaringClass(), lookup());
-            return l.unreflectGetter(field);
-        } catch (IllegalAccessException e) {
-            throw new UncheckedIllegalAccessException("Could not create a MethodHandle", e);
-        }
-    }
-
-    default MethodHandle unreflectSetter(Field field) {
-        try {
-            Lookup l = MethodHandles.privateLookupIn(field.getDeclaringClass(), lookup());
-            return l.unreflectSetter(field);
-        } catch (IllegalAccessException e) {
-            throw new UncheckedIllegalAccessException("Could not create a MethodHandle", e);
-        }
-    }
-
-    default VarHandle unreflectVarhandle(Field field) {
-        try {
-            Lookup l = MethodHandles.privateLookupIn(field.getDeclaringClass(), lookup());
-            return l.unreflectVarHandle(field);
-        } catch (IllegalAccessException e) {
-            throw new UncheckedIllegalAccessException("Could not create a VarHandle", e);
-        }
     }
 }

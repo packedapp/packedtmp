@@ -24,6 +24,8 @@ import app.packed.container.Bundle;
 import app.packed.container.ContainerSource;
 import packed.internal.component.ComponentModel;
 import packed.internal.container.access.ClassProcessor;
+import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
+import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.util.LookupValue;
 
 /** A model of a container source, typically a subclass of {@link Bundle}. */
@@ -97,12 +99,17 @@ public final class ContainerSourceModel implements ComponentLookup {
         return d;
     }
 
-    /** {@inheritDoc} */
     @Override
-    public Lookup lookup() {
-        // Should we return a private lookup???
-        // TODO fix, this method does not work
-        return MethodHandles.lookup();
+    public <T> FactoryHandle<T> readable(FactoryHandle<T> factory) {
+        // TODO needs to cached
+        // TODO add field...
+        if (factory instanceof ExecutableFactoryHandle) {
+            ExecutableFactoryHandle<T> e = (ExecutableFactoryHandle<T>) factory;
+            if (!e.hasMethodHandle()) {
+                return e.withLookup(MethodHandles.lookup());
+            }
+        }
+        return factory;
     }
 
     public ComponentLookup withLookup(Lookup lookup) {
@@ -162,14 +169,21 @@ public final class ContainerSourceModel implements ComponentLookup {
 
         /** {@inheritDoc} */
         @Override
-        public Lookup lookup() {
-            return lookup;
-        }
-
-        /** {@inheritDoc} */
-        @Override
         public ClassProcessor newClassProcessor(Class<?> clazz, boolean registerNatives) {
             return new ClassProcessor(lookup, clazz, registerNatives);
+        }
+
+        @Override
+        public <T> FactoryHandle<T> readable(FactoryHandle<T> factory) {
+            // TODO needs to cached
+            // TODO add field...
+            if (factory instanceof ExecutableFactoryHandle) {
+                ExecutableFactoryHandle<T> e = (ExecutableFactoryHandle<T>) factory;
+                if (!e.hasMethodHandle()) {
+                    return e.withLookup(lookup);
+                }
+            }
+            return factory;
         }
     }
 
