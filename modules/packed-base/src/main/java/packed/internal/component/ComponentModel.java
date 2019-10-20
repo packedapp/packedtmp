@@ -27,6 +27,7 @@ import app.packed.container.UseExtension;
 import packed.internal.container.ComponentLookup;
 import packed.internal.container.ContainerSourceModel;
 import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.container.access.ClassProcessor;
 import packed.internal.hook.ComponentModelHookGroup;
 import packed.internal.reflect.MemberFinder;
 import packed.internal.util.ThrowableUtil;
@@ -112,6 +113,8 @@ public final class ComponentModel {
         /** A lookup object for the component. */
         private final ComponentLookup lookup;
 
+        public final ClassProcessor cp;
+
         /**
          * Creates a new component model builder
          * 
@@ -121,8 +124,10 @@ public final class ComponentModel {
          *            the type of component
          */
         public Builder(ComponentLookup lookup, Class<?> componentType) {
+            this.cp = lookup.newClassProcessor(componentType, true);
             this.lookup = requireNonNull(lookup);
             this.componentType = requireNonNull(componentType);
+
         }
 
         /**

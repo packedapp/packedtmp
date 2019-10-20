@@ -19,12 +19,12 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import app.packed.lang.reflect.UncheckedIllegalAccessException;
 import packed.internal.component.ComponentModel;
+import packed.internal.container.access.ClassProcessor;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 
@@ -34,15 +34,11 @@ import packed.internal.inject.factoryhandle.FactoryHandle;
  */
 public interface ComponentLookup {
 
-    default MethodHandle acquireMethodHandle(Class<?> componentType, Constructor<?> constructor) {
-        throw new UnsupportedOperationException();
-    }
-
-    MethodHandle acquireMethodHandle(Class<?> componentType, Method method);
-
     default VarHandle acquireVarHandle(Class<?> componentType, Field field) {
         throw new UnsupportedOperationException();
     }
+
+    ClassProcessor newClassProcessor(Class<?> clazz, boolean registerNatives);
 
     // componentModel should probably check valid types.... Basically
     ComponentModel componentModelOf(Class<?> componentType);

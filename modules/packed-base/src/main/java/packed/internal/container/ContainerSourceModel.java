@@ -17,14 +17,13 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.reflect.Method;
 
 import app.packed.container.Bundle;
 import app.packed.container.ContainerSource;
 import packed.internal.component.ComponentModel;
+import packed.internal.container.access.ClassProcessor;
 import packed.internal.util.LookupValue;
 
 /** A model of a container source, typically a subclass of {@link Bundle}. */
@@ -81,17 +80,6 @@ public final class ContainerSourceModel implements ComponentLookup {
 
     /** {@inheritDoc} */
     @Override
-    public MethodHandle acquireMethodHandle(Class<?> componentType, Method method) {
-        try {
-            Lookup lookup = MethodHandles.lookup();
-            return lookup.unreflect(method);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public ComponentModel componentModelOf(Class<?> componentType) {
         return componentsNoLookup.get(componentType);
     }
@@ -108,15 +96,6 @@ public final class ContainerSourceModel implements ComponentLookup {
         }
         return d;
     }
-
-    // @Override
-    // public MethodHandle emptyConstructor() {
-    // MethodHandle c = constructor;
-    // if (c == null) {
-    // c = constructor = ConstructorFinder.find(sourceType);
-    // }
-    // return c;
-    // }
 
     /** {@inheritDoc} */
     @Override
@@ -177,16 +156,6 @@ public final class ContainerSourceModel implements ComponentLookup {
 
         /** {@inheritDoc} */
         @Override
-        public MethodHandle acquireMethodHandle(Class<?> componentType, Method method) {
-            try {
-                return lookup.unreflect(method);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        /** {@inheritDoc} */
-        @Override
         public ComponentModel componentModelOf(Class<?> componentType) {
             return components.get(componentType);
         }
@@ -196,6 +165,18 @@ public final class ContainerSourceModel implements ComponentLookup {
         public Lookup lookup() {
             return lookup;
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public ClassProcessor newClassProcessor(Class<?> clazz, boolean registerNatives) {
+            return new ClassProcessor(lookup, clazz, registerNatives);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ClassProcessor newClassProcessor(Class<?> clazz, boolean registerNatives) {
+        return new ClassProcessor(MethodHandles.lookup(), clazz, registerNatives);
     }
 }
 

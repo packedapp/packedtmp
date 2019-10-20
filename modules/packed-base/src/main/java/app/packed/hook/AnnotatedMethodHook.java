@@ -29,6 +29,7 @@ import app.packed.lang.reflect.MethodOperator;
 import app.packed.lang.reflect.UncheckedIllegalAccessException;
 import packed.internal.component.ComponentModel;
 import packed.internal.hook.applicator.PackedMethodHookApplicator;
+import packed.internal.util.ThrowableFactory;
 
 /** A hook representing a method annotated with a specific type. */
 public final class AnnotatedMethodHook<T extends Annotation> implements Hook {
@@ -128,7 +129,7 @@ public final class AnnotatedMethodHook<T extends Annotation> implements Hook {
         MethodHandle mh = methodHandle;
         if (mh == null) {
             builder.checkActive();
-            methodHandle = mh = builder.lookup().unreflect(method);
+            methodHandle = mh = builder.cp.unreflect(method, ThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
         }
         return mh;
     }

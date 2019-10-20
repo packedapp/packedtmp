@@ -35,6 +35,7 @@ import packed.internal.hook.applicator.PackedFieldHookApplicator;
 import packed.internal.moduleaccess.AppPackedHookAccess;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.util.StringFormatter;
+import packed.internal.util.ThrowableFactory;
 
 /**
  * A hook representing a field annotated with a specific annotation.
@@ -285,7 +286,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     public MethodHandle getter() {
         MethodHandle g = getter;
         if (g == null) {
-            getter = g = builder.lookup().unreflectGetter(field);
+            getter = g = builder.cp.unreflectGetter(field, ThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
         }
         return g;
     }
@@ -308,7 +309,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
             if (Modifier.isFinal(field.getModifiers())) {
                 throw new UnsupportedOperationException("Field is final, cannot create a setter for this field, field = " + field);
             }
-            setter = s = builder.lookup().unreflectSetter(field);
+            setter = s = builder.cp.unreflectSetter(field, ThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
         }
         return s;
     }
@@ -324,7 +325,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     public VarHandle varHandle() {
         VarHandle vh = varHandle;
         if (vh == null) {
-            varHandle = vh = builder.lookup().unreflectVarhandle(field);
+            varHandle = vh = builder.cp.unreflectVarhandle(field, ThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
         }
         return vh;
     }
