@@ -20,8 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
@@ -38,9 +36,9 @@ import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import app.packed.lang.InvalidDeclarationException;
-import app.packed.lang.NativeImage;
-import app.packed.lang.reflect.UncheckedIllegalAccessException;
+import packed.internal.container.access.ClassProcessor;
 import packed.internal.util.StringFormatter;
+import packed.internal.util.ThrowableFactory;
 
 /**
  *
@@ -68,21 +66,21 @@ final class HookClassBuilder {
 
     private final boolean isHookGroupBuilder;
 
-    public Lookup lookup;
+    final ClassProcessor cp;
 
     public HookClassBuilder(Class<?> actualType, boolean isHookGroupBuilder) {
         this.actualType = requireNonNull(actualType);
         this.isHookGroupBuilder = isHookGroupBuilder;
-
-        this.lookup = MethodHandles.lookup();
+        this.cp = new ClassProcessor(MethodHandles.lookup(), actualType, true);
 
         // Create lazy??? For example, for bundle it is only needed if the class actually has
-        try {
-            lookup = MethodHandles.privateLookupIn(actualType, lookup);
-        } catch (IllegalAccessException | InaccessibleObjectException e) {
-            throw new UncheckedIllegalAccessException("In order to use the hook aggregate " + StringFormatter.format(actualType) + ", the module '"
-                    + actualType.getModule().getName() + "' in which the class is located must be 'open' to 'app.packed.base'", e);
-        }
+        // try {
+        // lookup = MethodHandles.privateLookupIn(actualType, lookup);
+        // } catch (IllegalAccessException | InaccessibleObjectException e) {
+        // throw new UncheckedIllegalAccessException("In order to use the hook aggregate " + StringFormatter.format(actualType)
+        // + ", the module '"
+        // + actualType.getModule().getName() + "' in which the class is located must be 'open' to 'app.packed.base'", e);
+        // }
     }
 
     private void onHook(Method method) {
@@ -93,13 +91,13 @@ final class HookClassBuilder {
             Parameter p2 = parameters.length == 2 ? parameters[1] : null;
 
             if (hookType == AnnotatedFieldHook.class) {
-                onHook(lookup, method, p1, p2, annotatedFields);
+                onHook(method, p1, p2, annotatedFields);
                 return;
             } else if (hookType == AnnotatedMethodHook.class) {
-                onHook(lookup, method, p1, p2, annotatedMethods);
+                onHook(method, p1, p2, annotatedMethods);
                 return;
             } else if (hookType == AnnotatedTypeHook.class) {
-                onHook(lookup, method, p1, p2, annotatedTypes);
+                onHook(method, p1, p2, annotatedTypes);
                 return;
             } else if (hookType == AssignableToHook.class) {
                 throw new UnsupportedOperationException();
@@ -118,8 +116,7 @@ final class HookClassBuilder {
         }
     }
 
-    private void onHook(MethodHandles.Lookup lookup, Method method, Parameter p1, Parameter p2,
-            IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotations) {
+    private void onHook(Method method, Parameter p1, Parameter p2, IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotations) {
         ParameterizedType pt = (ParameterizedType) p1.getParameterizedType();
         @SuppressWarnings("unchecked")
         Class<? extends Annotation> annotationType = (Class<? extends Annotation>) pt.getActualTypeArguments()[0];
@@ -130,15 +127,18 @@ final class HookClassBuilder {
                     + " that takes " + p1.getParameterizedType());
         }
 
-        MethodHandle mh;
-        try {
-            mh = lookup.unreflect(method);
-        } catch (IllegalAccessException | InaccessibleObjectException e) {
-            throw new UncheckedIllegalAccessException("In order to use the extension " + StringFormatter.format(method.getDeclaringClass()) + ", the module '"
-                    + method.getDeclaringClass().getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);
-        }
+        MethodHandle mh = cp.unreflect(method, ThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
 
-        NativeImage.registerMethod(method);
+        // try {
+        // mh = lookup.unreflect(method);
+        // } catch (IllegalAccessException | InaccessibleObjectException e) {
+        // throw new UncheckedIllegalAccessException("In order to use the extension " +
+        // StringFormatter.format(method.getDeclaringClass()) + ", the module '"
+        // + method.getDeclaringClass().getModule().getName() + "' in which the extension is located must be 'open' to
+        // 'app.packed.base'", e);
+        // }
+        //
+        // NativeImage.registerMethod(method);
         annotations.put(annotationType, mh);
     }
 
@@ -160,15 +160,7 @@ final class HookClassBuilder {
             }
         }
 
-        MethodHandle mh;
-        try {
-            mh = lookup.unreflect(method);
-        } catch (IllegalAccessException | InaccessibleObjectException e) {
-            throw new UncheckedIllegalAccessException("In order to use the extension " + StringFormatter.format(method.getDeclaringClass()) + ", the module '"
-                    + method.getDeclaringClass().getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);
-        }
-
-        NativeImage.registerMethod(method);
+        MethodHandle mh = cp.unreflect(method, ThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
 
         groups.put(groupType, mh);
         HookBuilderModel oha = HookBuilderModel.of(groupType);
