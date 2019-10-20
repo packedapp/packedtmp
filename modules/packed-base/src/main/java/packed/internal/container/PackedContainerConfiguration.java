@@ -65,7 +65,7 @@ import packed.internal.hook.applicator.DelayedAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarFieldDelayerAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarMethodDelayerAccessor;
 import packed.internal.inject.util.InjectConfigSiteOperations;
-import packed.internal.module.ModuleAccess;
+import packed.internal.moduleaccess.ModuleAccess;
 
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration<Object> implements ContainerConfiguration {

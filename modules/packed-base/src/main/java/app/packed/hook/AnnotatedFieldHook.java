@@ -32,8 +32,8 @@ import app.packed.lang.reflect.UncheckedIllegalAccessException;
 import app.packed.lang.reflect.VarOperator;
 import packed.internal.component.ComponentModel;
 import packed.internal.hook.applicator.PackedFieldHookApplicator;
-import packed.internal.module.AppPackedHookAccess;
-import packed.internal.module.ModuleAccess;
+import packed.internal.moduleaccess.AppPackedHookAccess;
+import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.util.StringFormatter;
 
 /**

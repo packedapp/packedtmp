@@ -17,7 +17,6 @@ package packed.internal.reflect;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -25,8 +24,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import app.packed.container.InternalExtensionException;
-import app.packed.lang.NativeImage;
-import app.packed.lang.reflect.UncheckedIllegalAccessException;
+import packed.internal.container.access.ClassProcessor;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableFactory;
 import packed.internal.util.ThrowableUtil;
@@ -38,9 +36,6 @@ import packed.internal.util.TypeUtil;
  * Is currently only used in connections with extensions. So we always throws {@link InternalExtensionException}.
  */
 public final class ConstructorFinder {
-
-    /** The app.packed.base module. */
-    private static final Module THIS_MODULE = ConstructorFinder.class.getModule();
 
     public static <T> T invoke(Class<T> onType, Class<?>... parameterTypes) {
         MethodHandle mh = ConstructorFinder.find(onType, parameterTypes);
@@ -86,44 +81,8 @@ public final class ConstructorFinder {
             }
         }
 
-        // Checks that the package the class is in, is open to app.packed.base
-        String pckName = onType.getPackageName();
-        if (!onType.getModule().isOpen(pckName, THIS_MODULE)) {
-            String otherModule = onType.getModule().getName();
-            String m = THIS_MODULE.getName();
-            throw tf.newThrowable("In order to instantiate '" + StringFormatter.format(onType) + "', the module '" + otherModule + "' must be open to '" + m
-                    + "'. This can be done, for example, by adding 'opens " + pckName + " to " + m + ";' to the module-info.java file of " + otherModule);
-        }
-
-        // Make sure we can read the module where the extension is located.
-        if (!THIS_MODULE.canRead(onType.getModule())) {
-            THIS_MODULE.addReads(onType.getModule());
-        }
-
-        Lookup lookup = MethodHandles.lookup();
-
-        // Check to see, if we need to use a private lookup
-        if (!Modifier.isPublic(onType.getModifiers()) || !Modifier.isPublic(constructor.getModifiers())) {
-            try {
-                lookup = MethodHandles.privateLookupIn(onType, lookup);
-            } catch (IllegalAccessException e) {
-                // This should never happen, because we have checked all preconditions
-                // And we use our own lookup object which have Module access mode enabled.
-                // Maybe something with unnamed modules...
-                throw new UncheckedIllegalAccessException("This exception was not expected, please file a bug report with details", e);
-            }
-        }
-
-        // Finally, lets unreflect the constructor
-        MethodHandle methodHandle;
-        try {
-            methodHandle = lookup.unreflectConstructor(constructor);
-        } catch (IllegalAccessException e) {
-            throw new UncheckedIllegalAccessException("This exception was not expected, please file a bug report with details", e);
-        }
-
-        // Make sure the constructor is registered if we are generating a native image
-        NativeImage.registerConstructor(constructor);
+        ClassProcessor cp = new ClassProcessor(MethodHandles.lookup(), onType, true);
+        MethodHandle methodHandle = cp.unreflectConstructor(constructor, tf);
 
         return methodHandle;
     }

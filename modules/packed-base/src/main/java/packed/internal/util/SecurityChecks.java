@@ -31,7 +31,7 @@ public final class SecurityChecks {
      * @return true if the two classes are in the same package, otherwise null
      */
     public static boolean isClassesInSamePackage(Class<?> c1, Class<?> c2) {
-        return c1.getClassLoader() == c2.getClassLoader() && c1.getPackageName().equals(c2.getPackageName());
+        return (c1 == c2) || (c1.getClassLoader() == c2.getClassLoader() && c1.getPackageName().equals(c2.getPackageName()));
     }
 
     public static boolean isSuperInterfaceOf(Class<?> clazz, Class<?> interfaze) {

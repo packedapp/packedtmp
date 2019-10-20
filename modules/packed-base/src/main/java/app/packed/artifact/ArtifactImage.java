@@ -32,8 +32,8 @@ import packed.internal.artifact.PackedArtifactContext;
 import packed.internal.component.ComponentConfigurationToComponentAdaptor;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.WireletContext;
-import packed.internal.module.AppPackedArtifactAccess;
-import packed.internal.module.ModuleAccess;
+import packed.internal.moduleaccess.AppPackedArtifactAccess;
+import packed.internal.moduleaccess.ModuleAccess;
 
 /**
  * Artifact images are immutable ahead-of-time configured artifacts. By configuring an artifact ahead of time, the

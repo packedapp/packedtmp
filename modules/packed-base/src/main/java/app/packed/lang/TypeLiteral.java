@@ -29,8 +29,8 @@ import java.lang.reflect.Type;
 import java.util.Optional;
 
 import app.packed.lang.reflect.ParameterDescriptor;
-import packed.internal.module.AppPackedUtilAccess;
-import packed.internal.module.ModuleAccess;
+import packed.internal.moduleaccess.AppPackedUtilAccess;
+import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.TypeUtil;
 

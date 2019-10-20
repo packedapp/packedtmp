@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.module;
+package packed.internal.moduleaccess;
 
-import app.packed.artifact.ArtifactImage;
-import packed.internal.container.PackedContainerConfiguration;
+import app.packed.container.Bundle;
+import app.packed.container.ContainerConfiguration;
 
-/** An interface for calling non-accessible methods in the app.packed.artifact package. */
-public interface AppPackedArtifactAccess extends SecretAccess {
+/** A support class for calling package private methods in the app.packed.container package. */
+public interface AppPackedContainerAccess extends SecretAccess {
 
     /**
-     * Extracts a container configuration from the specified image.
+     * Calls the doConfigure method in {@link Bundle}.
      * 
-     * @param image
-     *            the image to return the configuration object for
-     * @return the configuration object
+     * @param bundle
+     *            the bundle to configure
+     * @param configuration
+     *            the configuration of the container
      */
-    PackedContainerConfiguration getConfiguration(ArtifactImage image);
+    void doConfigure(Bundle bundle, ContainerConfiguration configuration);
 }

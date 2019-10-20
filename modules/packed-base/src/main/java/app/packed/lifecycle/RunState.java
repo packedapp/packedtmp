@@ -15,8 +15,8 @@
  */
 package app.packed.lifecycle;
 
-import packed.internal.module.AppPackedLifecycleAccess;
-import packed.internal.module.ModuleAccess;
+import packed.internal.moduleaccess.AppPackedLifecycleAccess;
+import packed.internal.moduleaccess.ModuleAccess;
 
 /**
  * An enum containing all valid run states.

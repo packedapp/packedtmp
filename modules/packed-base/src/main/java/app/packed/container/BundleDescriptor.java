@@ -37,7 +37,7 @@ import app.packed.lang.Nullable;
 import app.packed.service.ServiceDescriptor;
 import packed.internal.artifact.BuildOutput;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.module.ModuleAccess;
+import packed.internal.moduleaccess.ModuleAccess;
 
 /**
  * A bundle descriptor.

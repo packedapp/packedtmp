@@ -16,6 +16,7 @@
 package app.packed.lang;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
@@ -39,6 +40,8 @@ public final class NativeImage {
     public static Mode mode() {
         return Mode.NO_IMAGE;
     }
+
+    public static void registerField(Field field) {}
 
     public static void registerConstructor(Constructor<?> c) {}
 

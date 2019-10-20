@@ -42,7 +42,7 @@ import app.packed.lang.reflect.MethodDescriptor;
 import app.packed.lang.reflect.ParameterDescriptor;
 import app.packed.lang.reflect.VarDescriptor;
 import packed.internal.inject.util.QualifierHelper;
-import packed.internal.module.ModuleAccess;
+import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.TypeUtil;

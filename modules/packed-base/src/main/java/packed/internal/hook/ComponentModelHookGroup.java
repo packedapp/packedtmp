@@ -36,7 +36,7 @@ import app.packed.hook.Hook;
 import packed.internal.component.ComponentModel;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.ExtensionModel;
-import packed.internal.module.ModuleAccess;
+import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.util.ThrowableUtil;
 
 /**

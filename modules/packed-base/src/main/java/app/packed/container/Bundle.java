@@ -26,8 +26,8 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.lang.Nullable;
-import packed.internal.module.AppPackedContainerAccess;
-import packed.internal.module.ModuleAccess;
+import packed.internal.moduleaccess.AppPackedContainerAccess;
+import packed.internal.moduleaccess.ModuleAccess;
 
 /**
  * Bundles are the main source of configuration for containers and artifacts. Basically a bundle is just a thin wrapper

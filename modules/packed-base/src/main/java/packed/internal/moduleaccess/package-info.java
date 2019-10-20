@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.module;
 
-/** A support class for calling package private methods in the app.packed.lifecycle package. */
-public interface AppPackedLifecycleAccess extends SecretAccess {
-
-}
+/** Provides a mechanism for calling methods that are non-accessible in public packages without using reflection. */
+package packed.internal.moduleaccess;

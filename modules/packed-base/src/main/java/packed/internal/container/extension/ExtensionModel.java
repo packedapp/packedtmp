@@ -35,7 +35,7 @@ import app.packed.container.ExtensionWirelet;
 import app.packed.container.InternalExtensionException;
 import app.packed.hook.OnHook;
 import packed.internal.hook.HookContainerModel;
-import packed.internal.module.ModuleAccess;
+import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ConstructorFinder;
 import packed.internal.reflect.MemberFinder;
 import packed.internal.util.StringFormatter;

@@ -23,8 +23,8 @@ import java.util.Optional;
 import app.packed.config.ConfigSite;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.extension.AbstractExtensionModelBuilder;
-import packed.internal.module.AppPackedExtensionAccess;
-import packed.internal.module.ModuleAccess;
+import packed.internal.moduleaccess.AppPackedExtensionAccess;
+import packed.internal.moduleaccess.ModuleAccess;
 
 /**
  * Container extensions allows you to extend the basic functionality of containers.

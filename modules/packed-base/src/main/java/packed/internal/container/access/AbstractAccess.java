@@ -13,16 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hook2;
+package packed.internal.container.access;
 
-import java.lang.reflect.Method;
+import static java.util.Objects.requireNonNull;
+
+import java.lang.invoke.MethodHandles;
 
 /**
  *
  */
-public class OnHookContainerModelBuilder extends SCCNode {
+public abstract class AbstractAccess {
 
-    public final void onAnnotatedMethod(Method method) {
+    final MethodHandles.Lookup lookup;
 
+    protected AbstractAccess(MethodHandles.Lookup lookup) {
+        this.lookup = requireNonNull(lookup);
     }
 }

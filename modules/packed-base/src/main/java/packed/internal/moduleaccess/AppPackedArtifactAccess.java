@@ -13,22 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.module;
+package packed.internal.moduleaccess;
 
-import app.packed.service.Factory;
-import packed.internal.inject.factoryhandle.FactoryHandle;
+import app.packed.artifact.ArtifactImage;
+import packed.internal.container.PackedContainerConfiguration;
 
-/** A support class for calling package private methods in the app.packed.service package. */
-public interface AppPackedServiceAccess extends SecretAccess {
+/** An interface for calling non-accessible methods in the app.packed.artifact package. */
+public interface AppPackedArtifactAccess extends SecretAccess {
 
     /**
-     * Extracts a handle from the specified factory
+     * Extracts a container configuration from the specified image.
      * 
-     * @param <T>
-     *            the type of elements the factory produces
-     * @param factory
-     *            the factory to extract from
-     * @return the handle
+     * @param image
+     *            the image to return the configuration object for
+     * @return the configuration object
      */
-    <T> FactoryHandle<T> toHandle(Factory<T> factory);
+    PackedContainerConfiguration getConfiguration(ArtifactImage image);
 }

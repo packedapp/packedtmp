@@ -26,7 +26,7 @@ import app.packed.container.ExtensionContext;
 import app.packed.container.InternalExtensionException;
 import app.packed.lang.Key;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.module.ModuleAccess;
+import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.build.service.RuntimeAdaptorEntry;

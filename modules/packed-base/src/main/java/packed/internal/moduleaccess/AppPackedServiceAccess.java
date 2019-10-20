@@ -13,27 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.module;
+package packed.internal.moduleaccess;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
+import app.packed.service.Factory;
+import packed.internal.inject.factoryhandle.FactoryHandle;
 
-import app.packed.lang.Key;
-import app.packed.lang.TypeLiteral;
-
-/** A support class for calling package private methods in the app.packed.util package. */
-public interface AppPackedUtilAccess extends SecretAccess {
-
-    boolean isCanonicalized(TypeLiteral<?> typeLiteral);
-
-    Key<?> toKeyNullableQualifier(Type type, Annotation qualifier);
+/** A support class for calling package private methods in the app.packed.service package. */
+public interface AppPackedServiceAccess extends SecretAccess {
 
     /**
-     * Converts the type to a type literal.
+     * Extracts a handle from the specified factory
      * 
-     * @param type
-     *            the type to convert
-     * @return the type literal
+     * @param <T>
+     *            the type of elements the factory produces
+     * @param factory
+     *            the factory to extract from
+     * @return the handle
      */
-    TypeLiteral<?> toTypeLiteral(Type type);
+    <T> FactoryHandle<T> toHandle(Factory<T> factory);
 }

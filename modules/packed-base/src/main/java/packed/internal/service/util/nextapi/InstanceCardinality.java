@@ -13,6 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package packed.internal.service.util.nextapi;
 
-/** Provides a mechanism for calling methods that are non-accessible in public packages without using reflection. */
-package packed.internal.module;
+/**
+ *
+ */
+
+// For components yes
+public enum InstanceCardinality {
+    ZERO, ONE, MANY;
+}
+
+// But for services vi only have isSingleton
+
+// Prototype scope = A new object is created each time it is injected/looked up. It will use new SomeClass() each time.
+//
+// Singleton scope = (Default) The same object is returned each time it is injected/looked up. Here it will instantiate
+// one instance of SomeClass and then return it each time.
+
+// Maybe lazy <- But thats the component, not the service.....
+// Or is it???

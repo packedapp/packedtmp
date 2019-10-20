@@ -44,7 +44,7 @@ public final class MemberFinder {
         for (Method m : actualType.getMethods()) {
             // Filter methods whose declaring class is in java.base and bridge methods
             if (m.getDeclaringClass().getModule() != JAVA_BASE_MODULE && !m.isBridge()) {
-                // Should we also ignore methods on base class????
+                // Should we also ignore methods on base bundle class????
                 methodConsumer.accept(m);// move this to step 2???
                 types.put(new MethodEntry(m), packages);
             }

@@ -17,9 +17,6 @@ package packed.internal.service.util.nextapi;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
-
 /**
  *
  */
@@ -28,7 +25,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 // Og ikke andet funktionalitet.....
 class LYhingy {
 
-    static final Lookup THIS_MODULE = MethodHandles.lookup();
+    // static final Lookup THIS_MODULE = MethodHandles.lookup();
 
     final Class<?> type;
 

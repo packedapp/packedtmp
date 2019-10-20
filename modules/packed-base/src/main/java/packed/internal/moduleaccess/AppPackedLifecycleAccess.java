@@ -13,21 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.module;
+package packed.internal.moduleaccess;
 
-import app.packed.container.Bundle;
-import app.packed.container.ContainerConfiguration;
+/** A support class for calling package private methods in the app.packed.lifecycle package. */
+public interface AppPackedLifecycleAccess extends SecretAccess {
 
-/** A support class for calling package private methods in the app.packed.container package. */
-public interface AppPackedContainerAccess extends SecretAccess {
-
-    /**
-     * Calls the doConfigure method in {@link Bundle}.
-     * 
-     * @param bundle
-     *            the bundle to configure
-     * @param configuration
-     *            the configuration of the container
-     */
-    void doConfigure(Bundle bundle, ContainerConfiguration configuration);
 }

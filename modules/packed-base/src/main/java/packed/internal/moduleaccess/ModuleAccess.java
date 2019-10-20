@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.module;
+package packed.internal.moduleaccess;
 
 import java.util.concurrent.ConcurrentHashMap;
 
