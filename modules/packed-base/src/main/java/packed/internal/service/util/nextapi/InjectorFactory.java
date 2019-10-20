@@ -15,14 +15,13 @@
  */
 package packed.internal.service.util.nextapi;
 
-import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.util.Set;
 
-import app.packed.service.ServiceComponentConfiguration;
 import app.packed.lang.Key;
 import app.packed.service.Injector;
 import app.packed.service.Provide;
+import app.packed.service.ServiceComponentConfiguration;
 
 /**
  *
@@ -35,9 +34,9 @@ class InjectorFactory {
     // Hvor man kan lave en instance af X
 
     // Istedet for settet skal vi have saadan en modifiere som vi bruger andre steder
-    protected void addNewInstanceLookup(MethodHandles.Lookup lookup) {
-
-    }
+    // protected void addNewInstanceLookup(MethodHandles.Lookup lookup) {
+    //
+    // }
 
     // ConfigSource is disabled per default
     protected <T> ServiceComponentConfiguration<T> registerInjectorFactory(Class<T> injectorFactory, Set<Key<?>> keysToInheritFromParent) {

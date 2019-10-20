@@ -75,7 +75,7 @@ public interface ContainerConfiguration extends ComponentConfiguration<Object> {
      */
     void link(Bundle bundle, Wirelet... wirelets);
 
-    void link(Class<? extends Bundle> bundle, Wirelet... wirelets);
+    // void link(Class<? extends Bundle> bundle, Wirelet... wirelets);
 
     /**
      * Registers a {@link Lookup} object that will be used for accessing fields and invoking methods on registered

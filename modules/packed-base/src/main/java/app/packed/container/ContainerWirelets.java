@@ -20,6 +20,9 @@ import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
 /**
  *
  */
+// Move these to Wirelet???
+// Wirelets is a container thing.. So maybe have the core there.
+// Wirelet->ContainerWirelet->ExtensionWirelet
 public final class ContainerWirelets {
 
     /** Never instantitate. */

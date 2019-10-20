@@ -26,15 +26,15 @@ import packed.internal.util.SecurityChecks;
 /**
  *
  */
-public final class FunctionalInterfaceModel {
+public final class FunctionalInterfaceModl {
 
     /** A cache of functional interface descriptors. */
-    static final ClassValue<FunctionalInterfaceModel> MODEL_CACHE = new ClassValue<>() {
+    static final ClassValue<FunctionalInterfaceModl> MODEL_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @Override
-        protected FunctionalInterfaceModel computeValue(Class<?> functionalInterface) {
-            return new FunctionalInterfaceModel(functionalInterface);
+        protected FunctionalInterfaceModl computeValue(Class<?> functionalInterface) {
+            return new FunctionalInterfaceModl(functionalInterface);
         }
     };
 
@@ -47,7 +47,7 @@ public final class FunctionalInterfaceModel {
 
     public MethodHandle methodHandle;
 
-    private FunctionalInterfaceModel(Class<?> clazz) {
+    private FunctionalInterfaceModl(Class<?> clazz) {
         this.clazz = requireNonNull(clazz);
         if (!clazz.isInterface()) {
             throw new IllegalArgumentException(clazz + " is not an interface");
@@ -68,7 +68,7 @@ public final class FunctionalInterfaceModel {
         // Which should have provided read access to
     }
 
-    public static FunctionalInterfaceModel get(Class<?> interfaze) {
+    public static FunctionalInterfaceModl get(Class<?> interfaze) {
         return MODEL_CACHE.get(interfaze);
     }
 

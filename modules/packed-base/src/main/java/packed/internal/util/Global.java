@@ -15,8 +15,6 @@
  */
 package packed.internal.util;
 
-import java.lang.invoke.MethodHandles;
-
 /**
  *
  */
@@ -31,7 +29,7 @@ final class Global {
     // Maybe have both
 
     // Support for cleaner
-    public static Global create(MethodHandles.Lookup caller) {
-        throw new UnsupportedOperationException();
-    }
+    // public static Global create(MethodHandles.Lookup caller) {
+    // throw new UnsupportedOperationException();
+    // }
 }

@@ -32,7 +32,7 @@ import app.packed.container.ExtensionWirelet;
 import app.packed.lang.Nullable;
 
 /** A context object used for all registration for an {@link ExtensionComposer}. */
-public abstract class ExtensionComposerContext {
+public abstract class AbstractExtensionModelBuilder {
 
     public BiConsumer<? super Extension, ? super BundleDescriptor.Builder> builder;
 
@@ -62,7 +62,7 @@ public abstract class ExtensionComposerContext {
     public final IdentityHashMap<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, BiFunction<?, ?, ?>> pipelines = new IdentityHashMap<>();
 
     /** This class can only be overridden by another class in this package. */
-    ExtensionComposerContext() {}
+    AbstractExtensionModelBuilder() {}
 
     /**
      * Registers an action that is invoked when the extension has first been instantiated

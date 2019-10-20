@@ -18,7 +18,7 @@ package packed.internal.aaa.extension.graph;
 /**
  *
  */
-class ExtensionIntegrationModel {
+class ExtensionIntegrationModl {
 
     // None
     // Pit (as in Service)

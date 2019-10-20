@@ -25,7 +25,6 @@ import app.packed.lang.Nullable;
 /**
  * Something that contains methods with {@link OnHook}
  */
-//
 public class OnHookContainerModel {
 
     /** Any builders that this model depends on. */

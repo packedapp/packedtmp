@@ -16,19 +16,10 @@
 package packed.internal.service.util.nextapi;
 
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.packed.lang.Nullable;
-import app.packed.lang.reflect.FieldDescriptor;
-import app.packed.lang.reflect.MethodDescriptor;
 import app.packed.service.Inject;
-import app.packed.service.Dependency;
-import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
-import packed.internal.inject.factoryhandle.FieldFactoryHandle;
 
 /** A group of injectable fields and methods. */
 public final class OldAtInjectGroup {
@@ -74,37 +65,37 @@ public final class OldAtInjectGroup {
             return new OldAtInjectGroup(this);
         }
 
-        @Nullable
-        public OldAtInject createIfInjectable(Lookup lookup, Field field, Annotation[] annotations) {
-            OldAtInject result = null;
-            if (isInjectAnnotationPresent(annotations)) {
-                FieldDescriptor descriptor = FieldDescriptor.of(field);
-
-                if (fields == null) {
-                    fields = new ArrayList<>();
-                }
-
-                fields.add(result = new OldAtInject(new FieldFactoryHandle<>(descriptor).withLookup(lookup),
-                        List.of(Dependency.fromVariable(descriptor))));
-            }
-            return result;
-        }
-
-        @Nullable
-        public OldAtInject createIfInjectable(Lookup lookup, Method method, Annotation[] annotations) {
-            OldAtInject result = null;
-            if (isInjectAnnotationPresent(annotations)) {
-                MethodDescriptor descriptor = MethodDescriptor.of(method);
-                // static @Inject methods are treated like factory methods, and captured elsewhere
-
-                if (methods == null) {
-                    methods = new ArrayList<>();
-                }
-                methods.add(result = new OldAtInject(new ExecutableFactoryHandle<>(descriptor).withLookup(lookup),
-                        Dependency.fromExecutable(descriptor)));
-            }
-            return result;
-        }
+        // @Nullable
+        // public OldAtInject createIfInjectable(Lookup lookup, Field field, Annotation[] annotations) {
+        // OldAtInject result = null;
+        // if (isInjectAnnotationPresent(annotations)) {
+        // FieldDescriptor descriptor = FieldDescriptor.of(field);
+        //
+        // if (fields == null) {
+        // fields = new ArrayList<>();
+        // }
+        //
+        // fields.add(result = new OldAtInject(new FieldFactoryHandle<>(descriptor).withLookup(lookup),
+        // List.of(Dependency.fromVariable(descriptor))));
+        // }
+        // return result;
+        // }
+        //
+        // @Nullable
+        // public OldAtInject createIfInjectable(Lookup lookup, Method method, Annotation[] annotations) {
+        // OldAtInject result = null;
+        // if (isInjectAnnotationPresent(annotations)) {
+        // MethodDescriptor descriptor = MethodDescriptor.of(method);
+        // // static @Inject methods are treated like factory methods, and captured elsewhere
+        //
+        // if (methods == null) {
+        // methods = new ArrayList<>();
+        // }
+        // methods.add(result = new OldAtInject(new ExecutableFactoryHandle<>(descriptor).withLookup(lookup),
+        // Dependency.fromExecutable(descriptor)));
+        // }
+        // return result;
+        // }
 
         public static boolean isInjectAnnotationPresent(Annotation[] annotations) {
             for (Annotation an : annotations) {

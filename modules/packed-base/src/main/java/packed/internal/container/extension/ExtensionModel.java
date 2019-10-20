@@ -161,7 +161,7 @@ public final class ExtensionModel<T extends Extension> {
     }
 
     /** A builder for {@link ExtensionModel}. */
-    private static final class Builder extends ExtensionComposerContext {
+    private static final class Builder extends AbstractExtensionModelBuilder {
 
         /** The constructor used to create a new extension instance. */
         private final MethodHandle constructor;
@@ -201,12 +201,6 @@ public final class ExtensionModel<T extends Extension> {
                         throw new InternalExtensionException(c.getCanonicalName() + " must extend " + StringFormatter.format(ExtensionComposer.class));
                     }
                     composerType = (Class<? extends ExtensionComposer<?>>) c;
-                    // composerType = (Class<? extends ExtensionComposer<?>>) COMPOSABLE_EXTENSION_TV_EXTRACTOR.extract(extensionType);
-                    // if (!Modifier.isFinal(nodeType.getModifiers())) {
-                    // throw new ExtensionDeclarationException(
-                    // "The extension node returned by onAdded(), must be declareda final, node type = " +
-                    // StringFormatter.format(nodeType));
-                    // }
                 }
             }
 

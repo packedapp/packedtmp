@@ -22,7 +22,7 @@ import java.util.Optional;
 
 import app.packed.config.ConfigSite;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.container.extension.ExtensionComposerContext;
+import packed.internal.container.extension.AbstractExtensionModelBuilder;
 import packed.internal.module.AppPackedExtensionAccess;
 import packed.internal.module.ModuleAccess;
 
@@ -69,7 +69,7 @@ public abstract class Extension {
 
             /** {@inheritDoc} */
             @Override
-            public void configureComposer(ExtensionComposer<?> composer, ExtensionComposerContext context) {
+            public void configureComposer(ExtensionComposer<?> composer, AbstractExtensionModelBuilder context) {
                 composer.doConfigure(context);
             }
 

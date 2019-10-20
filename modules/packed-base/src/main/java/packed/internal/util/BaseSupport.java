@@ -16,7 +16,6 @@
 package packed.internal.util;
 
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandles;
 
 import app.packed.container.Bundle;
 
@@ -76,22 +75,22 @@ public abstract class BaseSupport {
     protected abstract void configure();
 
     // open??? openClass???
-    protected final void registerClass(MethodHandles.Lookup lookup, Class<?>... type) {
-        // Registers full access to the class for subclasses.
-        // Is useful, for example, for having a base abstract class with @Inject in module.
-        // That is overridden in another module.
+    // protected final void registerClass(MethodHandles.Lookup lookup, Class<?>... type) {
+    // Registers full access to the class for subclasses.
+    // Is useful, for example, for having a base abstract class with @Inject in module.
+    // That is overridden in another module.
 
-        // split-module class hierarchies
-        // Visibility is controlled via modules
+    // split-module class hierarchies
+    // Visibility is controlled via modules
 
-        // registerAbstractClass(AbstractLoggable, )
+    // registerAbstractClass(AbstractLoggable, )
 
-        // as an alternative the package should be open to Packed
-        // Finally, last scenario was to be able to add it to a bundle...
+    // as an alternative the package should be open to Packed
+    // Finally, last scenario was to be able to add it to a bundle...
 
-        // Check...
-        // And insert in ClassValue.... [Cannot unload]
-    }
+    // Check...
+    // And insert in ClassValue.... [Cannot unload]
+    // }
 
     protected final void registerUnannotatedHook(Class<?> qualifierType) {
         // annotation -> Field, Method

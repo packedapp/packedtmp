@@ -25,7 +25,6 @@ import java.lang.reflect.Method;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerSource;
 import packed.internal.component.ComponentModel;
-import packed.internal.reflect.ConstructorFinder;
 import packed.internal.util.LookupValue;
 
 /** A model of a container source, typically a subclass of {@link Bundle}. */
@@ -51,8 +50,6 @@ public final class ContainerSourceModel implements ComponentLookup {
             return new ComponentModel.Builder(ContainerSourceModel.this, type).build();
         }
     };
-
-    private volatile MethodHandle constructor;
 
     /** The default lookup object, when the user has specified no Lookup value */
     ComponentLookup defaultLookup;
@@ -112,14 +109,14 @@ public final class ContainerSourceModel implements ComponentLookup {
         return d;
     }
 
-    @Override
-    public MethodHandle emptyConstructor() {
-        MethodHandle c = constructor;
-        if (c == null) {
-            c = constructor = ConstructorFinder.find(sourceType);
-        }
-        return c;
-    }
+    // @Override
+    // public MethodHandle emptyConstructor() {
+    // MethodHandle c = constructor;
+    // if (c == null) {
+    // c = constructor = ConstructorFinder.find(sourceType);
+    // }
+    // return c;
+    // }
 
     /** {@inheritDoc} */
     @Override

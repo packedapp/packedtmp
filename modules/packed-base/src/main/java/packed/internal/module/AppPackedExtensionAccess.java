@@ -19,7 +19,7 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
 import app.packed.container.ExtensionContext;
 import app.packed.container.ExtensionWirelet;
-import packed.internal.container.extension.ExtensionComposerContext;
+import packed.internal.container.extension.AbstractExtensionModelBuilder;
 
 /** A support class for calling package private methods in the app.packed.extension package. */
 public interface AppPackedExtensionAccess extends SecretAccess {
@@ -32,7 +32,7 @@ public interface AppPackedExtensionAccess extends SecretAccess {
      */
     void setExtensionContext(Extension extension, ExtensionContext context);
 
-    void configureComposer(ExtensionComposer<?> composer, ExtensionComposerContext context);
+    void configureComposer(ExtensionComposer<?> composer, AbstractExtensionModelBuilder context);
 
     void pipelineInitialize(ExtensionWirelet.Pipeline<?, ?, ?> pipeline);
 }

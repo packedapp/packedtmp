@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 
 import app.packed.api.Contract;
 import packed.internal.container.MutableWireletList;
-import packed.internal.container.extension.ExtensionComposerContext;
+import packed.internal.container.extension.AbstractExtensionModelBuilder;
 
 /**
  * An extension composer is used for specifying how an extension works.
@@ -33,7 +33,7 @@ import packed.internal.container.extension.ExtensionComposerContext;
 public abstract class ExtensionComposer<E extends Extension> {
 
     /** The context that all calls are delegated to, must only be accessed via {@link #context}. */
-    private ExtensionComposerContext context;
+    private AbstractExtensionModelBuilder context;
 
     protected final <P extends ExtensionWirelet.Pipeline<E, P, W>, W extends ExtensionWirelet<P>> void addPipeline(Class<P> pipelineType,
             BiFunction<E, MutableWireletList<W>, P> pipelineFactory) {
@@ -53,8 +53,8 @@ public abstract class ExtensionComposer<E extends Extension> {
      * @throws IllegalStateException
      *             if called outside {@link #configure()}
      */
-    private ExtensionComposerContext context() {
-        ExtensionComposerContext c = context;
+    private AbstractExtensionModelBuilder context() {
+        AbstractExtensionModelBuilder c = context;
         if (c == null) {
             throw new IllegalStateException(
                     "This method can only be called from within the #configure() method. Maybe you tried to call #configure() directly");
@@ -68,7 +68,7 @@ public abstract class ExtensionComposer<E extends Extension> {
      * @param context
      *            the context to wrap
      */
-    final void doConfigure(ExtensionComposerContext context) {
+    final void doConfigure(AbstractExtensionModelBuilder context) {
         this.context = context;
         // Im not sure we want to null it out...
         // We should have some way to mark it failed????

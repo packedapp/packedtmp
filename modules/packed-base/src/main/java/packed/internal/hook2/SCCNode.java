@@ -13,24 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.util.nextapi;
-
-import java.util.List;
-
-import app.packed.service.Injector;
+package packed.internal.hook2;
 
 /**
  *
  */
-interface InjectorProxy {
+public class SCCNode {
 
-    Injector create(String s, List<String> list);
-
-    // Uncommented to remove reference to Lookup while cleaning up
-
-    // public static <T> T createProxy(MethodHandles.Lookup caller, Class<T> t, ArtifactConfigurator<? super
-    // InjectorConfigurator> configurator,
-    // Wirelet... wirelets) {
-    // throw new UnsupportedOperationException();
-    // }
 }

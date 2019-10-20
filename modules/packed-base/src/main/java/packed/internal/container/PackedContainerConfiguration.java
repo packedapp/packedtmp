@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,16 +35,16 @@ import app.packed.component.ComponentExtension;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
+import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerLayer;
 import app.packed.container.ContainerSource;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionDescriptorContext;
 import app.packed.container.ExtensionInstantiationContext;
+import app.packed.container.ExtensionWirelet.Pipeline;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
-import app.packed.container.BundleDescriptor.Builder;
-import app.packed.container.ExtensionWirelet.Pipeline;
 import app.packed.lang.Nullable;
 import app.packed.service.Factory;
 import app.packed.service.ServiceExtension;
@@ -67,7 +66,6 @@ import packed.internal.hook.applicator.DelayedAccessor.SidecarFieldDelayerAccess
 import packed.internal.hook.applicator.DelayedAccessor.SidecarMethodDelayerAccessor;
 import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.module.ModuleAccess;
-import packed.internal.util.ThrowableUtil;
 
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration<Object> implements ContainerConfiguration {
@@ -383,20 +381,20 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         // Maybe in the future LinkedBundle<- (LinkableContainerSource)
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void link(Class<? extends Bundle> bundle, Wirelet... wirelets) {
-        requireNonNull(bundle, "bundle is null");
-        ContainerSourceModel csm = ContainerSourceModel.of(bundle);
-        Bundle b;
-        try {
-            b = (Bundle) csm.emptyConstructor().invoke();
-        } catch (Throwable e) {
-            ThrowableUtil.rethrowErrorOrRuntimeException(e);
-            throw new UndeclaredThrowableException(e);
-        }
-        link(b, wirelets);
-    }
+    // /** {@inheritDoc} */
+    // @Override
+    // public void link(Class<? extends Bundle> bundle, Wirelet... wirelets) {
+    // requireNonNull(bundle, "bundle is null");
+    // ContainerSourceModel csm = ContainerSourceModel.of(bundle);
+    // Bundle b;
+    // try {
+    // b = (Bundle) csm.emptyConstructor().invoke();
+    // } catch (Throwable e) {
+    // ThrowableUtil.rethrowErrorOrRuntimeException(e);
+    // throw new UndeclaredThrowableException(e);
+    // }
+    // link(b, wirelets);
+    // }
 
     /** {@inheritDoc} */
     @Override

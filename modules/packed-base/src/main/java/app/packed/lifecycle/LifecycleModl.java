@@ -32,7 +32,7 @@ package app.packed.lifecycle;
 
 // Is that right down to the default lifecycle model????
 // @OnStart(anyOrder=true)
-class LifecycleModel {
+class LifecycleModl {
 
 }
 // Hvordan goer man det paa tvaers af containere hosts....
