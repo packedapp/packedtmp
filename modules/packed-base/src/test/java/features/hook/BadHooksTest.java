@@ -22,6 +22,6 @@ public class BadHooksTest {
 
     @Test
     public void badboy() {
-
+        System.out.println(BadHooksTest.class.getModule());
     }
 }

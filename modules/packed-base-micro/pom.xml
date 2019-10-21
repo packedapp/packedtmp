@@ -3,12 +3,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.cakeframework</groupId>
-    <artifactId>cked-modules</artifactId>
+    <groupId>app.packed</groupId>
+    <artifactId>packed-modules-pom</artifactId>
     <version>0.1-SNAPSHOT</version>
+    <relativePath>..</relativePath>
   </parent>
 
-  <artifactId>cked-base-micro</artifactId>
+  <artifactId>packed-base-micro</artifactId>
   <packaging>jar</packaging>
   <name>Packed-Base-Micro</name>
   <description>Packed Base Micro Benchmarking</description>
