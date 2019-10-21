@@ -22,13 +22,16 @@ import java.lang.invoke.MethodHandles;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
-import packed.internal.container.access.ClassProcessor;
 import packed.internal.hook.model.OnHookContainerModelBuilder;
+import packed.internal.reflect.ClassProcessor;
 
 /**
  *
  */
 public class Stuff {
+
+    @Anno1(12233)
+    private String hahad;
 
     @Anno1(123)
     private String haha;
@@ -37,7 +40,10 @@ public class Stuff {
         OnHookContainerModelBuilder ohs = new OnHookContainerModelBuilder(new ClassProcessor(MethodHandles.lookup(), MyHook.class, false));
         ohs.process();
 
-        Hook.Builder.test(MethodHandles.lookup(), MyHook.class, Stuff.class);
+        MyHook mh = Hook.Builder.test(MethodHandles.lookup(), MyHook.class, Stuff.class);
+
+        System.out.println("----");
+        System.out.println(mh.val);
     }
 
     static class MyHook implements Hook {
@@ -55,6 +61,7 @@ public class Stuff {
             @OnHook
             private void foo(AnnotatedFieldHook<Anno1> hook) {
                 this.sum += hook.annotation().value();
+                hook.checkFinal();
             }
 
             /** {@inheritDoc} */

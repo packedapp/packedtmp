@@ -13,21 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package support.stubs.annotation;
+package features.hook;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.junit.jupiter.api.Test;
 
-import app.packed.lang.Qualifier;
+/** This class tests various illegal combinations of hooks that should fail. */
+public class BadHooksTest {
 
-/**
- *
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Qualifier
-@Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
-public @interface Left {
+    @Test
+    public void badboy() {
 
+    }
 }

@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import app.packed.container.InternalExtensionException;
-import packed.internal.container.access.ClassProcessor;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableFactory;
 import packed.internal.util.ThrowableUtil;

@@ -42,16 +42,43 @@ public abstract class ThrowableFactory<T extends Throwable> {
         }
     };
 
+    public static final ThrowableFactory<AssertionError> ASSERTION_ERROR = new ThrowableFactory<AssertionError>() {
+
+        /** {@inheritDoc} */
+        @Override
+        protected AssertionError newThrowable0(String message) {
+            return new AssertionError(message);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public AssertionError newThrowable(String message, Throwable cause) {
+            return new AssertionError(message, cause);
+        }
+    };
+
     public final T newThrowable(CharSequence msg) {
         return newThrowable(msg.toString());
     }
 
     protected abstract T newThrowable0(String message);
 
+    public final void fail(String message) {
+        ThrowableUtil.throwAny(newThrowable(message, 1));
+    }
+
     public final T newThrowable(String message) {
         T t = newThrowable0(message);
         StackTraceElement[] stackTrace = t.getStackTrace();
         StackTraceElement[] ste = Arrays.copyOfRange(stackTrace, 3, stackTrace.length);
+        t.setStackTrace(ste);
+        return t;
+    }
+
+    public final T newThrowable(String message, int depth) {
+        T t = newThrowable0(message);
+        StackTraceElement[] stackTrace = t.getStackTrace();
+        StackTraceElement[] ste = Arrays.copyOfRange(stackTrace, 3 + depth, stackTrace.length);
         t.setStackTrace(ste);
         return t;
     }

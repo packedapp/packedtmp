@@ -17,6 +17,7 @@ package app.packed.hook;
 
 import java.lang.invoke.MethodHandles.Lookup;
 
+import app.packed.lang.Nullable;
 import packed.internal.hook.model.UseIt;
 
 /**
@@ -56,11 +57,12 @@ public interface Hook {
          *            a lookup object that can access both the builder of the hook type, and the target.
          * @param target
          *            the target class that should be processed by the builder
-         * @return a new group
+         * @return a new hook, or null if no hooks were activated
          * 
          * @throws AssertionError
          *             if something went wrong
          */
+        @Nullable
         static <T extends Hook> T test(Lookup caller, Class<T> hookType, Class<?> target) {
             return UseIt.test(caller, hookType, target);
         }

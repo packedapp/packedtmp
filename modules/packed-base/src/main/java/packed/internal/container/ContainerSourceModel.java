@@ -23,9 +23,9 @@ import java.lang.invoke.MethodHandles.Lookup;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerSource;
 import packed.internal.component.ComponentModel;
-import packed.internal.container.access.ClassProcessor;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FactoryHandle;
+import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.LookupValue;
 
 /** A model of a container source, typically a subclass of {@link Bundle}. */

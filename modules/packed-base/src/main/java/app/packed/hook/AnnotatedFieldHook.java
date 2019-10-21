@@ -166,7 +166,11 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     }
 
     /**
-     * Checks that the underlying field is final. Throwing an {@link RuntimeException} if the field is not final.
+     * Checks that the underlying field is final. Or throws a {@link RuntimeException} or {@link Error} if the field is not
+     * final.
+     * <p>
+     * Any throwable thrown by this method should not be catched, but instead propagated out to the call site that resulted
+     * in this method being invoked.
      * 
      * @return this hook
      * @throws RuntimeException
@@ -175,10 +179,9 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      * 
      * @see Modifier#isFinal(int)
      */
-    // Ideen er jo at brugere ikke skal fangere den her exception men den skal propagere direkte ud til brugere.
     public AnnotatedFieldHook<T> checkFinal() {
         if (!Modifier.isFinal(field.getModifiers())) {
-            throw new InvalidDeclarationException(failedModifierCheck(false, "final"));
+            controller.tf().fail(failedModifierCheck(false, "final"));
         }
         return this;
     }

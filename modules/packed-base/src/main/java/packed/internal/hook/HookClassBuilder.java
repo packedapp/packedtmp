@@ -36,7 +36,7 @@ import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import app.packed.lang.InvalidDeclarationException;
-import packed.internal.container.access.ClassProcessor;
+import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableFactory;
 

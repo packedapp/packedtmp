@@ -6,7 +6,6 @@ module app.packed.base {
     exports app.packed.container;
     exports app.packed.config;
     exports app.packed.errorhandling;
-    exports app.packed.hook;
     exports app.packed.lang;
     exports app.packed.lang.reflect;
     exports app.packed.lifecycle;

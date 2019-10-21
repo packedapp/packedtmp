@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.access;
+package packed.internal.reflect;
 
 import static java.util.Objects.requireNonNull;
 
@@ -30,7 +30,6 @@ import java.util.function.Consumer;
 
 import app.packed.lang.NativeImage;
 import app.packed.lang.reflect.UncheckedIllegalAccessException;
-import packed.internal.reflect.MemberFinder;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableFactory;
 
@@ -47,13 +46,14 @@ public class ClassProcessor {
     /** The class that can be processed. */
     private final Class<?> clazz;
 
-    /** */
+    /** A lookup object that can be used to access {@link #clazz}. */
     private final MethodHandles.Lookup lookup;
 
     private boolean lookupInitialized;
 
     private MethodHandles.Lookup privateLookup;
 
+    /** Whether or not every unreflected action results in the member being registered for native image generation. */
     private final boolean registerForNative;
 
     public ClassProcessor(MethodHandles.Lookup lookup, Class<?> clazz, boolean registerForNative) {
@@ -72,6 +72,11 @@ public class ClassProcessor {
         }
     }
 
+    /**
+     * Returns the class that is processed.
+     * 
+     * @return the class that is processed
+     */
     public Class<?> clazz() {
         return clazz;
     }

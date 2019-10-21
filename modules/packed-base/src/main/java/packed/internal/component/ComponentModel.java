@@ -27,9 +27,10 @@ import app.packed.container.UseExtension;
 import packed.internal.container.ComponentLookup;
 import packed.internal.container.ContainerSourceModel;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.container.access.ClassProcessor;
 import packed.internal.hook.ComponentModelHookGroup;
 import packed.internal.hook.HookController;
+import packed.internal.reflect.ClassProcessor;
+import packed.internal.util.ThrowableFactory;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -123,7 +124,7 @@ public final class ComponentModel {
         public Builder(ComponentLookup lookup, Class<?> componentType) {
             this.cp = lookup.newClassProcessor(componentType, true);
             this.componentType = requireNonNull(componentType);
-            this.hookController = new HookController(cp);
+            this.hookController = new HookController(cp, ThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
         }
 
         /**

@@ -21,7 +21,7 @@ import java.util.Set;
 
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
-import packed.internal.container.access.ClassProcessor;
+import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.ThrowableFactory;
 
 /**

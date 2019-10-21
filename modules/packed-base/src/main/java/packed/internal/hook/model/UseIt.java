@@ -18,15 +18,18 @@ package packed.internal.hook.model;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.concurrent.atomic.AtomicReference;
 
+import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.Hook;
 import app.packed.hook.Hook.Builder;
-import packed.internal.container.access.ClassProcessor;
+import packed.internal.hook.HookController;
 import packed.internal.hook.model.OnHookContainerModelBuilder.OnHookEntry;
+import packed.internal.moduleaccess.ModuleAccess;
+import packed.internal.reflect.ClassProcessor;
+import packed.internal.util.ThrowableFactory;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -34,6 +37,7 @@ import packed.internal.util.ThrowableUtil;
  */
 public class UseIt {
 
+    @SuppressWarnings("unchecked")
     public static <T extends Hook> T test(Lookup caller, Class<T> hookType, Class<?> target) {
         requireNonNull(caller, "caller is null");
         requireNonNull(hookType, "hookType is null");
@@ -43,33 +47,46 @@ public class UseIt {
         OnHookContainerModelBuilder ohs = new OnHookContainerModelBuilder(cp);
         ohs.process();
 
+        ClassProcessor cpTarget = new ClassProcessor(caller, target, false);
         AtomicReference<Hook.Builder<?>> ar = new AtomicReference<>();
-        cp.findMethodsAndFields(c -> {}, f -> {
+        cpTarget.findMethodsAndFields(c -> {}, f -> {
             if (ohs.onHookAnnotatedFields != null) {
                 for (Annotation a : f.getAnnotations()) {
                     OnHookEntry e = ohs.onHookAnnotatedFields.get(a.annotationType());
                     while (e != null) {
-                        Hook.Builder<?> builder = (Builder<?>) invoke(e.builder.constructor);
-                        ar.set(builder);
-                        try {
-                            e.methodHandle.invoke(builder);
-                        } catch (Throwable e1) {
 
+                        Hook.Builder<?> builder;
+                        if (ar.get() == null) {
+                            try {
+                                builder = (Builder<?>) e.builder.constructor.invoke();
+                            } catch (Throwable e2) {
+                                ThrowableUtil.rethrowErrorOrRuntimeException(e2);
+                                throw new UndeclaredThrowableException(e2);
+                            }
+                        } else {
+                            builder = ar.get();
                         }
+
+                        // e.builder.cp
+                        try (HookController hc = new HookController(cpTarget, ThrowableFactory.ASSERTION_ERROR)) {
+                            ar.set(builder);
+                            AnnotatedFieldHook<Annotation> afh = ModuleAccess.hook().newAnnotatedFieldHook(hc, f, a);
+                            try {
+                                e.methodHandle.invoke(builder, afh);
+                            } catch (Throwable e1) {
+                                ThrowableUtil.rethrowErrorOrRuntimeException(e1);
+                                throw new UndeclaredThrowableException(e1);
+                            }
+                        }
+                        e = e.next;
                     }
                 }
             }
         });
-
-        return null;
-    }
-
-    private static Object invoke(MethodHandle mh, Object... vars) {
-        try {
-            return mh.invoke(vars);
-        } catch (Throwable e) {
-            ThrowableUtil.rethrowErrorOrRuntimeException(e);
-            throw new UndeclaredThrowableException(e);
+        if (ar.get() == null) {
+            return null;
         }
+        return (T) ar.get().build();
     }
+
 }

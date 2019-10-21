@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.access;
+package packed.internal.reflect;
 
 import app.packed.container.InternalExtensionException;
 import packed.internal.util.StringFormatter;

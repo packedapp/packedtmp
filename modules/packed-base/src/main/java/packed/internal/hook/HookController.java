@@ -23,7 +23,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import packed.internal.container.access.ClassProcessor;
+import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.ThrowableFactory;
 
 /**
@@ -35,10 +35,14 @@ public class HookController implements AutoCloseable {
 
     private boolean isClosed;
 
-    private final ThrowableFactory<? extends RuntimeException> tf = ThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY;
+    private final ThrowableFactory<? extends RuntimeException> tf;
 
-    public HookController(ClassProcessor cp) {
+    @SuppressWarnings("unchecked")
+    public HookController(ClassProcessor cp, ThrowableFactory<?> tf) {
         this.cp = requireNonNull(cp);
+        // A hack to allow us to throw AssertionError, as we have no way to indicate
+        // Error || RuntimeException
+        this.tf = (ThrowableFactory<? extends RuntimeException>) tf;
     }
 
     public void checkActive() {
@@ -50,6 +54,10 @@ public class HookController implements AutoCloseable {
     @Override
     public void close() {
         isClosed = true;
+    }
+
+    public ThrowableFactory<? extends RuntimeException> tf() {
+        return tf;
     }
 
     public MethodHandle unreflect(Method method) {

@@ -19,8 +19,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import packed.internal.component.ComponentModel;
-import packed.internal.container.access.ClassProcessor;
 import packed.internal.inject.factoryhandle.FactoryHandle;
+import packed.internal.reflect.ClassProcessor;
 
 /**
  * This class exists because we have to ways to access the members of a component. One with a {@link Lookup} object, and

@@ -37,8 +37,8 @@ import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
-import packed.internal.container.access.ClassFinder;
-import packed.internal.container.access.ClassProcessor;
+import packed.internal.reflect.ClassFinder;
+import packed.internal.reflect.ClassProcessor;
 import packed.internal.reflect.ConstructorFinder;
 import packed.internal.util.ThrowableFactory;
 import packed.internal.util.ThrowableUtil;
@@ -78,7 +78,11 @@ public final class OnHookContainerModelBuilder {
     private final ArrayDeque<OnHookContainerNode> unprocessedNodes = new ArrayDeque<>();
 
     public OnHookContainerModelBuilder(ClassProcessor cp, Class<?>... additionalParameters) {
-        this.root = new OnHookContainerNode(cp, null);
+        if (Hook.class.isAssignableFrom(cp.clazz())) {
+            this.root = newNode(cp, cp.clazz(), ThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+        } else {
+            this.root = new OnHookContainerNode(cp, null);
+        }
     }
 
     private <T extends Throwable> void onMethod(OnHookContainerNode b, Method method, ThrowableFactory<T> tf) throws T {
@@ -169,6 +173,20 @@ public final class OnHookContainerModelBuilder {
         }
     }
 
+    static <T extends Throwable> OnHookContainerNode newNode(ClassProcessor cpr, Class<?> hookType, ThrowableFactory<T> tf) throws T {
+        Class<?> cl = ClassFinder.findDeclaredClass(hookType, "Builder", Hook.Builder.class);
+        ClassProcessor cp = cpr.spawn(cl);
+        MethodHandle constructor;
+        try {
+            constructor = ConstructorFinder.find(cp, tf);
+        } catch (Throwable t) {
+            ThrowableUtil.rethrowErrorOrRuntimeException(t);
+            throw new UndeclaredThrowableException(t);
+        }
+        // TODO validate type variable
+        return new OnHookContainerNode(cp, constructor);
+    }
+
     public void process() {
         root.cp.findMethods(m -> onMethod(root, m, ThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY));
         for (OnHookContainerNode b = unprocessedNodes.pollFirst(); b != null; b = unprocessedNodes.pollFirst()) {
@@ -229,6 +247,9 @@ public final class OnHookContainerModelBuilder {
         OnHookContainerNode(ClassProcessor cp, MethodHandle constructor) {
             this.cp = requireNonNull(cp);
             this.constructor = constructor;
+            if (constructor != null && constructor.type().returnType() != cp.clazz()) {
+                throw new IllegalStateException("OOPS");
+            }
         }
 
         void addDependency(OnHookContainerNode b) {
