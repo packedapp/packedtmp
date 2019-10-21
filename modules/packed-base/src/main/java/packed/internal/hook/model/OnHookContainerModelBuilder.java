@@ -22,10 +22,13 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.Set;
 
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
@@ -34,8 +37,11 @@ import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
+import packed.internal.container.access.ClassFinder;
 import packed.internal.container.access.ClassProcessor;
+import packed.internal.reflect.ConstructorFinder;
 import packed.internal.util.ThrowableFactory;
+import packed.internal.util.ThrowableUtil;
 import packed.internal.util.TypeUtil;
 
 /**
@@ -44,10 +50,10 @@ import packed.internal.util.TypeUtil;
 // Ideen er at vi resolver, maaske alle paa en gang
 
 // Vi bliver noedt til at have den her som samler alt,
-public class OnHookSet {
+public final class OnHookContainerModelBuilder {
 
     /** Temporary builders. */
-    private final IdentityHashMap<Class<?>, OnHookNodeBuilder> nodes = new IdentityHashMap<>();
+    private final IdentityHashMap<Class<?>, OnHookContainerNode> nodes = new IdentityHashMap<>();
 
     /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedFieldHook} as a parameter. */
     IdentityHashMap<Class<? extends Annotation>, OnHookEntry> onHookAnnotatedFields;
@@ -65,17 +71,17 @@ public class OnHookSet {
     IdentityHashMap<Class<?>, OnHookEntry> onHookCustomHooks;
 
     /** The root builder. */
-    private final OnHookNodeBuilder root;
+    private final OnHookContainerNode root;
 
-    final ArrayList<OnHookNodeBuilder> sorted = new ArrayList<>();
+    final ArrayList<OnHookContainerNode> sorted = new ArrayList<>();
 
-    private final ArrayDeque<OnHookNodeBuilder> unprocessedNodes = new ArrayDeque<>();
+    private final ArrayDeque<OnHookContainerNode> unprocessedNodes = new ArrayDeque<>();
 
-    public OnHookSet(ClassProcessor cp, Class<?>... additionalParameters) {
-        this.root = new OnHookNodeBuilder(cp);
+    public OnHookContainerModelBuilder(ClassProcessor cp, Class<?>... additionalParameters) {
+        this.root = new OnHookContainerNode(cp, null);
     }
 
-    final <T extends Throwable> void onMethod(OnHookNodeBuilder b, Method method, ThrowableFactory<T> tf) throws T {
+    private <T extends Throwable> void onMethod(OnHookContainerNode b, Method method, ThrowableFactory<T> tf) throws T {
         if (!method.isAnnotationPresent(OnHook.class)) {
             return;
         }
@@ -136,24 +142,37 @@ public class OnHookSet {
                 n = onHookCustomHooks = new IdentityHashMap<>(1);
             }
             onHookCustomHooks.compute(hookType, (k, v) -> {
-                OnHookNodeBuilder ob = nodes.computeIfAbsent(k, kk -> {
-                    OnHookNodeBuilder newB = new OnHookNodeBuilder(root.cp.spawn(kk));
+                OnHookContainerNode node = nodes.computeIfAbsent(k, ignore -> {
+                    Class<?> cl = ClassFinder.findDeclaredClass(hookType, "Builder", Hook.Builder.class);
+                    ClassProcessor cp = root.cp.spawn(cl);
+                    MethodHandle constructor;
+                    try {
+                        constructor = ConstructorFinder.find(cp, tf);
+                    } catch (Throwable t) {
+                        ThrowableUtil.rethrowErrorOrRuntimeException(t);
+                        throw new UndeclaredThrowableException(t);
+                    }
+                    // TODO validate type variable
+                    OnHookContainerNode newB = new OnHookContainerNode(cp, constructor);
                     unprocessedNodes.addLast(newB); // make sure it will be procesed at some point.
                     return newB;
                 });
                 // If we are the non-root we need to add the builder as a dependency
-                if (b != root) {
-                    b.addDependency(ob);
+                if (b == node) {
+                    tf.newThrowableForMethod("Hook cannot depend on itself", method);
                 }
-                return new OnHookEntry(ob, method, mh, v);
+                if (b != root) {
+                    b.addDependency(node);
+                }
+                return new OnHookEntry(node, method, mh, v);
             });
         }
     }
 
     public void process() {
         root.cp.findMethods(m -> onMethod(root, m, ThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY));
-        for (OnHookNodeBuilder b = unprocessedNodes.pollFirst(); b != null; b = unprocessedNodes.pollFirst()) {
-            OnHookNodeBuilder bb = b;
+        for (OnHookContainerNode b = unprocessedNodes.pollFirst(); b != null; b = unprocessedNodes.pollFirst()) {
+            OnHookContainerNode bb = b;
             b.cp.findMethods(m -> onMethod(bb, m, ThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY));
         }
 
@@ -165,8 +184,8 @@ public class OnHookSet {
         boolean doContinue = true;
         while (doContinue && !nodes.isEmpty()) {
             doContinue = false;
-            for (Iterator<OnHookNodeBuilder> iterator = nodes.values().iterator(); iterator.hasNext();) {
-                OnHookNodeBuilder b = iterator.next();
+            for (Iterator<OnHookContainerNode> iterator = nodes.values().iterator(); iterator.hasNext();) {
+                OnHookContainerNode b = iterator.next();
                 if (!b.hasUnresolvedDependencies()) {
                     b.id = ++index;
                     sorted.add(b);
@@ -187,27 +206,83 @@ public class OnHookSet {
     }
 
     @SuppressWarnings("unchecked")
-    private void process(OnHookNodeBuilder b, Parameter p, Method method, MethodHandle mh, IdentityHashMap<?, OnHookEntry> map) {
+    private void process(OnHookContainerNode b, Parameter p, Method method, MethodHandle mh, IdentityHashMap<?, OnHookEntry> map) {
         ParameterizedType pt = (ParameterizedType) p.getParameterizedType();
         Class<?> typeVariable = (Class<?>) pt.getActualTypeArguments()[0];
         ((IdentityHashMap<Class<?>, OnHookEntry>) map).compute(typeVariable, (k, v) -> new OnHookEntry(b, method, mh, v));
     }
 
-    static class OnHookEntry {
-        final OnHookNodeBuilder builder;
+    static final class OnHookContainerNode {
+
+        /** The class processor used for iterating over methods. */
+        final ClassProcessor cp;
+
+        @Nullable
+        Set<OnHookContainerNode> dependencies;
+
+        /** The i */
+        int id;
+
+        @Nullable
+        final MethodHandle constructor;
+
+        OnHookContainerNode(ClassProcessor cp, MethodHandle constructor) {
+            this.cp = requireNonNull(cp);
+            this.constructor = constructor;
+        }
+
+        void addDependency(OnHookContainerNode b) {
+            Set<OnHookContainerNode> d = dependencies;
+            if (d == null) {
+                d = dependencies = new HashSet<>();
+            }
+            d.add(b);
+        }
+
+        boolean hasUnresolvedDependencies() {
+            if (dependencies != null) {
+                for (OnHookContainerNode ch : dependencies) {
+                    if (ch.id == 0) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public String toString() {
+            return constructor == null ? "" : constructor.type().toString();
+        }
+    }
+
+    static final class OnHookEntry {
+        final OnHookContainerNode builder;
         final Method method;
         final MethodHandle methodHandle;
 
         @Nullable
         final OnHookEntry next;
 
-        OnHookEntry(OnHookNodeBuilder builder, Method method, MethodHandle methodHandle, OnHookEntry next) {
+        OnHookEntry(OnHookContainerNode builder, Method method, MethodHandle methodHandle, OnHookEntry next) {
             this.builder = requireNonNull(builder);
             this.method = requireNonNull(method);
             this.methodHandle = requireNonNull(methodHandle);
             this.next = next;
         }
     }
+
 }
 // if rootClass.getModule() != hook.class.getModule and hook.class.getModule() is not open...
 /// Complain.
+
+// STEP 1
+/// Find All methods
+/// Validate Parameters
+/// Go into dependencies...
+
+// Find them, validate parameters
+// Validate we can make MethodHandle
+
+// Step 2
+// Validate no

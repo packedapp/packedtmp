@@ -17,44 +17,52 @@ package app.packed.hook;
 
 import java.lang.invoke.MethodHandles.Lookup;
 
+import packed.internal.hook.model.UseIt;
+
 /**
  * A marker interface
  * 
  * The base hooks available in this package.
+ * 
+ * Builds must have at least one method annotated with {@link OnHook}
  */
+
+// Custom hooks must declare a static (with any visibility) class named Builder extending #Builder and the with Hook
+// type as type Variable;
 
 // Relations to AOP???
 public interface Hook {
 
-    /**
-     *
-     * Must have at least one method annotated with {@link OnHook}.
-     */
+    /** A builder for custom hooks, see {@link Hook} for details about how to implement this interface. */
     interface Builder<T extends Hook> {
 
         /**
-         * Invoked by the runtime when all relevant methods annotated with {@link OnHook} has been called.
+         * Invoked by the runtime when all methods annotated with {@link OnHook} has been successfully invoked.
          * 
-         * @return the hook group that was built.
+         * @return the hook that was built.
          */
         T build();
 
         /**
-         * A utility method that tests class that. Mainly used for testing. Instead of needing to spin up a container.
+         * A test method that can be used to easily test custom implemented hooks.
+         * <p>
+         * Build on example from {@link Hook}, Maybe put everything together
          * 
          * @param <T>
          *            the type of hook group to generate
          * @param hookType
          *            the builder type to instantiate
          * @param caller
-         *            a lookup object that has permissions to instantiate the builder and access its and the targets hookable
-         *            methods.
+         *            a lookup object that can access both the builder of the hook type, and the target.
          * @param target
-         *            the target class that should be processed be specified
+         *            the target class that should be processed by the builder
          * @return a new group
+         * 
+         * @throws AssertionError
+         *             if something went wrong
          */
         static <T extends Hook> T test(Lookup caller, Class<T> hookType, Class<?> target) {
-            throw new UnsupportedOperationException();
+            return UseIt.test(caller, hookType, target);
         }
     }
 }

@@ -141,6 +141,11 @@ public @interface Provide {
     // Class<?> exportAs(); Only way to specify generic type or Qualifier is manually... Do we remove any qualifier?????
     // exportAs overrides Qualifiers og generic information. identical to calling as(MyInterface.class)
     // Essential a export(this).as(SomeInterface.class)
+
+    // We do not main qualifiers when using this method...
+    // Or maybe???
+    // @Internal Injector = exportAs= Injector.class
+    // Definitely not keep qualifier.
     Class<?> exportAs() default Object.class;
 
     /**

@@ -119,7 +119,6 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      *
      * @return the annotation value
      */
-
     public T annotation() {
         return annotation;
     }
@@ -169,14 +168,16 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     }
 
     /**
-     * Checks that the underlying field is final. Throwing an {@link InvalidDeclarationException} if the field is not final.
+     * Checks that the underlying field is final. Throwing an {@link RuntimeException} if the field is not final.
      * 
      * @return this hook
-     * @throws InvalidDeclarationException
-     *             if the underlying field is not final
+     * @throws RuntimeException
+     *             if the underlying field is not final, the exact type of the exception is context dependent, but the idea
+     *             is to let this exception propagate out to users.
      * 
      * @see Modifier#isFinal(int)
      */
+    // Ideen er jo at brugere ikke skal fangere den her exception men den skal propagere direkte ud til brugere.
     public AnnotatedFieldHook<T> checkFinal() {
         if (!Modifier.isFinal(field.getModifiers())) {
             throw new InvalidDeclarationException(failedModifierCheck(false, "final"));

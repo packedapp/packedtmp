@@ -178,6 +178,12 @@ public final class ServiceExtension extends Extension {
         return provide(Factory.findInjectable(implementation));
     }
 
+    <T> ServiceConfiguration<T> addOptional(Class<T> optional) {
+        // @Inject is allowed, but other annotations, types und so weiter is not...
+
+        throw new UnsupportedOperationException();
+    }
+
     /**
      *
      * <p>

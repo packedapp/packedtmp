@@ -15,34 +15,54 @@
  */
 package packed.internal.hook.model.testit;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandles;
 
+import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import packed.internal.container.access.ClassProcessor;
-import packed.internal.hook.model.OnHookSet;
+import packed.internal.hook.model.OnHookContainerModelBuilder;
 
 /**
  *
  */
 public class Stuff {
 
-    @OnHook
-    private void foo(MyHook h) {
-
-    }
+    @Anno1(123)
+    private String haha;
 
     public static void main(String[] args) {
-        OnHookSet ohs = new OnHookSet(new ClassProcessor(MethodHandles.lookup(), Stuff.class, false));
+        OnHookContainerModelBuilder ohs = new OnHookContainerModelBuilder(new ClassProcessor(MethodHandles.lookup(), MyHook.class, false));
         ohs.process();
+
+        Hook.Builder.test(MethodHandles.lookup(), MyHook.class, Stuff.class);
     }
 
     static class MyHook implements Hook {
 
-        @OnHook
-        private void foo(MyHook h) {
+        final String val;
 
+        MyHook(String val) {
+            this.val = requireNonNull(val);
         }
 
+        static class Builder implements Hook.Builder<MyHook> {
+
+            int sum;
+
+            @OnHook
+            private void foo(AnnotatedFieldHook<Anno1> hook) {
+                this.sum += hook.annotation().value();
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public MyHook build() {
+                return new MyHook("foobar " + sum);
+            }
+        }
     }
+
 }
