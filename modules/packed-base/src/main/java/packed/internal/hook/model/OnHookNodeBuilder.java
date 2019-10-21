@@ -17,135 +17,55 @@ package packed.internal.hook.model;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.lang.reflect.ParameterizedType;
-import java.util.IdentityHashMap;
+import java.util.HashSet;
+import java.util.Set;
 
-import app.packed.hook.AnnotatedFieldHook;
-import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.AnnotatedTypeHook;
-import app.packed.hook.AssignableToHook;
-import app.packed.hook.Hook;
-import app.packed.hook.OnHook;
-import app.packed.lang.Nullable;
 import packed.internal.container.access.ClassProcessor;
-import packed.internal.util.ThrowableFactory;
-import packed.internal.util.TypeUtil;
 
 /**
  *
  */
-// Lazy initialize maps...
-class OnHookNodeBuilder {
+final class OnHookNodeBuilder {
 
-    /** Fields annotated with {@link OnHook} taking a single {@link AnnotatedFieldHook} as parameter. */
-    final IdentityHashMap<Class<? extends Annotation>, Entry> annotatedFieldHooks = new IdentityHashMap<>();
-
-    /** Fields annotated with {@link OnHook} taking a single {@link AnnotatedMethodHook} as parameter. */
-    final IdentityHashMap<Class<? extends Annotation>, Entry> annotatedMethodHooks = new IdentityHashMap<>();
-
-    /** Fields annotated with {@link OnHook} taking a single {@link AnnotatedTypeHook} as parameter. */
-    final IdentityHashMap<Class<? extends Annotation>, Entry> annotatedTypeHooks = new IdentityHashMap<>();
-
-    /** Components that are of a specific type. */
-    final IdentityHashMap<Class<?>, Entry> assignableToHooks = new IdentityHashMap<>();
-
-    /** Non-base hooks */
-    final IdentityHashMap<Class<?>, Entry> nonBaseHooks = new IdentityHashMap<>();
-
-    // STEP 1
-    /// Find All methods
-    /// Validate Parameters
-    /// Go into dependencies...
-
-    // Find them, validate parameters
-    // Validate we can make MethodHandle
-
-    // Step 2
-    // Validate no
-
-    final OnHookSet s;
-
-    final OnHookContainerType type;
-
+    /** The class processor used for iterating over methods. */
     final ClassProcessor cp;
 
-    final int id;
+    /** The i */
+    int id;
 
-    OnHookNodeBuilder(OnHookSet s, int id, ClassProcessor cp, OnHookContainerType type) {
-        this.s = requireNonNull(s);
-        this.id = id;
+    Set<OnHookNodeBuilder> dependencies;
+
+    OnHookNodeBuilder(ClassProcessor cp) {
         this.cp = requireNonNull(cp);
-        this.type = requireNonNull(type);
     }
 
-    final <T extends Throwable> void onMethod(Method method, ThrowableFactory<T> tf) throws T {
-        if (!method.isAnnotationPresent(OnHook.class)) {
-            return;
+    void addDependency(OnHookNodeBuilder b) {
+        Set<OnHookNodeBuilder> d = dependencies;
+        if (d == null) {
+            d = dependencies = new HashSet<>();
         }
-        int hookIndex = -1;
-        Parameter[] parameters = method.getParameters();
-        for (int i = 0; i < parameters.length; i++) {
-            if (Hook.class.isAssignableFrom(parameters[i].getType())) {
-                if (hookIndex != -1) {
-                    throw tf.newThrowableForMethod("Cannot have more than 1 parameter that are instances of " + Hook.class.getCanonicalName(), method);
+        d.add(b);
+    }
+
+    boolean hasUnresolvedDependencies() {
+        if (dependencies != null) {
+            for (OnHookNodeBuilder ch : dependencies) {
+                if (ch.id == 0) {
+                    return true;
                 }
-                hookIndex = i;
             }
         }
-        if (hookIndex == -1) {
-            throw tf.newThrowableForMethod("Atleast one parameter most be an instance of " + Hook.class.getCanonicalName(), method);
-        }
-
-        // If we have additional parameters, check that they are okay.
-        if (parameters.length > 1) {
-            // Check that the remaining are okay
-            // Probably want these additional parameters in a list to Entry
-        }
-
-        Parameter hook = parameters[hookIndex];
-        MethodHandle mh = cp.unreflect(method, tf);
-        Class<?> hookType = hook.getType();
-        if (hookType == AnnotatedFieldHook.class) {
-            process(hook, method, mh, annotatedFieldHooks);
-        } else if (hookType == AnnotatedMethodHook.class) {
-            process(hook, method, mh, annotatedMethodHooks);
-        } else if (hookType == AnnotatedTypeHook.class) {
-            process(hook, method, mh, annotatedTypeHooks);
-        } else if (hookType == AssignableToHook.class) {
-            process(hook, method, mh, assignableToHooks);
-        } else {
-            if (hookType == cp.clazz()) {
-                tf.newThrowableForMethod("Hook cannot depend on itself", method);
-            }
-            TypeUtil.checkClassIsInstantiable(hookType);
-            nonBaseHooks.compute(hookType, (k, v) -> new Entry(s.builderFor(hookType), method, mh, v));
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private void process(Parameter p, Method method, MethodHandle mh, IdentityHashMap<?, Entry> map) {
-        ParameterizedType pt = (ParameterizedType) p.getParameterizedType();
-        Class<?> typeVariable = (Class<?>) pt.getActualTypeArguments()[0];
-        ((IdentityHashMap<Class<?>, Entry>) map).compute(typeVariable, (k, v) -> new Entry(this, method, mh, v));
-    }
-
-    static class Entry {
-        final Method method;
-        final OnHookNodeBuilder builder;
-        final MethodHandle methodHandle;
-
-        @Nullable
-        final Entry next;
-
-        Entry(OnHookNodeBuilder builder, Method method, MethodHandle methodHandle, Entry next) {
-            this.builder = requireNonNull(builder);
-            this.method = requireNonNull(method);
-            this.methodHandle = requireNonNull(methodHandle);
-            this.next = next;
-        }
+        return false;
     }
 }
+
+// STEP 1
+/// Find All methods
+/// Validate Parameters
+/// Go into dependencies...
+
+// Find them, validate parameters
+// Validate we can make MethodHandle
+
+// Step 2
+// Validate no

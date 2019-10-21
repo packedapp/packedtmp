@@ -18,6 +18,8 @@ package packed.internal.hook.model;
 /**
  *
  */
+// Could just be a simple Class<?>... additionalParameterTypes
+//
 enum OnHookContainerType {
 
     BUILDER {
@@ -41,5 +43,4 @@ enum OnHookContainerType {
 
     abstract boolean isValidExtraType(Class<?> clazz);
 
-    // Could just be a simple Class<?>... additionalParameterTypes
 }

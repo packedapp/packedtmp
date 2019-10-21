@@ -160,14 +160,18 @@ public final class ServiceContract extends Contract {
         return provides;
     }
 
+    public void print() {
+        // ServiceContract.of(FooBundle()).print();
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         int count = (optional.isEmpty() ? 0 : 1) + (provides.isEmpty() ? 0 : 1) + (requires.isEmpty() ? 0 : 1);
         if (count == 0) {
-            return "InjectorContract {}";
+            return "ServiceContract {}";
         }
-        sb.append("InjectorContract {");
+        sb.append("ServiceContract {");
         if (!requires.isEmpty()) {
             sb.append("\n  requires : " + requires.stream().map(e -> e.toString()).collect(Collectors.joining(", ")));
         }
