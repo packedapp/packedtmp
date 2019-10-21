@@ -22,7 +22,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -41,7 +40,6 @@ import packed.internal.reflect.ClassFinder;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.reflect.ConstructorFinder;
 import packed.internal.util.ThrowableFactory;
-import packed.internal.util.ThrowableUtil;
 import packed.internal.util.TypeUtil;
 
 /**
@@ -85,7 +83,7 @@ public final class OnHookContainerModelBuilder {
         }
     }
 
-    private <T extends Throwable> void onMethod(OnHookContainerNode b, Method method, ThrowableFactory<T> tf) throws T {
+    private void onMethod(OnHookContainerNode b, Method method, ThrowableFactory<? extends RuntimeException> tf) {
         if (!method.isAnnotationPresent(OnHook.class)) {
             return;
         }
@@ -149,22 +147,21 @@ public final class OnHookContainerModelBuilder {
                 OnHookContainerNode node = nodes.computeIfAbsent(k, ignore -> {
                     Class<?> cl = ClassFinder.findDeclaredClass(hookType, "Builder", Hook.Builder.class);
                     ClassProcessor cp = root.cp.spawn(cl);
-                    MethodHandle constructor;
-                    try {
-                        constructor = ConstructorFinder.find(cp, tf);
-                    } catch (Throwable t) {
-                        ThrowableUtil.rethrowErrorOrRuntimeException(t);
-                        throw new UndeclaredThrowableException(t);
-                    }
+                    MethodHandle constructor = ConstructorFinder.find(cp, tf);
+
                     // TODO validate type variable
                     OnHookContainerNode newB = new OnHookContainerNode(cp, constructor);
                     unprocessedNodes.addLast(newB); // make sure it will be procesed at some point.
                     return newB;
                 });
-                // If we are the non-root we need to add the builder as a dependency
+
+                // Test if the builder of a hooks depends on the hook itself
                 if (b == node) {
-                    tf.newThrowableForMethod("Hook cannot depend on itself", method);
+                    throw tf.newThrowableForMethod("Hook cannot depend on itself", method);
                 }
+
+                // Or maybe we need to this for circles??
+                // If we have pure tests
                 if (b != root) {
                     b.addDependency(node);
                 }
@@ -173,16 +170,10 @@ public final class OnHookContainerModelBuilder {
         }
     }
 
-    static <T extends Throwable> OnHookContainerNode newNode(ClassProcessor cpr, Class<?> hookType, ThrowableFactory<T> tf) throws T {
+    static OnHookContainerNode newNode(ClassProcessor cpr, Class<?> hookType, ThrowableFactory<? extends RuntimeException> tf) {
         Class<?> cl = ClassFinder.findDeclaredClass(hookType, "Builder", Hook.Builder.class);
         ClassProcessor cp = cpr.spawn(cl);
-        MethodHandle constructor;
-        try {
-            constructor = ConstructorFinder.find(cp, tf);
-        } catch (Throwable t) {
-            ThrowableUtil.rethrowErrorOrRuntimeException(t);
-            throw new UndeclaredThrowableException(t);
-        }
+        MethodHandle constructor = ConstructorFinder.find(cp, tf);
         // TODO validate type variable
         return new OnHookContainerNode(cp, constructor);
     }

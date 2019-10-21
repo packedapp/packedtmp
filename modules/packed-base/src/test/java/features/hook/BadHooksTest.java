@@ -15,13 +15,36 @@
  */
 package features.hook;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+
+import java.lang.invoke.MethodHandles;
+
 import org.junit.jupiter.api.Test;
+
+import app.packed.hook.Hook;
+import app.packed.hook.OnHook;
 
 /** This class tests various illegal combinations of hooks that should fail. */
 public class BadHooksTest {
 
     @Test
-    public void badboy() {
-        System.out.println(BadHooksTest.class.getModule());
+    public void hookCannotDependOnItSelf() {
+        assertThatExceptionOfType(AssertionError.class)
+                .isThrownBy(() -> Hook.Builder.test(MethodHandles.lookup(), HookDependingOnItSelf.class, BadHooksTest.class));
+    }
+
+    static class HookDependingOnItSelf implements Hook {
+
+        static class Builder implements Hook.Builder<HookDependingOnItSelf> {
+
+            @OnHook
+            public void on(HookDependingOnItSelf s) {}
+
+            /** {@inheritDoc} */
+            @Override
+            public HookDependingOnItSelf build() {
+                throw new AssertionError();
+            }
+        }
     }
 }

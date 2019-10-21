@@ -17,6 +17,7 @@ package app.packed.hook;
 
 import java.lang.invoke.MethodHandles.Lookup;
 
+import app.packed.container.InternalExtensionException;
 import app.packed.lang.Nullable;
 import packed.internal.hook.model.UseIt;
 
@@ -64,7 +65,13 @@ public interface Hook {
          */
         @Nullable
         static <T extends Hook> T test(Lookup caller, Class<T> hookType, Class<?> target) {
-            return UseIt.test(caller, hookType, target);
+            try {
+                return UseIt.test(caller, hookType, target);
+            } catch (InternalExtensionException ee) {
+                AssertionError ar = new AssertionError(ee.getMessage());
+                ar.setStackTrace(ee.getStackTrace());
+                throw ar;
+            }
         }
     }
 }

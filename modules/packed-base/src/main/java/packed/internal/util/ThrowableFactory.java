@@ -85,7 +85,7 @@ public abstract class ThrowableFactory<T extends Throwable> {
 
     public final T newThrowableForMethod(String message, Method method) {
         // We need to keep track of the depth...
-        return newThrowable(message + " for method  " + method);
+        return newThrowable(message + " for method  " + method, 1);
     }
 
     public abstract T newThrowable(String message, Throwable cause);
