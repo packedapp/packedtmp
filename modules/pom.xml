@@ -16,8 +16,8 @@
   <modules>
     <module>packed-base</module>
     <!--
-    <module>packed-base-devtools</module>
     <module>packed-base-micro</module>
+    <module>packed-base-devtools</module>
     -->
   </modules>
   
@@ -25,11 +25,50 @@
   <properties>
     <!-- Locate the root directory of the multi-module build -->
     <root.dir>${project.basedir}/..</root.dir>
+    
     <!-- Versions -->
     <assertj.version>3.13.2</assertj.version>
     <junit.version>5.5.2</junit.version>
+    <jmh.version>1.21</jmh.version>
   </properties>
 
+
+    <!-- ==================================================================== -->
+  <dependencyManagement>
+    <dependencies>
+      <!-- Packed -->
+      <dependency>
+        <groupId>app.packed</groupId>
+        <artifactId>packed-base</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    
+      <!-- JMH -->
+      <dependency>
+        <groupId>org.openjdk.jmh</groupId>
+        <artifactId>jmh-core</artifactId>
+        <version>${jmh.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.openjdk.jmh</groupId>
+        <artifactId>jmh-generator-annprocess</artifactId>
+        <version>${jmh.version}</version>
+      </dependency>
+      <!-- Testing -->
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>${junit.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-core</artifactId>
+        <version>${assertj.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  
+  
   <!-- ==================================================================== -->
   <build>
     <plugins>

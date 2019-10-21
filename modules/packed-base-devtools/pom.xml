@@ -15,12 +15,10 @@
   <description>Packed Base DevTools</description>
   
   <!-- ==================================================================== -->
-
   <dependencies>
     <dependency>
-      <groupId>org.cakeframework</groupId>
-      <artifactId>cked-base</artifactId>
-      <version>0.1-SNAPSHOT</version>
+      <groupId>app.packed</groupId>
+      <artifactId>packed-base</artifactId>
     </dependency>
   </dependencies>
   

@@ -19,16 +19,15 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
-      <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
-      <version>${assertj.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
+  
  <profiles>
  <!-- https://stackoverflow.com/questions/44910155/maven-invoker-plugin-not-detecting-failed-test --> 
    <profile>
