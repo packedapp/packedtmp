@@ -29,6 +29,7 @@ import packed.internal.container.ContainerSourceModel;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.access.ClassProcessor;
 import packed.internal.hook.ComponentModelHookGroup;
+import packed.internal.hook.HookController;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -107,9 +108,9 @@ public final class ComponentModel {
         /** A map of builders for every activated extension. */
         private final IdentityHashMap<Class<? extends Extension>, ComponentModelHookGroup.Builder> extensionBuilders = new IdentityHashMap<>();
 
-        private boolean isFinished;
+        private final ClassProcessor cp;
 
-        public final ClassProcessor cp;
+        public final HookController hookController;
 
         /**
          * Creates a new component model builder
@@ -122,6 +123,7 @@ public final class ComponentModel {
         public Builder(ComponentLookup lookup, Class<?> componentType) {
             this.cp = lookup.newClassProcessor(componentType, true);
             this.componentType = requireNonNull(componentType);
+            this.hookController = new HookController(cp);
         }
 
         /**
@@ -162,14 +164,14 @@ public final class ComponentModel {
                 }
             });
             ComponentModel cm = new ComponentModel(this);
-            isFinished = true;
+            hookController.close();
             return cm;
         }
 
-        public void checkActive() {
-            if (isFinished) {
-                throw new IllegalStateException("This method cannot be called after the component type has processed");
-            }
-        }
+        // public void checkActive() {
+        // if (isFinished) {
+        // throw new IllegalStateException("This method cannot be called after the component type has processed");
+        // }
+        // }
     }
 }

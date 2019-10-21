@@ -27,9 +27,8 @@ import app.packed.lang.Nullable;
 import app.packed.lang.reflect.MethodDescriptor;
 import app.packed.lang.reflect.MethodOperator;
 import app.packed.lang.reflect.UncheckedIllegalAccessException;
-import packed.internal.component.ComponentModel;
+import packed.internal.hook.HookController;
 import packed.internal.hook.applicator.PackedMethodHookApplicator;
-import packed.internal.util.ThrowableFactory;
 
 /** A hook representing a method annotated with a specific type. */
 public final class AnnotatedMethodHook<T extends Annotation> implements Hook {
@@ -38,7 +37,7 @@ public final class AnnotatedMethodHook<T extends Annotation> implements Hook {
     private final T annotation;
 
     /** The builder for the component type. */
-    private final ComponentModel.Builder builder;
+    private final HookController controller;
 
     /** A method descriptor, is lazily created via {@link #method()}. */
     @Nullable
@@ -54,15 +53,15 @@ public final class AnnotatedMethodHook<T extends Annotation> implements Hook {
     /**
      * Creates a new hook instance.
      * 
-     * @param builder
+     * @param controller
      *            the builder for the component type
      * @param method
      *            the annotated method
      * @param annotation
      *            the annotation value
      */
-    AnnotatedMethodHook(ComponentModel.Builder builder, Method method, T annotation) {
-        this.builder = requireNonNull(builder);
+    AnnotatedMethodHook(HookController controller, Method method, T annotation) {
+        this.controller = requireNonNull(controller);
         this.method = requireNonNull(method);
         this.annotation = requireNonNull(annotation);
     }
@@ -77,7 +76,7 @@ public final class AnnotatedMethodHook<T extends Annotation> implements Hook {
     }
 
     public <E> HookApplicator<E> applicator(MethodOperator<E> operator) {
-        builder.checkActive();
+        controller.checkActive();
         return new PackedMethodHookApplicator<E>(this, operator, method);
     }
 
@@ -98,7 +97,7 @@ public final class AnnotatedMethodHook<T extends Annotation> implements Hook {
         if (!Modifier.isStatic(method.getModifiers())) {
             throw new IllegalArgumentException("Cannot invoke this method on a non-static method, method = " + method);
         }
-        builder.checkActive();
+        controller.checkActive();
         return operator.applyStaticHook(this);
     }
 
@@ -128,8 +127,7 @@ public final class AnnotatedMethodHook<T extends Annotation> implements Hook {
     public MethodHandle methodHandle() {
         MethodHandle mh = methodHandle;
         if (mh == null) {
-            builder.checkActive();
-            methodHandle = mh = builder.cp.unreflect(method, ThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+            methodHandle = mh = controller.unreflect(method);
         }
         return mh;
     }

@@ -22,7 +22,7 @@ import java.lang.reflect.Method;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
-import packed.internal.component.ComponentModel;
+import packed.internal.hook.HookController;
 
 /** An access class for accessing package private members in app.packed.hook. */
 public interface AppPackedHookAccess extends SecretAccess {
@@ -32,7 +32,7 @@ public interface AppPackedHookAccess extends SecretAccess {
      * 
      * @param <T>
      *            the type of annotation
-     * @param builder
+     * @param controller
      *            the component model builder
      * @param field
      *            the annotated field
@@ -40,14 +40,14 @@ public interface AppPackedHookAccess extends SecretAccess {
      *            the annotation value
      * @return the new annotated field hook
      */
-    <T extends Annotation> AnnotatedFieldHook<T> newAnnotatedFieldHook(ComponentModel.Builder builder, Field field, T annotation);
+    <T extends Annotation> AnnotatedFieldHook<T> newAnnotatedFieldHook(HookController controller, Field field, T annotation);
 
     /**
      * Creates a new instance of {@link AnnotatedMethodHook}.
      * 
      * @param <T>
      *            the type of annotation
-     * @param builder
+     * @param controller
      *            the component model builder
      * @param method
      *            the annotated method
@@ -55,14 +55,14 @@ public interface AppPackedHookAccess extends SecretAccess {
      *            the annotation value
      * @return the new annotated field hook
      */
-    <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(ComponentModel.Builder builder, Method method, T annotation);
+    <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(HookController controller, Method method, T annotation);
 
     /**
      * Creates a new instance of {@link AnnotatedTypeHook}.
      * 
      * @param <T>
      *            the type of annotation
-     * @param builder
+     * @param controller
      *            the component model builder
      * @param type
      *            the annotated type
@@ -70,5 +70,5 @@ public interface AppPackedHookAccess extends SecretAccess {
      *            the annotation value
      * @return the new annotated type hook
      */
-    <T extends Annotation> AnnotatedTypeHook<T> newAnnotatedTypeHook(ComponentModel.Builder builder, Class<?> type, T annotation);
+    <T extends Annotation> AnnotatedTypeHook<T> newAnnotatedTypeHook(HookController controller, Class<?> type, T annotation);
 }

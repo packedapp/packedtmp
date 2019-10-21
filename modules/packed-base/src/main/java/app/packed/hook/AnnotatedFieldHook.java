@@ -30,12 +30,11 @@ import app.packed.lang.Nullable;
 import app.packed.lang.reflect.FieldDescriptor;
 import app.packed.lang.reflect.UncheckedIllegalAccessException;
 import app.packed.lang.reflect.VarOperator;
-import packed.internal.component.ComponentModel;
+import packed.internal.hook.HookController;
 import packed.internal.hook.applicator.PackedFieldHookApplicator;
 import packed.internal.moduleaccess.AppPackedHookAccess;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.util.StringFormatter;
-import packed.internal.util.ThrowableFactory;
 
 /**
  * A hook representing a field annotated with a specific annotation.
@@ -54,21 +53,20 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
 
             /** {@inheritDoc} */
             @Override
-            public <T extends Annotation> AnnotatedFieldHook<T> newAnnotatedFieldHook(ComponentModel.Builder builder, Field field, T annotation) {
-                return new AnnotatedFieldHook<>(builder, field, annotation);
+            public <T extends Annotation> AnnotatedFieldHook<T> newAnnotatedFieldHook(HookController controller, Field field, T annotation) {
+                return new AnnotatedFieldHook<>(controller, field, annotation);
             }
 
             /** {@inheritDoc} */
             @Override
-            public <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(packed.internal.component.ComponentModel.Builder builder, Method method,
-                    T annotation) {
-                return new AnnotatedMethodHook<>(builder, method, annotation);
+            public <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(HookController controller, Method method, T annotation) {
+                return new AnnotatedMethodHook<>(controller, method, annotation);
             }
 
             /** {@inheritDoc} */
             @Override
-            public <T extends Annotation> AnnotatedTypeHook<T> newAnnotatedTypeHook(ComponentModel.Builder builder, Class<?> type, T annotation) {
-                return new AnnotatedTypeHook<>(builder, type, annotation);
+            public <T extends Annotation> AnnotatedTypeHook<T> newAnnotatedTypeHook(HookController controller, Class<?> type, T annotation) {
+                return new AnnotatedTypeHook<>(controller, type, annotation);
             }
         });
     }
@@ -77,7 +75,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     private final T annotation;
 
     /** The builder for the component type. */
-    private final ComponentModel.Builder builder;
+    private final HookController controller;
 
     /** A field descriptor, is lazily created via {@link #field()}. */
     @Nullable
@@ -101,15 +99,15 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     /**
      * Creates a new hook instance.
      * 
-     * @param builder
+     * @param controller
      *            a builder for the component type
      * @param field
      *            the annotated field
      * @param annotation
      *            the annotation value
      */
-    AnnotatedFieldHook(ComponentModel.Builder builder, Field field, T annotation) {
-        this.builder = requireNonNull(builder);
+    AnnotatedFieldHook(HookController controller, Field field, T annotation) {
+        this.controller = requireNonNull(controller);
         this.field = requireNonNull(field);
         this.annotation = requireNonNull(annotation);
     }
@@ -124,7 +122,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     }
 
     public <E> HookApplicator<E> applicator(VarOperator<E> operator) {
-        builder.checkActive(); // we do not want people to invoke this method, after the aggregate has been built
+        controller.checkActive(); // we do not want people to invoke this method, after the aggregate has been built
         return new PackedFieldHookApplicator<E>(this, operator, field);
     }
 
@@ -146,7 +144,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
         if (!Modifier.isStatic(field.getModifiers())) {
             throw new UnsupportedOperationException("Cannot invoke this method on a non-static field " + field);
         }
-        builder.checkActive(); // we do not want people to invoke this method, after the aggregate has been built
+        controller.checkActive(); // we do not want people to invoke this method, after the aggregate has been built
         // Should it be per hook group instead of container model?
         return operator.applyStaticHook(this);
     }
@@ -287,7 +285,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     public MethodHandle getter() {
         MethodHandle g = getter;
         if (g == null) {
-            getter = g = builder.cp.unreflectGetter(field, ThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+            getter = g = controller.unreflectGetter(field);
         }
         return g;
     }
@@ -310,7 +308,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
             if (Modifier.isFinal(field.getModifiers())) {
                 throw new UnsupportedOperationException("Field is final, cannot create a setter for this field, field = " + field);
             }
-            setter = s = builder.cp.unreflectSetter(field, ThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+            setter = s = controller.unreflectSetter(field);
         }
         return s;
     }
@@ -326,7 +324,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     public VarHandle varHandle() {
         VarHandle vh = varHandle;
         if (vh == null) {
-            varHandle = vh = builder.cp.unreflectVarhandle(field, ThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+            varHandle = vh = controller.unreflectVarhandle(field);
         }
         return vh;
     }

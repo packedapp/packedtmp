@@ -98,17 +98,17 @@ public final class ComponentModelHookGroup {
         }
 
         public void onAnnotatedType(Class<?> clazz, Annotation annotation) {
-            AnnotatedTypeHook<Annotation> hook = ModuleAccess.hook().newAnnotatedTypeHook(componentModelBuilder, clazz, annotation);
+            AnnotatedTypeHook<Annotation> hook = ModuleAccess.hook().newAnnotatedTypeHook(componentModelBuilder.hookController, clazz, annotation);
             process(con.findMethodHandleForAnnotatedType(hook), hook);
         }
 
         public void onAnnotatedField(Field field, Annotation annotation) {
-            AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(componentModelBuilder, field, annotation);
+            AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(componentModelBuilder.hookController, field, annotation);
             process(con.findMethodHandleForAnnotatedField(hook), hook);
         }
 
         public void onAnnotatedMethod(Method method, Annotation annotation) {
-            AnnotatedMethodHook hook = ModuleAccess.hook().newAnnotatedMethodHook(componentModelBuilder, method, annotation);
+            AnnotatedMethodHook hook = ModuleAccess.hook().newAnnotatedMethodHook(componentModelBuilder.hookController, method, annotation);
             process(con.findMethodHandleForAnnotatedMethod(hook), hook);
         }
 

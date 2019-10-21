@@ -29,7 +29,7 @@ import packed.internal.util.ThrowableFactory;
 /**
  *
  */
-public class HookBoss implements AutoCloseable {
+public class HookController implements AutoCloseable {
 
     private final ClassProcessor cp;
 
@@ -37,7 +37,7 @@ public class HookBoss implements AutoCloseable {
 
     private final ThrowableFactory<? extends RuntimeException> tf = ThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY;
 
-    public HookBoss(ClassProcessor cp) {
+    public HookController(ClassProcessor cp) {
         this.cp = requireNonNull(cp);
     }
 

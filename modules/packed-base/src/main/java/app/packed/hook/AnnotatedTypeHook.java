@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 
-import packed.internal.component.ComponentModel;
+import packed.internal.hook.HookController;
 
 /** A hook representing a instance whose type is annotated with a specific annotation type. */
 // Kan f.eks. bruges til @Provide, hvor vi i saa fald skal have adgang til en instans.......
@@ -30,7 +30,7 @@ public final class AnnotatedTypeHook<T extends Annotation> implements Hook {
     private final T annotation;
 
     /** The builder for the component type. */
-    final ComponentModel.Builder builder;
+    final HookController controller;
 
     /** The annotated type. */
     private final Class<?> type;
@@ -38,15 +38,15 @@ public final class AnnotatedTypeHook<T extends Annotation> implements Hook {
     /**
      * Creates a new hook instance.
      * 
-     * @param builder
+     * @param controller
      *            the builder for the component type
      * @param type
      *            the annotated type
      * @param annotation
      *            the annotation value
      */
-    AnnotatedTypeHook(ComponentModel.Builder builder, Class<?> type, T annotation) {
-        this.builder = requireNonNull(builder);
+    AnnotatedTypeHook(HookController controller, Class<?> type, T annotation) {
+        this.controller = requireNonNull(controller);
         this.type = requireNonNull(type);
         this.annotation = requireNonNull(annotation);
     }
