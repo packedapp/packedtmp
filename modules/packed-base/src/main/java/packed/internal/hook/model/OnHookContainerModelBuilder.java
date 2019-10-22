@@ -44,9 +44,6 @@ import packed.internal.util.types.TypeUtil;
 /**
  *
  */
-// Ideen er at vi resolver, maaske alle paa en gang
-
-// Vi bliver noedt til at have den her som samler alt,
 public final class OnHookContainerModelBuilder {
 
     /** Temporary builders. */

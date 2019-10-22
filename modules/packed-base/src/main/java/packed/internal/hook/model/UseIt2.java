@@ -41,7 +41,7 @@ public class UseIt2 {
         OnHookContainerModel m = new OnHookContainerModel(ohs);
         ClassProcessor cpTarget = new ClassProcessor(caller, target, false);
 
-        return (T) m.process(cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR);
+        return (T) m.process(null, cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR);
     }
 
 }

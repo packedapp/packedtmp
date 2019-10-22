@@ -84,8 +84,10 @@ public class OnHookContainerModel {
         }
     }
 
-    public Object process(ClassProcessor cpTarget, UncheckedThrowableFactory<?> tf) {
+    @Nullable
+    public Object process(@Nullable Object parent, ClassProcessor cpTarget, UncheckedThrowableFactory<?> tf) {
         Object[] array = new Object[constructors.length];
+        array[0] = parent;
         HookProcessor hc = new HookProcessor(cpTarget, tf);
         cpTarget.findMethodsAndFields(c -> {}, onHookAnnotatedFields == null ? null : f -> {
             for (Annotation a : f.getAnnotations()) {
@@ -103,7 +105,8 @@ public class OnHookContainerModel {
         });
         hc.close();
 
-        for (int i = array.length - 1; i >= 0; i--) {
+        // Process everything but the top elements, which we do in the end.
+        for (int i = array.length - 1; i >= 1; i--) {
             Object h = array[i];
             if (h != null) {
                 array[i] = ((Hook.Builder<?>) h).build();
@@ -118,7 +121,11 @@ public class OnHookContainerModel {
                 }
             }
         }
-        return array[0];
+        if (parent != null) {
+            return parent;
+        }
+        Object a = array[0];
+        return a == null ? null : ((Hook.Builder<?>) a).build();
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
