@@ -15,6 +15,8 @@
  */
 package features.hook;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
@@ -31,10 +33,19 @@ public class SubHooks {
     @Left
     String s = "foo";
 
+    @Left
+    String ss = "foo";
+
+    @Left
+    String s1 = "foo";
+
+    @Left
+    String s2 = "foo";
+
     @Test
     public void foo() {
         Aggregate a = Hook.Builder.test(MethodHandles.lookup(), HookStubs.Aggregate.class, SubHooks.class);
 
-        System.out.println(a);
+        assertThat(a.laf.fields.stream().mapToInt(e -> e.field().getName().length()).sum()).isSameAs(7);
     }
 }

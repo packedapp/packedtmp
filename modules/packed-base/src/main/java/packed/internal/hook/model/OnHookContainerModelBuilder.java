@@ -168,7 +168,7 @@ public final class OnHookContainerModelBuilder {
                 if (b != root) {
                     b.addDependency(node);
                 }
-                return new OnHookEntry(node, method, mh, v);
+                return new OnHookEntry(b, method, mh, v);
             });
         }
     }

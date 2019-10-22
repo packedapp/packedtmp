@@ -24,6 +24,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.Hook;
 import packed.internal.hook.HookProcessor;
+import packed.internal.hook.model.OnHookContainerModelBuilder.OnHookContainerNode;
 import packed.internal.hook.model.OnHookContainerModelBuilder.OnHookEntry;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ClassProcessor;
@@ -81,10 +82,34 @@ public class UseIt {
                 }
             }
         });
+
         for (int i = builders.length - 1; i >= 0; i--) {
             Object h = builders[i];
             if (h != null) {
                 result[i] = ((Hook.Builder<?>) h).build();
+            }
+            OnHookContainerNode ocn = ohs.sorted.get(i);
+            if (ohs.onHookCustomHooks != null) {
+                OnHookEntry e = ohs.onHookCustomHooks.get(ocn.hookType);
+                while (e != null) {
+                    Object builder = builders[e.builder.id];
+                    if (builder == null) {
+                        try {
+                            builder = builders[e.builder.id] = e.builder.constructor.invoke();
+                        } catch (Throwable e2) {
+                            ThrowableUtil.rethrowErrorOrRuntimeException(e2);
+                            throw new UndeclaredThrowableException(e2);
+                        }
+                    }
+                    requireNonNull(result[i]);
+                    try {
+                        e.methodHandle.invoke(builder, result[i]);
+                    } catch (Throwable e1) {
+                        ThrowableUtil.rethrowErrorOrRuntimeException(e1);
+                        throw new UndeclaredThrowableException(e1);
+                    }
+                    e = e.next;
+                }
             }
         }
         return (T) result[0];
