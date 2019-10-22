@@ -18,9 +18,9 @@ package app.packed.lang;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
-import static support.assertj.Assertions.npe;
-import static support.stubs.TypeStubs.LIST_STRING;
-import static support.stubs.TypeStubs.LIST_WILDCARD;
+import static testutil.assertj.Assertions.npe;
+import static testutil.stubs.TypeStubs.LIST_STRING;
+import static testutil.stubs.TypeStubs.LIST_WILDCARD;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -38,7 +38,7 @@ import java.util.OptionalLong;
 import org.junit.jupiter.api.Test;
 
 import app.packed.lang.TypeLiteral.CanonicalizedTypeLiteral;
-import support.stubs.annotation.AnnotationInstances;
+import testutil.stubs.annotation.AnnotationInstances;
 
 /** Tests {@link TypeLiteral}. */
 public class TypeLiteralTest {

@@ -27,7 +27,7 @@ import java.util.Map;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
-import support.stubs.annotation.Left;
+import testutil.stubs.annotation.Left;
 
 /**
  *

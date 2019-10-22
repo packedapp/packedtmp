@@ -22,7 +22,7 @@ import packed.internal.thirdparty.asm.ClassWriter;
 import packed.internal.thirdparty.asm.MethodVisitor;
 import packed.internal.thirdparty.asm.Opcodes;
 import packed.internal.thirdparty.asm.Type;
-import support.stubs.Letters.B;
+import testutil.stubs.Letters.B;
 
 /**
  *

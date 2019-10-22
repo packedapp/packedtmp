@@ -16,7 +16,7 @@
 package tests.inject.bindinjector.bundle;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static support.assertj.Assertions.npe;
+import static testutil.assertj.Assertions.npe;
 
 import java.util.concurrent.atomic.AtomicLong;
 

@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.Extension;
-import support.testutil.AbstractArtifactTest;
+import testutil.testutil.AbstractArtifactTest;
 
 /** Tests basic functionality of a {@link Extension}. */
 public class BasicExtensionTest extends AbstractArtifactTest {

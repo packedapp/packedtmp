@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 
 import app.packed.service.InjectionException;
-import support.stubs.Throwables.Exception1;
+import testutil.stubs.Throwables.Exception1;
 
 /** Tests {@link InjectionException}. */
 public class InjectionExceptionTest {

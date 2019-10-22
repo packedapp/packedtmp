@@ -19,8 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import support.testutil.AbstractArtifactTest;
-import support.testutil.AppTester;
+import testutil.testutil.AbstractArtifactTest;
+import testutil.testutil.AppTester;
 
 /**
  *

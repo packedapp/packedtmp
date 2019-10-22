@@ -30,8 +30,8 @@ import org.junit.jupiter.api.Test;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.Hook;
 import features.hook.HookStubs.LeftAnnotatedFields;
-import support.stubs.annotation.Left;
-import support.stubs.annotation.Right;
+import testutil.stubs.annotation.Left;
+import testutil.stubs.annotation.Right;
 
 /** Various tests related to hooks and annotated fields. */
 public class AnnotatedFieldTest {

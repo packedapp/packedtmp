@@ -23,10 +23,10 @@ import java.util.concurrent.CompletableFuture;
 
 import org.junit.jupiter.api.Test;
 
-import support.stubs.Throwables.Error1;
-import support.stubs.Throwables.Exception1;
-import support.stubs.Throwables.RuntimeException1;
-import support.stubs.Throwables.Throwable1;
+import testutil.stubs.Throwables.Error1;
+import testutil.stubs.Throwables.Exception1;
+import testutil.stubs.Throwables.RuntimeException1;
+import testutil.stubs.Throwables.Throwable1;
 
 /** Tests {@link ThrowableUtil}. */
 public class ThrowableUtilTest {

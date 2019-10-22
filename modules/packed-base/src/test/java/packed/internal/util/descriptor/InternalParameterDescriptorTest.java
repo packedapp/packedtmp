@@ -16,8 +16,8 @@
 package packed.internal.util.descriptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static support.assertj.Assertions.npe;
-import static support.stubs.TypeStubs.LIST_WILDCARD;
+import static testutil.assertj.Assertions.npe;
+import static testutil.stubs.TypeStubs.LIST_WILDCARD;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;

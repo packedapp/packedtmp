@@ -16,25 +16,25 @@
 package tck.injectorconfigurator.of.provide;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static support.stubs.Letters.A0;
-import static support.stubs.Letters.C0;
+import static testutil.stubs.Letters.A0;
+import static testutil.stubs.Letters.C0;
 
 import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
 
 import app.packed.service.ServiceComponentConfiguration;
+import testutil.stubs.Letters.A;
+import testutil.stubs.Letters.B;
+import testutil.stubs.Letters.C;
+import testutil.stubs.Letters.E;
+import testutil.stubs.Letters.F;
+import testutil.stubs.Letters.H;
+import testutil.stubs.Letters.I;
 import app.packed.lang.Key;
 import app.packed.service.Factory;
 import app.packed.service.Injector;
 import app.packed.service.InstantiationMode;
-import support.stubs.Letters.A;
-import support.stubs.Letters.B;
-import support.stubs.Letters.C;
-import support.stubs.Letters.E;
-import support.stubs.Letters.F;
-import support.stubs.Letters.H;
-import support.stubs.Letters.I;
 
 /**
  *

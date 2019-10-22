@@ -23,7 +23,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
-import support.stubs.TypeStubs;
+import testutil.stubs.TypeStubs;
 
 /**
  *

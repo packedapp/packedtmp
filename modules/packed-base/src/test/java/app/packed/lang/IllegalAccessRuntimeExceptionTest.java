@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.lang.reflect.UncheckedIllegalAccessException;
 import app.packed.service.InjectionException;
-import support.stubs.Throwables.Exception1;
+import testutil.stubs.Throwables.Exception1;
 
 /** Tests {@link InjectionException}. */
 public class IllegalAccessRuntimeExceptionTest {

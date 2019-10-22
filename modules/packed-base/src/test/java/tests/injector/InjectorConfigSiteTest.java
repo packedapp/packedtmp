@@ -16,7 +16,7 @@
 package tests.injector;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static support.stubs.Letters.C0;
+import static testutil.stubs.Letters.C0;
 
 import java.lang.StackWalker.StackFrame;
 import java.lang.invoke.MethodHandles;
@@ -32,15 +32,15 @@ import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.Factory;
 import app.packed.service.Injector;
 import packed.internal.inject.util.InjectConfigSiteOperations;
-import support.stubs.Letters.A;
-import support.stubs.Letters.B;
-import support.stubs.Letters.D;
-import support.stubs.Letters.E;
-import support.stubs.Letters.F;
-import support.stubs.Letters.G;
-import support.stubs.Letters.H;
-import support.stubs.Letters.I;
-import support.stubs.Letters.J;
+import testutil.stubs.Letters.A;
+import testutil.stubs.Letters.B;
+import testutil.stubs.Letters.D;
+import testutil.stubs.Letters.E;
+import testutil.stubs.Letters.F;
+import testutil.stubs.Letters.G;
+import testutil.stubs.Letters.H;
+import testutil.stubs.Letters.I;
+import testutil.stubs.Letters.J;
 
 /**
  * Tests {@link ServiceComponentConfiguration#configSite()} and {@link Injector#configSite()}.

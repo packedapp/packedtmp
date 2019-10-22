@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.service.Injector;
 import packed.internal.service.run.InjectorEntry;
-import support.stubs.Letters.A;
+import testutil.stubs.Letters.A;
 
 /**
  * Tests various things that do not have their own test class.

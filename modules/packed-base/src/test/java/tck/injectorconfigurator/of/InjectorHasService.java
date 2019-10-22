@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.lang.Key;
 import app.packed.service.Injector;
-import support.stubs.Letters.A;
-import support.stubs.Letters.B;
-import support.stubs.annotation.Left;
-import support.stubs.annotation.Right;
+import testutil.stubs.Letters.A;
+import testutil.stubs.Letters.B;
+import testutil.stubs.annotation.Left;
+import testutil.stubs.annotation.Right;
 
 /** Test {@link Injector#get(Class)} and {@link Injector#get(Key)}. */
 public class InjectorHasService {

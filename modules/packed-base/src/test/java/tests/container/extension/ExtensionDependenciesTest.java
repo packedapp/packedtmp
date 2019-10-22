@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
 import app.packed.container.UseExtension;
-import support.testutil.AbstractArtifactTest;
+import testutil.testutil.AbstractArtifactTest;
 
 /**
  *

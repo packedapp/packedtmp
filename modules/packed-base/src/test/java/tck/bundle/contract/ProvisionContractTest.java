@@ -27,12 +27,12 @@ import app.packed.container.BundleDescriptor;
 import app.packed.lang.Key;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
-import support.stubs.Letters.A;
-import support.stubs.Letters.B;
-import support.stubs.Letters.C;
-import support.stubs.Letters.NeedsA;
-import support.stubs.Letters.NeedsAOptional;
-import support.stubs.Letters.NeedsB;
+import testutil.stubs.Letters.A;
+import testutil.stubs.Letters.B;
+import testutil.stubs.Letters.C;
+import testutil.stubs.Letters.NeedsA;
+import testutil.stubs.Letters.NeedsAOptional;
+import testutil.stubs.Letters.NeedsB;
 
 /**
  * 

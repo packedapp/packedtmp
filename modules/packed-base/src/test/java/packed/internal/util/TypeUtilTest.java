@@ -18,7 +18,7 @@ package packed.internal.util;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
-import static support.assertj.Assertions.npe;
+import static testutil.assertj.Assertions.npe;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;

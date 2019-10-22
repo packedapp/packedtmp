@@ -16,7 +16,7 @@
 package app.packed.lang;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static support.assertj.Assertions.npe;
+import static testutil.assertj.Assertions.npe;
 
 import java.lang.reflect.Parameter;
 import java.util.List;

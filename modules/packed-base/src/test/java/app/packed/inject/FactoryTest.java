@@ -16,7 +16,7 @@
 package app.packed.inject;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import static support.assertj.Assertions.npe;
+import static testutil.assertj.Assertions.npe;
 
 import java.lang.annotation.Retention;
 import java.util.function.Consumer;

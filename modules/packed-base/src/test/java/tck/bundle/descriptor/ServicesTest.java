@@ -23,9 +23,9 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.container.BaseBundle;
 import app.packed.container.BundleDescriptor;
-import support.stubs.Letters.A;
-import support.stubs.Letters.B;
-import support.stubs.Letters.C;
+import testutil.stubs.Letters.A;
+import testutil.stubs.Letters.B;
+import testutil.stubs.Letters.C;
 
 /**
  * 

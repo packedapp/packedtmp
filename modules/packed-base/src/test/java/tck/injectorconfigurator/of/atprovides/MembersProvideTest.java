@@ -26,7 +26,7 @@ import app.packed.lang.Key;
 import app.packed.service.Injector;
 import app.packed.service.InjectorConfigurator;
 import app.packed.service.Provide;
-import support.stubs.annotation.StringQualifier;
+import testutil.stubs.annotation.StringQualifier;
 
 /**
  * Tests {@link Provide} on fields and methods.

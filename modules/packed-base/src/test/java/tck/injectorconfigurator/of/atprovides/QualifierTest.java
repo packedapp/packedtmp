@@ -30,7 +30,7 @@ import app.packed.service.Injector;
 import app.packed.service.InjectorConfigurator;
 import app.packed.service.InstantiationMode;
 import app.packed.service.Provide;
-import support.stubs.annotation.StringQualifier;
+import testutil.stubs.annotation.StringQualifier;
 
 /**
  *

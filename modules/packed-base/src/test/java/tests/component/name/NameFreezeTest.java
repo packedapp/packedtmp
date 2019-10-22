@@ -25,8 +25,8 @@ import org.junit.jupiter.api.Test;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.container.ContainerConfiguration;
-import support.testutil.AbstractArtifactTest;
-import support.testutil.ContainerConfigurationTester;
+import testutil.testutil.AbstractArtifactTest;
+import testutil.testutil.ContainerConfigurationTester;
 
 /**
  * Tests the various ways the name of a component can be frozen.

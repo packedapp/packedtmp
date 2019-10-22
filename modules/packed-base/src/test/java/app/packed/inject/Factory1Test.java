@@ -16,7 +16,7 @@
 package app.packed.inject;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static support.assertj.Assertions.checkThat;
+import static testutil.assertj.Assertions.checkThat;
 
 import org.junit.jupiter.api.Test;
 

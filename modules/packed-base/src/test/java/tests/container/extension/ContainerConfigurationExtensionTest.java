@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
-import support.testutil.AbstractArtifactTest;
+import testutil.testutil.AbstractArtifactTest;
 
 /** Tests {@link ContainerConfiguration#extensions()} and {@link ContainerConfiguration#use(Class)}. */
 public class ContainerConfigurationExtensionTest extends AbstractArtifactTest {

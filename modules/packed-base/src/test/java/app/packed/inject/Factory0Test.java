@@ -16,7 +16,7 @@
 package app.packed.inject;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static support.assertj.Assertions.checkThat;
+import static testutil.assertj.Assertions.checkThat;
 
 import java.util.List;
 import java.util.function.Supplier;

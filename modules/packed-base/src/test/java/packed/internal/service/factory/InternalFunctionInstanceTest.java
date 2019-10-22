@@ -15,7 +15,7 @@
  */
 package packed.internal.service.factory;
 
-import static support.assertj.Assertions.checkThat;
+import static testutil.assertj.Assertions.checkThat;
 
 import org.junit.jupiter.api.Test;
 
