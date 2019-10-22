@@ -47,7 +47,7 @@ public class HookController implements AutoCloseable {
 
     public void checkActive() {
         if (isClosed) {
-            throw tf.newThrowable("No longer active");
+            throw new IllegalStateException("No longer active");
         }
     }
 

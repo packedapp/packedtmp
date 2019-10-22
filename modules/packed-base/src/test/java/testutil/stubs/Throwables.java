@@ -15,120 +15,117 @@
  */
 package testutil.stubs;
 
-/**
- * Various throwable classes.
- * 
- */
+/** Various classes that extends Throwable in some way. */
 public class Throwables {
 
     public static class Error1 extends Error {
 
-        /** serialVersionUID */
-        private static final long serialVersionUID = 1L;
-
         /** The default instance. */
         public static final Error1 INSTANCE = new Error1();
+
+        /** serialVersionUID */
+        private static final long serialVersionUID = 1L;
 
         private Error1() {}
     }
 
     public static class Error2 extends Error {
 
-        /** serialVersionUID */
-        private static final long serialVersionUID = 1L;
-
         /** The default instance. */
         public static Error2 INSTANCE = new Error2();
+
+        /** serialVersionUID */
+        private static final long serialVersionUID = 1L;
     }
 
     public static class Error3 extends Error {
 
-        /** serialVersionUID */
-        private static final long serialVersionUID = 1L;
-
         /** The default instance. */
         public static Error3 INSTANCE = new Error3();
+
+        /** serialVersionUID */
+        private static final long serialVersionUID = 1L;
     }
 
     public static class Exception1 extends Exception {
 
-        /** serialVersionUID */
-        private static final long serialVersionUID = 1L;
-
         /** The default instance. */
         public static final Exception1 INSTANCE = new Exception1();
+
+        /** serialVersionUID */
+        private static final long serialVersionUID = 1L;
     }
 
     public static class Exception2 extends Exception {
 
-        /** serialVersionUID */
-        private static final long serialVersionUID = 1L;
-
         /** The default instance. */
         public static Exception2 INSTANCE = new Exception2();
+
+        /** serialVersionUID */
+        private static final long serialVersionUID = 1L;
     }
 
     public static class Exception3 extends Exception {
 
-        /** serialVersionUID */
-        private static final long serialVersionUID = 1L;
-
         /** The default instance. */
         public static Exception3 INSTANCE = new Exception3();
+
+        /** serialVersionUID */
+        private static final long serialVersionUID = 1L;
     }
 
     public static class RuntimeException1 extends RuntimeException {
 
-        /** serialVersionUID */
-        private static final long serialVersionUID = 1L;
-
         /** The default instance. */
         public static final RuntimeException1 INSTANCE = new RuntimeException1();
+
+        /** serialVersionUID */
+        private static final long serialVersionUID = 1L;
     }
 
     public static class RuntimeException2 extends RuntimeException {
 
-        /** serialVersionUID */
-        private static final long serialVersionUID = 1L;
-
         /** The default instance. */
         public static RuntimeException2 INSTANCE = new RuntimeException2();
+
+        /** serialVersionUID */
+        private static final long serialVersionUID = 1L;
     }
 
     public static class RuntimeException3 extends RuntimeException {
 
-        /** serialVersionUID */
-        private static final long serialVersionUID = 1L;
-
         /** The default instance. */
         public static RuntimeException3 INSTANCE = new RuntimeException3();
+
+        /** serialVersionUID */
+        private static final long serialVersionUID = 1L;
     }
 
     public static class Throwable1 extends Throwable {
 
-        /** serialVersionUID */
-        private static final long serialVersionUID = 1L;
-
         /** The default instance. */
         public static final Throwable1 INSTANCE = new Throwable1();
+
+        /** serialVersionUID */
+        private static final long serialVersionUID = 1L;
     }
 
     public static class Throwable2 extends Throwable {
 
-        /** serialVersionUID */
-        private static final long serialVersionUID = 1L;
-
         /** The default instance. */
         public static Throwable2 INSTANCE = new Throwable2();
+
+        /** serialVersionUID */
+        private static final long serialVersionUID = 1L;
     }
 
     public static class Throwable3 extends Throwable {
 
-        /** serialVersionUID */
-        private static final long serialVersionUID = 1L;
-
         /** The default instance. */
         public static Throwable3 INSTANCE = new Throwable3();
+
+        /** serialVersionUID */
+        private static final long serialVersionUID = 1L;
     }
 
     public static class ThrowsError1InConstructor {

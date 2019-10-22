@@ -18,6 +18,9 @@ package testutil.stubs;
 import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static testutil.util.TestMemberFinder.findField;
+
+import java.lang.reflect.Field;
 
 import app.packed.service.Inject;
 import testutil.stubs.Letters.A;
@@ -26,6 +29,11 @@ import testutil.stubs.Letters.A;
  *
  */
 public class Fields {
+
+    @SuppressWarnings("unused")
+    private static String FINAL_FIELD$ = "ff";
+
+    public static Field FINAL_FIELD = findField("FINAL_FIELD$");
 
     public static class InjectAConstructor {
 

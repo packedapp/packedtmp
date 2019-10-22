@@ -16,7 +16,6 @@
 package features.hook;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static testutil.util.TestMemberFinder.findField;
 
@@ -62,6 +61,7 @@ public class AnnotatedFieldTest {
         }
         LeftAnnotatedFields f = Hook.Builder.test(MethodHandles.lookup(), LeftAnnotatedFields.class, Tester.class);
         assertThat(f.hooks).hasSize(1);
+
         AnnotatedFieldHook<Left> h = f.hooks.get(0);
         assertThat(h.annotation()).isInstanceOf(Left.class);
         assertThat(h.field().newField()).isEqualTo(findField(Tester.class, "ss2"));
@@ -90,19 +90,5 @@ public class AnnotatedFieldTest {
         assertThat(varHandle.get(t)).isEqualTo("fooBar");
         varHandle.set(t, "blabla");
         assertThat(t.ss2).isEqualTo("blabla");
-    }
-
-    @Test
-    public void checks() {
-        class Tester {
-            @Left
-            String ss2 = "gotIt";
-        }
-        AnnotatedFieldHook<Left> h = Hook.Builder.test(MethodHandles.lookup(), LeftAnnotatedFields.class, Tester.class).hooks.get(0);
-
-        assertThat(h.checkAssignableTo(String.class)).isSameAs(h);
-        assertThat(h.checkAssignableTo(CharSequence.class)).isSameAs(h);
-        assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> h.checkAssignableTo(Long.class));
-
     }
 }

@@ -35,8 +35,8 @@ public class InternalFieldDescriptorTest extends AbstractDescriptorTest {
 
     @Test
     public void basics() throws Exception {
-        validateField(findField(C, "string"), FieldDescriptor.of(C, "string"));
-        validateField(findField(C, "C"), FieldDescriptor.of(C, "C"));
+        validateField(findField("string"), FieldDescriptor.of(C, "string"));
+        validateField(findField("C"), FieldDescriptor.of(C, "C"));
     }
 
     static void validateField(Field f, FieldDescriptor d) {

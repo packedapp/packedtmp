@@ -15,12 +15,22 @@
  */
 package testutil.util;
 
+import java.lang.StackWalker.Option;
 import java.lang.reflect.Field;
 
 /**
  *
  */
 public class TestMemberFinder {
+
+    public static Field findField(String name) {
+        Class<?> c = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).getCallerClass();
+        try {
+            return c.getDeclaredField(name);
+        } catch (NoSuchFieldException e) {
+            throw new AssertionError(e);
+        }
+    }
 
     public static Field findField(Class<?> declaringClass, String name) {
         try {

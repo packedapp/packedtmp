@@ -84,18 +84,6 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     /** The annotated field. */
     private final Field field;
 
-    /** A method handle getter, is lazily created via {@link #getter()}. */
-    @Nullable
-    private MethodHandle getter;
-
-    /** A method handle setter, is lazily created via {@link #setter()}. */
-    @Nullable
-    private MethodHandle setter;
-
-    /** A var handle, is lazily created via {@link #varHandle()}. */
-    @Nullable
-    private VarHandle varHandle;
-
     /**
      * Creates a new hook instance.
      * 
@@ -104,7 +92,8 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      * @param field
      *            the annotated field
      * @param annotation
-     *            the annotation value
+     *            the annotation value, no validation whether or not the given annotation value is equivalent to an
+     *            annotation value on the specified field is performed
      */
     AnnotatedFieldHook(HookController controller, Field field, T annotation) {
         this.controller = requireNonNull(controller);
@@ -170,7 +159,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     public AnnotatedFieldHook<T> checkExactType(Class<?> type) {
         requireNonNull(type, "type is null");
         if (field.getType() != type) {
-            throw new InvalidDeclarationException("OOPS ");
+            controller.tf().fail("NotAssignable");
         }
         return this;
     }
@@ -207,7 +196,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      */
     public AnnotatedFieldHook<T> checkNotFinal() {
         if (Modifier.isFinal(field.getModifiers())) {
-            throw new InvalidDeclarationException(failedModifierCheck(true, "final"));
+            controller.tf().fail(failedModifierCheck(true, "final"));
         }
         return this;
     }
@@ -224,7 +213,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      */
     public AnnotatedFieldHook<T> checkNotStatic() {
         if (Modifier.isStatic(field.getModifiers())) {
-            throw new InvalidDeclarationException(failedModifierCheck(true, "static"));
+            controller.tf().fail(failedModifierCheck(true, "static"));
         }
         return this;
     }
@@ -241,7 +230,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      */
     public AnnotatedFieldHook<T> checkStatic() {
         if (!Modifier.isStatic(field.getModifiers())) {
-            throw new InvalidDeclarationException(failedModifierCheck(false, "static"));
+            controller.tf().fail(failedModifierCheck(false, "static"));
         }
         return this;
     }
@@ -286,59 +275,53 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     }
 
     /**
-     * Returns a method handle giving read access to the underlying field.
+     * Returns a new method handle giving read access to the underlying field.
      * <p>
      * The returned method handle is never bound to a receiver, even if the underlying field is an instance field.
      * 
-     * @return a method handle for the underlying field with read access
+     * @return a new method handle for the underlying field with read access
      * @throws UncheckedIllegalAccessException
      *             if access checking fails
+     * @throws IllegalStateException
+     *             if trying to invoke this method after the hook has been constructed
      * @see Lookup#unreflectGetter(java.lang.reflect.Field)
      */
     public MethodHandle getter() {
-        MethodHandle g = getter;
-        if (g == null) {
-            getter = g = controller.unreflectGetter(field);
-        }
-        return g;
+        return controller.unreflectGetter(field);
     }
 
     /**
-     * Returns a method handle giving read access to the underlying field.
+     * Returns a new method handle giving read access to the underlying field.
      * <p>
      * The returned method handle is never bound to a receiver, even if the underlying field is an instance field.
      * 
-     * @return a method handle for the underlying field with write access
+     * @return a new method handle for the underlying field with write access
      * @throws UncheckedIllegalAccessException
      *             if access checking fails
      * @throws UnsupportedOperationException
      *             if the field is final
+     * @throws IllegalStateException
+     *             if trying to invoke this method after the hook has been constructed
      * @see Lookup#unreflectSetter(java.lang.reflect.Field)
      */
     public MethodHandle setter() {
-        MethodHandle s = setter;
-        if (s == null) {
-            if (Modifier.isFinal(field.getModifiers())) {
-                throw new UnsupportedOperationException("Field is final, cannot create a setter for this field, field = " + field);
-            }
-            setter = s = controller.unreflectSetter(field);
+        if (Modifier.isFinal(field.getModifiers())) {
+            throw new UnsupportedOperationException("Field is final, cannot create a setter for this field, field = " + field);
         }
-        return s;
+        return controller.unreflectSetter(field);
     }
 
     /**
-     * Returns a {@link VarHandle} for the underlying field.
+     * Returns a new {@link VarHandle} for the underlying field.
      * 
-     * @return a VarHandle for the underlying field
+     * @return a new VarHandle for the underlying field
      * @throws UncheckedIllegalAccessException
      *             if access checking fails
+     * @throws IllegalStateException
+     *             if trying to invoke this method after the hook has been constructed
      * @see Lookup#unreflectVarHandle(java.lang.reflect.Field)
      */
     public VarHandle varHandle() {
-        VarHandle vh = varHandle;
-        if (vh == null) {
-            varHandle = vh = controller.unreflectVarhandle(field);
-        }
-        return vh;
+        return controller.unreflectVarhandle(field);
     }
 }
