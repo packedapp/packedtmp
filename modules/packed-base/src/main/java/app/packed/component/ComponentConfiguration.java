@@ -16,6 +16,7 @@
 package app.packed.component;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import app.packed.component.feature.FeatureMap;
 import app.packed.config.ConfigSite;
@@ -40,9 +41,17 @@ import app.packed.service.Factory;
  */
 public interface ComponentConfiguration<T> {
 
-    // Invoked when the component has gotten its name...
-    // So people can use the path...
-    // ComponentConfiguration<T> onNamed(Consumer<? super ComponentConfiguration<T>> action);
+    /**
+     * Registers an action that will be performed whenever a name is assigned to the component.
+     * <p>
+     * This method is mainly used by extensions.
+     * 
+     * @param action
+     *            the action to be performed when the name of the component is finalized
+     */
+    default void onNamed(Consumer<? super ComponentConfiguration<T>> action) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Checks that the component is still configurable or throws an {@link IllegalStateException}.
@@ -139,7 +148,6 @@ public interface ComponentConfiguration<T> {
 
 interface XCC2<T> {
 
-    // TypeAnnotations are ignored for now...
     /**
      * 
      * @param implementation

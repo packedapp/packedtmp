@@ -100,6 +100,4 @@ public interface ComponentContext extends Component {
     // Maaske skal vi bare extende Injector.....
 
     Injector injector();// sidecar???
-
-    // Container
 }

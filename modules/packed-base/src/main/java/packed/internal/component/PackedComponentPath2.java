@@ -60,7 +60,37 @@ public final class PackedComponentPath2 implements ComponentPath {
     /** {@inheritDoc} */
     @Override
     public int compareTo(ComponentPath o) {
-        // TODO Auto-generated method stub
+        if (depth() == 0) {
+            return o.depth() == 0 ? 0 : 1;
+        }
+        if (o instanceof PackedComponentPath2) {
+            return compareTo((PackedComponentPath2) o);
+        }
+
+        return 0;
+    }
+
+    private int compareTo(PackedComponentPath2 o) {
+        // Always make sure this is has the greatest depth
+        if (o.depth() > depth()) {
+            return -compareTo(o);
+        }
+        // spol depths-o.depth
+        int amou = depth() - o.depth();
+        if (amou == 0) {
+            return compareSameDepth(this, o);
+        }
+        PackedComponentPath2 p = this;
+        for (int i = 0; i < amou; i++) {
+            p = p.parent;
+        }
+        int ii = compareSameDepth(p, o);
+        return ii == 0 ? 1 : ii;
+    }
+
+    private static int compareSameDepth(PackedComponentPath2 o1, PackedComponentPath2 o2) {
+        /// rul ned til roden..
+        // og saa sammenlign
         return 0;
     }
 
@@ -100,7 +130,8 @@ public final class PackedComponentPath2 implements ComponentPath {
 
     /** {@inheritDoc} */
     @Override
-    public @Nullable ComponentPath parent() {
+    @Nullable
+    public ComponentPath parent() {
         return parent;
     }
 }

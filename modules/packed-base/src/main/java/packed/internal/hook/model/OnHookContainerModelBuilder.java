@@ -17,7 +17,6 @@ package packed.internal.hook.model;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -54,19 +53,19 @@ public final class OnHookContainerModelBuilder {
     private final IdentityHashMap<Class<?>, OnHookContainerNode> nodes = new IdentityHashMap<>();
 
     /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedFieldHook} as a parameter. */
-    IdentityHashMap<Class<? extends Annotation>, OnHookEntry> onHookAnnotatedFields;
+    IdentityHashMap<Class<?>, LinkedEntry> onHookAnnotatedFields;
 
     /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedMethodHook} as a parameter. */
-    IdentityHashMap<Class<? extends Annotation>, OnHookEntry> onHookAnnotatedMethods;
+    IdentityHashMap<Class<?>, LinkedEntry> onHookAnnotatedMethods;
 
     /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedTypeHook} as a parameter. */
-    IdentityHashMap<Class<? extends Annotation>, OnHookEntry> onHookAnnotatedTypes;
+    IdentityHashMap<Class<?>, LinkedEntry> onHookAnnotatedTypes;
 
     /** Methods annotated with {@link OnHook} that takes a {@link AssignableToHook} as a parameter. */
-    IdentityHashMap<Class<?>, OnHookEntry> onHookAssignableTos;
+    IdentityHashMap<Class<?>, LinkedEntry> onHookAssignableTos;
 
     /** Methods annotated with {@link OnHook} that takes a non-base {@link Hook}. */
-    IdentityHashMap<Class<?>, OnHookEntry> onHookCustomHooks;
+    IdentityHashMap<Class<?>, LinkedEntry> onHookCustomHooks;
 
     /** The root builder. */
     private final OnHookContainerNode root;
@@ -114,25 +113,25 @@ public final class OnHookContainerModelBuilder {
         @SuppressWarnings("unchecked")
         Class<? extends Hook> hookType = (Class<? extends Hook>) hook.getType();
         if (hookType == AnnotatedFieldHook.class) {
-            IdentityHashMap<Class<? extends Annotation>, OnHookEntry> o = onHookAnnotatedFields;
+            IdentityHashMap<Class<?>, LinkedEntry> o = onHookAnnotatedFields;
             if (o == null) {
                 o = onHookAnnotatedFields = new IdentityHashMap<>(1);
             }
             process(b, hook, method, mh, o);
         } else if (hookType == AnnotatedMethodHook.class) {
-            IdentityHashMap<Class<? extends Annotation>, OnHookEntry> o = onHookAnnotatedMethods;
+            IdentityHashMap<Class<?>, LinkedEntry> o = onHookAnnotatedMethods;
             if (o == null) {
                 o = onHookAnnotatedMethods = new IdentityHashMap<>(1);
             }
             process(b, hook, method, mh, o);
         } else if (hookType == AnnotatedTypeHook.class) {
-            IdentityHashMap<Class<? extends Annotation>, OnHookEntry> o = onHookAnnotatedTypes;
+            IdentityHashMap<Class<?>, LinkedEntry> o = onHookAnnotatedTypes;
             if (o == null) {
                 o = onHookAnnotatedTypes = new IdentityHashMap<>(1);
             }
             process(b, hook, method, mh, o);
         } else if (hookType == AssignableToHook.class) {
-            IdentityHashMap<Class<?>, OnHookEntry> o = onHookAssignableTos;
+            IdentityHashMap<Class<?>, LinkedEntry> o = onHookAssignableTos;
             if (o == null) {
                 o = onHookAssignableTos = new IdentityHashMap<>(1);
             }
@@ -142,7 +141,7 @@ public final class OnHookContainerModelBuilder {
                 tf.newThrowableForMethod("Hook cannot depend on itself", method);
             }
             TypeUtil.checkClassIsInstantiable(hookType);
-            IdentityHashMap<Class<?>, OnHookEntry> n = onHookCustomHooks;
+            IdentityHashMap<Class<?>, LinkedEntry> n = onHookCustomHooks;
             if (n == null) {
                 n = onHookCustomHooks = new IdentityHashMap<>(1);
             }
@@ -168,7 +167,7 @@ public final class OnHookContainerModelBuilder {
                 if (b != root) {
                     b.addDependency(node);
                 }
-                return new OnHookEntry(b, method, mh, v);
+                return new LinkedEntry(b, method, mh, v);
             });
         }
     }
@@ -227,10 +226,10 @@ public final class OnHookContainerModelBuilder {
     }
 
     @SuppressWarnings("unchecked")
-    private void process(OnHookContainerNode b, Parameter p, Method method, MethodHandle mh, IdentityHashMap<?, OnHookEntry> map) {
+    private void process(OnHookContainerNode b, Parameter p, Method method, MethodHandle mh, IdentityHashMap<?, LinkedEntry> map) {
         ParameterizedType pt = (ParameterizedType) p.getParameterizedType();
         Class<?> typeVariable = (Class<?>) pt.getActualTypeArguments()[0];
-        ((IdentityHashMap<Class<?>, OnHookEntry>) map).compute(typeVariable, (k, v) -> new OnHookEntry(b, method, mh, v));
+        ((IdentityHashMap<Class<?>, LinkedEntry>) map).compute(typeVariable, (k, v) -> new LinkedEntry(b, method, mh, v));
     }
 
     static final class OnHookContainerNode {
@@ -283,15 +282,15 @@ public final class OnHookContainerModelBuilder {
         }
     }
 
-    static final class OnHookEntry {
+    static final class LinkedEntry {
         final OnHookContainerNode builder;
         final Method method;
         final MethodHandle methodHandle;
 
         @Nullable
-        final OnHookEntry next;
+        final LinkedEntry next;
 
-        OnHookEntry(OnHookContainerNode builder, Method method, MethodHandle methodHandle, OnHookEntry next) {
+        LinkedEntry(OnHookContainerNode builder, Method method, MethodHandle methodHandle, LinkedEntry next) {
             this.builder = requireNonNull(builder);
             this.method = requireNonNull(method);
             this.methodHandle = requireNonNull(methodHandle);

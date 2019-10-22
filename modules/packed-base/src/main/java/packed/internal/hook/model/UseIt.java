@@ -24,8 +24,8 @@ import java.lang.reflect.UndeclaredThrowableException;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.Hook;
 import packed.internal.hook.HookProcessor;
+import packed.internal.hook.model.OnHookContainerModelBuilder.LinkedEntry;
 import packed.internal.hook.model.OnHookContainerModelBuilder.OnHookContainerNode;
-import packed.internal.hook.model.OnHookContainerModelBuilder.OnHookEntry;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.ThrowableUtil;
@@ -48,19 +48,17 @@ public class UseIt {
 
         ClassProcessor cpTarget = new ClassProcessor(caller, target, false);
 
-        Object[] builders = new Object[ohs.sorted.size()];
+        Object[] array = new Object[ohs.sorted.size()];
 
-        Object[] result = new Object[ohs.sorted.size()];
         cpTarget.findMethodsAndFields(c -> {}, f -> {
             if (ohs.onHookAnnotatedFields != null) {
                 for (Annotation a : f.getAnnotations()) {
-                    OnHookEntry e = ohs.onHookAnnotatedFields.get(a.annotationType());
+                    LinkedEntry e = ohs.onHookAnnotatedFields.get(a.annotationType());
                     while (e != null) {
-                        OnHookEntry ee = e;
-                        Object builder = builders[ee.builder.id];
+                        Object builder = array[e.builder.id];
                         if (builder == null) {
                             try {
-                                builder = builders[ee.builder.id] = ee.builder.constructor.invoke();
+                                builder = array[e.builder.id] = e.builder.constructor.invoke();
                             } catch (Throwable e2) {
                                 ThrowableUtil.rethrowErrorOrRuntimeException(e2);
                                 throw new UndeclaredThrowableException(e2);
@@ -69,9 +67,9 @@ public class UseIt {
 
                         // e.builder.cp
                         try (HookProcessor hc = new HookProcessor(cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR)) {
-                            AnnotatedFieldHook<Annotation> afh = ModuleAccess.hook().newAnnotatedFieldHook(hc, f, a);
+                            AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(hc, f, a);
                             try {
-                                e.methodHandle.invoke(builder, afh);
+                                e.methodHandle.invoke(builder, hook);
                             } catch (Throwable e1) {
                                 ThrowableUtil.rethrowErrorOrRuntimeException(e1);
                                 throw new UndeclaredThrowableException(e1);
@@ -83,27 +81,27 @@ public class UseIt {
             }
         });
 
-        for (int i = builders.length - 1; i >= 0; i--) {
-            Object h = builders[i];
+        for (int i = array.length - 1; i >= 0; i--) {
+            Object h = array[i];
             if (h != null) {
-                result[i] = ((Hook.Builder<?>) h).build();
+                array[i] = ((Hook.Builder<?>) h).build();
             }
             OnHookContainerNode ocn = ohs.sorted.get(i);
             if (ohs.onHookCustomHooks != null) {
-                OnHookEntry e = ohs.onHookCustomHooks.get(ocn.hookType);
+                LinkedEntry e = ohs.onHookCustomHooks.get(ocn.hookType);
                 while (e != null) {
-                    Object builder = builders[e.builder.id];
+                    Object builder = array[e.builder.id];
                     if (builder == null) {
                         try {
-                            builder = builders[e.builder.id] = e.builder.constructor.invoke();
+                            builder = array[e.builder.id] = e.builder.constructor.invoke();
                         } catch (Throwable e2) {
                             ThrowableUtil.rethrowErrorOrRuntimeException(e2);
                             throw new UndeclaredThrowableException(e2);
                         }
                     }
-                    requireNonNull(result[i]);
+                    // requireNonNull(result[i]);
                     try {
-                        e.methodHandle.invoke(builder, result[i]);
+                        e.methodHandle.invoke(builder, array[i]);
                     } catch (Throwable e1) {
                         ThrowableUtil.rethrowErrorOrRuntimeException(e1);
                         throw new UndeclaredThrowableException(e1);
@@ -112,7 +110,7 @@ public class UseIt {
                 }
             }
         }
-        return (T) result[0];
+        return (T) array[0];
 
     }
 

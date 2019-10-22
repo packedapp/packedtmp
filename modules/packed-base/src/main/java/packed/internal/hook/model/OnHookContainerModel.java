@@ -15,60 +15,86 @@
  */
 package packed.internal.hook.model;
 
-import java.lang.invoke.MethodHandle;
-import java.util.List;
-import java.util.Set;
+import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+import java.util.ArrayList;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+
+import app.packed.hook.AnnotatedFieldHook;
+import app.packed.hook.AnnotatedMethodHook;
+import app.packed.hook.AnnotatedTypeHook;
+import app.packed.hook.AssignableToHook;
+import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
-import packed.internal.reflect.ClassProcessor;
-import packed.internal.util.UncheckedThrowableFactory;
+import packed.internal.hook.model.OnHookContainerModelBuilder.LinkedEntry;
+import packed.internal.hook.model.OnHookContainerModelBuilder.OnHookContainerNode;
 
 /**
- * Something that contains methods with {@link OnHook}
+ *
  */
 public class OnHookContainerModel {
 
-    /** Any builders that this model depends on. */
-    final List<OnHookContainerModel> builders = List.of();
+    /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedFieldHook} as a parameter. */
+    Map<Class<?>, LinkedEntry> onHookAnnotatedFields;
 
-    final Class<?> containerType = null;
+    /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedMethodHook} as a parameter. */
+    Map<Class<?>, LinkedEntry> onHookAnnotatedMethods;
 
-    // Is null for a non-hook builder container, do we want a subclass??
-    @Nullable
-    final MethodHandle hookBuilderConstructor = null;
+    /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedTypeHook} as a parameter. */
+    Map<Class<?>, LinkedEntry> onHookAnnotatedTypes;
 
-    /**
-     * Returns a set of all
-     * 
-     * @return stuff
-     */
-    public Set<Class<?>> annotatedFieldTargets() {
-        return Set.of();
+    /** Methods annotated with {@link OnHook} that takes a {@link AssignableToHook} as a parameter. */
+    Map<Class<?>, LinkedEntry> onHookAssignableTos;
+
+    /** Methods annotated with {@link OnHook} that takes a non-base {@link Hook}. */
+    Map<Class<?>, LinkedEntry> onHookCustomHooks;
+
+    final List<MethodHandle> constructors;
+
+    OnHookContainerModel(OnHookContainerModelBuilder b) {
+        ArrayList<MethodHandle> nodes = new ArrayList<>();
+        for (OnHookContainerNode e : b.sorted) {
+            nodes.add(e.constructor);
+        }
+        this.onHookAnnotatedFields = convert(b.onHookAnnotatedFields);
+        this.constructors = List.copyOf(nodes);
     }
 
-    /**
-     * Returns a model for the specified extension type.
-     * <p>
-     * This method assumes that it has already been established that the specified extension type is open to
-     * 'app.packed.base'
-     * 
-     * @param cp
-     *            the class processor.
-     * @return a container model for the specified extension
-     */
-    public OnHookContainerModel ofExtension(ClassProcessor cp) {
-        throw new UnsupportedOperationException();
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private static Map<Class<?>, LinkedEntry> convert(IdentityHashMap<Class<?>, OnHookContainerModelBuilder.LinkedEntry> map) {
+        if (map == null) {
+            return null;
+        }
+        // Replace in map
+        IdentityHashMap m = map;
+
+        m.replaceAll((k, v) -> {
+            OnHookContainerModelBuilder.LinkedEntry e = (LinkedEntry) v;
+            Link l = null;
+            for (; e != null; e = e.next) {
+                l = new Link(e.methodHandle, e.builder.id, l);
+            }
+            return l;
+        });
+
+        return Map.copyOf(m);
     }
 
-    public OnHookContainerModel ofBundle(ClassProcessor cp) {
-        throw new UnsupportedOperationException();
-    }
+    static class Link {
+        final MethodHandle mh;
+        final int index;
 
-    public <T extends Throwable> OnHookContainerModel ofBundle(ClassProcessor cp, UncheckedThrowableFactory<T> tf, Class<?>... additionalParameterTypes) throws T {
-        // Eneste problem er nok at vi gerne f.eks. vil skrive the Extension
-        // Mht til ClassProcessor saa vil vi ogsaa gerne have en MaxType... F.eks. Bundle eller Extension..
-        throw new UnsupportedOperationException();
-    }
+        @Nullable
+        final Link next;
 
+        Link(MethodHandle mh, int index, @Nullable Link next) {
+            this.mh = requireNonNull(mh);
+            this.index = index;
+            this.next = next;
+        }
+    }
 }

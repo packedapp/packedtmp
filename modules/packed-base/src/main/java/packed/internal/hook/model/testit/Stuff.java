@@ -33,7 +33,7 @@ public class Stuff {
     @Anno1(12233)
     private String hahad;
 
-    @Anno1(123)
+    @Anno1(12322)
     private String haha;
 
     public static void main(String[] args) {
@@ -61,7 +61,6 @@ public class Stuff {
             @OnHook
             private void foo(AnnotatedFieldHook<Anno1> hook) {
                 this.sum += hook.annotation().value();
-                hook.checkFinal();
             }
 
             /** {@inheritDoc} */

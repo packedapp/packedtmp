@@ -43,6 +43,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 // RequireExtension?????
+
+// @UseExtensionIfHooked(ServiceExtension.class)
+//// Uses the service extension, if any of the hooks that needs activation is encountered, otherwise not.
 public @interface UseExtension {
 
     /**

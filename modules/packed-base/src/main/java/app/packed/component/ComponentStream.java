@@ -23,6 +23,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import app.packed.artifact.App;
+import app.packed.artifact.ArtifactImage;
 import app.packed.component.feature.AFeature;
 import app.packed.container.Extension;
 
@@ -196,10 +198,17 @@ public interface ComponentStream extends Stream<Component> {
     /// Men eftersom vi kun kan goere en stream mindre... Altsaa med mindre vi laver nogle flatmap tricks.
     // a.la. components.mapToVirtual....
 
+    /**
+     * Various options that can be used when creating a component stream.
+     * 
+     * @see Component#stream(Option...)
+     * @see App#stream(Option...)
+     * @see ArtifactImage#stream()
+     */
     public static final class Option {
 
         /**
-         * Eclude
+         * Include all components that is attached to an extension
          * 
          * @return an option that includes all components that are owned by extensions
          */
@@ -222,6 +231,11 @@ public interface ComponentStream extends Stream<Component> {
             throw new UnsupportedOperationException();
         }
 
+        /**
+         * Only process components in the same container as the component stream source (or root).
+         * 
+         * @return the option
+         */
         public static ComponentStream.Option inSameContainer() {
             throw new UnsupportedOperationException();
         }
@@ -237,51 +251,3 @@ public interface ComponentStream extends Stream<Component> {
         // processChildren, pro
     }
 }
-// default <T> ComponentStream filterOnInstance(Class<T> type, Predicate<T> predicate) {
-// throw new UnsupportedOperationException();
-// }
-
-// /**
-// * Invokes the specified consumer for each component whose component instance is of the specific type.
-// * <p>
-// * Components that have not yet been fully initialized and where the initializing thread is different from the thread
-// * calling this method are ignored.
-// *
-// * This is a <em>terminal operation</em>.
-// *
-// * @param <T>
-// * the type of component instances to consume
-// * @param instanceType
-// * the type of instances to invoke the consumer for
-// * @param consumer
-// * the consumer to invoke for each match
-// */
-// <T> void forEachInstanceOf(Class<T> instanceType, BiConsumer<? super Component, ? super T> consumer);
-//
-// <T> void forEachInstanceOf(Class<T> instanceType, Consumer<? super T> consumer);
-//
-// /**
-// * Returns a new stream of all component instances.
-// *
-// * @return a new stream of all component instances
-// */
-// // Tager kun dem der er instantiated... Maaske skal vi endda have et generalt isInstantiatedFilter? return map(e ->
-// // e.getInstance());
-// Stream<Object> instances();
-//
-// /**
-// * Returns a new stream of all component instances that are of the specified type.
-// * <p>
-// * Invoking this method is equivalent to {@code instances().filter(e -> instanceType.isAssignableFrom(e.getClass()))}.
-// *
-// * @param <T>
-// * The type of instances to include in the new stream
-// * @param instanceType
-// * the component instance types to include in the new stream
-// * @return the new stream
-// */
-// @SuppressWarnings("unchecked")
-// default <T> Stream<T> instancesOfType(Class<T> instanceType) {
-// requireNonNull(instanceType, "instanceType is null");
-// return (Stream<T>) instances().filter(e -> instanceType.isAssignableFrom(e.getClass()));
-// }

@@ -162,6 +162,15 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
         return this;
     }
 
+    /**
+     * Checks that the type of the field is the exact specified type. Otherwise throws a context dependent unchecked
+     * throwable.
+     * 
+     * @param type
+     *            the type to check the field type against
+     * @return this hook
+     * @see Object#equals(Object)
+     */
     public AnnotatedFieldHook<T> checkExactType(Class<?> type) {
         requireNonNull(type, "type is null");
         if (field.getType() != type) {
