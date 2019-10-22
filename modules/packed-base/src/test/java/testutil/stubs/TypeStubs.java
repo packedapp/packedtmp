@@ -67,6 +67,5 @@ public class TypeStubs {
     @SuppressWarnings("unchecked")
     private static <T extends Type> T fromField(String name) {
         return (T) TestMemberFinder.findField(TypeStubs.class, name).getGenericType();
-
     }
 }

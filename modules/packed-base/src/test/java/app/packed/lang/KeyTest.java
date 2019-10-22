@@ -20,6 +20,7 @@ import static app.packed.lang.TypeLiteralTest.TL_LIST_WILDCARD;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static testutil.assertj.Assertions.npe;
+import static testutil.util.TestMemberFinder.findField;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -87,7 +88,7 @@ public class KeyTest {
 
     /** Tests {@link Key#fromField(Field)}. */
     @Test
-    public void fromField() throws Exception {
+    public void fromField() {
         @SuppressWarnings("unused")
         class Tmpx<T> {
 
@@ -113,35 +114,35 @@ public class KeyTest {
 
         npe(() -> Key.fromField(null), "field");
 
-        Field f = Tmpx.class.getDeclaredField("ok");
+        Field f = findField(Tmpx.class, "ok");
         assertThat(Key.fromField(f).typeLiteral()).isEqualTo(TL_LIST_WILDCARD);
         assertThat(Key.fromField(f).hasQualifier()).isFalse();
         assertThat(Key.fromField(f).qualifier().isPresent()).isFalse();
 
-        f = Tmpx.class.getDeclaredField("okQualified");
+        f = findField(Tmpx.class, "okQualified");
         assertThat(Key.fromField(f).typeLiteral()).isEqualTo(TL_LIST_WILDCARD);
         assertThat(Key.fromField(f).hasQualifier()).isTrue();
         assertThat(Key.fromField(f).qualifier().get()).isEqualTo(AnnotationInstances.CHAR_QUALIFIER_X);
 
-        f = Tmpx.class.getDeclaredField("primitive");
+        f = findField(Tmpx.class, "primitive");
         assertThat(Key.fromField(f).typeLiteral()).isEqualTo(TL_INTEGER);
         assertThat(Key.fromField(f).hasQualifier()).isFalse();
         assertThat(Key.fromField(f).qualifier().isPresent()).isFalse();
 
-        f = Tmpx.class.getDeclaredField("primitiveQualified");
+        f = findField(Tmpx.class, "primitiveQualified");
         assertThat(Key.fromField(f).typeLiteral()).isEqualTo(TL_INTEGER);
         assertThat(Key.fromField(f).hasQualifier()).isTrue();
         assertThat(Key.fromField(f).qualifier().get()).isEqualTo(AnnotationInstances.CHAR_QUALIFIER_X);
 
-        AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> Key.fromField(Tmpx.class.getDeclaredField("notTypeParameterFree")));
+        AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> Key.fromField(findField(Tmpx.class, "notTypeParameterFree")));
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO test msg
 
-        a = assertThatThrownBy(() -> Key.fromField(Tmpx.class.getDeclaredField("optional")));
+        a = assertThatThrownBy(() -> Key.fromField(findField(Tmpx.class, "optional")));
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO test msg
 
-        a = assertThatThrownBy(() -> Key.fromField(Tmpx.class.getDeclaredField("multipleQualifier")));
+        a = assertThatThrownBy(() -> Key.fromField(findField(Tmpx.class, "multipleQualifier")));
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO test msg
     }

@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.fail;
 import static testutil.assertj.Assertions.npe;
 import static testutil.stubs.TypeStubs.LIST_STRING;
 import static testutil.stubs.TypeStubs.LIST_WILDCARD;
+import static testutil.util.TestMemberFinder.findField;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -64,12 +65,12 @@ public class TypeLiteralTest {
             Integer f;
             List<?> fq;
         }
-        Field f = Tmpx.class.getDeclaredField("f");
+        Field f = findField(Tmpx.class, "f");
         npe(TypeLiteral::fromField, f, "field");
 
         assertThat(TypeLiteral.of(Integer.class)).isEqualTo(TypeLiteral.fromField(f));
 
-        assertThat(LIST_WILDCARD).isEqualTo(TypeLiteral.fromField(Tmpx.class.getDeclaredField("fq")).type());
+        assertThat(LIST_WILDCARD).isEqualTo(TypeLiteral.fromField(findField(Tmpx.class, "fq")).type());
     }
 
     /** Tests {@link TypeLiteral#fromMethodReturnType(Method)}. */
@@ -300,7 +301,7 @@ public class TypeLiteralTest {
             @SuppressWarnings("unused")
             Map<? extends String, ? super Integer> f;
         }
-        Type fGenericType = Tmpx.class.getDeclaredField("f").getGenericType();
+        Type fGenericType = findField(Tmpx.class, "f").getGenericType();
 
         assertThat(listStringNew.box().type()).isEqualTo(fGenericType);
 
@@ -368,13 +369,13 @@ public class TypeLiteralTest {
 
     /** Tests a type literal with a type variable (T) */
     @Test
-    public void tl_withTypeVariable() throws Exception {
+    public void tl_withTypeVariable() {
         // Type
         class Tmpx<T> {
             @SuppressWarnings("unused")
             Map<T, ?> f;
         }
-        Type fGenericType = Tmpx.class.getDeclaredField("f").getGenericType();
+        Type fGenericType = findField(Tmpx.class, "f").getGenericType();
         TypeLiteral<?> typeVariable = new CanonicalizedTypeLiteral<>(fGenericType);
 
         assertThat(typeVariable.box().type()).isEqualTo(fGenericType);
