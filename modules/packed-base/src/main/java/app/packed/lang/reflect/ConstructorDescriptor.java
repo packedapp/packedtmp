@@ -65,6 +65,7 @@ public final class ConstructorDescriptor<T> extends ExecutableDescriptor {
         return false;
     }
 
+    @Override
     public String getName() {
         return constructor.getName();
     }

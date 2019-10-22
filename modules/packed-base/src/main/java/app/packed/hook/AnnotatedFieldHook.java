@@ -141,6 +141,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      *             if access checking failed when accessing the field
      */
     public <E> E applyStatic(VarOperator<E> operator) {
+        requireNonNull(operator, "operator is null");
         if (!Modifier.isStatic(field.getModifiers())) {
             throw new UnsupportedOperationException("Cannot invoke this method on a non-static field " + field);
         }
@@ -149,10 +150,19 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
         return operator.applyStaticHook(this);
     }
 
+    /**
+     * Checks that the type of the field is assignable to the specified type. Otherwise throws a context dependent unchecked
+     * throwable.
+     * 
+     * @param type
+     *            the type to check the field type against
+     * @return this hook
+     * @see Class#isAssignableFrom(Class)
+     */
     public AnnotatedFieldHook<T> checkAssignableTo(Class<?> type) {
         requireNonNull(type, "type is null");
-        if (type.isAssignableFrom(field.getType())) {
-            throw new InvalidDeclarationException("OOPS ");
+        if (!type.isAssignableFrom(field.getType())) {
+            controller.tf().fail("NotAssignable");
         }
         return this;
     }

@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.factory;
+package app.packed.hook;
 
-import packed.internal.inject.factoryhandle.Factory0FactoryHandle;
+/** Tests {@link AnnotatedFieldHook}. */
+public class AnnotatedFieldHookTest {
 
-/** Tests {@link Factory0FactoryHandle}. */
-public class InternalFactory0Test {
+    public void test() {
 
+        new AnnotatedFieldHook<>(null, null, null);
+    }
 }

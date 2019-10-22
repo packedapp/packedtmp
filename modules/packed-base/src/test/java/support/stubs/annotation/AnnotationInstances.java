@@ -23,7 +23,15 @@ import java.util.Arrays;
 public class AnnotationInstances {
 
     @NoValueQualifier
-    public static final NoValueQualifier NO_VALUE_QUALIFIER = (NoValueQualifier) Arrays.stream(AnnotationInstances.class.getDeclaredFields())
-            .filter(m -> m.getName().equals("NO_VALUE_QUALIFIER")).findFirst().get().getAnnotations()[0];
+    public static final NoValueQualifier NO_VALUE_QUALIFIER = Arrays.stream(AnnotationInstances.class.getDeclaredFields())
+            .filter(f -> f.isAnnotationPresent(NoValueQualifier.class)).findFirst().get().getAnnotation(NoValueQualifier.class);
 
+    @Left
+    public static final Left LEFT = Arrays.stream(AnnotationInstances.class.getDeclaredFields()).filter(f -> f.isAnnotationPresent(Left.class)).findFirst()
+            .get().getAnnotation(Left.class);
+
+    public static void main(String[] args) {
+        System.out.println(LEFT);
+
+    }
 }

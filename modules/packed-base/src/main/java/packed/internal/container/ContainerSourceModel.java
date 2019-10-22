@@ -22,6 +22,8 @@ import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.container.Bundle;
 import app.packed.container.ContainerSource;
+import app.packed.hook.Hook;
+import app.packed.lang.InvalidDeclarationException;
 import packed.internal.component.ComponentModel;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FactoryHandle;
@@ -74,6 +76,9 @@ public final class ContainerSourceModel implements ComponentLookup {
      *            the source type
      */
     private ContainerSourceModel(Class<? extends ContainerSource> sourceType) {
+        if (Hook.class.isAssignableFrom(sourceType)) {
+            throw new InvalidDeclarationException(sourceType + " must not implement/extend " + Hook.class);
+        }
         this.sourceType = requireNonNull(sourceType);
     }
 

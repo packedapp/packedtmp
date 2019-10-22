@@ -25,6 +25,9 @@ import app.packed.container.InternalExtensionException;
  */
 
 // TODO we can bruge dem som en builder af en slags...
+// Make rename to something like UncheckedThrowableFactory....
+// Og saa laver vi et check
+
 public abstract class ThrowableFactory<T extends Throwable> {
 
     public static final ThrowableFactory<InternalExtensionException> INTERNAL_EXTENSION_EXCEPTION_FACTORY = new ThrowableFactory<InternalExtensionException>() {

@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.factory;
+package support.assertj;
 
-import packed.internal.inject.factoryhandle.Factory0FactoryHandle;
-
-/** Tests {@link Factory0FactoryHandle}. */
-public class InternalFactory0Test {
+/**
+ *
+ */
+public class Ddd {
 
 }

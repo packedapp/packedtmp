@@ -16,6 +16,7 @@
 package features.hook;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.lang.invoke.MethodHandle;
@@ -32,9 +33,7 @@ import features.hook.HookStubs.LeftAnnotatedFields;
 import support.stubs.annotation.Left;
 import support.stubs.annotation.Right;
 
-/**
- *
- */
+/** Various tests related to hooks and annotated fields. */
 public class AnnotatedFieldTest {
 
     @Test
@@ -93,7 +92,16 @@ public class AnnotatedFieldTest {
     }
 
     @Test
-    public void singleFinalField() {
+    public void checks() {
+        class Tester {
+            @Left
+            String ss2 = "gotIt";
+        }
+        AnnotatedFieldHook<Left> h = Hook.Builder.test(MethodHandles.lookup(), LeftAnnotatedFields.class, Tester.class).hooks.get(0);
+
+        assertThat(h.checkAssignableTo(String.class)).isSameAs(h);
+        assertThat(h.checkAssignableTo(CharSequence.class)).isSameAs(h);
+        assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> h.checkAssignableTo(Long.class));
 
     }
 }
