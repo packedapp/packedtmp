@@ -25,8 +25,6 @@ import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.Hook;
 import packed.internal.hook.HookProcessor;
 import packed.internal.hook.model.OnHookContainerModel.Link;
-import packed.internal.hook.model.OnHookContainerModelBuilder.LinkedEntry;
-import packed.internal.hook.model.OnHookContainerModelBuilder.OnHookContainerNode;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.ThrowableUtil;
@@ -56,10 +54,8 @@ public class UseIt2 {
         HookProcessor hc = new HookProcessor(cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR);
         cpTarget.findMethodsAndFields(c -> {}, m.onHookAnnotatedFields == null ? null : f -> {
             for (Annotation a : f.getAnnotations()) {
-                Link link = m.onHookAnnotatedFields.get(a.annotationType());
-                while (link != null) {
-                    Object builder = link.builder(m, array);
-
+                for (Link link = m.onHookAnnotatedFields.get(a.annotationType()); link != null; link = link.next) {
+                    Object builder = link.builderOf(m, array);
                     AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(hc, f, a);
                     try {
                         link.mh.invoke(builder, hook);
@@ -67,7 +63,6 @@ public class UseIt2 {
                         ThrowableUtil.rethrowErrorOrRuntimeException(e);
                         throw new UndeclaredThrowableException(e);
                     }
-                    link = link.next;
                 }
             }
         });
@@ -77,28 +72,13 @@ public class UseIt2 {
             Object h = array[i];
             if (h != null) {
                 array[i] = ((Hook.Builder<?>) h).build();
-
-                OnHookContainerNode ocn = ohs.sorted.get(i);
-                if (ohs.onHookCustomHooks != null) {
-                    LinkedEntry e = ohs.onHookCustomHooks.get(ocn.hookType);
-                    while (e != null) {
-                        Object builder = array[e.builder.id];
-                        if (builder == null) {
-                            try {
-                                builder = array[e.builder.id] = e.builder.constructor.invoke();
-                            } catch (Throwable e2) {
-                                ThrowableUtil.rethrowErrorOrRuntimeException(e2);
-                                throw new UndeclaredThrowableException(e2);
-                            }
-                        }
-
-                        try {
-                            e.methodHandle.invoke(builder, array[i]);
-                        } catch (Throwable e1) {
-                            ThrowableUtil.rethrowErrorOrRuntimeException(e1);
-                            throw new UndeclaredThrowableException(e1);
-                        }
-                        e = e.next;
+                for (Link link = m.onHookCustomHooks[i]; link != null; link = link.next) {
+                    Object builder = link.builderOf(m, array);
+                    try {
+                        link.mh.invoke(builder, array[i]);
+                    } catch (Throwable e1) {
+                        ThrowableUtil.rethrowErrorOrRuntimeException(e1);
+                        throw new UndeclaredThrowableException(e1);
                     }
                 }
             }

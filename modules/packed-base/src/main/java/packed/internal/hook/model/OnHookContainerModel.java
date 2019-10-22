@@ -110,7 +110,7 @@ public class OnHookContainerModel {
             this.next = next;
         }
 
-        Object builder(OnHookContainerModel m, Object[] array) {
+        Object builderOf(OnHookContainerModel m, Object[] array) {
             Object builder = array[index];
             if (builder == null) {
                 try {
