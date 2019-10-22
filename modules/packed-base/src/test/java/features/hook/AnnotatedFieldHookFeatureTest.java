@@ -16,14 +16,10 @@
 package features.hook;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static testutil.util.TestMemberFinder.findField;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
-import java.lang.invoke.VarHandle;
-import java.lang.invoke.WrongMethodTypeException;
 
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +30,7 @@ import testutil.stubs.annotation.Left;
 import testutil.stubs.annotation.Right;
 
 /** Various tests related to hooks and annotated fields. */
-public class AnnotatedFieldTest {
+public class AnnotatedFieldHookFeatureTest {
 
     @Test
     public void noActivatedHooksReturnNull() {
@@ -60,35 +56,15 @@ public class AnnotatedFieldTest {
             String ss2 = "gotIt";
         }
         LeftAnnotatedFields f = Hook.Builder.test(MethodHandles.lookup(), LeftAnnotatedFields.class, Tester.class);
-        assertThat(f.hooks).hasSize(1);
+        assertThat(f.fields).hasSize(1);
 
-        AnnotatedFieldHook<Left> h = f.hooks.get(0);
+        AnnotatedFieldHook<Left> h = f.fields.get(0);
         assertThat(h.annotation()).isInstanceOf(Left.class);
         assertThat(h.field().newField()).isEqualTo(findField(Tester.class, "ss2"));
 
-        Tester t = new Tester();
-        MethodHandle getter = f.getterOf(h);
-        MethodHandle setter = f.setterOf(h);
-        VarHandle varHandle = f.varHandleOf(h);
-
-        // Test the getter
-        assertThat(getter.type()).isSameAs(MethodType.methodType(String.class, Tester.class));
-        assertThat(getter.invoke(t)).isEqualTo("gotIt");
-        t.ss2 = "notBad";
-        assertThat(getter.invoke(t)).isEqualTo("notBad");
-        assertThatThrownBy(() -> getter.invoke()).isExactlyInstanceOf(WrongMethodTypeException.class);
-
-        // Test the setter
-        assertThat(t.ss2).isEqualTo("notBad");
-        assertThat(setter.invoke(t, "fooBar")).isNull();
-        assertThat(t.ss2).isEqualTo("fooBar");
-        assertThat(getter.invoke(t)).isEqualTo("fooBar");
-        assertThatThrownBy(() -> setter.invoke(t)).isExactlyInstanceOf(WrongMethodTypeException.class);
-        assertThatThrownBy(() -> setter.invoke(t, 123)).isExactlyInstanceOf(WrongMethodTypeException.class);
-
-        // Test the var handle
-        assertThat(varHandle.get(t)).isEqualTo("fooBar");
-        varHandle.set(t, "blabla");
-        assertThat(t.ss2).isEqualTo("blabla");
+        // These methods cannot be called after the hook has been created.
+        assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> h.getter());
+        assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> h.setter());
+        assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> h.varHandle());
     }
 }

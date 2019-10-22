@@ -39,8 +39,8 @@ import app.packed.lang.Nullable;
 import packed.internal.reflect.ClassFinder;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.reflect.ConstructorFinder;
-import packed.internal.util.ThrowableFactory;
-import packed.internal.util.TypeUtil;
+import packed.internal.util.UncheckedThrowableFactory;
+import packed.internal.util.types.TypeUtil;
 
 /**
  *
@@ -75,15 +75,17 @@ public final class OnHookContainerModelBuilder {
 
     private final ArrayDeque<OnHookContainerNode> unprocessedNodes = new ArrayDeque<>();
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public OnHookContainerModelBuilder(ClassProcessor cp, Class<?>... additionalParameters) {
         if (Hook.class.isAssignableFrom(cp.clazz())) {
-            this.root = newNode(cp, cp.clazz(), ThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+            this.root = newNode(cp, (Class<? extends Hook>) cp.clazz(), UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
         } else {
-            this.root = new OnHookContainerNode(cp, null);
+            // This cast is not valid... For example is Bundle not a hook.
+            this.root = new OnHookContainerNode((Class) cp.clazz(), cp, null);
         }
     }
 
-    private void onMethod(OnHookContainerNode b, Method method, ThrowableFactory<? extends RuntimeException> tf) {
+    private void onMethod(OnHookContainerNode b, Method method, UncheckedThrowableFactory<? extends RuntimeException> tf) {
         if (!method.isAnnotationPresent(OnHook.class)) {
             return;
         }
@@ -109,7 +111,8 @@ public final class OnHookContainerModelBuilder {
 
         Parameter hook = parameters[hookIndex];
         MethodHandle mh = b.cp.unreflect(method, tf);
-        Class<?> hookType = hook.getType();
+        @SuppressWarnings("unchecked")
+        Class<? extends Hook> hookType = (Class<? extends Hook>) hook.getType();
         if (hookType == AnnotatedFieldHook.class) {
             IdentityHashMap<Class<? extends Annotation>, OnHookEntry> o = onHookAnnotatedFields;
             if (o == null) {
@@ -150,7 +153,7 @@ public final class OnHookContainerModelBuilder {
                     MethodHandle constructor = ConstructorFinder.find(cp, tf);
 
                     // TODO validate type variable
-                    OnHookContainerNode newB = new OnHookContainerNode(cp, constructor);
+                    OnHookContainerNode newB = new OnHookContainerNode(hookType, cp, constructor);
                     unprocessedNodes.addLast(newB); // make sure it will be procesed at some point.
                     return newB;
                 });
@@ -170,19 +173,27 @@ public final class OnHookContainerModelBuilder {
         }
     }
 
-    static OnHookContainerNode newNode(ClassProcessor cpr, Class<?> hookType, ThrowableFactory<? extends RuntimeException> tf) {
+    static OnHookContainerNode newNode(ClassProcessor cpr, Class<? extends Hook> hookType, UncheckedThrowableFactory<? extends RuntimeException> tf) {
         Class<?> cl = ClassFinder.findDeclaredClass(hookType, "Builder", Hook.Builder.class);
         ClassProcessor cp = cpr.spawn(cl);
         MethodHandle constructor = ConstructorFinder.find(cp, tf);
         // TODO validate type variable
-        return new OnHookContainerNode(cp, constructor);
+        return new OnHookContainerNode(hookType, cp, constructor);
     }
 
     public void process() {
-        root.cp.findMethods(m -> onMethod(root, m, ThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY));
+        root.cp.findMethods(m -> onMethod(root, m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY));
         for (OnHookContainerNode b = unprocessedNodes.pollFirst(); b != null; b = unprocessedNodes.pollFirst()) {
             OnHookContainerNode bb = b;
-            b.cp.findMethods(m -> onMethod(bb, m, ThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY));
+            b.cp.findMethods(m -> onMethod(bb, m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY));
+        }
+
+        boolean isEmpty = onHookAnnotatedFields == null && onHookAnnotatedMethods == null && onHookAnnotatedTypes == null && onHookAssignableTos == null
+                && onHookCustomHooks == null;
+
+        // It's okay, for example, for bundle to not have any roots.
+        if (isEmpty && Hook.Builder.class.isAssignableFrom(root.cp.clazz())) {
+            throw new AssertionError("There must be at least one method annotated with @OnHook on " + root.cp.clazz());
         }
 
         int index = 0;
@@ -208,6 +219,7 @@ public final class OnHookContainerModelBuilder {
             // Okay, we got some circles.
             throw new UnsupportedOperationException("Not supported currently");
         }
+
         // We do really simple
 
         // Top search
@@ -235,7 +247,10 @@ public final class OnHookContainerModelBuilder {
         @Nullable
         final MethodHandle constructor;
 
-        OnHookContainerNode(ClassProcessor cp, MethodHandle constructor) {
+        final Class<? extends Hook> hookType;
+
+        OnHookContainerNode(Class<? extends Hook> hookType, ClassProcessor cp, MethodHandle constructor) {
+            this.hookType = requireNonNull(hookType);
             this.cp = requireNonNull(cp);
             this.constructor = constructor;
             if (constructor != null && constructor.type().returnType() != cp.clazz()) {

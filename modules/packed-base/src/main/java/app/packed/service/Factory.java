@@ -45,7 +45,7 @@ import packed.internal.moduleaccess.AppPackedServiceAccess;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.BaseSupport;
-import packed.internal.util.TypeUtil;
+import packed.internal.util.types.TypeUtil;
 
 /**
  * Factories are used for creating new instances of a particular type.

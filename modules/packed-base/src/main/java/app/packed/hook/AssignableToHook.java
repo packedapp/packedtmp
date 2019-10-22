@@ -17,7 +17,7 @@ package app.packed.hook;
 
 import static java.util.Objects.requireNonNull;
 
-import packed.internal.component.ComponentModel;
+import packed.internal.hook.HookProcessor;
 
 /**
  * Represent an annotated field on a component instance.
@@ -46,37 +46,22 @@ import packed.internal.component.ComponentModel;
 public final class AssignableToHook<T> implements Hook {
 
     /** The builder for the component type. */
-    final ComponentModel.Builder builder;
+    final HookProcessor controller;
 
-    /** The annotated type. */
-    private final Class<T> hookType;
-
-    /** The annotated type. */
-    private final Class<? extends T> actualType;
+    /** The actual type. */
+    private final Class<? extends T> type;
 
     /**
      * Creates a new hook instance.
      * 
-     * @param builder
+     * @param controller
      *            the builder for the component type
-     * @param hookType
-     *            the annotated type
-     * @param actualType
-     *            the annotation value
+     * @param type
+     *            the actual type that was hook
      */
-    AssignableToHook(ComponentModel.Builder builder, Class<T> hookType, Class<? extends T> actualType) {
-        this.builder = requireNonNull(builder);
-        this.hookType = requireNonNull(hookType);
-        this.actualType = requireNonNull(actualType);
-    }
-
-    /**
-     * Returns the
-     * 
-     * @return the type we are hooked on
-     */
-    public Class<T> hookType() {
-        return hookType;
+    AssignableToHook(HookProcessor controller, Class<? extends T> type) {
+        this.controller = requireNonNull(controller);
+        this.type = requireNonNull(type);
     }
 
     /**
@@ -97,6 +82,6 @@ public final class AssignableToHook<T> implements Hook {
     // Den er det jo paa runtime
     // Check den virker generics, f.eks. med List
     Class<? extends T> type() {
-        return actualType;
+        return type;
     }
 }

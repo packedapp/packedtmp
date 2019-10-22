@@ -27,24 +27,54 @@ import app.packed.hook.OnHook;
 /** This class tests various illegal combinations of hooks that should fail. */
 public class BadHooksTest {
 
+    /** Tests that at least one method annotated with {@link OnHook} is available. */
+    @Test
+    public void noHookMethods() {
+        assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> Hook.Builder.test(MethodHandles.lookup(), NoHookMethods.class, BadHooksTest.class));
+    }
+
     @Test
     public void hookCannotDependOnItSelf() {
         assertThatExceptionOfType(AssertionError.class)
                 .isThrownBy(() -> Hook.Builder.test(MethodHandles.lookup(), HookDependingOnItSelf.class, BadHooksTest.class));
     }
 
+    public static class NoHookMethodsOnSubHook implements Hook {
+
+        static class Builder implements Hook.Builder<NoHookMethodsOnSubHook> {
+
+            /** {@inheritDoc} */
+            @Override
+            public NoHookMethodsOnSubHook build() {
+                throw new AssertionError();
+            }
+        }
+    }
+
+    public static class NoHookMethods implements Hook {
+
+        static class Builder implements Hook.Builder<NoHookMethods> {
+
+            /** {@inheritDoc} */
+            @Override
+            public NoHookMethods build() {
+                throw new AssertionError();
+            }
+        }
+    }
+
     static class HookDependingOnItSelf implements Hook {
 
         static class Builder implements Hook.Builder<HookDependingOnItSelf> {
-
-            @OnHook
-            public void on(HookDependingOnItSelf s) {}
 
             /** {@inheritDoc} */
             @Override
             public HookDependingOnItSelf build() {
                 throw new AssertionError();
             }
+
+            @OnHook
+            public void on(HookDependingOnItSelf s) {}
         }
     }
 }

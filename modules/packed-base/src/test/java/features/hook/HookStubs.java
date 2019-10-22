@@ -15,14 +15,12 @@
  */
 package features.hook;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.VarHandle;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.Hook;
@@ -34,59 +32,57 @@ import testutil.stubs.annotation.Left;
  */
 public class HookStubs {
 
+    public static class Aggregate implements Hook {
+
+        final LeftAnnotatedFields laf;
+
+        Aggregate(LeftAnnotatedFields laf) {
+            this.laf = laf;
+        }
+
+        static class Builder implements Hook.Builder<Aggregate> {
+
+            private LeftAnnotatedFields laf;
+
+            @OnHook
+            public void on(LeftAnnotatedFields laf) {
+                this.laf = laf;
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public Aggregate build() {
+                return new Aggregate(laf);
+            }
+        }
+    }
+
     public static class LeftAnnotatedFields implements Hook {
 
         /** All fields that was annotated with Left */
-        public final List<AnnotatedFieldHook<Left>> hooks;
-
-        private final Map<AnnotatedFieldHook<Left>, MethodHandle> setters;
-
-        private final Map<AnnotatedFieldHook<Left>, MethodHandle> getters;
-        private final Map<AnnotatedFieldHook<Left>, VarHandle> varHandles;
-
-        public MethodHandle setterOf(AnnotatedFieldHook<Left> hook) {
-            return setters.get(hook);
-        }
-
-        public MethodHandle getterOf(AnnotatedFieldHook<Left> hook) {
-            return getters.get(hook);
-        }
-
-        public VarHandle varHandleOf(AnnotatedFieldHook<Left> hook) {
-            return varHandles.get(hook);
-        }
+        public final List<AnnotatedFieldHook<Left>> fields;
 
         private LeftAnnotatedFields(Builder builder) {
-            this.hooks = List.copyOf(builder.hooks);
-            this.setters = Map.copyOf(builder.setters);
-            this.getters = Map.copyOf(builder.getters);
-            this.varHandles = Map.copyOf(builder.varHandles);
+            this.fields = List.copyOf(builder.fields);
         }
 
         private static class Builder implements Hook.Builder<LeftAnnotatedFields> {
 
-            private final ArrayList<AnnotatedFieldHook<Left>> hooks = new ArrayList<>();
-
-            private final HashMap<AnnotatedFieldHook<Left>, MethodHandle> setters = new HashMap<>();
-
-            private final HashMap<AnnotatedFieldHook<Left>, MethodHandle> getters = new HashMap<>();
-
-            private final HashMap<AnnotatedFieldHook<Left>, VarHandle> varHandles = new HashMap<>();
+            private final ArrayList<AnnotatedFieldHook<Left>> fields = new ArrayList<>();
 
             @OnHook
-            private void foo(AnnotatedFieldHook<Left> hook) {
-                hooks.add(hook);
-
-                // These methods cannot be called after build() has been invoked.
-                getters.put(hook, hook.getter());
-                varHandles.put(hook, hook.varHandle());
+            private void foo(AnnotatedFieldHook<Left> hook) throws IllegalAccessException {
+                // These methods cannot be called after build() has been invoked, so test them now
+                assertThat(hook.getter().type()).isSameAs(hook.field().unreflectGetter(MethodHandles.lookup()).type());
+                assertThat(hook.varHandle().varType()).isSameAs(hook.field().unreflectVarHandle(MethodHandles.lookup()).varType());
 
                 if (hook.field().isFinal()) {
-                    assertThatThrownBy(() -> hook.setter()).isExactlyInstanceOf(UnsupportedOperationException.class);
+                    assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> hook.setter());
                 } else {
-                    setters.put(hook, hook.setter());
+                    assertThat(hook.setter().type()).isSameAs(hook.field().unreflectSetter(MethodHandles.lookup()).type());
+                    hook.setter();
                 }
-
+                fields.add(hook);
             }
 
             /** {@inheritDoc} */

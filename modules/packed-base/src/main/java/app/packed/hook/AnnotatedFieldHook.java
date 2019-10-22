@@ -30,7 +30,7 @@ import app.packed.lang.Nullable;
 import app.packed.lang.reflect.FieldDescriptor;
 import app.packed.lang.reflect.UncheckedIllegalAccessException;
 import app.packed.lang.reflect.VarOperator;
-import packed.internal.hook.HookController;
+import packed.internal.hook.HookProcessor;
 import packed.internal.hook.applicator.PackedFieldHookApplicator;
 import packed.internal.moduleaccess.AppPackedHookAccess;
 import packed.internal.moduleaccess.ModuleAccess;
@@ -53,20 +53,26 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
 
             /** {@inheritDoc} */
             @Override
-            public <T extends Annotation> AnnotatedFieldHook<T> newAnnotatedFieldHook(HookController controller, Field field, T annotation) {
-                return new AnnotatedFieldHook<>(controller, field, annotation);
+            public <T extends Annotation> AnnotatedFieldHook<T> newAnnotatedFieldHook(HookProcessor processor, Field field, T annotation) {
+                return new AnnotatedFieldHook<>(processor, field, annotation);
             }
 
             /** {@inheritDoc} */
             @Override
-            public <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(HookController controller, Method method, T annotation) {
-                return new AnnotatedMethodHook<>(controller, method, annotation);
+            public <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(HookProcessor processor, Method method, T annotation) {
+                return new AnnotatedMethodHook<>(processor, method, annotation);
             }
 
             /** {@inheritDoc} */
             @Override
-            public <T extends Annotation> AnnotatedTypeHook<T> newAnnotatedTypeHook(HookController controller, Class<?> type, T annotation) {
-                return new AnnotatedTypeHook<>(controller, type, annotation);
+            public <T extends Annotation> AnnotatedTypeHook<T> newAnnotatedTypeHook(HookProcessor processor, Class<?> type, T annotation) {
+                return new AnnotatedTypeHook<>(processor, type, annotation);
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public <T> AssignableToHook<T> newAssignableToHook(HookProcessor processor, Class<T> type) {
+                return new AssignableToHook<>(processor, type);
             }
         });
     }
@@ -74,8 +80,8 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     /** The annotation value. */
     private final T annotation;
 
-    /** The builder for the component type. */
-    private final HookController controller;
+    /** The processor for this hook. */
+    private final HookProcessor processor;
 
     /** A field descriptor, is lazily created via {@link #field()}. */
     @Nullable
@@ -87,16 +93,16 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     /**
      * Creates a new hook instance.
      * 
-     * @param controller
-     *            a builder for the component type
+     * @param processor
+     *            the processor for this hook
      * @param field
      *            the annotated field
      * @param annotation
      *            the annotation value, no validation whether or not the given annotation value is equivalent to an
      *            annotation value on the specified field is performed
      */
-    AnnotatedFieldHook(HookController controller, Field field, T annotation) {
-        this.controller = requireNonNull(controller);
+    AnnotatedFieldHook(HookProcessor processor, Field field, T annotation) {
+        this.processor = requireNonNull(processor);
         this.field = requireNonNull(field);
         this.annotation = requireNonNull(annotation);
     }
@@ -111,7 +117,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     }
 
     public <E> HookApplicator<E> applicator(VarOperator<E> operator) {
-        controller.checkActive(); // we do not want people to invoke this method, after the aggregate has been built
+        processor.checkOpen(); // we do not want people to invoke this method, after the aggregate has been built
         return new PackedFieldHookApplicator<E>(this, operator, field);
     }
 
@@ -134,7 +140,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
         if (!Modifier.isStatic(field.getModifiers())) {
             throw new UnsupportedOperationException("Cannot invoke this method on a non-static field " + field);
         }
-        controller.checkActive(); // we do not want people to invoke this method, after the aggregate has been built
+        processor.checkOpen(); // we do not want people to invoke this method, after the aggregate has been built
         // Should it be per hook group instead of container model?
         return operator.applyStaticHook(this);
     }
@@ -151,7 +157,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     public AnnotatedFieldHook<T> checkAssignableTo(Class<?> type) {
         requireNonNull(type, "type is null");
         if (!type.isAssignableFrom(field.getType())) {
-            controller.tf().fail("NotAssignable");
+            processor.tf().fail("NotAssignable");
         }
         return this;
     }
@@ -159,7 +165,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     public AnnotatedFieldHook<T> checkExactType(Class<?> type) {
         requireNonNull(type, "type is null");
         if (field.getType() != type) {
-            controller.tf().fail("NotAssignable");
+            processor.tf().fail("NotAssignable");
         }
         return this;
     }
@@ -180,7 +186,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      */
     public AnnotatedFieldHook<T> checkFinal() {
         if (!Modifier.isFinal(field.getModifiers())) {
-            controller.tf().fail(failedModifierCheck(false, "final"));
+            processor.tf().fail(failedModifierCheck(false, "final"));
         }
         return this;
     }
@@ -196,7 +202,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      */
     public AnnotatedFieldHook<T> checkNotFinal() {
         if (Modifier.isFinal(field.getModifiers())) {
-            controller.tf().fail(failedModifierCheck(true, "final"));
+            processor.tf().fail(failedModifierCheck(true, "final"));
         }
         return this;
     }
@@ -213,7 +219,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      */
     public AnnotatedFieldHook<T> checkNotStatic() {
         if (Modifier.isStatic(field.getModifiers())) {
-            controller.tf().fail(failedModifierCheck(true, "static"));
+            processor.tf().fail(failedModifierCheck(true, "static"));
         }
         return this;
     }
@@ -230,7 +236,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      */
     public AnnotatedFieldHook<T> checkStatic() {
         if (!Modifier.isStatic(field.getModifiers())) {
-            controller.tf().fail(failedModifierCheck(false, "static"));
+            processor.tf().fail(failedModifierCheck(false, "static"));
         }
         return this;
     }
@@ -287,7 +293,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      * @see Lookup#unreflectGetter(java.lang.reflect.Field)
      */
     public MethodHandle getter() {
-        return controller.unreflectGetter(field);
+        return processor.unreflectGetter(field);
     }
 
     /**
@@ -308,7 +314,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
         if (Modifier.isFinal(field.getModifiers())) {
             throw new UnsupportedOperationException("Field is final, cannot create a setter for this field, field = " + field);
         }
-        return controller.unreflectSetter(field);
+        return processor.unreflectSetter(field);
     }
 
     /**
@@ -322,6 +328,6 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      * @see Lookup#unreflectVarHandle(java.lang.reflect.Field)
      */
     public VarHandle varHandle() {
-        return controller.unreflectVarhandle(field);
+        return processor.unreflectVarhandle(field);
     }
 }

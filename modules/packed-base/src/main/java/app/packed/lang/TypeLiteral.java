@@ -32,7 +32,7 @@ import app.packed.lang.reflect.ParameterDescriptor;
 import packed.internal.moduleaccess.AppPackedUtilAccess;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
-import packed.internal.util.TypeUtil;
+import packed.internal.util.types.TypeUtil;
 
 /**
  * A TypeLiteral represents a generic type {@code T}. This class is used to work around the limitation that Java does

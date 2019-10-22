@@ -38,7 +38,7 @@ import app.packed.hook.OnHook;
 import app.packed.lang.InvalidDeclarationException;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.StringFormatter;
-import packed.internal.util.ThrowableFactory;
+import packed.internal.util.UncheckedThrowableFactory;
 
 /**
  *
@@ -127,7 +127,7 @@ final class HookClassBuilder {
                     + " that takes " + p1.getParameterizedType());
         }
 
-        MethodHandle mh = cp.unreflect(method, ThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+        MethodHandle mh = cp.unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
 
         annotations.put(annotationType, mh);
     }
@@ -150,7 +150,7 @@ final class HookClassBuilder {
             }
         }
 
-        MethodHandle mh = cp.unreflect(method, ThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+        MethodHandle mh = cp.unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
 
         groups.put(groupType, mh);
         HookBuilderModel oha = HookBuilderModel.of(groupType);

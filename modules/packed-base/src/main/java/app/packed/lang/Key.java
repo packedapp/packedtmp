@@ -37,7 +37,7 @@ import app.packed.lang.reflect.MethodDescriptor;
 import app.packed.lang.reflect.ParameterDescriptor;
 import packed.internal.inject.util.QualifierHelper;
 import packed.internal.util.AnnotationUtil;
-import packed.internal.util.TypeUtil;
+import packed.internal.util.types.TypeUtil;
 
 /**
  * A key defines a unique identifier with two parts: a mandatory type literal and an optional annotation called a

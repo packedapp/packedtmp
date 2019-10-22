@@ -40,6 +40,10 @@ import app.packed.service.Factory;
  */
 public interface ComponentConfiguration<T> {
 
+    // Invoked when the component has gotten its name...
+    // So people can use the path...
+    // ComponentConfiguration<T> onNamed(Consumer<? super ComponentConfiguration<T>> action);
+
     /**
      * Checks that the component is still configurable or throws an {@link IllegalStateException}.
      * <p>

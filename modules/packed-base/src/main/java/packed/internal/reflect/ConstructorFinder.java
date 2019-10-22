@@ -26,9 +26,9 @@ import java.util.stream.Stream;
 
 import app.packed.container.InternalExtensionException;
 import packed.internal.util.StringFormatter;
-import packed.internal.util.ThrowableFactory;
+import packed.internal.util.UncheckedThrowableFactory;
+import packed.internal.util.types.TypeUtil;
 import packed.internal.util.ThrowableUtil;
-import packed.internal.util.TypeUtil;
 
 /**
  * A utility class for finder method handles for constructors.
@@ -48,7 +48,7 @@ public final class ConstructorFinder {
     }
 
     public static MethodHandle find(Class<?> onType, Class<?>... parameterTypes) {
-        return find(onType, ThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, parameterTypes);
+        return find(onType, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, parameterTypes);
     }
 
     /**
@@ -60,7 +60,7 @@ public final class ConstructorFinder {
      *            the parameter types the constructor must take
      * @return a method handle
      */
-    public static <T extends Throwable> MethodHandle find(Class<?> onType, ThrowableFactory<T> tf, Class<?>... parameterTypes) throws T {
+    public static <T extends Throwable> MethodHandle find(Class<?> onType, UncheckedThrowableFactory<T> tf, Class<?>... parameterTypes) throws T {
         if (Modifier.isAbstract(onType.getModifiers())) {
             throw tf.newThrowable("'" + StringFormatter.format(onType) + "' cannot be an abstract class");
         } else if (TypeUtil.isInnerOrLocalClass(onType)) {
@@ -98,7 +98,7 @@ public final class ConstructorFinder {
      *            the parameter types the constructor must take
      * @return a method handle
      */
-    public static <T extends Throwable> MethodHandle find(ClassProcessor cp, ThrowableFactory<T> tf, Class<?>... parameterTypes) throws T {
+    public static <T extends Throwable> MethodHandle find(ClassProcessor cp, UncheckedThrowableFactory<T> tf, Class<?>... parameterTypes) throws T {
         Class<?> onType = cp.clazz();
         if (Modifier.isAbstract(onType.getModifiers())) {
             throw tf.newThrowable("'" + StringFormatter.format(onType) + "' cannot be an abstract class");
@@ -123,7 +123,7 @@ public final class ConstructorFinder {
         return cp.unreflectConstructor(constructor, tf);
     }
 
-    public static <T extends Throwable> MethodHandle findExactlyOnce(ClassProcessor cp, ThrowableFactory<T> tf, MethodType... parameterTypes) throws T {
+    public static <T extends Throwable> MethodHandle findExactlyOnce(ClassProcessor cp, UncheckedThrowableFactory<T> tf, MethodType... parameterTypes) throws T {
         throw new UnsupportedOperationException();
     }
 }

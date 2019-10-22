@@ -24,30 +24,32 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import packed.internal.reflect.ClassProcessor;
-import packed.internal.util.ThrowableFactory;
+import packed.internal.util.UncheckedThrowableFactory;
 
 /**
  *
  */
-public class HookController implements AutoCloseable {
+// HookGate
+public final class HookProcessor implements AutoCloseable {
 
     private final ClassProcessor cp;
 
+    /** Whether or not the processor is closed. */
     private boolean isClosed;
 
-    private final ThrowableFactory<? extends RuntimeException> tf;
+    private final UncheckedThrowableFactory<? extends RuntimeException> tf;
 
     @SuppressWarnings("unchecked")
-    public HookController(ClassProcessor cp, ThrowableFactory<?> tf) {
+    public HookProcessor(ClassProcessor cp, UncheckedThrowableFactory<?> tf) {
         this.cp = requireNonNull(cp);
         // A hack to allow us to throw AssertionError, as we have no way to indicate
         // Error || RuntimeException
-        this.tf = (ThrowableFactory<? extends RuntimeException>) tf;
+        this.tf = (UncheckedThrowableFactory<? extends RuntimeException>) tf;
     }
 
-    public void checkActive() {
+    public void checkOpen() {
         if (isClosed) {
-            throw new IllegalStateException("No longer active");
+            throw new IllegalStateException("The underlying hook processor is no longer open after the hook has been built.");
         }
     }
 
@@ -56,32 +58,32 @@ public class HookController implements AutoCloseable {
         isClosed = true;
     }
 
-    public ThrowableFactory<? extends RuntimeException> tf() {
+    public UncheckedThrowableFactory<? extends RuntimeException> tf() {
         return tf;
     }
 
     public MethodHandle unreflect(Method method) {
-        checkActive();
+        checkOpen();
         return cp.unreflect(method, tf);
     }
 
     public MethodHandle unreflectConstructor(Constructor<?> constructor) {
-        checkActive();
+        checkOpen();
         return cp.unreflectConstructor(constructor, tf);
     }
 
     public MethodHandle unreflectGetter(Field field) {
-        checkActive();
+        checkOpen();
         return cp.unreflectGetter(field, tf);
     }
 
     public MethodHandle unreflectSetter(Field field) {
-        checkActive();
+        checkOpen();
         return cp.unreflectSetter(field, tf);
     }
 
     public VarHandle unreflectVarhandle(Field field) {
-        checkActive();
+        checkOpen();
         return cp.unreflectVarhandle(field, tf);
     }
 }

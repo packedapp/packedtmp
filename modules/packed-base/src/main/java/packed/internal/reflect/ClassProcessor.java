@@ -31,7 +31,7 @@ import java.util.function.Consumer;
 import app.packed.lang.NativeImage;
 import app.packed.lang.reflect.UncheckedIllegalAccessException;
 import packed.internal.util.StringFormatter;
-import packed.internal.util.ThrowableFactory;
+import packed.internal.util.UncheckedThrowableFactory;
 
 /**
  *
@@ -62,7 +62,7 @@ public class ClassProcessor {
         this.registerForNative = registerForNative;
     }
 
-    private <T extends Throwable> void checkPackageOpen(ThrowableFactory<T> tf) throws T {
+    private <T extends Throwable> void checkPackageOpen(UncheckedThrowableFactory<T> tf) throws T {
         String pckName = clazz.getPackageName();
         if (!clazz.getModule().isOpen(pckName, THIS_MODULE)) {
             String otherModule = clazz.getModule().getName();
@@ -93,8 +93,8 @@ public class ClassProcessor {
         MemberFinder.findMethodsAndFields(Object.class, clazz, methodConsumer, fieldConsumer);
     }
 
-    private <T extends Throwable> Lookup lookup(Member member, ThrowableFactory<T> tf) throws T {
-        if (member.getDeclaringClass() != clazz) {
+    private <T extends Throwable> Lookup lookup(Member member, UncheckedThrowableFactory<T> tf) throws T {
+        if (!member.getDeclaringClass().isAssignableFrom(clazz)) {
             throw new IllegalArgumentException("Was " + member.getDeclaringClass() + " expecting " + clazz);
         }
 
@@ -139,7 +139,7 @@ public class ClassProcessor {
      *            the method to unreflect
      * @return a method handle for the unreflected method
      */
-    public <T extends Throwable> MethodHandle unreflect(Method method, ThrowableFactory<T> tf) throws T {
+    public <T extends Throwable> MethodHandle unreflect(Method method, UncheckedThrowableFactory<T> tf) throws T {
         Lookup lookup = lookup(method, tf);
 
         MethodHandle mh;
@@ -155,7 +155,7 @@ public class ClassProcessor {
         return mh;
     }
 
-    public <T extends Throwable> MethodHandle unreflectConstructor(Constructor<?> constructor, ThrowableFactory<T> tf) throws T {
+    public <T extends Throwable> MethodHandle unreflectConstructor(Constructor<?> constructor, UncheckedThrowableFactory<T> tf) throws T {
         Lookup lookup = lookup(constructor, tf);
 
         MethodHandle mh;
@@ -171,7 +171,7 @@ public class ClassProcessor {
         return mh;
     }
 
-    public <T extends Throwable> MethodHandle unreflectGetter(Field field, ThrowableFactory<T> tf) throws T {
+    public <T extends Throwable> MethodHandle unreflectGetter(Field field, UncheckedThrowableFactory<T> tf) throws T {
         Lookup lookup = lookup(field, tf);
 
         MethodHandle mh;
@@ -187,7 +187,7 @@ public class ClassProcessor {
         return mh;
     }
 
-    public <T extends Throwable> MethodHandle unreflectSetter(Field field, ThrowableFactory<T> tf) throws T {
+    public <T extends Throwable> MethodHandle unreflectSetter(Field field, UncheckedThrowableFactory<T> tf) throws T {
         Lookup lookup = lookup(field, tf);
 
         MethodHandle mh;
@@ -203,7 +203,7 @@ public class ClassProcessor {
         return mh;
     }
 
-    public <T extends Throwable> VarHandle unreflectVarhandle(Field field, ThrowableFactory<T> tf) throws T {
+    public <T extends Throwable> VarHandle unreflectVarhandle(Field field, UncheckedThrowableFactory<T> tf) throws T {
         Lookup lookup = lookup(field, tf);
 
         VarHandle vh;

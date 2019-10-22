@@ -23,21 +23,20 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import app.packed.lang.InvalidDeclarationException;
 import app.packed.lang.Nullable;
 import app.packed.lang.reflect.MethodDescriptor;
 import app.packed.lang.reflect.MethodOperator;
 import app.packed.lang.reflect.UncheckedIllegalAccessException;
-import packed.internal.hook.HookController;
+import packed.internal.hook.HookProcessor;
 import packed.internal.hook.applicator.PackedMethodHookApplicator;
+import packed.internal.util.StringFormatter;
 
 /** A hook representing a method annotated with a specific type. */
 public final class AnnotatedMethodHook<T extends Annotation> implements Hook {
 
     /** The annotation value. */
     private final T annotation;
-
-    /** The builder for the component type. */
-    private final HookController controller;
 
     /** A method descriptor, is lazily created via {@link #method()}. */
     @Nullable
@@ -46,9 +45,8 @@ public final class AnnotatedMethodHook<T extends Annotation> implements Hook {
     /** The annotated method. */
     private final Method method;
 
-    /** A method handle setter, is lazily created via {@link #methodHandle()}. */
-    @Nullable
-    private MethodHandle methodHandle;
+    /** The builder for the component type. */
+    private final HookProcessor processor;
 
     /**
      * Creates a new hook instance.
@@ -60,8 +58,8 @@ public final class AnnotatedMethodHook<T extends Annotation> implements Hook {
      * @param annotation
      *            the annotation value
      */
-    AnnotatedMethodHook(HookController controller, Method method, T annotation) {
-        this.controller = requireNonNull(controller);
+    AnnotatedMethodHook(HookProcessor controller, Method method, T annotation) {
+        this.processor = requireNonNull(controller);
         this.method = requireNonNull(method);
         this.annotation = requireNonNull(annotation);
     }
@@ -76,7 +74,7 @@ public final class AnnotatedMethodHook<T extends Annotation> implements Hook {
     }
 
     public <E> HookApplicator<E> applicator(MethodOperator<E> operator) {
-        controller.checkActive();
+        processor.checkOpen();
         return new PackedMethodHookApplicator<E>(this, operator, method);
     }
 
@@ -97,8 +95,47 @@ public final class AnnotatedMethodHook<T extends Annotation> implements Hook {
         if (!Modifier.isStatic(method.getModifiers())) {
             throw new IllegalArgumentException("Cannot invoke this method on a non-static method, method = " + method);
         }
-        controller.checkActive();
+        processor.checkOpen();
         return operator.applyStaticHook(this);
+    }
+
+    /**
+     * Checks that the underlying method is not static. Throwing an {@link InvalidDeclarationException} if the field is
+     * static.
+     * 
+     * @return this hook
+     * @throws InvalidDeclarationException
+     *             if the underlying method is static
+     * 
+     * @see Modifier#isStatic(int)
+     */
+    public AnnotatedMethodHook<T> checkNotStatic() {
+        if (Modifier.isStatic(method.getModifiers())) {
+            processor.tf().fail(failedModifierCheck(true));
+        }
+        return this;
+    }
+
+    /**
+     * Checks that the underlying method is static. Throwing an {@link InvalidDeclarationException} if the field is not
+     * static.
+     * 
+     * @return this hook
+     * @throws InvalidDeclarationException
+     *             if the underlying method is not static
+     * 
+     * @see Modifier#isStatic(int)
+     */
+    public AnnotatedMethodHook<T> checkStatic() {
+        if (!Modifier.isStatic(method.getModifiers())) {
+            processor.tf().fail(failedModifierCheck(false));
+        }
+        return this;
+    }
+
+    private String failedModifierCheck(boolean isNot) {
+        String msg = (isNot ? "not be " : "be ") + "static";
+        return "Fields annotated with @" + annotation.annotationType().getSimpleName() + " must " + msg + ", field = " + StringFormatter.format(method);
     }
 
     /**
@@ -125,10 +162,6 @@ public final class AnnotatedMethodHook<T extends Annotation> implements Hook {
      * @see Lookup#unreflect(java.lang.reflect.Method)
      */
     public MethodHandle methodHandle() {
-        MethodHandle mh = methodHandle;
-        if (mh == null) {
-            methodHandle = mh = controller.unreflect(method);
-        }
-        return mh;
+        return processor.unreflect(method);
     }
 }

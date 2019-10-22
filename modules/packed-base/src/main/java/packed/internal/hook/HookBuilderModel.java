@@ -30,7 +30,7 @@ import packed.internal.reflect.MemberFinder;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
-import packed.internal.util.TypeUtil;
+import packed.internal.util.types.TypeUtil;
 
 /** An {@link HookBuilderModel} wraps information about a {@link Builder}. */
 final class HookBuilderModel {

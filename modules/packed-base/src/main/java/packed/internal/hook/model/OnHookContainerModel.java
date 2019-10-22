@@ -22,7 +22,7 @@ import java.util.Set;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
 import packed.internal.reflect.ClassProcessor;
-import packed.internal.util.ThrowableFactory;
+import packed.internal.util.UncheckedThrowableFactory;
 
 /**
  * Something that contains methods with {@link OnHook}
@@ -65,7 +65,7 @@ public class OnHookContainerModel {
         throw new UnsupportedOperationException();
     }
 
-    public <T extends Throwable> OnHookContainerModel ofBundle(ClassProcessor cp, ThrowableFactory<T> tf, Class<?>... additionalParameterTypes) throws T {
+    public <T extends Throwable> OnHookContainerModel ofBundle(ClassProcessor cp, UncheckedThrowableFactory<T> tf, Class<?>... additionalParameterTypes) throws T {
         // Eneste problem er nok at vi gerne f.eks. vil skrive the Extension
         // Mht til ClassProcessor saa vil vi ogsaa gerne have en MaxType... F.eks. Bundle eller Extension..
         throw new UnsupportedOperationException();

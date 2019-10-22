@@ -20,17 +20,18 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.IdentityHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.Hook;
 import app.packed.hook.Hook.Builder;
-import packed.internal.hook.HookController;
+import packed.internal.hook.HookProcessor;
 import packed.internal.hook.model.OnHookContainerModelBuilder.OnHookEntry;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ClassProcessor;
-import packed.internal.util.ThrowableFactory;
 import packed.internal.util.ThrowableUtil;
+import packed.internal.util.UncheckedThrowableFactory;
 
 /**
  *
@@ -48,14 +49,14 @@ public class UseIt {
         ohs.process();
 
         ClassProcessor cpTarget = new ClassProcessor(caller, target, false);
+        IdentityHashMap<Class<?>, Hook.Builder<?>> result = new IdentityHashMap<>();
         AtomicReference<Hook.Builder<?>> ar = new AtomicReference<>();
         cpTarget.findMethodsAndFields(c -> {}, f -> {
             if (ohs.onHookAnnotatedFields != null) {
                 for (Annotation a : f.getAnnotations()) {
                     OnHookEntry e = ohs.onHookAnnotatedFields.get(a.annotationType());
                     while (e != null) {
-
-                        Hook.Builder<?> builder;
+                        Hook.Builder<?> builder = result.get(e.builder.hookType);
                         if (ar.get() == null) {
                             try {
                                 builder = (Builder<?>) e.builder.constructor.invoke();
@@ -68,7 +69,7 @@ public class UseIt {
                         }
 
                         // e.builder.cp
-                        try (HookController hc = new HookController(cpTarget, ThrowableFactory.ASSERTION_ERROR)) {
+                        try (HookProcessor hc = new HookProcessor(cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR)) {
                             ar.set(builder);
                             AnnotatedFieldHook<Annotation> afh = ModuleAccess.hook().newAnnotatedFieldHook(hc, f, a);
                             try {
@@ -86,6 +87,7 @@ public class UseIt {
         if (ar.get() == null) {
             return null;
         }
+
         return (T) ar.get().build();
     }
 

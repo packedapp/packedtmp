@@ -28,9 +28,9 @@ import app.packed.container.InternalExtensionException;
 // Make rename to something like UncheckedThrowableFactory....
 // Og saa laver vi et check
 
-public abstract class ThrowableFactory<T extends Throwable> {
+public abstract class UncheckedThrowableFactory<T extends Throwable> {
 
-    public static final ThrowableFactory<InternalExtensionException> INTERNAL_EXTENSION_EXCEPTION_FACTORY = new ThrowableFactory<InternalExtensionException>() {
+    public static final UncheckedThrowableFactory<InternalExtensionException> INTERNAL_EXTENSION_EXCEPTION_FACTORY = new UncheckedThrowableFactory<InternalExtensionException>() {
 
         /** {@inheritDoc} */
         @Override
@@ -45,7 +45,7 @@ public abstract class ThrowableFactory<T extends Throwable> {
         }
     };
 
-    public static final ThrowableFactory<AssertionError> ASSERTION_ERROR = new ThrowableFactory<AssertionError>() {
+    public static final UncheckedThrowableFactory<AssertionError> ASSERTION_ERROR = new UncheckedThrowableFactory<AssertionError>() {
 
         /** {@inheritDoc} */
         @Override

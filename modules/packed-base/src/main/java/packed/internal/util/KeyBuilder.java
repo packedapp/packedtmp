@@ -17,6 +17,7 @@ package packed.internal.util;
 
 import app.packed.component.Component;
 import app.packed.lang.Key;
+import app.packed.service.Inject;
 import app.packed.service.Injector;
 import app.packed.service.PrototypeRequest;
 
@@ -37,6 +38,14 @@ public final class KeyBuilder {
 
     /** Cannot instantiate. */
     private KeyBuilder() {}
+
+    public class InjectMe<T> {
+        @Inject
+        public T t;
+    }
+
+    // Factory.of(new InjectMe<@Nullable String>(){}.getClass());
+
 }
 
 // Saa metoder ved hvorfor, the caller knows where/what

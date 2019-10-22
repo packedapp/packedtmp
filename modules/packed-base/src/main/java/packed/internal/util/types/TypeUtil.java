@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util;
+package packed.internal.util.types;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
@@ -177,10 +177,17 @@ public final class TypeUtil {
             return false;
         } else if (type instanceof WildcardType) {
             WildcardType wt = (WildcardType) type;
-            if (wt.getLowerBounds().length > 0 && !isFreeFromTypeVariables(wt.getLowerBounds()[0])) {
-                return false;
+            for (Type t : wt.getLowerBounds()) {
+                if (!isFreeFromTypeVariables(t)) {
+                    return false;
+                }
             }
-            return isFreeFromTypeVariables(wt.getUpperBounds()[0]);// upperBound always defines, as a minimum Object
+            for (Type t : wt.getUpperBounds()) {
+                if (!isFreeFromTypeVariables(t)) {
+                    return false;
+                }
+            }
+            return true;
         } else {
             throw new IllegalArgumentException("Unknown type: " + type);
         }

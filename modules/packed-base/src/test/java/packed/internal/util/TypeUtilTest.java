@@ -36,6 +36,8 @@ import java.util.OptionalLong;
 
 import org.junit.jupiter.api.Test;
 
+import packed.internal.util.types.TypeUtil;
+
 /** Tests {@link TypeUtil}. */
 public class TypeUtilTest {
 
