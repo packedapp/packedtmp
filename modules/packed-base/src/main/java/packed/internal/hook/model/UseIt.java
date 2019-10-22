@@ -20,12 +20,9 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.IdentityHashMap;
-import java.util.concurrent.atomic.AtomicReference;
 
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.Hook;
-import app.packed.hook.Hook.Builder;
 import packed.internal.hook.HookProcessor;
 import packed.internal.hook.model.OnHookContainerModelBuilder.OnHookEntry;
 import packed.internal.moduleaccess.ModuleAccess;
@@ -49,28 +46,28 @@ public class UseIt {
         ohs.process();
 
         ClassProcessor cpTarget = new ClassProcessor(caller, target, false);
-        IdentityHashMap<Class<?>, Hook.Builder<?>> result = new IdentityHashMap<>();
-        AtomicReference<Hook.Builder<?>> ar = new AtomicReference<>();
+
+        Object[] builders = new Object[ohs.sorted.size()];
+
+        Object[] result = new Object[ohs.sorted.size()];
         cpTarget.findMethodsAndFields(c -> {}, f -> {
             if (ohs.onHookAnnotatedFields != null) {
                 for (Annotation a : f.getAnnotations()) {
                     OnHookEntry e = ohs.onHookAnnotatedFields.get(a.annotationType());
                     while (e != null) {
-                        Hook.Builder<?> builder = result.get(e.builder.hookType);
-                        if (ar.get() == null) {
+                        OnHookEntry ee = e;
+                        Object builder = builders[ee.builder.id];
+                        if (builder == null) {
                             try {
-                                builder = (Builder<?>) e.builder.constructor.invoke();
+                                builder = builders[ee.builder.id] = ee.builder.constructor.invoke();
                             } catch (Throwable e2) {
                                 ThrowableUtil.rethrowErrorOrRuntimeException(e2);
                                 throw new UndeclaredThrowableException(e2);
                             }
-                        } else {
-                            builder = ar.get();
                         }
 
                         // e.builder.cp
                         try (HookProcessor hc = new HookProcessor(cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR)) {
-                            ar.set(builder);
                             AnnotatedFieldHook<Annotation> afh = ModuleAccess.hook().newAnnotatedFieldHook(hc, f, a);
                             try {
                                 e.methodHandle.invoke(builder, afh);
@@ -84,11 +81,14 @@ public class UseIt {
                 }
             }
         });
-        if (ar.get() == null) {
-            return null;
+        for (int i = builders.length - 1; i >= 0; i--) {
+            Object h = builders[i];
+            if (h != null) {
+                result[i] = ((Hook.Builder<?>) h).build();
+            }
         }
+        return (T) result[0];
 
-        return (T) ar.get().build();
     }
 
 }
