@@ -24,6 +24,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.Hook;
 import packed.internal.hook.HookProcessor;
+import packed.internal.hook.model.OnHookContainerModel.Link;
 import packed.internal.hook.model.OnHookContainerModelBuilder.LinkedEntry;
 import packed.internal.hook.model.OnHookContainerModelBuilder.OnHookContainerNode;
 import packed.internal.moduleaccess.ModuleAccess;
@@ -34,7 +35,7 @@ import packed.internal.util.UncheckedThrowableFactory;
 /**
  *
  */
-public class UseIt {
+public class UseIt2 {
 
     @SuppressWarnings("unchecked")
     public static <T extends Hook> T test(Lookup caller, Class<T> hookType, Class<?> target) {
@@ -46,45 +47,37 @@ public class UseIt {
         OnHookContainerModelBuilder ohs = new OnHookContainerModelBuilder(cp);
         ohs.process();
 
+        OnHookContainerModel m = new OnHookContainerModel(ohs);
+
         ClassProcessor cpTarget = new ClassProcessor(caller, target, false);
 
         Object[] array = new Object[ohs.sorted.size()];
 
-        cpTarget.findMethodsAndFields(c -> {}, f -> {
-            if (ohs.onHookAnnotatedFields != null) {
-                for (Annotation a : f.getAnnotations()) {
-                    LinkedEntry e = ohs.onHookAnnotatedFields.get(a.annotationType());
-                    while (e != null) {
-                        Object builder = array[e.builder.id];
-                        if (builder == null) {
-                            try {
-                                builder = array[e.builder.id] = e.builder.constructor.invoke();
-                            } catch (Throwable e2) {
-                                ThrowableUtil.rethrowErrorOrRuntimeException(e2);
-                                throw new UndeclaredThrowableException(e2);
-                            }
-                        }
+        HookProcessor hc = new HookProcessor(cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR);
+        cpTarget.findMethodsAndFields(c -> {}, m.onHookAnnotatedFields == null ? null : f -> {
+            for (Annotation a : f.getAnnotations()) {
+                Link link = m.onHookAnnotatedFields.get(a.annotationType());
+                while (link != null) {
+                    Object builder = link.builder(m, array);
 
-                        // e.builder.cp
-                        try (HookProcessor hc = new HookProcessor(cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR)) {
-                            AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(hc, f, a);
-                            try {
-                                e.methodHandle.invoke(builder, hook);
-                            } catch (Throwable e1) {
-                                ThrowableUtil.rethrowErrorOrRuntimeException(e1);
-                                throw new UndeclaredThrowableException(e1);
-                            }
-                        }
-                        e = e.next;
+                    AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(hc, f, a);
+                    try {
+                        link.mh.invoke(builder, hook);
+                    } catch (Throwable e) {
+                        ThrowableUtil.rethrowErrorOrRuntimeException(e);
+                        throw new UndeclaredThrowableException(e);
                     }
+                    link = link.next;
                 }
             }
         });
+        hc.close();
 
         for (int i = array.length - 1; i >= 0; i--) {
             Object h = array[i];
             if (h != null) {
                 array[i] = ((Hook.Builder<?>) h).build();
+
                 OnHookContainerNode ocn = ohs.sorted.get(i);
                 if (ohs.onHookCustomHooks != null) {
                     LinkedEntry e = ohs.onHookCustomHooks.get(ocn.hookType);
@@ -98,7 +91,7 @@ public class UseIt {
                                 throw new UndeclaredThrowableException(e2);
                             }
                         }
-                        // requireNonNull(result[i]);
+
                         try {
                             e.methodHandle.invoke(builder, array[i]);
                         } catch (Throwable e1) {

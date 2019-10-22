@@ -18,6 +18,7 @@ package packed.internal.hook.model;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -32,6 +33,7 @@ import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
 import packed.internal.hook.model.OnHookContainerModelBuilder.LinkedEntry;
 import packed.internal.hook.model.OnHookContainerModelBuilder.OnHookContainerNode;
+import packed.internal.util.ThrowableUtil;
 
 /**
  *
@@ -39,19 +41,19 @@ import packed.internal.hook.model.OnHookContainerModelBuilder.OnHookContainerNod
 public class OnHookContainerModel {
 
     /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedFieldHook} as a parameter. */
-    Map<Class<?>, LinkedEntry> onHookAnnotatedFields;
+    final Map<Class<?>, Link> onHookAnnotatedFields;
 
     /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedMethodHook} as a parameter. */
-    Map<Class<?>, LinkedEntry> onHookAnnotatedMethods;
+    final Map<Class<?>, Link> onHookAnnotatedMethods;
 
     /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedTypeHook} as a parameter. */
-    Map<Class<?>, LinkedEntry> onHookAnnotatedTypes;
+    final Map<Class<?>, Link> onHookAnnotatedTypes;
 
     /** Methods annotated with {@link OnHook} that takes a {@link AssignableToHook} as a parameter. */
-    Map<Class<?>, LinkedEntry> onHookAssignableTos;
+    final Map<Class<?>, Link> onHookAssignableTos;
 
     /** Methods annotated with {@link OnHook} that takes a non-base {@link Hook}. */
-    Map<Class<?>, LinkedEntry> onHookCustomHooks;
+    final Link[] onHookCustomHooks;
 
     final List<MethodHandle> constructors;
 
@@ -61,11 +63,22 @@ public class OnHookContainerModel {
             nodes.add(e.constructor);
         }
         this.onHookAnnotatedFields = convert(b.onHookAnnotatedFields);
+        this.onHookAnnotatedMethods = convert(b.onHookAnnotatedMethods);
+        this.onHookAnnotatedTypes = convert(b.onHookAnnotatedTypes);
+        this.onHookAssignableTos = convert(b.onHookAssignableTos);
+        Map<Class<?>, Link> tmp = convert(b.onHookCustomHooks);
+        onHookCustomHooks = new Link[b.sorted.size()];
+        if (tmp != null) {
+            for (int i = 0; i < b.sorted.size(); i++) {
+                Class<? extends Hook> cl = b.sorted.get(i).hookType;
+                onHookCustomHooks[i] = tmp.get(cl);
+            }
+        }
         this.constructors = List.copyOf(nodes);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static Map<Class<?>, LinkedEntry> convert(IdentityHashMap<Class<?>, OnHookContainerModelBuilder.LinkedEntry> map) {
+    private static Map<Class<?>, Link> convert(IdentityHashMap<Class<?>, OnHookContainerModelBuilder.LinkedEntry> map) {
         if (map == null) {
             return null;
         }
@@ -95,6 +108,19 @@ public class OnHookContainerModel {
             this.mh = requireNonNull(mh);
             this.index = index;
             this.next = next;
+        }
+
+        Object builder(OnHookContainerModel m, Object[] array) {
+            Object builder = array[index];
+            if (builder == null) {
+                try {
+                    builder = array[index] = m.constructors.get(index).invoke();
+                } catch (Throwable e2) {
+                    ThrowableUtil.rethrowErrorOrRuntimeException(e2);
+                    throw new UndeclaredThrowableException(e2);
+                }
+            }
+            return builder;
         }
     }
 }

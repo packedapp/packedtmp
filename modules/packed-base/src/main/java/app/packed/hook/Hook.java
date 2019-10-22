@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.container.InternalExtensionException;
 import app.packed.lang.Nullable;
-import packed.internal.hook.model.UseIt;
+import packed.internal.hook.model.UseIt2;
 
 /**
  * A marker interface
@@ -66,7 +66,7 @@ public interface Hook {
         @Nullable
         static <T extends Hook> T test(Lookup caller, Class<T> hookType, Class<?> target) {
             try {
-                return UseIt.test(caller, hookType, target);
+                return UseIt2.test(caller, hookType, target);
             } catch (InternalExtensionException ee) {
                 AssertionError ar = new AssertionError(ee.getMessage());
                 ar.setStackTrace(ee.getStackTrace());
