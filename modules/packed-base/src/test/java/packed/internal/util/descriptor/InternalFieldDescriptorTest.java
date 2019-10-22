@@ -16,6 +16,7 @@
 package packed.internal.util.descriptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static testutil.util.TestMemberFinder.findField;
 
 import java.lang.reflect.Field;
 
@@ -34,8 +35,8 @@ public class InternalFieldDescriptorTest extends AbstractDescriptorTest {
 
     @Test
     public void basics() throws Exception {
-        validateField(C.getDeclaredField("string"), FieldDescriptor.of(C, "string"));
-        validateField(C.getDeclaredField("C"), FieldDescriptor.of(C, "C"));
+        validateField(findField(C, "string"), FieldDescriptor.of(C, "string"));
+        validateField(findField(C, "C"), FieldDescriptor.of(C, "C"));
     }
 
     static void validateField(Field f, FieldDescriptor d) {

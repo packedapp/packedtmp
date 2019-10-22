@@ -22,8 +22,8 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.container.ContainerSource;
 import app.packed.container.ContainerWirelets;
-import testutil.testutil.AbstractArtifactTest;
-import testutil.testutil.ContainerConfigurationTester;
+import testutil.util.AbstractArtifactTest;
+import testutil.util.ContainerConfigurationTester;
 
 /** Tests that a proper name is generated if the name of a container is not explicitly set. */
 public class NameGeneratedTest extends AbstractArtifactTest {

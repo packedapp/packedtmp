@@ -18,7 +18,7 @@ package tests.component.name;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.ContainerWirelets;
-import testutil.testutil.AbstractArtifactTest;
+import testutil.util.AbstractArtifactTest;
 
 /**
  * Various basic test for naming of components.

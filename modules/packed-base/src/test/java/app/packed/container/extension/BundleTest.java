@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
-import testutil.testutil.AbstractArtifactTest;
+import testutil.util.AbstractArtifactTest;
 
 /** Various Bundle tests. */
 public class BundleTest extends AbstractArtifactTest {

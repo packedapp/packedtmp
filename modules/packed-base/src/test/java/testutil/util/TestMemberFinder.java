@@ -13,11 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package testutil.testutil;
+package testutil.util;
+
+import java.lang.reflect.Field;
 
 /**
  *
  */
-public class ExtensionTest {
+public class TestMemberFinder {
 
+    public static Field findField(Class<?> declaringClass, String name) {
+        try {
+            return declaringClass.getDeclaredField(name);
+        } catch (NoSuchFieldException e) {
+            throw new AssertionError(e);
+        }
+    }
 }

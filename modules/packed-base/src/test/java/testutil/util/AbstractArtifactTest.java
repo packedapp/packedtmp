@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package testutil.testutil;
+package testutil.util;
 
 import static java.util.Objects.requireNonNull;
 

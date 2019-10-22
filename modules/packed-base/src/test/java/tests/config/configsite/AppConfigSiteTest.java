@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.artifact.App;
 import app.packed.component.Component;
 import app.packed.container.BaseBundle;
-import testutil.testutil.ConfigSiteTestHelper;
+import testutil.util.ConfigSiteTestHelper;
 
 /** Tests {@link App#configSite()}. */
 public class AppConfigSiteTest {

@@ -18,6 +18,7 @@ package features.hook;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static testutil.util.TestMemberFinder.findField;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -63,7 +64,7 @@ public class AnnotatedFieldTest {
         assertThat(f.hooks).hasSize(1);
         AnnotatedFieldHook<Left> h = f.hooks.get(0);
         assertThat(h.annotation()).isInstanceOf(Left.class);
-        assertThat(h.field().newField()).isEqualTo(Tester.class.getDeclaredField("ss2"));
+        assertThat(h.field().newField()).isEqualTo(findField(Tester.class, "ss2"));
 
         Tester t = new Tester();
         MethodHandle getter = f.getterOf(h);

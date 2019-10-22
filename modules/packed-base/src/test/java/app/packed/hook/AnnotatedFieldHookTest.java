@@ -19,7 +19,6 @@ package app.packed.hook;
 public class AnnotatedFieldHookTest {
 
     public void test() {
-
         new AnnotatedFieldHook<>(null, null, null);
     }
 }

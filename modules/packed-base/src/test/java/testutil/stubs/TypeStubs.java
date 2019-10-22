@@ -21,6 +21,8 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
+import testutil.util.TestMemberFinder;
+
 /**
  *
  */
@@ -64,14 +66,7 @@ public class TypeStubs {
 
     @SuppressWarnings("unchecked")
     private static <T extends Type> T fromField(String name) {
-        try {
-            return (T) TypeStubs.class.getDeclaredField(name).getGenericType();
-        } catch (NoSuchFieldException e) {
-            throw new Error(e);
-        }
-    }
+        return (T) TestMemberFinder.findField(TypeStubs.class, name).getGenericType();
 
-    public static void main(String[] args) {
-        System.out.println(LIST_STRING);
     }
 }
