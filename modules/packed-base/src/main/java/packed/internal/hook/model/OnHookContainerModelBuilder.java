@@ -226,7 +226,7 @@ public final class OnHookContainerModelBuilder {
 
     static final class Node {
 
-        /** A constructor for any builder that might belong to the node. */
+        /** A constructor for the builder if this node is a custom hook. */
         @Nullable
         final MethodHandle builderConstructor;
 
