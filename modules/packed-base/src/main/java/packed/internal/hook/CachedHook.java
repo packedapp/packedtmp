@@ -19,33 +19,32 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.hook.Hook;
 import app.packed.lang.Nullable;
 
 /**
  *
  */
 // Bruges til at kalde tilbage paa extensions
-final class CachedHook {
+public final class CachedHook<T> {
 
-    private final Hook hook;
+    private final T hook;
 
     private final MethodHandle mh;
 
     @Nullable
-    private CachedHook next;
+    private final CachedHook<T> next;
 
     /**
      * @param mh
      * @param hook
      */
-    CachedHook(MethodHandle mh, Hook hook, @Nullable CachedHook next) {
+    public CachedHook(MethodHandle mh, T hook, @Nullable CachedHook<T> next) {
         this.mh = requireNonNull(mh);
         this.hook = hook;
         this.next = next;
     }
 
-    public Hook hook() {
+    public T hook() {
         return hook;
     }
 
@@ -54,7 +53,7 @@ final class CachedHook {
     }
 
     @Nullable
-    public CachedHook next() {
+    public CachedHook<T> next() {
         return next;
     }
 }

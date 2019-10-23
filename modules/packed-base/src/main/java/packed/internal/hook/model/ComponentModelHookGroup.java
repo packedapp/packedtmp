@@ -13,30 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hook;
+package packed.internal.hook.model;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.IdentityHashMap;
-import java.util.Map.Entry;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.Extension;
-import app.packed.hook.AnnotatedFieldHook;
-import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.Hook;
 import app.packed.lang.Nullable;
 import packed.internal.component.ComponentModel;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.ExtensionModel;
-import packed.internal.moduleaccess.ModuleAccess;
-import packed.internal.util.ThrowableUtil;
+import packed.internal.hook.CachedHook;
+import packed.internal.hook.HookContainerModel;
 
 /**
  * We have a group for a collection of hooks/annotations. A component can have multiple groups.
@@ -66,14 +57,13 @@ public final class ComponentModelHookGroup {
         }
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static final class Builder {
 
         @Nullable
         private CachedHook<Hook> callback;
 
         /** The component model builder that is creating this group. */
-        private final ComponentModel.Builder componentModelBuilder;
+        final ComponentModel.Builder componentModelBuilder;
 
         final HookContainerModel con;
 
@@ -88,48 +78,5 @@ public final class ComponentModelHookGroup {
             this.con = ExtensionModel.of(extensionType).hooks();
         }
 
-        public ComponentModelHookGroup build() {
-
-            for (Entry<Class<?>, Hook.Builder<?>> m : groupBuilders.entrySet()) {
-                MethodHandle mh = con.groups.get(m.getKey());
-                callback = new CachedHook(mh, m.getValue().build(), callback);
-            }
-            return new ComponentModelHookGroup(this);
-        }
-
-        public void onAnnotatedType(Class<?> clazz, Annotation annotation) {
-            AnnotatedTypeHook<Annotation> hook = ModuleAccess.hook().newAnnotatedTypeHook(componentModelBuilder.hookController, clazz, annotation);
-            process(con.findMethodHandleForAnnotatedType(hook), hook);
-        }
-
-        public void onAnnotatedField(Field field, Annotation annotation) {
-            AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(componentModelBuilder.hookController, field, annotation);
-            process(con.findMethodHandleForAnnotatedField(hook), hook);
-        }
-
-        public void onAnnotatedMethod(Method method, Annotation annotation) {
-            AnnotatedMethodHook hook = ModuleAccess.hook().newAnnotatedMethodHook(componentModelBuilder.hookController, method, annotation);
-            process(con.findMethodHandleForAnnotatedMethod(hook), hook);
-        }
-
-        private void process(MethodHandle mh, Hook hook) {
-            Class<?> owner = mh.type().parameterType(0);
-            if (owner == extensionType) {
-                // callbacks.add(new HookCallback(mh, hook, null));
-                throw new Error();
-            } else {
-                processBuilder(mh, (Class<? extends Hook.Builder<?>>) owner, hook);
-            }
-        }
-
-        private void processBuilder(MethodHandle mh, Class<? extends Hook.Builder<?>> builderType, Hook hook) {
-            Hook.Builder<?> b = groupBuilders.computeIfAbsent(builderType, k -> HookBuilderModel.newInstance(builderType));
-            try {
-                mh.invoke(b, hook);
-            } catch (Throwable e) {
-                ThrowableUtil.rethrowErrorOrRuntimeException(e);
-                throw new UndeclaredThrowableException(e);
-            }
-        }
     }
 }

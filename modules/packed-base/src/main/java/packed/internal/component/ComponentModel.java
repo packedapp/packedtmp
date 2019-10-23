@@ -169,11 +169,5 @@ public final class ComponentModel {
             hookController.close();
             return cm;
         }
-
-        // public void checkActive() {
-        // if (isFinished) {
-        // throw new IllegalStateException("This method cannot be called after the component type has processed");
-        // }
-        // }
     }
 }

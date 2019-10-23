@@ -66,10 +66,10 @@ public final class OnHookContainerModel {
     private final Link[] customHooks;
 
     OnHookContainerModel(OnHookContainerModelBuilder b) {
-        this.annotatedFields = convert(b.onHookAnnotatedFields);
-        this.annotatedMethods = convert(b.onHookAnnotatedMethods);
-        this.annotatedTypes = convert(b.onHookAnnotatedTypes);
-        this.assignableTos = convert(b.onHookAssignableTos);
+        this.annotatedFields = convert(b.map.annotatedFields);
+        this.annotatedMethods = convert(b.map.annotatedMethods);
+        this.annotatedTypes = convert(b.map.annotatedTypes);
+        this.assignableTos = convert(b.map.assignableTos);
 
         this.customHooks = new Link[b.sorted.size()];
         this.constructors = new MethodHandle[b.sorted.size()];
@@ -81,7 +81,7 @@ public final class OnHookContainerModel {
                 // We reverse the order here so instead of Dependent->Dependency we get Dependency->Dependent
                 // We do this so we do not automatically invoke methods on the root object. which is never cached.
                 for (LinkedEntry l = b.onHookCustomHooks.get(n.hookType); l != null; l = l.next) {
-                    customHooks[l.builder.id] = new Link(l.methodHandle, i, customHooks[l.builder.id]);
+                    customHooks[l.builder.index] = new Link(l.methodHandle, i, customHooks[l.builder.index]);
                 }
             }
         }
@@ -106,7 +106,7 @@ public final class OnHookContainerModel {
         cpTarget.findMethodsAndFields(c -> {}, annotatedFields == null ? null : f -> {
             for (Annotation a : f.getAnnotations()) {
                 for (Link link = annotatedFields.get(a.annotationType()); link != null; link = link.next) {
-                    Object builder = Link.builderOf(this, link.index, array);
+                    Object builder = builderOf(this, link.index, array);
                     AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(hc, f, a);
                     try {
                         link.mh.invoke(builder, hook);
@@ -122,7 +122,7 @@ public final class OnHookContainerModel {
         // Process everything but the top elements, which we do in the end.
         for (int i = array.length - 1; i >= 0; i--) {
             for (Link link = customHooks[i]; link != null; link = link.next) {
-                Object builder = Link.builderOf(this, i, array);
+                Object builder = builderOf(this, i, array);
                 try {
                     link.mh.invoke(builder, array[link.index]);
                 } catch (Throwable e1) {
@@ -156,12 +156,25 @@ public final class OnHookContainerModel {
             OnHookContainerModelBuilder.LinkedEntry e = (LinkedEntry) v;
             Link l = null;
             for (; e != null; e = e.next) {
-                l = new Link(e.methodHandle, e.builder.id, l);
+                l = new Link(e.methodHandle, e.builder.index, l);
             }
             return l;
         });
 
         return Map.copyOf(m);
+    }
+
+    private static Object builderOf(OnHookContainerModel m, int index, Object[] array) {
+        Object builder = array[index];
+        if (builder == null) {
+            try {
+                builder = array[index] = m.constructors[index].invoke();
+            } catch (Throwable e2) {
+                ThrowableUtil.rethrowErrorOrRuntimeException(e2);
+                throw new UndeclaredThrowableException(e2);
+            }
+        }
+        return builder;
     }
 
     private static class Link {
@@ -177,17 +190,5 @@ public final class OnHookContainerModel {
             this.next = next;
         }
 
-        private static Object builderOf(OnHookContainerModel m, int index, Object[] array) {
-            Object builder = array[index];
-            if (builder == null) {
-                try {
-                    builder = array[index] = m.constructors[index].invoke();
-                } catch (Throwable e2) {
-                    ThrowableUtil.rethrowErrorOrRuntimeException(e2);
-                    throw new UndeclaredThrowableException(e2);
-                }
-            }
-            return builder;
-        }
     }
 }

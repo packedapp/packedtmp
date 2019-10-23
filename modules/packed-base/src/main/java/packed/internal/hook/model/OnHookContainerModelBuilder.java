@@ -49,17 +49,7 @@ public final class OnHookContainerModelBuilder {
     /** Temporary builders. */
     private final IdentityHashMap<Class<?>, OnHookContainerNode> nodes = new IdentityHashMap<>();
 
-    /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedFieldHook} as a parameter. */
-    IdentityHashMap<Class<?>, LinkedEntry> onHookAnnotatedFields;
-
-    /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedMethodHook} as a parameter. */
-    IdentityHashMap<Class<?>, LinkedEntry> onHookAnnotatedMethods;
-
-    /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedTypeHook} as a parameter. */
-    IdentityHashMap<Class<?>, LinkedEntry> onHookAnnotatedTypes;
-
-    /** Methods annotated with {@link OnHook} that takes a {@link AssignableToHook} as a parameter. */
-    IdentityHashMap<Class<?>, LinkedEntry> onHookAssignableTos;
+    final MutableOnHookMap<LinkedEntry> map = new MutableOnHookMap<>();
 
     /** Methods annotated with {@link OnHook} that takes a non-base {@link Hook}. */
     IdentityHashMap<Class<?>, LinkedEntry> onHookCustomHooks;
@@ -116,29 +106,13 @@ public final class OnHookContainerModelBuilder {
         @SuppressWarnings("unchecked")
         Class<? extends Hook> hookType = (Class<? extends Hook>) hook.getType();
         if (hookType == AnnotatedFieldHook.class) {
-            IdentityHashMap<Class<?>, LinkedEntry> o = onHookAnnotatedFields;
-            if (o == null) {
-                o = onHookAnnotatedFields = new IdentityHashMap<>(1);
-            }
-            process(b, hook, method, mh, o);
+            process(b, hook, method, mh, map.annotatedFieldsLazyInit());
         } else if (hookType == AnnotatedMethodHook.class) {
-            IdentityHashMap<Class<?>, LinkedEntry> o = onHookAnnotatedMethods;
-            if (o == null) {
-                o = onHookAnnotatedMethods = new IdentityHashMap<>(1);
-            }
-            process(b, hook, method, mh, o);
+            process(b, hook, method, mh, map.annotatedMethodsLazyInit());
         } else if (hookType == AnnotatedTypeHook.class) {
-            IdentityHashMap<Class<?>, LinkedEntry> o = onHookAnnotatedTypes;
-            if (o == null) {
-                o = onHookAnnotatedTypes = new IdentityHashMap<>(1);
-            }
-            process(b, hook, method, mh, o);
+            process(b, hook, method, mh, map.annotatedTypesLazyInit());
         } else if (hookType == AssignableToHook.class) {
-            IdentityHashMap<Class<?>, LinkedEntry> o = onHookAssignableTos;
-            if (o == null) {
-                o = onHookAssignableTos = new IdentityHashMap<>(1);
-            }
-            process(b, hook, method, mh, o);
+            process(b, hook, method, mh, map.assignableTosLazyInit());
         } else {
             if (hookType == b.cp.clazz()) {
                 tf.newThrowableForMethod("Hook cannot depend on itself", method);
@@ -170,17 +144,9 @@ public final class OnHookContainerModelBuilder {
                 if (b != root) {
                     b.addDependency(node);
                 }
-                return new LinkedEntry(b, method, mh, v);
+                return new LinkedEntry(b, mh, v);
             });
         }
-    }
-
-    static OnHookContainerNode newNode(ClassProcessor cpr, Class<? extends Hook> hookType, UncheckedThrowableFactory<? extends RuntimeException> tf) {
-        Class<?> cl = ClassFinder.findDeclaredClass(hookType, "Builder", Hook.Builder.class);
-        ClassProcessor cp = cpr.spawn(cl);
-        MethodHandle constructor = ConstructorFinder.find(cp, tf);
-        // TODO validate type variable
-        return new OnHookContainerNode(hookType, cp, constructor);
     }
 
     public void process() {
@@ -190,8 +156,7 @@ public final class OnHookContainerModelBuilder {
             b.cp.findMethods(m -> onMethod(bb, m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY));
         }
 
-        boolean isEmpty = onHookAnnotatedFields == null && onHookAnnotatedMethods == null && onHookAnnotatedTypes == null && onHookAssignableTos == null
-                && onHookCustomHooks == null;
+        boolean isEmpty = map.isEmpty() && onHookCustomHooks == null;
 
         // It's okay, for example, for bundle to not have any roots.
         if (isEmpty && Hook.Builder.class.isAssignableFrom(root.cp.clazz())) {
@@ -209,7 +174,7 @@ public final class OnHookContainerModelBuilder {
             for (Iterator<OnHookContainerNode> iterator = nodes.values().iterator(); iterator.hasNext();) {
                 OnHookContainerNode b = iterator.next();
                 if (!b.hasUnresolvedDependencies()) {
-                    b.id = ++index;
+                    b.index = ++index;
                     sorted.add(b);
                     iterator.remove();
                     doContinue = true;
@@ -221,21 +186,41 @@ public final class OnHookContainerModelBuilder {
             // Okay, we got some circles.
             throw new UnsupportedOperationException("Not supported currently");
         }
-
-        // We do really simple
-
-        // Top search
-        // int prevSize = builders.size();
     }
 
-    @SuppressWarnings("unchecked")
-    private void process(OnHookContainerNode b, Parameter p, Method method, MethodHandle mh, IdentityHashMap<?, LinkedEntry> map) {
+    private void process(OnHookContainerNode b, Parameter p, Method method, MethodHandle mh, IdentityHashMap<Class<?>, LinkedEntry> map) {
         ParameterizedType pt = (ParameterizedType) p.getParameterizedType();
         Class<?> typeVariable = (Class<?>) pt.getActualTypeArguments()[0];
-        ((IdentityHashMap<Class<?>, LinkedEntry>) map).compute(typeVariable, (k, v) -> new LinkedEntry(b, method, mh, v));
+        map.compute(typeVariable, (k, v) -> new LinkedEntry(b, mh, v));
+    }
+
+    private static OnHookContainerNode newNode(ClassProcessor cpr, Class<? extends Hook> hookType, UncheckedThrowableFactory<? extends RuntimeException> tf) {
+        Class<?> cl = ClassFinder.findDeclaredClass(hookType, "Builder", Hook.Builder.class);
+        ClassProcessor cp = cpr.spawn(cl);
+        MethodHandle constructor = ConstructorFinder.find(cp, tf);
+        // TODO validate type variable
+        return new OnHookContainerNode(hookType, cp, constructor);
+    }
+
+    static final class LinkedEntry {
+        final OnHookContainerNode builder;
+
+        final MethodHandle methodHandle;
+
+        @Nullable
+        final LinkedEntry next;
+
+        LinkedEntry(OnHookContainerNode builder, MethodHandle methodHandle, LinkedEntry next) {
+            this.builder = requireNonNull(builder);
+            this.methodHandle = requireNonNull(methodHandle);
+            this.next = next;
+        }
     }
 
     static final class OnHookContainerNode {
+
+        @Nullable
+        final MethodHandle constructor;
 
         /** The class processor used for iterating over methods. */
         final ClassProcessor cp;
@@ -243,13 +228,10 @@ public final class OnHookContainerModelBuilder {
         @Nullable
         Set<OnHookContainerNode> dependencies;
 
-        /** The i */
-        int id;
-
-        @Nullable
-        final MethodHandle constructor;
-
         final Class<? extends Hook> hookType;
+
+        /** The index of this node, we use */
+        int index;
 
         OnHookContainerNode(Class<? extends Hook> hookType, ClassProcessor cp, MethodHandle constructor) {
             this.hookType = requireNonNull(hookType);
@@ -271,7 +253,7 @@ public final class OnHookContainerModelBuilder {
         boolean hasUnresolvedDependencies() {
             if (dependencies != null) {
                 for (OnHookContainerNode ch : dependencies) {
-                    if (ch.id == 0) {
+                    if (ch.index == 0) {
                         return true;
                     }
                 }
@@ -284,21 +266,4 @@ public final class OnHookContainerModelBuilder {
             return constructor == null ? "" : constructor.type().toString();
         }
     }
-
-    static final class LinkedEntry {
-        final OnHookContainerNode builder;
-        final Method method;
-        final MethodHandle methodHandle;
-
-        @Nullable
-        final LinkedEntry next;
-
-        LinkedEntry(OnHookContainerNode builder, Method method, MethodHandle methodHandle, LinkedEntry next) {
-            this.builder = requireNonNull(builder);
-            this.method = requireNonNull(method);
-            this.methodHandle = requireNonNull(methodHandle);
-            this.next = next;
-        }
-    }
-
 }
