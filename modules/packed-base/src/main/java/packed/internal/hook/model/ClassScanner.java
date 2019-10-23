@@ -35,9 +35,7 @@ public class ClassScanner {
         ClassProcessor cp = new ClassProcessor(caller, hookType, false);
 
         OnHookContainerModelBuilder ohs = new OnHookContainerModelBuilder(cp);
-        ohs.findAllHooks();
-
-        OnHookContainerModel m = new OnHookContainerModel(ohs);
+        OnHookContainerModel m = ohs.build();
 
         ClassProcessor cpTarget = new ClassProcessor(caller, target, false);
 

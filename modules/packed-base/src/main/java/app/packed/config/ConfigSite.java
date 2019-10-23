@@ -69,6 +69,7 @@ public interface ConfigSite {
 
     Wirelet DISABLE_CAPTURE = null;
     Wirelet ENABLE_CAPTURE = null;
+    // Wirelet.configSite() <- specifies the config site....
 
     /**
      * Performs the given action on each element in configuration site chain, traversing from the top configuration site.

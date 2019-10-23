@@ -52,7 +52,7 @@ public final class OnHookContainerModel {
 
     final ImmutanleOnHookMap<Link> rootLinks;
 
-    public OnHookContainerModel(OnHookContainerModelBuilder b) {
+    OnHookContainerModel(OnHookContainerModelBuilder b) {
         Function<OnHookContainerModelBuilder.LinkedEntry, Link> ff = e -> {
             Link l = null;
             for (; e != null; e = e.next) {

@@ -219,7 +219,8 @@ public final class ExtensionModel<T extends Extension> {
             // Find all methods annotated with @OnHook on the extension
             MemberFinder.findMethods(Extension.class, extensionType, hooks);
 
-            hooks2.findAllHooks();
+            hooks2.build();
+
             return new ExtensionModel<>(this);
         }
     }

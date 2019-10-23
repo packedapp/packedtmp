@@ -38,7 +38,7 @@ public class Stuff {
 
     public static void main(String[] args) {
         OnHookContainerModelBuilder ohs = new OnHookContainerModelBuilder(new ClassProcessor(MethodHandles.lookup(), MyHook.class, false));
-        ohs.findAllHooks();
+        ohs.build();
 
         MyHook mh = Hook.Builder.test(MethodHandles.lookup(), MyHook.class, Stuff.class);
 
