@@ -27,6 +27,7 @@ import app.packed.container.ExtensionComposer;
 import app.packed.container.ExtensionContext;
 import app.packed.container.UseExtension;
 import app.packed.container.Wirelet;
+import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
 import app.packed.lang.Key;
 import app.packed.lang.Qualifier;
@@ -219,8 +220,10 @@ public final class ServiceExtension extends Extension {
         node.provider().addProvidesHook(hook, cc);
     }
 
-    // @OnHook
-    // void onHook(AnnotatedMethodHook<Provide> hook) {}
+    @OnHook
+    void onHook(AnnotatedMethodHook<Provide> hook) {
+        System.out.println("INVOKED");
+    }
 
     /**
      * @param <T>

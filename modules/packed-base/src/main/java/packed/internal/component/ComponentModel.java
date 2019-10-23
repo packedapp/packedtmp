@@ -75,7 +75,7 @@ public final class ComponentModel {
                 Extension e = containerConfiguration.use(group.extensionType);
 
                 // Call the actual methods on the Extension
-                for (CachedHook<Hook> c = group.callback; c != null; c = c.next()) {
+                for (CachedHook<Hook> c = group.customHooksCallback; c != null; c = c.next()) {
                     MethodHandle mh = c.mh();
                     if (mh.type().parameterCount() == 2) {
                         c.mh().invoke(e, c.hook());

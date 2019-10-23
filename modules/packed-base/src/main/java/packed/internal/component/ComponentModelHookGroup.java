@@ -28,50 +28,45 @@ import app.packed.lang.Nullable;
 import packed.internal.container.extension.ExtensionModel;
 import packed.internal.hook.model.CachedHook;
 import packed.internal.hook.model.HookProcessor;
-import packed.internal.hook.model.OnHookContainerModel;
+import packed.internal.hook.model.HookRequest;
 import packed.internal.util.ThrowableUtil;
 
 /**
  * We have a group for a collection of hooks/annotations. A component can have multiple groups.
  */
 // One of these suckers is creates once for each component+Extension combination...
-final class ComponentModelHookGroup {
+final class ComponentModelHookGroup extends HookRequest {
 
-    /** A list of callbacks for the particular extension. */
-    final CachedHook<Hook> callback;
+    /** A list of custom hook callbacks for the particular extension. */
+    final CachedHook<Hook> customHooksCallback;
 
     /** The type of extension that will be activated. */
     final Class<? extends Extension> extensionType;
 
     private ComponentModelHookGroup(Class<? extends Extension> extensionType, CachedHook<Hook> callback) {
         this.extensionType = requireNonNull(extensionType);
-        this.callback = callback;
+        this.customHooksCallback = callback;
     }
 
-    static final class Builder {
+    static final class Builder extends HookRequest.Builder {
 
         @Nullable
         private CachedHook<Hook> callback;
-
-        private final OnHookContainerModel hooks;
 
         private final HookProcessor hookProcessor;
 
         /** The type of extension that will be activated. */
         private final Class<? extends Extension> extensionType;
 
-        private final Object[] array;
-
         public Builder(HookProcessor hookProcessor, Class<? extends Extension> extensionType) {
+            super(ExtensionModel.of(extensionType).hooks());
             this.hookProcessor = requireNonNull(hookProcessor);
             this.extensionType = requireNonNull(extensionType);
-            this.hooks = ExtensionModel.of(extensionType).hooks();
-            this.array = new Object[hooks.size()];
         }
 
         public ComponentModelHookGroup build() {
             try {
-                return new ComponentModelHookGroup(extensionType, hooks.compute(array));
+                return new ComponentModelHookGroup(extensionType, compute());
             } catch (Throwable e) {
                 ThrowableUtil.rethrowErrorOrRuntimeException(e);
                 throw new UndeclaredThrowableException(e);
@@ -83,11 +78,11 @@ final class ComponentModelHookGroup {
         }
 
         public void onAnnotatedField(Field field, Annotation annotation) throws Throwable {
-            hooks.tryProcesAnnotatedField(hookProcessor, field, annotation, array);
+            onAnnotatedField(hookProcessor, field, annotation);
         }
 
         public void onAnnotatedMethod(Method method, Annotation annotation) throws Throwable {
-            hooks.tryProcesAnnotatedMethod(hookProcessor, method, annotation, array);
+            onAnnotatedMethod(hookProcessor, method, annotation);
         }
     }
 }

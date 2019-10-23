@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.service.Injector;
@@ -31,6 +32,7 @@ public class DescriptionTest {
 
     /** Tests service with description on {@link Provide}. */
     @Test
+    @Disabled
     public void injectorWithDescription() {
         Injector i = of(c -> c.provideInstance(new WithDescription()));
         assertThat(i.getDescriptor(Long.class).get().description()).hasValue("niceField");

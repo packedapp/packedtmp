@@ -118,7 +118,7 @@ public final class OnHookContainerModel {
         return (Builder<?>) builder;
     }
 
-    public CachedHook<Hook> compute(Object[] array) throws Throwable {
+    CachedHook<Hook> compute(Object[] array) throws Throwable {
         // This code is same as process()
         for (int i = array.length - 1; i >= 0; i--) {
             for (Link link = customHooks[i]; link != null; link = link.next) {
@@ -144,7 +144,8 @@ public final class OnHookContainerModel {
 
     @Nullable
     public Object process(@Nullable Object parent, ClassProcessor cpTarget, UncheckedThrowableFactory<?> tf) throws Throwable {
-        Object[] array = new Object[builderConstructors.length];
+        HookRequest.Builder hb = new HookRequest.Builder(this);
+        Object[] array = hb.array;
         array[0] = parent;
         HookProcessor hc = new HookProcessor(cpTarget, tf);
         cpTarget.findMethodsAndFields(allLinks.annotatedMethods == null ? null : f -> {
@@ -158,19 +159,7 @@ public final class OnHookContainerModel {
         });
         hc.close();
 
-        // Process everything but the top elements, which we do in the end.
-        for (int i = array.length - 1; i >= 0; i--) {
-            for (Link link = customHooks[i]; link != null; link = link.next) {
-                Hook.Builder<?> builder = builderOf(array, i);
-                link.mh.invoke(builder, array[link.index]);
-            }
-            if (i > 0) {
-                Object h = array[i];
-                if (h != null) {
-                    array[i] = ((Hook.Builder<?>) h).build();
-                }
-            }
-        }
+        compute(array);
         if (parent != null) {
             return parent;
         }
@@ -178,7 +167,7 @@ public final class OnHookContainerModel {
         return a == null ? null : ((Hook.Builder<?>) a).build();
     }
 
-    public int size() {
+    int size() {
         return builderConstructors.length;
     }
 
@@ -192,9 +181,15 @@ public final class OnHookContainerModel {
 
     public void tryProcesAnnotatedMethod(HookProcessor hc, Method method, Annotation annotation, Object[] array) throws Throwable {
         for (Link link = allLinks.annotatedMethods.get(annotation.annotationType()); link != null; link = link.next) {
-            Hook.Builder<?> builder = builderOf(array, link.index);
-            AnnotatedMethodHook<Annotation> hook = ModuleAccess.hook().newAnnotatedMethodHook(hc, method, annotation);
-            link.mh.invoke(builder, hook);
+            System.out.println(link.mh);
+
+            if (link.index == 0) {
+
+            } else {
+                Hook.Builder<?> builder = builderOf(array, link.index);
+                AnnotatedMethodHook<Annotation> hook = ModuleAccess.hook().newAnnotatedMethodHook(hc, method, annotation);
+                link.mh.invoke(builder, hook);
+            }
         }
     }
 
