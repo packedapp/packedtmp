@@ -13,20 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hook.model;
+package packed.internal.hook.model.testit;
 
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.hook.Hook;
+import packed.internal.hook.model.OnHookContainerModel;
+import packed.internal.hook.model.OnHookContainerModelBuilder;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.UncheckedThrowableFactory;
 
 /**
  *
  */
-public class ClassScanner {
+public class UseIt2 {
+
     @SuppressWarnings("unchecked")
     public static <T extends Hook> T test(Lookup caller, Class<T> hookType, Class<?> target) {
         requireNonNull(caller, "caller is null");
@@ -36,9 +39,9 @@ public class ClassScanner {
 
         OnHookContainerModelBuilder ohs = new OnHookContainerModelBuilder(cp);
         OnHookContainerModel m = ohs.build();
-
         ClassProcessor cpTarget = new ClassProcessor(caller, target, false);
 
         return (T) m.process(null, cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR);
     }
+
 }

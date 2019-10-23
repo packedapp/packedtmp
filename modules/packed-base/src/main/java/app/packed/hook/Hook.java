@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.container.InternalExtensionException;
 import app.packed.lang.Nullable;
-import packed.internal.hook.model.UseIt2;
+import packed.internal.hook.model.testit.UseIt2;
 
 /**
  * A marker interface

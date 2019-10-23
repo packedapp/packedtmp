@@ -92,6 +92,5 @@ public final class ComponentModelHookGroup {
         public void onAnnotatedMethod(Method method, Annotation annotation) {
             hooks.tryProcesAnnotatedMethod(hookProcessor, method, annotation, array);
         }
-
     }
 }
