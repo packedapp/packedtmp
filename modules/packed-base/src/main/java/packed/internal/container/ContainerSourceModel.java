@@ -50,7 +50,7 @@ public final class ContainerSourceModel implements ComponentLookup {
 
         @Override
         protected ComponentModel computeValue(Class<?> type) {
-            return new ComponentModel.Builder(ContainerSourceModel.this, type).build();
+            return new ComponentModel.Builder(ContainerSourceModel.this, ContainerSourceModel.this, type).build();
         }
     };
 
@@ -136,7 +136,7 @@ public final class ContainerSourceModel implements ComponentLookup {
 
             @Override
             protected ComponentModel computeValue(Class<?> type) {
-                return new ComponentModel.Builder(PerLookup.this, type).build();
+                return new ComponentModel.Builder(parent, PerLookup.this, type).build();
             }
         };
 

@@ -120,7 +120,7 @@ public final class ComponentModel {
          * @param componentType
          *            the type of component
          */
-        public Builder(ComponentLookup lookup, Class<?> componentType) {
+        public Builder(ContainerSourceModel csm, ComponentLookup lookup, Class<?> componentType) {
             this.cp = lookup.newClassProcessor(componentType, true);
             this.componentType = requireNonNull(componentType);
             this.hookProcessor = new HookProcessor(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);

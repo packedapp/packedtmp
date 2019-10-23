@@ -116,7 +116,7 @@ public final class ExtensionModel<T extends Extension> {
         this.dependencies = Set.copyOf(builder.dependencies);
         this.optional = Optional.of(extensionType); // No need to create an optional every time we need this
 
-        hooks = builder.hooks2.build();
+        hooks = builder.hooks.build();
     }
 
     /**
@@ -172,7 +172,7 @@ public final class ExtensionModel<T extends Extension> {
         private final Class<? extends Extension> extensionType;
 
         /** A builder for all methods annotated with {@link OnHook} on the extension. */
-        private final OnHookContainerModelBuilder hooks2;
+        private final OnHookContainerModelBuilder hooks;
 
         private final List<Class<? extends Extension>> dependencies;
 
@@ -186,7 +186,7 @@ public final class ExtensionModel<T extends Extension> {
             this.extensionType = extensionType;
             this.dependencies = ExtensionDependencyValidator.dependenciesOf(extensionType);
             this.constructor = ConstructorFinder.find(extensionType);
-            this.hooks2 = new OnHookContainerModelBuilder(new ClassProcessor(MethodHandles.lookup(), extensionType, true), ContainerConfiguration.class);
+            this.hooks = new OnHookContainerModelBuilder(new ClassProcessor(MethodHandles.lookup(), extensionType, true), ContainerConfiguration.class);
         }
 
         /**
