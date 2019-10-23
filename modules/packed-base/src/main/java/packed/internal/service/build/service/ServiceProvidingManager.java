@@ -89,13 +89,13 @@ public final class ServiceProvidingManager {
     /**
      * Invoked by the runtime when a component has members (fields or methods) that are annotated with {@link Provide}.
      * 
+     * @param hook
+     *            a provides group object
      * @param cc
      *            the configuration of the annotated component
-     * @param group
-     *            a provides group object
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void addProvidesGroup(ComponentConfiguration cc, AtProvidesHook group) {
+    public void addProvidesHook(AtProvidesHook hook, ComponentConfiguration cc) {
         // The parent node is not added until #provideFactory or #provideInstance
         AbstractComponentBuildEntry parentNode;
         if (cc instanceof InstantiatedComponentConfiguration) {
@@ -111,11 +111,11 @@ public final class ServiceProvidingManager {
         // If any of the @Provide methods are instance members the parent node needs special treatment.
         // As it needs to be constructed, before the field or method can provide services.
         if (parentNode instanceof ComponentFactoryBuildEntry) {
-            ((ComponentFactoryBuildEntry) parentNode).hasInstanceMembers = group.hasInstanceMembers;
+            ((ComponentFactoryBuildEntry) parentNode).hasInstanceMembers = hook.hasInstanceMembers;
         }
 
         // Add each @Provide as children of the parent node
-        for (AtProvides atProvides : group.members) {
+        for (AtProvides atProvides : hook.members) {
             ConfigSite configSite = parentNode.configSite().thenAnnotatedMember(InjectConfigSiteOperations.INJECTOR_PROVIDE, atProvides.provides,
                     atProvides.member);
             ComponentFactoryBuildEntry<?> node = new ComponentFactoryBuildEntry<>(configSite, atProvides, atProvides.methodHandle, parentNode);

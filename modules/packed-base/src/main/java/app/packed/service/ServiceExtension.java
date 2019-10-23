@@ -46,6 +46,7 @@ import packed.internal.service.run.AbstractInjector;
 // * Explicitly requiring services: require, requiOpt & Manual Requirements Management
 // * Exporting services: export, exportAll
 // * Providing components or injectors (provideAll)
+// * Manual Injection
 
 // Future potential functionality
 /// Contracts
@@ -73,6 +74,12 @@ public final class ServiceExtension extends Extension {
     /** Should never be initialized by users. */
     ServiceExtension() {}
 
+    <T> ServiceConfiguration<T> addOptional(Class<T> optional) {
+        // @Inject is allowed, but other annotations, types und so weiter is not...
+
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Exports a service of the specified type.
      * 
@@ -85,33 +92,6 @@ public final class ServiceExtension extends Extension {
      */
     public <T> ServiceConfiguration<T> export(Class<T> key) {
         return export(Key.of(key));
-    }
-
-    /**
-     * Exports a service represented by the specified service configuration. Is typically used together with
-     * {@link #provide(Class)} to export and: <pre>
-     * {@code  
-     * export(provide(Service.class));
-     * }
-     * </pre> or <pre>
-     * {@code  
-     * export(provide(InternalClass.class)).as(ExternalInterface.class);
-     * }
-     * </pre>
-     * 
-     * @param <T>
-     *            the type of service the configuration creates
-     * @param configuration
-     *            the service to export
-     * @return a new service configuration object representing the exported service
-     * @throws IllegalArgumentException
-     *             if the specified configuration object was created by another injection extension instance .
-     */
-    // TODO provide(Foo.class).export instead????
-    public <T> ServiceConfiguration<T> export(ServiceComponentConfiguration<T> configuration) {
-        requireNonNull(configuration, "configuration is null");
-        checkConfigurable();
-        return node.exports().export(configuration, captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
     }
 
     /**
@@ -145,11 +125,64 @@ public final class ServiceExtension extends Extension {
     }
 
     /**
+     * Exports a service represented by the specified service configuration. Is typically used together with
+     * {@link #provide(Class)} to export and: <pre>
+     * {@code  
+     * export(provide(Service.class));
+     * }
+     * </pre> or <pre>
+     * {@code  
+     * export(provide(InternalClass.class)).as(ExternalInterface.class);
+     * }
+     * </pre>
+     * 
+     * @param <T>
+     *            the type of service the configuration creates
+     * @param configuration
+     *            the service to export
+     * @return a new service configuration object representing the exported service
+     * @throws IllegalArgumentException
+     *             if the specified configuration object was created by another injection extension instance .
+     */
+    // TODO provide(Foo.class).export instead????
+    public <T> ServiceConfiguration<T> export(ServiceComponentConfiguration<T> configuration) {
+        requireNonNull(configuration, "configuration is null");
+        checkConfigurable();
+        return node.exports().export(configuration, captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
+    }
+
+    /**
      * 
      */
     public void exportAll() {
         checkConfigurable();
         node.exports().exportAll(captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
+    }
+
+    public <T, C> void inject(Class<T> key, ComponentConfiguration<C> cc, BiConsumer<? super C, ? super T> action) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Registers a
+     * 
+     * @param <T>
+     *            the type of service to inject
+     * @param <C>
+     *            the instance type of the component that should be injected
+     * @param key
+     *            the key of the service to inject
+     * @param cc
+     *            the configuration of the component that should be manually injected
+     * @param action
+     *            the manual injection action
+     * @throws UnsupportedOperationException
+     *             if the component configuration represents a static component
+     */
+    // I guess ComponentContext should also be available here..
+    // What about errors??? Well, it adds the key to the list of requirements...
+    public <T, C> void inject(Key<T> key, ComponentConfiguration<C> cc, BiConsumer<? super C, ? super T> action) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -167,6 +200,19 @@ public final class ServiceExtension extends Extension {
     }
 
     /**
+     * Invoked by the runtime for each component using {@link Provide}.
+     * 
+     * @param hook
+     *            the cached hook
+     * @param cc
+     *            the configuration of the component that uses the annotation
+     */
+    @OnHook
+    void onHook(AtProvidesHook hook, ComponentConfiguration<?> cc) {
+        node.provider().addProvidesHook(hook, cc);
+    }
+
+    /**
      * @param <T>
      *            the type of service to provide
      * @param implementation
@@ -176,12 +222,6 @@ public final class ServiceExtension extends Extension {
      */
     public <T> ServiceComponentConfiguration<T> provide(Class<T> implementation) {
         return provide(Factory.findInjectable(implementation));
-    }
-
-    <T> ServiceConfiguration<T> addOptional(Class<T> optional) {
-        // @Inject is allowed, but other annotations, types und so weiter is not...
-
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -280,20 +320,6 @@ public final class ServiceExtension extends Extension {
         checkConfigurable();
         node.dependencies().require(Dependency.ofOptional(key), captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE_OPTIONAL));
     }
-
-    public <T, C> void inject(Key<T> key, ComponentConfiguration<C> into, BiConsumer<? super C, ? super T> action) {
-
-    }
-
-    @OnHook
-    void onHook(AtProvidesHook g, ComponentConfiguration<?> cc) {
-        node.provider().addProvidesGroup(cc, g);
-    }
-
-    // @OnHook
-    // void onHook(AtInjectHook g, ComponentConfiguration<?> cc) {
-    // // node.provider().addProvidesGroup(cc, g);
-    // }
 
     /** The composer for the service extension. */
     static final class Composer extends ExtensionComposer<ServiceExtension> {
