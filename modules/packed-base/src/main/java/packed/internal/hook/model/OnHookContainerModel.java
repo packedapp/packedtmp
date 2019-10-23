@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
@@ -30,7 +31,6 @@ import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
-import packed.internal.hook.HookProcessor;
 import packed.internal.hook.model.OnHookContainerModelBuilder.LinkedEntry;
 import packed.internal.hook.model.OnHookContainerModelBuilder.OnHookContainerNode;
 import packed.internal.moduleaccess.ModuleAccess;
@@ -41,42 +41,57 @@ import packed.internal.util.UncheckedThrowableFactory;
 /**
  *
  */
-public class OnHookContainerModel {
+public final class OnHookContainerModel {
 
     /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedFieldHook} as a parameter. */
-    private final Map<Class<?>, Link> onHookAnnotatedFields;
+    @Nullable
+    final Map<Class<?>, Link> annotatedFields;
 
     /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedMethodHook} as a parameter. */
-    final Map<Class<?>, Link> onHookAnnotatedMethods;
+    @Nullable
+    final Map<Class<?>, Link> annotatedMethods;
 
     /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedTypeHook} as a parameter. */
-    final Map<Class<?>, Link> onHookAnnotatedTypes;
+    @Nullable
+    final Map<Class<?>, Link> annotatedTypes;
 
     /** Methods annotated with {@link OnHook} that takes a {@link AssignableToHook} as a parameter. */
-    final Map<Class<?>, Link> onHookAssignableTos;
-
-    /** Methods annotated with {@link OnHook} that takes a non-base {@link Hook}. */
-    private final Link[] onHookCustomHooks;
+    @Nullable
+    final Map<Class<?>, Link> assignableTos;
 
     /** Constructors for each builder. */
     private final MethodHandle[] constructors;
 
+    /** Methods annotated with {@link OnHook} that takes a non-base {@link Hook}. */
+    private final Link[] customHooks;
+
     OnHookContainerModel(OnHookContainerModelBuilder b) {
-        this.onHookAnnotatedFields = convert(b.onHookAnnotatedFields);
-        this.onHookAnnotatedMethods = convert(b.onHookAnnotatedMethods);
-        this.onHookAnnotatedTypes = convert(b.onHookAnnotatedTypes);
-        this.onHookAssignableTos = convert(b.onHookAssignableTos);
+        this.annotatedFields = convert(b.onHookAnnotatedFields);
+        this.annotatedMethods = convert(b.onHookAnnotatedMethods);
+        this.annotatedTypes = convert(b.onHookAnnotatedTypes);
+        this.assignableTos = convert(b.onHookAssignableTos);
         Map<Class<?>, Link> tmp = convert(b.onHookCustomHooks);
 
-        this.onHookCustomHooks = new Link[b.sorted.size()];
+        this.customHooks = new Link[b.sorted.size()];
         this.constructors = new MethodHandle[b.sorted.size()];
         for (int i = 0; i < b.sorted.size(); i++) {
             OnHookContainerNode n = b.sorted.get(i);
             constructors[i] = n.constructor;
             if (tmp != null) {
-                onHookCustomHooks[i] = tmp.get(n.hookType);
+                customHooks[i] = tmp.get(n.hookType);
             }
         }
+    }
+
+    /**
+     * Returns an immutable set of all field triggering annotations types.
+     * 
+     * @return the set
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public Set<Class<? extends Annotation>> annotatedFieldHookTypes() {
+        Map<Class<?>, Link> a = annotatedFields;
+        return a == null ? Set.of() : (Set) annotatedFields.keySet();
     }
 
     @Nullable
@@ -84,9 +99,9 @@ public class OnHookContainerModel {
         Object[] array = new Object[constructors.length];
         array[0] = parent;
         HookProcessor hc = new HookProcessor(cpTarget, tf);
-        cpTarget.findMethodsAndFields(c -> {}, onHookAnnotatedFields == null ? null : f -> {
+        cpTarget.findMethodsAndFields(c -> {}, annotatedFields == null ? null : f -> {
             for (Annotation a : f.getAnnotations()) {
-                for (Link link = onHookAnnotatedFields.get(a.annotationType()); link != null; link = link.next) {
+                for (Link link = annotatedFields.get(a.annotationType()); link != null; link = link.next) {
                     Object builder = link.builderOf(this, array);
                     AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(hc, f, a);
                     try {
@@ -105,7 +120,7 @@ public class OnHookContainerModel {
             Object h = array[i];
             if (h != null) {
                 array[i] = ((Hook.Builder<?>) h).build();
-                for (Link link = onHookCustomHooks[i]; link != null; link = link.next) {
+                for (Link link = customHooks[i]; link != null; link = link.next) {
                     Object builder = link.builderOf(this, array);
                     try {
                         link.mh.invoke(builder, array[i]);
@@ -144,8 +159,8 @@ public class OnHookContainerModel {
     }
 
     private static class Link {
-        private final MethodHandle mh;
         private final int index;
+        private final MethodHandle mh;
 
         @Nullable
         private final Link next;

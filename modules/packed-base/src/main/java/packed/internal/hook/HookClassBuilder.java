@@ -24,7 +24,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.util.IdentityHashMap;
-import java.util.Set;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.ExtensionComposer;
@@ -44,9 +43,6 @@ import packed.internal.util.UncheckedThrowableFactory;
  *
  */
 final class HookClassBuilder {
-
-    /** The different types of hooks we allow. */
-    static final Set<Class<?>> BASE_HOOK_TYPES = Set.of(AnnotatedFieldHook.class, AnnotatedMethodHook.class, AnnotatedTypeHook.class, AssignableToHook.class);
 
     public final Class<?> actualType;
 

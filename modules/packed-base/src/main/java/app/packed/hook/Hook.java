@@ -33,6 +33,7 @@ import packed.internal.hook.model.UseIt2;
 // type as type Variable;
 
 // Relations to AOP???
+// Rename to Trigger? Ej.
 public interface Hook {
 
     /** A builder for custom hooks, see {@link Hook} for details about how to implement this interface. */

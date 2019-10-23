@@ -28,10 +28,10 @@ import packed.internal.container.ComponentLookup;
 import packed.internal.container.ContainerSourceModel;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.hook.ComponentModelHookGroup;
-import packed.internal.hook.HookProcessor;
+import packed.internal.hook.model.HookProcessor;
 import packed.internal.reflect.ClassProcessor;
-import packed.internal.util.UncheckedThrowableFactory;
 import packed.internal.util.ThrowableUtil;
+import packed.internal.util.UncheckedThrowableFactory;
 
 /**
  * A model of a container, an instance of this class can only be acquired via
@@ -68,6 +68,7 @@ public final class ComponentModel {
         // Preferable deterministic
         try {
             for (ComponentModelHookGroup group : hookGroups) {
+                // First make sure the extension is activated
                 group.addTo(containerConfiguration, componentConfiguration);
             }
         } catch (Throwable e) {

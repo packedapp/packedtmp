@@ -24,6 +24,7 @@ import packed.internal.util.StringFormatter;
 public class ClassFinder {
 
     // Could have name = type.getSipleName?
+    // TODO include subclasses if they are assignable to type
     public static Class<?> findDeclaredClass(Class<?> declaringClass, String name, Class<?> type) {
         Class<?> groupType = null;
 

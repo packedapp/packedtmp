@@ -28,8 +28,8 @@ import app.packed.lang.Nullable;
 import app.packed.lang.reflect.MethodDescriptor;
 import app.packed.lang.reflect.MethodOperator;
 import app.packed.lang.reflect.UncheckedIllegalAccessException;
-import packed.internal.hook.HookProcessor;
 import packed.internal.hook.applicator.PackedMethodHookApplicator;
+import packed.internal.hook.model.HookProcessor;
 import packed.internal.util.StringFormatter;
 
 /** A hook representing a method annotated with a specific type. */

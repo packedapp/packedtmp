@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
 
-import packed.internal.hook.HookProcessor;
+import packed.internal.hook.model.HookProcessor;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.UncheckedThrowableFactory;
 import testutil.stubs.annotation.AnnotationInstances;
