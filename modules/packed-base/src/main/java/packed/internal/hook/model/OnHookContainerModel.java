@@ -29,6 +29,7 @@ import java.util.function.Function;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
+import app.packed.hook.Hook.Builder;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
 import packed.internal.hook.model.OnHookContainerModelBuilder.LinkedEntry;
@@ -41,13 +42,13 @@ import packed.internal.util.UncheckedThrowableFactory;
  */
 public final class OnHookContainerModel {
 
+    final ImmutanleOnHookMap<Link> allLinks;
+
     /** Constructors for each builder. */
-    private final MethodHandle[] constructors;
+    private final MethodHandle[] builderConstructors;
 
     /** Methods annotated with {@link OnHook} that takes a non-base {@link Hook}. */
     private final Link[] customHooks;
-
-    final ImmutanleOnHookMap<Link> allLinks;
 
     final ImmutanleOnHookMap<Link> rootLinks;
 
@@ -68,7 +69,7 @@ public final class OnHookContainerModel {
         }
 
         this.customHooks = new Link[b.stack.size()];
-        this.constructors = new MethodHandle[b.stack.size()];
+        this.builderConstructors = new MethodHandle[b.stack.size()];
         // for (int i = 0; i < b.result.size(); i++) {
         // OnHookContainerModelBuilder.Node n = b.result.get(i);
         // String msg = i + " " + n.index + " " + n.onNodeContainerType;
@@ -81,7 +82,7 @@ public final class OnHookContainerModel {
         List<OnHookContainerModelBuilder.Node> list = List.copyOf(b.stack);
         for (int i = 0; i < list.size(); i++) {
             OnHookContainerModelBuilder.Node n = list.get(i);// b.result.get(i);
-            constructors[i] = n.builderConstructor;
+            builderConstructors[i] = n.builderConstructor;
             if (b.allEntries.customHooks != null) {
                 // We reverse the order here so instead of Dependent->Dependency we get Dependency->Dependent
                 // We do this so we do not automatically invoke methods on the root object. which is never cached.
@@ -103,23 +104,19 @@ public final class OnHookContainerModel {
         return a == null ? Set.of() : (Set) a.keySet();
     }
 
-    public int size() {
-        return constructors.length;
-    }
-
-    public void tryProcesAnnotatedField(HookProcessor hc, Field f, Annotation a, Object[] array) throws Throwable {
-        for (Link link = allLinks.annotatedFields.get(a.annotationType()); link != null; link = link.next) {
-            Object builder = builderOf(link.index, array);
-            AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(hc, f, a);
-            link.mh.invoke(builder, hook);
+    private Hook.Builder<?> builderOf(Object[] array, int index) throws Throwable {
+        Object builder = array[index];
+        if (builder == null) {
+            builder = array[index] = builderConstructors[index].invoke();
         }
+        return (Builder<?>) builder;
     }
 
     public CachedHook<Hook> compute(Object[] array) throws Throwable {
         for (int i = array.length - 1; i >= 0; i--) {
             for (Link link = customHooks[i]; link != null; link = link.next) {
-                if (constructors[i] != null) {
-                    Object builder = builderOf(i, array);
+                if (builderConstructors[i] != null) {
+                    Hook.Builder<?> builder = builderOf(array, i);
                     link.mh.invoke(builder, array[link.index]);
                 }
             }
@@ -138,17 +135,9 @@ public final class OnHookContainerModel {
         return result;
     }
 
-    public void tryProcesAnnotatedMethod(HookProcessor hc, Method m, Annotation a, Object[] array) throws Throwable {
-        for (Link link = allLinks.annotatedMethods.get(a.annotationType()); link != null; link = link.next) {
-            Object builder = builderOf(link.index, array);
-            AnnotatedMethodHook<Annotation> hook = ModuleAccess.hook().newAnnotatedMethodHook(hc, m, a);
-            link.mh.invoke(builder, hook);
-        }
-    }
-
     @Nullable
     public Object process(@Nullable Object parent, ClassProcessor cpTarget, UncheckedThrowableFactory<?> tf) throws Throwable {
-        Object[] array = new Object[constructors.length];
+        Object[] array = new Object[builderConstructors.length];
         array[0] = parent;
         HookProcessor hc = new HookProcessor(cpTarget, tf);
         cpTarget.findMethodsAndFields(allLinks.annotatedMethods == null ? null : f -> {
@@ -165,7 +154,7 @@ public final class OnHookContainerModel {
         // Process everything but the top elements, which we do in the end.
         for (int i = array.length - 1; i >= 0; i--) {
             for (Link link = customHooks[i]; link != null; link = link.next) {
-                Object builder = builderOf(i, array);
+                Hook.Builder<?> builder = builderOf(array, i);
                 link.mh.invoke(builder, array[link.index]);
             }
             if (i > 0) {
@@ -182,12 +171,24 @@ public final class OnHookContainerModel {
         return a == null ? null : ((Hook.Builder<?>) a).build();
     }
 
-    private Object builderOf(int index, Object[] array) throws Throwable {
-        Object builder = array[index];
-        if (builder == null) {
-            builder = array[index] = constructors[index].invoke();
+    public int size() {
+        return builderConstructors.length;
+    }
+
+    public void tryProcesAnnotatedField(HookProcessor hc, Field field, Annotation annotation, Object[] array) throws Throwable {
+        for (Link link = allLinks.annotatedFields.get(annotation.annotationType()); link != null; link = link.next) {
+            Hook.Builder<?> builder = builderOf(array, link.index);
+            AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(hc, field, annotation);
+            link.mh.invoke(builder, hook);
         }
-        return builder;
+    }
+
+    public void tryProcesAnnotatedMethod(HookProcessor hc, Method method, Annotation annotation, Object[] array) throws Throwable {
+        for (Link link = allLinks.annotatedMethods.get(annotation.annotationType()); link != null; link = link.next) {
+            Hook.Builder<?> builder = builderOf(array, link.index);
+            AnnotatedMethodHook<Annotation> hook = ModuleAccess.hook().newAnnotatedMethodHook(hc, method, annotation);
+            link.mh.invoke(builder, hook);
+        }
     }
 
     private static class Link {
