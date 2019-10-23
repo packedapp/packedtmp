@@ -68,10 +68,10 @@ public final class OnHookContainerModelBuilder {
             ClassProcessor cpx = cp.spawn(cl);
             MethodHandle constructor = ConstructorFinder.find(cpx, tf);
             // TODO validate type variable
-            this.root = new Node(hookType, cpx, constructor);
+            this.root = new Node(cpx, hookType, constructor);
         } else {
             // This cast is not valid... For example is Bundle not a hook.
-            this.root = new Node(cp.clazz(), cp, null);
+            this.root = new Node(cp);
         }
     }
 
@@ -182,7 +182,7 @@ public final class OnHookContainerModelBuilder {
                     MethodHandle constructor = ConstructorFinder.find(cp, tf);
 
                     // TODO validate type variable
-                    Node newNode = new Node(hookType, cp, constructor);
+                    Node newNode = new Node(cp, hookType, constructor);
                     unprocessedNodes.addLast(newNode); // make sure it will be processed at some point.
                     return newNode;
                 });
@@ -236,15 +236,6 @@ public final class OnHookContainerModelBuilder {
         /** The type of the node, is always a sub type of hook, for non-roots */
         final Class<?> type;
 
-        Node(Class<?> type, ClassProcessor cp, MethodHandle constructor) {
-            this.type = requireNonNull(type);
-            this.cp = requireNonNull(cp);
-            this.builderConstructor = constructor;
-            if (constructor != null && constructor.type().returnType() != cp.clazz()) {
-                throw new IllegalStateException("OOPS");
-            }
-        }
-
         /**
          * A node without a builder
          * 
@@ -255,6 +246,15 @@ public final class OnHookContainerModelBuilder {
             this.cp = cp;
             this.type = cp.clazz();
             this.builderConstructor = null;
+        }
+
+        Node(ClassProcessor cp, Class<?> type, MethodHandle constructor) {
+            this.type = requireNonNull(type);
+            this.cp = requireNonNull(cp);
+            this.builderConstructor = constructor;
+            if (constructor != null && constructor.type().returnType() != cp.clazz()) {
+                throw new IllegalStateException("OOPS");
+            }
         }
 
         void addDependency(Node b) {
