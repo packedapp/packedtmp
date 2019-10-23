@@ -24,11 +24,13 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import app.packed.container.Extension;
+import app.packed.container.ExtensionContext;
 import app.packed.container.InternalExtensionException;
 import packed.internal.util.StringFormatter;
+import packed.internal.util.ThrowableUtil;
 import packed.internal.util.UncheckedThrowableFactory;
 import packed.internal.util.types.TypeUtil;
-import packed.internal.util.ThrowableUtil;
 
 /**
  * A utility class for finder method handles for constructors.
@@ -69,15 +71,23 @@ public final class ConstructorFinder {
 
         // First check that we have a constructor with specified parameters.
         // We could use Lookup.findSpecial, but we need to register the constructor if we are generating a native image.
-        Constructor<?> constructor;
+        Constructor<?> constructor = null;
         try {
             constructor = onType.getDeclaredConstructor(parameterTypes);
         } catch (NoSuchMethodException e) {
-            if (parameterTypes.length == 0) {
-                throw tf.newThrowable("'" + StringFormatter.format(onType) + "' must have a no-argument constructor");
-            } else {
-                throw tf.newThrowable("'" + StringFormatter.format(onType) + "' must have a constructor taking ["
-                        + Stream.of(parameterTypes).map(p -> p.getName()).collect(Collectors.joining(",")) + "]");
+            if (Extension.class.isAssignableFrom(onType)) {
+                // Hack
+                try {
+                    constructor = onType.getDeclaredConstructor(ExtensionContext.class);
+                } catch (NoSuchMethodException ignore) {} // Already on failure path
+            }
+            if (constructor == null) {
+                if (parameterTypes.length == 0) {
+                    throw tf.newThrowable("'" + StringFormatter.format(onType) + "' must have a no-argument constructor");
+                } else {
+                    throw tf.newThrowable("'" + StringFormatter.format(onType) + "' must have a constructor taking ["
+                            + Stream.of(parameterTypes).map(p -> p.getName()).collect(Collectors.joining(",")) + "]");
+                }
             }
         }
 
@@ -123,7 +133,8 @@ public final class ConstructorFinder {
         return cp.unreflectConstructor(constructor, tf);
     }
 
-    public static <T extends Throwable> MethodHandle findExactlyOnce(ClassProcessor cp, UncheckedThrowableFactory<T> tf, MethodType... parameterTypes) throws T {
+    public static <T extends Throwable> MethodHandle findExactlyOnce(ClassProcessor cp, UncheckedThrowableFactory<T> tf, MethodType... parameterTypes)
+            throws T {
         throw new UnsupportedOperationException();
     }
 }

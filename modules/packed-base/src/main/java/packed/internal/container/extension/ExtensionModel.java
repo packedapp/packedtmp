@@ -133,16 +133,15 @@ public final class ExtensionModel<T extends Extension> {
      * 
      * @return a new instance of the extension
      */
-    public T newInstance() {
+    public T newInstance(PackedExtensionContext context) {
         // Time goes from around 1000 ns to 12 ns when we cache the method handle.
         // With LambdaMetafactory wrapped in a supplier we can get down to 6 ns
         try {
-            return (T) constructor.invoke();
-            // if (constructor.type().parameterCount() > 0) {
-            // return (T) constructor.invoke(pec);
-            // } else {
-            //
-            // }
+            if (constructor.type().parameterCount() > 0) {
+                return (T) constructor.invoke(context);
+            } else {
+                return (T) constructor.invoke();
+            }
         } catch (Throwable e) {
             ThrowableUtil.rethrowErrorOrRuntimeException(e);
             throw new UndeclaredThrowableException(e);

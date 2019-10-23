@@ -24,11 +24,11 @@ import app.packed.component.ComponentExtension;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
+import app.packed.container.ExtensionContext;
 import app.packed.container.UseExtension;
 import app.packed.container.Wirelet;
 import app.packed.hook.OnHook;
 import app.packed.lang.Key;
-import app.packed.lang.Nullable;
 import app.packed.lang.Qualifier;
 import app.packed.lifecycle.OnStart;
 import packed.internal.container.FixedWireletList;
@@ -68,12 +68,13 @@ import packed.internal.service.run.AbstractInjector;
 @UseExtension(ComponentExtension.class)
 public final class ServiceExtension extends Extension {
 
-    /** The extension node, initialized in {@link ServiceExtension.Composer#configure()}. */
-    @Nullable
-    private ServiceExtensionNode node;
+    /** The extension node that does most of the work. */
+    private final ServiceExtensionNode node;
 
     /** Should never be initialized by users. */
-    ServiceExtension() {}
+    ServiceExtension(ExtensionContext context) {
+        this.node = new ServiceExtensionNode(context);
+    }
 
     <T> ServiceConfiguration<T> addOptional(Class<T> optional) {
         // @Inject is allowed, but other annotations, types und so weiter is not...
@@ -340,8 +341,6 @@ public final class ServiceExtension extends Extension {
         /** {@inheritDoc} */
         @Override
         protected void configure() {
-            onExtensionInstantiated(e -> e.node = new ServiceExtensionNode(e.context()));
-
             onConfigured(e -> e.node.build());
             onInstantiation((e, c) -> e.node.onInstantiate(c));
             onLinkage((p, c) -> p.node.link(c.node));
