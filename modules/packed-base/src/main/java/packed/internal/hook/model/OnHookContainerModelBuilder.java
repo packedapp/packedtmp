@@ -173,7 +173,7 @@ public final class OnHookContainerModelBuilder {
             Class<?> typeVariable = (Class<?>) pt.getActualTypeArguments()[0];
             mm.compute(typeVariable, (k, v) -> new LinkedEntry(node, mh, v));
             if (roots != null) {
-                // roots.compute(typeVariable, (k, v) -> new LinkedEntry(node, mh, v));
+                roots.compute(typeVariable, (k, v) -> new LinkedEntry(node, mh, v));
             }
         } else {
             if (hookType == node.cp.clazz()) {

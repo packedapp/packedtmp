@@ -51,4 +51,15 @@ final class ImmutableOnHookMap<V> {
         this.annotatedTypes = annotatedTypes;
         this.assignableTos = assignableTos;
     }
+
+    @Override
+    public String toString() {
+        return "AnnotatedFields: " + toString(annotatedFields) + ", " + "annotatedMethods: " + toString(annotatedMethods) + ", " + "annotatedTypes: "
+                + toString(annotatedTypes) + ", " + "assignableTos: " + toString(assignableTos) + ", ";
+    }
+
+    private String toString(Map<?, ?> m) {
+        return m == null ? "{}" : m.keySet().toString();
+    }
+
 }

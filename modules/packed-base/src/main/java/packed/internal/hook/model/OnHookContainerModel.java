@@ -70,16 +70,22 @@ public final class OnHookContainerModel {
 
         this.customHooks = new Link[b.stack.size()];
         this.builderConstructors = new MethodHandle[b.stack.size()];
-        // for (int i = 0; i < b.result.size(); i++) {
-        // OnHookContainerModelBuilder.Node n = b.result.get(i);
-        // String msg = i + " " + n.index + " " + n.onNodeContainerType;
-        // if (n.builderConstructor != null) {
-        // msg += " " + n.builderConstructor.type().returnType();
-        // }
-        // System.out.println(msg);
-        // }
-        // System.out.println("-----");
+
         List<OnHookContainerModelBuilder.Node> list = List.copyOf(b.stack);
+        for (int i = 0; i < list.size(); i++) {
+            OnHookContainerModelBuilder.Node n = list.get(i);
+            String msg = i + " " + n.index + " " + n.onNodeContainerType;
+            if (n.builderConstructor != null) {
+                msg += " " + n.builderConstructor.type().returnType();
+            }
+            System.out.println(msg);
+        }
+        if (rootLinks != null) {
+            System.out.println(rootLinks.toString());
+        } else {
+            System.out.println("No rootlinks");
+        }
+        System.out.println("------");
         for (int i = 0; i < list.size(); i++) {
             OnHookContainerModelBuilder.Node n = list.get(i);// b.result.get(i);
             builderConstructors[i] = n.builderConstructor;

@@ -250,6 +250,11 @@ public final class ServiceExtension extends Extension {
         return node.provider().provideFactory(use(ComponentExtension.class).install(factory), factory, factory.factory.function);
     }
 
+    <T> ServiceComponentConfiguration<T> provide(ComponentConfiguration<T> existing) {
+        // IDeen er lidt at man f.eks. kan lave en ComponentExtension et andet sted, som saa kan bruges her.
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Imports all the services from the specified injector and make each service available to other services in the
      * injector being build.
