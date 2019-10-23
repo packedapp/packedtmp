@@ -84,29 +84,34 @@ public final class OnHookContainerModelBuilder {
     private void onMethod(OnHookContainerNode b, Method method, UncheckedThrowableFactory<? extends RuntimeException> tf) {
         if (!method.isAnnotationPresent(OnHook.class)) {
             return;
-        } else if (method.getParameterCount() == 0) {
+        }
+        if (method.getParameterCount() == 0) {
             throw tf.newThrowableForMethod(
                     "Methods annotated with @" + OnHook.class.getSimpleName() + " must take at least 1 parameter of type " + Hook.class.getCanonicalName(),
                     method);
         }
         Parameter[] parameters = method.getParameters();
-        if (!Hook.class.isAssignableFrom(parameters[0].getType())) {
+        Parameter hook = parameters[0];
+        if (!Hook.class.isAssignableFrom(hook.getType())) {
             throw tf.newThrowableForMethod("The first parameter of a method annotated with @" + OnHook.class.getSimpleName() + " must be of type "
                     + Hook.class.getCanonicalName() + " was " + parameters[0].getType(), method);
         }
         for (int i = 1; i < parameters.length; i++) {
+            if (b != root) {
+                throw tf.newThrowableForMethod(
+                        "Implementations of Hook.Builder can only take a single parameter for methods annotated with @" + OnHook.class.getSimpleName(), method);
+            }
             if (Hook.class.isAssignableFrom(parameters[i].getType())) {
                 throw tf.newThrowableForMethod("Cannot have more than 1 parameter that are instances of " + Hook.class.getCanonicalName(), method);
             }
+            //
+            // // If we have additional parameters on our initial builder, check that they are okay.
+            // if (b == root && parameters.length > 1) {
+            // // Check that the remaining are okay
+            // // Probably want these additional parameters in a list to Entry
+            // }
         }
 
-        // If we have additional parameters on our initial builder, check that they are okay.
-        if (b == root && parameters.length > 1) {
-            // Check that the remaining are okay
-            // Probably want these additional parameters in a list to Entry
-        }
-
-        Parameter hook = parameters[0];
         MethodHandle mh = b.cp.unreflect(method, tf);
         @SuppressWarnings("unchecked")
         Class<? extends Hook> hookType = (Class<? extends Hook>) hook.getType();
