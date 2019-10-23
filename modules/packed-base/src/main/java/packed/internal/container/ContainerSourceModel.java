@@ -21,10 +21,13 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.container.Bundle;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
 import app.packed.hook.Hook;
 import app.packed.lang.InvalidDeclarationException;
 import packed.internal.component.ComponentModel;
+import packed.internal.hook.model.OnHookContainerModel;
+import packed.internal.hook.model.OnHookContainerModelBuilder;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.reflect.ClassProcessor;
@@ -69,6 +72,8 @@ public final class ContainerSourceModel implements ComponentLookup {
     /** The type of container source. Typically, a subclass of {@link Bundle}. */
     private final Class<? extends ContainerSource> sourceType;
 
+    public final OnHookContainerModel hooks;
+
     /**
      * Creates a new container source model.
      * 
@@ -80,6 +85,11 @@ public final class ContainerSourceModel implements ComponentLookup {
             throw new InvalidDeclarationException(sourceType + " must not implement/extend " + Hook.class);
         }
         this.sourceType = requireNonNull(sourceType);
+
+        OnHookContainerModelBuilder builder = new OnHookContainerModelBuilder(new ClassProcessor(MethodHandles.lookup(), sourceType, true),
+                ContainerConfiguration.class);
+        hooks = builder.build();
+
     }
 
     /** {@inheritDoc} */
