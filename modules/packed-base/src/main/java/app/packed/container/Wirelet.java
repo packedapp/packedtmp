@@ -30,6 +30,10 @@ import packed.internal.container.FixedWireletList;
 // Interface -> kan man let implementere, uden at fucke et nedarvnings hiraki op
 // Klasse -> Vi kan have protected metoder
 /**
+ * Packlets are an umbrella term for small pieces of glue code, that is used to connect, wire, instantiate, debug your
+ * applications.
+ * 
+ * 
  * A wiring operation is a piece of glue code that wire bundles and/or runtimes together, through operations such as
  * {@link InjectorConfigurator#provideAll(Injector, Wirelet...)} or
  * <p>
@@ -81,6 +85,9 @@ import packed.internal.container.FixedWireletList;
 // Properties
 //// Inherited/Not-Inherited (F.eks. Logging, Disable ConfigSite, ...)
 //// OutputTargetType == App, Injector, Analyze, Image
+
+// Paclet??? Har bare altid syntes det loed lidt dumt naar noget opkaldt efter projektet..
+// Packlet...
 public abstract class Wirelet {
 
     // For bedre error messages. This operation can only be used if the parent or child bundle

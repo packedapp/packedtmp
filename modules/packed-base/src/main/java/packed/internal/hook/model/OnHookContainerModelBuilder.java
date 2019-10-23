@@ -48,7 +48,7 @@ public final class OnHookContainerModelBuilder {
 
     final MutableOnHookMap<LinkedEntry> map = new MutableOnHookMap<>();
 
-    /** Temporary builders. */
+    /** All non-root nodes. */
     private final IdentityHashMap<Class<? extends Hook>, Node> nodes = new IdentityHashMap<>();
 
     /** The root builder. */

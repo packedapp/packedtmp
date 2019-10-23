@@ -22,7 +22,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
+ * Uses an extension
+ * 
+ * 
+ * @see Bundle
+ * @see Extension
+ * 
  */
 // Skriver en warning, hvis man har en extension, hvor alle hooks bruger @UseExtension...
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
