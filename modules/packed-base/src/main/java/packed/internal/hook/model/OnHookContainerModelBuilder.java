@@ -84,19 +84,20 @@ public final class OnHookContainerModelBuilder {
     private void onMethod(OnHookContainerNode b, Method method, UncheckedThrowableFactory<? extends RuntimeException> tf) {
         if (!method.isAnnotationPresent(OnHook.class)) {
             return;
+        } else if (method.getParameterCount() == 0) {
+            throw tf.newThrowableForMethod(
+                    "Methods annotated with @" + OnHook.class.getSimpleName() + " must take at least 1 parameter of type " + Hook.class.getCanonicalName(),
+                    method);
         }
-        int hookIndex = -1;
         Parameter[] parameters = method.getParameters();
-        for (int i = 0; i < parameters.length; i++) {
-            if (Hook.class.isAssignableFrom(parameters[i].getType())) {
-                if (hookIndex != -1) {
-                    throw tf.newThrowableForMethod("Cannot have more than 1 parameter that are instances of " + Hook.class.getCanonicalName(), method);
-                }
-                hookIndex = i;
-            }
+        if (!Hook.class.isAssignableFrom(parameters[0].getType())) {
+            throw tf.newThrowableForMethod("The first parameter of a method annotated with @" + OnHook.class.getSimpleName() + " must be of type "
+                    + Hook.class.getCanonicalName() + " was " + parameters[0].getType(), method);
         }
-        if (hookIndex == -1) {
-            throw tf.newThrowableForMethod("Atleast one parameter most be an instance of " + Hook.class.getCanonicalName(), method);
+        for (int i = 1; i < parameters.length; i++) {
+            if (Hook.class.isAssignableFrom(parameters[i].getType())) {
+                throw tf.newThrowableForMethod("Cannot have more than 1 parameter that are instances of " + Hook.class.getCanonicalName(), method);
+            }
         }
 
         // If we have additional parameters on our initial builder, check that they are okay.
@@ -105,7 +106,7 @@ public final class OnHookContainerModelBuilder {
             // Probably want these additional parameters in a list to Entry
         }
 
-        Parameter hook = parameters[hookIndex];
+        Parameter hook = parameters[0];
         MethodHandle mh = b.cp.unreflect(method, tf);
         @SuppressWarnings("unchecked")
         Class<? extends Hook> hookType = (Class<? extends Hook>) hook.getType();
@@ -296,16 +297,3 @@ public final class OnHookContainerModelBuilder {
     }
 
 }
-// if rootClass.getModule() != hook.class.getModule and hook.class.getModule() is not open...
-/// Complain.
-
-// STEP 1
-/// Find All methods
-/// Validate Parameters
-/// Go into dependencies...
-
-// Find them, validate parameters
-// Validate we can make MethodHandle
-
-// Step 2
-// Validate no

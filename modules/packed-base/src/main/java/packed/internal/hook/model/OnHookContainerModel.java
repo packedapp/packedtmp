@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
@@ -63,10 +62,6 @@ public class OnHookContainerModel {
     private final MethodHandle[] constructors;
 
     OnHookContainerModel(OnHookContainerModelBuilder b) {
-        ArrayList<MethodHandle> nodes = new ArrayList<>();
-        for (OnHookContainerNode e : b.sorted) {
-            nodes.add(e.constructor);
-        }
         this.onHookAnnotatedFields = convert(b.onHookAnnotatedFields);
         this.onHookAnnotatedMethods = convert(b.onHookAnnotatedMethods);
         this.onHookAnnotatedTypes = convert(b.onHookAnnotatedTypes);
