@@ -109,7 +109,7 @@ public final class OnHookContainerModel {
 
     public void tryProcesAnnotatedField(HookProcessor hc, Field f, Annotation a, Object[] array) throws Throwable {
         for (Link link = allLinks.annotatedFields.get(a.annotationType()); link != null; link = link.next) {
-            Object builder = builderOf(this, link.index, array);
+            Object builder = builderOf(link.index, array);
             AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(hc, f, a);
             link.mh.invoke(builder, hook);
         }
@@ -119,7 +119,7 @@ public final class OnHookContainerModel {
         for (int i = array.length - 1; i >= 0; i--) {
             for (Link link = customHooks[i]; link != null; link = link.next) {
                 if (constructors[i] != null) {
-                    Object builder = builderOf(this, i, array);
+                    Object builder = builderOf(i, array);
                     link.mh.invoke(builder, array[link.index]);
                 }
             }
@@ -140,7 +140,7 @@ public final class OnHookContainerModel {
 
     public void tryProcesAnnotatedMethod(HookProcessor hc, Method m, Annotation a, Object[] array) throws Throwable {
         for (Link link = allLinks.annotatedMethods.get(a.annotationType()); link != null; link = link.next) {
-            Object builder = builderOf(this, link.index, array);
+            Object builder = builderOf(link.index, array);
             AnnotatedMethodHook<Annotation> hook = ModuleAccess.hook().newAnnotatedMethodHook(hc, m, a);
             link.mh.invoke(builder, hook);
         }
@@ -165,7 +165,7 @@ public final class OnHookContainerModel {
         // Process everything but the top elements, which we do in the end.
         for (int i = array.length - 1; i >= 0; i--) {
             for (Link link = customHooks[i]; link != null; link = link.next) {
-                Object builder = builderOf(this, i, array);
+                Object builder = builderOf(i, array);
                 link.mh.invoke(builder, array[link.index]);
             }
             if (i > 0) {
@@ -182,10 +182,10 @@ public final class OnHookContainerModel {
         return a == null ? null : ((Hook.Builder<?>) a).build();
     }
 
-    private static Object builderOf(OnHookContainerModel m, int index, Object[] array) throws Throwable {
+    private Object builderOf(int index, Object[] array) throws Throwable {
         Object builder = array[index];
         if (builder == null) {
-            builder = array[index] = m.constructors[index].invoke();
+            builder = array[index] = constructors[index].invoke();
         }
         return builder;
     }
