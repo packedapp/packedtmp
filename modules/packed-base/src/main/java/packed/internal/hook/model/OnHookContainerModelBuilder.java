@@ -60,7 +60,7 @@ public final class OnHookContainerModelBuilder {
 
     private final ArrayDeque<Node> unprocessedNodes = new ArrayDeque<>();
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({ "unchecked" })
     public OnHookContainerModelBuilder(ClassProcessor cp, Class<?>... additionalParameters) {
         if (Hook.class.isAssignableFrom(cp.clazz())) {
             Class<? extends Hook> hookType = (Class<? extends Hook>) cp.clazz();
@@ -68,10 +68,10 @@ public final class OnHookContainerModelBuilder {
             ClassProcessor cpx = cp.spawn(cl);
             MethodHandle constructor = ConstructorFinder.find(cpx, tf);
             // TODO validate type variable
-            this.root = new Node(hookType, cpx, constructor);
+            this.root = new Node(cpx, constructor);
         } else {
             // This cast is not valid... For example is Bundle not a hook.
-            this.root = new Node((Class) cp.clazz(), cp, null);
+            this.root = new Node(cp, null);
         }
     }
 
@@ -142,7 +142,7 @@ public final class OnHookContainerModelBuilder {
                     MethodHandle constructor = ConstructorFinder.find(cp, tf);
 
                     // TODO validate type variable
-                    Node newNode = new Node(hookType, cp, constructor);
+                    Node newNode = new Node(cp, constructor);
                     unprocessedNodes.addLast(newNode); // make sure it will be processed at some point.
                     return newNode;
                 });
@@ -162,7 +162,7 @@ public final class OnHookContainerModelBuilder {
         }
     }
 
-    public void process() {
+    public void findAllHooks() {
         // Find all methods annotated with @OnHook and process them.
         root.cp.findMethods(m -> onMethod(root, m));
         for (Node b = unprocessedNodes.pollFirst(); b != null; b = unprocessedNodes.pollFirst()) {
@@ -220,6 +220,7 @@ public final class OnHookContainerModelBuilder {
 
     static final class Node {
 
+        /** */
         @Nullable
         final MethodHandle constructor;
 
@@ -229,13 +230,10 @@ public final class OnHookContainerModelBuilder {
         @Nullable
         Set<Node> dependencies;
 
-        final Class<? extends Hook> hookType;
-
         /** The index of this node, we use */
         int index;
 
-        Node(Class<? extends Hook> hookType, ClassProcessor cp, MethodHandle constructor) {
-            this.hookType = requireNonNull(hookType);
+        Node(ClassProcessor cp, MethodHandle constructor) {
             this.cp = requireNonNull(cp);
             this.constructor = constructor;
             if (constructor != null && constructor.type().returnType() != cp.clazz()) {

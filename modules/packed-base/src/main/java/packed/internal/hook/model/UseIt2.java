@@ -36,7 +36,7 @@ public class UseIt2 {
         ClassProcessor cp = new ClassProcessor(caller, hookType, false);
 
         OnHookContainerModelBuilder ohs = new OnHookContainerModelBuilder(cp);
-        ohs.process();
+        ohs.findAllHooks();
 
         OnHookContainerModel m = new OnHookContainerModel(ohs);
         ClassProcessor cpTarget = new ClassProcessor(caller, target, false);
