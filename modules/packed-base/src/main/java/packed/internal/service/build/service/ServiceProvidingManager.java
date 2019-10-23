@@ -95,7 +95,7 @@ public final class ServiceProvidingManager {
      *            a provides group object
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void addProvidesGroup(ComponentConfiguration cc, AtProvidesGroup group) {
+    public void addProvidesGroup(ComponentConfiguration cc, AtProvidesHook group) {
         // The parent node is not added until #provideFactory or #provideInstance
         AbstractComponentBuildEntry parentNode;
         if (cc instanceof InstantiatedComponentConfiguration) {

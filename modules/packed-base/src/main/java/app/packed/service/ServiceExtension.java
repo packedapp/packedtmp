@@ -34,7 +34,7 @@ import packed.internal.container.FixedWireletList;
 import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.build.ServiceWireletPipeline;
-import packed.internal.service.build.service.AtProvidesGroup;
+import packed.internal.service.build.service.AtProvidesHook;
 import packed.internal.service.run.AbstractInjector;
 
 /**
@@ -286,7 +286,7 @@ public final class ServiceExtension extends Extension {
     }
 
     @OnHook
-    void onHook(AtProvidesGroup g, ComponentConfiguration<?> cc) {
+    void onHook(AtProvidesHook g, ComponentConfiguration<?> cc) {
         node.provider().addProvidesGroup(cc, g);
     }
 

@@ -33,7 +33,7 @@ import app.packed.service.Inject;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceContract;
 import packed.internal.inject.hooks.AtInject;
-import packed.internal.inject.hooks.AtInjectGroup;
+import packed.internal.inject.hooks.AtInjectHook;
 import packed.internal.service.build.dependencies.DependencyManager;
 import packed.internal.service.build.export.ExportManager;
 import packed.internal.service.build.export.ExportedBuildEntry;
@@ -173,7 +173,7 @@ public final class ServiceExtensionNode {
      * @param group
      *            a inject group object
      */
-    public void onInjectGroup(ComponentConfiguration<?> cc, AtInjectGroup group) {
+    public void onInjectGroup(ComponentConfiguration<?> cc, AtInjectHook group) {
         // new Exception().printStackTrace();
         // Hvis den er instans, Singlton Factory -> Saa skal det vel med i en liste
         // Hvis det er en ManyProvide-> Saa skal vi jo egentlig bare gemme den til den bliver instantieret.

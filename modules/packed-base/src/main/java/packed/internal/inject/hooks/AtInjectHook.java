@@ -30,7 +30,7 @@ import app.packed.service.Inject;
 /**
  *
  */
-public final class AtInjectGroup implements Hook {
+public final class AtInjectHook implements Hook {
 
     /** An immutable map of all providing members. */
     public final List<AtInject> members;
@@ -41,12 +41,12 @@ public final class AtInjectGroup implements Hook {
      * @param builder
      *            the builder to create the group for
      */
-    private AtInjectGroup(Builder builder) {
+    private AtInjectHook(Builder builder) {
         this.members = builder.members == null ? List.of() : List.copyOf(builder.members);
     }
 
-    /** A builder for {@link AtInjectGroup}. */
-    public final static class Builder implements Hook.Builder<AtInjectGroup> {
+    /** A builder for {@link AtInjectHook}. */
+    public final static class Builder implements Hook.Builder<AtInjectHook> {
 
         /** A set of all keys for every provided service. */
         private final ArrayList<AtInject> members = new ArrayList<>();
@@ -57,8 +57,8 @@ public final class AtInjectGroup implements Hook {
          * @return the new group
          */
         @Override
-        public AtInjectGroup build() {
-            return new AtInjectGroup(this);
+        public AtInjectHook build() {
+            return new AtInjectHook(this);
         }
 
         @OnHook

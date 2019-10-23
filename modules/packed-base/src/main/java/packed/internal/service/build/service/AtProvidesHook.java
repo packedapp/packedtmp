@@ -33,7 +33,7 @@ import app.packed.service.Provide;
 import packed.internal.util.ErrorMessageBuilder;
 
 /** Information about fields and methods annotated with {@link Provide}. */
-public final class AtProvidesGroup implements Hook {
+public final class AtProvidesHook implements Hook {
 
     /** Whether or not there are any non-static providing fields or methods. */
     final boolean hasInstanceMembers;
@@ -47,13 +47,13 @@ public final class AtProvidesGroup implements Hook {
      * @param builder
      *            the builder to create the group for
      */
-    private AtProvidesGroup(Builder builder) {
+    private AtProvidesHook(Builder builder) {
         this.members = builder.members == null ? List.of() : List.copyOf(builder.members.values());
         this.hasInstanceMembers = builder.hasInstanceMembers;
     }
 
-    /** A builder for {@link AtProvidesGroup}. */
-    public final static class Builder implements Hook.Builder<AtProvidesGroup> {
+    /** A builder for {@link AtProvidesHook}. */
+    public final static class Builder implements Hook.Builder<AtProvidesHook> {
 
         /** Whether or not there are any non-static providing fields or methods. */
         private boolean hasInstanceMembers;
@@ -67,8 +67,8 @@ public final class AtProvidesGroup implements Hook {
          * @return the new group
          */
         @Override
-        public AtProvidesGroup build() {
-            return new AtProvidesGroup(this);
+        public AtProvidesHook build() {
+            return new AtProvidesHook(this);
         }
 
         /**
