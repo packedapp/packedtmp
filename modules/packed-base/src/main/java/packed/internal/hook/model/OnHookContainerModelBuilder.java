@@ -47,7 +47,7 @@ import packed.internal.util.types.TypeUtil;
 public final class OnHookContainerModelBuilder {
 
     /** Temporary builders. */
-    private final IdentityHashMap<Class<?>, OnHookContainerNode> nodes = new IdentityHashMap<>();
+    private final IdentityHashMap<Class<? extends Hook>, OnHookContainerNode> nodes = new IdentityHashMap<>();
 
     final MutableOnHookMap<LinkedEntry> map = new MutableOnHookMap<>();
 
@@ -117,7 +117,7 @@ public final class OnHookContainerModelBuilder {
             TypeUtil.checkClassIsInstantiable(hookType);
             IdentityHashMap<Class<?>, LinkedEntry> onHookCustomHooks = map.customHooksLazyInit();
             onHookCustomHooks.compute(hookType, (k, v) -> {
-                OnHookContainerNode node = nodes.computeIfAbsent(k, ignore -> {
+                OnHookContainerNode node = nodes.computeIfAbsent(hookType, ignore -> {
                     Class<?> cl = ClassFinder.findDeclaredClass(hookType, "Builder", Hook.Builder.class);
                     ClassProcessor cp = root.cp.spawn(cl);
                     MethodHandle constructor = ConstructorFinder.find(cp, tf);
