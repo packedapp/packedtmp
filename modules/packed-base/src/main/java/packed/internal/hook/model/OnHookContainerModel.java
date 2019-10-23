@@ -77,10 +77,10 @@ public final class OnHookContainerModel {
         for (int i = 0; i < b.sorted.size(); i++) {
             OnHookContainerNode n = b.sorted.get(i);
             constructors[i] = n.constructor;
-            if (b.onHookCustomHooks != null) {
+            if (b.map.customHooks != null) {
                 // We reverse the order here so instead of Dependent->Dependency we get Dependency->Dependent
                 // We do this so we do not automatically invoke methods on the root object. which is never cached.
-                for (LinkedEntry l = b.onHookCustomHooks.get(n.hookType); l != null; l = l.next) {
+                for (LinkedEntry l = b.map.customHooks.get(n.hookType); l != null; l = l.next) {
                     customHooks[l.builder.index] = new Link(l.methodHandle, i, customHooks[l.builder.index]);
                 }
             }

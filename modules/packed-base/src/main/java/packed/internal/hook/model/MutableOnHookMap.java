@@ -21,6 +21,7 @@ import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.AssignableToHook;
+import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 
 /**
@@ -40,6 +41,9 @@ final class MutableOnHookMap<V> {
     /** Methods annotated with {@link OnHook} that takes a {@link AssignableToHook} as a parameter. */
     IdentityHashMap<Class<?>, V> assignableTos;
 
+    /** Methods annotated with {@link OnHook} that takes a non-base {@link Hook}. */
+    IdentityHashMap<Class<?>, V> customHooks;
+
     public IdentityHashMap<Class<?>, V> annotatedFieldsLazyInit() {
         IdentityHashMap<Class<?>, V> a = annotatedFields;
         if (a == null) {
@@ -49,7 +53,7 @@ final class MutableOnHookMap<V> {
     }
 
     public boolean isEmpty() {
-        return annotatedFields == null && annotatedMethods == null && annotatedTypes == null && assignableTos == null;
+        return annotatedFields == null && annotatedMethods == null && annotatedTypes == null && assignableTos == null && customHooks == null;
     }
 
     public IdentityHashMap<Class<?>, V> annotatedMethodsLazyInit() {
@@ -72,6 +76,14 @@ final class MutableOnHookMap<V> {
         IdentityHashMap<Class<?>, V> a = assignableTos;
         if (a == null) {
             a = assignableTos = new IdentityHashMap<>(1);
+        }
+        return a;
+    }
+
+    public IdentityHashMap<Class<?>, V> customHooksLazyInit() {
+        IdentityHashMap<Class<?>, V> a = customHooks;
+        if (a == null) {
+            a = customHooks = new IdentityHashMap<>(1);
         }
         return a;
     }

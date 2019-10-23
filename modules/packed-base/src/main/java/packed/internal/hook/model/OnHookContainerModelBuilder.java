@@ -51,9 +51,6 @@ public final class OnHookContainerModelBuilder {
 
     final MutableOnHookMap<LinkedEntry> map = new MutableOnHookMap<>();
 
-    /** Methods annotated with {@link OnHook} that takes a non-base {@link Hook}. */
-    IdentityHashMap<Class<?>, LinkedEntry> onHookCustomHooks;
-
     /** The root builder. */
     private final OnHookContainerNode root;
 
@@ -118,10 +115,7 @@ public final class OnHookContainerModelBuilder {
                 tf.newThrowableForMethod("Hook cannot depend on itself", method);
             }
             TypeUtil.checkClassIsInstantiable(hookType);
-            IdentityHashMap<Class<?>, LinkedEntry> n = onHookCustomHooks;
-            if (n == null) {
-                n = onHookCustomHooks = new IdentityHashMap<>(1);
-            }
+            IdentityHashMap<Class<?>, LinkedEntry> onHookCustomHooks = map.customHooksLazyInit();
             onHookCustomHooks.compute(hookType, (k, v) -> {
                 OnHookContainerNode node = nodes.computeIfAbsent(k, ignore -> {
                     Class<?> cl = ClassFinder.findDeclaredClass(hookType, "Builder", Hook.Builder.class);
@@ -156,10 +150,8 @@ public final class OnHookContainerModelBuilder {
             b.cp.findMethods(m -> onMethod(bb, m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY));
         }
 
-        boolean isEmpty = map.isEmpty() && onHookCustomHooks == null;
-
         // It's okay, for example, for bundle to not have any roots.
-        if (isEmpty && Hook.Builder.class.isAssignableFrom(root.cp.clazz())) {
+        if (map.isEmpty() && Hook.Builder.class.isAssignableFrom(root.cp.clazz())) {
             throw new AssertionError("There must be at least one method annotated with @OnHook on " + root.cp.clazz());
         }
 
