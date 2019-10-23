@@ -34,7 +34,13 @@ import packed.internal.moduleaccess.ModuleAccess;
  * Extensions form the basis, extensible model
  * 
  * <p>
- * Subclasses of this class that are actively used should be final.
+ * Any packages where extension implementations, custom hooks or extension wirelet pipelines are located must be open to
+ * 'app.packed.base'
+ * <p>
+ * Every extension implementations must provide either an empty constructor, or a constructor taking a single parameter
+ * of type {@link ExtensionContext}. The constructor should have package private accessibility to make sure users do not
+ * try an manually instantiate it, but instead use {@link ContainerConfiguration#use(Class)}. It also recommended that
+ * the extension itself is declared final.
  */
 
 // Step1
