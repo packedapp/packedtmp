@@ -73,7 +73,7 @@ public final class OnHookContainerModelBuilder {
         }
     }
 
-    private void onMethod(Node b, Method method, UncheckedThrowableFactory<? extends RuntimeException> tf) {
+    private void onMethod(Node node, Method method, UncheckedThrowableFactory<? extends RuntimeException> tf) {
         if (!method.isAnnotationPresent(OnHook.class)) {
             return;
         }
@@ -92,7 +92,7 @@ public final class OnHookContainerModelBuilder {
         Class<? extends Hook> hookType = (Class<? extends Hook>) hook.getType();
 
         for (int i = 1; i < parameters.length; i++) {
-            if (b != root) {
+            if (node != root) {
                 throw tf.newThrowableForMethod(
                         "Implementations of Hook.Builder can only take a single parameter for methods annotated with @" + OnHook.class.getSimpleName(), method);
             }
@@ -107,7 +107,7 @@ public final class OnHookContainerModelBuilder {
             // }
         }
 
-        MethodHandle mh = b.cp.unreflect(method, tf);
+        MethodHandle mh = node.cp.unreflect(method, tf);
 
         // Let first see if it is a base book.
         IdentityHashMap<Class<?>, LinkedEntry> mm = null;
@@ -124,9 +124,9 @@ public final class OnHookContainerModelBuilder {
         if (mm != null) {
             ParameterizedType pt = (ParameterizedType) hook.getParameterizedType();
             Class<?> typeVariable = (Class<?>) pt.getActualTypeArguments()[0];
-            mm.compute(typeVariable, (k, v) -> new LinkedEntry(b, mh, v));
+            mm.compute(typeVariable, (k, v) -> new LinkedEntry(node, mh, v));
         } else {
-            if (hookType == b.cp.clazz()) {
+            if (hookType == node.cp.clazz()) {
                 tf.newThrowableForMethod("Hook cannot depend on itself", method);
             }
             TypeUtil.checkClassIsInstantiable(hookType);
@@ -134,7 +134,7 @@ public final class OnHookContainerModelBuilder {
             m.compute(hookType, (k, v) -> {
 
                 // Lazy create new node if one does not already exist for the hookType
-                Node node = nodes.computeIfAbsent(hookType, ignore -> {
+                Node nodeRef = nodes.computeIfAbsent(hookType, ignore -> {
                     Class<?> cl = ClassFinder.findDeclaredClass(hookType, "Builder", Hook.Builder.class);
                     ClassProcessor cp = root.cp.spawn(cl);
                     MethodHandle constructor = ConstructorFinder.find(cp, tf);
@@ -146,16 +146,16 @@ public final class OnHookContainerModelBuilder {
                 });
 
                 // Test if the builder of a hooks depends on the hook itself
-                if (b == node) {
+                if (node == nodeRef) {
                     throw tf.newThrowableForMethod("Hook cannot depend on itself", method);
                 }
 
                 // Or maybe we need to this for circles??
                 // If we have pure tests
-                if (b != root) {
-                    b.addDependency(node);
+                if (node != root) {
+                    node.addDependency(nodeRef);
                 }
-                return new LinkedEntry(b, mh, v);
+                return new LinkedEntry(node, mh, v);
             });
         }
     }
