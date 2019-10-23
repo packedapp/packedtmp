@@ -503,13 +503,13 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             } else {
                 callingExtension.checkConfigurable();
             }
+            initializeName(State.EXTENSION_USED, null); // initializes name of container, if not already set
 
             // Retrieves the extension model for the specified extension. This will throw ExtensionDeclarationException
             // If the extension is not correctly implemented.
             ExtensionModel<? extends Extension> model = ExtensionModel.of(extensionType);
 
             extensions.put(extensionType, pec = new PackedExtensionContext(this, model));
-            initializeName(State.EXTENSION_USED, null); // initializes name of container, if not already set
             pec.initialize(this); // initializes the extension, might use additional new extensions
         }
         return pec;

@@ -36,7 +36,7 @@ import packed.internal.service.run.SingletonInjectorEntry;
 public final class PackedExtensionContext implements ExtensionContext {
 
     /** The extension instance this context wraps. */
-    private final Extension extension;
+    private Extension extension;
 
     /** Whether or not the extension is configurable. */
     private boolean isConfigurable = true;
@@ -60,7 +60,6 @@ public final class PackedExtensionContext implements ExtensionContext {
     public PackedExtensionContext(PackedContainerConfiguration pcc, ExtensionModel<?> model) {
         this.pcc = requireNonNull(pcc);
         this.model = model;
-        this.extension = requireNonNull(model.newInstance());
     }
 
     /** {@inheritDoc} */
@@ -96,9 +95,15 @@ public final class PackedExtensionContext implements ExtensionContext {
      * Returns the extension instance this context wraps.
      * 
      * @return the extension instance this context wraps
+     * @throws IllegalStateException
+     *             if trying to call this method from the constructor of the extension
      */
     public Extension extension() {
-        return extension;
+        Extension e = extension;
+        if (e == null) {
+            throw new IllegalStateException("Cannot call this method from the constructor of the extension");
+        }
+        return e;
     }
 
     /**
@@ -108,6 +113,7 @@ public final class PackedExtensionContext implements ExtensionContext {
      */
     public void initialize(PackedContainerConfiguration pcc) {
         // Sets Extension.context = this
+        this.extension = model.newInstance();
         ModuleAccess.extension().setExtensionContext(extension, this);
 
         // Run any onAdd action that has set via ExtensionComposer#onAdd().
