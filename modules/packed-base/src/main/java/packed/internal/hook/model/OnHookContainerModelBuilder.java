@@ -22,7 +22,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
@@ -55,12 +54,10 @@ public final class OnHookContainerModelBuilder {
     /** All non-root nodes. */
     private final IdentityHashMap<Class<? extends Hook>, Node> nodes = new IdentityHashMap<>();
 
-    final ArrayList<Node> result = new ArrayList<>();
-
     /** The root node. */
     private final Node root;
 
-    private final ArrayDeque<Node> unprocessedNodes = new ArrayDeque<>();
+    final ArrayDeque<Node> stack = new ArrayDeque<>();
 
     public OnHookContainerModelBuilder(ClassProcessor cp, Class<?>... additionalParameters) {
         if (Hook.class.isAssignableFrom(cp.clazz())) {
@@ -76,7 +73,7 @@ public final class OnHookContainerModelBuilder {
     public OnHookContainerModel build() {
         // Find all methods annotated with @OnHook and process them.
         root.cp.findMethods(m -> onMethod(root, m));
-        for (Node b = unprocessedNodes.pollFirst(); b != null; b = unprocessedNodes.pollFirst()) {
+        for (Node b = stack.pollFirst(); b != null; b = stack.pollFirst()) {
             Node bb = b;
             bb.cp.findMethods(m -> onMethod(bb, m));
         }
@@ -88,7 +85,6 @@ public final class OnHookContainerModelBuilder {
         }
 
         // There is always a root, add it as the first element
-        result.add(root);
 
         // Uses a simple iterative algorithm, to make sure there are no interdependencies between the custom hooks
         // It is potentially O(n^2) but this should not be a problem in practice
@@ -100,12 +96,13 @@ public final class OnHookContainerModelBuilder {
                 Node b = iterator.next();
                 if (!b.hasUnresolvedDependencies()) {
                     b.index = index--;
-                    result.add(b);
+                    stack.addFirst(b);
                     iterator.remove();
                     doContinue = true;
                 }
             }
         }
+        stack.addFirst(root);
 
         if (!nodes.isEmpty()) {
             // Okay, we got some circles.
@@ -190,7 +187,7 @@ public final class OnHookContainerModelBuilder {
                 // Lazy create new node if one does not already exist for the hookType
                 Node nodeRef = nodes.computeIfAbsent(hookType, ignore -> {
                     Node newNode = new Node(root.cp, hookType);
-                    unprocessedNodes.addLast(newNode); // make sure it will be processed at some later point.
+                    stack.addLast(newNode); // make sure it will be processed at some later point.
                     return newNode;
                 });
 

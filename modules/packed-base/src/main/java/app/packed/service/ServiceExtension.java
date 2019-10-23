@@ -160,9 +160,8 @@ public final class ServiceExtension extends Extension {
         node.exports().exportAll(captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
     }
 
-    // manualInject?
     public <T, C> void inject(Class<T> key, ComponentConfiguration<C> cc, BiConsumer<? super C, ? super T> action) {
-        throw new UnsupportedOperationException();
+        inject(Key.of(key), cc, action);
     }
 
     /**
@@ -183,6 +182,7 @@ public final class ServiceExtension extends Extension {
      */
     // I guess ComponentContext should also be available here..
     // What about errors??? Well, it adds the key to the list of requirements...
+    // manualInject?
     public <T, C> void inject(Key<T> key, ComponentConfiguration<C> cc, BiConsumer<? super C, ? super T> action) {
         throw new UnsupportedOperationException();
     }

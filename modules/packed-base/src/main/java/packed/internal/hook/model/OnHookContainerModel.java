@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -68,11 +69,20 @@ public final class OnHookContainerModel {
             rootLinks = allLinks;
         }
 
-        this.customHooks = new Link[b.result.size()];
-        this.constructors = new MethodHandle[b.result.size()];
-
-        for (int i = 0; i < b.result.size(); i++) {
-            OnHookContainerModelBuilder.Node n = b.result.get(i);
+        this.customHooks = new Link[b.stack.size()];
+        this.constructors = new MethodHandle[b.stack.size()];
+        // for (int i = 0; i < b.result.size(); i++) {
+        // OnHookContainerModelBuilder.Node n = b.result.get(i);
+        // String msg = i + " " + n.index + " " + n.onNodeContainerType;
+        // if (n.builderConstructor != null) {
+        // msg += " " + n.builderConstructor.type().returnType();
+        // }
+        // System.out.println(msg);
+        // }
+        // System.out.println("-----");
+        List<OnHookContainerModelBuilder.Node> list = List.copyOf(b.stack);
+        for (int i = 0; i < list.size(); i++) {
+            OnHookContainerModelBuilder.Node n = list.get(i);// b.result.get(i);
             constructors[i] = n.builderConstructor;
             if (b.allEntries.customHooks != null) {
                 // We reverse the order here so instead of Dependent->Dependency we get Dependency->Dependent
@@ -143,7 +153,6 @@ public final class OnHookContainerModel {
     public void tryProcesAnnotatedMethod(HookProcessor hc, Method m, Annotation a, Object[] array) {
         for (Link link = allLinks.annotatedMethods.get(a.annotationType()); link != null; link = link.next) {
             Object builder = builderOf(this, link.index, array);
-            System.out.println(builder.getClass());
             AnnotatedMethodHook<Annotation> hook = ModuleAccess.hook().newAnnotatedMethodHook(hc, m, a);
             try {
                 link.mh.invoke(builder, hook);
@@ -212,7 +221,6 @@ public final class OnHookContainerModel {
     private static class Link {
         private final int index;
         private final MethodHandle mh;
-
         @Nullable
         private final Link next;
 
