@@ -35,6 +35,7 @@ import app.packed.lang.Nullable;
 import packed.internal.component.ComponentModel;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.ExtensionModel;
+import packed.internal.hook.model.OnHookContainerModel;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.util.ThrowableUtil;
 
@@ -75,7 +76,9 @@ public final class ComponentModelHookGroup {
         /** The component model builder that is creating this group. */
         private final ComponentModel.Builder componentModelBuilder;
 
-        final HookContainerModel con;
+        final HookContainerModel oldHooks;
+
+        final OnHookContainerModel hooks;
 
         /** The type of extension that will be activated. */
         private final Class<? extends Extension> extensionType;
@@ -85,12 +88,13 @@ public final class ComponentModelHookGroup {
         public Builder(ComponentModel.Builder componentModelBuilder, Class<? extends Extension> extensionType) {
             this.componentModelBuilder = requireNonNull(componentModelBuilder);
             this.extensionType = requireNonNull(extensionType);
-            this.con = ExtensionModel.of(extensionType).hooks();
+            this.oldHooks = ExtensionModel.of(extensionType).hooks();
+            this.hooks = ExtensionModel.of(extensionType).hooks2();
         }
 
         public ComponentModelHookGroup build() {
             for (Entry<Class<?>, Hook.Builder<?>> m : groupBuilders.entrySet()) {
-                MethodHandle mh = con.groups.get(m.getKey());
+                MethodHandle mh = oldHooks.groups.get(m.getKey());
                 callback = new CachedHook(mh, m.getValue().build(), callback);
             }
             return new ComponentModelHookGroup(this);
@@ -98,17 +102,17 @@ public final class ComponentModelHookGroup {
 
         public void onAnnotatedType(Class<?> clazz, Annotation annotation) {
             AnnotatedTypeHook<Annotation> hook = ModuleAccess.hook().newAnnotatedTypeHook(componentModelBuilder.hookController, clazz, annotation);
-            process(con.findMethodHandleForAnnotatedType(hook), hook);
+            process(oldHooks.findMethodHandleForAnnotatedType(hook), hook);
         }
 
         public void onAnnotatedField(Field field, Annotation annotation) {
             AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(componentModelBuilder.hookController, field, annotation);
-            process(con.findMethodHandleForAnnotatedField(hook), hook);
+            process(oldHooks.findMethodHandleForAnnotatedField(hook), hook);
         }
 
         public void onAnnotatedMethod(Method method, Annotation annotation) {
             AnnotatedMethodHook hook = ModuleAccess.hook().newAnnotatedMethodHook(componentModelBuilder.hookController, method, annotation);
-            process(con.findMethodHandleForAnnotatedMethod(hook), hook);
+            process(oldHooks.findMethodHandleForAnnotatedMethod(hook), hook);
         }
 
         private void process(MethodHandle mh, Hook hook) {

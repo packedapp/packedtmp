@@ -37,6 +37,7 @@ import app.packed.container.ExtensionWirelet;
 import app.packed.container.InternalExtensionException;
 import app.packed.hook.OnHook;
 import packed.internal.hook.HookContainerModel;
+import packed.internal.hook.model.OnHookContainerModel;
 import packed.internal.hook.model.OnHookContainerModelBuilder;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ClassProcessor;
@@ -98,6 +99,8 @@ public final class ExtensionModel<T extends Extension> {
 
     public final Map<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, BiFunction<?, ?, ?>> pipelines;
 
+    public final OnHookContainerModel hooks2;
+
     /**
      * Creates a new extension model from the specified builder.
      * 
@@ -116,8 +119,9 @@ public final class ExtensionModel<T extends Extension> {
         this.onInstantiation = builder.onInstantiation;
         this.onLinkage = builder.onLinkage;
         this.dependencies = Set.copyOf(builder.dependencies);
-        this.optional = Optional.of(extensionType);
-        // Saa slipper vi for at lave en ny optional hver gang....
+        this.optional = Optional.of(extensionType); // No need to create an optional every time we need this
+
+        hooks2 = builder.hooks2.build();
     }
 
     /**
@@ -127,6 +131,15 @@ public final class ExtensionModel<T extends Extension> {
      */
     public HookContainerModel hooks() {
         return hooks;
+    }
+
+    /**
+     * Returns a model of all the methods annotated with {@link OnHook} on the extension.
+     * 
+     * @return a hook model
+     */
+    public OnHookContainerModel hooks2() {
+        return hooks2;
     }
 
     /**
@@ -218,9 +231,6 @@ public final class ExtensionModel<T extends Extension> {
             }
             // Find all methods annotated with @OnHook on the extension
             MemberFinder.findMethods(Extension.class, extensionType, hooks);
-
-            hooks2.build();
-
             return new ExtensionModel<>(this);
         }
     }
