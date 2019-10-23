@@ -32,7 +32,7 @@ import packed.internal.util.UncheckedThrowableFactory;
 // HookGate
 public final class HookProcessor implements AutoCloseable {
 
-    private final ClassProcessor cp;
+    public final ClassProcessor cp;
 
     /** Whether or not the processor is closed. */
     private boolean isClosed;

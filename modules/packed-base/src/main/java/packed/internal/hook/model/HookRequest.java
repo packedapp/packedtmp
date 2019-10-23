@@ -27,6 +27,8 @@ import java.util.List;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
 import packed.internal.moduleaccess.ModuleAccess;
+import packed.internal.reflect.ClassProcessor;
+import packed.internal.util.UncheckedThrowableFactory;
 
 /**
  *
@@ -34,9 +36,9 @@ import packed.internal.moduleaccess.ModuleAccess;
 public class HookRequest {
 
     /** A list of custom hook callbacks for the particular extension. */
-    public final CachedHook<Hook> customHooksCallback;
+    final CachedHook<Hook> customHooksCallback;
 
-    public List<DelayedAnnotatedMethod> delayedMethods;
+    List<DelayedAnnotatedMethod> delayedMethods;
 
     protected HookRequest(HookRequest.Builder builder) throws Throwable {
         this.customHooksCallback = builder.hooks.compute(builder.array);
@@ -47,12 +49,22 @@ public class HookRequest {
         for (CachedHook<Hook> c = customHooksCallback; c != null; c = c.next()) {
             MethodHandle mh = c.mh();
             if (mh.type().parameterCount() == 2) {
-                c.mh().invoke(target, c.hook());
+                mh.invoke(target, c.hook());
             } else {
-                c.mh().invoke(target, c.hook(), additional);
+                mh.invoke(target, c.hook(), additional);
             }
         }
-
+        for (DelayedAnnotatedMethod m : delayedMethods) {
+            try (HookProcessor hp = new HookProcessor(m.cp.copy(), UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
+                MethodHandle mh = m.mh;
+                AnnotatedMethodHook<Annotation> amh = ModuleAccess.hook().newAnnotatedMethodHook(hp, m.method, m.annotation);
+                if (mh.type().parameterCount() == 2) {
+                    mh.invoke(target, amh);
+                } else {
+                    mh.invoke(target, amh, additional);
+                }
+            }
+        }
     }
 
     public static class Builder {
@@ -91,8 +103,10 @@ public class HookRequest {
         final Annotation annotation;
         final Method method;
         public final MethodHandle mh;
+        final ClassProcessor cp;
 
-        DelayedAnnotatedMethod(Method method, Annotation annotation, MethodHandle mh) {
+        DelayedAnnotatedMethod(ClassProcessor cp, Method method, Annotation annotation, MethodHandle mh) {
+            this.cp = requireNonNull(cp);
             this.method = requireNonNull(method);
             this.annotation = requireNonNull(annotation);
             this.mh = requireNonNull(mh);

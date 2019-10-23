@@ -62,6 +62,10 @@ public class ClassProcessor {
         this.registerForNative = registerForNative;
     }
 
+    public ClassProcessor copy() {
+        return new ClassProcessor(lookup, clazz, registerForNative);
+    }
+
     private <T extends Throwable> void checkPackageOpen(UncheckedThrowableFactory<T> tf) throws T {
         String pckName = clazz.getPackageName();
         if (!clazz.getModule().isOpen(pckName, THIS_MODULE)) {

@@ -183,7 +183,7 @@ public final class OnHookContainerModel {
     public void tryProcesAnnotatedMethod(HookProcessor hc, Method method, Annotation annotation, HookRequest.Builder hr) throws Throwable {
         for (Link link = allLinks.annotatedMethods.get(annotation.annotationType()); link != null; link = link.next) {
             if (link.index == 0) {
-                hr.delayedMethods.add(new DelayedAnnotatedMethod(method, annotation, link.mh));
+                hr.delayedMethods.add(new DelayedAnnotatedMethod(hc.cp, method, annotation, link.mh));
             } else {
                 Hook.Builder<?> builder = builderOf(hr.array, link.index);
                 AnnotatedMethodHook<Annotation> hook = ModuleAccess.hook().newAnnotatedMethodHook(hc, method, annotation);

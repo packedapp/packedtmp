@@ -221,8 +221,8 @@ public final class ServiceExtension extends Extension {
     }
 
     @OnHook
-    void onHook(AnnotatedMethodHook<Provide> hook) {
-        System.out.println("INVOKED");
+    void onHook(AnnotatedMethodHook<Provide> hook, ComponentConfiguration<?> cc) {
+        System.out.println("INVOKED " + hook.method());
     }
 
     /**
