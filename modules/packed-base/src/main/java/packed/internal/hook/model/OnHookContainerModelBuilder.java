@@ -55,7 +55,7 @@ public final class OnHookContainerModelBuilder {
 
     final ArrayList<Node> result = new ArrayList<>();
 
-    /** The root builder. */
+    /** The root node. */
     private final Node root;
 
     private final ArrayDeque<Node> unprocessedNodes = new ArrayDeque<>();
@@ -221,8 +221,8 @@ public final class OnHookContainerModelBuilder {
         /** The index of this node, we use */
         int index;
 
-        /** The type of the node, is always a sub type of hook, for non-roots */
-        final Class<?> type;
+        /** The type of on node container. */
+        final Class<?> onNodeContainerType;
 
         /**
          * A node without a builder
@@ -232,14 +232,15 @@ public final class OnHookContainerModelBuilder {
          */
         Node(ClassProcessor cp) {
             this.cp = cp;
-            this.type = cp.clazz();
+            this.onNodeContainerType = cp.clazz();
             this.builderConstructor = null;
         }
 
         Node(ClassProcessor cps, Class<?> type) {
-            this.type = requireNonNull(type);
-            Class<?> cl = ClassFinder.findDeclaredClass(type, "Builder", Hook.Builder.class);
-            this.cp = cps.spawn(cl);
+            this.onNodeContainerType = requireNonNull(type);
+
+            Class<?> builderClass = ClassFinder.findDeclaredClass(type, "Builder", Hook.Builder.class);
+            this.cp = cps.spawn(builderClass);
 
             this.builderConstructor = ConstructorFinder.find(cp, tf);
             if (builderConstructor.type().returnType() != cp.clazz()) {
