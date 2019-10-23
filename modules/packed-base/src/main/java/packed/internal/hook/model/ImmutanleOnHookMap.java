@@ -27,7 +27,7 @@ import app.packed.lang.Nullable;
 /**
  *
  */
-public class ImmutanleOnHookMap<V> {
+class ImmutanleOnHookMap<V> {
 
     /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedFieldHook} as a parameter. */
     @Nullable
