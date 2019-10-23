@@ -31,6 +31,7 @@ import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
+import packed.internal.hook.CachedHook;
 import packed.internal.hook.model.OnHookContainerModelBuilder.LinkedEntry;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ClassProcessor;
@@ -112,6 +113,34 @@ public final class OnHookContainerModel {
         }
     }
 
+    public CachedHook<Hook> compute(Object[] array) {
+        for (int i = array.length - 1; i >= 0; i--) {
+            for (Link link = customHooks[i]; link != null; link = link.next) {
+                if (constructors[i] != null) {
+                    Object builder = builderOf(this, i, array);
+                    try {
+                        link.mh.invoke(builder, array[link.index]);
+                    } catch (Throwable e1) {
+                        ThrowableUtil.rethrowErrorOrRuntimeException(e1);
+                        throw new UndeclaredThrowableException(e1);
+                    }
+                }
+            }
+            if (i > 0) {
+                Object h = array[i];
+                if (h != null) {
+                    array[i] = ((Hook.Builder<?>) h).build();
+                }
+            }
+        }
+
+        CachedHook<Hook> result = null;
+        for (Link link = customHooks[0]; link != null; link = link.next) {
+            result = new CachedHook<>(link.mh, (Hook) array[link.index], result);
+        }
+        return result;
+    }
+
     public void tryProcesAnnotatedMethod(HookProcessor hc, Method m, Annotation a, Object[] array) {
         for (Link link = allLinks.annotatedMethods.get(a.annotationType()); link != null; link = link.next) {
             Object builder = builderOf(this, link.index, array);
@@ -167,6 +196,7 @@ public final class OnHookContainerModel {
     }
 
     private static Object builderOf(OnHookContainerModel m, int index, Object[] array) {
+        requireNonNull(m.constructors[index]);
         Object builder = array[index];
         if (builder == null) {
             try {

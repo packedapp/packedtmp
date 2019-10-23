@@ -103,6 +103,7 @@ public final class ComponentModelHookGroup {
                 MethodHandle mh = oldHooks.groups.get(m.getKey());
                 callback = new CachedHook(mh, m.getValue().build(), callback);
             }
+            hooks.compute(array);
             return new ComponentModelHookGroup(this);
         }
 
