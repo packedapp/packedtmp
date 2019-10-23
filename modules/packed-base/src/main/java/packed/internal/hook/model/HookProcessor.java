@@ -27,7 +27,7 @@ import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.UncheckedThrowableFactory;
 
 /**
- *
+ * A single one of these is created by class that is analyzed
  */
 // HookGate
 public final class HookProcessor implements AutoCloseable {

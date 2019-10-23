@@ -50,7 +50,7 @@ public final class OnHookContainerModelBuilder {
 
     final MutableOnHookMap<LinkedEntry> hooks = new MutableOnHookMap<>();
 
-    final MutableOnHookMap<LinkedEntry> rootHooks = new MutableOnHookMap<>();
+    final MutableOnHookMap<LinkedEntry> rootHooks;
 
     /** All non-root nodes. */
     private final IdentityHashMap<Class<? extends Hook>, Node> nodes = new IdentityHashMap<>();
@@ -65,8 +65,11 @@ public final class OnHookContainerModelBuilder {
     public OnHookContainerModelBuilder(ClassProcessor cp, Class<?>... additionalParameters) {
         if (Hook.class.isAssignableFrom(cp.clazz())) {
             this.root = new Node(cp, cp.clazz());
+            rootHooks = hooks;
         } else {
             this.root = new Node(cp);
+            rootHooks = new MutableOnHookMap<>();
+
         }
     }
 
@@ -173,7 +176,7 @@ public final class OnHookContainerModelBuilder {
             Class<?> typeVariable = (Class<?>) pt.getActualTypeArguments()[0];
             mm.compute(typeVariable, (k, v) -> new LinkedEntry(node, mh, v));
             if (roots != null) {
-                roots.compute(typeVariable, (k, v) -> new LinkedEntry(node, mh, v));
+                // roots.compute(typeVariable, (k, v) -> new LinkedEntry(node, mh, v));
             }
         } else {
             if (hookType == node.cp.clazz()) {

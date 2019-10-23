@@ -20,14 +20,10 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
 
 import app.packed.hook.AnnotatedFieldHook;
-import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.AnnotatedTypeHook;
-import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
@@ -42,33 +38,22 @@ import packed.internal.util.UncheckedThrowableFactory;
  */
 public final class OnHookContainerModel {
 
-    /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedFieldHook} as a parameter. */
-    @Nullable
-    final Map<Class<?>, Link> annotatedFields;
-
-    /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedMethodHook} as a parameter. */
-    @Nullable
-    final Map<Class<?>, Link> annotatedMethods;
-
-    /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedTypeHook} as a parameter. */
-    @Nullable
-    final Map<Class<?>, Link> annotatedTypes;
-
-    /** Methods annotated with {@link OnHook} that takes a {@link AssignableToHook} as a parameter. */
-    @Nullable
-    final Map<Class<?>, Link> assignableTos;
-
     /** Constructors for each builder. */
     private final MethodHandle[] constructors;
 
     /** Methods annotated with {@link OnHook} that takes a non-base {@link Hook}. */
     private final Link[] customHooks;
 
+    final ImmutanleOnHookMap<Link> mm;
+
     OnHookContainerModel(OnHookContainerModelBuilder b) {
-        this.annotatedFields = convert(b.hooks.annotatedFields);
-        this.annotatedMethods = convert(b.hooks.annotatedMethods);
-        this.annotatedTypes = convert(b.hooks.annotatedTypes);
-        this.assignableTos = convert(b.hooks.assignableTos);
+        mm = b.hooks.toImmutable(e -> {
+            Link l = null;
+            for (; e != null; e = e.next) {
+                l = new Link(e.methodHandle, e.builder.index, l);
+            }
+            return l;
+        });
 
         this.customHooks = new Link[b.result.size()];
         this.constructors = new MethodHandle[b.result.size()];
@@ -93,8 +78,8 @@ public final class OnHookContainerModel {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public Set<Class<? extends Annotation>> annotatedFieldHookTypes() {
-        Map<Class<?>, Link> a = annotatedFields;
-        return a == null ? Set.of() : (Set) annotatedFields.keySet();
+        Map<Class<?>, Link> a = mm.annotatedFields;
+        return a == null ? Set.of() : (Set) a.keySet();
     }
 
     @Nullable
@@ -102,9 +87,9 @@ public final class OnHookContainerModel {
         Object[] array = new Object[constructors.length];
         array[0] = parent;
         HookProcessor hc = new HookProcessor(cpTarget, tf);
-        cpTarget.findMethodsAndFields(c -> {}, annotatedFields == null ? null : f -> {
+        cpTarget.findMethodsAndFields(c -> {}, mm.annotatedFields == null ? null : f -> {
             for (Annotation a : f.getAnnotations()) {
-                for (Link link = annotatedFields.get(a.annotationType()); link != null; link = link.next) {
+                for (Link link = mm.annotatedFields.get(a.annotationType()); link != null; link = link.next) {
                     Object builder = builderOf(this, link.index, array);
                     AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(hc, f, a);
                     try {
@@ -141,26 +126,6 @@ public final class OnHookContainerModel {
         }
         Object a = array[0];
         return a == null ? null : ((Hook.Builder<?>) a).build();
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static Map<Class<?>, Link> convert(IdentityHashMap<Class<?>, OnHookContainerModelBuilder.LinkedEntry> map) {
-        if (map == null) {
-            return null;
-        }
-        // Replace in map
-        IdentityHashMap m = map;
-
-        m.replaceAll((k, v) -> {
-            OnHookContainerModelBuilder.LinkedEntry e = (LinkedEntry) v;
-            Link l = null;
-            for (; e != null; e = e.next) {
-                l = new Link(e.methodHandle, e.builder.index, l);
-            }
-            return l;
-        });
-
-        return Map.copyOf(m);
     }
 
     private static Object builderOf(OnHookContainerModel m, int index, Object[] array) {

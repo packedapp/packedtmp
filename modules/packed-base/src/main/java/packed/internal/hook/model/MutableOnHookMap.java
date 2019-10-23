@@ -16,6 +16,8 @@
 package packed.internal.hook.model;
 
 import java.util.IdentityHashMap;
+import java.util.Map;
+import java.util.function.Function;
 
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
@@ -86,5 +88,29 @@ final class MutableOnHookMap<V> {
             a = customHooks = new IdentityHashMap<>(1);
         }
         return a;
+    }
+
+    public <E> ImmutanleOnHookMap<E> toImmutable(Function<V, E> converter) {
+        if (isEmpty()) {
+            return null;
+        }
+        Map<Class<?>, E> annotatedFieldHooks = convert(annotatedFields, converter);
+        Map<Class<?>, E> annotatedMethoddHooks = convert(annotatedMethods, converter);
+        Map<Class<?>, E> annotatedTypeHooks = convert(annotatedTypes, converter);
+        Map<Class<?>, E> assignableToHooks = convert(assignableTos, converter);
+        return new ImmutanleOnHookMap<E>(annotatedFieldHooks, annotatedMethoddHooks, annotatedTypeHooks, assignableToHooks);
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private <VV, E> Map<Class<?>, E> convert(IdentityHashMap<Class<?>, VV> map, Function<VV, E> f) {
+        if (map == null) {
+            return null;
+        }
+        // Replace in map
+        IdentityHashMap m = map;
+
+        m.replaceAll((k, v) -> ((Function) f).apply(v));
+
+        return Map.copyOf(m);
     }
 }
