@@ -18,7 +18,6 @@ package packed.internal.component;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -52,15 +51,7 @@ final class ComponentModelHookGroup extends HookRequest {
         // First make sure the extension is activated
         Extension e = containerConfiguration.use(extensionType);
 
-        // Call the actual methods on the Extension
-        for (CachedHook<Hook> c = customHooksCallback; c != null; c = c.next()) {
-            MethodHandle mh = c.mh();
-            if (mh.type().parameterCount() == 2) {
-                c.mh().invoke(e, c.hook());
-            } else {
-                c.mh().invoke(e, c.hook(), componentConfiguration);
-            }
-        }
+        invokeIt(e, componentConfiguration);
     }
 
     static final class Builder extends HookRequest.Builder {

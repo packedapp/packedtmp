@@ -36,23 +36,36 @@ public class HookRequest {
     /** A list of custom hook callbacks for the particular extension. */
     public final CachedHook<Hook> customHooksCallback;
 
+    public List<DelayedAnnotatedMethod> delayedMethods;
+
     protected HookRequest(HookRequest.Builder builder) throws Throwable {
-        this.customHooksCallback = builder.compute();
+        this.customHooksCallback = builder.hooks.compute(builder.array);
+        this.delayedMethods = builder.delayedMethods;
+    }
+
+    protected void invokeIt(Object target, Object additional) throws Throwable {
+        for (CachedHook<Hook> c = customHooksCallback; c != null; c = c.next()) {
+            MethodHandle mh = c.mh();
+            if (mh.type().parameterCount() == 2) {
+                c.mh().invoke(target, c.hook());
+            } else {
+                c.mh().invoke(target, c.hook(), additional);
+            }
+        }
+
     }
 
     public static class Builder {
 
         final Object[] array;
 
+        List<DelayedAnnotatedMethod> delayedMethods = new ArrayList<>();
+
         final OnHookContainerModel hooks;
 
         protected Builder(OnHookContainerModel model) {
             this.array = new Object[model.size()];
             this.hooks = requireNonNull(model);
-        }
-
-        public CachedHook<Hook> compute() throws Throwable {
-            return hooks.compute(array);
         }
 
         public void onAnnotatedField(HookProcessor hookProcessor, Field field, Annotation annotation) throws Throwable {
@@ -62,13 +75,11 @@ public class HookRequest {
         public void onAnnotatedMethod(HookProcessor hookProcessor, Method method, Annotation annotation) throws Throwable {
             hooks.tryProcesAnnotatedMethod(hookProcessor, method, annotation, this);
         }
-
-        List<DelayedAnnotatedMethod> delayedMethods = new ArrayList<>();
     }
 
     static class DelayedAnnotatedField {
-        final Field field;
         final Annotation annotation;
+        final Field field;
 
         DelayedAnnotatedField(Field field, Annotation annotation) {
             this.field = requireNonNull(field);
@@ -77,8 +88,8 @@ public class HookRequest {
     }
 
     static class DelayedAnnotatedMethod {
-        final Method method;
         final Annotation annotation;
+        final Method method;
         public final MethodHandle mh;
 
         DelayedAnnotatedMethod(Method method, Annotation annotation, MethodHandle mh) {
