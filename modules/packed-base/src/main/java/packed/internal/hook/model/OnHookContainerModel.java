@@ -70,23 +70,18 @@ public final class OnHookContainerModel {
         this.annotatedMethods = convert(b.onHookAnnotatedMethods);
         this.annotatedTypes = convert(b.onHookAnnotatedTypes);
         this.assignableTos = convert(b.onHookAssignableTos);
-        // Map<Class<?>, Link> tmp = convert(b.onHookCustomHooks);
 
         this.customHooks = new Link[b.sorted.size()];
         this.constructors = new MethodHandle[b.sorted.size()];
+
         for (int i = 0; i < b.sorted.size(); i++) {
             OnHookContainerNode n = b.sorted.get(i);
             constructors[i] = n.constructor;
-
-        }
-
-        for (int i = 0; i < b.sorted.size(); i++) {
-            OnHookContainerNode n = b.sorted.get(i);
             if (b.onHookCustomHooks != null) {
-                LinkedEntry l = b.onHookCustomHooks.get(n.hookType);
-                while (l != null) {
-                    customHooks[i] = new Link(l, customHooks[i]);
-                    l = l.next;
+                // We reverse the order here so instead of Dependent->Dependency we get Dependency->Dependent
+                // We do this so we do not automatically invoke methods on the root object. which is never cached.
+                for (LinkedEntry l = b.onHookCustomHooks.get(n.hookType); l != null; l = l.next) {
+                    customHooks[l.builder.id] = new Link(l.methodHandle, i, customHooks[l.builder.id]);
                 }
             }
         }
@@ -111,7 +106,7 @@ public final class OnHookContainerModel {
         cpTarget.findMethodsAndFields(c -> {}, annotatedFields == null ? null : f -> {
             for (Annotation a : f.getAnnotations()) {
                 for (Link link = annotatedFields.get(a.annotationType()); link != null; link = link.next) {
-                    Object builder = link.builderOf(this, array);
+                    Object builder = Link.builderOf(this, link.index, array);
                     AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(hc, f, a);
                     try {
                         link.mh.invoke(builder, hook);
@@ -125,18 +120,20 @@ public final class OnHookContainerModel {
         hc.close();
 
         // Process everything but the top elements, which we do in the end.
-        for (int i = array.length - 1; i >= 1; i--) {
-            Object h = array[i];
-            if (h != null) {
-                array[i] = ((Hook.Builder<?>) h).build();
-                for (Link link = customHooks[i]; link != null; link = link.next) {
-                    Object builder = link.builderOf(this, array);
-                    try {
-                        link.mh.invoke(builder, array[i]);
-                    } catch (Throwable e1) {
-                        ThrowableUtil.rethrowErrorOrRuntimeException(e1);
-                        throw new UndeclaredThrowableException(e1);
-                    }
+        for (int i = array.length - 1; i >= 0; i--) {
+            for (Link link = customHooks[i]; link != null; link = link.next) {
+                Object builder = Link.builderOf(this, i, array);
+                try {
+                    link.mh.invoke(builder, array[link.index]);
+                } catch (Throwable e1) {
+                    ThrowableUtil.rethrowErrorOrRuntimeException(e1);
+                    throw new UndeclaredThrowableException(e1);
+                }
+            }
+            if (i > 0) {
+                Object h = array[i];
+                if (h != null) {
+                    array[i] = ((Hook.Builder<?>) h).build();
                 }
             }
         }
@@ -159,7 +156,7 @@ public final class OnHookContainerModel {
             OnHookContainerModelBuilder.LinkedEntry e = (LinkedEntry) v;
             Link l = null;
             for (; e != null; e = e.next) {
-                l = new Link(e, l);
+                l = new Link(e.methodHandle, e.builder.id, l);
             }
             return l;
         });
@@ -174,13 +171,13 @@ public final class OnHookContainerModel {
         @Nullable
         private final Link next;
 
-        private Link(LinkedEntry e, @Nullable Link next) {
-            this.mh = requireNonNull(e.methodHandle);
-            this.index = e.builder.id;
+        private Link(MethodHandle mh, int index, @Nullable Link next) {
+            this.mh = requireNonNull(mh);
+            this.index = index;
             this.next = next;
         }
 
-        private Object builderOf(OnHookContainerModel m, Object[] array) {
+        private static Object builderOf(OnHookContainerModel m, int index, Object[] array) {
             Object builder = array[index];
             if (builder == null) {
                 try {
