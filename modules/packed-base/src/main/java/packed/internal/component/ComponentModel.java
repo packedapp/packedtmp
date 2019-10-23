@@ -29,7 +29,6 @@ import packed.internal.container.ComponentLookup;
 import packed.internal.container.ContainerSourceModel;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.hook.model.CachedHook;
-import packed.internal.hook.model.ComponentModelHookGroup;
 import packed.internal.hook.model.HookProcessor;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.ThrowableUtil;

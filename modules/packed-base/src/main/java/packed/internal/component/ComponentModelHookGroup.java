@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hook.model;
+package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
@@ -25,25 +25,28 @@ import app.packed.container.Extension;
 import app.packed.hook.Hook;
 import app.packed.lang.Nullable;
 import packed.internal.container.extension.ExtensionModel;
+import packed.internal.hook.model.CachedHook;
+import packed.internal.hook.model.HookProcessor;
+import packed.internal.hook.model.OnHookContainerModel;
 
 /**
  * We have a group for a collection of hooks/annotations. A component can have multiple groups.
  */
 // One of these suckers is creates once for each component+Extension combination...
-public final class ComponentModelHookGroup {
+final class ComponentModelHookGroup {
 
     /** A list of callbacks for the particular extension. */
-    public final CachedHook<Hook> callback;
+    final CachedHook<Hook> callback;
 
     /** The type of extension that will be activated. */
-    public final Class<? extends Extension> extensionType;
+    final Class<? extends Extension> extensionType;
 
     private ComponentModelHookGroup(Class<? extends Extension> extensionType, CachedHook<Hook> callback) {
         this.extensionType = requireNonNull(extensionType);
         this.callback = callback;
     }
 
-    public static final class Builder {
+    static final class Builder {
 
         @Nullable
         private CachedHook<Hook> callback;

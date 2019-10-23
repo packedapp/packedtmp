@@ -19,6 +19,7 @@ package packed.internal.container.extension;
  *
  */
 public class ExtensionIds {
+
     public static final int APP_PACKED_COMPONENT_COMPONENT_EXTENSION = 1;
     public static final int APP_PACKED_SERVICE_SERVICE_EXTENSION = 2;
 
