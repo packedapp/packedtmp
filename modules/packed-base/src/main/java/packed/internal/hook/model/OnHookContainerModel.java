@@ -144,6 +144,7 @@ public final class OnHookContainerModel {
     public void tryProcesAnnotatedMethod(HookProcessor hc, Method m, Annotation a, Object[] array) {
         for (Link link = allLinks.annotatedMethods.get(a.annotationType()); link != null; link = link.next) {
             Object builder = builderOf(this, link.index, array);
+            System.out.println(builder.getClass());
             AnnotatedMethodHook<Annotation> hook = ModuleAccess.hook().newAnnotatedMethodHook(hc, m, a);
             try {
                 link.mh.invoke(builder, hook);

@@ -112,7 +112,7 @@ public final class ComponentModel {
 
         private final ClassProcessor cp;
 
-        public final HookProcessor hookController;
+        public final HookProcessor hookProcessor;
 
         /**
          * Creates a new component model builder
@@ -125,7 +125,7 @@ public final class ComponentModel {
         public Builder(ComponentLookup lookup, Class<?> componentType) {
             this.cp = lookup.newClassProcessor(componentType, true);
             this.componentType = requireNonNull(componentType);
-            this.hookController = new HookProcessor(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+            this.hookProcessor = new HookProcessor(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
         }
 
         /**
@@ -139,7 +139,8 @@ public final class ComponentModel {
                 Class<? extends Extension>[] extensionTypes = EXTENSION_ACTIVATORS.get(a.annotationType());
                 if (extensionTypes != null) {
                     for (Class<? extends Extension> eType : extensionTypes) {
-                        extensionBuilders.computeIfAbsent(eType, etype -> new ComponentModelHookGroup.Builder(this, etype)).onAnnotatedType(componentType, a);
+                        extensionBuilders.computeIfAbsent(eType, etype -> new ComponentModelHookGroup.Builder(hookProcessor, etype))
+                                .onAnnotatedType(componentType, a);
                     }
                 }
             }
@@ -150,7 +151,8 @@ public final class ComponentModel {
                     // See if the component method has any annotations that activates extensions
                     if (extensionTypes != null) {
                         for (Class<? extends Extension> eType : extensionTypes) {
-                            extensionBuilders.computeIfAbsent(eType, etype -> new ComponentModelHookGroup.Builder(this, etype)).onAnnotatedMethod(method, a);
+                            extensionBuilders.computeIfAbsent(eType, etype -> new ComponentModelHookGroup.Builder(hookProcessor, etype))
+                                    .onAnnotatedMethod(method, a);
                         }
                     }
                 }
@@ -160,13 +162,14 @@ public final class ComponentModel {
                     // See if the component method has any annotations that activates extensions
                     if (extensionTypes != null) {
                         for (Class<? extends Extension> eType : extensionTypes) {
-                            extensionBuilders.computeIfAbsent(eType, etype -> new ComponentModelHookGroup.Builder(this, etype)).onAnnotatedField(field, a);
+                            extensionBuilders.computeIfAbsent(eType, etype -> new ComponentModelHookGroup.Builder(hookProcessor, etype)).onAnnotatedField(field,
+                                    a);
                         }
                     }
                 }
             });
             ComponentModel cm = new ComponentModel(this);
-            hookController.close();
+            hookProcessor.close();
             return cm;
         }
     }

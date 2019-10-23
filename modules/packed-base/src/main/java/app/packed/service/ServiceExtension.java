@@ -290,6 +290,11 @@ public final class ServiceExtension extends Extension {
         node.provider().addProvidesGroup(cc, g);
     }
 
+    // @OnHook
+    // void onHook(AtInjectHook g, ComponentConfiguration<?> cc) {
+    // // node.provider().addProvidesGroup(cc, g);
+    // }
+
     /** The composer for the service extension. */
     static final class Composer extends ExtensionComposer<ServiceExtension> {
 

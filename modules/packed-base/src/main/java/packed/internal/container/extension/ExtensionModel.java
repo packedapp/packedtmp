@@ -36,13 +36,11 @@ import app.packed.container.ExtensionInstantiationContext;
 import app.packed.container.ExtensionWirelet;
 import app.packed.container.InternalExtensionException;
 import app.packed.hook.OnHook;
-import packed.internal.hook.HookContainerModel;
 import packed.internal.hook.model.OnHookContainerModel;
 import packed.internal.hook.model.OnHookContainerModelBuilder;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.reflect.ConstructorFinder;
-import packed.internal.reflect.MemberFinder;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 
@@ -84,8 +82,6 @@ public final class ExtensionModel<T extends Extension> {
     /** The type of the extension this model describes. */
     public final Class<? extends Extension> extensionType;
 
-    private final HookContainerModel hooks;
-
     public final Consumer<? super Extension> onAdd;
 
     public final Consumer<? super Extension> onConfigured;
@@ -110,7 +106,6 @@ public final class ExtensionModel<T extends Extension> {
     private ExtensionModel(Builder builder) {
         this.constructor = builder.constructor;
         this.extensionType = builder.extensionType;
-        this.hooks = builder.hooks.build();
         this.pipelines = Map.copyOf(builder.pipelines);
         this.bundleBuilder = builder.builder;
         this.contracts = Map.copyOf(builder.contracts);
@@ -122,15 +117,6 @@ public final class ExtensionModel<T extends Extension> {
         this.optional = Optional.of(extensionType); // No need to create an optional every time we need this
 
         hooks2 = builder.hooks2.build();
-    }
-
-    /**
-     * Returns a model of all the methods annotated with {@link OnHook} on the extension.
-     * 
-     * @return a hook model
-     */
-    public HookContainerModel hooks() {
-        return hooks;
     }
 
     /**
@@ -187,9 +173,6 @@ public final class ExtensionModel<T extends Extension> {
         private final Class<? extends Extension> extensionType;
 
         /** A builder for all methods annotated with {@link OnHook} on the extension. */
-        private final HookContainerModel.Builder hooks;
-
-        /** A builder for all methods annotated with {@link OnHook} on the extension. */
         private final OnHookContainerModelBuilder hooks2;
 
         private final List<Class<? extends Extension>> dependencies;
@@ -204,7 +187,6 @@ public final class ExtensionModel<T extends Extension> {
             this.extensionType = extensionType;
             this.dependencies = ExtensionDependencyValidator.dependenciesOf(extensionType);
             this.constructor = ConstructorFinder.find(extensionType);
-            this.hooks = new HookContainerModel.Builder(extensionType);
             this.hooks2 = new OnHookContainerModelBuilder(new ClassProcessor(MethodHandles.lookup(), extensionType, true), ContainerConfiguration.class);
         }
 
@@ -230,7 +212,6 @@ public final class ExtensionModel<T extends Extension> {
                 ModuleAccess.extension().configureComposer(composer, this);
             }
             // Find all methods annotated with @OnHook on the extension
-            MemberFinder.findMethods(Extension.class, extensionType, hooks);
             return new ExtensionModel<>(this);
         }
     }
