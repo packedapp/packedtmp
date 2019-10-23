@@ -56,7 +56,7 @@ public final class OnHookContainerModel {
         Function<OnHookContainerModelBuilder.LinkedEntry, Link> ff = e -> {
             Link l = null;
             for (; e != null; e = e.next) {
-                l = new Link(e.methodHandle, e.builder.index, l);
+                l = new Link(e.methodHandle, e.node.index, l);
             }
             return l;
         };
@@ -87,7 +87,7 @@ public final class OnHookContainerModel {
                 // We reverse the order here so instead of Dependent->Dependency we get Dependency->Dependent
                 // We do this so we do not automatically invoke methods on the root object. which is never cached.
                 for (LinkedEntry l = b.allEntries.customHooks.get(n.onNodeContainerType); l != null; l = l.next) {
-                    customHooks[l.builder.index] = new Link(l.methodHandle, i, customHooks[l.builder.index]);
+                    customHooks[l.node.index] = new Link(l.methodHandle, i, customHooks[l.node.index]);
                 }
             }
         }
@@ -113,6 +113,7 @@ public final class OnHookContainerModel {
     }
 
     public CachedHook<Hook> compute(Object[] array) throws Throwable {
+        // This code is same as process()
         for (int i = array.length - 1; i >= 0; i--) {
             for (Link link = customHooks[i]; link != null; link = link.next) {
                 if (builderConstructors[i] != null) {

@@ -218,6 +218,9 @@ public final class ServiceExtension extends Extension {
         node.provider().addProvidesHook(hook, cc);
     }
 
+    // @OnHook
+    // void onHook(AnnotatedMethodHook<Provide> hook) {}
+
     /**
      * @param <T>
      *            the type of service to provide

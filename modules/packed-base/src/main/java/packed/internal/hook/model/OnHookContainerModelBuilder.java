@@ -207,7 +207,7 @@ public final class OnHookContainerModelBuilder {
 
     static final class LinkedEntry {
 
-        final Node builder;
+        final Node node;
 
         final MethodHandle methodHandle;
 
@@ -215,7 +215,7 @@ public final class OnHookContainerModelBuilder {
         final LinkedEntry next;
 
         LinkedEntry(Node builder, MethodHandle methodHandle, LinkedEntry next) {
-            this.builder = requireNonNull(builder);
+            this.node = requireNonNull(builder);
             this.methodHandle = requireNonNull(methodHandle);
             this.next = next;
         }
@@ -230,10 +230,11 @@ public final class OnHookContainerModelBuilder {
         /** The class processor for the entity that contains the methods annotated with {@link OnHook}. */
         private final ClassProcessor cp;
 
+        /** Any dependencies on other nodes. */
         @Nullable
-        Set<Node> dependencies;
+        private Set<Node> dependencies;
 
-        /** The index of this node, we use */
+        /** The index of this node. */
         int index;
 
         /** The type of on node container. */
