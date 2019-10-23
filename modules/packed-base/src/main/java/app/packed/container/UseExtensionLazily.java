@@ -34,7 +34,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @interface UseExtensionLazily {
-
     String[] optional() default {};
 
     Class<? extends Extension>[] value();

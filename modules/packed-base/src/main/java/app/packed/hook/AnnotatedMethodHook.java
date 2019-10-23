@@ -78,6 +78,11 @@ public final class AnnotatedMethodHook<T extends Annotation> implements Hook {
         return new PackedMethodHookApplicator<E>(this, operator, method);
     }
 
+    void fail(String msg) {
+        // Skal goere det let skrive fejlmeddellser
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Applies the specified operator to the underlying method.
      * 

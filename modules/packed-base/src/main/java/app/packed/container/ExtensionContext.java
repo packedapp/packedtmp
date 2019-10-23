@@ -37,25 +37,26 @@ public interface ExtensionContext {
     void checkConfigurable();
 
     /**
-     * Returns the config site of the container to which the extension belongs.
+     * Returns the config site of the container to which the underlying extension belongs.
      * 
-     * @return the config site of the container to which the extension belongs
+     * @return the config site of the container to which the underlying extension belongs
      */
     ConfigSite containerConfigSite();
 
     /**
-     * Returns the path of the container to which the extension belongs.
+     * Returns the path of the container to which the underlying extension belongs.
      * 
-     * @return the path of the container to which the extension belongs
+     * @return the path of the container to which the underlying extension belongs
      */
     ComponentPath containerPath();
 
     /**
-     * Returns an extension of the specified type.
+     * Returns an extension of the specified type. The specified type must be among the dependencies of underlying
+     * extension. Otherwise an {@link UnsupportedOperationException} is thrown.
      * <p>
-     * Invoking this method is similar to calling {@link ContainerConfiguration#use(Class)}. However, this method also keeps
-     * track of which extensions uses other extensions. And forming any kind of circle in the dependency graph will fail
-     * with a runtime exception.
+     * This method is similar to {@link ContainerConfiguration#use(Class)}. However, this method also makes sure that the
+     * extension do request any other extensions that are in the set of its dependencies. Thereby potentially forming cycles
+     * in the dependency graph.
      * 
      * @param <E>
      *            the type of extension to return
@@ -65,6 +66,9 @@ public interface ExtensionContext {
      * @throws IllegalStateException
      *             if used from the constructor of the container. Or if the underlying container is no longer configurable
      *             and an extension of the specified type has not already been installed
+     * @throws UnsupportedOperationException
+     *             if the specified extension type is not among the dependencies of this extension
+     * @see ContainerConfiguration#use(Class)
      */
     <E extends Extension> E use(Class<E> extensionType);
 }

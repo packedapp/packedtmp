@@ -40,7 +40,8 @@ public interface Hook {
     interface Builder<T extends Hook> {
 
         /**
-         * Invoked by the runtime when all methods annotated with {@link OnHook} has been successfully invoked.
+         * Invoked by the runtime when all relevant methods annotated with {@link OnHook} has been successfully invoked on the
+         * builder.
          * 
          * @return the hook that was built.
          */

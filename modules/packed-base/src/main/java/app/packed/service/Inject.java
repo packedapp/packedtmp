@@ -36,8 +36,6 @@ import app.packed.container.UseExtension;
  * 
  * <p>
  * The annotation can also be applied to
- * 
- * <p>
  */
 // Field injection first
 // Maybe run @Inject noArgConstruct() last

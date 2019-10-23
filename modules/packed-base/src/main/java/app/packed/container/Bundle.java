@@ -114,8 +114,6 @@ public abstract class Bundle implements ContainerSource {
      *             if called outside {@link #configure()}
      */
     protected final ContainerConfiguration configuration() {
-        // This method is protected for now, but should be (package?) private
-        // Det er primaert extensions vi ikke vil have der skal have fat i den
         ContainerConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException(
@@ -166,10 +164,9 @@ public abstract class Bundle implements ContainerSource {
     }
 
     /**
-     * Returns an immutable view of all of the extension types that are currently used.
+     * Returns an unmodifiable set view of the extensions that are currently in use by the container.
      * 
-     * @return an immutable view of all of the extension types that are currently used
-     * 
+     * @return an unmodifiable set view of the extensions that are currently in use by the container
      * @see ContainerConfiguration#extensions()
      */
     protected final Set<Class<? extends Extension>> extensions() {

@@ -52,9 +52,9 @@ public interface ContainerConfiguration extends ComponentConfiguration<Object> {
     // ArtifactBuildContext buildContext();
 
     /**
-     * Returns an unmodifiable view of the extensions that are have been used while configuring the container.
+     * Returns an unmodifiable set view of the extensions that are currently in use by the container.
      * 
-     * @return an unmodifiable view of the extensions that are have been used while configuring the container
+     * @return an unmodifiable set view of the extensions that are currently in use by the container
      */
     Set<Class<? extends Extension>> extensions();
 
@@ -74,8 +74,6 @@ public interface ContainerConfiguration extends ComponentConfiguration<Object> {
      *            any wirelets
      */
     void link(Bundle bundle, Wirelet... wirelets);
-
-    // void link(Class<? extends Bundle> bundle, Wirelet... wirelets);
 
     /**
      * Registers a {@link Lookup} object that will be used for accessing fields and invoking methods on registered
@@ -107,8 +105,8 @@ public interface ContainerConfiguration extends ComponentConfiguration<Object> {
 
     /**
      * Returns an extension of the specified type. If this is the first time an extension of the specified type is
-     * requested. This method will create a new instance of the extension. Returning the instantiated extension for all
-     * subsequent calls to this method with the specified type.
+     * requested. This method will create a new instance of the extension and return it for all subsequent calls to this
+     * method with the same extension type.
      * 
      * @param <T>
      *            the type of extension to return
@@ -116,28 +114,10 @@ public interface ContainerConfiguration extends ComponentConfiguration<Object> {
      *            the type of extension to return
      * @return an extension of the specified type
      * @throws IllegalStateException
-     *             if the configuration is no longer modifiable and an extension of the specified type has not already been
-     *             installed
+     *             if the configuration is no longer configurable and an extension of the specified type has not already
+     *             been installed
      * @see Extension#use(Class)
      * @see ContainerConfiguration#extensions()
      */
     <T extends Extension> T use(Class<T> extensionType);
 }
-//
-/// **
-// * Returns a wirelet list containing any wirelets that was specified when creating this configuration. For example,
-// via
-// * {@link App#of(ContainerSource, Wirelet...)} or {@link ContainerConfiguration#link(Bundle, Wirelet...)}.
-// *
-// * @return a wirelet list containing any wirelets that was specified when creating this configuration
-// */
-//// hmm vs build wirelet context, vs instantiation wirelet context.
-//// Maaske skal vi helt droppe den... Saa man altid skal tage stilling.
-//// Saa hvis man har en wirelet der kan klare image(), saa brug instantiation.
-//
-//// Mht til navn saa kan vi cache NamingWirelet instance paa image creation time.
-//// Leder efter den paa build time, og saa se om de er same ==
-//// Hvis nej, applier vi nyt navn. Ellers beholder vi det gamle.
-//
-//// Build Contexts tager kun top container wirelets....
-// WireletList wirelets();

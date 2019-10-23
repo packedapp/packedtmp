@@ -52,10 +52,10 @@ public abstract class ExecutableDescriptor implements Member, AnnotatedElement {
      */
     ExecutableDescriptor(Executable executable) {
         this.executable = executable;
-        Parameter[] javaParameters = executable.getParameters();
-        this.parameters = new ParameterDescriptor[javaParameters.length];
-        for (int i = 0; i < javaParameters.length; i++) {
-            this.parameters[i] = new ParameterDescriptor(this, javaParameters[i], i);
+        Parameter[] parameters = executable.getParameters();
+        this.parameters = new ParameterDescriptor[parameters.length];
+        for (int i = 0; i < parameters.length; i++) {
+            this.parameters[i] = new ParameterDescriptor(this, parameters[i], i);
         }
         this.parameterTypes = executable.getParameterTypes();
     }
@@ -98,7 +98,6 @@ public abstract class ExecutableDescriptor implements Member, AnnotatedElement {
     }
 
     /** {@inheritDoc} */
-    /** {@inheritDoc} */
     @Override
     public <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
         return executable.getDeclaredAnnotationsByType(annotationClass);
@@ -121,6 +120,7 @@ public abstract class ExecutableDescriptor implements Member, AnnotatedElement {
      *
      * @return an array of parameter mirrors of the executable
      */
+    // TODO fix
     public final ParameterDescriptor[] getParametersUnsafe() {
         return parameters;
     }

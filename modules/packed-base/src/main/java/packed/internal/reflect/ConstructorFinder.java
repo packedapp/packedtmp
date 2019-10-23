@@ -133,8 +133,7 @@ public final class ConstructorFinder {
         return cp.unreflectConstructor(constructor, tf);
     }
 
-    public static <T extends Throwable> MethodHandle findExactlyOnce(ClassProcessor cp, UncheckedThrowableFactory<T> tf, MethodType... parameterTypes)
-            throws T {
+    public static <T extends Throwable> MethodHandle findExactlyOne(ClassProcessor cp, UncheckedThrowableFactory<T> tf, MethodType... parameterTypes) throws T {
         throw new UnsupportedOperationException();
     }
 }
