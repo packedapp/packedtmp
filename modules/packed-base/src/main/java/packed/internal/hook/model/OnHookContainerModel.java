@@ -65,21 +65,21 @@ public final class OnHookContainerModel {
     private final Link[] customHooks;
 
     OnHookContainerModel(OnHookContainerModelBuilder b) {
-        this.annotatedFields = convert(b.map.annotatedFields);
-        this.annotatedMethods = convert(b.map.annotatedMethods);
-        this.annotatedTypes = convert(b.map.annotatedTypes);
-        this.assignableTos = convert(b.map.assignableTos);
+        this.annotatedFields = convert(b.hooks.annotatedFields);
+        this.annotatedMethods = convert(b.hooks.annotatedMethods);
+        this.annotatedTypes = convert(b.hooks.annotatedTypes);
+        this.assignableTos = convert(b.hooks.assignableTos);
 
         this.customHooks = new Link[b.result.size()];
         this.constructors = new MethodHandle[b.result.size()];
 
         for (int i = 0; i < b.result.size(); i++) {
             OnHookContainerModelBuilder.Node n = b.result.get(i);
-            constructors[i] = n.constructor;
-            if (b.map.customHooks != null) {
+            constructors[i] = n.builderConstructor;
+            if (b.hooks.customHooks != null) {
                 // We reverse the order here so instead of Dependent->Dependency we get Dependency->Dependent
                 // We do this so we do not automatically invoke methods on the root object. which is never cached.
-                for (LinkedEntry l = b.map.customHooks.get(n.cp.clazz()); l != null; l = l.next) {
+                for (LinkedEntry l = b.hooks.customHooks.get(n.type); l != null; l = l.next) {
                     customHooks[l.builder.index] = new Link(l.methodHandle, i, customHooks[l.builder.index]);
                 }
             }

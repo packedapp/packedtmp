@@ -46,17 +46,17 @@ import packed.internal.util.types.TypeUtil;
  */
 public final class OnHookContainerModelBuilder {
 
-    final MutableOnHookMap<LinkedEntry> map = new MutableOnHookMap<>();
+    private static final UncheckedThrowableFactory<? extends RuntimeException> tf = UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY;
+
+    final MutableOnHookMap<LinkedEntry> hooks = new MutableOnHookMap<>();
 
     /** All non-root nodes. */
     private final IdentityHashMap<Class<? extends Hook>, Node> nodes = new IdentityHashMap<>();
 
-    /** The root builder. */
-    private final Node root;
-
     final ArrayList<Node> result = new ArrayList<>();
 
-    private static final UncheckedThrowableFactory<? extends RuntimeException> tf = UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY;
+    /** The root builder. */
+    private final Node root;
 
     private final ArrayDeque<Node> unprocessedNodes = new ArrayDeque<>();
 
@@ -68,10 +68,50 @@ public final class OnHookContainerModelBuilder {
             ClassProcessor cpx = cp.spawn(cl);
             MethodHandle constructor = ConstructorFinder.find(cpx, tf);
             // TODO validate type variable
-            this.root = new Node(cpx, constructor);
+            this.root = new Node(hookType, cpx, constructor);
         } else {
             // This cast is not valid... For example is Bundle not a hook.
-            this.root = new Node(cp, null);
+            this.root = new Node(cp.clazz(), cp, null);
+        }
+    }
+
+    public void findAllHooks() {
+        // Find all methods annotated with @OnHook and process them.
+        root.cp.findMethods(m -> onMethod(root, m));
+        for (Node b = unprocessedNodes.pollFirst(); b != null; b = unprocessedNodes.pollFirst()) {
+            Node bb = b;
+            bb.cp.findMethods(m -> onMethod(bb, m));
+        }
+
+        // Roots are only required to have OnHook if they are an Hook themself.
+        // For example, Extension and Bundle should not fail here.
+        if (hooks.isEmpty() && Hook.Builder.class.isAssignableFrom(root.cp.clazz())) {
+            throw new AssertionError("There must be at least one method annotated with @OnHook on " + root.cp.clazz());
+        }
+
+        // There is always a root, add it as the first element
+        result.add(root);
+
+        // Uses a simple iterative algorithm, to make sure there are no interdependencies between the custom hooks
+        // It is potentially O(n^2) but this should not be a problem in practice
+        int index = nodes.size(); // TODO I think we should count down here instead???
+        boolean doContinue = true;
+        while (doContinue && !nodes.isEmpty()) {
+            doContinue = false;
+            for (Iterator<Node> iterator = nodes.values().iterator(); iterator.hasNext();) {
+                Node b = iterator.next();
+                if (!b.hasUnresolvedDependencies()) {
+                    b.index = index--;
+                    result.add(b);
+                    iterator.remove();
+                    doContinue = true;
+                }
+            }
+        }
+
+        if (!nodes.isEmpty()) {
+            // Okay, we got some circles.
+            throw new UnsupportedOperationException("Not supported currently");
         }
     }
 
@@ -114,13 +154,13 @@ public final class OnHookContainerModelBuilder {
         // Let first see if it is a base book.
         IdentityHashMap<Class<?>, LinkedEntry> mm = null;
         if (hookType == AnnotatedFieldHook.class) {
-            mm = map.annotatedFieldsLazyInit();
+            mm = hooks.annotatedFieldsLazyInit();
         } else if (hookType == AnnotatedMethodHook.class) {
-            mm = map.annotatedMethodsLazyInit();
+            mm = hooks.annotatedMethodsLazyInit();
         } else if (hookType == AnnotatedTypeHook.class) {
-            mm = map.annotatedTypesLazyInit();
+            mm = hooks.annotatedTypesLazyInit();
         } else if (hookType == AssignableToHook.class) {
-            mm = map.assignableTosLazyInit();
+            mm = hooks.assignableTosLazyInit();
         }
 
         if (mm != null) {
@@ -132,7 +172,7 @@ public final class OnHookContainerModelBuilder {
                 tf.newThrowableForMethod("Hook cannot depend on itself", method);
             }
             TypeUtil.checkClassIsInstantiable(hookType);
-            IdentityHashMap<Class<?>, LinkedEntry> m = map.customHooksLazyInit();
+            IdentityHashMap<Class<?>, LinkedEntry> m = hooks.customHooksLazyInit();
             m.compute(hookType, (k, v) -> {
 
                 // Lazy create new node if one does not already exist for the hookType
@@ -142,7 +182,7 @@ public final class OnHookContainerModelBuilder {
                     MethodHandle constructor = ConstructorFinder.find(cp, tf);
 
                     // TODO validate type variable
-                    Node newNode = new Node(cp, constructor);
+                    Node newNode = new Node(hookType, cp, constructor);
                     unprocessedNodes.addLast(newNode); // make sure it will be processed at some point.
                     return newNode;
                 });
@@ -159,46 +199,6 @@ public final class OnHookContainerModelBuilder {
                 }
                 return new LinkedEntry(node, mh, v);
             });
-        }
-    }
-
-    public void findAllHooks() {
-        // Find all methods annotated with @OnHook and process them.
-        root.cp.findMethods(m -> onMethod(root, m));
-        for (Node b = unprocessedNodes.pollFirst(); b != null; b = unprocessedNodes.pollFirst()) {
-            Node bb = b;
-            bb.cp.findMethods(m -> onMethod(bb, m));
-        }
-
-        // Roots are only required to have OnHook if they are an Hook themself.
-        // For example, Extension and Bundle should not fail here.
-        if (map.isEmpty() && Hook.Builder.class.isAssignableFrom(root.cp.clazz())) {
-            throw new AssertionError("There must be at least one method annotated with @OnHook on " + root.cp.clazz());
-        }
-
-        // There is always a root, add it as the first element
-        result.add(root);
-
-        // Uses a simple iterative algorithm, to make sure there are no interdependencies between the custom hooks
-        // It is potentially O(n^2) but this should not be a problem in practice
-        int index = nodes.size(); // TODO I think we should count down here instead???
-        boolean doContinue = true;
-        while (doContinue && !nodes.isEmpty()) {
-            doContinue = false;
-            for (Iterator<Node> iterator = nodes.values().iterator(); iterator.hasNext();) {
-                Node b = iterator.next();
-                if (!b.hasUnresolvedDependencies()) {
-                    b.index = index--;
-                    result.add(b);
-                    iterator.remove();
-                    doContinue = true;
-                }
-            }
-        }
-
-        if (!nodes.isEmpty()) {
-            // Okay, we got some circles.
-            throw new UnsupportedOperationException("Not supported currently");
         }
     }
 
@@ -220,12 +220,12 @@ public final class OnHookContainerModelBuilder {
 
     static final class Node {
 
-        /** */
+        /** A constructor for any builder that might belong to the node. */
         @Nullable
-        final MethodHandle constructor;
+        final MethodHandle builderConstructor;
 
-        /** The class processor used for iterating over methods. */
-        final ClassProcessor cp;
+        /** The class processor for the entity that contains the methods annotated with {@link OnHook}. */
+        private final ClassProcessor cp;
 
         @Nullable
         Set<Node> dependencies;
@@ -233,12 +233,28 @@ public final class OnHookContainerModelBuilder {
         /** The index of this node, we use */
         int index;
 
-        Node(ClassProcessor cp, MethodHandle constructor) {
+        /** The type of the node, is always a sub type of hook, for non-roots */
+        final Class<?> type;
+
+        Node(Class<?> type, ClassProcessor cp, MethodHandle constructor) {
+            this.type = requireNonNull(type);
             this.cp = requireNonNull(cp);
-            this.constructor = constructor;
+            this.builderConstructor = constructor;
             if (constructor != null && constructor.type().returnType() != cp.clazz()) {
                 throw new IllegalStateException("OOPS");
             }
+        }
+
+        /**
+         * A node without a builder
+         * 
+         * @param cp
+         *            the class processor for the node
+         */
+        Node(ClassProcessor cp) {
+            this.cp = cp;
+            this.type = cp.clazz();
+            this.builderConstructor = null;
         }
 
         void addDependency(Node b) {
@@ -262,7 +278,7 @@ public final class OnHookContainerModelBuilder {
 
         @Override
         public String toString() {
-            return constructor == null ? "" : constructor.type().toString();
+            return builderConstructor == null ? "" : builderConstructor.type().toString();
         }
     }
 }
