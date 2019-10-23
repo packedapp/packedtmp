@@ -71,31 +71,3 @@ abstract class AppBundle extends BaseBundle {
     }
 
 }
-
-class MyBundle extends AppBundle {
-
-    private static final ArtifactImage IMAGE = newImage(new MyBundle());
-
-    @Override
-    protected void configure() {
-        lifecycle().main(() -> System.out.println("HelloWorld"));
-    }
-
-    public static void main(String[] args) {
-        run(IMAGE);
-    }
-}
-
-class MyBundle2 extends BaseBundle {
-
-    private static final ArtifactImage IMAGE = ArtifactImage.of(new MyBundle2());
-
-    @Override
-    protected void configure() {
-        lifecycle().main(() -> System.out.println("HelloWorld"));
-    }
-
-    public static void main(String[] args) {
-        App.run(IMAGE);
-    }
-}

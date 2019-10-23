@@ -15,20 +15,13 @@
  */
 package packed.internal.service.run;
 
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import app.packed.component.Component;
 import app.packed.lang.Key;
 import app.packed.lang.Nullable;
-import app.packed.service.Dependency;
-import app.packed.service.InjectionException;
 import app.packed.service.Injector;
 import app.packed.service.PrototypeRequest;
-import packed.internal.inject.factoryhandle.FieldFactoryHandle;
-import packed.internal.service.util.nextapi.OldAtInject;
-import packed.internal.service.util.nextapi.OldAtInjectGroup;
 
 /** An abstract implementation of an injector. */
 public abstract class AbstractInjector implements Injector {
@@ -89,52 +82,52 @@ public abstract class AbstractInjector implements Injector {
         return n.getInstance(PrototypeRequest.of(key));
     }
 
-    protected final void injectMembers(OldAtInjectGroup descriptor, Object instance, @Nullable Component component) {
-        // Inject fields
-        if (!descriptor.fields.isEmpty()) {
-            for (OldAtInject atInject : descriptor.fields) {
-                Dependency dependency = atInject.dependencies.get(0);
-                FieldFactoryHandle<?> field = (FieldFactoryHandle<?>) atInject.invokable;
-                InjectorEntry<?> node = findNode(dependency.key());
-                if (node != null) {
-                    Object value = node.getInstance(PrototypeRequest.of(dependency, component));
-                    value = dependency.wrapIfOptional(value);
-                    field.setOnInstance(instance, value);
-                } else if (dependency.isOptional()) {
-                    // 3 Valgmuligheder
-
-                    // Altid overskriv
-
-                    // Overskriv Optional, ikke for nullable
-
-                    // Aldrig overskriv
-
-                    // I think we want to set optional fields????
-                    // But not nullable
-                    // I think
-                    // if field == null, inject, otherwise leave to value
-                    // Hmm, should we override existing value???
-                    // For consistentsee reason yes, but hmm it is useful not to override
-                } else {
-                    String msg = "Could not find a valid value for " + dependency.key() + " on field " + field.toString();
-                    throw new InjectionException(msg);
-                }
-            }
-        }
-
-        // Inject methods
-        if (!descriptor.methods.isEmpty()) {
-            for (OldAtInject method : descriptor.methods) {
-                Object[] arguments = new Object[method.dependencies.size()];
-                System.out.println(Arrays.toString(arguments));
-                for (Dependency dependency : method.dependencies) {
-                    InjectorEntry<?> node = findNode(dependency.key());
-                    System.out.println(node);
-                }
-                System.out.println("Should have injected " + method);
-            }
-        }
-    }
+    // protected final void injectMembers(OldAtInjectGroup descriptor, Object instance, @Nullable Component component) {
+    // // Inject fields
+    // if (!descriptor.fields.isEmpty()) {
+    // for (OldAtInject atInject : descriptor.fields) {
+    // Dependency dependency = atInject.dependencies.get(0);
+    // FieldFactoryHandle<?> field = (FieldFactoryHandle<?>) atInject.invokable;
+    // InjectorEntry<?> node = findNode(dependency.key());
+    // if (node != null) {
+    // Object value = node.getInstance(PrototypeRequest.of(dependency, component));
+    // value = dependency.wrapIfOptional(value);
+    // field.setOnInstance(instance, value);
+    // } else if (dependency.isOptional()) {
+    // // 3 Valgmuligheder
+    //
+    // // Altid overskriv
+    //
+    // // Overskriv Optional, ikke for nullable
+    //
+    // // Aldrig overskriv
+    //
+    // // I think we want to set optional fields????
+    // // But not nullable
+    // // I think
+    // // if field == null, inject, otherwise leave to value
+    // // Hmm, should we override existing value???
+    // // For consistentsee reason yes, but hmm it is useful not to override
+    // } else {
+    // String msg = "Could not find a valid value for " + dependency.key() + " on field " + field.toString();
+    // throw new InjectionException(msg);
+    // }
+    // }
+    // }
+    //
+    // // Inject methods
+    // if (!descriptor.methods.isEmpty()) {
+    // for (OldAtInject method : descriptor.methods) {
+    // Object[] arguments = new Object[method.dependencies.size()];
+    // System.out.println(Arrays.toString(arguments));
+    // for (Dependency dependency : method.dependencies) {
+    // InjectorEntry<?> node = findNode(dependency.key());
+    // System.out.println(node);
+    // }
+    // System.out.println("Should have injected " + method);
+    // }
+    // }
+    // }
 
     /** {@inheritDoc} */
     @Override
