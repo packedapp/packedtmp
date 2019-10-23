@@ -18,13 +18,16 @@ package packed.internal.component;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 
+import app.packed.component.ComponentConfiguration;
 import app.packed.container.Extension;
 import app.packed.hook.Hook;
 import app.packed.lang.Nullable;
+import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.ExtensionModel;
 import packed.internal.hook.model.CachedHook;
 import packed.internal.hook.model.HookProcessor;
@@ -37,15 +40,27 @@ import packed.internal.util.ThrowableUtil;
 // One of these suckers is creates once for each component+Extension combination...
 final class ComponentModelHookGroup extends HookRequest {
 
-    /** A list of custom hook callbacks for the particular extension. */
-    final CachedHook<Hook> customHooksCallback;
-
     /** The type of extension that will be activated. */
     final Class<? extends Extension> extensionType;
 
-    private ComponentModelHookGroup(Class<? extends Extension> extensionType, CachedHook<Hook> callback) {
+    private ComponentModelHookGroup(HookRequest.Builder builder, Class<? extends Extension> extensionType) throws Throwable {
+        super(builder);
         this.extensionType = requireNonNull(extensionType);
-        this.customHooksCallback = callback;
+    }
+
+    void process(PackedContainerConfiguration containerConfiguration, ComponentConfiguration<?> componentConfiguration) throws Throwable {
+        // First make sure the extension is activated
+        Extension e = containerConfiguration.use(extensionType);
+
+        // Call the actual methods on the Extension
+        for (CachedHook<Hook> c = customHooksCallback; c != null; c = c.next()) {
+            MethodHandle mh = c.mh();
+            if (mh.type().parameterCount() == 2) {
+                c.mh().invoke(e, c.hook());
+            } else {
+                c.mh().invoke(e, c.hook(), componentConfiguration);
+            }
+        }
     }
 
     static final class Builder extends HookRequest.Builder {
@@ -66,7 +81,7 @@ final class ComponentModelHookGroup extends HookRequest {
 
         public ComponentModelHookGroup build() {
             try {
-                return new ComponentModelHookGroup(extensionType, compute());
+                return new ComponentModelHookGroup(this, extensionType);
             } catch (Throwable e) {
                 ThrowableUtil.rethrowErrorOrRuntimeException(e);
                 throw new UndeclaredThrowableException(e);

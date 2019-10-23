@@ -32,6 +32,7 @@ import app.packed.hook.Hook;
 import app.packed.hook.Hook.Builder;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
+import packed.internal.hook.model.HookRequest.DelayedAnnotatedMethod;
 import packed.internal.hook.model.OnHookContainerModelBuilder.LinkedEntry;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ClassProcessor;
@@ -150,7 +151,7 @@ public final class OnHookContainerModel {
         HookProcessor hc = new HookProcessor(cpTarget, tf);
         cpTarget.findMethodsAndFields(allLinks.annotatedMethods == null ? null : f -> {
             for (Annotation a : f.getAnnotations()) {
-                tryProcesAnnotatedMethod(hc, f, a, array);
+                tryProcesAnnotatedMethod(hc, f, a, hb);
             }
         }, allLinks.annotatedFields == null ? null : f -> {
             for (Annotation a : f.getAnnotations()) {
@@ -179,14 +180,12 @@ public final class OnHookContainerModel {
         }
     }
 
-    public void tryProcesAnnotatedMethod(HookProcessor hc, Method method, Annotation annotation, Object[] array) throws Throwable {
+    public void tryProcesAnnotatedMethod(HookProcessor hc, Method method, Annotation annotation, HookRequest.Builder hr) throws Throwable {
         for (Link link = allLinks.annotatedMethods.get(annotation.annotationType()); link != null; link = link.next) {
-            System.out.println(link.mh);
-
             if (link.index == 0) {
-
+                hr.delayedMethods.add(new DelayedAnnotatedMethod(method, annotation, link.mh));
             } else {
-                Hook.Builder<?> builder = builderOf(array, link.index);
+                Hook.Builder<?> builder = builderOf(hr.array, link.index);
                 AnnotatedMethodHook<Annotation> hook = ModuleAccess.hook().newAnnotatedMethodHook(hc, method, annotation);
                 link.mh.invoke(builder, hook);
             }

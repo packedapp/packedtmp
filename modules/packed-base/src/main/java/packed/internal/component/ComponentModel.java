@@ -18,18 +18,15 @@ package packed.internal.component;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandle;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.IdentityHashMap;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.UseExtension;
-import app.packed.hook.Hook;
 import packed.internal.container.ComponentLookup;
 import packed.internal.container.ContainerSourceModel;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.hook.model.CachedHook;
 import packed.internal.hook.model.HookProcessor;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.ThrowableUtil;
@@ -70,19 +67,7 @@ public final class ComponentModel {
         // Preferable deterministic
         try {
             for (ComponentModelHookGroup group : hookGroups) {
-
-                // First make sure the extension is activated
-                Extension e = containerConfiguration.use(group.extensionType);
-
-                // Call the actual methods on the Extension
-                for (CachedHook<Hook> c = group.customHooksCallback; c != null; c = c.next()) {
-                    MethodHandle mh = c.mh();
-                    if (mh.type().parameterCount() == 2) {
-                        c.mh().invoke(e, c.hook());
-                    } else {
-                        c.mh().invoke(e, c.hook(), componentConfiguration);
-                    }
-                }
+                group.process(containerConfiguration, componentConfiguration);
             }
         } catch (Throwable e) {
             ThrowableUtil.rethrowErrorOrRuntimeException(e);

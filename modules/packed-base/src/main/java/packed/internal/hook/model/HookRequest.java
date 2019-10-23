@@ -18,15 +18,27 @@ package packed.internal.hook.model;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
+import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
+import packed.internal.moduleaccess.ModuleAccess;
 
 /**
  *
  */
 public class HookRequest {
+
+    /** A list of custom hook callbacks for the particular extension. */
+    public final CachedHook<Hook> customHooksCallback;
+
+    protected HookRequest(HookRequest.Builder builder) throws Throwable {
+        this.customHooksCallback = builder.compute();
+    }
 
     public static class Builder {
 
@@ -48,17 +60,35 @@ public class HookRequest {
         }
 
         public void onAnnotatedMethod(HookProcessor hookProcessor, Method method, Annotation annotation) throws Throwable {
-            hooks.tryProcesAnnotatedMethod(hookProcessor, method, annotation, array);
+            hooks.tryProcesAnnotatedMethod(hookProcessor, method, annotation, this);
+        }
+
+        List<DelayedAnnotatedMethod> delayedMethods = new ArrayList<>();
+    }
+
+    static class DelayedAnnotatedField {
+        final Field field;
+        final Annotation annotation;
+
+        DelayedAnnotatedField(Field field, Annotation annotation) {
+            this.field = requireNonNull(field);
+            this.annotation = requireNonNull(annotation);
         }
     }
 
     static class DelayedAnnotatedMethod {
-        final Field field;
+        final Method method;
         final Annotation annotation;
+        public final MethodHandle mh;
 
-        DelayedAnnotatedMethod(Field field, Annotation annotation) {
-            this.field = requireNonNull(field);
+        DelayedAnnotatedMethod(Method method, Annotation annotation, MethodHandle mh) {
+            this.method = requireNonNull(method);
             this.annotation = requireNonNull(annotation);
+            this.mh = requireNonNull(mh);
+        }
+
+        public AnnotatedMethodHook<Annotation> toHook(HookProcessor hookProcessor) {
+            return ModuleAccess.hook().newAnnotatedMethodHook(hookProcessor, method, annotation);
         }
     }
 }
