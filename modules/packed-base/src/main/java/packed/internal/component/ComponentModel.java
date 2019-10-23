@@ -18,6 +18,7 @@ package packed.internal.component;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.IdentityHashMap;
 
@@ -75,7 +76,12 @@ public final class ComponentModel {
 
                 // Call the actual methods on the Extension
                 for (CachedHook<Hook> c = group.callback; c != null; c = c.next()) {
-                    c.mh().invoke(e, c.hook(), componentConfiguration);
+                    MethodHandle mh = c.mh();
+                    if (mh.type().parameterCount() == 2) {
+                        c.mh().invoke(e, c.hook());
+                    } else {
+                        c.mh().invoke(e, c.hook(), componentConfiguration);
+                    }
                 }
             }
         } catch (Throwable e) {
