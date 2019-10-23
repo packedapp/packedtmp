@@ -21,7 +21,8 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.function.Consumer;
+
+import packed.internal.util.function.ThrowableConsumer;
 
 /**
  * Processes all fields and methods on a specified class.
@@ -35,7 +36,8 @@ public final class MemberFinder {
     /** Never instantiate. */
     private MemberFinder() {}
 
-    private static void find(Class<?> baseType, Class<?> actualType, Consumer<? super Method> methodConsumer, Consumer<? super Field> fieldConsumer) {
+    private static <T extends Throwable> void find(Class<?> baseType, Class<?> actualType, ThrowableConsumer<? super Method, T> methodConsumer,
+            ThrowableConsumer<? super Field, T> fieldConsumer) throws T {
         HashSet<Package> packages = new HashSet<>();
         HashMap<MethodEntry, HashSet<Package>> types = new HashMap<>();
 
@@ -95,12 +97,12 @@ public final class MemberFinder {
         }
     }
 
-    public static void findMethods(Class<?> baseType, Class<?> actualType, Consumer<? super Method> methodConsumer) {
+    public static <T extends Throwable> void findMethods(Class<?> baseType, Class<?> actualType, ThrowableConsumer<? super Method, T> methodConsumer) throws T {
         find(baseType, actualType, methodConsumer, null);
     }
 
-    public static void findMethodsAndFields(Class<?> baseType, Class<?> actualType, Consumer<? super Method> methodConsumer,
-            Consumer<? super Field> fieldConsumer) {
+    public static <T extends Throwable> void findMethodsAndFields(Class<?> baseType, Class<?> actualType, ThrowableConsumer<? super Method, T> methodConsumer,
+            ThrowableConsumer<? super Field, T> fieldConsumer) throws T {
         find(baseType, actualType, methodConsumer, fieldConsumer);
     }
 

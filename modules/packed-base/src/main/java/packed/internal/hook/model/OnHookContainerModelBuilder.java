@@ -84,11 +84,10 @@ public final class OnHookContainerModelBuilder {
             throw new AssertionError("There must be at least one method annotated with @OnHook on " + root.cp.clazz());
         }
 
-        // There is always a root, add it as the first element
-
         // Uses a simple iterative algorithm, to make sure there are no interdependencies between the custom hooks
         // It is potentially O(n^2) but this should not be a problem in practice
-        int index = nodes.size(); // TODO I think we should count down here instead???
+        // We add each no with no dependencies to the end of the stack.
+        int index = nodes.size();
         boolean doContinue = true;
         while (doContinue && !nodes.isEmpty()) {
             doContinue = false;

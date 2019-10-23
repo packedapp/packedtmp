@@ -26,12 +26,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.function.Consumer;
 
 import app.packed.lang.NativeImage;
 import app.packed.lang.reflect.UncheckedIllegalAccessException;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.UncheckedThrowableFactory;
+import packed.internal.util.function.ThrowableConsumer;
 
 /**
  *
@@ -81,15 +81,17 @@ public class ClassProcessor {
         return clazz;
     }
 
-    public void findMethods(Consumer<? super Method> methodConsumer) {
+    public <T extends Throwable> void findMethods(ThrowableConsumer<? super Method, T> methodConsumer) throws T {
         MemberFinder.findMethods(Object.class, clazz, methodConsumer);
     }
 
-    public void findMethodsAndFields(Class<?> baseType, Consumer<? super Method> methodConsumer, Consumer<? super Field> fieldConsumer) {
+    public <T extends Throwable> void findMethodsAndFields(Class<?> baseType, ThrowableConsumer<? super Method, T> methodConsumer,
+            ThrowableConsumer<? super Field, T> fieldConsumer) throws T {
         MemberFinder.findMethodsAndFields(baseType, clazz, methodConsumer, fieldConsumer);
     }
 
-    public void findMethodsAndFields(Consumer<? super Method> methodConsumer, Consumer<? super Field> fieldConsumer) {
+    public <T extends Throwable> void findMethodsAndFields(ThrowableConsumer<? super Method, T> methodConsumer,
+            ThrowableConsumer<? super Field, T> fieldConsumer) throws T {
         MemberFinder.findMethodsAndFields(Object.class, clazz, methodConsumer, fieldConsumer);
     }
 

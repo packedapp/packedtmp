@@ -205,7 +205,6 @@ public final class OnHookContainerModel {
     }
 
     private static Object builderOf(OnHookContainerModel m, int index, Object[] array) {
-        requireNonNull(m.constructors[index]);
         Object builder = array[index];
         if (builder == null) {
             try {
