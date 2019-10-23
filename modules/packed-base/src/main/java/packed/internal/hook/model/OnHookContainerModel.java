@@ -42,7 +42,7 @@ import packed.internal.util.UncheckedThrowableFactory;
  */
 public final class OnHookContainerModel {
 
-    final ImmutanleOnHookMap<Link> allLinks;
+    private final ImmutableOnHookMap<Link> allLinks;
 
     /** Constructors for each builder. */
     private final MethodHandle[] builderConstructors;
@@ -50,7 +50,7 @@ public final class OnHookContainerModel {
     /** Methods annotated with {@link OnHook} that takes a non-base {@link Hook}. */
     private final Link[] customHooks;
 
-    final ImmutanleOnHookMap<Link> rootLinks;
+    final ImmutableOnHookMap<Link> rootLinks;
 
     OnHookContainerModel(OnHookContainerModelBuilder b) {
         Function<OnHookContainerModelBuilder.LinkedEntry, Link> ff = e -> {

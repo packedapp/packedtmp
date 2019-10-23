@@ -27,7 +27,7 @@ import app.packed.lang.Nullable;
 /**
  *
  */
-class ImmutanleOnHookMap<V> {
+final class ImmutableOnHookMap<V> {
 
     /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedFieldHook} as a parameter. */
     @Nullable
@@ -45,7 +45,7 @@ class ImmutanleOnHookMap<V> {
     @Nullable
     final Map<Class<?>, V> assignableTos;
 
-    ImmutanleOnHookMap(Map<Class<?>, V> annotatedFields, Map<Class<?>, V> annotatedMethod, Map<Class<?>, V> annotatedTypes, Map<Class<?>, V> assignableTos) {
+    ImmutableOnHookMap(Map<Class<?>, V> annotatedFields, Map<Class<?>, V> annotatedMethod, Map<Class<?>, V> annotatedTypes, Map<Class<?>, V> assignableTos) {
         this.annotatedFields = annotatedFields;
         this.annotatedMethods = annotatedMethod;
         this.annotatedTypes = annotatedTypes;

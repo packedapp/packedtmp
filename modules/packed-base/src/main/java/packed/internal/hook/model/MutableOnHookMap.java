@@ -90,7 +90,7 @@ final class MutableOnHookMap<V> {
         return a;
     }
 
-    public <E> ImmutanleOnHookMap<E> toImmutable(Function<V, E> converter) {
+    public <E> ImmutableOnHookMap<E> toImmutable(Function<V, E> converter) {
         if (isEmpty()) {
             return null;
         }
@@ -98,7 +98,7 @@ final class MutableOnHookMap<V> {
         Map<Class<?>, E> annotatedMethoddHooks = convert(annotatedMethods, converter);
         Map<Class<?>, E> annotatedTypeHooks = convert(annotatedTypes, converter);
         Map<Class<?>, E> assignableToHooks = convert(assignableTos, converter);
-        return new ImmutanleOnHookMap<E>(annotatedFieldHooks, annotatedMethoddHooks, annotatedTypeHooks, assignableToHooks);
+        return new ImmutableOnHookMap<E>(annotatedFieldHooks, annotatedMethoddHooks, annotatedTypeHooks, assignableToHooks);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
