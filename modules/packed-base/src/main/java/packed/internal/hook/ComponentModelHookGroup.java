@@ -63,7 +63,7 @@ public final class ComponentModelHookGroup {
 
         // Calling the actual methods on Extension
         for (HookCallback c : callbacks) {
-            c.mh.invoke(e, c.hookGroup, cc);
+            c.mh().invoke(e, c.hook(), cc);
         }
     }
 
@@ -92,7 +92,7 @@ public final class ComponentModelHookGroup {
 
             for (Entry<Class<?>, Hook.Builder<?>> m : groupBuilders.entrySet()) {
                 MethodHandle mh = con.groups.get(m.getKey());
-                callbacks.add(new HookCallback(mh, m.getValue().build()));
+                callbacks.add(new HookCallback(mh, m.getValue().build(), null));
             }
             return new ComponentModelHookGroup(this);
         }
@@ -112,17 +112,17 @@ public final class ComponentModelHookGroup {
             process(con.findMethodHandleForAnnotatedMethod(hook), hook);
         }
 
-        private void process(MethodHandle mh, Object hook) {
+        private void process(MethodHandle mh, Hook hook) {
             Class<?> owner = mh.type().parameterType(0);
             if (owner == extensionType) {
-                callbacks.add(new HookCallback(mh, hook));
+                callbacks.add(new HookCallback(mh, hook, null));
                 throw new Error();
             } else {
                 processBuilder(mh, (Class<? extends Hook.Builder<?>>) owner, hook);
             }
         }
 
-        private void processBuilder(MethodHandle mh, Class<? extends Hook.Builder<?>> builderType, Object hook) {
+        private void processBuilder(MethodHandle mh, Class<? extends Hook.Builder<?>> builderType, Hook hook) {
             Hook.Builder<?> b = groupBuilders.computeIfAbsent(builderType, k -> HookBuilderModel.newInstance(builderType));
             try {
                 mh.invoke(b, hook);

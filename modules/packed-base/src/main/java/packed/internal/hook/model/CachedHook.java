@@ -13,36 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hook;
+package packed.internal.hook.model;
 
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.component.ComponentConfiguration;
 import app.packed.hook.Hook;
 import app.packed.lang.Nullable;
 
 /**
  *
  */
-// Bruges til at kalde tilbage paa extensions
-final class HookCallback {
+public final class CachedHook {
 
     private final Hook hook;
-
     private final MethodHandle mh;
 
     @Nullable
-    private HookCallback next;
+    private CachedHook next;
 
-    /**
-     * @param mh
-     * @param hook
-     */
-    HookCallback(MethodHandle mh, Hook hook, @Nullable HookCallback next) {
+    CachedHook(Hook hook, MethodHandle mh, @Nullable CachedHook next) {
+        this.hook = requireNonNull(hook);
         this.mh = requireNonNull(mh);
-        this.hook = hook;
         this.next = next;
     }
 
@@ -50,17 +43,12 @@ final class HookCallback {
         return hook;
     }
 
-    @SuppressWarnings({ "rawtypes" })
-    void invoke(Object e, ComponentConfiguration component) throws Throwable {
-        mh.invoke(e, hook, component);
-    }
-
     public MethodHandle mh() {
         return mh;
     }
 
     @Nullable
-    public HookCallback next() {
+    public CachedHook next() {
         return next;
     }
 }
