@@ -50,6 +50,8 @@ public final class OnHookContainerModelBuilder {
 
     final MutableOnHookMap<LinkedEntry> hooks = new MutableOnHookMap<>();
 
+    final MutableOnHookMap<LinkedEntry> rootHooks = new MutableOnHookMap<>();
+
     /** All non-root nodes. */
     private final IdentityHashMap<Class<? extends Hook>, Node> nodes = new IdentityHashMap<>();
 
@@ -145,21 +147,34 @@ public final class OnHookContainerModelBuilder {
         MethodHandle mh = node.cp.unreflect(method, tf);
 
         // Let first see if it is a base book.
-        IdentityHashMap<Class<?>, LinkedEntry> mm = null;
+        final IdentityHashMap<Class<?>, LinkedEntry> mm;
+
+        // Keep track of all dangling stuff on root
+        final IdentityHashMap<Class<?>, LinkedEntry> roots;
         if (hookType == AnnotatedFieldHook.class) {
             mm = hooks.annotatedFieldsLazyInit();
+            roots = node == root && root.builderConstructor == null ? rootHooks.annotatedFieldsLazyInit() : null;
         } else if (hookType == AnnotatedMethodHook.class) {
             mm = hooks.annotatedMethodsLazyInit();
+            roots = node == root && root.builderConstructor == null ? rootHooks.annotatedMethodsLazyInit() : null;
         } else if (hookType == AnnotatedTypeHook.class) {
             mm = hooks.annotatedTypesLazyInit();
+            roots = node == root && root.builderConstructor == null ? rootHooks.annotatedTypesLazyInit() : null;
         } else if (hookType == AssignableToHook.class) {
             mm = hooks.assignableTosLazyInit();
+            roots = node == root && root.builderConstructor == null ? rootHooks.assignableTos : null;
+        } else {
+            mm = null;
+            roots = null;
         }
 
         if (mm != null) {
             ParameterizedType pt = (ParameterizedType) hook.getParameterizedType();
             Class<?> typeVariable = (Class<?>) pt.getActualTypeArguments()[0];
             mm.compute(typeVariable, (k, v) -> new LinkedEntry(node, mh, v));
+            if (roots != null) {
+                roots.compute(typeVariable, (k, v) -> new LinkedEntry(node, mh, v));
+            }
         } else {
             if (hookType == node.cp.clazz()) {
                 tf.newThrowableForMethod("Hook cannot depend on itself", method);
