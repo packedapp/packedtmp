@@ -160,6 +160,7 @@ public final class ServiceExtension extends Extension {
         node.exports().exportAll(captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
     }
 
+    // manualInject?
     public <T, C> void inject(Class<T> key, ComponentConfiguration<C> cc, BiConsumer<? super C, ? super T> action) {
         throw new UnsupportedOperationException();
     }
@@ -194,6 +195,10 @@ public final class ServiceExtension extends Extension {
     // disableAutomaticRequirements()
     // Jeg taenker lidt det er enten eller. Vi kan ikke goere det per component.
     // Problemet er dem der f.eks. har metoder
+    //// Vil det ikke altid bliver efterfuldt af en contract?????
+    // Ser ingen grund til baade at support
+    // ManualRequirements management..
+    // AutoExport with regards to contract???
     public void manualRequirementsManagement() {
         // explicitRequirementsManagement
         checkConfigurable();
