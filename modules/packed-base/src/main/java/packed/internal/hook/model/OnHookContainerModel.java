@@ -70,11 +70,11 @@ public final class OnHookContainerModel {
         this.annotatedTypes = convert(b.map.annotatedTypes);
         this.assignableTos = convert(b.map.assignableTos);
 
-        this.customHooks = new Link[b.sorted.size()];
-        this.constructors = new MethodHandle[b.sorted.size()];
+        this.customHooks = new Link[b.result.size()];
+        this.constructors = new MethodHandle[b.result.size()];
 
-        for (int i = 0; i < b.sorted.size(); i++) {
-            OnHookContainerModelBuilder.Node n = b.sorted.get(i);
+        for (int i = 0; i < b.result.size(); i++) {
+            OnHookContainerModelBuilder.Node n = b.result.get(i);
             constructors[i] = n.constructor;
             if (b.map.customHooks != null) {
                 // We reverse the order here so instead of Dependent->Dependency we get Dependency->Dependent

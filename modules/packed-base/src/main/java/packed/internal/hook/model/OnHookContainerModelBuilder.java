@@ -54,7 +54,9 @@ public final class OnHookContainerModelBuilder {
     /** The root builder. */
     private final Node root;
 
-    final ArrayList<Node> sorted = new ArrayList<>();
+    final ArrayList<Node> result = new ArrayList<>();
+
+    private static final UncheckedThrowableFactory<? extends RuntimeException> tf = UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY;
 
     private final ArrayDeque<Node> unprocessedNodes = new ArrayDeque<>();
 
@@ -64,7 +66,7 @@ public final class OnHookContainerModelBuilder {
             Class<? extends Hook> hookType = (Class<? extends Hook>) cp.clazz();
             Class<?> cl = ClassFinder.findDeclaredClass(hookType, "Builder", Hook.Builder.class);
             ClassProcessor cpx = cp.spawn(cl);
-            MethodHandle constructor = ConstructorFinder.find(cpx, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+            MethodHandle constructor = ConstructorFinder.find(cpx, tf);
             // TODO validate type variable
             this.root = new Node(hookType, cpx, constructor);
         } else {
@@ -73,7 +75,7 @@ public final class OnHookContainerModelBuilder {
         }
     }
 
-    private void onMethod(Node node, Method method, UncheckedThrowableFactory<? extends RuntimeException> tf) {
+    private void onMethod(Node node, Method method) {
         if (!method.isAnnotationPresent(OnHook.class)) {
             return;
         }
@@ -161,30 +163,33 @@ public final class OnHookContainerModelBuilder {
     }
 
     public void process() {
-        root.cp.findMethods(m -> onMethod(root, m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY));
+        // Find all methods annotated with @OnHook and process them.
+        root.cp.findMethods(m -> onMethod(root, m));
         for (Node b = unprocessedNodes.pollFirst(); b != null; b = unprocessedNodes.pollFirst()) {
             Node bb = b;
-            b.cp.findMethods(m -> onMethod(bb, m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY));
+            bb.cp.findMethods(m -> onMethod(bb, m));
         }
 
-        // It's okay, for example, for bundle to not have any roots.
+        // Roots are only required to have OnHook if they are an Hook themself.
+        // For example, Extension and Bundle should not fail here.
         if (map.isEmpty() && Hook.Builder.class.isAssignableFrom(root.cp.clazz())) {
             throw new AssertionError("There must be at least one method annotated with @OnHook on " + root.cp.clazz());
         }
 
-        int index = 0;
-        sorted.add(root);
+        // There is always a root, add it as the first element
+        result.add(root);
 
-        // Uses a simple iterative algorithm, that keeps on going as long as progress is made.
+        // Uses a simple iterative algorithm, to make sure there are no interdependencies between the custom hooks
         // It is potentially O(n^2) but this should not be a problem in practice
+        int index = nodes.size(); // TODO I think we should count down here instead???
         boolean doContinue = true;
         while (doContinue && !nodes.isEmpty()) {
             doContinue = false;
             for (Iterator<Node> iterator = nodes.values().iterator(); iterator.hasNext();) {
                 Node b = iterator.next();
                 if (!b.hasUnresolvedDependencies()) {
-                    b.index = ++index;
-                    sorted.add(b);
+                    b.index = index--;
+                    result.add(b);
                     iterator.remove();
                     doContinue = true;
                 }
