@@ -70,15 +70,24 @@ public final class OnHookContainerModel {
         this.annotatedMethods = convert(b.onHookAnnotatedMethods);
         this.annotatedTypes = convert(b.onHookAnnotatedTypes);
         this.assignableTos = convert(b.onHookAssignableTos);
-        Map<Class<?>, Link> tmp = convert(b.onHookCustomHooks);
+        // Map<Class<?>, Link> tmp = convert(b.onHookCustomHooks);
 
         this.customHooks = new Link[b.sorted.size()];
         this.constructors = new MethodHandle[b.sorted.size()];
         for (int i = 0; i < b.sorted.size(); i++) {
             OnHookContainerNode n = b.sorted.get(i);
             constructors[i] = n.constructor;
-            if (tmp != null) {
-                customHooks[i] = tmp.get(n.hookType);
+
+        }
+
+        for (int i = 0; i < b.sorted.size(); i++) {
+            OnHookContainerNode n = b.sorted.get(i);
+            if (b.onHookCustomHooks != null) {
+                LinkedEntry l = b.onHookCustomHooks.get(n.hookType);
+                while (l != null) {
+                    customHooks[i] = new Link(l, customHooks[i]);
+                    l = l.next;
+                }
             }
         }
     }
