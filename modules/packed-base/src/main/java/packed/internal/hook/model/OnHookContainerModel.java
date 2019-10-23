@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.Hook;
@@ -44,16 +45,25 @@ public final class OnHookContainerModel {
     /** Methods annotated with {@link OnHook} that takes a non-base {@link Hook}. */
     private final Link[] customHooks;
 
-    final ImmutanleOnHookMap<Link> mm;
+    final ImmutanleOnHookMap<Link> allLinks;
+
+    final ImmutanleOnHookMap<Link> rootLinks;
 
     OnHookContainerModel(OnHookContainerModelBuilder b) {
-        mm = b.hooks.toImmutable(e -> {
+        Function<OnHookContainerModelBuilder.LinkedEntry, Link> ff = e -> {
             Link l = null;
             for (; e != null; e = e.next) {
                 l = new Link(e.methodHandle, e.builder.index, l);
             }
             return l;
-        });
+        };
+
+        allLinks = b.allEntries.toImmutable(ff);
+        if (b.allEntries != b.rootEntries) {
+            rootLinks = b.rootEntries.toImmutable(ff);
+        } else {
+            rootLinks = allLinks;
+        }
 
         this.customHooks = new Link[b.result.size()];
         this.constructors = new MethodHandle[b.result.size()];
@@ -61,10 +71,10 @@ public final class OnHookContainerModel {
         for (int i = 0; i < b.result.size(); i++) {
             OnHookContainerModelBuilder.Node n = b.result.get(i);
             constructors[i] = n.builderConstructor;
-            if (b.hooks.customHooks != null) {
+            if (b.allEntries.customHooks != null) {
                 // We reverse the order here so instead of Dependent->Dependency we get Dependency->Dependent
                 // We do this so we do not automatically invoke methods on the root object. which is never cached.
-                for (LinkedEntry l = b.hooks.customHooks.get(n.onNodeContainerType); l != null; l = l.next) {
+                for (LinkedEntry l = b.allEntries.customHooks.get(n.onNodeContainerType); l != null; l = l.next) {
                     customHooks[l.builder.index] = new Link(l.methodHandle, i, customHooks[l.builder.index]);
                 }
             }
@@ -78,7 +88,7 @@ public final class OnHookContainerModel {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public Set<Class<? extends Annotation>> annotatedFieldHookTypes() {
-        Map<Class<?>, Link> a = mm.annotatedFields;
+        Map<Class<?>, Link> a = allLinks.annotatedFields;
         return a == null ? Set.of() : (Set) a.keySet();
     }
 
@@ -87,9 +97,9 @@ public final class OnHookContainerModel {
         Object[] array = new Object[constructors.length];
         array[0] = parent;
         HookProcessor hc = new HookProcessor(cpTarget, tf);
-        cpTarget.findMethodsAndFields(c -> {}, mm.annotatedFields == null ? null : f -> {
+        cpTarget.findMethodsAndFields(c -> {}, allLinks.annotatedFields == null ? null : f -> {
             for (Annotation a : f.getAnnotations()) {
-                for (Link link = mm.annotatedFields.get(a.annotationType()); link != null; link = link.next) {
+                for (Link link = allLinks.annotatedFields.get(a.annotationType()); link != null; link = link.next) {
                     Object builder = builderOf(this, link.index, array);
                     AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(hc, f, a);
                     try {

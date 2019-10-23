@@ -48,9 +48,9 @@ public final class OnHookContainerModelBuilder {
 
     private static final UncheckedThrowableFactory<? extends RuntimeException> tf = UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY;
 
-    final MutableOnHookMap<LinkedEntry> hooks = new MutableOnHookMap<>();
+    final MutableOnHookMap<LinkedEntry> allEntries = new MutableOnHookMap<>();
 
-    final MutableOnHookMap<LinkedEntry> rootHooks;
+    final MutableOnHookMap<LinkedEntry> rootEntries;
 
     /** All non-root nodes. */
     private final IdentityHashMap<Class<? extends Hook>, Node> nodes = new IdentityHashMap<>();
@@ -65,10 +65,10 @@ public final class OnHookContainerModelBuilder {
     public OnHookContainerModelBuilder(ClassProcessor cp, Class<?>... additionalParameters) {
         if (Hook.class.isAssignableFrom(cp.clazz())) {
             this.root = new Node(cp, cp.clazz());
-            rootHooks = hooks;
+            rootEntries = allEntries;
         } else {
             this.root = new Node(cp);
-            rootHooks = new MutableOnHookMap<>();
+            rootEntries = new MutableOnHookMap<>();
 
         }
     }
@@ -83,7 +83,7 @@ public final class OnHookContainerModelBuilder {
 
         // Roots are only required to have OnHook if they are an Hook themself.
         // For example, Extension and Bundle should not fail here.
-        if (hooks.isEmpty() && Hook.Builder.class.isAssignableFrom(root.cp.clazz())) {
+        if (allEntries.isEmpty() && Hook.Builder.class.isAssignableFrom(root.cp.clazz())) {
             throw new AssertionError("There must be at least one method annotated with @OnHook on " + root.cp.clazz());
         }
 
@@ -155,17 +155,17 @@ public final class OnHookContainerModelBuilder {
         // Keep track of all dangling stuff on root
         final IdentityHashMap<Class<?>, LinkedEntry> roots;
         if (hookType == AnnotatedFieldHook.class) {
-            mm = hooks.annotatedFieldsLazyInit();
-            roots = node == root && root.builderConstructor == null ? rootHooks.annotatedFieldsLazyInit() : null;
+            mm = allEntries.annotatedFieldsLazyInit();
+            roots = node == root && root.builderConstructor == null ? rootEntries.annotatedFieldsLazyInit() : null;
         } else if (hookType == AnnotatedMethodHook.class) {
-            mm = hooks.annotatedMethodsLazyInit();
-            roots = node == root && root.builderConstructor == null ? rootHooks.annotatedMethodsLazyInit() : null;
+            mm = allEntries.annotatedMethodsLazyInit();
+            roots = node == root && root.builderConstructor == null ? rootEntries.annotatedMethodsLazyInit() : null;
         } else if (hookType == AnnotatedTypeHook.class) {
-            mm = hooks.annotatedTypesLazyInit();
-            roots = node == root && root.builderConstructor == null ? rootHooks.annotatedTypesLazyInit() : null;
+            mm = allEntries.annotatedTypesLazyInit();
+            roots = node == root && root.builderConstructor == null ? rootEntries.annotatedTypesLazyInit() : null;
         } else if (hookType == AssignableToHook.class) {
-            mm = hooks.assignableTosLazyInit();
-            roots = node == root && root.builderConstructor == null ? rootHooks.assignableTos : null;
+            mm = allEntries.assignableTosLazyInit();
+            roots = node == root && root.builderConstructor == null ? rootEntries.assignableTos : null;
         } else {
             mm = null;
             roots = null;
@@ -183,7 +183,7 @@ public final class OnHookContainerModelBuilder {
                 tf.newThrowableForMethod("Hook cannot depend on itself", method);
             }
             TypeUtil.checkClassIsInstantiable(hookType);
-            IdentityHashMap<Class<?>, LinkedEntry> m = hooks.customHooksLazyInit();
+            IdentityHashMap<Class<?>, LinkedEntry> m = allEntries.customHooksLazyInit();
             m.compute(hookType, (k, v) -> {
 
                 // Lazy create new node if one does not already exist for the hookType
