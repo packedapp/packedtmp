@@ -224,16 +224,16 @@ public abstract class BaseBundle extends Bundle {
         service().require(Key.of(key));
     }
 
-    protected final void require(Key<?> key) {
-        service().require(key);
+    protected final void require(Key<?>... keys) {
+        service().require(keys);
     }
 
     protected final void requireOptionally(Class<?> key) {
         service().requireOptionally(Key.of(key));
     }
 
-    protected final void requireOptionally(Key<?> key) {
-        service().requireOptionally(key);
+    protected final void requireOptionally(Key<?>... keys) {
+        service().requireOptionally(keys);
     }
 
     /**

@@ -48,8 +48,8 @@ import packed.internal.service.run.SingletonInjectorEntry;
  * This class manages everything to do with dependencies of components and service for an {@link ServiceExtension}.
  * 
  * @see ServiceExtension#manualRequirementsManagement()
- * @see ServiceExtension#require(Key)
- * @see ServiceExtension#requireOptionally(Key)
+ * @see ServiceExtension#require(Key...)
+ * @see ServiceExtension#requireOptionally(Key...)
  */
 public final class DependencyManager {
 
@@ -57,14 +57,14 @@ public final class DependencyManager {
     private final ServiceExtensionNode node;
 
     /**
-     * Explicit requirements, typically added via {@link ServiceExtension#require(Key)} or
-     * {@link ServiceExtension#requireOptionally(Key)}.
+     * Explicit requirements, typically added via {@link ServiceExtension#require(Key...)} or
+     * {@link ServiceExtension#requireOptionally(Key...)}.
      */
     final ArrayList<DependencyRequirement> explicitRequirements = new ArrayList<>();
 
     /**
-     * Whether or not the user must explicitly specify all required services. Via {@link ServiceExtension#require(Key)},
-     * {@link ServiceExtension#requireOptionally(Key)} and add contract.
+     * Whether or not the user must explicitly specify all required services. Via {@link ServiceExtension#require(Key...)},
+     * {@link ServiceExtension#requireOptionally(Key...)} and add contract.
      * <p>
      * In previous versions we kept this information on a per node basis. However, it does not work properly with "foreign"
      * hook methods that make use of injection. Because they may not be processed until the bitter end, so it was only
@@ -108,8 +108,8 @@ public final class DependencyManager {
      * @param configSite
      *            the config site
      * 
-     * @see ServiceExtension#require(Key)
-     * @see ServiceExtension#requireOptionally(Key)
+     * @see ServiceExtension#require(Key...)
+     * @see ServiceExtension#requireOptionally(Key...)
      */
     public void require(Dependency dependency, ConfigSite configSite) {
         explicitRequirements.add(new DependencyRequirement(dependency, configSite));

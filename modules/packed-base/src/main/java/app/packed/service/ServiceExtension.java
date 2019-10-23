@@ -21,6 +21,7 @@ import java.util.function.BiConsumer;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
+import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
 import app.packed.container.UseExtension;
@@ -186,8 +187,8 @@ public final class ServiceExtension extends Extension {
     }
 
     /**
-     * Requires that all requirements are explicitly added via either {@link #requireOptionally(Key)}, {@link #require(Key)}
-     * or via implementing a contract.
+     * Requires that all requirements are explicitly added via either {@link #requireOptionally(Key...)},
+     * {@link #require(Key...)} or via implementing a contract.
      */
     // Kan vi lave denne generisk paa tvaers af extensions...
     // disableAutomaticRequirements()
@@ -296,29 +297,33 @@ public final class ServiceExtension extends Extension {
      * <p>
      * In any but the simplest of cases, contracts are useful
      * 
-     * @param key
-     *            the key to add
+     * @param keys
+     *            the key(s) to add
      */
-    public void require(Key<?> key) {
+    public void require(Key<?>... keys) {
         checkConfigurable();
-        node.dependencies().require(Dependency.of(key), captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE));
+        ConfigSite cs = captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE);
+        for (Key<?> key : keys) {
+            node.dependencies().require(Dependency.of(key), cs);
+        }
     }
 
     /**
      * Adds the specified key to the list of optional services.
      * <p>
      * If a key is added optionally and the same key is later added as a normal (mandatory) requirement either explicitly
-     * via # {@link #require(Key)} or implicitly via, for example, a constructor dependency. The key will be removed from
+     * via # {@link #require(Key...)} or implicitly via, for example, a constructor dependency. The key will be removed from
      * the list of optional services and only be listed as a required key.
      * 
-     * @param key
-     *            the key to add
+     * @param keys
+     *            the key(s) to add
      */
-    // Should be have varargs???, or as a minimum support method chaining
-    // MethodChaining does not work with bundles...
-    public void requireOptionally(Key<?> key) {
+    public void requireOptionally(Key<?>... keys) {
         checkConfigurable();
-        node.dependencies().require(Dependency.ofOptional(key), captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE_OPTIONAL));
+        ConfigSite cs = captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE_OPTIONAL);
+        for (Key<?> key : keys) {
+            node.dependencies().require(Dependency.ofOptional(key), cs);
+        }
     }
 
     /** The composer for the service extension. */
