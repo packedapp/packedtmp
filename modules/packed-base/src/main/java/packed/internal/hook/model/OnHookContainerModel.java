@@ -32,7 +32,6 @@ import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
 import packed.internal.hook.model.OnHookContainerModelBuilder.LinkedEntry;
-import packed.internal.hook.model.OnHookContainerModelBuilder.OnHookContainerNode;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.ThrowableUtil;
@@ -75,7 +74,7 @@ public final class OnHookContainerModel {
         this.constructors = new MethodHandle[b.sorted.size()];
 
         for (int i = 0; i < b.sorted.size(); i++) {
-            OnHookContainerNode n = b.sorted.get(i);
+            OnHookContainerModelBuilder.Node n = b.sorted.get(i);
             constructors[i] = n.constructor;
             if (b.map.customHooks != null) {
                 // We reverse the order here so instead of Dependent->Dependency we get Dependency->Dependent

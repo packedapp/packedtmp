@@ -49,26 +49,31 @@ public final class OnHookContainerModelBuilder {
     final MutableOnHookMap<LinkedEntry> map = new MutableOnHookMap<>();
 
     /** Temporary builders. */
-    private final IdentityHashMap<Class<? extends Hook>, OnHookContainerNode> nodes = new IdentityHashMap<>();
+    private final IdentityHashMap<Class<? extends Hook>, Node> nodes = new IdentityHashMap<>();
 
     /** The root builder. */
-    private final OnHookContainerNode root;
+    private final Node root;
 
-    final ArrayList<OnHookContainerNode> sorted = new ArrayList<>();
+    final ArrayList<Node> sorted = new ArrayList<>();
 
-    private final ArrayDeque<OnHookContainerNode> unprocessedNodes = new ArrayDeque<>();
+    private final ArrayDeque<Node> unprocessedNodes = new ArrayDeque<>();
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public OnHookContainerModelBuilder(ClassProcessor cp, Class<?>... additionalParameters) {
         if (Hook.class.isAssignableFrom(cp.clazz())) {
-            this.root = newNode(cp, (Class<? extends Hook>) cp.clazz(), UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+            Class<? extends Hook> hookType = (Class<? extends Hook>) cp.clazz();
+            Class<?> cl = ClassFinder.findDeclaredClass(hookType, "Builder", Hook.Builder.class);
+            ClassProcessor cpx = cp.spawn(cl);
+            MethodHandle constructor = ConstructorFinder.find(cpx, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+            // TODO validate type variable
+            this.root = new Node(hookType, cpx, constructor);
         } else {
             // This cast is not valid... For example is Bundle not a hook.
-            this.root = new OnHookContainerNode((Class) cp.clazz(), cp, null);
+            this.root = new Node((Class) cp.clazz(), cp, null);
         }
     }
 
-    private void onMethod(OnHookContainerNode b, Method method, UncheckedThrowableFactory<? extends RuntimeException> tf) {
+    private void onMethod(Node b, Method method, UncheckedThrowableFactory<? extends RuntimeException> tf) {
         if (!method.isAnnotationPresent(OnHook.class)) {
             return;
         }
@@ -104,15 +109,22 @@ public final class OnHookContainerModelBuilder {
 
         MethodHandle mh = b.cp.unreflect(method, tf);
 
+        // Let first see if it is a base book.
         IdentityHashMap<Class<?>, LinkedEntry> mm = null;
         if (hookType == AnnotatedFieldHook.class) {
-            onMethod(b, hook, method, mh, map.annotatedFieldsLazyInit());
+            mm = map.annotatedFieldsLazyInit();
         } else if (hookType == AnnotatedMethodHook.class) {
-            onMethod(b, hook, method, mh, map.annotatedMethodsLazyInit());
+            mm = map.annotatedMethodsLazyInit();
         } else if (hookType == AnnotatedTypeHook.class) {
-            onMethod(b, hook, method, mh, map.annotatedTypesLazyInit());
+            mm = map.annotatedTypesLazyInit();
         } else if (hookType == AssignableToHook.class) {
-            onMethod(b, hook, method, mh, map.assignableTosLazyInit());
+            mm = map.assignableTosLazyInit();
+        }
+
+        if (mm != null) {
+            ParameterizedType pt = (ParameterizedType) hook.getParameterizedType();
+            Class<?> typeVariable = (Class<?>) pt.getActualTypeArguments()[0];
+            mm.compute(typeVariable, (k, v) -> new LinkedEntry(b, mh, v));
         } else {
             if (hookType == b.cp.clazz()) {
                 tf.newThrowableForMethod("Hook cannot depend on itself", method);
@@ -122,13 +134,13 @@ public final class OnHookContainerModelBuilder {
             m.compute(hookType, (k, v) -> {
 
                 // Lazy create new node if one does not already exist for the hookType
-                OnHookContainerNode node = nodes.computeIfAbsent(hookType, ignore -> {
+                Node node = nodes.computeIfAbsent(hookType, ignore -> {
                     Class<?> cl = ClassFinder.findDeclaredClass(hookType, "Builder", Hook.Builder.class);
                     ClassProcessor cp = root.cp.spawn(cl);
                     MethodHandle constructor = ConstructorFinder.find(cp, tf);
 
                     // TODO validate type variable
-                    OnHookContainerNode newNode = new OnHookContainerNode(hookType, cp, constructor);
+                    Node newNode = new Node(hookType, cp, constructor);
                     unprocessedNodes.addLast(newNode); // make sure it will be processed at some point.
                     return newNode;
                 });
@@ -148,16 +160,10 @@ public final class OnHookContainerModelBuilder {
         }
     }
 
-    private void onMethod(OnHookContainerNode b, Parameter p, Method method, MethodHandle mh, IdentityHashMap<Class<?>, LinkedEntry> map) {
-        ParameterizedType pt = (ParameterizedType) p.getParameterizedType();
-        Class<?> typeVariable = (Class<?>) pt.getActualTypeArguments()[0];
-        map.compute(typeVariable, (k, v) -> new LinkedEntry(b, mh, v));
-    }
-
     public void process() {
         root.cp.findMethods(m -> onMethod(root, m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY));
-        for (OnHookContainerNode b = unprocessedNodes.pollFirst(); b != null; b = unprocessedNodes.pollFirst()) {
-            OnHookContainerNode bb = b;
+        for (Node b = unprocessedNodes.pollFirst(); b != null; b = unprocessedNodes.pollFirst()) {
+            Node bb = b;
             b.cp.findMethods(m -> onMethod(bb, m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY));
         }
 
@@ -174,8 +180,8 @@ public final class OnHookContainerModelBuilder {
         boolean doContinue = true;
         while (doContinue && !nodes.isEmpty()) {
             doContinue = false;
-            for (Iterator<OnHookContainerNode> iterator = nodes.values().iterator(); iterator.hasNext();) {
-                OnHookContainerNode b = iterator.next();
+            for (Iterator<Node> iterator = nodes.values().iterator(); iterator.hasNext();) {
+                Node b = iterator.next();
                 if (!b.hasUnresolvedDependencies()) {
                     b.index = ++index;
                     sorted.add(b);
@@ -191,30 +197,23 @@ public final class OnHookContainerModelBuilder {
         }
     }
 
-    private static OnHookContainerNode newNode(ClassProcessor cpr, Class<? extends Hook> hookType, UncheckedThrowableFactory<? extends RuntimeException> tf) {
-        Class<?> cl = ClassFinder.findDeclaredClass(hookType, "Builder", Hook.Builder.class);
-        ClassProcessor cp = cpr.spawn(cl);
-        MethodHandle constructor = ConstructorFinder.find(cp, tf);
-        // TODO validate type variable
-        return new OnHookContainerNode(hookType, cp, constructor);
-    }
-
     static final class LinkedEntry {
-        final OnHookContainerNode builder;
+
+        final Node builder;
 
         final MethodHandle methodHandle;
 
         @Nullable
         final LinkedEntry next;
 
-        LinkedEntry(OnHookContainerNode builder, MethodHandle methodHandle, LinkedEntry next) {
+        LinkedEntry(Node builder, MethodHandle methodHandle, LinkedEntry next) {
             this.builder = requireNonNull(builder);
             this.methodHandle = requireNonNull(methodHandle);
             this.next = next;
         }
     }
 
-    static final class OnHookContainerNode {
+    static final class Node {
 
         @Nullable
         final MethodHandle constructor;
@@ -223,14 +222,14 @@ public final class OnHookContainerModelBuilder {
         final ClassProcessor cp;
 
         @Nullable
-        Set<OnHookContainerNode> dependencies;
+        Set<Node> dependencies;
 
         final Class<? extends Hook> hookType;
 
         /** The index of this node, we use */
         int index;
 
-        OnHookContainerNode(Class<? extends Hook> hookType, ClassProcessor cp, MethodHandle constructor) {
+        Node(Class<? extends Hook> hookType, ClassProcessor cp, MethodHandle constructor) {
             this.hookType = requireNonNull(hookType);
             this.cp = requireNonNull(cp);
             this.constructor = constructor;
@@ -239,8 +238,8 @@ public final class OnHookContainerModelBuilder {
             }
         }
 
-        void addDependency(OnHookContainerNode b) {
-            Set<OnHookContainerNode> d = dependencies;
+        void addDependency(Node b) {
+            Set<Node> d = dependencies;
             if (d == null) {
                 d = dependencies = new HashSet<>();
             }
@@ -249,7 +248,7 @@ public final class OnHookContainerModelBuilder {
 
         boolean hasUnresolvedDependencies() {
             if (dependencies != null) {
-                for (OnHookContainerNode ch : dependencies) {
+                for (Node ch : dependencies) {
                     if (ch.index == 0) {
                         return true;
                     }

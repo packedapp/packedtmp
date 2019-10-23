@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component.feature;
+package app.packed.container;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -21,21 +21,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.container.Extension;
-
 /**
  *
  */
-
-// AutoActivateExtension()
-// Smider en exception, hvis man har en extension, hvor alle hooks bruger @UseExtension...
-// Maaske bare en Warning...
-
-// Vi traekker automatiske alle hooks fra extensionen...
+// Skriver en warning, hvis man har en extension, hvor alle hooks bruger @UseExtension...
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@interface UseExtensionWhenHooked {
+@interface UseExtensionLazily {
 
     String[] optional() default {};
 
