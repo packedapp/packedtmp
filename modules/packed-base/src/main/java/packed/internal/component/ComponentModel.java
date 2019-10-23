@@ -158,29 +158,34 @@ public final class ComponentModel {
                 }
             }
 
-            cp.findMethodsAndFields(method -> {
-                for (Annotation a : method.getAnnotations()) {
-                    Class<? extends Extension>[] extensionTypes = EXTENSION_ACTIVATORS.get(a.annotationType());
-                    // See if the component method has any annotations that activates extensions
-                    if (extensionTypes != null) {
-                        for (Class<? extends Extension> eType : extensionTypes) {
-                            extensionBuilders.computeIfAbsent(eType, etype -> new ComponentModelHookGroup.Builder(hookProcessor, etype))
-                                    .onAnnotatedMethod(method, a);
+            try {
+                cp.findMethodsAndFields(method -> {
+                    for (Annotation a : method.getAnnotations()) {
+                        Class<? extends Extension>[] extensionTypes = EXTENSION_ACTIVATORS.get(a.annotationType());
+                        // See if the component method has any annotations that activates extensions
+                        if (extensionTypes != null) {
+                            for (Class<? extends Extension> eType : extensionTypes) {
+                                extensionBuilders.computeIfAbsent(eType, etype -> new ComponentModelHookGroup.Builder(hookProcessor, etype))
+                                        .onAnnotatedMethod(method, a);
+                            }
                         }
                     }
-                }
-            }, field -> {
-                for (Annotation a : field.getAnnotations()) {
-                    Class<? extends Extension>[] extensionTypes = EXTENSION_ACTIVATORS.get(a.annotationType());
-                    // See if the component method has any annotations that activates extensions
-                    if (extensionTypes != null) {
-                        for (Class<? extends Extension> eType : extensionTypes) {
-                            extensionBuilders.computeIfAbsent(eType, etype -> new ComponentModelHookGroup.Builder(hookProcessor, etype)).onAnnotatedField(field,
-                                    a);
+                }, field -> {
+                    for (Annotation a : field.getAnnotations()) {
+                        Class<? extends Extension>[] extensionTypes = EXTENSION_ACTIVATORS.get(a.annotationType());
+                        // See if the component method has any annotations that activates extensions
+                        if (extensionTypes != null) {
+                            for (Class<? extends Extension> eType : extensionTypes) {
+                                extensionBuilders.computeIfAbsent(eType, etype -> new ComponentModelHookGroup.Builder(hookProcessor, etype))
+                                        .onAnnotatedField(field, a);
+                            }
                         }
                     }
-                }
-            });
+                });
+            } catch (Throwable e) {
+                ThrowableUtil.rethrowErrorOrRuntimeException(e);
+                throw new UndeclaredThrowableException(e);
+            }
             ComponentModel cm = new ComponentModel(this);
             hookProcessor.close();
             return cm;

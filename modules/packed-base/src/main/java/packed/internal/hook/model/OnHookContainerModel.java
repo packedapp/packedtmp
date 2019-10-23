@@ -21,7 +21,6 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,7 +34,6 @@ import app.packed.lang.Nullable;
 import packed.internal.hook.model.OnHookContainerModelBuilder.LinkedEntry;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ClassProcessor;
-import packed.internal.util.ThrowableUtil;
 import packed.internal.util.UncheckedThrowableFactory;
 
 /**
@@ -109,30 +107,20 @@ public final class OnHookContainerModel {
         return constructors.length;
     }
 
-    public void tryProcesAnnotatedField(HookProcessor hc, Field f, Annotation a, Object[] array) {
+    public void tryProcesAnnotatedField(HookProcessor hc, Field f, Annotation a, Object[] array) throws Throwable {
         for (Link link = allLinks.annotatedFields.get(a.annotationType()); link != null; link = link.next) {
             Object builder = builderOf(this, link.index, array);
             AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(hc, f, a);
-            try {
-                link.mh.invoke(builder, hook);
-            } catch (Throwable e) {
-                ThrowableUtil.rethrowErrorOrRuntimeException(e);
-                throw new UndeclaredThrowableException(e);
-            }
+            link.mh.invoke(builder, hook);
         }
     }
 
-    public CachedHook<Hook> compute(Object[] array) {
+    public CachedHook<Hook> compute(Object[] array) throws Throwable {
         for (int i = array.length - 1; i >= 0; i--) {
             for (Link link = customHooks[i]; link != null; link = link.next) {
                 if (constructors[i] != null) {
                     Object builder = builderOf(this, i, array);
-                    try {
-                        link.mh.invoke(builder, array[link.index]);
-                    } catch (Throwable e1) {
-                        ThrowableUtil.rethrowErrorOrRuntimeException(e1);
-                        throw new UndeclaredThrowableException(e1);
-                    }
+                    link.mh.invoke(builder, array[link.index]);
                 }
             }
             if (i > 0) {
@@ -150,21 +138,16 @@ public final class OnHookContainerModel {
         return result;
     }
 
-    public void tryProcesAnnotatedMethod(HookProcessor hc, Method m, Annotation a, Object[] array) {
+    public void tryProcesAnnotatedMethod(HookProcessor hc, Method m, Annotation a, Object[] array) throws Throwable {
         for (Link link = allLinks.annotatedMethods.get(a.annotationType()); link != null; link = link.next) {
             Object builder = builderOf(this, link.index, array);
             AnnotatedMethodHook<Annotation> hook = ModuleAccess.hook().newAnnotatedMethodHook(hc, m, a);
-            try {
-                link.mh.invoke(builder, hook);
-            } catch (Throwable e) {
-                ThrowableUtil.rethrowErrorOrRuntimeException(e);
-                throw new UndeclaredThrowableException(e);
-            }
+            link.mh.invoke(builder, hook);
         }
     }
 
     @Nullable
-    public Object process(@Nullable Object parent, ClassProcessor cpTarget, UncheckedThrowableFactory<?> tf) {
+    public Object process(@Nullable Object parent, ClassProcessor cpTarget, UncheckedThrowableFactory<?> tf) throws Throwable {
         Object[] array = new Object[constructors.length];
         array[0] = parent;
         HookProcessor hc = new HookProcessor(cpTarget, tf);
@@ -183,12 +166,7 @@ public final class OnHookContainerModel {
         for (int i = array.length - 1; i >= 0; i--) {
             for (Link link = customHooks[i]; link != null; link = link.next) {
                 Object builder = builderOf(this, i, array);
-                try {
-                    link.mh.invoke(builder, array[link.index]);
-                } catch (Throwable e1) {
-                    ThrowableUtil.rethrowErrorOrRuntimeException(e1);
-                    throw new UndeclaredThrowableException(e1);
-                }
+                link.mh.invoke(builder, array[link.index]);
             }
             if (i > 0) {
                 Object h = array[i];
@@ -204,15 +182,10 @@ public final class OnHookContainerModel {
         return a == null ? null : ((Hook.Builder<?>) a).build();
     }
 
-    private static Object builderOf(OnHookContainerModel m, int index, Object[] array) {
+    private static Object builderOf(OnHookContainerModel m, int index, Object[] array) throws Throwable {
         Object builder = array[index];
         if (builder == null) {
-            try {
-                builder = array[index] = m.constructors[index].invoke();
-            } catch (Throwable e2) {
-                ThrowableUtil.rethrowErrorOrRuntimeException(e2);
-                throw new UndeclaredThrowableException(e2);
-            }
+            builder = array[index] = m.constructors[index].invoke();
         }
         return builder;
     }

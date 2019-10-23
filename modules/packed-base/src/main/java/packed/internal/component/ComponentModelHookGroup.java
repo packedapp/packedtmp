@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.UndeclaredThrowableException;
 
 import app.packed.container.Extension;
 import app.packed.hook.Hook;
@@ -28,6 +29,7 @@ import packed.internal.container.extension.ExtensionModel;
 import packed.internal.hook.model.CachedHook;
 import packed.internal.hook.model.HookProcessor;
 import packed.internal.hook.model.OnHookContainerModel;
+import packed.internal.util.ThrowableUtil;
 
 /**
  * We have a group for a collection of hooks/annotations. A component can have multiple groups.
@@ -68,18 +70,23 @@ final class ComponentModelHookGroup {
         }
 
         public ComponentModelHookGroup build() {
-            return new ComponentModelHookGroup(extensionType, hooks.compute(array));
+            try {
+                return new ComponentModelHookGroup(extensionType, hooks.compute(array));
+            } catch (Throwable e) {
+                ThrowableUtil.rethrowErrorOrRuntimeException(e);
+                throw new UndeclaredThrowableException(e);
+            }
         }
 
         public void onAnnotatedType(Class<?> clazz, Annotation annotation) {
             throw new UnsupportedOperationException();
         }
 
-        public void onAnnotatedField(Field field, Annotation annotation) {
+        public void onAnnotatedField(Field field, Annotation annotation) throws Throwable {
             hooks.tryProcesAnnotatedField(hookProcessor, field, annotation, array);
         }
 
-        public void onAnnotatedMethod(Method method, Annotation annotation) {
+        public void onAnnotatedMethod(Method method, Annotation annotation) throws Throwable {
             hooks.tryProcesAnnotatedMethod(hookProcessor, method, annotation, array);
         }
     }
