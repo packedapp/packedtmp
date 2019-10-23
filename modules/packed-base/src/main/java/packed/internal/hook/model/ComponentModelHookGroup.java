@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hook;
+package packed.internal.hook.model;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,8 +27,6 @@ import app.packed.hook.Hook;
 import app.packed.lang.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.ExtensionModel;
-import packed.internal.hook.model.HookProcessor;
-import packed.internal.hook.model.OnHookContainerModel;
 
 /**
  * We have a group for a collection of hooks/annotations. A component can have multiple groups.

@@ -31,7 +31,6 @@ import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
-import packed.internal.hook.CachedHook;
 import packed.internal.hook.model.OnHookContainerModelBuilder.LinkedEntry;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ClassProcessor;

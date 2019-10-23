@@ -27,7 +27,7 @@ import app.packed.container.UseExtension;
 import packed.internal.container.ComponentLookup;
 import packed.internal.container.ContainerSourceModel;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.hook.ComponentModelHookGroup;
+import packed.internal.hook.model.ComponentModelHookGroup;
 import packed.internal.hook.model.HookProcessor;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.ThrowableUtil;
