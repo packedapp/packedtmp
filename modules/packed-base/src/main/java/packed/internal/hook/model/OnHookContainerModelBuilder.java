@@ -46,10 +46,10 @@ import packed.internal.util.types.TypeUtil;
  */
 public final class OnHookContainerModelBuilder {
 
+    final MutableOnHookMap<LinkedEntry> map = new MutableOnHookMap<>();
+
     /** Temporary builders. */
     private final IdentityHashMap<Class<? extends Hook>, OnHookContainerNode> nodes = new IdentityHashMap<>();
-
-    final MutableOnHookMap<LinkedEntry> map = new MutableOnHookMap<>();
 
     /** The root builder. */
     private final OnHookContainerNode root;
@@ -83,6 +83,9 @@ public final class OnHookContainerModelBuilder {
             throw tf.newThrowableForMethod("The first parameter of a method annotated with @" + OnHook.class.getSimpleName() + " must be of type "
                     + Hook.class.getCanonicalName() + " was " + parameters[0].getType(), method);
         }
+        @SuppressWarnings("unchecked")
+        Class<? extends Hook> hookType = (Class<? extends Hook>) hook.getType();
+
         for (int i = 1; i < parameters.length; i++) {
             if (b != root) {
                 throw tf.newThrowableForMethod(
@@ -100,32 +103,34 @@ public final class OnHookContainerModelBuilder {
         }
 
         MethodHandle mh = b.cp.unreflect(method, tf);
-        @SuppressWarnings("unchecked")
-        Class<? extends Hook> hookType = (Class<? extends Hook>) hook.getType();
+
+        IdentityHashMap<Class<?>, LinkedEntry> mm = null;
         if (hookType == AnnotatedFieldHook.class) {
-            process(b, hook, method, mh, map.annotatedFieldsLazyInit());
+            onMethod(b, hook, method, mh, map.annotatedFieldsLazyInit());
         } else if (hookType == AnnotatedMethodHook.class) {
-            process(b, hook, method, mh, map.annotatedMethodsLazyInit());
+            onMethod(b, hook, method, mh, map.annotatedMethodsLazyInit());
         } else if (hookType == AnnotatedTypeHook.class) {
-            process(b, hook, method, mh, map.annotatedTypesLazyInit());
+            onMethod(b, hook, method, mh, map.annotatedTypesLazyInit());
         } else if (hookType == AssignableToHook.class) {
-            process(b, hook, method, mh, map.assignableTosLazyInit());
+            onMethod(b, hook, method, mh, map.assignableTosLazyInit());
         } else {
             if (hookType == b.cp.clazz()) {
                 tf.newThrowableForMethod("Hook cannot depend on itself", method);
             }
             TypeUtil.checkClassIsInstantiable(hookType);
-            IdentityHashMap<Class<?>, LinkedEntry> onHookCustomHooks = map.customHooksLazyInit();
-            onHookCustomHooks.compute(hookType, (k, v) -> {
+            IdentityHashMap<Class<?>, LinkedEntry> m = map.customHooksLazyInit();
+            m.compute(hookType, (k, v) -> {
+
+                // Lazy create new node if one does not already exist for the hookType
                 OnHookContainerNode node = nodes.computeIfAbsent(hookType, ignore -> {
                     Class<?> cl = ClassFinder.findDeclaredClass(hookType, "Builder", Hook.Builder.class);
                     ClassProcessor cp = root.cp.spawn(cl);
                     MethodHandle constructor = ConstructorFinder.find(cp, tf);
 
                     // TODO validate type variable
-                    OnHookContainerNode newB = new OnHookContainerNode(hookType, cp, constructor);
-                    unprocessedNodes.addLast(newB); // make sure it will be procesed at some point.
-                    return newB;
+                    OnHookContainerNode newNode = new OnHookContainerNode(hookType, cp, constructor);
+                    unprocessedNodes.addLast(newNode); // make sure it will be processed at some point.
+                    return newNode;
                 });
 
                 // Test if the builder of a hooks depends on the hook itself
@@ -141,6 +146,12 @@ public final class OnHookContainerModelBuilder {
                 return new LinkedEntry(b, mh, v);
             });
         }
+    }
+
+    private void onMethod(OnHookContainerNode b, Parameter p, Method method, MethodHandle mh, IdentityHashMap<Class<?>, LinkedEntry> map) {
+        ParameterizedType pt = (ParameterizedType) p.getParameterizedType();
+        Class<?> typeVariable = (Class<?>) pt.getActualTypeArguments()[0];
+        map.compute(typeVariable, (k, v) -> new LinkedEntry(b, mh, v));
     }
 
     public void process() {
@@ -178,12 +189,6 @@ public final class OnHookContainerModelBuilder {
             // Okay, we got some circles.
             throw new UnsupportedOperationException("Not supported currently");
         }
-    }
-
-    private void process(OnHookContainerNode b, Parameter p, Method method, MethodHandle mh, IdentityHashMap<Class<?>, LinkedEntry> map) {
-        ParameterizedType pt = (ParameterizedType) p.getParameterizedType();
-        Class<?> typeVariable = (Class<?>) pt.getActualTypeArguments()[0];
-        map.compute(typeVariable, (k, v) -> new LinkedEntry(b, mh, v));
     }
 
     private static OnHookContainerNode newNode(ClassProcessor cpr, Class<? extends Hook> hookType, UncheckedThrowableFactory<? extends RuntimeException> tf) {
