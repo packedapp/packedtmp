@@ -66,9 +66,8 @@ public final class OnHookContainerModelBuilder {
             Class<? extends Hook> hookType = (Class<? extends Hook>) cp.clazz();
             Class<?> cl = ClassFinder.findDeclaredClass(hookType, "Builder", Hook.Builder.class);
             ClassProcessor cpx = cp.spawn(cl);
-            MethodHandle constructor = ConstructorFinder.find(cpx, tf);
             // TODO validate type variable
-            this.root = new Node(cpx, hookType, constructor);
+            this.root = new Node(cpx, hookType);
         } else {
             // This cast is not valid... For example is Bundle not a hook.
             this.root = new Node(cp);
@@ -179,10 +178,9 @@ public final class OnHookContainerModelBuilder {
                 Node nodeRef = nodes.computeIfAbsent(hookType, ignore -> {
                     Class<?> cl = ClassFinder.findDeclaredClass(hookType, "Builder", Hook.Builder.class);
                     ClassProcessor cp = root.cp.spawn(cl);
-                    MethodHandle constructor = ConstructorFinder.find(cp, tf);
 
                     // TODO validate type variable
-                    Node newNode = new Node(cp, hookType, constructor);
+                    Node newNode = new Node(cp, hookType);
                     unprocessedNodes.addLast(newNode); // make sure it will be processed at some point.
                     return newNode;
                 });
@@ -248,11 +246,11 @@ public final class OnHookContainerModelBuilder {
             this.builderConstructor = null;
         }
 
-        Node(ClassProcessor cp, Class<?> type, MethodHandle constructor) {
+        Node(ClassProcessor cp, Class<?> type) {
             this.type = requireNonNull(type);
             this.cp = requireNonNull(cp);
-            this.builderConstructor = constructor;
-            if (constructor != null && constructor.type().returnType() != cp.clazz()) {
+            this.builderConstructor = ConstructorFinder.find(cp, tf);
+            if (builderConstructor.type().returnType() != cp.clazz()) {
                 throw new IllegalStateException("OOPS");
             }
         }
