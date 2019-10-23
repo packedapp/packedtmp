@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hook.model;
+package packed.internal.hook;
 
 import static java.util.Objects.requireNonNull;
 
@@ -25,17 +25,23 @@ import app.packed.lang.Nullable;
 /**
  *
  */
-public final class CachedHook {
+// Bruges til at kalde tilbage paa extensions
+final class CachedHook {
 
     private final Hook hook;
+
     private final MethodHandle mh;
 
     @Nullable
     private CachedHook next;
 
-    CachedHook(Hook hook, MethodHandle mh, @Nullable CachedHook next) {
-        this.hook = requireNonNull(hook);
+    /**
+     * @param mh
+     * @param hook
+     */
+    CachedHook(MethodHandle mh, Hook hook, @Nullable CachedHook next) {
         this.mh = requireNonNull(mh);
+        this.hook = hook;
         this.next = next;
     }
 

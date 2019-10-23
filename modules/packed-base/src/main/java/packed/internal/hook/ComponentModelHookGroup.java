@@ -45,7 +45,7 @@ import packed.internal.util.ThrowableUtil;
 public final class ComponentModelHookGroup {
 
     /** A list of callbacks for the particular extension. */
-    private final HookCallback callback;
+    private final CachedHook callback;
 
     /** The type of extension that will be activated. */
     private final Class<? extends Extension> extensionType;
@@ -61,7 +61,7 @@ public final class ComponentModelHookGroup {
         Extension e = container.use(extensionType);
 
         // Calling the actual methods on Extension
-        for (HookCallback c = callback; c != null; c = c.next()) {
+        for (CachedHook c = callback; c != null; c = c.next()) {
             c.mh().invoke(e, c.hook(), cc);
         }
     }
@@ -70,7 +70,7 @@ public final class ComponentModelHookGroup {
     public static final class Builder {
 
         @Nullable
-        private HookCallback callback;
+        private CachedHook callback;
 
         /** The component model builder that is creating this group. */
         private final ComponentModel.Builder componentModelBuilder;
@@ -92,7 +92,7 @@ public final class ComponentModelHookGroup {
 
             for (Entry<Class<?>, Hook.Builder<?>> m : groupBuilders.entrySet()) {
                 MethodHandle mh = con.groups.get(m.getKey());
-                callback = new HookCallback(mh, m.getValue().build(), callback);
+                callback = new CachedHook(mh, m.getValue().build(), callback);
             }
             return new ComponentModelHookGroup(this);
         }
