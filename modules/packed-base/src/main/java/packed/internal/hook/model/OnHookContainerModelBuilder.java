@@ -73,6 +73,11 @@ public final class OnHookContainerModelBuilder {
         }
     }
 
+    public OnHookContainerModel build() {
+        findAllHooks();
+        return new OnHookContainerModel(this);
+    }
+
     public void findAllHooks() {
         // Find all methods annotated with @OnHook and process them.
         root.cp.findMethods(m -> onMethod(root, m));

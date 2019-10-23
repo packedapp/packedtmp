@@ -16,6 +16,7 @@
 package packed.internal.container.extension;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import java.util.function.Consumer;
 
 import app.packed.api.Contract;
 import app.packed.component.Component;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
 import app.packed.container.ExtensionDescriptorContext;
@@ -35,7 +37,9 @@ import app.packed.container.ExtensionWirelet;
 import app.packed.container.InternalExtensionException;
 import app.packed.hook.OnHook;
 import packed.internal.hook.HookContainerModel;
+import packed.internal.hook.model.OnHookContainerModelBuilder;
 import packed.internal.moduleaccess.ModuleAccess;
+import packed.internal.reflect.ClassProcessor;
 import packed.internal.reflect.ConstructorFinder;
 import packed.internal.reflect.MemberFinder;
 import packed.internal.util.StringFormatter;
@@ -172,6 +176,9 @@ public final class ExtensionModel<T extends Extension> {
         /** A builder for all methods annotated with {@link OnHook} on the extension. */
         private final HookContainerModel.Builder hooks;
 
+        /** A builder for all methods annotated with {@link OnHook} on the extension. */
+        private final OnHookContainerModelBuilder hooks2;
+
         private final List<Class<? extends Extension>> dependencies;
 
         /**
@@ -185,6 +192,7 @@ public final class ExtensionModel<T extends Extension> {
             this.dependencies = ExtensionDependencyValidator.dependenciesOf(extensionType);
             this.constructor = ConstructorFinder.find(extensionType);
             this.hooks = new HookContainerModel.Builder(extensionType);
+            this.hooks2 = new OnHookContainerModelBuilder(new ClassProcessor(MethodHandles.lookup(), extensionType, true), ContainerConfiguration.class);
         }
 
         /**
@@ -210,6 +218,8 @@ public final class ExtensionModel<T extends Extension> {
             }
             // Find all methods annotated with @OnHook on the extension
             MemberFinder.findMethods(Extension.class, extensionType, hooks);
+
+            hooks2.findAllHooks();
             return new ExtensionModel<>(this);
         }
     }

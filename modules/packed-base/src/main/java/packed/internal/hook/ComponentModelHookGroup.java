@@ -89,7 +89,6 @@ public final class ComponentModelHookGroup {
         }
 
         public ComponentModelHookGroup build() {
-
             for (Entry<Class<?>, Hook.Builder<?>> m : groupBuilders.entrySet()) {
                 MethodHandle mh = con.groups.get(m.getKey());
                 callback = new CachedHook(mh, m.getValue().build(), callback);
