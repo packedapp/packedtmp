@@ -19,12 +19,15 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
 import app.packed.hook.AnnotatedFieldHook;
+import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
@@ -92,23 +95,44 @@ public final class OnHookContainerModel {
         return a == null ? Set.of() : (Set) a.keySet();
     }
 
+    void tryProcesAnnotatedField(HookProcessor hc, Field f, Annotation a, Object[] array) {
+        for (Link link = allLinks.annotatedFields.get(a.annotationType()); link != null; link = link.next) {
+            Object builder = builderOf(this, link.index, array);
+            AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(hc, f, a);
+            try {
+                link.mh.invoke(builder, hook);
+            } catch (Throwable e) {
+                ThrowableUtil.rethrowErrorOrRuntimeException(e);
+                throw new UndeclaredThrowableException(e);
+            }
+        }
+    }
+
+    void tryProcesAnnotatedMethod(HookProcessor hc, Method m, Annotation a, Object[] array) {
+        for (Link link = allLinks.annotatedFields.get(a.annotationType()); link != null; link = link.next) {
+            Object builder = builderOf(this, link.index, array);
+            AnnotatedMethodHook<Annotation> hook = ModuleAccess.hook().newAnnotatedMethodHook(hc, m, a);
+            try {
+                link.mh.invoke(builder, hook);
+            } catch (Throwable e) {
+                ThrowableUtil.rethrowErrorOrRuntimeException(e);
+                throw new UndeclaredThrowableException(e);
+            }
+        }
+    }
+
     @Nullable
     public Object process(@Nullable Object parent, ClassProcessor cpTarget, UncheckedThrowableFactory<?> tf) {
         Object[] array = new Object[constructors.length];
         array[0] = parent;
         HookProcessor hc = new HookProcessor(cpTarget, tf);
-        cpTarget.findMethodsAndFields(c -> {}, allLinks.annotatedFields == null ? null : f -> {
+        cpTarget.findMethodsAndFields(allLinks.annotatedMethods == null ? null : f -> {
             for (Annotation a : f.getAnnotations()) {
-                for (Link link = allLinks.annotatedFields.get(a.annotationType()); link != null; link = link.next) {
-                    Object builder = builderOf(this, link.index, array);
-                    AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(hc, f, a);
-                    try {
-                        link.mh.invoke(builder, hook);
-                    } catch (Throwable e) {
-                        ThrowableUtil.rethrowErrorOrRuntimeException(e);
-                        throw new UndeclaredThrowableException(e);
-                    }
-                }
+                tryProcesAnnotatedMethod(hc, f, a, array);
+            }
+        }, allLinks.annotatedFields == null ? null : f -> {
+            for (Annotation a : f.getAnnotations()) {
+                tryProcesAnnotatedField(hc, f, a, array);
             }
         });
         hc.close();

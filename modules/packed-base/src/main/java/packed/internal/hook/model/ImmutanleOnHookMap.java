@@ -35,7 +35,7 @@ public class ImmutanleOnHookMap<V> {
 
     /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedMethodHook} as a parameter. */
     @Nullable
-    final Map<Class<?>, V> annotatedMethod;
+    final Map<Class<?>, V> annotatedMethods;
 
     /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedTypeHook} as a parameter. */
     @Nullable
@@ -47,7 +47,7 @@ public class ImmutanleOnHookMap<V> {
 
     ImmutanleOnHookMap(Map<Class<?>, V> annotatedFields, Map<Class<?>, V> annotatedMethod, Map<Class<?>, V> annotatedTypes, Map<Class<?>, V> assignableTos) {
         this.annotatedFields = annotatedFields;
-        this.annotatedMethod = annotatedMethod;
+        this.annotatedMethods = annotatedMethod;
         this.annotatedTypes = annotatedTypes;
         this.assignableTos = assignableTos;
     }
