@@ -24,9 +24,11 @@ import java.util.IdentityHashMap;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.UseExtension;
+import app.packed.hook.Hook;
 import packed.internal.container.ComponentLookup;
 import packed.internal.container.ContainerSourceModel;
 import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.hook.model.CachedHook;
 import packed.internal.hook.model.ComponentModelHookGroup;
 import packed.internal.hook.model.HookProcessor;
 import packed.internal.reflect.ClassProcessor;
@@ -68,8 +70,14 @@ public final class ComponentModel {
         // Preferable deterministic
         try {
             for (ComponentModelHookGroup group : hookGroups) {
+
                 // First make sure the extension is activated
-                group.addTo(containerConfiguration, componentConfiguration);
+                Extension e = containerConfiguration.use(group.extensionType);
+
+                // Call the actual methods on the Extension
+                for (CachedHook<Hook> c = group.callback; c != null; c = c.next()) {
+                    c.mh().invoke(e, c.hook(), componentConfiguration);
+                }
             }
         } catch (Throwable e) {
             ThrowableUtil.rethrowErrorOrRuntimeException(e);

@@ -95,7 +95,7 @@ public final class ExtensionModel<T extends Extension> {
 
     public final Map<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, BiFunction<?, ?, ?>> pipelines;
 
-    public final OnHookContainerModel hooks2;
+    public final OnHookContainerModel hooks;
 
     /**
      * Creates a new extension model from the specified builder.
@@ -116,7 +116,7 @@ public final class ExtensionModel<T extends Extension> {
         this.dependencies = Set.copyOf(builder.dependencies);
         this.optional = Optional.of(extensionType); // No need to create an optional every time we need this
 
-        hooks2 = builder.hooks2.build();
+        hooks = builder.hooks2.build();
     }
 
     /**
@@ -124,8 +124,8 @@ public final class ExtensionModel<T extends Extension> {
      * 
      * @return a hook model
      */
-    public OnHookContainerModel hooks2() {
-        return hooks2;
+    public OnHookContainerModel hooks() {
+        return hooks;
     }
 
     /**

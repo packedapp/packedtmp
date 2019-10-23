@@ -21,11 +21,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import app.packed.component.ComponentConfiguration;
 import app.packed.container.Extension;
 import app.packed.hook.Hook;
 import app.packed.lang.Nullable;
-import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.ExtensionModel;
 
 /**
@@ -35,25 +33,14 @@ import packed.internal.container.extension.ExtensionModel;
 public final class ComponentModelHookGroup {
 
     /** A list of callbacks for the particular extension. */
-    private final CachedHook<Hook> callback;
+    public final CachedHook<Hook> callback;
 
     /** The type of extension that will be activated. */
-    private final Class<? extends Extension> extensionType;
+    public final Class<? extends Extension> extensionType;
 
-    private ComponentModelHookGroup(Builder builder) {
-        this.extensionType = requireNonNull(builder.extensionType);
-        this.callback = builder.callback;
-    }
-
-    public void addTo(PackedContainerConfiguration container, ComponentConfiguration<?> cc) throws Throwable {
-
-        // First make sure the extension is activated
-        Extension e = container.use(extensionType);
-
-        // Call the actual methods on the Extension
-        for (CachedHook<Hook> c = callback; c != null; c = c.next()) {
-            c.mh().invoke(e, c.hook(), cc);
-        }
+    private ComponentModelHookGroup(Class<? extends Extension> extensionType, CachedHook<Hook> callback) {
+        this.extensionType = requireNonNull(extensionType);
+        this.callback = callback;
     }
 
     public static final class Builder {
@@ -61,24 +48,24 @@ public final class ComponentModelHookGroup {
         @Nullable
         private CachedHook<Hook> callback;
 
-        final OnHookContainerModel hooks;
+        private final OnHookContainerModel hooks;
 
-        final HookProcessor hookProcessor;
+        private final HookProcessor hookProcessor;
+
         /** The type of extension that will be activated. */
         private final Class<? extends Extension> extensionType;
 
-        final Object[] array;
+        private final Object[] array;
 
         public Builder(HookProcessor hookProcessor, Class<? extends Extension> extensionType) {
             this.hookProcessor = requireNonNull(hookProcessor);
             this.extensionType = requireNonNull(extensionType);
-            this.hooks = ExtensionModel.of(extensionType).hooks2();
-            array = new Object[hooks.size()];
+            this.hooks = ExtensionModel.of(extensionType).hooks();
+            this.array = new Object[hooks.size()];
         }
 
         public ComponentModelHookGroup build() {
-            callback = hooks.compute(array);
-            return new ComponentModelHookGroup(this);
+            return new ComponentModelHookGroup(extensionType, hooks.compute(array));
         }
 
         public void onAnnotatedType(Class<?> clazz, Annotation annotation) {
