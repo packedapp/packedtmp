@@ -60,16 +60,10 @@ public final class OnHookContainerModelBuilder {
 
     private final ArrayDeque<Node> unprocessedNodes = new ArrayDeque<>();
 
-    @SuppressWarnings({ "unchecked" })
     public OnHookContainerModelBuilder(ClassProcessor cp, Class<?>... additionalParameters) {
         if (Hook.class.isAssignableFrom(cp.clazz())) {
-            Class<? extends Hook> hookType = (Class<? extends Hook>) cp.clazz();
-            Class<?> cl = ClassFinder.findDeclaredClass(hookType, "Builder", Hook.Builder.class);
-            ClassProcessor cpx = cp.spawn(cl);
-            // TODO validate type variable
-            this.root = new Node(cpx, hookType);
+            this.root = new Node(cp, cp.clazz());
         } else {
-            // This cast is not valid... For example is Bundle not a hook.
             this.root = new Node(cp);
         }
     }
@@ -176,12 +170,8 @@ public final class OnHookContainerModelBuilder {
 
                 // Lazy create new node if one does not already exist for the hookType
                 Node nodeRef = nodes.computeIfAbsent(hookType, ignore -> {
-                    Class<?> cl = ClassFinder.findDeclaredClass(hookType, "Builder", Hook.Builder.class);
-                    ClassProcessor cp = root.cp.spawn(cl);
-
-                    // TODO validate type variable
-                    Node newNode = new Node(cp, hookType);
-                    unprocessedNodes.addLast(newNode); // make sure it will be processed at some point.
+                    Node newNode = new Node(root.cp, hookType);
+                    unprocessedNodes.addLast(newNode); // make sure it will be processed at some later point.
                     return newNode;
                 });
 
@@ -246,9 +236,11 @@ public final class OnHookContainerModelBuilder {
             this.builderConstructor = null;
         }
 
-        Node(ClassProcessor cp, Class<?> type) {
+        Node(ClassProcessor cps, Class<?> type) {
             this.type = requireNonNull(type);
-            this.cp = requireNonNull(cp);
+            Class<?> cl = ClassFinder.findDeclaredClass(type, "Builder", Hook.Builder.class);
+            this.cp = cps.spawn(cl);
+
             this.builderConstructor = ConstructorFinder.find(cp, tf);
             if (builderConstructor.type().returnType() != cp.clazz()) {
                 throw new IllegalStateException("OOPS");
