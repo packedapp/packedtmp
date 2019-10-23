@@ -34,6 +34,10 @@ import app.packed.lang.reflect.VarOperator;
 // Ja ikke ServiceExtensionSupport naar vi ogsaa har ServiceExtension
 
 // Jaja, det er ogsaa den her der styrer exceptions
+/**
+ * This class contains various utility methods that are useful when writing extensions that make use of
+ * {@link ServiceExtension}.
+ */
 class ServiceExtensionSupport {
 
     public static final VarOperator<?> INJECT_FIELD = null;

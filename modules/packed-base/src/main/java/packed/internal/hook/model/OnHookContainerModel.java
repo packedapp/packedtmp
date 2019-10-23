@@ -95,7 +95,11 @@ public final class OnHookContainerModel {
         return a == null ? Set.of() : (Set) a.keySet();
     }
 
-    void tryProcesAnnotatedField(HookProcessor hc, Field f, Annotation a, Object[] array) {
+    public int size() {
+        return constructors.length;
+    }
+
+    public void tryProcesAnnotatedField(HookProcessor hc, Field f, Annotation a, Object[] array) {
         for (Link link = allLinks.annotatedFields.get(a.annotationType()); link != null; link = link.next) {
             Object builder = builderOf(this, link.index, array);
             AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(hc, f, a);
@@ -108,8 +112,8 @@ public final class OnHookContainerModel {
         }
     }
 
-    void tryProcesAnnotatedMethod(HookProcessor hc, Method m, Annotation a, Object[] array) {
-        for (Link link = allLinks.annotatedFields.get(a.annotationType()); link != null; link = link.next) {
+    public void tryProcesAnnotatedMethod(HookProcessor hc, Method m, Annotation a, Object[] array) {
+        for (Link link = allLinks.annotatedMethods.get(a.annotationType()); link != null; link = link.next) {
             Object builder = builderOf(this, link.index, array);
             AnnotatedMethodHook<Annotation> hook = ModuleAccess.hook().newAnnotatedMethodHook(hc, m, a);
             try {

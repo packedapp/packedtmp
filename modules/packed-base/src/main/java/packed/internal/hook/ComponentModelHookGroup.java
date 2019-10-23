@@ -85,11 +85,17 @@ public final class ComponentModelHookGroup {
 
         final IdentityHashMap<Class<?>, Hook.Builder<?>> groupBuilders = new IdentityHashMap<>();
 
+        final Object[] array;
+
         public Builder(ComponentModel.Builder componentModelBuilder, Class<? extends Extension> extensionType) {
             this.componentModelBuilder = requireNonNull(componentModelBuilder);
             this.extensionType = requireNonNull(extensionType);
             this.oldHooks = ExtensionModel.of(extensionType).hooks();
             this.hooks = ExtensionModel.of(extensionType).hooks2();
+
+            array = new Object[hooks.size()];
+
+            // hooks.
         }
 
         public ComponentModelHookGroup build() {
@@ -108,11 +114,13 @@ public final class ComponentModelHookGroup {
         public void onAnnotatedField(Field field, Annotation annotation) {
             AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(componentModelBuilder.hookController, field, annotation);
             process(oldHooks.findMethodHandleForAnnotatedField(hook), hook);
+            hooks.tryProcesAnnotatedField(componentModelBuilder.hookController, field, annotation, array);
         }
 
         public void onAnnotatedMethod(Method method, Annotation annotation) {
             AnnotatedMethodHook hook = ModuleAccess.hook().newAnnotatedMethodHook(componentModelBuilder.hookController, method, annotation);
             process(oldHooks.findMethodHandleForAnnotatedMethod(hook), hook);
+            hooks.tryProcesAnnotatedMethod(componentModelBuilder.hookController, method, annotation, array);
         }
 
         private void process(MethodHandle mh, Hook hook) {
