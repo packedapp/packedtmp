@@ -103,7 +103,7 @@ public final class OnHookContainerModel {
                 }
             }
         }
-        isHookTop = builderConstructors[0] != null;
+        isHookTop = b.isTopHook;
     }
 
     /**
@@ -197,7 +197,11 @@ public final class OnHookContainerModel {
             } else {
                 Hook.Builder<?> builder = builderOf(hr.array, link.index);
                 AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(hc, field, annotation);
-                link.mh.invoke(builder, hook);
+                if (link.mh.type().parameterCount() == 1) {
+                    link.mh.invoke(hook);
+                } else {
+                    link.mh.invoke(builder, hook);
+                }
             }
         }
     }

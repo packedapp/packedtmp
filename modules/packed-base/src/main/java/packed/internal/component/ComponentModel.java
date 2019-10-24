@@ -47,7 +47,7 @@ public final class ComponentModel {
     private final Class<?> componentType;
 
     /** An array of any hook groups defined by the component type. */
-    private final ComponentHookRequest[] hookGroups;
+    private final ComponentExtensionHookRequest[] hookGroups;
 
     /** The simple name of the component type, typically used for lazy generating a component name. */
     private volatile String simpleName;
@@ -60,7 +60,7 @@ public final class ComponentModel {
      */
     private ComponentModel(ComponentModel.Builder builder) {
         this.componentType = requireNonNull(builder.componentType);
-        this.hookGroups = builder.extensionBuilders.values().stream().map(e -> e.build()).toArray(i -> new ComponentHookRequest[i]);
+        this.hookGroups = builder.extensionBuilders.values().stream().map(e -> e.build()).toArray(i -> new ComponentExtensionHookRequest[i]);
     }
 
     public <T> ComponentConfiguration<T> addExtensionsToContainer(PackedContainerConfiguration containerConfiguration,
@@ -72,7 +72,7 @@ public final class ComponentModel {
         // Boer vaere lowest dependency id first...
         // Preferable deterministic
         try {
-            for (ComponentHookRequest group : hookGroups) {
+            for (ComponentExtensionHookRequest group : hookGroups) {
                 group.process(containerConfiguration, componentConfiguration);
             }
         } catch (Throwable e) {
@@ -118,7 +118,7 @@ public final class ComponentModel {
         final ContainerSourceModel csm;
 
         /** A map of builders for every activated extension. */
-        private final IdentityHashMap<Class<? extends Extension>, ComponentHookRequest.Builder> extensionBuilders = new IdentityHashMap<>();
+        private final IdentityHashMap<Class<? extends Extension>, ComponentExtensionHookRequest.Builder> extensionBuilders = new IdentityHashMap<>();
 
         public final HookProcessor hookProcessor;
 
@@ -180,7 +180,7 @@ public final class ComponentModel {
         private void onAnnotatedType(Annotation a, Set<Class<? extends Extension>> extensionTypes) throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
-                    extensionBuilders.computeIfAbsent(eType, etype -> new ComponentHookRequest.Builder(hookProcessor, etype)).onAnnotatedType(componentType, a);
+                    extensionBuilders.computeIfAbsent(eType, etype -> new ComponentExtensionHookRequest.Builder(hookProcessor, etype)).onAnnotatedType(componentType, a);
                 }
             }
         }
@@ -188,7 +188,7 @@ public final class ComponentModel {
         private void onAnnotatedField(Annotation a, Field field, Set<Class<? extends Extension>> extensionTypes) throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
-                    extensionBuilders.computeIfAbsent(eType, etype -> new ComponentHookRequest.Builder(hookProcessor, etype)).onAnnotatedField(field, a);
+                    extensionBuilders.computeIfAbsent(eType, etype -> new ComponentExtensionHookRequest.Builder(hookProcessor, etype)).onAnnotatedField(field, a);
                 }
             }
         }
@@ -196,7 +196,7 @@ public final class ComponentModel {
         private void onAnnotatedMethod(Annotation a, Method method, Set<Class<? extends Extension>> extensionTypes) throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
-                    extensionBuilders.computeIfAbsent(eType, etype -> new ComponentHookRequest.Builder(hookProcessor, etype)).onAnnotatedMethod(method, a);
+                    extensionBuilders.computeIfAbsent(eType, etype -> new ComponentExtensionHookRequest.Builder(hookProcessor, etype)).onAnnotatedMethod(method, a);
                 }
             }
         }

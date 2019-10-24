@@ -23,6 +23,7 @@ import java.lang.annotation.Target;
 import app.packed.artifact.App;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
+import app.packed.container.UseExtension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
@@ -56,7 +57,7 @@ public class WwTest extends BaseBundle {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Qualifier
-    // @UseExtension(MyExtension.class)
+    @UseExtension(MyExtension.class)
     @Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
     public @interface Left {
 
@@ -85,7 +86,7 @@ public class WwTest extends BaseBundle {
         static final class Builder implements Hook.Builder<My> {
 
             @OnHook
-            public void on(AnnotatedFieldHook<Left> h) {
+            public static void on(AnnotatedFieldHook<Left> h) {
                 System.out.println(h.field());
                 System.out.println("AC");
             }

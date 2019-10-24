@@ -46,7 +46,7 @@ import packed.internal.util.types.TypeUtil;
  */
 public final class OnHookContainerModelBuilder {
 
-    private static final UncheckedThrowableFactory<? extends RuntimeException> tf = UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY;
+    private final static UncheckedThrowableFactory<? extends RuntimeException> tf = UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY;
 
     final MutableOnHookMap<TinyPairNode<Node, MethodHandle>> allEntries = new MutableOnHookMap<>();
 
@@ -60,14 +60,17 @@ public final class OnHookContainerModelBuilder {
 
     final ArrayDeque<Node> stack = new ArrayDeque<>();
 
+    final boolean isTopHook;
+
     public OnHookContainerModelBuilder(ClassProcessor cp, Class<?>... additionalParameters) {
         if (Hook.class.isAssignableFrom(cp.clazz())) {
             this.root = new Node(cp, cp.clazz());
             rootEntries = allEntries;
+            this.isTopHook = true;
         } else {
             this.root = new Node(cp);
+            this.isTopHook = false;
             rootEntries = new MutableOnHookMap<>();
-
         }
     }
 
@@ -231,13 +234,13 @@ public final class OnHookContainerModelBuilder {
          * @param cp
          *            the class processor for the node
          */
-        Node(ClassProcessor cp) {
+        private Node(ClassProcessor cp) {
             this.cp = cp;
             this.onNodeContainerType = cp.clazz();
             this.builderConstructor = null;
         }
 
-        Node(ClassProcessor cps, Class<?> type) {
+        private Node(ClassProcessor cps, Class<?> type) {
             this.onNodeContainerType = requireNonNull(type);
 
             Class<?> builderClass = ClassFinder.findDeclaredClass(type, "Builder", Hook.Builder.class);
@@ -249,7 +252,7 @@ public final class OnHookContainerModelBuilder {
             }
         }
 
-        void addDependency(Node b) {
+        private void addDependency(Node b) {
             Set<Node> d = dependencies;
             if (d == null) {
                 d = dependencies = new HashSet<>();
@@ -257,7 +260,7 @@ public final class OnHookContainerModelBuilder {
             d.add(b);
         }
 
-        boolean hasUnresolvedDependencies() {
+        private boolean hasUnresolvedDependencies() {
             if (dependencies != null) {
                 for (Node ch : dependencies) {
                     if (ch.index == 0) {

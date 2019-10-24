@@ -34,12 +34,12 @@ import packed.internal.util.ThrowableUtil;
  * We have a group for a collection of hooks/annotations. A component can have multiple groups.
  */
 // One of these suckers is creates once for each component+Extension combination...
-final class ComponentHookRequest extends HookRequest {
+final class ComponentExtensionHookRequest extends HookRequest {
 
     /** The type of extension that will be activated. */
     final Class<? extends Extension> extensionType;
 
-    private ComponentHookRequest(HookRequest.Builder builder, Class<? extends Extension> extensionType) throws Throwable {
+    private ComponentExtensionHookRequest(HookRequest.Builder builder, Class<? extends Extension> extensionType) throws Throwable {
         super(builder);
         this.extensionType = requireNonNull(extensionType);
     }
@@ -62,9 +62,9 @@ final class ComponentHookRequest extends HookRequest {
             this.extensionType = requireNonNull(extensionType);
         }
 
-        public ComponentHookRequest build() {
+        public ComponentExtensionHookRequest build() {
             try {
-                return new ComponentHookRequest(this, extensionType);
+                return new ComponentExtensionHookRequest(this, extensionType);
             } catch (Throwable e) {
                 ThrowableUtil.rethrowErrorOrRuntimeException(e);
                 throw new UndeclaredThrowableException(e);
