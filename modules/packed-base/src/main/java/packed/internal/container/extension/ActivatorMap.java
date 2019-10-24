@@ -24,6 +24,7 @@ import app.packed.container.Extension;
 import app.packed.container.UseExtension;
 import app.packed.container.UseExtensionLazily;
 import app.packed.lang.Nullable;
+import packed.internal.util.tiny.TinyNode;
 
 /**
  *

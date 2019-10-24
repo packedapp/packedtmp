@@ -38,6 +38,7 @@ import packed.internal.reflect.ClassFinder;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.reflect.ConstructorFinder;
 import packed.internal.util.UncheckedThrowableFactory;
+import packed.internal.util.tiny.TinyPairNode;
 import packed.internal.util.types.TypeUtil;
 
 /**
@@ -47,9 +48,9 @@ public final class OnHookContainerModelBuilder {
 
     private static final UncheckedThrowableFactory<? extends RuntimeException> tf = UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY;
 
-    final MutableOnHookMap<LinkedEntry> allEntries = new MutableOnHookMap<>();
+    final MutableOnHookMap<TinyPairNode<Node, MethodHandle>> allEntries = new MutableOnHookMap<>();
 
-    final MutableOnHookMap<LinkedEntry> rootEntries;
+    final MutableOnHookMap<TinyPairNode<Node, MethodHandle>> rootEntries;
 
     /** All non-root nodes. */
     private final IdentityHashMap<Class<? extends Hook>, Node> nodes = new IdentityHashMap<>();
@@ -147,10 +148,10 @@ public final class OnHookContainerModelBuilder {
         MethodHandle mh = node.cp.unreflect(method, tf);
 
         // Let first see if it is a base book.
-        final IdentityHashMap<Class<?>, LinkedEntry> mm;
+        final IdentityHashMap<Class<?>, TinyPairNode<Node, MethodHandle>> mm;
 
         // Keep track of all dangling stuff on root
-        final IdentityHashMap<Class<?>, LinkedEntry> roots;
+        final IdentityHashMap<Class<?>, TinyPairNode<Node, MethodHandle>> roots;
         if (hookType == AnnotatedFieldHook.class) {
             mm = allEntries.annotatedFieldsLazyInit();
             roots = node == root && root.builderConstructor == null ? rootEntries.annotatedFieldsLazyInit() : null;
@@ -171,16 +172,16 @@ public final class OnHookContainerModelBuilder {
         if (mm != null) {
             ParameterizedType pt = (ParameterizedType) hook.getParameterizedType();
             Class<?> typeVariable = (Class<?>) pt.getActualTypeArguments()[0];
-            mm.compute(typeVariable, (k, v) -> new LinkedEntry(node, mh, v));
+            mm.compute(typeVariable, (k, v) -> new TinyPairNode<>(node, mh, v));
             if (roots != null) {
-                roots.compute(typeVariable, (k, v) -> new LinkedEntry(node, mh, v));
+                roots.compute(typeVariable, (k, v) -> new TinyPairNode<>(node, mh, v));
             }
         } else {
             if (hookType == node.cp.clazz()) {
                 tf.newThrowableForMethod("Hook cannot depend on itself", method);
             }
             TypeUtil.checkClassIsInstantiable(hookType);
-            IdentityHashMap<Class<?>, LinkedEntry> m = allEntries.customHooksLazyInit();
+            IdentityHashMap<Class<?>, TinyPairNode<Node, MethodHandle>> m = allEntries.customHooksLazyInit();
             m.compute(hookType, (k, v) -> {
 
                 // Lazy create new node if one does not already exist for the hookType
@@ -200,24 +201,8 @@ public final class OnHookContainerModelBuilder {
                 if (node != root) {
                     node.addDependency(nodeRef);
                 }
-                return new LinkedEntry(node, mh, v);
+                return new TinyPairNode<>(node, mh, v);
             });
-        }
-    }
-
-    static final class LinkedEntry {
-
-        final Node node;
-
-        final MethodHandle methodHandle;
-
-        @Nullable
-        final LinkedEntry next;
-
-        LinkedEntry(Node builder, MethodHandle methodHandle, LinkedEntry next) {
-            this.node = requireNonNull(builder);
-            this.methodHandle = requireNonNull(methodHandle);
-            this.next = next;
         }
     }
 

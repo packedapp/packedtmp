@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.extension;
+package packed.internal.util.tiny;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,16 +27,16 @@ import app.packed.lang.Nullable;
 /**
  *
  */
-public final class TinyNode<T> {
+public final class TinyNode<E> {
 
-    final T element;
+    public final E element;
 
     @Nullable
-    final TinyNode<T> next;
+    final TinyNode<E> next;
 
     private final int predecessors;
 
-    TinyNode(T element, @Nullable TinyNode<T> next) {
+    public TinyNode(E element, @Nullable TinyNode<E> next) {
         this.element = requireNonNull(element);
         this.next = next;
         this.predecessors = next == null ? 0 : next.predecessors + 1;
