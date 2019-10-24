@@ -23,10 +23,10 @@ import java.util.IdentityHashMap;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.Extension;
-import app.packed.container.UseExtension;
 import packed.internal.container.ComponentLookup;
 import packed.internal.container.ContainerSourceModel;
 import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.container.extension.ActivatorMap;
 import packed.internal.hook.HookProcessor;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.ThrowableUtil;
@@ -92,15 +92,7 @@ public final class ComponentModel {
     /** A builder object for a component model. */
     public static final class Builder {
 
-        /** A cache of any extensions a particular annotation activates. */
-        private static final ClassValue<Class<? extends Extension>[]> EXTENSION_ACTIVATORS = new ClassValue<>() {
-
-            @Override
-            protected Class<? extends Extension>[] computeValue(Class<?> type) {
-                UseExtension ae = type.getAnnotation(UseExtension.class);
-                return ae == null ? null : ae.value();
-            }
-        };
+        private final ActivatorMap activatorMap = ActivatorMap.DEFAULT;
 
         /** The type of component we are building a model for. */
         private final Class<?> componentType;
@@ -137,7 +129,7 @@ public final class ComponentModel {
         public ComponentModel build() {
             // Look for type annotations
             for (Annotation a : componentType.getAnnotations()) {
-                Class<? extends Extension>[] extensionTypes = EXTENSION_ACTIVATORS.get(a.annotationType());
+                Class<? extends Extension>[] extensionTypes = activatorMap.onAnnotatedType(a.annotationType());
                 if (extensionTypes != null) {
                     for (Class<? extends Extension> eType : extensionTypes) {
                         extensionBuilders.computeIfAbsent(eType, etype -> new ComponentModelHookGroup.Builder(hookProcessor, etype))
@@ -149,7 +141,7 @@ public final class ComponentModel {
             try {
                 cp.findMethodsAndFields(method -> {
                     for (Annotation a : method.getAnnotations()) {
-                        Class<? extends Extension>[] extensionTypes = EXTENSION_ACTIVATORS.get(a.annotationType());
+                        Class<? extends Extension>[] extensionTypes = activatorMap.onAnnotatedField(a.annotationType());
                         // See if the component method has any annotations that activates extensions
                         if (extensionTypes != null) {
                             for (Class<? extends Extension> eType : extensionTypes) {
@@ -160,7 +152,7 @@ public final class ComponentModel {
                     }
                 }, field -> {
                     for (Annotation a : field.getAnnotations()) {
-                        Class<? extends Extension>[] extensionTypes = EXTENSION_ACTIVATORS.get(a.annotationType());
+                        Class<? extends Extension>[] extensionTypes = activatorMap.onAnnotatedMethod(a.annotationType());
                         // See if the component method has any annotations that activates extensions
                         if (extensionTypes != null) {
                             for (Class<? extends Extension> eType : extensionTypes) {
