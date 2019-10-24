@@ -26,6 +26,7 @@ import app.packed.container.ContainerSource;
 import app.packed.hook.Hook;
 import app.packed.lang.InvalidDeclarationException;
 import packed.internal.component.ComponentModel;
+import packed.internal.container.extension.ActivatorMap;
 import packed.internal.hook.OnHookContainerModel;
 import packed.internal.hook.OnHookContainerModelBuilder;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
@@ -90,7 +91,10 @@ public final class ContainerSourceModel implements ComponentLookup {
                 ContainerConfiguration.class);
         hooks = builder.build();
 
+        activatorMap = ActivatorMap.of(sourceType);
     }
+
+    public final ActivatorMap activatorMap;
 
     /** {@inheritDoc} */
     @Override

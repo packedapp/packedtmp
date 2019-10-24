@@ -104,7 +104,7 @@ public final class ComponentModel {
             }
         };
 
-        private final ActivatorMap activatorMap = null;
+        private final ActivatorMap activatorMap;
 
         /** The type of component we are building a model for. */
         private final Class<?> componentType;
@@ -131,6 +131,7 @@ public final class ComponentModel {
             this.componentType = requireNonNull(componentType);
             this.hookProcessor = new HookProcessor(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
             this.csm = requireNonNull(csm);
+            this.activatorMap = csm.activatorMap;
         }
 
         /**
