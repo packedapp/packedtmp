@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
 import packed.internal.moduleaccess.ModuleAccess;
@@ -40,9 +41,12 @@ public class HookRequest {
 
     List<DelayedAnnotatedMethod> delayedMethods;
 
+    List<DelayedAnnotatedField> delayedFields;
+
     protected HookRequest(HookRequest.Builder builder) throws Throwable {
         this.customHooksCallback = builder.hooks.compute(builder.array);
         this.delayedMethods = builder.delayedMethods;
+        this.delayedFields = builder.delayedFields;
     }
 
     protected void invokeIt(Object target, Object additional) throws Throwable {
@@ -52,6 +56,17 @@ public class HookRequest {
                 mh.invoke(target, c.hook());
             } else {
                 mh.invoke(target, c.hook(), additional);
+            }
+        }
+        for (DelayedAnnotatedField m : delayedFields) {
+            try (HookProcessor hp = new HookProcessor(m.cp.copy(), UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
+                MethodHandle mh = m.mh;
+                AnnotatedFieldHook<Annotation> amh = ModuleAccess.hook().newAnnotatedFieldHook(hp, m.field, m.annotation);
+                if (mh.type().parameterCount() == 2) {
+                    mh.invoke(target, amh);
+                } else {
+                    mh.invoke(target, amh, additional);
+                }
             }
         }
         for (DelayedAnnotatedMethod m : delayedMethods) {
@@ -73,6 +88,8 @@ public class HookRequest {
 
         List<DelayedAnnotatedMethod> delayedMethods = new ArrayList<>();
 
+        List<DelayedAnnotatedField> delayedFields = new ArrayList<>();
+
         final OnHookContainerModel hooks;
 
         final HookProcessor hookProcessor;
@@ -84,7 +101,7 @@ public class HookRequest {
         }
 
         private void onAnnotatedField(HookProcessor hookProcessor, Field field, Annotation annotation) throws Throwable {
-            hooks.tryProcesAnnotatedField(hookProcessor, field, annotation, array);
+            hooks.tryProcesAnnotatedField(hookProcessor, field, annotation, this);
         }
 
         private void onAnnotatedMethod(HookProcessor hookProcessor, Method method, Annotation annotation) throws Throwable {
@@ -103,10 +120,18 @@ public class HookRequest {
     static class DelayedAnnotatedField {
         final Annotation annotation;
         final Field field;
+        public final MethodHandle mh;
+        final ClassProcessor cp;
 
-        DelayedAnnotatedField(Field field, Annotation annotation) {
+        DelayedAnnotatedField(ClassProcessor cp, Field field, Annotation annotation, MethodHandle mh) {
+            this.cp = requireNonNull(cp);
             this.field = requireNonNull(field);
             this.annotation = requireNonNull(annotation);
+            this.mh = requireNonNull(mh);
+        }
+
+        public AnnotatedFieldHook<Annotation> toHook(HookProcessor hookProcessor) {
+            return ModuleAccess.hook().newAnnotatedFieldHook(hookProcessor, field, annotation);
         }
     }
 

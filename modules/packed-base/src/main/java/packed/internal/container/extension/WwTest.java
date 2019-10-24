@@ -23,7 +23,6 @@ import java.lang.annotation.Target;
 import app.packed.artifact.App;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
-import app.packed.container.UseExtensionLazily;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
@@ -32,7 +31,7 @@ import app.packed.lang.Qualifier;
 /**
  *
  */
-@UseExtensionLazily(WwTest.MyExtension.class)
+// @UseExtensionLazily(WwTest.MyExtension.class)
 public class WwTest extends BaseBundle {
 
     /** {@inheritDoc} */
@@ -40,6 +39,11 @@ public class WwTest extends BaseBundle {
     protected void configure() {
         install(Comp1.class);
 
+    }
+
+    @OnHook
+    public void onff(AnnotatedFieldHook<Left> my) {
+        System.out.println("DAV");
     }
 
     public static void main(String[] args) {
@@ -68,6 +72,12 @@ public class WwTest extends BaseBundle {
         @OnHook
         public void on(My my) {
             System.out.println("XXXAC");
+        }
+
+        @OnHook
+        public void on(AnnotatedFieldHook<Left> h) {
+            System.out.println("On the field motherfucker " + h.field());
+            System.out.println("AC");
         }
     }
 

@@ -31,6 +31,7 @@ import app.packed.hook.Hook;
 import app.packed.hook.Hook.Builder;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
+import packed.internal.hook.HookRequest.DelayedAnnotatedField;
 import packed.internal.hook.HookRequest.DelayedAnnotatedMethod;
 import packed.internal.hook.OnHookContainerModelBuilder.Node;
 import packed.internal.moduleaccess.ModuleAccess;
@@ -43,6 +44,7 @@ import packed.internal.util.tiny.TinyPairNode;
  */
 public final class OnHookContainerModel {
 
+    static final boolean DEBUG = false;
     private final ImmutableOnHookMap<Link> allLinks;
 
     /** Constructors for each builder. */
@@ -73,20 +75,22 @@ public final class OnHookContainerModel {
         this.builderConstructors = new MethodHandle[b.stack.size()];
 
         List<OnHookContainerModelBuilder.Node> list = List.copyOf(b.stack);
-        for (int i = 0; i < list.size(); i++) {
-            OnHookContainerModelBuilder.Node n = list.get(i);
-            String msg = i + " " + n.index + " " + n.onNodeContainerType;
-            if (n.builderConstructor != null) {
-                msg += " " + n.builderConstructor.type().returnType();
+        if (DEBUG) {
+            for (int i = 0; i < list.size(); i++) {
+                OnHookContainerModelBuilder.Node n = list.get(i);
+                String msg = i + " " + n.index + " " + n.onNodeContainerType;
+                if (n.builderConstructor != null) {
+                    msg += " " + n.builderConstructor.type().returnType();
+                }
+                System.out.println(msg);
             }
-            System.out.println(msg);
+            if (rootLinks != null) {
+                System.out.println(rootLinks.toString());
+            } else {
+                System.out.println("No rootlinks");
+            }
+            System.out.println("------");
         }
-        if (rootLinks != null) {
-            System.out.println(rootLinks.toString());
-        } else {
-            System.out.println("No rootlinks");
-        }
-        System.out.println("------");
         for (int i = 0; i < list.size(); i++) {
             OnHookContainerModelBuilder.Node n = list.get(i);// b.result.get(i);
             builderConstructors[i] = n.builderConstructor;
@@ -167,7 +171,7 @@ public final class OnHookContainerModel {
             }
         }, allLinks.annotatedFields == null ? null : f -> {
             for (Annotation a : f.getAnnotations()) {
-                tryProcesAnnotatedField(hc, f, a, array);
+                tryProcesAnnotatedField(hc, f, a, hb);
             }
         });
         hc.close();
@@ -184,11 +188,15 @@ public final class OnHookContainerModel {
         return builderConstructors.length;
     }
 
-    public void tryProcesAnnotatedField(HookProcessor hc, Field field, Annotation annotation, Object[] array) throws Throwable {
+    public void tryProcesAnnotatedField(HookProcessor hc, Field field, Annotation annotation, HookRequest.Builder hr) throws Throwable {
         for (Link link = allLinks.annotatedFields.get(annotation.annotationType()); link != null; link = link.next) {
-            Hook.Builder<?> builder = builderOf(array, link.index);
-            AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(hc, field, annotation);
-            link.mh.invoke(builder, hook);
+            if (link.index == 0) {
+                hr.delayedFields.add(new DelayedAnnotatedField(hc.cp, field, annotation, link.mh));
+            } else {
+                Hook.Builder<?> builder = builderOf(hr.array, link.index);
+                AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(hc, field, annotation);
+                link.mh.invoke(builder, hook);
+            }
         }
     }
 
