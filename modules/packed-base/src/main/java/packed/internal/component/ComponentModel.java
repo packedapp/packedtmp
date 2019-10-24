@@ -27,7 +27,7 @@ import app.packed.container.UseExtension;
 import packed.internal.container.ComponentLookup;
 import packed.internal.container.ContainerSourceModel;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.hook.model.HookProcessor;
+import packed.internal.hook.HookProcessor;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.UncheckedThrowableFactory;
@@ -112,6 +112,8 @@ public final class ComponentModel {
 
         public final HookProcessor hookProcessor;
 
+        final ContainerSourceModel csm;
+
         /**
          * Creates a new component model builder
          * 
@@ -124,6 +126,7 @@ public final class ComponentModel {
             this.cp = lookup.newClassProcessor(componentType, true);
             this.componentType = requireNonNull(componentType);
             this.hookProcessor = new HookProcessor(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+            this.csm = requireNonNull(csm);
         }
 
         /**

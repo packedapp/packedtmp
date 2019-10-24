@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hook.model.testit;
+package packed.internal.hook.testit;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,8 +21,8 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.UndeclaredThrowableException;
 
 import app.packed.hook.Hook;
-import packed.internal.hook.model.OnHookContainerModel;
-import packed.internal.hook.model.OnHookContainerModelBuilder;
+import packed.internal.hook.OnHookContainerModel;
+import packed.internal.hook.OnHookContainerModelBuilder;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.UncheckedThrowableFactory;

@@ -28,9 +28,9 @@ import app.packed.hook.Hook;
 import app.packed.lang.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.ExtensionModel;
-import packed.internal.hook.model.CachedHook;
-import packed.internal.hook.model.HookProcessor;
-import packed.internal.hook.model.HookRequest;
+import packed.internal.hook.CachedHook;
+import packed.internal.hook.HookProcessor;
+import packed.internal.hook.HookRequest;
 import packed.internal.util.ThrowableUtil;
 
 /**

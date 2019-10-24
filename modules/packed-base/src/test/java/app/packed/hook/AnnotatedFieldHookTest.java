@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.lang.reflect.FieldDescriptor;
 import app.packed.lang.reflect.VarOperator;
-import packed.internal.hook.model.HookProcessor;
+import packed.internal.hook.HookProcessor;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.UncheckedThrowableFactory;
 import testutil.stubs.annotation.AnnotationInstances;

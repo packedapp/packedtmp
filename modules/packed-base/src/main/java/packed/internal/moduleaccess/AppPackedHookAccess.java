@@ -23,7 +23,7 @@ import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.AssignableToHook;
-import packed.internal.hook.model.HookProcessor;
+import packed.internal.hook.HookProcessor;
 
 /** An access class for accessing package private members in app.packed.hook. */
 public interface AppPackedHookAccess extends SecretAccess {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hook.model;
+package packed.internal.hook;
 
 import static java.util.Objects.requireNonNull;
 
@@ -32,8 +32,8 @@ import app.packed.hook.Hook;
 import app.packed.hook.Hook.Builder;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
-import packed.internal.hook.model.HookRequest.DelayedAnnotatedMethod;
-import packed.internal.hook.model.OnHookContainerModelBuilder.LinkedEntry;
+import packed.internal.hook.HookRequest.DelayedAnnotatedMethod;
+import packed.internal.hook.OnHookContainerModelBuilder.LinkedEntry;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.UncheckedThrowableFactory;
