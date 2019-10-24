@@ -33,7 +33,12 @@ import java.lang.annotation.Target;
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@interface UseExtensionLazily {
+
+// Extensions that have non-activating hooks must be installed before any components.
+// Or use @UseExtensionLazily(SomeExtension.class) on the bundle
+// taenker det kun er rigtige komponenter... Man kan f.eks. godt link andre containere...
+
+public @interface UseExtensionLazily {
     String[] optional() default {};
 
     Class<? extends Extension>[] value();

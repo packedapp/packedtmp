@@ -75,17 +75,28 @@ public class HookRequest {
 
         final OnHookContainerModel hooks;
 
-        protected Builder(OnHookContainerModel model) {
+        final HookProcessor hookProcessor;
+
+        protected Builder(OnHookContainerModel model, HookProcessor hookProcessor) {
             this.array = new Object[model.size()];
             this.hooks = requireNonNull(model);
+            this.hookProcessor = requireNonNull(hookProcessor);
         }
 
-        public void onAnnotatedField(HookProcessor hookProcessor, Field field, Annotation annotation) throws Throwable {
+        private void onAnnotatedField(HookProcessor hookProcessor, Field field, Annotation annotation) throws Throwable {
             hooks.tryProcesAnnotatedField(hookProcessor, field, annotation, array);
         }
 
-        public void onAnnotatedMethod(HookProcessor hookProcessor, Method method, Annotation annotation) throws Throwable {
+        private void onAnnotatedMethod(HookProcessor hookProcessor, Method method, Annotation annotation) throws Throwable {
             hooks.tryProcesAnnotatedMethod(hookProcessor, method, annotation, this);
+        }
+
+        public void onAnnotatedField(Field field, Annotation annotation) throws Throwable {
+            onAnnotatedField(hookProcessor, field, annotation);
+        }
+
+        public void onAnnotatedMethod(Method method, Annotation annotation) throws Throwable {
+            onAnnotatedMethod(hookProcessor, method, annotation);
         }
     }
 

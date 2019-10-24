@@ -36,6 +36,7 @@ import app.packed.container.ExtensionInstantiationContext;
 import app.packed.container.ExtensionWirelet;
 import app.packed.container.InternalExtensionException;
 import app.packed.hook.OnHook;
+import packed.internal.hook.DefaultHookUsage;
 import packed.internal.hook.OnHookContainerModel;
 import packed.internal.hook.OnHookContainerModelBuilder;
 import packed.internal.moduleaccess.ModuleAccess;
@@ -45,7 +46,7 @@ import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 
 /** A model of an Extension. */
-public final class ExtensionModel<T extends Extension> {
+public final class ExtensionModel<E extends Extension> {
 
     /** A cache of values. */
     private static final ClassValue<ExtensionModel<?>> CACHE = new ClassValue<>() {
@@ -97,6 +98,8 @@ public final class ExtensionModel<T extends Extension> {
 
     public final OnHookContainerModel hooks;
 
+    final DefaultHookUsage nonActivatingHooks;
+
     /**
      * Creates a new extension model from the specified builder.
      * 
@@ -116,7 +119,10 @@ public final class ExtensionModel<T extends Extension> {
         this.dependencies = Set.copyOf(builder.dependencies);
         this.optional = Optional.of(extensionType); // No need to create an optional every time we need this
 
-        hooks = builder.hooks.build();
+        this.hooks = builder.hooks.build();
+        this.nonActivatingHooks = DefaultHookUsage.ofOrNull(ActivatorMap.findNonAutoExtending(hooks.annotatedFieldHooks()),
+                ActivatorMap.findNonAutoExtending(hooks.annotatedMethodHooks()), ActivatorMap.findNonAutoExtending(hooks.annotatedTypeHooks()));
+
     }
 
     /**
@@ -133,14 +139,14 @@ public final class ExtensionModel<T extends Extension> {
      * 
      * @return a new instance of the extension
      */
-    public T newInstance(PackedExtensionContext context) {
+    public E newInstance(PackedExtensionContext context) {
         // Time goes from around 1000 ns to 12 ns when we cache the method handle.
         // With LambdaMetafactory wrapped in a supplier we can get down to 6 ns
         try {
             if (constructor.type().parameterCount() > 0) {
-                return (T) constructor.invoke(context);
+                return (E) constructor.invoke(context);
             } else {
-                return (T) constructor.invoke();
+                return (E) constructor.invoke();
             }
         } catch (Throwable e) {
             ThrowableUtil.rethrowErrorOrRuntimeException(e);
@@ -213,5 +219,9 @@ public final class ExtensionModel<T extends Extension> {
             // Find all methods annotated with @OnHook on the extension
             return new ExtensionModel<>(this);
         }
+    }
+
+    static class NonActivatingHooks {
+
     }
 }

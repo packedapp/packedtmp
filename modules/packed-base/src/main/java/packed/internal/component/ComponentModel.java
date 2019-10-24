@@ -20,9 +20,11 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.IdentityHashMap;
+import java.util.Set;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.Extension;
+import app.packed.container.UseExtension;
 import packed.internal.container.ComponentLookup;
 import packed.internal.container.ContainerSourceModel;
 import packed.internal.container.PackedContainerConfiguration;
@@ -43,7 +45,7 @@ public final class ComponentModel {
     private final Class<?> componentType;
 
     /** An array of any hook groups defined by the component type. */
-    private final ComponentModelHookGroup[] hookGroups;
+    private final ComponentHookRequest[] hookGroups;
 
     /** The simple name of the component type, typically used for lazy generating a component name. */
     private volatile String simpleName;
@@ -56,7 +58,7 @@ public final class ComponentModel {
      */
     private ComponentModel(ComponentModel.Builder builder) {
         this.componentType = requireNonNull(builder.componentType);
-        this.hookGroups = builder.extensionBuilders.values().stream().map(e -> e.build()).toArray(i -> new ComponentModelHookGroup[i]);
+        this.hookGroups = builder.extensionBuilders.values().stream().map(e -> e.build()).toArray(i -> new ComponentHookRequest[i]);
     }
 
     public <T> ComponentConfiguration<T> addExtensionsToContainer(PackedContainerConfiguration containerConfiguration,
@@ -66,7 +68,7 @@ public final class ComponentModel {
         /// Think they need an order id....
         // Preferable deterministic
         try {
-            for (ComponentModelHookGroup group : hookGroups) {
+            for (ComponentHookRequest group : hookGroups) {
                 group.process(containerConfiguration, componentConfiguration);
             }
         } catch (Throwable e) {
@@ -92,19 +94,29 @@ public final class ComponentModel {
     /** A builder object for a component model. */
     public static final class Builder {
 
-        private final ActivatorMap activatorMap = ActivatorMap.DEFAULT;
+        /** A cache of any extensions a particular annotation activates. */
+        static final ClassValue<Set<Class<? extends Extension>>> EXTENSION_ACTIVATORS = new ClassValue<>() {
+
+            @Override
+            protected Set<Class<? extends Extension>> computeValue(Class<?> type) {
+                UseExtension ae = type.getAnnotation(UseExtension.class);
+                return ae == null ? null : Set.of(ae.value());
+            }
+        };
+
+        private final ActivatorMap activatorMap = null;
 
         /** The type of component we are building a model for. */
         private final Class<?> componentType;
 
-        /** A map of builders for every activated extension. */
-        private final IdentityHashMap<Class<? extends Extension>, ComponentModelHookGroup.Builder> extensionBuilders = new IdentityHashMap<>();
-
         private final ClassProcessor cp;
 
-        public final HookProcessor hookProcessor;
-
         final ContainerSourceModel csm;
+
+        /** A map of builders for every activated extension. */
+        private final IdentityHashMap<Class<? extends Extension>, ComponentHookRequest.Builder> extensionBuilders = new IdentityHashMap<>();
+
+        public final HookProcessor hookProcessor;
 
         /**
          * Creates a new component model builder
@@ -129,11 +141,20 @@ public final class ComponentModel {
         public ComponentModel build() {
             // Look for type annotations
             for (Annotation a : componentType.getAnnotations()) {
-                Class<? extends Extension>[] extensionTypes = activatorMap.onAnnotatedType(a.annotationType());
+                Set<Class<? extends Extension>> extensionTypes = EXTENSION_ACTIVATORS.get(a.annotationType());
                 if (extensionTypes != null) {
                     for (Class<? extends Extension> eType : extensionTypes) {
-                        extensionBuilders.computeIfAbsent(eType, etype -> new ComponentModelHookGroup.Builder(hookProcessor, etype))
-                                .onAnnotatedType(componentType, a);
+                        extensionBuilders.computeIfAbsent(eType, etype -> new ComponentHookRequest.Builder(hookProcessor, etype)).onAnnotatedType(componentType,
+                                a);
+                    }
+                }
+                if (activatorMap != null) {
+                    extensionTypes = activatorMap.onAnnotatedType(a.annotationType());
+                    if (extensionTypes != null) {
+                        for (Class<? extends Extension> eType : extensionTypes) {
+                            extensionBuilders.computeIfAbsent(eType, etype -> new ComponentHookRequest.Builder(hookProcessor, etype))
+                                    .onAnnotatedType(componentType, a);
+                        }
                     }
                 }
             }
@@ -141,23 +162,43 @@ public final class ComponentModel {
             try {
                 cp.findMethodsAndFields(method -> {
                     for (Annotation a : method.getAnnotations()) {
-                        Class<? extends Extension>[] extensionTypes = activatorMap.onAnnotatedField(a.annotationType());
+                        Set<Class<? extends Extension>> extensionTypes = EXTENSION_ACTIVATORS.get(a.annotationType());
                         // See if the component method has any annotations that activates extensions
                         if (extensionTypes != null) {
                             for (Class<? extends Extension> eType : extensionTypes) {
-                                extensionBuilders.computeIfAbsent(eType, etype -> new ComponentModelHookGroup.Builder(hookProcessor, etype))
+                                extensionBuilders.computeIfAbsent(eType, etype -> new ComponentHookRequest.Builder(hookProcessor, etype))
                                         .onAnnotatedMethod(method, a);
+                            }
+                        }
+                        if (activatorMap != null) {
+                            extensionTypes = activatorMap.onAnnotatedMethod(a.annotationType());
+                            // See if the component method has any annotations that activates extensions
+                            if (extensionTypes != null) {
+                                for (Class<? extends Extension> eType : extensionTypes) {
+                                    extensionBuilders.computeIfAbsent(eType, etype -> new ComponentHookRequest.Builder(hookProcessor, etype))
+                                            .onAnnotatedMethod(method, a);
+                                }
                             }
                         }
                     }
                 }, field -> {
                     for (Annotation a : field.getAnnotations()) {
-                        Class<? extends Extension>[] extensionTypes = activatorMap.onAnnotatedMethod(a.annotationType());
+                        Set<Class<? extends Extension>> extensionTypes = EXTENSION_ACTIVATORS.get(a.annotationType());
                         // See if the component method has any annotations that activates extensions
                         if (extensionTypes != null) {
                             for (Class<? extends Extension> eType : extensionTypes) {
-                                extensionBuilders.computeIfAbsent(eType, etype -> new ComponentModelHookGroup.Builder(hookProcessor, etype))
+                                extensionBuilders.computeIfAbsent(eType, etype -> new ComponentHookRequest.Builder(hookProcessor, etype))
                                         .onAnnotatedField(field, a);
+                            }
+                        }
+                        if (activatorMap != null) {
+                            extensionTypes = activatorMap.onAnnotatedField(a.annotationType());
+                            // See if the component method has any annotations that activates extensions
+                            if (extensionTypes != null) {
+                                for (Class<? extends Extension> eType : extensionTypes) {
+                                    extensionBuilders.computeIfAbsent(eType, etype -> new ComponentHookRequest.Builder(hookProcessor, etype))
+                                            .onAnnotatedField(field, a);
+                                }
                             }
                         }
                     }
@@ -171,4 +212,5 @@ public final class ComponentModel {
             return cm;
         }
     }
+
 }

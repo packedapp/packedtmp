@@ -18,8 +18,6 @@ package packed.internal.component;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 
 import app.packed.component.ComponentConfiguration;
@@ -37,12 +35,12 @@ import packed.internal.util.ThrowableUtil;
  * We have a group for a collection of hooks/annotations. A component can have multiple groups.
  */
 // One of these suckers is creates once for each component+Extension combination...
-final class ComponentModelHookGroup extends HookRequest {
+final class ComponentHookRequest extends HookRequest {
 
     /** The type of extension that will be activated. */
     final Class<? extends Extension> extensionType;
 
-    private ComponentModelHookGroup(HookRequest.Builder builder, Class<? extends Extension> extensionType) throws Throwable {
+    private ComponentHookRequest(HookRequest.Builder builder, Class<? extends Extension> extensionType) throws Throwable {
         super(builder);
         this.extensionType = requireNonNull(extensionType);
     }
@@ -59,20 +57,17 @@ final class ComponentModelHookGroup extends HookRequest {
         @Nullable
         private CachedHook<Hook> callback;
 
-        private final HookProcessor hookProcessor;
-
         /** The type of extension that will be activated. */
         private final Class<? extends Extension> extensionType;
 
         public Builder(HookProcessor hookProcessor, Class<? extends Extension> extensionType) {
-            super(ExtensionModel.of(extensionType).hooks());
-            this.hookProcessor = requireNonNull(hookProcessor);
+            super(ExtensionModel.of(extensionType).hooks(), hookProcessor);
             this.extensionType = requireNonNull(extensionType);
         }
 
-        public ComponentModelHookGroup build() {
+        public ComponentHookRequest build() {
             try {
-                return new ComponentModelHookGroup(this, extensionType);
+                return new ComponentHookRequest(this, extensionType);
             } catch (Throwable e) {
                 ThrowableUtil.rethrowErrorOrRuntimeException(e);
                 throw new UndeclaredThrowableException(e);
@@ -83,12 +78,5 @@ final class ComponentModelHookGroup extends HookRequest {
             throw new UnsupportedOperationException();
         }
 
-        public void onAnnotatedField(Field field, Annotation annotation) throws Throwable {
-            onAnnotatedField(hookProcessor, field, annotation);
-        }
-
-        public void onAnnotatedMethod(Method method, Annotation annotation) throws Throwable {
-            onAnnotatedMethod(hookProcessor, method, annotation);
-        }
     }
 }

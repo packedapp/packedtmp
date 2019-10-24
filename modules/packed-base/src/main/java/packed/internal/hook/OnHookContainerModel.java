@@ -22,7 +22,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -106,9 +105,21 @@ public final class OnHookContainerModel {
      * @return the set
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public Set<Class<? extends Annotation>> annotatedFieldHookTypes() {
-        Map<Class<?>, Link> a = allLinks.annotatedFields;
-        return a == null ? Set.of() : (Set) a.keySet();
+    @Nullable
+    public Set<Class<? extends Annotation>> annotatedFieldHooks() {
+        return allLinks == null || allLinks.annotatedFields == null ? null : (Set) allLinks.annotatedFields.keySet();
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Nullable
+    public Set<Class<? extends Annotation>> annotatedMethodHooks() {
+        return allLinks == null || allLinks.annotatedMethods == null ? null : (Set) allLinks.annotatedMethods.keySet();
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Nullable
+    public Set<Class<? extends Annotation>> annotatedTypeHooks() {
+        return allLinks == null || allLinks.annotatedTypes == null ? null : (Set) allLinks.annotatedTypes.keySet();
     }
 
     private Hook.Builder<?> builderOf(Object[] array, int index) throws Throwable {
@@ -145,10 +156,10 @@ public final class OnHookContainerModel {
 
     @Nullable
     public Object process(@Nullable Object parent, ClassProcessor cpTarget, UncheckedThrowableFactory<?> tf) throws Throwable {
-        HookRequest.Builder hb = new HookRequest.Builder(this);
+        HookProcessor hc = new HookProcessor(cpTarget, tf);
+        HookRequest.Builder hb = new HookRequest.Builder(this, hc);
         Object[] array = hb.array;
         array[0] = parent;
-        HookProcessor hc = new HookProcessor(cpTarget, tf);
         cpTarget.findMethodsAndFields(allLinks.annotatedMethods == null ? null : f -> {
             for (Annotation a : f.getAnnotations()) {
                 tryProcesAnnotatedMethod(hc, f, a, hb);
