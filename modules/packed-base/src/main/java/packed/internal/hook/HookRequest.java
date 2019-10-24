@@ -108,12 +108,16 @@ public class HookRequest {
             hooks.tryProcesAnnotatedMethod(hookProcessor, method, annotation, this);
         }
 
-        public void onAnnotatedField(Field field, Annotation annotation) throws Throwable {
+        public final void onAnnotatedField(Field field, Annotation annotation) throws Throwable {
             onAnnotatedField(hookProcessor, field, annotation);
         }
 
-        public void onAnnotatedMethod(Method method, Annotation annotation) throws Throwable {
+        public final void onAnnotatedMethod(Method method, Annotation annotation) throws Throwable {
             onAnnotatedMethod(hookProcessor, method, annotation);
+        }
+
+        public final void onAnnotatedType(Class<?> clazz, Annotation annotation) throws Throwable {
+            throw new UnsupportedOperationException();
         }
     }
 

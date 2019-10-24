@@ -18,6 +18,8 @@ package packed.internal.component;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.IdentityHashMap;
 import java.util.Set;
@@ -63,9 +65,11 @@ public final class ComponentModel {
 
     public <T> ComponentConfiguration<T> addExtensionsToContainer(PackedContainerConfiguration containerConfiguration,
             ComponentConfiguration<T> componentConfiguration) {
+
         // There should probably be some order we call extensions in....
         /// Other first, packed lasts?
         /// Think they need an order id....
+        // Boer vaere lowest dependency id first...
         // Preferable deterministic
         try {
             for (ComponentHookRequest group : hookGroups) {
@@ -141,66 +145,26 @@ public final class ComponentModel {
          */
         public ComponentModel build() {
             // Look for type annotations
-            for (Annotation a : componentType.getAnnotations()) {
-                Set<Class<? extends Extension>> extensionTypes = EXTENSION_ACTIVATORS.get(a.annotationType());
-                if (extensionTypes != null) {
-                    for (Class<? extends Extension> eType : extensionTypes) {
-                        extensionBuilders.computeIfAbsent(eType, etype -> new ComponentHookRequest.Builder(hookProcessor, etype)).onAnnotatedType(componentType,
-                                a);
-                    }
-                }
-                if (activatorMap != null) {
-                    extensionTypes = activatorMap.onAnnotatedType(a.annotationType());
-                    if (extensionTypes != null) {
-                        for (Class<? extends Extension> eType : extensionTypes) {
-                            extensionBuilders.computeIfAbsent(eType, etype -> new ComponentHookRequest.Builder(hookProcessor, etype))
-                                    .onAnnotatedType(componentType, a);
-                        }
-                    }
-                }
-            }
-
             try {
+                for (Annotation a : componentType.getAnnotations()) {
+                    onAnnotatedType(a, EXTENSION_ACTIVATORS.get(a.annotationType()));
+                    if (activatorMap != null) {
+                        onAnnotatedType(a, activatorMap.onAnnotatedType(a.annotationType()));
+                    }
+                }
+
                 cp.findMethodsAndFields(method -> {
                     for (Annotation a : method.getAnnotations()) {
-                        Set<Class<? extends Extension>> extensionTypes = EXTENSION_ACTIVATORS.get(a.annotationType());
-                        // See if the component method has any annotations that activates extensions
-                        if (extensionTypes != null) {
-                            for (Class<? extends Extension> eType : extensionTypes) {
-                                extensionBuilders.computeIfAbsent(eType, etype -> new ComponentHookRequest.Builder(hookProcessor, etype))
-                                        .onAnnotatedMethod(method, a);
-                            }
-                        }
+                        onAnnotatedMethod(a, method, EXTENSION_ACTIVATORS.get(a.annotationType()));
                         if (activatorMap != null) {
-                            extensionTypes = activatorMap.onAnnotatedMethod(a.annotationType());
-                            // See if the component method has any annotations that activates extensions
-                            if (extensionTypes != null) {
-                                for (Class<? extends Extension> eType : extensionTypes) {
-                                    extensionBuilders.computeIfAbsent(eType, etype -> new ComponentHookRequest.Builder(hookProcessor, etype))
-                                            .onAnnotatedMethod(method, a);
-                                }
-                            }
+                            onAnnotatedMethod(a, method, activatorMap.onAnnotatedMethod(a.annotationType()));
                         }
                     }
                 }, field -> {
                     for (Annotation a : field.getAnnotations()) {
-                        Set<Class<? extends Extension>> extensionTypes = EXTENSION_ACTIVATORS.get(a.annotationType());
-                        // See if the component method has any annotations that activates extensions
-                        if (extensionTypes != null) {
-                            for (Class<? extends Extension> eType : extensionTypes) {
-                                extensionBuilders.computeIfAbsent(eType, etype -> new ComponentHookRequest.Builder(hookProcessor, etype))
-                                        .onAnnotatedField(field, a);
-                            }
-                        }
+                        onAnnotatedField(a, field, EXTENSION_ACTIVATORS.get(a.annotationType()));
                         if (activatorMap != null) {
-                            extensionTypes = activatorMap.onAnnotatedField(a.annotationType());
-                            // See if the component method has any annotations that activates extensions
-                            if (extensionTypes != null) {
-                                for (Class<? extends Extension> eType : extensionTypes) {
-                                    extensionBuilders.computeIfAbsent(eType, etype -> new ComponentHookRequest.Builder(hookProcessor, etype))
-                                            .onAnnotatedField(field, a);
-                                }
-                            }
+                            onAnnotatedField(a, field, activatorMap.onAnnotatedMethod(a.annotationType()));
                         }
                     }
                 });
@@ -212,6 +176,29 @@ public final class ComponentModel {
             hookProcessor.close();
             return cm;
         }
-    }
 
+        private void onAnnotatedType(Annotation a, Set<Class<? extends Extension>> extensionTypes) throws Throwable {
+            if (extensionTypes != null) {
+                for (Class<? extends Extension> eType : extensionTypes) {
+                    extensionBuilders.computeIfAbsent(eType, etype -> new ComponentHookRequest.Builder(hookProcessor, etype)).onAnnotatedType(componentType, a);
+                }
+            }
+        }
+
+        private void onAnnotatedField(Annotation a, Field field, Set<Class<? extends Extension>> extensionTypes) throws Throwable {
+            if (extensionTypes != null) {
+                for (Class<? extends Extension> eType : extensionTypes) {
+                    extensionBuilders.computeIfAbsent(eType, etype -> new ComponentHookRequest.Builder(hookProcessor, etype)).onAnnotatedField(field, a);
+                }
+            }
+        }
+
+        private void onAnnotatedMethod(Annotation a, Method method, Set<Class<? extends Extension>> extensionTypes) throws Throwable {
+            if (extensionTypes != null) {
+                for (Class<? extends Extension> eType : extensionTypes) {
+                    extensionBuilders.computeIfAbsent(eType, etype -> new ComponentHookRequest.Builder(hookProcessor, etype)).onAnnotatedMethod(method, a);
+                }
+            }
+        }
+    }
 }

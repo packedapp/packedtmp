@@ -55,6 +55,8 @@ public final class OnHookContainerModel {
 
     final ImmutableOnHookMap<Link> rootLinks;
 
+    final boolean isHookTop;
+
     OnHookContainerModel(OnHookContainerModelBuilder b) {
         Function<TinyPairNode<Node, MethodHandle>, Link> ff = e -> {
             Link l = null;
@@ -73,7 +75,6 @@ public final class OnHookContainerModel {
 
         this.customHooks = new Link[b.stack.size()];
         this.builderConstructors = new MethodHandle[b.stack.size()];
-
         List<OnHookContainerModelBuilder.Node> list = List.copyOf(b.stack);
         if (DEBUG) {
             for (int i = 0; i < list.size(); i++) {
@@ -102,6 +103,7 @@ public final class OnHookContainerModel {
                 }
             }
         }
+        isHookTop = builderConstructors[0] != null;
     }
 
     /**
@@ -190,7 +192,7 @@ public final class OnHookContainerModel {
 
     public void tryProcesAnnotatedField(HookProcessor hc, Field field, Annotation annotation, HookRequest.Builder hr) throws Throwable {
         for (Link link = allLinks.annotatedFields.get(annotation.annotationType()); link != null; link = link.next) {
-            if (link.index == 0) {
+            if (link.index == 0 && !isHookTop) {
                 hr.delayedFields.add(new DelayedAnnotatedField(hc.cp, field, annotation, link.mh));
             } else {
                 Hook.Builder<?> builder = builderOf(hr.array, link.index);
@@ -202,7 +204,7 @@ public final class OnHookContainerModel {
 
     public void tryProcesAnnotatedMethod(HookProcessor hc, Method method, Annotation annotation, HookRequest.Builder hr) throws Throwable {
         for (Link link = allLinks.annotatedMethods.get(annotation.annotationType()); link != null; link = link.next) {
-            if (link.index == 0) {
+            if (link.index == 0 && !isHookTop) {
                 hr.delayedMethods.add(new DelayedAnnotatedMethod(hc.cp, method, annotation, link.mh));
             } else {
                 Hook.Builder<?> builder = builderOf(hr.array, link.index);

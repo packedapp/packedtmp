@@ -38,7 +38,6 @@ public class WwTest extends BaseBundle {
     @Override
     protected void configure() {
         install(Comp1.class);
-
     }
 
     @OnHook

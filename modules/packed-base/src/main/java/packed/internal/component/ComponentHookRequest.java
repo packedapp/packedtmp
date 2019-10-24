@@ -17,7 +17,6 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.UndeclaredThrowableException;
 
 import app.packed.component.ComponentConfiguration;
@@ -46,9 +45,7 @@ final class ComponentHookRequest extends HookRequest {
     }
 
     void process(PackedContainerConfiguration containerConfiguration, ComponentConfiguration<?> componentConfiguration) throws Throwable {
-        // First make sure the extension is activated
         Extension e = containerConfiguration.use(extensionType);
-
         invokeIt(e, componentConfiguration);
     }
 
@@ -73,10 +70,5 @@ final class ComponentHookRequest extends HookRequest {
                 throw new UndeclaredThrowableException(e);
             }
         }
-
-        public void onAnnotatedType(Class<?> clazz, Annotation annotation) {
-            throw new UnsupportedOperationException();
-        }
-
     }
 }
