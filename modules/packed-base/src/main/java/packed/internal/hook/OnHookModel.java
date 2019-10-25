@@ -31,8 +31,7 @@ import app.packed.hook.Hook;
 import app.packed.hook.Hook.Builder;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
-import packed.internal.hook.HookRequest.DelayedAnnotatedField;
-import packed.internal.hook.HookRequest.DelayedAnnotatedMethod;
+import packed.internal.hook.HookRequest.DelayedAnnotatedMember;
 import packed.internal.hook.OnHookModelBuilder.Node;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ClassProcessor;
@@ -162,7 +161,7 @@ public final class OnHookModel {
     void tryProcesAnnotatedField(HookRequest.Builder hr, Field field, Annotation annotation) throws Throwable {
         for (Link link = allLinks.annotatedFields.get(annotation.annotationType()); link != null; link = link.next) {
             if (link.index == 0 && !isHookTop) {
-                hr.delayedFields.add(new DelayedAnnotatedField(hr.hookProcessor.cp, field, annotation, link.mh));
+                hr.delayedFields.add(new DelayedAnnotatedMember<>(hr.hookProcessor.cp, field, annotation, link.mh));
             } else {
                 Hook.Builder<?> builder = builderOf(hr.array, link.index);
                 AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(hr.hookProcessor, field, annotation);
@@ -178,7 +177,7 @@ public final class OnHookModel {
     void tryProcesAnnotatedMethod(HookRequest.Builder hr, Method method, Annotation annotation) throws Throwable {
         for (Link link = allLinks.annotatedMethods.get(annotation.annotationType()); link != null; link = link.next) {
             if (link.index == 0 && !isHookTop) {
-                hr.delayedMethods.add(new DelayedAnnotatedMethod(hr.hookProcessor.cp, method, annotation, link.mh));
+                hr.delayedMethods.add(new DelayedAnnotatedMember<>(hr.hookProcessor.cp, method, annotation, link.mh));
             } else {
                 Hook.Builder<?> builder = builderOf(hr.array, link.index);
                 AnnotatedMethodHook<Annotation> hook = ModuleAccess.hook().newAnnotatedMethodHook(hr.hookProcessor, method, annotation);

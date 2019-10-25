@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,9 +41,9 @@ public final class HookRequest {
     /** A list of custom hook callbacks for the particular extension. */
     final TinyPair<Hook, MethodHandle> customHooksCallback;
 
-    final List<DelayedAnnotatedField> delayedFields;
+    final List<DelayedAnnotatedMember<Field>> delayedFields;
 
-    final List<DelayedAnnotatedMethod> delayedMethods;
+    final List<DelayedAnnotatedMember<Method>> delayedMethods;
 
     protected HookRequest(HookRequest.Builder builder) throws Throwable {
         this.customHooksCallback = builder.onHookModel.compute(builder.array);
@@ -61,10 +62,10 @@ public final class HookRequest {
                 mh.invoke(target, hook, additional);
             }
         }
-        for (DelayedAnnotatedField m : delayedFields) {
+        for (DelayedAnnotatedMember<Field> m : delayedFields) {
             try (HookTargetProcessor hp = new HookTargetProcessor(m.cp.copy(), UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
                 MethodHandle mh = m.mh;
-                AnnotatedFieldHook<Annotation> amh = ModuleAccess.hook().newAnnotatedFieldHook(hp, m.field, m.annotation);
+                AnnotatedFieldHook<Annotation> amh = ModuleAccess.hook().newAnnotatedFieldHook(hp, m.member, m.annotation);
                 if (mh.type().parameterCount() == 2) {
                     mh.invoke(target, amh);
                 } else {
@@ -72,10 +73,10 @@ public final class HookRequest {
                 }
             }
         }
-        for (DelayedAnnotatedMethod m : delayedMethods) {
+        for (DelayedAnnotatedMember<Method> m : delayedMethods) {
             try (HookTargetProcessor hp = new HookTargetProcessor(m.cp.copy(), UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
                 MethodHandle mh = m.mh;
-                AnnotatedMethodHook<Annotation> amh = ModuleAccess.hook().newAnnotatedMethodHook(hp, m.method, m.annotation);
+                AnnotatedMethodHook<Annotation> amh = ModuleAccess.hook().newAnnotatedMethodHook(hp, m.member, m.annotation);
                 if (mh.type().parameterCount() == 2) {
                     mh.invoke(target, amh);
                 } else {
@@ -89,9 +90,9 @@ public final class HookRequest {
 
         final Object[] array;
 
-        List<DelayedAnnotatedField> delayedFields = new ArrayList<>();
+        List<DelayedAnnotatedMember<Field>> delayedFields = new ArrayList<>();
 
-        List<DelayedAnnotatedMethod> delayedMethods = new ArrayList<>();
+        List<DelayedAnnotatedMember<Method>> delayedMethods = new ArrayList<>();
 
         final HookTargetProcessor hookProcessor;
 
@@ -135,39 +136,18 @@ public final class HookRequest {
         }
     }
 
-    static class DelayedAnnotatedField {
+    static class DelayedAnnotatedMember<T extends Member> {
         final Annotation annotation;
         final ClassProcessor cp;
-        final Field field;
+        final T member;
         final MethodHandle mh;
 
-        DelayedAnnotatedField(ClassProcessor cp, Field field, Annotation annotation, MethodHandle mh) {
+        DelayedAnnotatedMember(ClassProcessor cp, T member, Annotation annotation, MethodHandle mh) {
             this.cp = requireNonNull(cp);
-            this.field = requireNonNull(field);
+            this.member = requireNonNull(member);
             this.annotation = requireNonNull(annotation);
             this.mh = requireNonNull(mh);
         }
-
-        public AnnotatedFieldHook<Annotation> toHook(HookTargetProcessor hookProcessor) {
-            return ModuleAccess.hook().newAnnotatedFieldHook(hookProcessor, field, annotation);
-        }
     }
 
-    static class DelayedAnnotatedMethod {
-        final Annotation annotation;
-        final ClassProcessor cp;
-        final Method method;
-        final MethodHandle mh;
-
-        DelayedAnnotatedMethod(ClassProcessor cp, Method method, Annotation annotation, MethodHandle mh) {
-            this.cp = requireNonNull(cp);
-            this.method = requireNonNull(method);
-            this.annotation = requireNonNull(annotation);
-            this.mh = requireNonNull(mh);
-        }
-
-        public AnnotatedMethodHook<Annotation> toHook(HookTargetProcessor hookProcessor) {
-            return ModuleAccess.hook().newAnnotatedMethodHook(hookProcessor, method, annotation);
-        }
-    }
 }
