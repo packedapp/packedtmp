@@ -18,11 +18,16 @@ package app.packed.hook;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.UndeclaredThrowableException;
 
 import app.packed.container.InternalExtensionException;
 import app.packed.lang.Nullable;
-import packed.internal.hook.UseIt2;
+import packed.internal.hook.HookRequest;
+import packed.internal.hook.HookTargetProcessor;
+import packed.internal.hook.OnHookModel;
 import packed.internal.reflect.ClassProcessor;
+import packed.internal.util.ThrowableUtil;
+import packed.internal.util.UncheckedThrowableFactory;
 
 /**
  * A marker interface
@@ -71,6 +76,7 @@ public interface Hook {
          * @throws AssertionError
          *             if something went wrong
          */
+        @SuppressWarnings("unchecked")
         @Nullable
         static <T extends Hook> T test(Lookup caller, Class<T> hookType, Class<?> target) {
             requireNonNull(caller, "caller is null");
@@ -79,9 +85,22 @@ public interface Hook {
 
             ClassProcessor cpHook = new ClassProcessor(caller, hookType, false);
             ClassProcessor cpTarget = new ClassProcessor(caller, target, false);
-
             try {
-                return UseIt2.test(cpHook, cpTarget);
+
+                HookTargetProcessor hc = new HookTargetProcessor(cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR);
+                HookRequest.Builder hb = new HookRequest.Builder(OnHookModel.newInstance(cpHook), hc);
+                try {
+                    return (T) hb.singleConsume(cpTarget);
+                } catch (InternalExtensionException ee) {
+                    AssertionError ar = new AssertionError(ee.getMessage());
+                    ar.setStackTrace(ee.getStackTrace());
+                    throw ar;
+                } catch (Throwable t) {
+                    ThrowableUtil.rethrowErrorOrRuntimeException(t);
+                    throw new UndeclaredThrowableException(t);
+                } finally {
+                    hc.close();
+                }
             } catch (InternalExtensionException ee) {
                 AssertionError ar = new AssertionError(ee.getMessage());
                 ar.setStackTrace(ee.getStackTrace());

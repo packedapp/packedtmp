@@ -104,8 +104,10 @@ public class HookRequest {
             this.hookProcessor = requireNonNull(hookProcessor);
         }
 
-        void compute() throws Throwable {
+        Object compute() throws Throwable {
             hooks.compute(array);
+            Object a = array[0];
+            return a == null ? null : (((Hook.Builder<?>) a).build());
         }
 
         private void onAnnotatedField(HookTargetProcessor hookProcessor, Field field, Annotation annotation) throws Throwable {
@@ -128,7 +130,7 @@ public class HookRequest {
             throw new UnsupportedOperationException();
         }
 
-        void processMembers(ClassProcessor cp) throws Throwable {
+        public Object singleConsume(ClassProcessor cp) throws Throwable {
             cp.findMethodsAndFields(hooks.allLinks.annotatedMethods == null ? null : f -> {
                 for (Annotation a : f.getAnnotations()) {
                     hooks.tryProcesAnnotatedMethod(hookProcessor, f, a, this);
@@ -138,6 +140,7 @@ public class HookRequest {
                     hooks.tryProcesAnnotatedField(hookProcessor, f, a, this);
                 }
             });
+            return compute();
         }
     }
 
