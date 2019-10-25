@@ -122,6 +122,8 @@ public final class DependencyManager {
         DependencyCycleDetector.dependencyCyclesDetect(detectCyclesFor);
     }
 
+    private final IdentityHashMap<Class<? extends Extension>, BuildEntry<? extends Extension>> extensionEntries = new IdentityHashMap<>();
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private void resolveAllDependencies() {
         detectCyclesFor = new ArrayList<>();
@@ -142,7 +144,9 @@ public final class DependencyManager {
                                     Class<? extends Extension> cc = op.get();
                                     if (cc == k.typeLiteral().type()) {
                                         PackedExtensionContext e = ((PackedExtensionContext) node.context()).container().getExtension(cc);
-                                        resolveTo = e.serviceEntry(node);
+                                        resolveTo = extensionEntries.computeIfAbsent(e.type(), kk -> new RuntimeAdaptorEntry(node,
+                                                new SingletonInjectorEntry<Extension>(ConfigSite.UNKNOWN, (Key) Key.of(e.type()), null, e.extension())));
+
                                     }
                                 }
                             }

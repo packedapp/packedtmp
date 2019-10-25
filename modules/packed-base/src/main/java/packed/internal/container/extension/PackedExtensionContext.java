@@ -24,14 +24,9 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 import app.packed.container.InternalExtensionException;
-import app.packed.lang.Key;
 import app.packed.lang.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.moduleaccess.ModuleAccess;
-import packed.internal.service.build.BuildEntry;
-import packed.internal.service.build.ServiceExtensionNode;
-import packed.internal.service.build.service.RuntimeAdaptorEntry;
-import packed.internal.service.run.SingletonInjectorEntry;
 
 /** The default implementation of {@link ExtensionContext} with addition methods only available inside this module. */
 public final class PackedExtensionContext implements ExtensionContext {
@@ -48,10 +43,6 @@ public final class PackedExtensionContext implements ExtensionContext {
 
     /** The configuration of the container the extension is registered in. */
     private final PackedContainerConfiguration pcc;
-
-    /** A service build entry, if this extension is source of any form of dependency injection. */
-    @Nullable
-    private BuildEntry<? extends Extension> serviceEntry;
 
     /**
      * Creates a new extension context.
@@ -174,20 +165,12 @@ public final class PackedExtensionContext implements ExtensionContext {
         return extensionModel;
     }
 
+    /** Invoked by the container configuration, whenever the extension is configured. */
     public void onConfigured() {
         if (extensionModel.onConfigured != null) {
             extensionModel.onConfigured.accept(extension);
         }
         isConfigured = true;
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public BuildEntry<? extends Extension> serviceEntry(ServiceExtensionNode sen) {
-        BuildEntry<? extends Extension> e = serviceEntry;
-        if (e == null) {
-            e = serviceEntry = new RuntimeAdaptorEntry(sen, new SingletonInjectorEntry<Extension>(ConfigSite.UNKNOWN, (Key) Key.of(type()), null, extension));
-        }
-        return e;
     }
 
     /**
