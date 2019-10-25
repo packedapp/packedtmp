@@ -25,13 +25,14 @@ import java.util.IdentityHashMap;
 import java.util.Set;
 
 import app.packed.component.ComponentConfiguration;
+import app.packed.container.ContainerSource;
 import app.packed.container.Extension;
 import app.packed.hook.OnHook;
 import packed.internal.container.ContainerSourceModel;
-import packed.internal.container.extension.ActivatorMap;
+import packed.internal.container.extension.CustomExtensionHooksMap;
 import packed.internal.container.extension.ExtensionModel;
-import packed.internal.hook.HookTargetProcessor;
 import packed.internal.hook.HookRequest;
+import packed.internal.hook.HookTargetProcessor;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.UncheckedThrowableFactory;
@@ -51,6 +52,8 @@ public final class ComponentModel {
     /** The simple name of the component type, typically used for lazy generating a component name. (Racy) */
     private String simpleName;
 
+    private final HookRequest sourceHook;
+
     /**
      * Creates a new descriptor.
      * 
@@ -59,6 +62,13 @@ public final class ComponentModel {
      */
     private ComponentModel(ComponentModel.Builder builder) {
         this.componentType = requireNonNull(builder.cp.clazz());
+
+        try {
+            this.sourceHook = builder.sourceHook == null ? null : builder.sourceHook.build();
+        } catch (Throwable ee) {
+            ThrowableUtil.rethrowErrorOrRuntimeException(ee);
+            throw new UndeclaredThrowableException(ee);
+        }
 
         // There should probably be some order we call extensions in....
         /// Other first, packed lasts?
@@ -91,8 +101,14 @@ public final class ComponentModel {
         return s;
     }
 
-    <T> ComponentConfiguration<T> invokeOnHookOnInstall(AbstractComponentConfiguration<T> acc) {
+    <T> ComponentConfiguration<T> invokeOnHookOnInstall(ContainerSource cs, AbstractComponentConfiguration<T> acc) {
         try {
+            // First invoke any OnHook methods on the container source (bundle)
+            if (sourceHook != null) {
+                sourceHook.invokeIt(cs, acc);
+            }
+
+            // Next, invoke any OnHook methods on relevant extensions.
             for (ExtensionRequestPair he : extensionHooks) {
                 // Finds (possible installing) the extension with @OnHook methods
                 Extension extension = acc.container.use(he.extensionType);
@@ -108,7 +124,7 @@ public final class ComponentModel {
     }
 
     /**
-     * Creates a new component model.
+     * Creates a new component model instance.
      * 
      * @param csm
      *            a model of the container source that is trying to install the component
@@ -116,19 +132,21 @@ public final class ComponentModel {
      *            a class processor usable by hooks
      * @return a model of the component
      */
-    public static ComponentModel createNew(ContainerSourceModel csm, ClassProcessor cp) {
+    public static ComponentModel newInstance(ContainerSourceModel csm, ClassProcessor cp) {
         return new Builder(csm, cp).build();
     }
 
     /** A builder object for a component model. */
     private static final class Builder {
 
-        private final ActivatorMap activatorMap;
+        private final CustomExtensionHooksMap activatorMap;
 
         private final ClassProcessor cp;
 
         /** A map of builders for every activated extension. */
         private final IdentityHashMap<Class<? extends Extension>, HookRequest.Builder> extensionBuilders = new IdentityHashMap<>();
+
+        HookRequest.Builder sourceHook;
 
         /**
          * Creates a new component model builder
@@ -149,23 +167,24 @@ public final class ComponentModel {
          */
         private ComponentModel build() {
             Class<?> componentType = cp.clazz();
+
             try (HookTargetProcessor htp = new HookTargetProcessor(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
                 for (Annotation a : componentType.getAnnotations()) {
-                    onAnnotatedType(htp, componentType, a, ActivatorMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
+                    onAnnotatedType(htp, componentType, a, CustomExtensionHooksMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
                     if (activatorMap != null) {
                         onAnnotatedType(htp, componentType, a, activatorMap.onAnnotatedType(a.annotationType()));
                     }
                 }
                 cp.findMethodsAndFields(method -> {
                     for (Annotation a : method.getAnnotations()) {
-                        onAnnotatedMethod(htp, a, method, ActivatorMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
+                        onAnnotatedMethod(htp, a, method, CustomExtensionHooksMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
                         if (activatorMap != null) {
                             onAnnotatedMethod(htp, a, method, activatorMap.onAnnotatedMethod(a.annotationType()));
                         }
                     }
                 }, field -> {
                     for (Annotation a : field.getAnnotations()) {
-                        onAnnotatedField(htp, a, field, ActivatorMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
+                        onAnnotatedField(htp, a, field, CustomExtensionHooksMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
                         if (activatorMap != null) {
                             onAnnotatedField(htp, a, field, activatorMap.onAnnotatedMethod(a.annotationType()));
                         }
@@ -178,7 +197,8 @@ public final class ComponentModel {
             return new ComponentModel(this);
         }
 
-        private void onAnnotatedField(HookTargetProcessor hookProcessor, Annotation a, Field field, Set<Class<? extends Extension>> extensionTypes) throws Throwable {
+        private void onAnnotatedField(HookTargetProcessor hookProcessor, Annotation a, Field field, Set<Class<? extends Extension>> extensionTypes)
+                throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
                     extensionBuilders.computeIfAbsent(eType, etype -> new HookRequest.Builder(ExtensionModel.of(etype).hooks(), hookProcessor))

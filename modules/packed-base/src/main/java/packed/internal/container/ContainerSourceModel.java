@@ -26,7 +26,7 @@ import app.packed.container.ContainerSource;
 import app.packed.hook.Hook;
 import app.packed.lang.InvalidDeclarationException;
 import packed.internal.component.ComponentModel;
-import packed.internal.container.extension.ActivatorMap;
+import packed.internal.container.extension.CustomExtensionHooksMap;
 import packed.internal.hook.OnHookContainerModel;
 import packed.internal.hook.OnHookContainerModelBuilder;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
@@ -54,7 +54,7 @@ public final class ContainerSourceModel implements ComponentLookup {
 
         @Override
         protected ComponentModel computeValue(Class<?> type) {
-            return ComponentModel.createNew(ContainerSourceModel.this, ContainerSourceModel.this.newClassProcessor(type, true));
+            return ComponentModel.newInstance(ContainerSourceModel.this, ContainerSourceModel.this.newClassProcessor(type, true));
         }
     };
 
@@ -91,10 +91,10 @@ public final class ContainerSourceModel implements ComponentLookup {
                 ContainerConfiguration.class);
         hooks = builder.build();
 
-        activatorMap = ActivatorMap.of(sourceType);
+        activatorMap = CustomExtensionHooksMap.of(sourceType);
     }
 
-    public final ActivatorMap activatorMap;
+    public final CustomExtensionHooksMap activatorMap;
 
     /** {@inheritDoc} */
     @Override
@@ -150,7 +150,7 @@ public final class ContainerSourceModel implements ComponentLookup {
 
             @Override
             protected ComponentModel computeValue(Class<?> type) {
-                return ComponentModel.createNew(parent, PerLookup.this.newClassProcessor(type, true));
+                return ComponentModel.newInstance(parent, PerLookup.this.newClassProcessor(type, true));
             }
         };
 

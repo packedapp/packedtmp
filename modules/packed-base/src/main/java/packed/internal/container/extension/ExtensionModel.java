@@ -120,8 +120,8 @@ public final class ExtensionModel<E extends Extension> {
         this.optional = Optional.of(extensionType); // No need to create an optional every time we need this
 
         this.hooks = builder.hooks.build();
-        this.nonActivatingHooks = DefaultHookUsage.ofOrNull(ActivatorMap.findNonAutoExtending(hooks.annotatedFieldHooks()),
-                ActivatorMap.findNonAutoExtending(hooks.annotatedMethodHooks()), ActivatorMap.findNonAutoExtending(hooks.annotatedTypeHooks()));
+        this.nonActivatingHooks = DefaultHookUsage.ofOrNull(CustomExtensionHooksMap.findNonAutoExtending(hooks.annotatedFieldHooks()),
+                CustomExtensionHooksMap.findNonAutoExtending(hooks.annotatedMethodHooks()), CustomExtensionHooksMap.findNonAutoExtending(hooks.annotatedTypeHooks()));
 
     }
 

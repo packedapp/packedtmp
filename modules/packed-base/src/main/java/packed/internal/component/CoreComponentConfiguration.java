@@ -18,6 +18,7 @@ package packed.internal.component;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
+import app.packed.container.ContainerSource;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.container.PackedContainerConfiguration;
 
@@ -53,8 +54,8 @@ public abstract class CoreComponentConfiguration<T> extends AbstractComponentCon
         return this;
     }
 
-    public CoreComponentConfiguration<T> runHooks() {
-        model.invokeOnHookOnInstall(this);
+    public CoreComponentConfiguration<T> runHooks(ContainerSource source) {
+        model.invokeOnHookOnInstall(source, this);
         return this;
     }
 }
