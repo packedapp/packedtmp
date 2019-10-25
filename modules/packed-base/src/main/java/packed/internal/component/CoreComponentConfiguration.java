@@ -52,4 +52,9 @@ public abstract class CoreComponentConfiguration<T> extends AbstractComponentCon
         super.setName(name);
         return this;
     }
+
+    public CoreComponentConfiguration<T> runHooks() {
+        model.invokeOnHookOnInstall(this);
+        return this;
+    }
 }

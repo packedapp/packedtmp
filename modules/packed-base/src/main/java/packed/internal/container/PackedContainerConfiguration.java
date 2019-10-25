@@ -307,17 +307,17 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     public <T> ComponentConfiguration<T> install(Factory<T> factory, ConfigSite configSite) {
         ComponentModel model = lookup.componentModelOf(factory.rawType());
         installPrepare(State.INSTALL_INVOKED);
-        FactoryComponentConfiguration<T> cc = new FactoryComponentConfiguration<T>(configSite, this, model, factory);
+        CoreComponentConfiguration<T> cc = new FactoryComponentConfiguration<T>(configSite, this, model, factory);
         currentComponent = cc;
-        return model.invokeOnHookOnInstall(cc);
+        return cc.runHooks();
     }
 
     public <T> ComponentConfiguration<T> installInstance(T instance, ConfigSite configSite) {
         ComponentModel model = lookup.componentModelOf(instance.getClass());
         installPrepare(State.INSTALL_INVOKED);
-        InstantiatedComponentConfiguration<T> cc = new InstantiatedComponentConfiguration<T>(configSite, this, model, instance);
+        CoreComponentConfiguration<T> cc = new InstantiatedComponentConfiguration<T>(configSite, this, model, instance);
         currentComponent = cc;
-        return model.invokeOnHookOnInstall(cc);
+        return cc.runHooks();
     }
 
     private void installPrepare(State state) {
@@ -334,9 +334,9 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     public <T> ComponentConfiguration<T> installStatic(Class<T> implementation, ConfigSite configSite) {
         ComponentModel descriptor = lookup.componentModelOf(implementation);
         installPrepare(State.INSTALL_INVOKED);
-        StaticComponentConfiguration<T> cc = new StaticComponentConfiguration<T>(configSite, this, descriptor, implementation);
+        CoreComponentConfiguration<T> cc = new StaticComponentConfiguration<T>(configSite, this, descriptor, implementation);
         currentComponent = cc;
-        return descriptor.invokeOnHookOnInstall(cc);
+        return cc.runHooks();
     }
 
     /** {@inheritDoc} */

@@ -32,12 +32,12 @@ import packed.internal.util.tiny.Linked;
 public final class ActivatorMap {
 
     /** A cache of any extensions a particular annotation activates. */
-    static final ClassValue<Class<? extends Extension>[]> EXTENSION_ACTIVATORS = new ClassValue<>() {
+    public static final ClassValue<Set<Class<? extends Extension>>> EXTENSION_ACTIVATORS = new ClassValue<>() {
 
         @Override
-        protected Class<? extends Extension>[] computeValue(Class<?> type) {
+        protected Set<Class<? extends Extension>> computeValue(Class<?> type) {
             UseExtension ae = type.getAnnotation(UseExtension.class);
-            return ae == null ? null : ae.value();
+            return ae == null ? null : Set.of(ae.value());
         }
     };
 

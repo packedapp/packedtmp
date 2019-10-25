@@ -26,7 +26,6 @@ import java.util.Set;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.Extension;
-import app.packed.container.UseExtension;
 import app.packed.hook.OnHook;
 import packed.internal.container.ComponentLookup;
 import packed.internal.container.ContainerSourceModel;
@@ -44,14 +43,14 @@ import packed.internal.util.UncheckedThrowableFactory;
  */
 public final class ComponentModel {
 
-    /** The component type. */
+    /** The type of component this is a model for. */
     private final Class<?> componentType;
 
     /** An array of any extensions with relevant {@link OnHook} methods. */
     private final ExtensionRequestPair[] extensionHooks;
 
-    /** The simple name of the component type, typically used for lazy generating a component name. */
-    private volatile String simpleName;
+    /** The simple name of the component type, typically used for lazy generating a component name. (Racy) */
+    private String simpleName;
 
     /**
      * Creates a new descriptor.
@@ -85,7 +84,7 @@ public final class ComponentModel {
      * 
      * @return the default prefix for the component, if no name is explicitly set by the user
      */
-    public String defaultPrefix() {
+    String defaultPrefix() {
         String s = simpleName;
         if (s == null) {
             s = simpleName = componentType.getSimpleName();
@@ -93,7 +92,7 @@ public final class ComponentModel {
         return s;
     }
 
-    public <T> ComponentConfiguration<T> invokeOnHookOnInstall(AbstractComponentConfiguration<T> acc) {
+    <T> ComponentConfiguration<T> invokeOnHookOnInstall(AbstractComponentConfiguration<T> acc) {
         try {
             for (ExtensionRequestPair he : extensionHooks) {
                 // Finds (possible installing) the extension with @OnHook methods
@@ -109,18 +108,12 @@ public final class ComponentModel {
         return acc;
     }
 
+    public static ComponentModel of(ContainerSourceModel csm, ComponentLookup lookup, Class<?> componentType) {
+        return new Builder(csm, lookup, componentType).build();
+    }
+
     /** A builder object for a component model. */
-    public static final class Builder {
-
-        /** A cache of any extensions a particular annotation activates. */
-        static final ClassValue<Set<Class<? extends Extension>>> EXTENSION_ACTIVATORS = new ClassValue<>() {
-
-            @Override
-            protected Set<Class<? extends Extension>> computeValue(Class<?> type) {
-                UseExtension ae = type.getAnnotation(UseExtension.class);
-                return ae == null ? null : Set.of(ae.value());
-            }
-        };
+    private static final class Builder {
 
         private final ActivatorMap activatorMap;
 
@@ -129,12 +122,12 @@ public final class ComponentModel {
 
         private final ClassProcessor cp;
 
-        final ContainerSourceModel csm;
+        // final ContainerSourceModel csm;
 
         /** A map of builders for every activated extension. */
         private final IdentityHashMap<Class<? extends Extension>, HookRequest.Builder> extensionBuilders = new IdentityHashMap<>();
 
-        public final HookProcessor hookProcessor;
+        private final HookProcessor hookProcessor;
 
         /**
          * Creates a new component model builder
@@ -144,11 +137,11 @@ public final class ComponentModel {
          * @param componentType
          *            the type of component
          */
-        public Builder(ContainerSourceModel csm, ComponentLookup lookup, Class<?> componentType) {
+        private Builder(ContainerSourceModel csm, ComponentLookup lookup, Class<?> componentType) {
             this.cp = lookup.newClassProcessor(componentType, true);
             this.componentType = requireNonNull(componentType);
             this.hookProcessor = new HookProcessor(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-            this.csm = requireNonNull(csm);
+            /// this.csm = requireNonNull(csm);
             this.activatorMap = csm.activatorMap;
         }
 
@@ -157,11 +150,11 @@ public final class ComponentModel {
          * 
          * @return a new model
          */
-        public ComponentModel build() {
+        private ComponentModel build() {
             // Look for type annotations
             try {
                 for (Annotation a : componentType.getAnnotations()) {
-                    onAnnotatedType(a, EXTENSION_ACTIVATORS.get(a.annotationType()));
+                    onAnnotatedType(a, ActivatorMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
                     if (activatorMap != null) {
                         onAnnotatedType(a, activatorMap.onAnnotatedType(a.annotationType()));
                     }
@@ -169,14 +162,14 @@ public final class ComponentModel {
 
                 cp.findMethodsAndFields(method -> {
                     for (Annotation a : method.getAnnotations()) {
-                        onAnnotatedMethod(a, method, EXTENSION_ACTIVATORS.get(a.annotationType()));
+                        onAnnotatedMethod(a, method, ActivatorMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
                         if (activatorMap != null) {
                             onAnnotatedMethod(a, method, activatorMap.onAnnotatedMethod(a.annotationType()));
                         }
                     }
                 }, field -> {
                     for (Annotation a : field.getAnnotations()) {
-                        onAnnotatedField(a, field, EXTENSION_ACTIVATORS.get(a.annotationType()));
+                        onAnnotatedField(a, field, ActivatorMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
                         if (activatorMap != null) {
                             onAnnotatedField(a, field, activatorMap.onAnnotatedMethod(a.annotationType()));
                         }
