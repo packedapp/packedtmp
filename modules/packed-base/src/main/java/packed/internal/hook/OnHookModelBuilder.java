@@ -74,11 +74,8 @@ final class OnHookModelBuilder {
             Node bb = b;
             bb.cp.findMethods(m -> onMethod(bb, m));
         }
-
-        // Roots are only required to have OnHook if they are an Hook themself.
-        // For example, Extension and Bundle should not fail here.
-        if (allEntries.isEmpty() && Hook.Builder.class.isAssignableFrom(root.cp.clazz())) {
-            throw new AssertionError("There must be at least one method annotated with @OnHook on " + root.cp.clazz());
+        if (allEntries.isEmpty()) {
+            return null;
         }
 
         // Uses a simple iterative algorithm, to make sure there are no interdependencies between the custom hooks
@@ -104,9 +101,7 @@ final class OnHookModelBuilder {
             // Okay, we got some circles.
             throw new UnsupportedOperationException("Not supported currently");
         }
-        if (allEntries.isEmpty()) {
-            return null;
-        }
+
         return new OnHookModel(this);
     }
 

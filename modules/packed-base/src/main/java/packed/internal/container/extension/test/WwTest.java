@@ -27,6 +27,7 @@ import app.packed.container.Extension;
 import app.packed.container.UseExtension;
 import app.packed.container.UseExtensionLazily;
 import app.packed.hook.AnnotatedFieldHook;
+import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import app.packed.lang.Qualifier;
@@ -48,10 +49,16 @@ public class WwTest extends BaseBundle {
         System.out.println("DAV  DU ER EJJJ!! " + cc.path());
     }
 
+    @OnHook
+    public void on(AnnotatedTypeHook<Left> h) {
+        System.err.println("NICE TYPE " + h.annotation());
+    }
+
     public static void main(String[] args) {
         App.of(new WwTest());
     }
 
+    @Left
     static class Comp1 {
         @Left
         public String s = "ffiii";
@@ -79,6 +86,12 @@ public class WwTest extends BaseBundle {
         @OnHook
         public void on(AnnotatedFieldHook<Left> h) {
             System.out.println("On the field motherfucker " + h.field());
+            System.out.println("AC");
+        }
+
+        @OnHook
+        public void on(AnnotatedTypeHook<Left> h) {
+            // System.out.println("On the field motherfucker " + h.field());
             System.out.println("AC");
         }
     }

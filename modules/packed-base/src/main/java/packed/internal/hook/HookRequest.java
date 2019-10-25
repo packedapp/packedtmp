@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
-import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 
 import app.packed.hook.Hook;
@@ -70,8 +69,10 @@ public final class HookRequest {
                     Hook amh;
                     if (m.member instanceof Field) {
                         amh = ModuleAccess.hook().newAnnotatedFieldHook(hp, (Field) m.member, m.annotation);
-                    } else {
+                    } else if (m.member instanceof Method) {
                         amh = ModuleAccess.hook().newAnnotatedMethodHook(hp, (Method) m.member, m.annotation);
+                    } else {
+                        amh = ModuleAccess.hook().newAnnotatedTypeHook(hp, (Class<?>) m.member, m.annotation);
                     }
 
                     if (mh.type().parameterCount() == 2) {
@@ -87,10 +88,10 @@ public final class HookRequest {
     /// This is necessary because we can only fields and methods once. Without scanning everything again
     static class DelayedAnnotatedMember {
         private final Annotation annotation;
-        private final Member member;
+        private final Object member;
         private final MethodHandle mh;
 
-        DelayedAnnotatedMember(Member member, Annotation annotation, MethodHandle mh) {
+        DelayedAnnotatedMember(Object member, Annotation annotation, MethodHandle mh) {
             this.member = requireNonNull(member);
             this.annotation = requireNonNull(annotation);
             this.mh = requireNonNull(mh);

@@ -21,9 +21,11 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Map;
 
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
+import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.Hook;
 import packed.internal.hook.HookRequest.DelayedAnnotatedMember;
 import packed.internal.hook.OnHookModel.Link;
@@ -37,15 +39,17 @@ import packed.internal.util.TinyPair;
  */
 public class HookRequestBuilder {
 
-    final Object[] array;
+    private final Object[] array;
 
     Tiny<DelayedAnnotatedMember> delayedMembers;
 
     final HookTargetProcessor hookProcessor;
 
-    final OnHookModel onHookModel;
+    /** Whether or not we are called from {@link Hook.Builder#test(java.lang.invoke.MethodHandles.Lookup, Class, Class)} */
+    @SuppressWarnings("javadoc") // eclipse...TODO raise bug
+    private final boolean isTest;
 
-    final boolean isTest;
+    private final OnHookModel onHookModel;
 
     public HookRequestBuilder(OnHookModel model, HookTargetProcessor hookProcessor) {
         this(model, hookProcessor, false);
@@ -95,38 +99,56 @@ public class HookRequestBuilder {
     }
 
     public void onAnnotatedField(Field field, Annotation annotation) throws Throwable {
-        for (Link link = onHookModel.allLinks.annotatedFields.get(annotation.annotationType()); link != null; link = link.next) {
-            if (link.index == 0 && !isTest) {
-                delayedMembers = new Tiny<>(new DelayedAnnotatedMember(field, annotation, link.mh), delayedMembers);
-            } else {
-                Hook.Builder<?> builder = builderOf(array, link.index);
-                AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(hookProcessor, field, annotation);
-                if (link.mh.type().parameterCount() == 1) {
-                    link.mh.invoke(hook);
+        Map<Class<?>, Link> annotatedFields = onHookModel.allLinks.annotatedFields;
+        if (annotatedFields != null) {
+            for (Link link = annotatedFields.get(annotation.annotationType()); link != null; link = link.next) {
+                if (link.index == 0 && !isTest) {
+                    delayedMembers = new Tiny<>(new DelayedAnnotatedMember(field, annotation, link.mh), delayedMembers);
                 } else {
-                    link.mh.invoke(builder, hook);
+                    Hook.Builder<?> builder = builderOf(array, link.index);
+                    AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(hookProcessor, field, annotation);
+                    if (link.mh.type().parameterCount() == 1) {
+                        link.mh.invoke(hook);
+                    } else {
+                        link.mh.invoke(builder, hook);
+                    }
                 }
             }
         }
     }
 
     public void onAnnotatedMethod(Method method, Annotation annotation) throws Throwable {
-        for (Link link = onHookModel.allLinks.annotatedMethods.get(annotation.annotationType()); link != null; link = link.next) {
-            if (link.index == 0 && !isTest) {
-                delayedMembers = new Tiny<>(new DelayedAnnotatedMember(method, annotation, link.mh), delayedMembers);
-            } else {
-                Hook.Builder<?> builder = builderOf(array, link.index);
-                AnnotatedMethodHook<Annotation> hook = ModuleAccess.hook().newAnnotatedMethodHook(hookProcessor, method, annotation);
-                link.mh.invoke(builder, hook);
+        Map<Class<?>, Link> annotatedMethods = onHookModel.allLinks.annotatedMethods;
+        if (annotatedMethods != null) {
+            for (Link link = annotatedMethods.get(annotation.annotationType()); link != null; link = link.next) {
+                if (link.index == 0 && !isTest) {
+                    delayedMembers = new Tiny<>(new DelayedAnnotatedMember(method, annotation, link.mh), delayedMembers);
+                } else {
+                    Hook.Builder<?> builder = builderOf(array, link.index);
+                    AnnotatedMethodHook<Annotation> hook = ModuleAccess.hook().newAnnotatedMethodHook(hookProcessor, method, annotation);
+                    link.mh.invoke(builder, hook);
+                }
             }
         }
     }
 
     public void onAnnotatedType(Class<?> clazz, Annotation annotation) throws Throwable {
-        throw new UnsupportedOperationException();
+        Map<Class<?>, Link> annotatedTypes = onHookModel.allLinks.annotatedTypes;
+        if (annotatedTypes != null) {
+            for (Link link = onHookModel.allLinks.annotatedTypes.get(annotation.annotationType()); link != null; link = link.next) {
+                if (link.index == 0 && !isTest) {
+                    delayedMembers = new Tiny<>(new DelayedAnnotatedMember(clazz, annotation, link.mh), delayedMembers);
+                } else {
+                    Hook.Builder<?> builder = builderOf(array, link.index);
+                    AnnotatedTypeHook<Annotation> hook = ModuleAccess.hook().newAnnotatedTypeHook(hookProcessor, clazz, annotation);
+                    link.mh.invoke(builder, hook);
+                }
+            }
+        }
     }
 
     public Object singleConsume(ClassProcessor cp) throws Throwable {
+        //
         cp.findMethodsAndFields(onHookModel.allLinks.annotatedMethods == null ? null : f -> {
             for (Annotation a : f.getAnnotations()) {
                 onAnnotatedMethod(f, a);

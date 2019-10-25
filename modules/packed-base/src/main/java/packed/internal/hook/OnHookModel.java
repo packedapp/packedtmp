@@ -33,7 +33,7 @@ import packed.internal.util.TinyPair;
 /** A model of a container with {@link OnHook} methods. */
 public final class OnHookModel {
 
-    static final boolean DEBUG = false;
+    static final boolean DEBUG = true;
 
     final ImmutableOnHookMap<Link> allLinks;
 
@@ -67,6 +67,14 @@ public final class OnHookModel {
                 System.out.println(msg);
             }
             System.out.println("------");
+
+            System.out.println("Methods " + allLinks.annotatedMethods);
+
+            System.out.println("Fields " + allLinks.annotatedFields);
+            System.out.println("Types " + allLinks.annotatedTypes);
+            System.out.println("------");
+            // System.out.println("Methods " + allLinks.annotatedMethods);
+
         }
         for (int i = 0; i < list.size(); i++) {
             OnHookModelBuilder.Node n = list.get(i);// b.result.get(i);
