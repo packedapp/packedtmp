@@ -99,7 +99,7 @@ public class HookRequest {
         }
 
         public Builder(OnHookModel model, HookTargetProcessor hookProcessor) {
-            this.array = new Object[model.size()];
+            this.array = new Object[model.builderConstructors.length];
             this.hooks = requireNonNull(model);
             this.hookProcessor = requireNonNull(hookProcessor);
         }
@@ -122,6 +122,18 @@ public class HookRequest {
 
         public final void onAnnotatedType(Class<?> clazz, Annotation annotation) throws Throwable {
             throw new UnsupportedOperationException();
+        }
+
+        void processMembers(ClassProcessor cp) throws Throwable {
+            cp.findMethodsAndFields(hooks.allLinks.annotatedMethods == null ? null : f -> {
+                for (Annotation a : f.getAnnotations()) {
+                    hooks.tryProcesAnnotatedMethod(hookProcessor, f, a, this);
+                }
+            }, hooks.allLinks.annotatedFields == null ? null : f -> {
+                for (Annotation a : f.getAnnotations()) {
+                    hooks.tryProcesAnnotatedField(hookProcessor, f, a, this);
+                }
+            });
         }
     }
 

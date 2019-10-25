@@ -37,17 +37,16 @@ import packed.internal.hook.OnHookModelBuilder.Node;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.TinyPair;
-import packed.internal.util.UncheckedThrowableFactory;
 
 /** A model of a container with {@link OnHook} methods. */
 public final class OnHookModel {
 
     static final boolean DEBUG = false;
 
-    private final ImmutableOnHookMap<Link> allLinks;
+    final ImmutableOnHookMap<Link> allLinks;
 
     /** Constructors for each builder. */
-    private final MethodHandle[] builderConstructors;
+    final MethodHandle[] builderConstructors;
 
     /** Methods annotated with {@link OnHook} that takes a non-base {@link Hook}. */
     private final Link[] customHooks;
@@ -55,11 +54,6 @@ public final class OnHookModel {
     final boolean isHookTop;
 
     final ImmutableOnHookMap<Link> rootLinks;
-
-    @Nullable
-    public static OnHookModel newInstance(ClassProcessor cp, Class<?>... additionalParameters) {
-        return new OnHookModelBuilder(cp, additionalParameters).build();
-    }
 
     OnHookModel(OnHookModelBuilder b) {
         Function<TinyPair<Node, MethodHandle>, Link> ff = e -> {
@@ -111,7 +105,7 @@ public final class OnHookModel {
     }
 
     /**
-     * Returns an immutable set of all field triggering annotations types.
+     * Returns an immutable set of all annotations on fields that are we are hooked on.
      * 
      * @return the set
      */
@@ -165,35 +159,6 @@ public final class OnHookModel {
         return result;
     }
 
-    @Nullable
-    Object process(@Nullable Object parent, ClassProcessor cpTarget, UncheckedThrowableFactory<?> tf) throws Throwable {
-        HookTargetProcessor hc = new HookTargetProcessor(cpTarget, tf);
-        HookRequest.Builder hb = new HookRequest.Builder(this, hc);
-        Object[] array = hb.array;
-        array[0] = parent;
-        cpTarget.findMethodsAndFields(allLinks.annotatedMethods == null ? null : f -> {
-            for (Annotation a : f.getAnnotations()) {
-                tryProcesAnnotatedMethod(hc, f, a, hb);
-            }
-        }, allLinks.annotatedFields == null ? null : f -> {
-            for (Annotation a : f.getAnnotations()) {
-                tryProcesAnnotatedField(hc, f, a, hb);
-            }
-        });
-        hc.close();
-
-        compute(array);
-        if (parent != null) {
-            return parent;
-        }
-        Object a = array[0];
-        return a == null ? null : ((Hook.Builder<?>) a).build();
-    }
-
-    int size() {
-        return builderConstructors.length;
-    }
-
     void tryProcesAnnotatedField(HookTargetProcessor hc, Field field, Annotation annotation, HookRequest.Builder hr) throws Throwable {
         for (Link link = allLinks.annotatedFields.get(annotation.annotationType()); link != null; link = link.next) {
             if (link.index == 0 && !isHookTop) {
@@ -220,6 +185,20 @@ public final class OnHookModel {
                 link.mh.invoke(builder, hook);
             }
         }
+    }
+
+    /**
+     * Creates a new model.
+     * 
+     * @param cp
+     *            the class processor
+     * @param additionalParameters
+     *            any additional parameter types allowed.
+     * @return the new model, or null if the no {@link OnHook} annotations was present
+     */
+    @Nullable
+    public static OnHookModel newInstance(ClassProcessor cp, Class<?>... additionalParameters) {
+        return new OnHookModelBuilder(cp, additionalParameters).build();
     }
 
     private static class Link {

@@ -29,11 +29,21 @@ public class UseIt2 {
 
     @SuppressWarnings("unchecked")
     public static <T extends Hook> T test(ClassProcessor cpHook, ClassProcessor cpTarget) {
-        OnHookModelBuilder ohs = new OnHookModelBuilder(cpHook);
-        OnHookModel m = ohs.build();
+        OnHookModel model = OnHookModel.newInstance(cpHook);
+        HookTargetProcessor hc = new HookTargetProcessor(cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR);
+        HookRequest.Builder hb = new HookRequest.Builder(model, hc);
+        Object[] array = hb.array;
+        array[0] = null;
 
         try {
-            return (T) m.process(null, cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR);
+
+            hb.processMembers(cpTarget);
+            hc.close();
+
+            model.compute(array);
+            Object a = array[0];
+            return a == null ? null : (T) (((Hook.Builder<?>) a).build());
+            // return (T) model.process(null, cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR);
         } catch (Throwable t) {
             ThrowableUtil.rethrowErrorOrRuntimeException(t);
             throw new UndeclaredThrowableException(t);
