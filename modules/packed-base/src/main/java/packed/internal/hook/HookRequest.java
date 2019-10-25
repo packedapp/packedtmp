@@ -90,7 +90,7 @@ public class HookRequest {
 
         List<DelayedAnnotatedField> delayedFields = new ArrayList<>();
 
-        final OnHookContainerModel hooks;
+        final OnHookModel hooks;
 
         final HookTargetProcessor hookProcessor;
 
@@ -98,7 +98,7 @@ public class HookRequest {
             return new HookRequest(this);
         }
 
-        public Builder(OnHookContainerModel model, HookTargetProcessor hookProcessor) {
+        public Builder(OnHookModel model, HookTargetProcessor hookProcessor) {
             this.array = new Object[model.size()];
             this.hooks = requireNonNull(model);
             this.hookProcessor = requireNonNull(hookProcessor);

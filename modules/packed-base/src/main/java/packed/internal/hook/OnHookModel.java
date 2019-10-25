@@ -33,16 +33,14 @@ import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
 import packed.internal.hook.HookRequest.DelayedAnnotatedField;
 import packed.internal.hook.HookRequest.DelayedAnnotatedMethod;
-import packed.internal.hook.OnHookContainerModelBuilder.Node;
+import packed.internal.hook.OnHookModelBuilder.Node;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.TinyPair;
 import packed.internal.util.UncheckedThrowableFactory;
 
-/**
- *
- */
-public final class OnHookContainerModel {
+/** A model of a container with {@link OnHook} methods. */
+public final class OnHookModel {
 
     static final boolean DEBUG = false;
 
@@ -58,7 +56,7 @@ public final class OnHookContainerModel {
 
     final ImmutableOnHookMap<Link> rootLinks;
 
-    OnHookContainerModel(OnHookContainerModelBuilder b) {
+    OnHookModel(OnHookModelBuilder b) {
         Function<TinyPair<Node, MethodHandle>, Link> ff = e -> {
             Link l = null;
             for (; e != null; e = e.next) {
@@ -76,10 +74,10 @@ public final class OnHookContainerModel {
 
         this.customHooks = new Link[b.stack.size()];
         this.builderConstructors = new MethodHandle[b.stack.size()];
-        List<OnHookContainerModelBuilder.Node> list = List.copyOf(b.stack);
+        List<OnHookModelBuilder.Node> list = List.copyOf(b.stack);
         if (DEBUG) {
             for (int i = 0; i < list.size(); i++) {
-                OnHookContainerModelBuilder.Node n = list.get(i);
+                OnHookModelBuilder.Node n = list.get(i);
                 String msg = i + " " + n.index + " " + n.containerType;
                 if (n.builderConstructor != null) {
                     msg += " " + n.builderConstructor.type().returnType();
@@ -94,7 +92,7 @@ public final class OnHookContainerModel {
             System.out.println("------");
         }
         for (int i = 0; i < list.size(); i++) {
-            OnHookContainerModelBuilder.Node n = list.get(i);// b.result.get(i);
+            OnHookModelBuilder.Node n = list.get(i);// b.result.get(i);
             builderConstructors[i] = n.builderConstructor;
             if (b.allEntries.customHooks != null) {
                 // We reverse the order here so instead of Dependent->Dependency we get Dependency->Dependent

@@ -30,8 +30,8 @@ import app.packed.container.Extension;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
 import packed.internal.container.ContainerSourceModel;
-import packed.internal.container.extension.LazyExtensionActivationMap;
 import packed.internal.container.extension.ExtensionModel;
+import packed.internal.container.extension.LazyExtensionActivationMap;
 import packed.internal.hook.HookRequest;
 import packed.internal.hook.HookTargetProcessor;
 import packed.internal.reflect.ClassProcessor;
@@ -216,7 +216,7 @@ public final class ComponentModel {
                 throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
-                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequest.Builder(ExtensionModel.of(etype).hooks(), hookProcessor))
+                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequest.Builder(ExtensionModel.onHookModelOf(etype), hookProcessor))
                             .onAnnotatedField(field, a);
                 }
             }
@@ -226,7 +226,7 @@ public final class ComponentModel {
                 throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
-                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequest.Builder(ExtensionModel.of(etype).hooks(), hookProcessor))
+                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequest.Builder(ExtensionModel.onHookModelOf(etype), hookProcessor))
                             .onAnnotatedMethod(method, a);
                 }
             }
@@ -236,7 +236,7 @@ public final class ComponentModel {
                 throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
-                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequest.Builder(ExtensionModel.of(etype).hooks(), hookProcessor))
+                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequest.Builder(ExtensionModel.onHookModelOf(etype), hookProcessor))
                             .onAnnotatedType(componentType, a);
                 }
             }

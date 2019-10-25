@@ -27,8 +27,8 @@ import app.packed.hook.Hook;
 import app.packed.lang.InvalidDeclarationException;
 import packed.internal.component.ComponentModel;
 import packed.internal.container.extension.LazyExtensionActivationMap;
-import packed.internal.hook.OnHookContainerModel;
-import packed.internal.hook.OnHookContainerModelBuilder;
+import packed.internal.hook.OnHookModel;
+import packed.internal.hook.OnHookModelBuilder;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.reflect.ClassProcessor;
@@ -73,7 +73,7 @@ public final class ContainerSourceModel implements ComponentLookup {
     /** The type of container source. Typically, a subclass of {@link Bundle}. */
     private final Class<? extends ContainerSource> sourceType;
 
-    public final OnHookContainerModel hooks;
+    public final OnHookModel hooks;
 
     /**
      * Creates a new container source model.
@@ -87,7 +87,7 @@ public final class ContainerSourceModel implements ComponentLookup {
         }
         this.sourceType = requireNonNull(sourceType);
 
-        OnHookContainerModelBuilder builder = new OnHookContainerModelBuilder(new ClassProcessor(MethodHandles.lookup(), sourceType, true),
+        OnHookModelBuilder builder = new OnHookModelBuilder(new ClassProcessor(MethodHandles.lookup(), sourceType, true),
                 ContainerConfiguration.class);
         hooks = builder.build();
 

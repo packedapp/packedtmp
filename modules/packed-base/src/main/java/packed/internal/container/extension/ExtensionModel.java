@@ -38,13 +38,14 @@ import app.packed.container.InternalExtensionException;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
 import packed.internal.hook.DefaultHookUsage;
-import packed.internal.hook.OnHookContainerModel;
-import packed.internal.hook.OnHookContainerModelBuilder;
+import packed.internal.hook.OnHookModel;
+import packed.internal.hook.OnHookModelBuilder;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.reflect.ConstructorFinder;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
+import packed.internal.util.UncheckedThrowableFactory;
 
 /** A model of an Extension. */
 public final class ExtensionModel<E extends Extension> {
@@ -84,6 +85,11 @@ public final class ExtensionModel<E extends Extension> {
     /** The type of the extension this model describes. */
     public final Class<? extends Extension> extensionType;
 
+    @Nullable
+    private final OnHookModel hooks;
+
+    final DefaultHookUsage nonActivatingHooks;
+
     public final Consumer<? super Extension> onAdd;
 
     public final Consumer<? super Extension> onConfigured;
@@ -96,11 +102,6 @@ public final class ExtensionModel<E extends Extension> {
     public final Optional<Class<? extends Extension>> optional;
 
     public final Map<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, BiFunction<?, ?, ?>> pipelines;
-
-    @Nullable
-    private final OnHookContainerModel hooks;
-
-    final DefaultHookUsage nonActivatingHooks;
 
     /**
      * Creates a new extension model from the specified builder.
@@ -121,7 +122,7 @@ public final class ExtensionModel<E extends Extension> {
         this.dependencies = Set.copyOf(builder.dependencies);
         this.optional = Optional.of(extensionType); // No need to create an optional every time we need this
 
-        this.hooks = builder.hooks.build();
+        this.hooks = builder.ohmb.build();
         if (hooks == null) {
             this.nonActivatingHooks = null;
         } else {
@@ -132,18 +133,10 @@ public final class ExtensionModel<E extends Extension> {
     }
 
     /**
-     * Returns a model of all the methods annotated with {@link OnHook} on the extension.
-     * 
-     * @return a hook model
-     */
-    @Nullable
-    public OnHookContainerModel hooks() {
-        return hooks;
-    }
-
-    /**
      * Creates a new instance of the extension.
      * 
+     * @param context
+     *            the extension context that can be constructor injected into the extension
      * @return a new instance of the extension
      */
     public E newInstance(PackedExtensionContext context) {
@@ -175,19 +168,33 @@ public final class ExtensionModel<E extends Extension> {
         return (ExtensionModel<T>) CACHE.get(extensionType);
     }
 
+    /**
+     * Returns a on hook model of all the methods annotated with {@link OnHook} on the extension. Or null if the extension
+     * does not define any methods annotated with {@link OnHook}.
+     * 
+     * @param extensionType
+     *            the extension type to return the model for
+     * @return a hook model
+     */
+    @Nullable
+    public static OnHookModel onHookModelOf(Class<? extends Extension> extensionType) {
+        return of(extensionType).hooks;
+    }
+
     /** A builder for {@link ExtensionModel}. */
     private static final class Builder extends AbstractExtensionModelBuilder {
 
         /** The constructor used to create a new extension instance. */
         private final MethodHandle constructor;
 
+        /** A list of dependencies on other extensions. */
+        private final List<Class<? extends Extension>> dependencies;
+
         /** The type of extension we are building a model for. */
         private final Class<? extends Extension> extensionType;
 
         /** A builder for all methods annotated with {@link OnHook} on the extension. */
-        private final OnHookContainerModelBuilder hooks;
-
-        private final List<Class<? extends Extension>> dependencies;
+        private final OnHookModelBuilder ohmb;
 
         /**
          * Creates a new builder.
@@ -197,9 +204,10 @@ public final class ExtensionModel<E extends Extension> {
          */
         private Builder(Class<? extends Extension> extensionType) {
             this.extensionType = extensionType;
+            ClassProcessor cp = new ClassProcessor(MethodHandles.lookup(), extensionType, true);
+            this.constructor = ConstructorFinder.find(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
             this.dependencies = ExtensionDependencyValidator.dependenciesOf(extensionType);
-            this.constructor = ConstructorFinder.find(extensionType);
-            this.hooks = new OnHookContainerModelBuilder(new ClassProcessor(MethodHandles.lookup(), extensionType, true), ContainerConfiguration.class);
+            this.ohmb = new OnHookModelBuilder(cp, ContainerConfiguration.class);
         }
 
         /**
@@ -223,12 +231,7 @@ public final class ExtensionModel<E extends Extension> {
                 ExtensionComposer<?> composer = ConstructorFinder.invoke(composerType);
                 ModuleAccess.extension().configureComposer(composer, this);
             }
-            // Find all methods annotated with @OnHook on the extension
             return new ExtensionModel<>(this);
         }
-    }
-
-    static class NonActivatingHooks {
-
     }
 }

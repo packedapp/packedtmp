@@ -118,15 +118,23 @@ public final class ConstructorFinder {
 
         // First check that we have a constructor with specified parameters.
         // We could use Lookup.findSpecial, but we need to register the constructor if we are generating a native image.
-        Constructor<?> constructor;
+        Constructor<?> constructor = null;
         try {
             constructor = onType.getDeclaredConstructor(parameterTypes);
         } catch (NoSuchMethodException e) {
-            if (parameterTypes.length == 0) {
-                throw tf.newThrowable("'" + StringFormatter.format(onType) + "' must have a no-argument constructor");
-            } else {
-                throw tf.newThrowable("'" + StringFormatter.format(onType) + "' must have a constructor taking ["
-                        + Stream.of(parameterTypes).map(p -> p.getName()).collect(Collectors.joining(",")) + "]");
+            if (Extension.class.isAssignableFrom(onType)) {
+                // Hack
+                try {
+                    constructor = onType.getDeclaredConstructor(ExtensionContext.class);
+                } catch (NoSuchMethodException ignore) {} // Already on failure path
+            }
+            if (constructor == null) {
+                if (parameterTypes.length == 0) {
+                    throw tf.newThrowable("'" + StringFormatter.format(onType) + "' must have a no-argument constructor");
+                } else {
+                    throw tf.newThrowable("'" + StringFormatter.format(onType) + "' must have a constructor taking ["
+                            + Stream.of(parameterTypes).map(p -> p.getName()).collect(Collectors.joining(",")) + "]");
+                }
             }
         }
 

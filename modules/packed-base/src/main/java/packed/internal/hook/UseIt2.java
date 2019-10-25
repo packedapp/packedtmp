@@ -29,8 +29,8 @@ public class UseIt2 {
 
     @SuppressWarnings("unchecked")
     public static <T extends Hook> T test(ClassProcessor cpHook, ClassProcessor cpTarget) {
-        OnHookContainerModelBuilder ohs = new OnHookContainerModelBuilder(cpHook);
-        OnHookContainerModel m = ohs.build();
+        OnHookModelBuilder ohs = new OnHookModelBuilder(cpHook);
+        OnHookModel m = ohs.build();
 
         try {
             return (T) m.process(null, cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR);

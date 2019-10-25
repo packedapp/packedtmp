@@ -43,7 +43,7 @@ import packed.internal.util.types.TypeUtil;
 /**
  * A builder for classes that may contain methods annotated with {@link OnHook}.
  */
-public final class OnHookContainerModelBuilder {
+public final class OnHookModelBuilder {
 
     private final static UncheckedThrowableFactory<? extends RuntimeException> tf = UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY;
 
@@ -62,7 +62,7 @@ public final class OnHookContainerModelBuilder {
     /** A stack that is used to process each node. */
     final ArrayDeque<Node> stack = new ArrayDeque<>();
 
-    public OnHookContainerModelBuilder(ClassProcessor cp, Class<?>... additionalParameters) {
+    public OnHookModelBuilder(ClassProcessor cp, Class<?>... additionalParameters) {
         if (Hook.class.isAssignableFrom(cp.clazz())) {
             this.root = new Node(cp, cp.clazz());
             rootEntries = allEntries;
@@ -75,7 +75,7 @@ public final class OnHookContainerModelBuilder {
     }
 
     @Nullable
-    public OnHookContainerModel build() {
+    public OnHookModel build() {
         // Find all methods annotated with @OnHook and process them.
         root.cp.findMethods(m -> onMethod(root, m));
         for (Node b = stack.pollFirst(); b != null; b = stack.pollFirst()) {
@@ -115,7 +115,7 @@ public final class OnHookContainerModelBuilder {
         if (allEntries.isEmpty()) {
             return null;
         }
-        return new OnHookContainerModel(this);
+        return new OnHookModel(this);
     }
 
     private void onMethod(Node node, Method method) {
@@ -219,6 +219,9 @@ public final class OnHookContainerModelBuilder {
         @Nullable
         final MethodHandle builderConstructor;
 
+        /** The type of on node container. */
+        final Class<?> containerType;
+
         /** The class processor for the entity that contains the methods annotated with {@link OnHook}. */
         private final ClassProcessor cp;
 
@@ -228,9 +231,6 @@ public final class OnHookContainerModelBuilder {
 
         /** The index of this node. */
         int index;
-
-        /** The type of on node container. */
-        final Class<?> containerType;
 
         /**
          * A node without a builder
