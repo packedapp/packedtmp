@@ -104,6 +104,10 @@ public class HookRequest {
             this.hookProcessor = requireNonNull(hookProcessor);
         }
 
+        void compute() throws Throwable {
+            hooks.compute(array);
+        }
+
         private void onAnnotatedField(HookTargetProcessor hookProcessor, Field field, Annotation annotation) throws Throwable {
             hooks.tryProcesAnnotatedField(hookProcessor, field, annotation, this);
         }

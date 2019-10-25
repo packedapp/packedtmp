@@ -32,22 +32,19 @@ public class UseIt2 {
         OnHookModel model = OnHookModel.newInstance(cpHook);
         HookTargetProcessor hc = new HookTargetProcessor(cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR);
         HookRequest.Builder hb = new HookRequest.Builder(model, hc);
-        Object[] array = hb.array;
-        array[0] = null;
 
         try {
 
             hb.processMembers(cpTarget);
             hc.close();
-
-            model.compute(array);
-            Object a = array[0];
-            return a == null ? null : (T) (((Hook.Builder<?>) a).build());
-            // return (T) model.process(null, cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR);
+            hb.compute();
         } catch (Throwable t) {
             ThrowableUtil.rethrowErrorOrRuntimeException(t);
             throw new UndeclaredThrowableException(t);
         }
+
+        Object a = hb.array[0];
+        return a == null ? null : (T) (((Hook.Builder<?>) a).build());
     }
 
 }
