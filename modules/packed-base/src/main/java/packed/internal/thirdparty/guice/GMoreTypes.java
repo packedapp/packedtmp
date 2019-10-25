@@ -35,19 +35,19 @@ import java.util.Objects;
  * @author jessewilson@google.com (Jesse Wilson)
  */
 @SuppressWarnings("rawtypes")
-public class MoreTypes {
+public class GMoreTypes {
 
     public static final Type[] EMPTY_TYPE_ARRAY = new Type[] {};
 
-    private static final Map<TypeLiteralGuice<?>, TypeLiteralGuice<?>> PRIMITIVE_TO_WRAPPER = Map.ofEntries(
-            Map.entry(TypeLiteralGuice.get(boolean.class), TypeLiteralGuice.get(Boolean.class)),
-            Map.entry(TypeLiteralGuice.get(byte.class), TypeLiteralGuice.get(Byte.class)),
-            Map.entry(TypeLiteralGuice.get(int.class), TypeLiteralGuice.get(Integer.class)),
-            Map.entry(TypeLiteralGuice.get(long.class), TypeLiteralGuice.get(Long.class)),
-            Map.entry(TypeLiteralGuice.get(float.class), TypeLiteralGuice.get(Float.class)),
-            Map.entry(TypeLiteralGuice.get(double.class), TypeLiteralGuice.get(Double.class)),
-            Map.entry(TypeLiteralGuice.get(char.class), TypeLiteralGuice.get(Character.class)),
-            Map.entry(TypeLiteralGuice.get(void.class), TypeLiteralGuice.get(Void.class)));
+    private static final Map<GTypeLiteral<?>, GTypeLiteral<?>> PRIMITIVE_TO_WRAPPER = Map.ofEntries(
+            Map.entry(GTypeLiteral.get(boolean.class), GTypeLiteral.get(Boolean.class)),
+            Map.entry(GTypeLiteral.get(byte.class), GTypeLiteral.get(Byte.class)),
+            Map.entry(GTypeLiteral.get(int.class), GTypeLiteral.get(Integer.class)),
+            Map.entry(GTypeLiteral.get(long.class), GTypeLiteral.get(Long.class)),
+            Map.entry(GTypeLiteral.get(float.class), GTypeLiteral.get(Float.class)),
+            Map.entry(GTypeLiteral.get(double.class), GTypeLiteral.get(Double.class)),
+            Map.entry(GTypeLiteral.get(char.class), GTypeLiteral.get(Character.class)),
+            Map.entry(GTypeLiteral.get(void.class), GTypeLiteral.get(Void.class)));
 
     /**
      * Returns an type that's appropriate for use in a key.
@@ -60,7 +60,7 @@ public class MoreTypes {
      * If the type is a primitive, the corresponding wrapper type will be returned.
      *
      */
-    public static <T> TypeLiteralGuice<T> canonicalizeForKey(TypeLiteralGuice<T> typeLiteral) {
+    public static <T> GTypeLiteral<T> canonicalizeForKey(GTypeLiteral<T> typeLiteral) {
         Type type = typeLiteral.getType();
         if (!isFullySpecified(type)) {
             // Errors errors = new Errors().keyNotFullySpecified(typeLiteral);
@@ -68,20 +68,20 @@ public class MoreTypes {
         }
 
         @SuppressWarnings("unchecked")
-        TypeLiteralGuice<T> wrappedPrimitives = (TypeLiteralGuice<T>) PRIMITIVE_TO_WRAPPER.get(typeLiteral);
+        GTypeLiteral<T> wrappedPrimitives = (GTypeLiteral<T>) PRIMITIVE_TO_WRAPPER.get(typeLiteral);
         if (wrappedPrimitives != null) {
             return wrappedPrimitives;
         }
 
         // If we know this isn't a subclass, return as-is.
-        if (typeLiteral.getClass() == TypeLiteralGuice.class) {
+        if (typeLiteral.getClass() == GTypeLiteral.class) {
             return typeLiteral;
         }
 
         // recreate the TypeLiteral to avoid anonymous TypeLiterals from holding refs to their
         // surrounding classes.
         @SuppressWarnings("unchecked")
-        TypeLiteralGuice<T> recreated = (TypeLiteralGuice<T>) TypeLiteralGuice.get(typeLiteral.getType());
+        GTypeLiteral<T> recreated = (GTypeLiteral<T>) GTypeLiteral.get(typeLiteral.getType());
         return recreated;
     }
 
@@ -335,16 +335,16 @@ public class MoreTypes {
 
         @Override
         public boolean isFullySpecified() {
-            if (ownerType != null && !MoreTypes.isFullySpecified(ownerType)) {
+            if (ownerType != null && !GMoreTypes.isFullySpecified(ownerType)) {
                 return false;
             }
 
-            if (!MoreTypes.isFullySpecified(rawType)) {
+            if (!GMoreTypes.isFullySpecified(rawType)) {
                 return false;
             }
 
             for (Type type : typeArguments) {
-                if (!MoreTypes.isFullySpecified(type)) {
+                if (!GMoreTypes.isFullySpecified(type)) {
                     return false;
                 }
             }
@@ -354,7 +354,7 @@ public class MoreTypes {
 
         @Override
         public boolean equals(Object other) {
-            return other instanceof ParameterizedType && MoreTypes.equals(this, (ParameterizedType) other);
+            return other instanceof ParameterizedType && GMoreTypes.equals(this, (ParameterizedType) other);
         }
 
         @Override
@@ -410,12 +410,12 @@ public class MoreTypes {
 
         @Override
         public boolean isFullySpecified() {
-            return MoreTypes.isFullySpecified(componentType);
+            return GMoreTypes.isFullySpecified(componentType);
         }
 
         @Override
         public boolean equals(Object o) {
-            return o instanceof GenericArrayType && MoreTypes.equals(this, (GenericArrayType) o);
+            return o instanceof GenericArrayType && GMoreTypes.equals(this, (GenericArrayType) o);
         }
 
         @Override
@@ -470,12 +470,12 @@ public class MoreTypes {
 
         @Override
         public boolean isFullySpecified() {
-            return MoreTypes.isFullySpecified(upperBound) && (lowerBound == null || MoreTypes.isFullySpecified(lowerBound));
+            return GMoreTypes.isFullySpecified(upperBound) && (lowerBound == null || GMoreTypes.isFullySpecified(lowerBound));
         }
 
         @Override
         public boolean equals(Object other) {
-            return other instanceof WildcardType && MoreTypes.equals(this, (WildcardType) other);
+            return other instanceof WildcardType && GMoreTypes.equals(this, (WildcardType) other);
         }
 
         @Override

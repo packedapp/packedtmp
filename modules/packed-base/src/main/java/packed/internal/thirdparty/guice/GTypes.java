@@ -25,9 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import packed.internal.thirdparty.guice.MoreTypes.GenericArrayTypeImpl;
-import packed.internal.thirdparty.guice.MoreTypes.ParameterizedTypeImpl;
-import packed.internal.thirdparty.guice.MoreTypes.WildcardTypeImpl;
+import packed.internal.thirdparty.guice.GMoreTypes.GenericArrayTypeImpl;
+import packed.internal.thirdparty.guice.GMoreTypes.ParameterizedTypeImpl;
+import packed.internal.thirdparty.guice.GMoreTypes.WildcardTypeImpl;
 
 /**
  * Static methods for working with types.
@@ -35,8 +35,8 @@ import packed.internal.thirdparty.guice.MoreTypes.WildcardTypeImpl;
  * @author crazybob@google.com (Bob Lee)
  * @since 2.0
  */
-public final class Types {
-    private Types() {}
+public final class GTypes {
+    private GTypes() {}
 
     /**
      * Returns a new parameterized type, applying {@code typeArguments} to {@code rawType}. The returned type does not have
@@ -74,7 +74,7 @@ public final class Types {
      * extends Object}.
      */
     public static WildcardType subtypeOf(Type bound) {
-        return new WildcardTypeImpl(new Type[] { bound }, MoreTypes.EMPTY_TYPE_ARRAY);
+        return new WildcardTypeImpl(new Type[] { bound }, GMoreTypes.EMPTY_TYPE_ARRAY);
     }
 
     /**
@@ -124,13 +124,13 @@ public final class Types {
 
     // for other custom collections types, use newParameterizedType()
 
-    /**
-     * Returns a type modelling a {@link Provider} that provides elements of type {@code elementType}.
-     *
-     * @return a {@link java.io.Serializable serializable} parameterized type.
-     */
-    public static ParameterizedType providerOf(Type providedType) {
-        return newParameterizedType(Provider.class, providedType);
-    }
+    // /**
+    // * Returns a type modelling a {@link Provider} that provides elements of type {@code elementType}.
+    // *
+    // * @return a {@link java.io.Serializable serializable} parameterized type.
+    // */
+    // public static ParameterizedType providerOf(Type providedType) {
+    // return newParameterizedType(Provider.class, providedType);
+    // }
 
 }

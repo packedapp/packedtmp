@@ -17,7 +17,7 @@
 package packed.internal.thirdparty.guice;
 
 import static java.util.Objects.requireNonNull;
-import static packed.internal.thirdparty.guice.MoreTypes.canonicalize;
+import static packed.internal.thirdparty.guice.GMoreTypes.canonicalize;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -55,7 +55,7 @@ import java.util.List;
  * @author crazybob@google.com (Bob Lee)
  * @author jessewilson@google.com (Jesse Wilson)
  */
-public class TypeLiteralGuice<T> {
+public class GTypeLiteral<T> {
 
     final Class<? super T> rawType;
     final Type type;
@@ -69,22 +69,22 @@ public class TypeLiteralGuice<T> {
      * hierarchy so we can reconstitute it at runtime despite erasure.
      */
     @SuppressWarnings("unchecked")
-    protected TypeLiteralGuice() {
+    protected GTypeLiteral() {
         this.type = getSuperclassTypeParameter(getClass());
-        this.rawType = (Class<? super T>) MoreTypes.getRawType(type);
+        this.rawType = (Class<? super T>) GMoreTypes.getRawType(type);
         this.hashCode = type.hashCode();
     }
 
     /** Unsafe. Constructs a type literal manually. */
     @SuppressWarnings("unchecked")
-    TypeLiteralGuice(Type type) {
+    GTypeLiteral(Type type) {
         this.type = canonicalize(requireNonNull(type, "type"));
-        this.rawType = (Class<? super T>) MoreTypes.getRawType(this.type);
+        this.rawType = (Class<? super T>) GMoreTypes.getRawType(this.type);
         this.hashCode = this.type.hashCode();
     }
 
     /**
-     * Returns the type from super class's type parameter in {@link MoreTypes#canonicalize(Type) canonical form}.
+     * Returns the type from super class's type parameter in {@link GMoreTypes#canonicalize(Type) canonical form}.
      */
     static Type getSuperclassTypeParameter(Class<?> subclass) {
         Type superclass = subclass.getGenericSuperclass();
@@ -96,8 +96,8 @@ public class TypeLiteralGuice<T> {
     }
 
     /** Gets type literal from super class's type parameter. */
-    static TypeLiteralGuice<?> fromSuperclassTypeParameter(Class<?> subclass) {
-        return new TypeLiteralGuice<Object>(getSuperclassTypeParameter(subclass));
+    static GTypeLiteral<?> fromSuperclassTypeParameter(Class<?> subclass) {
+        return new GTypeLiteral<Object>(getSuperclassTypeParameter(subclass));
     }
 
     /**
@@ -114,13 +114,13 @@ public class TypeLiteralGuice<T> {
         return type;
     }
 
-    /** Gets the type of this type's provider. */
-    @SuppressWarnings("unchecked")
-    final TypeLiteralGuice<Provider<T>> providerType() {
-        // This cast is safe and wouldn't generate a warning if Type had a type
-        // parameter.
-        return (TypeLiteralGuice<Provider<T>>) get(Types.providerOf(getType()));
-    }
+    // /** Gets the type of this type's provider. */
+    // @SuppressWarnings("unchecked")
+    // final TypeLiteralGuice<Provider<T>> providerType() {
+    // // This cast is safe and wouldn't generate a warning if Type had a type
+    // // parameter.
+    // return (TypeLiteralGuice<Provider<T>>) get(Types.providerOf(getType()));
+    // }
 
     @Override
     public final int hashCode() {
@@ -130,27 +130,27 @@ public class TypeLiteralGuice<T> {
     @Override
     @SuppressWarnings("rawtypes")
     public final boolean equals(Object o) {
-        return o instanceof TypeLiteralGuice<?> && MoreTypes.equals(type, ((TypeLiteralGuice) o).type);
+        return o instanceof GTypeLiteral<?> && GMoreTypes.equals(type, ((GTypeLiteral) o).type);
     }
 
     @Override
     public final String toString() {
-        return MoreTypes.typeToString(type);
+        return GMoreTypes.typeToString(type);
     }
 
     /** Gets type literal for the given {@code Type} instance. */
-    public static TypeLiteralGuice<?> get(Type type) {
-        return new TypeLiteralGuice<Object>(type);
+    public static GTypeLiteral<?> get(Type type) {
+        return new GTypeLiteral<Object>(type);
     }
 
     /** Gets type literal for the given {@code Class} instance. */
-    public static <T> TypeLiteralGuice<T> get(Class<T> type) {
-        return new TypeLiteralGuice<T>(type);
+    public static <T> GTypeLiteral<T> get(Class<T> type) {
+        return new GTypeLiteral<T>(type);
     }
 
     /** Returns an immutable list of the resolved types. */
-    private List<TypeLiteralGuice<?>> resolveAll(Type[] types) {
-        TypeLiteralGuice<?>[] result = new TypeLiteralGuice<?>[types.length];
+    private List<GTypeLiteral<?>> resolveAll(Type[] types) {
+        GTypeLiteral<?>[] result = new GTypeLiteral<?>[types.length];
         for (int t = 0; t < types.length; t++) {
             result[t] = resolve(types[t]);
         }
@@ -158,8 +158,8 @@ public class TypeLiteralGuice<T> {
     }
 
     /** Resolves known type parameters in {@code toResolve} and returns the result. */
-    TypeLiteralGuice<?> resolve(Type toResolve) {
-        return TypeLiteralGuice.get(resolveType(toResolve));
+    GTypeLiteral<?> resolve(Type toResolve) {
+        return GTypeLiteral.get(resolveType(toResolve));
     }
 
     Type resolveType(Type toResolve) {
@@ -168,7 +168,7 @@ public class TypeLiteralGuice<T> {
             if (toResolve instanceof TypeVariable) {
                 @SuppressWarnings("rawtypes")
                 TypeVariable original = (TypeVariable) toResolve;
-                toResolve = MoreTypes.resolveTypeVariable(type, rawType, original);
+                toResolve = GMoreTypes.resolveTypeVariable(type, rawType, original);
                 if (toResolve == original) {
                     return toResolve;
                 }
@@ -177,7 +177,7 @@ public class TypeLiteralGuice<T> {
                 GenericArrayType original = (GenericArrayType) toResolve;
                 Type componentType = original.getGenericComponentType();
                 Type newComponentType = resolveType(componentType);
-                return componentType == newComponentType ? original : Types.arrayOf(newComponentType);
+                return componentType == newComponentType ? original : GTypes.arrayOf(newComponentType);
 
             } else if (toResolve instanceof ParameterizedType) {
                 ParameterizedType original = (ParameterizedType) toResolve;
@@ -197,7 +197,7 @@ public class TypeLiteralGuice<T> {
                     }
                 }
 
-                return changed ? Types.newParameterizedTypeWithOwner(newOwnerType, original.getRawType(), args) : original;
+                return changed ? GTypes.newParameterizedTypeWithOwner(newOwnerType, original.getRawType(), args) : original;
 
             } else if (toResolve instanceof WildcardType) {
                 WildcardType original = (WildcardType) toResolve;
@@ -207,12 +207,12 @@ public class TypeLiteralGuice<T> {
                 if (originalLowerBound.length == 1) {
                     Type lowerBound = resolveType(originalLowerBound[0]);
                     if (lowerBound != originalLowerBound[0]) {
-                        return Types.supertypeOf(lowerBound);
+                        return GTypes.supertypeOf(lowerBound);
                     }
                 } else if (originalUpperBound.length == 1) {
                     Type upperBound = resolveType(originalUpperBound[0]);
                     if (upperBound != originalUpperBound[0]) {
-                        return Types.subtypeOf(upperBound);
+                        return GTypes.subtypeOf(upperBound);
                     }
                 }
                 return original;
@@ -232,10 +232,10 @@ public class TypeLiteralGuice<T> {
      *            a superclass of, or interface implemented by, this.
      * @since 2.0
      */
-    public TypeLiteralGuice<?> getSupertype(Class<?> supertype) {
+    public GTypeLiteral<?> getSupertype(Class<?> supertype) {
         // checkArgument(
         // supertype.isAssignableFrom(rawType), "%s is not a supertype of %s", supertype, this.type);
-        return resolve(MoreTypes.getGenericSupertype(type, rawType, supertype));
+        return resolve(GMoreTypes.getGenericSupertype(type, rawType, supertype));
     }
 
     /**
@@ -245,7 +245,7 @@ public class TypeLiteralGuice<T> {
      *            a field defined by this or any superclass.
      * @since 2.0
      */
-    public TypeLiteralGuice<?> getFieldType(Field field) {
+    public GTypeLiteral<?> getFieldType(Field field) {
         // checkArgument(
         // field.getDeclaringClass().isAssignableFrom(rawType),
         // "%s is not defined by a supertype of %s",
@@ -261,7 +261,7 @@ public class TypeLiteralGuice<T> {
      *            a method or constructor defined by this or any supertype.
      * @since 2.0
      */
-    public List<TypeLiteralGuice<?>> getParameterTypes(Member methodOrConstructor) {
+    public List<GTypeLiteral<?>> getParameterTypes(Member methodOrConstructor) {
         Type[] genericParameterTypes;
 
         if (methodOrConstructor instanceof Method) {
@@ -296,7 +296,7 @@ public class TypeLiteralGuice<T> {
      *            a method or constructor defined by this or any supertype.
      * @since 2.0
      */
-    public List<TypeLiteralGuice<?>> getExceptionTypes(Member methodOrConstructor) {
+    public List<GTypeLiteral<?>> getExceptionTypes(Member methodOrConstructor) {
         Type[] genericExceptionTypes;
 
         if (methodOrConstructor instanceof Method) {
@@ -331,7 +331,7 @@ public class TypeLiteralGuice<T> {
      *            a method defined by this or any supertype.
      * @since 2.0
      */
-    public TypeLiteralGuice<?> getReturnType(Method method) {
+    public GTypeLiteral<?> getReturnType(Method method) {
         // checkArgument(
         // method.getDeclaringClass().isAssignableFrom(rawType),
         // "%s is not defined by a supertype of %s",
