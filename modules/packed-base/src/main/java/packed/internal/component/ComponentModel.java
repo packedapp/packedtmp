@@ -62,8 +62,19 @@ public final class ComponentModel {
      */
     private ComponentModel(ComponentModel.Builder builder) {
         this.componentType = requireNonNull(builder.componentType);
-        this.hookGroups = builder.extensionBuilders.entrySet().stream().map(e -> e.getValue().build(e.getKey()))
-                .toArray(i -> new PerExtensionHookRequest[i]);
+        this.hookGroups = builder.extensionBuilders.entrySet().stream().map(e ->
+
+        {
+            try {
+                return new PerExtensionHookRequest(e.getValue(), e.getKey());
+            } catch (Throwable ee) {
+                ThrowableUtil.rethrowErrorOrRuntimeException(ee);
+                throw new UndeclaredThrowableException(ee);
+            }
+
+        }
+
+        ).toArray(i -> new PerExtensionHookRequest[i]);
     }
 
     public <T> ComponentConfiguration<T> addExtensionsToContainer(PackedContainerConfiguration containerConfiguration,
@@ -121,7 +132,7 @@ public final class ComponentModel {
         final ContainerSourceModel csm;
 
         /** A map of builders for every activated extension. */
-        private final IdentityHashMap<Class<? extends Extension>, PerExtensionHookRequest.Builder> extensionBuilders = new IdentityHashMap<>();
+        private final IdentityHashMap<Class<? extends Extension>, HookRequest.Builder> extensionBuilders = new IdentityHashMap<>();
 
         public final HookProcessor hookProcessor;
 
@@ -181,10 +192,11 @@ public final class ComponentModel {
         }
 
         private void onAnnotatedField(Annotation a, Field field, Set<Class<? extends Extension>> extensionTypes) throws Throwable {
+
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
-                    extensionBuilders.computeIfAbsent(eType, etype -> new PerExtensionHookRequest.Builder(hookProcessor, etype)).onAnnotatedField(field,
-                            a);
+                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequest.Builder(ExtensionModel.of(etype).hooks(), hookProcessor))
+                            .onAnnotatedField(field, a);
                 }
             }
         }
@@ -192,8 +204,8 @@ public final class ComponentModel {
         private void onAnnotatedMethod(Annotation a, Method method, Set<Class<? extends Extension>> extensionTypes) throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
-                    extensionBuilders.computeIfAbsent(eType, etype -> new PerExtensionHookRequest.Builder(hookProcessor, etype)).onAnnotatedMethod(method,
-                            a);
+                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequest.Builder(ExtensionModel.of(etype).hooks(), hookProcessor))
+                            .onAnnotatedMethod(method, a);
                 }
             }
         }
@@ -201,7 +213,7 @@ public final class ComponentModel {
         private void onAnnotatedType(Annotation a, Set<Class<? extends Extension>> extensionTypes) throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
-                    extensionBuilders.computeIfAbsent(eType, etype -> new PerExtensionHookRequest.Builder(hookProcessor, etype))
+                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequest.Builder(ExtensionModel.of(etype).hooks(), hookProcessor))
                             .onAnnotatedType(componentType, a);
                 }
             }
@@ -221,22 +233,6 @@ public final class ComponentModel {
         void process(PackedContainerConfiguration containerConfiguration, ComponentConfiguration<?> componentConfiguration) throws Throwable {
             Extension e = containerConfiguration.use(extensionType);
             invokeIt(e, componentConfiguration);
-        }
-
-        static final class Builder extends HookRequest.Builder {
-
-            public Builder(HookProcessor hookProcessor, Class<? extends Extension> extensionType) {
-                super(ExtensionModel.of(extensionType).hooks(), hookProcessor);
-            }
-
-            public PerExtensionHookRequest build(Class<? extends Extension> extensionType) {
-                try {
-                    return new PerExtensionHookRequest(this, extensionType);
-                } catch (Throwable e) {
-                    ThrowableUtil.rethrowErrorOrRuntimeException(e);
-                    throw new UndeclaredThrowableException(e);
-                }
-            }
         }
     }
 }

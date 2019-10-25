@@ -94,7 +94,7 @@ public class HookRequest {
 
         final HookProcessor hookProcessor;
 
-        protected Builder(OnHookContainerModel model, HookProcessor hookProcessor) {
+        public Builder(OnHookContainerModel model, HookProcessor hookProcessor) {
             this.array = new Object[model.size()];
             this.hooks = requireNonNull(model);
             this.hookProcessor = requireNonNull(hookProcessor);
