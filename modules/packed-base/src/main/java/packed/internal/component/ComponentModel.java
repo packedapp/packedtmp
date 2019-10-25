@@ -30,7 +30,7 @@ import app.packed.hook.OnHook;
 import packed.internal.container.ContainerSourceModel;
 import packed.internal.container.extension.ActivatorMap;
 import packed.internal.container.extension.ExtensionModel;
-import packed.internal.hook.HookProcessor;
+import packed.internal.hook.HookTargetProcessor;
 import packed.internal.hook.HookRequest;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.ThrowableUtil;
@@ -149,25 +149,25 @@ public final class ComponentModel {
          */
         private ComponentModel build() {
             Class<?> componentType = cp.clazz();
-            try (HookProcessor hp = new HookProcessor(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
+            try (HookTargetProcessor htp = new HookTargetProcessor(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
                 for (Annotation a : componentType.getAnnotations()) {
-                    onAnnotatedType(hp, componentType, a, ActivatorMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
+                    onAnnotatedType(htp, componentType, a, ActivatorMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
                     if (activatorMap != null) {
-                        onAnnotatedType(hp, componentType, a, activatorMap.onAnnotatedType(a.annotationType()));
+                        onAnnotatedType(htp, componentType, a, activatorMap.onAnnotatedType(a.annotationType()));
                     }
                 }
                 cp.findMethodsAndFields(method -> {
                     for (Annotation a : method.getAnnotations()) {
-                        onAnnotatedMethod(hp, a, method, ActivatorMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
+                        onAnnotatedMethod(htp, a, method, ActivatorMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
                         if (activatorMap != null) {
-                            onAnnotatedMethod(hp, a, method, activatorMap.onAnnotatedMethod(a.annotationType()));
+                            onAnnotatedMethod(htp, a, method, activatorMap.onAnnotatedMethod(a.annotationType()));
                         }
                     }
                 }, field -> {
                     for (Annotation a : field.getAnnotations()) {
-                        onAnnotatedField(hp, a, field, ActivatorMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
+                        onAnnotatedField(htp, a, field, ActivatorMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
                         if (activatorMap != null) {
-                            onAnnotatedField(hp, a, field, activatorMap.onAnnotatedMethod(a.annotationType()));
+                            onAnnotatedField(htp, a, field, activatorMap.onAnnotatedMethod(a.annotationType()));
                         }
                     }
                 });
@@ -178,7 +178,7 @@ public final class ComponentModel {
             return new ComponentModel(this);
         }
 
-        private void onAnnotatedField(HookProcessor hookProcessor, Annotation a, Field field, Set<Class<? extends Extension>> extensionTypes) throws Throwable {
+        private void onAnnotatedField(HookTargetProcessor hookProcessor, Annotation a, Field field, Set<Class<? extends Extension>> extensionTypes) throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
                     extensionBuilders.computeIfAbsent(eType, etype -> new HookRequest.Builder(ExtensionModel.of(etype).hooks(), hookProcessor))
@@ -187,7 +187,7 @@ public final class ComponentModel {
             }
         }
 
-        private void onAnnotatedMethod(HookProcessor hookProcessor, Annotation a, Method method, Set<Class<? extends Extension>> extensionTypes)
+        private void onAnnotatedMethod(HookTargetProcessor hookProcessor, Annotation a, Method method, Set<Class<? extends Extension>> extensionTypes)
                 throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
@@ -197,7 +197,7 @@ public final class ComponentModel {
             }
         }
 
-        private void onAnnotatedType(HookProcessor hookProcessor, Class<?> componentType, Annotation a, Set<Class<? extends Extension>> extensionTypes)
+        private void onAnnotatedType(HookTargetProcessor hookProcessor, Class<?> componentType, Annotation a, Set<Class<? extends Extension>> extensionTypes)
                 throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {

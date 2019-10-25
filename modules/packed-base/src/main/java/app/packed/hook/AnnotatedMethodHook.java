@@ -28,7 +28,7 @@ import app.packed.lang.Nullable;
 import app.packed.lang.reflect.MethodDescriptor;
 import app.packed.lang.reflect.MethodOperator;
 import app.packed.lang.reflect.UncheckedIllegalAccessException;
-import packed.internal.hook.HookProcessor;
+import packed.internal.hook.HookTargetProcessor;
 import packed.internal.hook.applicator.PackedMethodHookApplicator;
 import packed.internal.util.StringFormatter;
 
@@ -46,7 +46,7 @@ public final class AnnotatedMethodHook<T extends Annotation> implements Hook {
     private final Method method;
 
     /** The builder for the component type. */
-    private final HookProcessor processor;
+    private final HookTargetProcessor processor;
 
     /**
      * Creates a new hook instance.
@@ -58,7 +58,7 @@ public final class AnnotatedMethodHook<T extends Annotation> implements Hook {
      * @param annotation
      *            the annotation value
      */
-    AnnotatedMethodHook(HookProcessor controller, Method method, T annotation) {
+    AnnotatedMethodHook(HookTargetProcessor controller, Method method, T annotation) {
         this.processor = requireNonNull(controller);
         this.method = requireNonNull(method);
         this.annotation = requireNonNull(annotation);

@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.lang.reflect.FieldDescriptor;
 import app.packed.lang.reflect.VarOperator;
-import packed.internal.hook.HookProcessor;
+import packed.internal.hook.HookTargetProcessor;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.UncheckedThrowableFactory;
 import testutil.stubs.annotation.AnnotationInstances;
@@ -51,7 +51,7 @@ public class AnnotatedFieldHookTest {
      */
     @Test
     public void basics() {
-        HookProcessor hc = newHookController();
+        HookTargetProcessor hc = newHookController();
         AnnotatedFieldHook<Left> h = new AnnotatedFieldHook<>(hc, findField("foo"), AnnotationInstances.LEFT);
         hc.close(); // We close it here, because these checks should work, even if it is closed
 
@@ -62,7 +62,7 @@ public class AnnotatedFieldHookTest {
     /** Tests {@link #applyStatic()} */
     @Test
     public void applyStatic() {
-        HookProcessor hc = newHookController();
+        HookTargetProcessor hc = newHookController();
         AnnotatedFieldHook<Left> f = new AnnotatedFieldHook<>(hc, findField("foo"), AnnotationInstances.LEFT);
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> f.applyStatic(VarOperator.supplier()));
 
@@ -92,7 +92,7 @@ public class AnnotatedFieldHookTest {
             String FIELD = "";
         }
 
-        HookProcessor hc = newHookController();
+        HookTargetProcessor hc = newHookController();
         AnnotatedFieldHook<Left> sff = new AnnotatedFieldHook<>(hc, findField(Tester.class, "SF_FIELD"), AnnotationInstances.LEFT);
         AnnotatedFieldHook<Left> f = new AnnotatedFieldHook<>(hc, findField(Tester.class, "FIELD"), AnnotationInstances.LEFT);
         hc.close(); // We close it here, because these checks should work, even if it is closed
@@ -133,7 +133,7 @@ public class AnnotatedFieldHookTest {
      */
     @Test
     public void handles() throws Throwable {
-        HookProcessor hc = newHookController();
+        HookTargetProcessor hc = newHookController();
         AnnotatedFieldHook<Left> h = new AnnotatedFieldHook<>(hc, FIELD, AnnotationInstances.LEFT);
         AnnotatedFieldHookTest t = new AnnotatedFieldHookTest();
 
@@ -174,8 +174,8 @@ public class AnnotatedFieldHookTest {
         assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> h.varHandle());
     }
 
-    private static HookProcessor newHookController() {
+    private static HookTargetProcessor newHookController() {
         ClassProcessor cp = new ClassProcessor(MethodHandles.lookup(), AnnotatedFieldHookTest.class, false);
-        return new HookProcessor(cp, UncheckedThrowableFactory.ASSERTION_ERROR);
+        return new HookTargetProcessor(cp, UncheckedThrowableFactory.ASSERTION_ERROR);
     }
 }

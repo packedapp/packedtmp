@@ -17,7 +17,7 @@ package app.packed.hook;
 
 import static java.util.Objects.requireNonNull;
 
-import packed.internal.hook.HookProcessor;
+import packed.internal.hook.HookTargetProcessor;
 
 /**
  * Represent an annotated field on a component instance.
@@ -46,7 +46,7 @@ import packed.internal.hook.HookProcessor;
 public final class AssignableToHook<T> implements Hook {
 
     /** The builder for the component type. */
-    final HookProcessor controller;
+    final HookTargetProcessor controller;
 
     /** The actual type. */
     private final Class<? extends T> type;
@@ -59,7 +59,7 @@ public final class AssignableToHook<T> implements Hook {
      * @param type
      *            the actual type that was hook
      */
-    AssignableToHook(HookProcessor controller, Class<? extends T> type) {
+    AssignableToHook(HookTargetProcessor controller, Class<? extends T> type) {
         this.controller = requireNonNull(controller);
         this.type = requireNonNull(type);
     }

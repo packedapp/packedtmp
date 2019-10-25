@@ -30,7 +30,7 @@ import packed.internal.util.UncheckedThrowableFactory;
  * A single one of these is created by class that is analyzed
  */
 // HookGate
-public final class HookProcessor implements AutoCloseable {
+public final class HookTargetProcessor implements AutoCloseable {
 
     public final ClassProcessor cp;
 
@@ -40,7 +40,7 @@ public final class HookProcessor implements AutoCloseable {
     private final UncheckedThrowableFactory<? extends RuntimeException> tf;
 
     @SuppressWarnings("unchecked")
-    public HookProcessor(ClassProcessor cp, UncheckedThrowableFactory<?> tf) {
+    public HookTargetProcessor(ClassProcessor cp, UncheckedThrowableFactory<?> tf) {
         this.cp = requireNonNull(cp);
         // A hack to allow us to throw AssertionError, as we have no way to indicate
         // Error || RuntimeException

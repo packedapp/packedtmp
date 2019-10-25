@@ -59,7 +59,7 @@ public class HookRequest {
             }
         }
         for (DelayedAnnotatedField m : delayedFields) {
-            try (HookProcessor hp = new HookProcessor(m.cp.copy(), UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
+            try (HookTargetProcessor hp = new HookTargetProcessor(m.cp.copy(), UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
                 MethodHandle mh = m.mh;
                 AnnotatedFieldHook<Annotation> amh = ModuleAccess.hook().newAnnotatedFieldHook(hp, m.field, m.annotation);
                 if (mh.type().parameterCount() == 2) {
@@ -70,7 +70,7 @@ public class HookRequest {
             }
         }
         for (DelayedAnnotatedMethod m : delayedMethods) {
-            try (HookProcessor hp = new HookProcessor(m.cp.copy(), UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
+            try (HookTargetProcessor hp = new HookTargetProcessor(m.cp.copy(), UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
                 MethodHandle mh = m.mh;
                 AnnotatedMethodHook<Annotation> amh = ModuleAccess.hook().newAnnotatedMethodHook(hp, m.method, m.annotation);
                 if (mh.type().parameterCount() == 2) {
@@ -92,23 +92,23 @@ public class HookRequest {
 
         final OnHookContainerModel hooks;
 
-        final HookProcessor hookProcessor;
+        final HookTargetProcessor hookProcessor;
 
         public HookRequest build() throws Throwable {
             return new HookRequest(this);
         }
 
-        public Builder(OnHookContainerModel model, HookProcessor hookProcessor) {
+        public Builder(OnHookContainerModel model, HookTargetProcessor hookProcessor) {
             this.array = new Object[model.size()];
             this.hooks = requireNonNull(model);
             this.hookProcessor = requireNonNull(hookProcessor);
         }
 
-        private void onAnnotatedField(HookProcessor hookProcessor, Field field, Annotation annotation) throws Throwable {
+        private void onAnnotatedField(HookTargetProcessor hookProcessor, Field field, Annotation annotation) throws Throwable {
             hooks.tryProcesAnnotatedField(hookProcessor, field, annotation, this);
         }
 
-        private void onAnnotatedMethod(HookProcessor hookProcessor, Method method, Annotation annotation) throws Throwable {
+        private void onAnnotatedMethod(HookTargetProcessor hookProcessor, Method method, Annotation annotation) throws Throwable {
             hooks.tryProcesAnnotatedMethod(hookProcessor, method, annotation, this);
         }
 
@@ -138,7 +138,7 @@ public class HookRequest {
             this.mh = requireNonNull(mh);
         }
 
-        public AnnotatedFieldHook<Annotation> toHook(HookProcessor hookProcessor) {
+        public AnnotatedFieldHook<Annotation> toHook(HookTargetProcessor hookProcessor) {
             return ModuleAccess.hook().newAnnotatedFieldHook(hookProcessor, field, annotation);
         }
     }
@@ -156,7 +156,7 @@ public class HookRequest {
             this.mh = requireNonNull(mh);
         }
 
-        public AnnotatedMethodHook<Annotation> toHook(HookProcessor hookProcessor) {
+        public AnnotatedMethodHook<Annotation> toHook(HookTargetProcessor hookProcessor) {
             return ModuleAccess.hook().newAnnotatedMethodHook(hookProcessor, method, annotation);
         }
     }

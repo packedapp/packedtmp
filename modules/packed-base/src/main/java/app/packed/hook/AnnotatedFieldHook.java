@@ -30,7 +30,7 @@ import app.packed.lang.Nullable;
 import app.packed.lang.reflect.FieldDescriptor;
 import app.packed.lang.reflect.UncheckedIllegalAccessException;
 import app.packed.lang.reflect.VarOperator;
-import packed.internal.hook.HookProcessor;
+import packed.internal.hook.HookTargetProcessor;
 import packed.internal.hook.applicator.PackedFieldHookApplicator;
 import packed.internal.moduleaccess.AppPackedHookAccess;
 import packed.internal.moduleaccess.ModuleAccess;
@@ -53,25 +53,25 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
 
             /** {@inheritDoc} */
             @Override
-            public <T extends Annotation> AnnotatedFieldHook<T> newAnnotatedFieldHook(HookProcessor processor, Field field, T annotation) {
+            public <T extends Annotation> AnnotatedFieldHook<T> newAnnotatedFieldHook(HookTargetProcessor processor, Field field, T annotation) {
                 return new AnnotatedFieldHook<>(processor, field, annotation);
             }
 
             /** {@inheritDoc} */
             @Override
-            public <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(HookProcessor processor, Method method, T annotation) {
+            public <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(HookTargetProcessor processor, Method method, T annotation) {
                 return new AnnotatedMethodHook<>(processor, method, annotation);
             }
 
             /** {@inheritDoc} */
             @Override
-            public <T extends Annotation> AnnotatedTypeHook<T> newAnnotatedTypeHook(HookProcessor processor, Class<?> type, T annotation) {
+            public <T extends Annotation> AnnotatedTypeHook<T> newAnnotatedTypeHook(HookTargetProcessor processor, Class<?> type, T annotation) {
                 return new AnnotatedTypeHook<>(processor, type, annotation);
             }
 
             /** {@inheritDoc} */
             @Override
-            public <T> AssignableToHook<T> newAssignableToHook(HookProcessor processor, Class<T> type) {
+            public <T> AssignableToHook<T> newAssignableToHook(HookTargetProcessor processor, Class<T> type) {
                 return new AssignableToHook<>(processor, type);
             }
         });
@@ -81,7 +81,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     private final T annotation;
 
     /** The processor for this hook. */
-    private final HookProcessor processor;
+    private final HookTargetProcessor processor;
 
     /** A field descriptor, is lazily created via {@link #field()}. */
     @Nullable
@@ -101,7 +101,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      *            the annotation value, no validation whether or not the given annotation value is equivalent to an
      *            annotation value on the specified field is performed
      */
-    AnnotatedFieldHook(HookProcessor processor, Field field, T annotation) {
+    AnnotatedFieldHook(HookTargetProcessor processor, Field field, T annotation) {
         this.processor = requireNonNull(processor);
         this.field = requireNonNull(field);
         this.annotation = requireNonNull(annotation);

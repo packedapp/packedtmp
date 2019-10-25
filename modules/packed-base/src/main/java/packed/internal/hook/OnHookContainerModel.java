@@ -164,7 +164,7 @@ public final class OnHookContainerModel {
 
     @Nullable
     Object process(@Nullable Object parent, ClassProcessor cpTarget, UncheckedThrowableFactory<?> tf) throws Throwable {
-        HookProcessor hc = new HookProcessor(cpTarget, tf);
+        HookTargetProcessor hc = new HookTargetProcessor(cpTarget, tf);
         HookRequest.Builder hb = new HookRequest.Builder(this, hc);
         Object[] array = hb.array;
         array[0] = parent;
@@ -191,7 +191,7 @@ public final class OnHookContainerModel {
         return builderConstructors.length;
     }
 
-    void tryProcesAnnotatedField(HookProcessor hc, Field field, Annotation annotation, HookRequest.Builder hr) throws Throwable {
+    void tryProcesAnnotatedField(HookTargetProcessor hc, Field field, Annotation annotation, HookRequest.Builder hr) throws Throwable {
         for (Link link = allLinks.annotatedFields.get(annotation.annotationType()); link != null; link = link.next) {
             if (link.index == 0 && !isHookTop) {
                 hr.delayedFields.add(new DelayedAnnotatedField(hc.cp, field, annotation, link.mh));
@@ -207,7 +207,7 @@ public final class OnHookContainerModel {
         }
     }
 
-    void tryProcesAnnotatedMethod(HookProcessor hc, Method method, Annotation annotation, HookRequest.Builder hr) throws Throwable {
+    void tryProcesAnnotatedMethod(HookTargetProcessor hc, Method method, Annotation annotation, HookRequest.Builder hr) throws Throwable {
         for (Link link = allLinks.annotatedMethods.get(annotation.annotationType()); link != null; link = link.next) {
             if (link.index == 0 && !isHookTop) {
                 hr.delayedMethods.add(new DelayedAnnotatedMethod(hc.cp, method, annotation, link.mh));
