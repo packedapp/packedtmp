@@ -49,15 +49,11 @@ final class OnHookModelBuilder {
 
     final MutableOnHookMap<TinyPair<Node, MethodHandle>> allEntries = new MutableOnHookMap<>();
 
-    final boolean isTopHook;
-
     /** All non-root nodes, index by their the type of the hook. */
     private final IdentityHashMap<Class<? extends Hook>, Node> nodes = new IdentityHashMap<>();
 
     /** The root node. */
     private final Node root;
-
-    final MutableOnHookMap<TinyPair<Node, MethodHandle>> rootEntries;
 
     /** A stack that is used to process each node. */
     final ArrayDeque<Node> stack = new ArrayDeque<>();
@@ -65,12 +61,8 @@ final class OnHookModelBuilder {
     OnHookModelBuilder(ClassProcessor cp, Class<?>... additionalParameters) {
         if (Hook.class.isAssignableFrom(cp.clazz())) {
             this.root = new Node(cp, cp.clazz());
-            rootEntries = allEntries;
-            this.isTopHook = true;
         } else {
             this.root = new Node(cp);
-            this.isTopHook = false;
-            rootEntries = new MutableOnHookMap<>();
         }
     }
 
@@ -155,34 +147,21 @@ final class OnHookModelBuilder {
         MethodHandle mh = node.cp.unreflect(method, tf);
 
         // Let first see if it is a base book.
-        final IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> mm;
-
-        // Keep track of all dangling stuff on root
-        final IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> roots;
+        IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> mm = null;
         if (hookType == AnnotatedFieldHook.class) {
             mm = allEntries.annotatedFieldsLazyInit();
-            roots = node == root && root.builderConstructor == null ? rootEntries.annotatedFieldsLazyInit() : null;
         } else if (hookType == AnnotatedMethodHook.class) {
             mm = allEntries.annotatedMethodsLazyInit();
-            roots = node == root && root.builderConstructor == null ? rootEntries.annotatedMethodsLazyInit() : null;
         } else if (hookType == AnnotatedTypeHook.class) {
             mm = allEntries.annotatedTypesLazyInit();
-            roots = node == root && root.builderConstructor == null ? rootEntries.annotatedTypesLazyInit() : null;
         } else if (hookType == AssignableToHook.class) {
             mm = allEntries.assignableTosLazyInit();
-            roots = node == root && root.builderConstructor == null ? rootEntries.assignableTos : null;
-        } else {
-            mm = null;
-            roots = null;
         }
 
         if (mm != null) {
             ParameterizedType pt = (ParameterizedType) hook.getParameterizedType();
             Class<?> typeVariable = (Class<?>) pt.getActualTypeArguments()[0];
             mm.compute(typeVariable, (k, v) -> new TinyPair<>(node, mh, v));
-            if (roots != null) {
-                roots.compute(typeVariable, (k, v) -> new TinyPair<>(node, mh, v));
-            }
         } else {
             if (hookType == node.cp.clazz()) {
                 tf.newThrowableForMethod("Hook cannot depend on itself", method);

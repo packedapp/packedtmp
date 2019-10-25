@@ -19,21 +19,14 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-import app.packed.hook.AnnotatedFieldHook;
-import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
-import app.packed.hook.Hook.Builder;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
-import packed.internal.hook.HookRequest.DelayedAnnotatedMember;
 import packed.internal.hook.OnHookModelBuilder.Node;
-import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.TinyPair;
 
@@ -48,11 +41,7 @@ public final class OnHookModel {
     final MethodHandle[] builderConstructors;
 
     /** Methods annotated with {@link OnHook} that takes a non-base {@link Hook}. */
-    private final Link[] customHooks;
-
-    final boolean isHookTop;
-
-    final ImmutableOnHookMap<Link> rootLinks;
+    final Link[] customHooks;
 
     OnHookModel(OnHookModelBuilder b) {
         Function<TinyPair<Node, MethodHandle>, Link> ff = e -> {
@@ -64,11 +53,6 @@ public final class OnHookModel {
         };
 
         allLinks = b.allEntries.toImmutable(ff);
-        if (b.allEntries != b.rootEntries) {
-            rootLinks = b.rootEntries.toImmutable(ff);
-        } else {
-            rootLinks = allLinks;
-        }
 
         this.customHooks = new Link[b.stack.size()];
         this.builderConstructors = new MethodHandle[b.stack.size()];
@@ -81,11 +65,6 @@ public final class OnHookModel {
                     msg += " " + n.builderConstructor.type().returnType();
                 }
                 System.out.println(msg);
-            }
-            if (rootLinks != null) {
-                System.out.println(rootLinks.toString());
-            } else {
-                System.out.println("No rootlinks");
             }
             System.out.println("------");
         }
@@ -100,7 +79,6 @@ public final class OnHookModel {
                 }
             }
         }
-        isHookTop = b.isTopHook;
     }
 
     /**
@@ -126,66 +104,6 @@ public final class OnHookModel {
         return allLinks == null || allLinks.annotatedTypes == null ? null : (Set) allLinks.annotatedTypes.keySet();
     }
 
-    private Hook.Builder<?> builderOf(Object[] array, int index) throws Throwable {
-        Object builder = array[index];
-        if (builder == null) {
-            builder = array[index] = builderConstructors[index].invoke();
-        }
-        return (Builder<?>) builder;
-    }
-
-    TinyPair<Hook, MethodHandle> compute(Object[] array) throws Throwable {
-        // This code is same as process()
-        for (int i = array.length - 1; i >= 0; i--) {
-            for (Link link = customHooks[i]; link != null; link = link.next) {
-                if (builderConstructors[i] != null) {
-                    Hook.Builder<?> builder = builderOf(array, i);
-                    link.mh.invoke(builder, array[link.index]);
-                }
-            }
-            if (i > 0) {
-                Object h = array[i];
-                if (h != null) {
-                    array[i] = ((Hook.Builder<?>) h).build();
-                }
-            }
-        }
-
-        TinyPair<Hook, MethodHandle> result = null;
-        for (Link link = customHooks[0]; link != null; link = link.next) {
-            result = new TinyPair<>((Hook) array[link.index], link.mh, result);
-        }
-        return result;
-    }
-
-    void tryProcesAnnotatedField(HookRequest.Builder hr, Field field, Annotation annotation) throws Throwable {
-        for (Link link = allLinks.annotatedFields.get(annotation.annotationType()); link != null; link = link.next) {
-            if (link.index == 0 && !isHookTop) {
-                hr.delayedMembers.add(new DelayedAnnotatedMember(field, annotation, link.mh));
-            } else {
-                Hook.Builder<?> builder = builderOf(hr.array, link.index);
-                AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(hr.hookProcessor, field, annotation);
-                if (link.mh.type().parameterCount() == 1) {
-                    link.mh.invoke(hook);
-                } else {
-                    link.mh.invoke(builder, hook);
-                }
-            }
-        }
-    }
-
-    void tryProcesAnnotatedMethod(HookRequest.Builder hr, Method method, Annotation annotation) throws Throwable {
-        for (Link link = allLinks.annotatedMethods.get(annotation.annotationType()); link != null; link = link.next) {
-            if (link.index == 0 && !isHookTop) {
-                hr.delayedMembers.add(new DelayedAnnotatedMember(method, annotation, link.mh));
-            } else {
-                Hook.Builder<?> builder = builderOf(hr.array, link.index);
-                AnnotatedMethodHook<Annotation> hook = ModuleAccess.hook().newAnnotatedMethodHook(hr.hookProcessor, method, annotation);
-                link.mh.invoke(builder, hook);
-            }
-        }
-    }
-
     /**
      * Creates a new model.
      * 
@@ -200,11 +118,11 @@ public final class OnHookModel {
         return new OnHookModelBuilder(cp, additionalParameters).build();
     }
 
-    private static class Link {
-        private final int index;
-        private final MethodHandle mh;
+    static class Link {
+        final int index;
+        final MethodHandle mh;
         @Nullable
-        private final Link next;
+        final Link next;
 
         private Link(MethodHandle mh, int index, @Nullable Link next) {
             this.mh = requireNonNull(mh);

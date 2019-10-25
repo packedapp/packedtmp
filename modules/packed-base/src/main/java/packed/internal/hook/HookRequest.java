@@ -22,13 +22,12 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 
 import app.packed.hook.Hook;
 import app.packed.lang.Nullable;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ClassProcessor;
+import packed.internal.util.Tiny;
 import packed.internal.util.TinyPair;
 import packed.internal.util.UncheckedThrowableFactory;
 
@@ -41,12 +40,12 @@ public final class HookRequest {
     final TinyPair<Hook, MethodHandle> customHooksCallback;
 
     @Nullable
-    final List<DelayedAnnotatedMember> delayedMembers;
+    final Tiny<DelayedAnnotatedMember> delayedMembers;
 
     final ClassProcessor delayedProcessor;
 
-    protected HookRequest(HookRequest.Builder builder) throws Throwable {
-        this.customHooksCallback = builder.onHookModel.compute(builder.array);
+    protected HookRequest(HookRequestBuilder builder) throws Throwable {
+        this.customHooksCallback = builder.compute();
         this.delayedMembers = builder.delayedMembers;
         this.delayedProcessor = builder.hookProcessor.cp;
     }
@@ -62,78 +61,34 @@ public final class HookRequest {
                 mh.invoke(target, hook, additional);
             }
         }
-
-        for (DelayedAnnotatedMember m : delayedMembers) {
+        // Invoke OnHook methods on the Bundle or Extension that takes a base hook
+        if (delayedMembers != null) {
             try (HookTargetProcessor hp = new HookTargetProcessor(delayedProcessor.copy(), UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
-                MethodHandle mh = m.mh;
-                Hook amh;
-                if (m.member instanceof Field) {
-                    amh = ModuleAccess.hook().newAnnotatedFieldHook(hp, (Field) m.member, m.annotation);
-                } else {
-                    amh = ModuleAccess.hook().newAnnotatedMethodHook(hp, (Method) m.member, m.annotation);
-                }
+                for (Tiny<DelayedAnnotatedMember> t = delayedMembers; t != null; t = t.next) {
+                    DelayedAnnotatedMember m = t.element;
+                    MethodHandle mh = m.mh;
+                    Hook amh;
+                    if (m.member instanceof Field) {
+                        amh = ModuleAccess.hook().newAnnotatedFieldHook(hp, (Field) m.member, m.annotation);
+                    } else {
+                        amh = ModuleAccess.hook().newAnnotatedMethodHook(hp, (Method) m.member, m.annotation);
+                    }
 
-                if (mh.type().parameterCount() == 2) {
-                    mh.invoke(target, amh);
-                } else {
-                    mh.invoke(target, amh, additional);
+                    if (mh.type().parameterCount() == 2) {
+                        mh.invoke(target, amh);
+                    } else {
+                        mh.invoke(target, amh, additional);
+                    }
                 }
             }
         }
     }
 
-    public static final class Builder {
-
-        final Object[] array;
-
-        List<DelayedAnnotatedMember> delayedMembers = new ArrayList<>();
-
-        final HookTargetProcessor hookProcessor;
-
-        private final OnHookModel onHookModel;
-
-        public Builder(OnHookModel model, HookTargetProcessor hookProcessor) {
-            this.array = new Object[model.builderConstructors.length];
-            this.onHookModel = requireNonNull(model);
-            this.hookProcessor = requireNonNull(hookProcessor);
-        }
-
-        public HookRequest build() throws Throwable {
-            return new HookRequest(this);
-        }
-
-        public void onAnnotatedField(Field field, Annotation annotation) throws Throwable {
-            onHookModel.tryProcesAnnotatedField(this, field, annotation);
-        }
-
-        public void onAnnotatedMethod(Method method, Annotation annotation) throws Throwable {
-            onHookModel.tryProcesAnnotatedMethod(this, method, annotation);
-        }
-
-        public void onAnnotatedType(Class<?> clazz, Annotation annotation) throws Throwable {
-            throw new UnsupportedOperationException();
-        }
-
-        public Object singleConsume(ClassProcessor cp) throws Throwable {
-            cp.findMethodsAndFields(onHookModel.allLinks.annotatedMethods == null ? null : f -> {
-                for (Annotation a : f.getAnnotations()) {
-                    onHookModel.tryProcesAnnotatedMethod(this, f, a);
-                }
-            }, onHookModel.allLinks.annotatedFields == null ? null : f -> {
-                for (Annotation a : f.getAnnotations()) {
-                    onHookModel.tryProcesAnnotatedField(this, f, a);
-                }
-            });
-            onHookModel.compute(array);
-            Object a = array[0];
-            return a == null ? null : (((Hook.Builder<?>) a).build());
-        }
-    }
-
+    /// This is necessary because we can only fields and methods once. Without scanning everything again
     static class DelayedAnnotatedMember {
-        final Annotation annotation;
-        final Member member;
-        final MethodHandle mh;
+        private final Annotation annotation;
+        private final Member member;
+        private final MethodHandle mh;
 
         DelayedAnnotatedMember(Member member, Annotation annotation, MethodHandle mh) {
             this.member = requireNonNull(member);

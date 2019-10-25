@@ -33,6 +33,7 @@ import packed.internal.container.ContainerSourceModel;
 import packed.internal.container.extension.ExtensionModel;
 import packed.internal.container.extension.LazyExtensionActivationMap;
 import packed.internal.hook.HookRequest;
+import packed.internal.hook.HookRequestBuilder;
 import packed.internal.hook.HookTargetProcessor;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.ThrowableUtil;
@@ -144,12 +145,12 @@ public final class ComponentModel {
 
         private final ClassProcessor cp;
 
-        HookRequest.Builder csb;
+        HookRequestBuilder csb;
 
         final ContainerSourceModel csm;
 
         /** A map of builders for every activated extension. */
-        private final IdentityHashMap<Class<? extends Extension>, HookRequest.Builder> extensionBuilders = new IdentityHashMap<>();
+        private final IdentityHashMap<Class<? extends Extension>, HookRequestBuilder> extensionBuilders = new IdentityHashMap<>();
 
         /**
          * Creates a new component model builder
@@ -173,7 +174,7 @@ public final class ComponentModel {
             Class<?> componentType = cp.clazz();
 
             try (HookTargetProcessor htp = new HookTargetProcessor(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
-                HookRequest.Builder csb = this.csb = csm.onHookModel == null ? null : new HookRequest.Builder(csm.onHookModel, htp);
+                HookRequestBuilder csb = this.csb = csm.onHookModel == null ? null : new HookRequestBuilder(csm.onHookModel, htp);
 
                 for (Annotation a : componentType.getAnnotations()) {
                     onAnnotatedType(htp, componentType, a, LazyExtensionActivationMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
@@ -216,7 +217,7 @@ public final class ComponentModel {
                 throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
-                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequest.Builder(ExtensionModel.onHookModelOf(etype), hookProcessor))
+                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequestBuilder(ExtensionModel.onHookModelOf(etype), hookProcessor))
                             .onAnnotatedField(field, a);
                 }
             }
@@ -226,7 +227,7 @@ public final class ComponentModel {
                 throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
-                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequest.Builder(ExtensionModel.onHookModelOf(etype), hookProcessor))
+                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequestBuilder(ExtensionModel.onHookModelOf(etype), hookProcessor))
                             .onAnnotatedMethod(method, a);
                 }
             }
@@ -236,7 +237,7 @@ public final class ComponentModel {
                 throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
-                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequest.Builder(ExtensionModel.onHookModelOf(etype), hookProcessor))
+                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequestBuilder(ExtensionModel.onHookModelOf(etype), hookProcessor))
                             .onAnnotatedType(componentType, a);
                 }
             }

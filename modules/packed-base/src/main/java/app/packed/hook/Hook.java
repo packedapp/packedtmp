@@ -22,7 +22,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 
 import app.packed.container.InternalExtensionException;
 import app.packed.lang.Nullable;
-import packed.internal.hook.HookRequest;
+import packed.internal.hook.HookRequestBuilder;
 import packed.internal.hook.HookTargetProcessor;
 import packed.internal.hook.OnHookModel;
 import packed.internal.reflect.ClassProcessor;
@@ -88,7 +88,7 @@ public interface Hook {
             try {
 
                 HookTargetProcessor hc = new HookTargetProcessor(cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR);
-                HookRequest.Builder hb = new HookRequest.Builder(OnHookModel.newInstance(cpHook), hc);
+                HookRequestBuilder hb = new HookRequestBuilder(OnHookModel.newInstance(cpHook), hc, true);
                 try {
                     return (T) hb.singleConsume(cpTarget);
                 } catch (InternalExtensionException ee) {

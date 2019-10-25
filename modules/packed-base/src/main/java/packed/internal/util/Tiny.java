@@ -31,10 +31,10 @@ import app.packed.lang.Nullable;
  */
 public final class Tiny<E> {
 
-    private final E element;
+    public final E element;
 
     @Nullable
-    final Tiny<E> next;
+    public final Tiny<E> next;
 
     private final int predecessors;
 
