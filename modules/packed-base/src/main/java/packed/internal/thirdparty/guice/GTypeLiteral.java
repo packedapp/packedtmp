@@ -162,7 +162,7 @@ public class GTypeLiteral<T> {
         return GTypeLiteral.get(resolveType(toResolve));
     }
 
-    Type resolveType(Type toResolve) {
+    public Type resolveType(Type toResolve) {
         // this implementation is made a little more complicated in an attempt to avoid object-creation
         while (true) {
             if (toResolve instanceof TypeVariable) {

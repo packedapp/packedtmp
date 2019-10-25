@@ -38,6 +38,7 @@ import app.packed.lang.Nullable;
 import packed.internal.reflect.ClassFinder;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.reflect.ConstructorFinder;
+import packed.internal.thirdparty.guice.GTypeLiteral;
 import packed.internal.util.Tiny;
 import packed.internal.util.TinyPair;
 import packed.internal.util.UncheckedThrowableFactory;
@@ -106,7 +107,22 @@ final class OnHookModelBuilder {
         return new OnHookModel(this);
     }
 
+    private Type getResolvedType(Class<?> c, Method p, Type t) {
+        if (TypeUtil.isFreeFromTypeVariables(t)) {
+            return t;
+        }
+
+        Type t2 = GTypeLiteral.get(c).resolveType(t);
+        System.out.println(t2);
+        if (TypeUtil.isFreeFromTypeVariables(t2)) {
+            return t2;
+        }
+        // Still unresolved type parameters
+        throw new Error();
+    }
+
     private void onMethod(Node node, Method method) {
+        System.out.println(method);
         if (!method.isAnnotationPresent(OnHook.class)) {
             return;
         }
@@ -117,13 +133,18 @@ final class OnHookModelBuilder {
         }
         Parameter[] parameters = method.getParameters();
         Parameter hook = parameters[0];
-        if (!Hook.class.isAssignableFrom(hook.getType())) {
+
+        Type hookT = getResolvedType(node.cp.clazz(), method, hook.getParameterizedType());
+
+        Class<?> rawHookType = GTypeLiteral.get(hookT).getRawType();
+        System.out.println(hookT.getClass());
+
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        Class<? extends Hook> hookType = (Class) GTypeLiteral.get(hookT).getRawType();
+        if (!Hook.class.isAssignableFrom(rawHookType)) {
             throw tf.newThrowableForMethod("The first parameter of a method annotated with @" + OnHook.class.getSimpleName() + " must be of type "
                     + Hook.class.getCanonicalName() + " was " + parameters[0].getType(), method);
         }
-        @SuppressWarnings("unchecked")
-        Class<? extends Hook> hookType = (Class<? extends Hook>) hook.getType();
-
         for (int i = 1; i < parameters.length; i++) {
             if (node != root) {
                 throw tf.newThrowableForMethod(
@@ -155,7 +176,7 @@ final class OnHookModelBuilder {
         }
 
         if (mm != null) {
-            Type t = hook.getParameterizedType();
+            Type t = hookT; // .getParameterizedType();
             if (!(t instanceof ParameterizedType)) {
                 throw tf.newThrowableForMethod(hookType.getSimpleName() + " must be parameterized, cannot be a raw type", method);
             }

@@ -36,8 +36,20 @@ public class ClassFinder {
                 groupType = c;
             }
         }
+
         if (groupType == null) {
-            throw new IllegalArgumentException("Could not find declared class named " + name);
+            for (Class<?> c : declaringClass.getSuperclass().getDeclaredClasses()) {
+                if (c.getSimpleName().equals(name)) {
+                    if (!type.isAssignableFrom(c)) {
+                        throw new InternalExtensionException(c.getCanonicalName() + " must extend " + StringFormatter.format(type));
+                    }
+                    groupType = c;
+                }
+            }
+        }
+
+        if (groupType == null) {
+            throw new IllegalArgumentException("Could not find declared class named " + name + " for " + declaringClass);
         }
 
         return groupType;
