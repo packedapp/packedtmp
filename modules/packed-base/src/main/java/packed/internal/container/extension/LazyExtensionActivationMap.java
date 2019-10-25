@@ -77,13 +77,12 @@ public final class LazyExtensionActivationMap {
 
     @Nullable
     public static DefaultHookUsage findNonExtending(OnHookModel hooks) {
-        return DefaultHookUsage.ofOrNull(LazyExtensionActivationMap.findNonAutoExtending(hooks.annotatedFieldHooks()),
-                LazyExtensionActivationMap.findNonAutoExtending(hooks.annotatedMethodHooks()),
-                LazyExtensionActivationMap.findNonAutoExtending(hooks.annotatedTypeHooks()));
+        return DefaultHookUsage.ofOrNull(findNonAutoExtending(hooks.annotatedFieldHooks()), findNonAutoExtending(hooks.annotatedMethodHooks()),
+                findNonAutoExtending(hooks.annotatedTypeHooks()));
     }
 
     @Nullable
-    static <T> Set<Class<? extends T>> findNonAutoExtending(Set<Class<? extends T>> set) {
+    private static <T> Set<Class<? extends T>> findNonAutoExtending(Set<Class<? extends T>> set) {
         Tiny<Class<? extends T>> n = null;
         if (set != null) {
             for (Class<? extends T> c : set) {
