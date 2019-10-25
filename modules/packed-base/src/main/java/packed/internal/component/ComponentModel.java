@@ -27,9 +27,9 @@ import java.util.Set;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.UseExtension;
+import app.packed.hook.OnHook;
 import packed.internal.container.ComponentLookup;
 import packed.internal.container.ContainerSourceModel;
-import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.ActivatorMap;
 import packed.internal.container.extension.ExtensionModel;
 import packed.internal.hook.HookProcessor;
@@ -42,13 +42,12 @@ import packed.internal.util.UncheckedThrowableFactory;
  * A model of a container, an instance of this class can only be acquired via
  * {@link ContainerSourceModel#componentModelOf(Class)}.
  */
-
 public final class ComponentModel {
 
     /** The component type. */
     private final Class<?> componentType;
 
-    /** An array of any hook groups defined by the component type. */
+    /** An array of any extensions with relevant {@link OnHook} methods. */
     private final ExtensionRequestPair[] extensionHooks;
 
     /** The simple name of the component type, typically used for lazy generating a component name. */
@@ -94,21 +93,20 @@ public final class ComponentModel {
         return s;
     }
 
-    public <T> ComponentConfiguration<T> invokeHooksForComponent(PackedContainerConfiguration containerConfiguration,
-            ComponentConfiguration<T> componentConfiguration) {
+    public <T> ComponentConfiguration<T> invokeOnHookOnInstall(AbstractComponentConfiguration<T> acc) {
         try {
             for (ExtensionRequestPair he : extensionHooks) {
-                // Finds (possible installing) the extension which have @OnHook methods
-                Extension extension = containerConfiguration.use(he.extensionType);
+                // Finds (possible installing) the extension with @OnHook methods
+                Extension extension = acc.container.use(he.extensionType);
 
-                // Invoke each method
-                he.request.invokeIt(extension, componentConfiguration);
+                // Invoke each method annotated with @OnHook on the extension instance
+                he.request.invokeIt(extension, acc);
             }
         } catch (Throwable t) {
             ThrowableUtil.rethrowErrorOrRuntimeException(t);
             throw new UndeclaredThrowableException(t);
         }
-        return componentConfiguration;
+        return acc;
     }
 
     /** A builder object for a component model. */
