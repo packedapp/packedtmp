@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.config.ConfigSite;
 import app.packed.lang.Nullable;
 import app.packed.service.Dependency;
-import packed.internal.inject.hooks.AtInject;
+import packed.internal.inject.AtInject;
 import packed.internal.service.build.BuildEntry;
 
 /**
