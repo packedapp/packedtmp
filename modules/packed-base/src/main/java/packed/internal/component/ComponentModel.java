@@ -31,7 +31,9 @@ import packed.internal.container.ComponentLookup;
 import packed.internal.container.ContainerSourceModel;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.ActivatorMap;
+import packed.internal.container.extension.ExtensionModel;
 import packed.internal.hook.HookProcessor;
+import packed.internal.hook.HookRequest;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.UncheckedThrowableFactory;
@@ -47,7 +49,7 @@ public final class ComponentModel {
     private final Class<?> componentType;
 
     /** An array of any hook groups defined by the component type. */
-    private final ComponentExtensionHookRequest[] hookGroups;
+    private final PerExtensionHookRequest[] hookGroups;
 
     /** The simple name of the component type, typically used for lazy generating a component name. */
     private volatile String simpleName;
@@ -61,7 +63,7 @@ public final class ComponentModel {
     private ComponentModel(ComponentModel.Builder builder) {
         this.componentType = requireNonNull(builder.componentType);
         this.hookGroups = builder.extensionBuilders.entrySet().stream().map(e -> e.getValue().build(e.getKey()))
-                .toArray(i -> new ComponentExtensionHookRequest[i]);
+                .toArray(i -> new PerExtensionHookRequest[i]);
     }
 
     public <T> ComponentConfiguration<T> addExtensionsToContainer(PackedContainerConfiguration containerConfiguration,
@@ -73,7 +75,7 @@ public final class ComponentModel {
         // Boer vaere lowest dependency id first...
         // Preferable deterministic
         try {
-            for (ComponentExtensionHookRequest group : hookGroups) {
+            for (PerExtensionHookRequest group : hookGroups) {
                 group.process(containerConfiguration, componentConfiguration);
             }
         } catch (Throwable e) {
@@ -119,7 +121,7 @@ public final class ComponentModel {
         final ContainerSourceModel csm;
 
         /** A map of builders for every activated extension. */
-        private final IdentityHashMap<Class<? extends Extension>, ComponentExtensionHookRequest.Builder> extensionBuilders = new IdentityHashMap<>();
+        private final IdentityHashMap<Class<? extends Extension>, PerExtensionHookRequest.Builder> extensionBuilders = new IdentityHashMap<>();
 
         public final HookProcessor hookProcessor;
 
@@ -178,19 +180,10 @@ public final class ComponentModel {
             return cm;
         }
 
-        private void onAnnotatedType(Annotation a, Set<Class<? extends Extension>> extensionTypes) throws Throwable {
-            if (extensionTypes != null) {
-                for (Class<? extends Extension> eType : extensionTypes) {
-                    extensionBuilders.computeIfAbsent(eType, etype -> new ComponentExtensionHookRequest.Builder(hookProcessor, etype))
-                            .onAnnotatedType(componentType, a);
-                }
-            }
-        }
-
         private void onAnnotatedField(Annotation a, Field field, Set<Class<? extends Extension>> extensionTypes) throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
-                    extensionBuilders.computeIfAbsent(eType, etype -> new ComponentExtensionHookRequest.Builder(hookProcessor, etype)).onAnnotatedField(field,
+                    extensionBuilders.computeIfAbsent(eType, etype -> new PerExtensionHookRequest.Builder(hookProcessor, etype)).onAnnotatedField(field,
                             a);
                 }
             }
@@ -199,8 +192,49 @@ public final class ComponentModel {
         private void onAnnotatedMethod(Annotation a, Method method, Set<Class<? extends Extension>> extensionTypes) throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
-                    extensionBuilders.computeIfAbsent(eType, etype -> new ComponentExtensionHookRequest.Builder(hookProcessor, etype)).onAnnotatedMethod(method,
+                    extensionBuilders.computeIfAbsent(eType, etype -> new PerExtensionHookRequest.Builder(hookProcessor, etype)).onAnnotatedMethod(method,
                             a);
+                }
+            }
+        }
+
+        private void onAnnotatedType(Annotation a, Set<Class<? extends Extension>> extensionTypes) throws Throwable {
+            if (extensionTypes != null) {
+                for (Class<? extends Extension> eType : extensionTypes) {
+                    extensionBuilders.computeIfAbsent(eType, etype -> new PerExtensionHookRequest.Builder(hookProcessor, etype))
+                            .onAnnotatedType(componentType, a);
+                }
+            }
+        }
+    }
+
+    static final class PerExtensionHookRequest extends HookRequest {
+
+        /** The type of extension that will be activated. */
+        final Class<? extends Extension> extensionType;
+
+        private PerExtensionHookRequest(HookRequest.Builder builder, Class<? extends Extension> extensionType) throws Throwable {
+            super(builder);
+            this.extensionType = requireNonNull(extensionType);
+        }
+
+        void process(PackedContainerConfiguration containerConfiguration, ComponentConfiguration<?> componentConfiguration) throws Throwable {
+            Extension e = containerConfiguration.use(extensionType);
+            invokeIt(e, componentConfiguration);
+        }
+
+        static final class Builder extends HookRequest.Builder {
+
+            public Builder(HookProcessor hookProcessor, Class<? extends Extension> extensionType) {
+                super(ExtensionModel.of(extensionType).hooks(), hookProcessor);
+            }
+
+            public PerExtensionHookRequest build(Class<? extends Extension> extensionType) {
+                try {
+                    return new PerExtensionHookRequest(this, extensionType);
+                } catch (Throwable e) {
+                    ThrowableUtil.rethrowErrorOrRuntimeException(e);
+                    throw new UndeclaredThrowableException(e);
                 }
             }
         }
