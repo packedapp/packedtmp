@@ -29,15 +29,16 @@ import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ClassProcessor;
+import packed.internal.util.TinyPair;
 import packed.internal.util.UncheckedThrowableFactory;
 
 /**
  *
  */
-public class HookRequest {
+public final class HookRequest {
 
     /** A list of custom hook callbacks for the particular extension. */
-    final CachedHook<Hook> customHooksCallback;
+    final TinyPair<Hook, MethodHandle> customHooksCallback;
 
     List<DelayedAnnotatedMethod> delayedMethods;
 
@@ -50,12 +51,13 @@ public class HookRequest {
     }
 
     public void invokeIt(Object target, Object additional) throws Throwable {
-        for (CachedHook<Hook> c = customHooksCallback; c != null; c = c.next()) {
-            MethodHandle mh = c.mh();
+        for (TinyPair<Hook, MethodHandle> c = customHooksCallback; c != null; c = c.next) {
+            Hook hook = c.element1;
+            MethodHandle mh = c.element2;
             if (mh.type().parameterCount() == 2) {
-                mh.invoke(target, c.hook());
+                mh.invoke(target, hook);
             } else {
-                mh.invoke(target, c.hook(), additional);
+                mh.invoke(target, hook, additional);
             }
         }
         for (DelayedAnnotatedField m : delayedFields) {
@@ -82,7 +84,7 @@ public class HookRequest {
         }
     }
 
-    public static class Builder {
+    public static final class Builder {
 
         final Object[] array;
 
@@ -110,23 +112,15 @@ public class HookRequest {
             return a == null ? null : (((Hook.Builder<?>) a).build());
         }
 
-        private void onAnnotatedField(HookTargetProcessor hookProcessor, Field field, Annotation annotation) throws Throwable {
+        public void onAnnotatedField(Field field, Annotation annotation) throws Throwable {
             hooks.tryProcesAnnotatedField(hookProcessor, field, annotation, this);
         }
 
-        private void onAnnotatedMethod(HookTargetProcessor hookProcessor, Method method, Annotation annotation) throws Throwable {
+        public void onAnnotatedMethod(Method method, Annotation annotation) throws Throwable {
             hooks.tryProcesAnnotatedMethod(hookProcessor, method, annotation, this);
         }
 
-        public final void onAnnotatedField(Field field, Annotation annotation) throws Throwable {
-            onAnnotatedField(hookProcessor, field, annotation);
-        }
-
-        public final void onAnnotatedMethod(Method method, Annotation annotation) throws Throwable {
-            onAnnotatedMethod(hookProcessor, method, annotation);
-        }
-
-        public final void onAnnotatedType(Class<?> clazz, Annotation annotation) throws Throwable {
+        public void onAnnotatedType(Class<?> clazz, Annotation annotation) throws Throwable {
             throw new UnsupportedOperationException();
         }
 
@@ -147,7 +141,7 @@ public class HookRequest {
     static class DelayedAnnotatedField {
         final Annotation annotation;
         final Field field;
-        public final MethodHandle mh;
+        final MethodHandle mh;
         final ClassProcessor cp;
 
         DelayedAnnotatedField(ClassProcessor cp, Field field, Annotation annotation, MethodHandle mh) {
@@ -165,7 +159,7 @@ public class HookRequest {
     static class DelayedAnnotatedMethod {
         final Annotation annotation;
         final Method method;
-        public final MethodHandle mh;
+        final MethodHandle mh;
         final ClassProcessor cp;
 
         DelayedAnnotatedMethod(ClassProcessor cp, Method method, Annotation annotation, MethodHandle mh) {

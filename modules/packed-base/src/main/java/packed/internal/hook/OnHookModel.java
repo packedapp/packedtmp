@@ -135,7 +135,7 @@ public final class OnHookModel {
         return (Builder<?>) builder;
     }
 
-    CachedHook<Hook> compute(Object[] array) throws Throwable {
+    TinyPair<Hook, MethodHandle> compute(Object[] array) throws Throwable {
         // This code is same as process()
         for (int i = array.length - 1; i >= 0; i--) {
             for (Link link = customHooks[i]; link != null; link = link.next) {
@@ -152,9 +152,9 @@ public final class OnHookModel {
             }
         }
 
-        CachedHook<Hook> result = null;
+        TinyPair<Hook, MethodHandle> result = null;
         for (Link link = customHooks[0]; link != null; link = link.next) {
-            result = new CachedHook<>(link.mh, (Hook) array[link.index], result);
+            result = new TinyPair<>((Hook) array[link.index], link.mh, result);
         }
         return result;
     }
