@@ -15,6 +15,8 @@
  */
 package packed.internal.container.extension;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -185,16 +187,16 @@ public final class ExtensionModel<E extends Extension> {
     private static final class Builder extends AbstractExtensionModelBuilder {
 
         /** The constructor used to create a new extension instance. */
-        private final MethodHandle constructor;
+        private MethodHandle constructor;
 
         /** A list of dependencies on other extensions. */
-        private final List<Class<? extends Extension>> dependencies;
+        private List<Class<? extends Extension>> dependencies;
 
         /** The type of extension we are building a model for. */
         private final Class<? extends Extension> extensionType;
 
         /** A builder for all methods annotated with {@link OnHook} on the extension. */
-        private final OnHookModelBuilder ohmb;
+        private OnHookModelBuilder ohmb;
 
         /**
          * Creates a new builder.
@@ -203,11 +205,7 @@ public final class ExtensionModel<E extends Extension> {
          *            the type of extension we are building a model for
          */
         private Builder(Class<? extends Extension> extensionType) {
-            this.extensionType = extensionType;
-            ClassProcessor cp = new ClassProcessor(MethodHandles.lookup(), extensionType, true);
-            this.constructor = ConstructorFinder.find(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-            this.dependencies = ExtensionDependencyValidator.dependenciesOf(extensionType);
-            this.ohmb = new OnHookModelBuilder(cp, ContainerConfiguration.class);
+            this.extensionType = requireNonNull(extensionType);
         }
 
         /**
@@ -226,9 +224,14 @@ public final class ExtensionModel<E extends Extension> {
                     composerType = (Class<? extends ExtensionComposer<?>>) c;
                 }
             }
+            this.dependencies = ExtensionDependencyValidator.dependenciesOf(extensionType);
+
+            ClassProcessor cp = new ClassProcessor(MethodHandles.lookup(), extensionType, true);
+            this.constructor = ConstructorFinder.find(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+            this.ohmb = new OnHookModelBuilder(cp, ContainerConfiguration.class);
 
             if (composerType != null) {
-                ExtensionComposer<?> composer = ConstructorFinder.invoke(composerType);
+                ExtensionComposer<?> composer = ConstructorFinder.invoke(cp.spawn(composerType));
                 ModuleAccess.extension().configureComposer(composer, this);
             }
             return new ExtensionModel<>(this);

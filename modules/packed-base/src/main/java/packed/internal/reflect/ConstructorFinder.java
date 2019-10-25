@@ -16,7 +16,6 @@
 package packed.internal.reflect;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
@@ -38,66 +37,6 @@ import packed.internal.util.types.TypeUtil;
  * Is currently only used in connections with extensions. So we always throws {@link InternalExtensionException}.
  */
 public final class ConstructorFinder {
-
-    public static <T> T invoke(Class<T> onType, Class<?>... parameterTypes) {
-        MethodHandle mh = ConstructorFinder.find(onType, parameterTypes);
-        try {
-            return (T) mh.invoke();
-        } catch (Throwable e) {
-            ThrowableUtil.rethrowErrorOrRuntimeException(e);
-            throw new UndeclaredThrowableException(e);
-        }
-    }
-
-    public static MethodHandle find(Class<?> onType, Class<?>... parameterTypes) {
-        return find(onType, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, parameterTypes);
-    }
-
-    /**
-     * Finds a constructor (method handle).
-     * 
-     * @param onType
-     *            the type to find the constructor or
-     * @param parameterTypes
-     *            the parameter types the constructor must take
-     * @return a method handle
-     */
-    public static <T extends Throwable> MethodHandle find(Class<?> onType, UncheckedThrowableFactory<T> tf, Class<?>... parameterTypes) throws T {
-        if (Modifier.isAbstract(onType.getModifiers())) {
-            throw tf.newThrowable("'" + StringFormatter.format(onType) + "' cannot be an abstract class");
-        } else if (TypeUtil.isInnerOrLocalClass(onType)) {
-            throw tf.newThrowable("'" + StringFormatter.format(onType) + "' cannot be an inner or local class");
-        }
-
-        // First check that we have a constructor with specified parameters.
-        // We could use Lookup.findSpecial, but we need to register the constructor if we are generating a native image.
-        Constructor<?> constructor = null;
-        try {
-            constructor = onType.getDeclaredConstructor(parameterTypes);
-        } catch (NoSuchMethodException e) {
-            if (Extension.class.isAssignableFrom(onType)) {
-                // Hack
-                try {
-                    constructor = onType.getDeclaredConstructor(ExtensionContext.class);
-                } catch (NoSuchMethodException ignore) {} // Already on failure path
-            }
-            if (constructor == null) {
-                if (parameterTypes.length == 0) {
-                    throw tf.newThrowable("'" + StringFormatter.format(onType) + "' must have a no-argument constructor");
-                } else {
-                    throw tf.newThrowable("'" + StringFormatter.format(onType) + "' must have a constructor taking ["
-                            + Stream.of(parameterTypes).map(p -> p.getName()).collect(Collectors.joining(",")) + "]");
-                }
-            }
-        }
-
-        // Should probably always take a CP....
-
-        ClassProcessor cp = new ClassProcessor(MethodHandles.lookup(), onType, true);
-        MethodHandle methodHandle = cp.unreflectConstructor(constructor, tf);
-
-        return methodHandle;
-    }
 
     /**
      * Finds a constructor (method handle).
@@ -143,5 +82,15 @@ public final class ConstructorFinder {
 
     public static <T extends Throwable> MethodHandle findExactlyOne(ClassProcessor cp, UncheckedThrowableFactory<T> tf, MethodType... parameterTypes) throws T {
         throw new UnsupportedOperationException();
+    }
+
+    public static <T> T invoke(ClassProcessor cp, Class<?>... parameterTypes) {
+        MethodHandle mh = ConstructorFinder.find(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, parameterTypes);
+        try {
+            return (T) mh.invoke();
+        } catch (Throwable e) {
+            ThrowableUtil.rethrowErrorOrRuntimeException(e);
+            throw new UndeclaredThrowableException(e);
+        }
     }
 }
