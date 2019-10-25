@@ -37,7 +37,7 @@ import app.packed.service.InstantiationMode;
 import app.packed.service.Provide;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceExtension;
-import packed.internal.component.CoreComponentConfiguration;
+import packed.internal.component.AbstractCoreComponentConfiguration;
 import packed.internal.component.FactoryComponentConfiguration;
 import packed.internal.component.InstantiatedComponentConfiguration;
 import packed.internal.container.FixedWireletList;
@@ -159,7 +159,7 @@ public final class ServiceProvidingManager {
 
         c.as((Key) Key.of(instance.getClass()));
         providingEntries.add(c);
-        return new PackedServiceComponentConfiguration<>((CoreComponentConfiguration) cc, (BuildEntry) c);
+        return new PackedServiceComponentConfiguration<>((AbstractCoreComponentConfiguration) cc, (BuildEntry) c);
     }
 
     public HashMap<Key<?>, BuildEntry<?>> resolve() {

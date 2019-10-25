@@ -280,7 +280,7 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
             // TODO think it should be named Artifact type, for example, app, injector, ...
             return "Unknown";
         } else {
-            return ((CoreComponentConfiguration<?>) this).model.defaultPrefix();
+            return ((AbstractCoreComponentConfiguration<?>) this).componentModel.defaultPrefix();
         }
 
     }

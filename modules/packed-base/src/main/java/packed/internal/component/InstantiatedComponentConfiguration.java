@@ -23,7 +23,7 @@ import packed.internal.container.PackedContainerConfiguration;
 /**
  *
  */
-public final class InstantiatedComponentConfiguration<T> extends CoreComponentConfiguration<T> {
+public final class InstantiatedComponentConfiguration<T> extends AbstractCoreComponentConfiguration<T> {
 
     /** The instance */
     public final T instance;

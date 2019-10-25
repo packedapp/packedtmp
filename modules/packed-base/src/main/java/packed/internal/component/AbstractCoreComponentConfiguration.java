@@ -25,37 +25,37 @@ import packed.internal.container.PackedContainerConfiguration;
 /**
  *
  */
-public abstract class CoreComponentConfiguration<T> extends AbstractComponentConfiguration<T> {
+public abstract class AbstractCoreComponentConfiguration<T> extends AbstractComponentConfiguration<T> {
 
-    final ComponentModel model;
+    final ComponentModel componentModel;
 
-    public CoreComponentConfiguration(ConfigSite site, PackedContainerConfiguration containerConfiguration, ComponentModel model) {
-        super(site, containerConfiguration);
-        this.model = requireNonNull(model);
+    public AbstractCoreComponentConfiguration(ConfigSite configSite, PackedContainerConfiguration pcc, ComponentModel componentModel) {
+        super(configSite, pcc);
+        this.componentModel = requireNonNull(componentModel);
     }
 
     /** {@inheritDoc} */
     @Override
-    public AbstractComponent instantiate(AbstractComponent parent, PackedArtifactInstantiationContext ic) {
-        return new DefaultComponent(parent, this, ic);
+    public AbstractComponent instantiate(AbstractComponent parent, PackedArtifactInstantiationContext paic) {
+        return new PackedComponent(parent, this, paic);
     }
 
     /** {@inheritDoc} */
     @Override
-    public CoreComponentConfiguration<T> setDescription(String description) {
+    public AbstractCoreComponentConfiguration<T> setDescription(String description) {
         super.setDescription(description);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public CoreComponentConfiguration<T> setName(String name) {
+    public AbstractCoreComponentConfiguration<T> setName(String name) {
         super.setName(name);
         return this;
     }
 
-    public CoreComponentConfiguration<T> runHooks(ContainerSource source) {
-        model.invokeOnHookOnInstall(source, this);
+    public AbstractCoreComponentConfiguration<T> runHooks(ContainerSource source) {
+        componentModel.invokeOnHookOnInstall(source, this);
         return this;
     }
 }

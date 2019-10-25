@@ -54,7 +54,7 @@ import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.component.AbstractComponent;
 import packed.internal.component.AbstractComponentConfiguration;
 import packed.internal.component.ComponentModel;
-import packed.internal.component.CoreComponentConfiguration;
+import packed.internal.component.AbstractCoreComponentConfiguration;
 import packed.internal.component.FactoryComponentConfiguration;
 import packed.internal.component.InstantiatedComponentConfiguration;
 import packed.internal.component.StaticComponentConfiguration;
@@ -79,7 +79,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     /** The component that was last installed. */
     @Nullable
-    protected CoreComponentConfiguration<?> currentComponent;
+    protected AbstractCoreComponentConfiguration<?> currentComponent;
 
     /** All registered extensions, in order of registration. */
     private final LinkedHashMap<Class<? extends Extension>, PackedExtensionContext> extensions = new LinkedHashMap<>();
@@ -307,7 +307,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     public <T> ComponentConfiguration<T> install(Factory<T> factory, ConfigSite configSite) {
         ComponentModel model = lookup.componentModelOf(factory.rawType());
         installPrepare(State.INSTALL_INVOKED);
-        CoreComponentConfiguration<T> cc = new FactoryComponentConfiguration<T>(configSite, this, model, factory);
+        AbstractCoreComponentConfiguration<T> cc = new FactoryComponentConfiguration<T>(configSite, this, model, factory);
         currentComponent = cc;
         return cc.runHooks(source);
     }
@@ -315,7 +315,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     public <T> ComponentConfiguration<T> installInstance(T instance, ConfigSite configSite) {
         ComponentModel model = lookup.componentModelOf(instance.getClass());
         installPrepare(State.INSTALL_INVOKED);
-        CoreComponentConfiguration<T> cc = new InstantiatedComponentConfiguration<T>(configSite, this, model, instance);
+        AbstractCoreComponentConfiguration<T> cc = new InstantiatedComponentConfiguration<T>(configSite, this, model, instance);
         currentComponent = cc;
         return cc.runHooks(source);
     }
@@ -334,7 +334,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     public <T> ComponentConfiguration<T> installStatic(Class<T> implementation, ConfigSite configSite) {
         ComponentModel descriptor = lookup.componentModelOf(implementation);
         installPrepare(State.INSTALL_INVOKED);
-        CoreComponentConfiguration<T> cc = new StaticComponentConfiguration<T>(configSite, this, descriptor, implementation);
+        AbstractCoreComponentConfiguration<T> cc = new StaticComponentConfiguration<T>(configSite, this, descriptor, implementation);
         currentComponent = cc;
         return cc.runHooks(source);
     }

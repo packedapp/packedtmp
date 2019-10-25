@@ -28,7 +28,7 @@ import packed.internal.inject.Instantiable;
 /**
  *
  */
-public final class FactoryComponentConfiguration<T> extends CoreComponentConfiguration<T> implements Instantiable {
+public final class FactoryComponentConfiguration<T> extends AbstractCoreComponentConfiguration<T> implements Instantiable {
 
     public final Factory<T> factory;
 

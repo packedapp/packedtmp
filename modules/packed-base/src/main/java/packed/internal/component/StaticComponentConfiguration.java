@@ -21,7 +21,7 @@ import app.packed.config.ConfigSite;
 import packed.internal.container.PackedContainerConfiguration;
 
 /** A component configuration representing a future static component. */
-public final class StaticComponentConfiguration<T> extends CoreComponentConfiguration<T> {
+public final class StaticComponentConfiguration<T> extends AbstractCoreComponentConfiguration<T> {
 
     /** The static implementation. */
     public final Class<T> implementation;
