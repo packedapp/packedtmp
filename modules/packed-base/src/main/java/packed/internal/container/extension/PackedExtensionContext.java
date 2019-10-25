@@ -25,6 +25,7 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 import app.packed.container.InternalExtensionException;
 import app.packed.lang.Key;
+import app.packed.lang.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.service.build.BuildEntry;
@@ -35,38 +36,41 @@ import packed.internal.service.run.SingletonInjectorEntry;
 /** The default implementation of {@link ExtensionContext} with addition methods only available inside this module. */
 public final class PackedExtensionContext implements ExtensionContext {
 
-    /** The extension instance this context wraps. */
+    /** The extension instance this context wraps, initialized in {@link #initialize(PackedContainerConfiguration)}. */
+    @Nullable
     private Extension extension;
 
-    /** Whether or not the extension is configurable. */
-    private boolean isConfigurable = true;
-
     /** The model of the extension. */
-    private final ExtensionModel<?> model;
+    private final ExtensionModel<?> extensionModel;
+
+    /** Whether or not the extension has been configured. */
+    private boolean isConfigured;
 
     /** The configuration of the container the extension is registered in. */
     private final PackedContainerConfiguration pcc;
 
-    private RuntimeAdaptorEntry<? extends Extension> serviceEntry;
+    /** A service build entry, if this extension is source of any form of dependency injection. */
+    @Nullable
+    private BuildEntry<? extends Extension> serviceEntry;
 
     /**
      * Creates a new extension context.
      * 
      * @param pcc
      *            the configuration of the container the extension is registered in
-     * @param model
+     * @param extensionModel
      *            the extension model
      */
-    public PackedExtensionContext(PackedContainerConfiguration pcc, ExtensionModel<?> model) {
+    public PackedExtensionContext(PackedContainerConfiguration pcc, ExtensionModel<?> extensionModel) {
         this.pcc = requireNonNull(pcc);
-        this.model = model;
+        this.extensionModel = requireNonNull(extensionModel);
     }
 
     /** {@inheritDoc} */
     @Override
     public void checkConfigurable() {
-        if (!isConfigurable) {
-            throw new IllegalStateException("This extension (" + extension.getClass().getSimpleName() + ") is no longer configurable");
+        if (isConfigured) {
+            throw new IllegalStateException("This extension (" + extension().getClass().getSimpleName() + ") is no longer configurable");
         }
     }
 
@@ -113,15 +117,15 @@ public final class PackedExtensionContext implements ExtensionContext {
      */
     public void initialize(PackedContainerConfiguration pcc) {
         // Sets Extension.context = this
-        this.extension = model.newInstance(this);
+        this.extension = extensionModel.newInstance(this);
         ModuleAccess.extension().setExtensionContext(extension, this);
 
         // Run any onAdd action that has set via ExtensionComposer#onAdd().
         PackedExtensionContext existing = pcc.activeExtension;
         try {
             pcc.activeExtension = this;
-            if (model.onAdd != null) {
-                model.onAdd.accept(extension);
+            if (extensionModel.onAdd != null) {
+                extensionModel.onAdd.accept(extension);
             }
 
             if (pcc.wireletContext != null) {
@@ -129,14 +133,14 @@ public final class PackedExtensionContext implements ExtensionContext {
             }
 
             // Call any link callbacks
-            if (model.onLinkage != null) {
+            if (extensionModel.onLinkage != null) {
                 // First link any children
                 ArrayList<PackedContainerConfiguration> containers = pcc.containers;
                 if (containers != null) {
                     for (PackedContainerConfiguration child : containers) {
-                        PackedExtensionContext e = child.getExtension(model.extensionType);
+                        PackedExtensionContext e = child.getExtension(extensionModel.extensionType);
                         if (e != null) {
-                            model.onLinkage.accept(extension, e.extension);
+                            extensionModel.onLinkage.accept(extension, e.extension);
                         }
                     }
                 }
@@ -144,10 +148,10 @@ public final class PackedExtensionContext implements ExtensionContext {
                 // Second link any parent
                 if (pcc.parent instanceof PackedContainerConfiguration) {
                     PackedContainerConfiguration p = (PackedContainerConfiguration) pcc.parent;
-                    PackedExtensionContext e = p.getExtension(model.extensionType);
+                    PackedExtensionContext e = p.getExtension(extensionModel.extensionType);
                     // set activate extension???
                     if (e != null) {
-                        model.onLinkage.accept(e.extension, extension);
+                        extensionModel.onLinkage.accept(e.extension, extension);
                     }
                 }
             }
@@ -167,19 +171,19 @@ public final class PackedExtensionContext implements ExtensionContext {
      * @return the model of the extension
      */
     public ExtensionModel<?> model() {
-        return model;
+        return extensionModel;
     }
 
     public void onConfigured() {
-        if (model.onConfigured != null) {
-            model.onConfigured.accept(extension);
+        if (extensionModel.onConfigured != null) {
+            extensionModel.onConfigured.accept(extension);
         }
-        isConfigurable = false;
+        isConfigured = true;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public BuildEntry<? extends Extension> serviceEntry(ServiceExtensionNode sen) {
-        RuntimeAdaptorEntry<? extends Extension> e = serviceEntry;
+        BuildEntry<? extends Extension> e = serviceEntry;
         if (e == null) {
             e = serviceEntry = new RuntimeAdaptorEntry(sen, new SingletonInjectorEntry<Extension>(ConfigSite.UNKNOWN, (Key) Key.of(type()), null, extension));
         }
@@ -192,7 +196,7 @@ public final class PackedExtensionContext implements ExtensionContext {
      * @return the type of extension this context wraps
      */
     public Class<? extends Extension> type() {
-        return model.extensionType;
+        return extensionModel.extensionType;
     }
 
     /** {@inheritDoc} */
@@ -212,9 +216,9 @@ public final class PackedExtensionContext implements ExtensionContext {
         // There would be significant overhead to instantiating a new map and caching the extension.
         // A better solution is that each extension caches the extensions they use (if they want to).
         // This saves a check + map lookup for each additional request.
-        if (!model.dependencies.contains(extensionType)) {
-            throw new InternalExtensionException("The specified extension type is not among " + model.extensionType.getSimpleName()
-                    + " dependencies, extensionType = " + extensionType + ", valid dependencies = " + model.dependencies);
+        if (!extensionModel.dependencies.contains(extensionType)) {
+            throw new InternalExtensionException("The specified extension type is not among " + extensionModel.extensionType.getSimpleName()
+                    + " dependencies, extensionType = " + extensionType + ", valid dependencies = " + extensionModel.dependencies);
         }
         return (T) pcc.useExtension(extensionType, this).extension;
     }

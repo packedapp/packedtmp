@@ -26,7 +26,7 @@ import packed.internal.util.StringFormatter;
 /**
  *
  */
-public final class ExtensionUtil {
+final class ExtensionUtil {
 
     private static final ClassValue<List<Class<? extends Extension>>> USE_DEPENDENCIES = new ClassValue<>() {
 
@@ -89,7 +89,7 @@ public final class ExtensionUtil {
      * @throws InternalExtensionException
      *             if some classes specified via {@link UseExtension#optional()} does not reference an extension type.
      */
-    public static final List<Class<? extends Extension>> fromUseExtension(Class<?> c) {
+    static final List<Class<? extends Extension>> fromUseExtension(Class<?> c) {
         return USE_DEPENDENCIES.get(c);
     }
 }

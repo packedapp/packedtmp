@@ -26,7 +26,7 @@ import app.packed.container.ContainerSource;
 import app.packed.hook.Hook;
 import app.packed.lang.InvalidDeclarationException;
 import packed.internal.component.ComponentModel;
-import packed.internal.container.extension.CustomExtensionHooksMap;
+import packed.internal.container.extension.LazyExtensionActivationMap;
 import packed.internal.hook.OnHookContainerModel;
 import packed.internal.hook.OnHookContainerModelBuilder;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
@@ -91,10 +91,10 @@ public final class ContainerSourceModel implements ComponentLookup {
                 ContainerConfiguration.class);
         hooks = builder.build();
 
-        activatorMap = CustomExtensionHooksMap.of(sourceType);
+        activatorMap = LazyExtensionActivationMap.of(sourceType);
     }
 
-    public final CustomExtensionHooksMap activatorMap;
+    public final LazyExtensionActivationMap activatorMap;
 
     /** {@inheritDoc} */
     @Override

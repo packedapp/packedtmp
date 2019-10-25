@@ -125,9 +125,9 @@ public final class ExtensionModel<E extends Extension> {
         if (hooks == null) {
             this.nonActivatingHooks = null;
         } else {
-            this.nonActivatingHooks = DefaultHookUsage.ofOrNull(CustomExtensionHooksMap.findNonAutoExtending(hooks.annotatedFieldHooks()),
-                    CustomExtensionHooksMap.findNonAutoExtending(hooks.annotatedMethodHooks()),
-                    CustomExtensionHooksMap.findNonAutoExtending(hooks.annotatedTypeHooks()));
+            this.nonActivatingHooks = DefaultHookUsage.ofOrNull(LazyExtensionActivationMap.findNonAutoExtending(hooks.annotatedFieldHooks()),
+                    LazyExtensionActivationMap.findNonAutoExtending(hooks.annotatedMethodHooks()),
+                    LazyExtensionActivationMap.findNonAutoExtending(hooks.annotatedTypeHooks()));
         }
     }
 

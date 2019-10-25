@@ -29,7 +29,7 @@ import packed.internal.util.tiny.Linked;
 /**
  *
  */
-public final class CustomExtensionHooksMap {
+public final class LazyExtensionActivationMap {
 
     /** A cache of any extensions a particular annotation activates. */
     public static final ClassValue<Set<Class<? extends Extension>>> EXTENSION_ACTIVATORS = new ClassValue<>() {
@@ -50,7 +50,7 @@ public final class CustomExtensionHooksMap {
     @Nullable
     private final Map<Class<? extends Annotation>, Set<Class<? extends Extension>>> annotatedTypes;
 
-    private CustomExtensionHooksMap(@Nullable Map<Class<? extends Annotation>, Set<Class<? extends Extension>>> annotatedFields,
+    private LazyExtensionActivationMap(@Nullable Map<Class<? extends Annotation>, Set<Class<? extends Extension>>> annotatedFields,
             @Nullable Map<Class<? extends Annotation>, Set<Class<? extends Extension>>> annotatedMethods,
             @Nullable Map<Class<? extends Annotation>, Set<Class<? extends Extension>>> annotatedTypes) {
         this.annotatedFields = annotatedFields;
@@ -78,7 +78,7 @@ public final class CustomExtensionHooksMap {
         Linked<Class<? extends T>> n = null;
         if (set != null) {
             for (Class<? extends T> c : set) {
-                if (!CustomExtensionHooksMap.isAutoActivate(c)) {
+                if (!LazyExtensionActivationMap.isAutoActivate(c)) {
                     n = new Linked<>(c, n);
                 }
             }
@@ -90,7 +90,7 @@ public final class CustomExtensionHooksMap {
         return EXTENSION_ACTIVATORS.get(clazz) != null;
     }
 
-    public static CustomExtensionHooksMap of(Class<?> cl) {
+    public static LazyExtensionActivationMap of(Class<?> cl) {
 
         UseExtensionLazily uel = cl.getAnnotation(UseExtensionLazily.class);
         if (uel == null) {
@@ -112,7 +112,7 @@ public final class CustomExtensionHooksMap {
         if (annotatedFields.size() == 0 && annotatedMethods.size() == 0 && annotatedTypes.size() == 0) {
             System.err.println("Why use " + uel);
         }
-        return new CustomExtensionHooksMap(Linked.toMapOrNull(annotatedFields), Linked.toMapOrNull(annotatedMethods), Linked.toMapOrNull(annotatedTypes));
+        return new LazyExtensionActivationMap(Linked.toMapOrNull(annotatedFields), Linked.toMapOrNull(annotatedMethods), Linked.toMapOrNull(annotatedTypes));
     }
 
     @Nullable

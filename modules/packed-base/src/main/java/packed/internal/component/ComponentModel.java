@@ -30,7 +30,7 @@ import app.packed.container.Extension;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
 import packed.internal.container.ContainerSourceModel;
-import packed.internal.container.extension.CustomExtensionHooksMap;
+import packed.internal.container.extension.LazyExtensionActivationMap;
 import packed.internal.container.extension.ExtensionModel;
 import packed.internal.hook.HookRequest;
 import packed.internal.hook.HookTargetProcessor;
@@ -169,14 +169,14 @@ public final class ComponentModel {
          * @return a new model
          */
         private ComponentModel build() {
-            final CustomExtensionHooksMap activatorMap = csm.activatorMap;
+            final LazyExtensionActivationMap activatorMap = csm.activatorMap;
             Class<?> componentType = cp.clazz();
 
             try (HookTargetProcessor htp = new HookTargetProcessor(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
                 HookRequest.Builder csb = this.csb = csm.hooks == null ? null : new HookRequest.Builder(csm.hooks, htp);
 
                 for (Annotation a : componentType.getAnnotations()) {
-                    onAnnotatedType(htp, componentType, a, CustomExtensionHooksMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
+                    onAnnotatedType(htp, componentType, a, LazyExtensionActivationMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
                     if (activatorMap != null) {
                         onAnnotatedType(htp, componentType, a, activatorMap.onAnnotatedType(a.annotationType()));
                     }
@@ -186,7 +186,7 @@ public final class ComponentModel {
                 }
                 cp.findMethodsAndFields(method -> {
                     for (Annotation a : method.getAnnotations()) {
-                        onAnnotatedMethod(htp, a, method, CustomExtensionHooksMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
+                        onAnnotatedMethod(htp, a, method, LazyExtensionActivationMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
                         if (activatorMap != null) {
                             onAnnotatedMethod(htp, a, method, activatorMap.onAnnotatedMethod(a.annotationType()));
                         }
@@ -196,7 +196,7 @@ public final class ComponentModel {
                     }
                 }, field -> {
                     for (Annotation a : field.getAnnotations()) {
-                        onAnnotatedField(htp, a, field, CustomExtensionHooksMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
+                        onAnnotatedField(htp, a, field, LazyExtensionActivationMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
                         if (activatorMap != null) {
                             onAnnotatedField(htp, a, field, activatorMap.onAnnotatedMethod(a.annotationType()));
                         }
