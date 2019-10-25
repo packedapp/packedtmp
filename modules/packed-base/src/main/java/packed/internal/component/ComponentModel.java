@@ -27,7 +27,6 @@ import java.util.Set;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.Extension;
 import app.packed.hook.OnHook;
-import packed.internal.container.ComponentLookup;
 import packed.internal.container.ContainerSourceModel;
 import packed.internal.container.extension.ActivatorMap;
 import packed.internal.container.extension.ExtensionModel;
@@ -108,8 +107,17 @@ public final class ComponentModel {
         return acc;
     }
 
-    public static ComponentModel of(ContainerSourceModel csm, ComponentLookup lookup, Class<?> componentType) {
-        return new Builder(csm, lookup, componentType).build();
+    /**
+     * Creates a new component model.
+     * 
+     * @param csm
+     *            a model of the container source that is trying to install the component
+     * @param cp
+     *            a class processor usable by hooks
+     * @return a model of the component
+     */
+    public static ComponentModel of(ContainerSourceModel csm, ClassProcessor cp) {
+        return new Builder(csm, cp).build();
     }
 
     /** A builder object for a component model. */
@@ -132,16 +140,14 @@ public final class ComponentModel {
         /**
          * Creates a new component model builder
          * 
-         * @param lookup
-         *            the component lookup
-         * @param componentType
-         *            the type of component
+         * @param cp
+         *            a class processor usable by hooks
+         * 
          */
-        private Builder(ContainerSourceModel csm, ComponentLookup lookup, Class<?> componentType) {
-            this.cp = lookup.newClassProcessor(componentType, true);
-            this.componentType = requireNonNull(componentType);
+        private Builder(ContainerSourceModel csm, ClassProcessor cp) {
+            this.cp = requireNonNull(cp);
+            this.componentType = requireNonNull(cp.clazz());
             this.hookProcessor = new HookProcessor(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-            /// this.csm = requireNonNull(csm);
             this.activatorMap = csm.activatorMap;
         }
 
