@@ -13,17 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.aaa.extension.graph;
+package packed.internal.container.extension.newgraph;
 
 /**
  *
  */
-// Component.java
-// Optional<Wiring> <- is removed, for example, when undeployed...
+interface ExtensionNode {
 
-interface Wiring {
-    boolean isRemoveable();// or isStatic
+    // Ideen er at den kommer med som parameter....
+
+    // Forspoerg om parent
+    // forspoerg om children
+
+    // Hav en shared context...
+
+    // onInstantiated
+    // onConfigured
+
+    // postProcess()
+    // buttomUp
+
+    // Service
 }
-
-// WiredContainer/LinkedBundle
-// UnwirableContainer extends WiredContainer

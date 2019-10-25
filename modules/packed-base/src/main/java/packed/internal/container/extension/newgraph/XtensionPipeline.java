@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.aaa.extension.graph;
+package packed.internal.container.extension.newgraph;
 
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;

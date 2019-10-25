@@ -13,21 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.aaa.extension.graph;
-
-import java.util.Optional;
+package packed.internal.container.extension.newgraph;
 
 /**
  *
  */
-// ContainerFuture???
+class ExtensionIntegrationModl {
 
-// Det er ihvertfald Bundle/ContainerConfiguration der returnere den fra link();
-// Den skulle bruges fra Injector til et eller andet....
-interface LinkedBundle {
-    // Path??? Still don't know the rules. Are we safe???-
-
-    String name();
-
-    Optional<String> description();
+    // None
+    // Pit (as in Service)
+    // Viral
 }

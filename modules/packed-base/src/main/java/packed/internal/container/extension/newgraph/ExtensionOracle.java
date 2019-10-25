@@ -13,25 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.aaa.extension.graph;
+package packed.internal.container.extension.newgraph;
+
+import java.util.Set;
+
+import app.packed.container.Extension;
 
 /**
  *
  */
-interface ExtensionNode {
+interface ExtensionOracle<E extends Extension> {
 
-    // Ideen er at den kommer med som parameter....
+    int count();
 
-    // Forspoerg om parent
-    // forspoerg om children
+    E root();
 
-    // Hav en shared context...
+    Set<E> findParentLess();
 
-    // onInstantiated
-    // onConfigured
-
-    // postProcess()
-    // buttomUp
-
-    // Service
+    Set<E> childrenOf(E extension);
 }
