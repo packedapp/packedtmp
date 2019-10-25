@@ -28,6 +28,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.ContainerSource;
 import app.packed.container.Extension;
 import app.packed.hook.OnHook;
+import app.packed.lang.Nullable;
 import packed.internal.container.ContainerSourceModel;
 import packed.internal.container.extension.CustomExtensionHooksMap;
 import packed.internal.container.extension.ExtensionModel;
@@ -49,9 +50,11 @@ public final class ComponentModel {
     /** An array of any extensions with relevant {@link OnHook} methods. */
     private final ExtensionRequestPair[] extensionHooks;
 
-    /** The simple name of the component type, typically used for lazy generating a component name. (Racy) */
+    /** The simple name of the component type (razy), typically used for lazy generating a component name. */
     private String simpleName;
 
+    /** Any methods annotated with {@link OnHook} on the container source. */
+    @Nullable
     private final HookRequest sourceHook;
 
     /**
@@ -141,12 +144,12 @@ public final class ComponentModel {
 
         private final ClassProcessor cp;
 
-        /** A map of builders for every activated extension. */
-        private final IdentityHashMap<Class<? extends Extension>, HookRequest.Builder> extensionBuilders = new IdentityHashMap<>();
+        HookRequest.Builder csb;
 
         final ContainerSourceModel csm;
 
-        HookRequest.Builder csb;
+        /** A map of builders for every activated extension. */
+        private final IdentityHashMap<Class<? extends Extension>, HookRequest.Builder> extensionBuilders = new IdentityHashMap<>();
 
         /**
          * Creates a new component model builder

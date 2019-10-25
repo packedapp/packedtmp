@@ -21,9 +21,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.artifact.App;
+import app.packed.component.ComponentConfiguration;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.container.UseExtension;
+import app.packed.container.UseExtensionLazily;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
@@ -32,7 +34,7 @@ import app.packed.lang.Qualifier;
 /**
  *
  */
-// @UseExtensionLazily(WwTest.MyExtension.class)
+@UseExtensionLazily(WwTest.MyExtension.class)
 public class WwTest extends BaseBundle {
 
     /** {@inheritDoc} */
@@ -42,8 +44,8 @@ public class WwTest extends BaseBundle {
     }
 
     @OnHook
-    public void onff(AnnotatedFieldHook<Left> my) {
-        System.out.println("DAV");
+    public void onff(AnnotatedFieldHook<Left> my, ComponentConfiguration<?> cc) {
+        System.out.println("DAV  DU ER EJJJ!! " + cc.path());
     }
 
     public static void main(String[] args) {
