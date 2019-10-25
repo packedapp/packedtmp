@@ -25,8 +25,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.packed.hook.AnnotatedFieldHook;
-import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ClassProcessor;
@@ -65,7 +63,7 @@ public final class HookRequest {
         for (DelayedAnnotatedMember<Field> m : delayedFields) {
             try (HookTargetProcessor hp = new HookTargetProcessor(m.cp.copy(), UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
                 MethodHandle mh = m.mh;
-                AnnotatedFieldHook<Annotation> amh = ModuleAccess.hook().newAnnotatedFieldHook(hp, m.member, m.annotation);
+                Hook amh = ModuleAccess.hook().newAnnotatedFieldHook(hp, m.member, m.annotation);
                 if (mh.type().parameterCount() == 2) {
                     mh.invoke(target, amh);
                 } else {
@@ -76,7 +74,7 @@ public final class HookRequest {
         for (DelayedAnnotatedMember<Method> m : delayedMethods) {
             try (HookTargetProcessor hp = new HookTargetProcessor(m.cp.copy(), UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
                 MethodHandle mh = m.mh;
-                AnnotatedMethodHook<Annotation> amh = ModuleAccess.hook().newAnnotatedMethodHook(hp, m.member, m.annotation);
+                Hook amh = ModuleAccess.hook().newAnnotatedMethodHook(hp, m.member, m.annotation);
                 if (mh.type().parameterCount() == 2) {
                     mh.invoke(target, amh);
                 } else {
