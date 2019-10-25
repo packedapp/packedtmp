@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayDeque;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
@@ -154,9 +155,13 @@ final class OnHookModelBuilder {
         }
 
         if (mm != null) {
-            ParameterizedType pt = (ParameterizedType) hook.getParameterizedType();
-            Class<?> typeVariable = (Class<?>) pt.getActualTypeArguments()[0];
-            mm.compute(typeVariable, (k, v) -> new TinyPair<>(node, mh, v));
+            Type t = hook.getParameterizedType();
+            if (!(t instanceof ParameterizedType)) {
+                throw tf.newThrowableForMethod(hookType.getSimpleName() + " must be parameterized, cannot be a raw type", method);
+            }
+            ParameterizedType pt = (ParameterizedType) t;
+            Class<?> qualifierType = (Class<?>) pt.getActualTypeArguments()[0];
+            mm.compute(qualifierType, (k, v) -> new TinyPair<>(node, mh, v));
         } else {
             if (hookType == node.cp.clazz()) {
                 tf.newThrowableForMethod("Hook cannot depend on itself", method);

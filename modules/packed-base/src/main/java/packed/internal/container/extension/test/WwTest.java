@@ -15,6 +15,7 @@
  */
 package packed.internal.container.extension.test;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -36,7 +37,7 @@ import app.packed.lang.Qualifier;
  *
  */
 @UseExtensionLazily(WwTest.MyExtension.class)
-public class WwTest extends BaseBundle {
+public class WwTest<A extends Annotation> extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
@@ -45,7 +46,7 @@ public class WwTest extends BaseBundle {
     }
 
     @OnHook
-    public void onff(AnnotatedFieldHook<Left> my, ComponentConfiguration<?> cc) {
+    public void onff(AnnotatedFieldHook<A> my, ComponentConfiguration<?> cc) {
         System.out.println("DAV  DU ER EJJJ!! " + cc.path());
     }
 
@@ -55,7 +56,7 @@ public class WwTest extends BaseBundle {
     }
 
     public static void main(String[] args) {
-        App.of(new WwTest());
+        App.of(new WwTest<Left>());
     }
 
     @Left
