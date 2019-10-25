@@ -159,13 +159,13 @@ public final class OnHookModel {
         return result;
     }
 
-    void tryProcesAnnotatedField(HookTargetProcessor hc, Field field, Annotation annotation, HookRequest.Builder hr) throws Throwable {
+    void tryProcesAnnotatedField(HookRequest.Builder hr, Field field, Annotation annotation) throws Throwable {
         for (Link link = allLinks.annotatedFields.get(annotation.annotationType()); link != null; link = link.next) {
             if (link.index == 0 && !isHookTop) {
-                hr.delayedFields.add(new DelayedAnnotatedField(hc.cp, field, annotation, link.mh));
+                hr.delayedFields.add(new DelayedAnnotatedField(hr.hookProcessor.cp, field, annotation, link.mh));
             } else {
                 Hook.Builder<?> builder = builderOf(hr.array, link.index);
-                AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(hc, field, annotation);
+                AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(hr.hookProcessor, field, annotation);
                 if (link.mh.type().parameterCount() == 1) {
                     link.mh.invoke(hook);
                 } else {
@@ -175,13 +175,13 @@ public final class OnHookModel {
         }
     }
 
-    void tryProcesAnnotatedMethod(HookTargetProcessor hc, Method method, Annotation annotation, HookRequest.Builder hr) throws Throwable {
+    void tryProcesAnnotatedMethod(HookRequest.Builder hr, Method method, Annotation annotation) throws Throwable {
         for (Link link = allLinks.annotatedMethods.get(annotation.annotationType()); link != null; link = link.next) {
             if (link.index == 0 && !isHookTop) {
-                hr.delayedMethods.add(new DelayedAnnotatedMethod(hc.cp, method, annotation, link.mh));
+                hr.delayedMethods.add(new DelayedAnnotatedMethod(hr.hookProcessor.cp, method, annotation, link.mh));
             } else {
                 Hook.Builder<?> builder = builderOf(hr.array, link.index);
-                AnnotatedMethodHook<Annotation> hook = ModuleAccess.hook().newAnnotatedMethodHook(hc, method, annotation);
+                AnnotatedMethodHook<Annotation> hook = ModuleAccess.hook().newAnnotatedMethodHook(hr.hookProcessor, method, annotation);
                 link.mh.invoke(builder, hook);
             }
         }
