@@ -309,7 +309,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         installPrepare(State.INSTALL_INVOKED);
         FactoryComponentConfiguration<T> cc = new FactoryComponentConfiguration<T>(configSite, this, model, factory);
         currentComponent = cc;
-        return model.addExtensionsToContainer(this, cc);
+        return model.invokeHooksForComponent(this, cc);
     }
 
     public <T> ComponentConfiguration<T> installInstance(T instance, ConfigSite configSite) {
@@ -317,7 +317,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         installPrepare(State.INSTALL_INVOKED);
         InstantiatedComponentConfiguration<T> cc = new InstantiatedComponentConfiguration<T>(configSite, this, model, instance);
         currentComponent = cc;
-        return model.addExtensionsToContainer(this, cc);
+        return model.invokeHooksForComponent(this, cc);
     }
 
     private void installPrepare(State state) {
@@ -336,7 +336,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         installPrepare(State.INSTALL_INVOKED);
         StaticComponentConfiguration<T> cc = new StaticComponentConfiguration<T>(configSite, this, descriptor, implementation);
         currentComponent = cc;
-        return descriptor.addExtensionsToContainer(this, cc);
+        return descriptor.invokeHooksForComponent(this, cc);
     }
 
     /** {@inheritDoc} */

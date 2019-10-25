@@ -49,7 +49,7 @@ public final class ComponentModel {
     private final Class<?> componentType;
 
     /** An array of any hook groups defined by the component type. */
-    private final PerExtensionHookRequest[] hookGroups;
+    private final ExtensionRequestPair[] extensionHooks;
 
     /** The simple name of the component type, typically used for lazy generating a component name. */
     private volatile String simpleName;
@@ -62,38 +62,23 @@ public final class ComponentModel {
      */
     private ComponentModel(ComponentModel.Builder builder) {
         this.componentType = requireNonNull(builder.componentType);
-        this.hookGroups = builder.extensionBuilders.entrySet().stream().map(e ->
-
-        {
-            try {
-                return new PerExtensionHookRequest(e.getValue(), e.getKey());
-            } catch (Throwable ee) {
-                ThrowableUtil.rethrowErrorOrRuntimeException(ee);
-                throw new UndeclaredThrowableException(ee);
-            }
-
-        }
-
-        ).toArray(i -> new PerExtensionHookRequest[i]);
-    }
-
-    public <T> ComponentConfiguration<T> addExtensionsToContainer(PackedContainerConfiguration containerConfiguration,
-            ComponentConfiguration<T> componentConfiguration) {
 
         // There should probably be some order we call extensions in....
         /// Other first, packed lasts?
         /// Think they need an order id....
         // Boer vaere lowest dependency id first...
         // Preferable deterministic
-        try {
-            for (PerExtensionHookRequest group : hookGroups) {
-                group.process(containerConfiguration, componentConfiguration);
+
+        this.extensionHooks = builder.extensionBuilders.entrySet().stream().map(e -> {
+            HookRequest r;
+            try {
+                r = e.getValue().build();
+            } catch (Throwable ee) {
+                ThrowableUtil.rethrowErrorOrRuntimeException(ee);
+                throw new UndeclaredThrowableException(ee);
             }
-        } catch (Throwable e) {
-            ThrowableUtil.rethrowErrorOrRuntimeException(e);
-            throw new UndeclaredThrowableException(e);
-        }
-        return componentConfiguration;
+            return new ExtensionRequestPair(e.getKey(), r);
+        }).toArray(i -> new ExtensionRequestPair[i]);
     }
 
     /**
@@ -107,6 +92,23 @@ public final class ComponentModel {
             s = simpleName = componentType.getSimpleName();
         }
         return s;
+    }
+
+    public <T> ComponentConfiguration<T> invokeHooksForComponent(PackedContainerConfiguration containerConfiguration,
+            ComponentConfiguration<T> componentConfiguration) {
+        try {
+            for (ExtensionRequestPair he : extensionHooks) {
+                // Finds (possible installing) the extension which have @OnHook methods
+                Extension extension = containerConfiguration.use(he.extensionType);
+
+                // Invoke each method
+                he.request.invokeIt(extension, componentConfiguration);
+            }
+        } catch (Throwable t) {
+            ThrowableUtil.rethrowErrorOrRuntimeException(t);
+            throw new UndeclaredThrowableException(t);
+        }
+        return componentConfiguration;
     }
 
     /** A builder object for a component model. */
@@ -192,7 +194,6 @@ public final class ComponentModel {
         }
 
         private void onAnnotatedField(Annotation a, Field field, Set<Class<? extends Extension>> extensionTypes) throws Throwable {
-
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
                     extensionBuilders.computeIfAbsent(eType, etype -> new HookRequest.Builder(ExtensionModel.of(etype).hooks(), hookProcessor))
@@ -220,19 +221,16 @@ public final class ComponentModel {
         }
     }
 
-    static final class PerExtensionHookRequest extends HookRequest {
+    private static final class ExtensionRequestPair {
 
         /** The type of extension that will be activated. */
-        final Class<? extends Extension> extensionType;
+        private final Class<? extends Extension> extensionType;
 
-        private PerExtensionHookRequest(HookRequest.Builder builder, Class<? extends Extension> extensionType) throws Throwable {
-            super(builder);
+        private final HookRequest request;
+
+        private ExtensionRequestPair(Class<? extends Extension> extensionType, HookRequest request) {
             this.extensionType = requireNonNull(extensionType);
-        }
-
-        void process(PackedContainerConfiguration containerConfiguration, ComponentConfiguration<?> componentConfiguration) throws Throwable {
-            Extension e = containerConfiguration.use(extensionType);
-            invokeIt(e, componentConfiguration);
+            this.request = requireNonNull(request);
         }
     }
 }

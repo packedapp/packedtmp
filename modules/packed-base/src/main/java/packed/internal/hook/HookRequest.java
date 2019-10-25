@@ -49,7 +49,7 @@ public class HookRequest {
         this.delayedFields = builder.delayedFields;
     }
 
-    protected void invokeIt(Object target, Object additional) throws Throwable {
+    public void invokeIt(Object target, Object additional) throws Throwable {
         for (CachedHook<Hook> c = customHooksCallback; c != null; c = c.next()) {
             MethodHandle mh = c.mh();
             if (mh.type().parameterCount() == 2) {
@@ -93,6 +93,10 @@ public class HookRequest {
         final OnHookContainerModel hooks;
 
         final HookProcessor hookProcessor;
+
+        public HookRequest build() throws Throwable {
+            return new HookRequest(this);
+        }
 
         public Builder(OnHookContainerModel model, HookProcessor hookProcessor) {
             this.array = new Object[model.size()];
