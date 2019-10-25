@@ -21,7 +21,7 @@ import app.packed.container.UseExtension;
 /**
  *
  */
-public class TestIt {
+public class ExtensionDependencyValidatorTester {
 
     public static void main(String[] args) {
         System.out.println(ExtensionDependencyValidator.dependenciesOf(MyExtension.class));
