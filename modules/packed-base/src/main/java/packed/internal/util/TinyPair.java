@@ -13,38 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.model;
+package packed.internal.util;
 
 import static java.util.Objects.requireNonNull;
+
+import app.packed.lang.Nullable;
 
 /**
  *
  */
-public abstract class AbstractModel<T> {
+public class TinyPair<E1, E2> {
 
-    private final Class<? extends T> type;
+    public final E1 element1;
 
-    protected AbstractModel(Builder<T> builder) {
-        this.type = requireNonNull(builder.type);
-    }
+    public final E2 element2;
 
-    public final Class<? extends T> type() {
-        return type;
-    }
+    @Nullable
+    public final TinyPair<E1, E2> next;
 
-    public static abstract class Builder<T> {
-
-        private final Class<? extends T> type;
-
-        /**
-         * @param type
-         */
-        protected Builder(Class<? extends T> type) {
-            this.type = requireNonNull(type);
-        }
-
-        public final Class<? extends T> type() {
-            return type;
-        }
+    public TinyPair(E1 element1, E2 element2, @Nullable TinyPair<E1, E2> next) {
+        this.element1 = requireNonNull(element1);
+        this.element2 = requireNonNull(element2);
+        this.next = next;
     }
 }

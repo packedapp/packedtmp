@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.tiny;
+package packed.internal.util;
 
 import static java.util.Objects.requireNonNull;
 
@@ -28,22 +28,22 @@ import app.packed.lang.Nullable;
 /**
  *
  */
-public final class Linked<E> {
+public final class Tiny<E> {
 
     public final E element;
 
     @Nullable
-    final Linked<E> next;
+    final Tiny<E> next;
 
     private final int predecessors;
 
-    public Linked(E element, @Nullable Linked<E> next) {
+    public Tiny(E element, @Nullable Tiny<E> next) {
         this.element = requireNonNull(element);
         this.next = next;
         this.predecessors = next == null ? 0 : next.predecessors + 1;
     }
 
-    public static <E> boolean anyMatch(@Nullable Linked<E> node, Predicate<? super E> predicate) {
+    public static <E> boolean anyMatch(@Nullable Tiny<E> node, Predicate<? super E> predicate) {
         requireNonNull(predicate, "predicate is null");
         for (; node != null; node = node.next) {
             if (predicate.test(node.element)) {
@@ -53,13 +53,13 @@ public final class Linked<E> {
         return false;
     }
 
-    public static <T> Set<T> toSet(@Nullable Linked<T> node) {
+    public static <T> Set<T> toSet(@Nullable Tiny<T> node) {
         Set<T> set = toSetOrNull(node);
         return set == null ? Set.of() : set;
     }
 
     @Nullable
-    public static <T> Set<T> toSetOrNull(@Nullable Linked<T> node) {
+    public static <T> Set<T> toSetOrNull(@Nullable Tiny<T> node) {
         if (node == null) {
             return null;
         }
@@ -69,15 +69,15 @@ public final class Linked<E> {
         case 1:
             return Set.of(node.element, node.next.element);
         case 2:
-            Linked<T> prev = node.next;
+            Tiny<T> prev = node.next;
             return Set.of(node.element, prev.element, prev.next.element);
         case 3:
             prev = node.next;
-            Linked<T> prevPrev = prev.next;
+            Tiny<T> prevPrev = prev.next;
             return Set.of(node.element, prev.element, prevPrev.element, prevPrev.next.element);
         }
         HashSet<T> set = new HashSet<>(node.predecessors + 1);
-        for (Linked<T> t = node; t != null; t = t.next) {
+        for (Tiny<T> t = node; t != null; t = t.next) {
             if (!set.add(t.element)) {
                 throw new IllegalArgumentException("Contains more than one elements of " + t.element);
             }
@@ -85,7 +85,7 @@ public final class Linked<E> {
         return Set.copyOf(set);
     }
 
-    public static <K, V> Map<K, Set<V>> toMapOrNull(Map<K, Linked<V>> map) {
+    public static <K, V> Map<K, Set<V>> toMapOrNull(Map<K, Tiny<V>> map) {
         if (map == null) {
             return null;
         }
@@ -93,11 +93,11 @@ public final class Linked<E> {
         case 0:
             return null;
         case 1:
-            Entry<K, Linked<V>> e = map.entrySet().iterator().next();
+            Entry<K, Tiny<V>> e = map.entrySet().iterator().next();
             return Map.of(e.getKey(), toSet(e.getValue()));
         case 2:
             e = map.entrySet().iterator().next();
-            Entry<K, Linked<V>> e1 = map.entrySet().iterator().next();
+            Entry<K, Tiny<V>> e1 = map.entrySet().iterator().next();
             return Map.of(e.getKey(), toSet(e.getValue()), e1.getKey(), toSet(e1.getValue()));
         }
         throw new UnsupportedOperationException("Unsupported");

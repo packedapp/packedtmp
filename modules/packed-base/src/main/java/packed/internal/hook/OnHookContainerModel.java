@@ -36,8 +36,8 @@ import packed.internal.hook.HookRequest.DelayedAnnotatedMethod;
 import packed.internal.hook.OnHookContainerModelBuilder.Node;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ClassProcessor;
+import packed.internal.util.TinyPair;
 import packed.internal.util.UncheckedThrowableFactory;
-import packed.internal.util.tiny.LinkedPair;
 
 /**
  *
@@ -59,7 +59,7 @@ public final class OnHookContainerModel {
     final ImmutableOnHookMap<Link> rootLinks;
 
     OnHookContainerModel(OnHookContainerModelBuilder b) {
-        Function<LinkedPair<Node, MethodHandle>, Link> ff = e -> {
+        Function<TinyPair<Node, MethodHandle>, Link> ff = e -> {
             Link l = null;
             for (; e != null; e = e.next) {
                 l = new Link(e.element2, e.element1.index, l);
@@ -99,7 +99,7 @@ public final class OnHookContainerModel {
             if (b.allEntries.customHooks != null) {
                 // We reverse the order here so instead of Dependent->Dependency we get Dependency->Dependent
                 // We do this so we do not automatically invoke methods on the root object. which is never cached.
-                for (LinkedPair<Node, MethodHandle> l = b.allEntries.customHooks.get(n.containerType); l != null; l = l.next) {
+                for (TinyPair<Node, MethodHandle> l = b.allEntries.customHooks.get(n.containerType); l != null; l = l.next) {
                     customHooks[l.element1.index] = new Link(l.element2, i, customHooks[l.element1.index]);
                 }
             }

@@ -24,7 +24,7 @@ import app.packed.container.Extension;
 import app.packed.container.UseExtension;
 import app.packed.container.UseExtensionLazily;
 import app.packed.lang.Nullable;
-import packed.internal.util.tiny.Linked;
+import packed.internal.util.Tiny;
 
 /**
  *
@@ -75,15 +75,15 @@ public final class LazyExtensionActivationMap {
 
     @Nullable
     static <T> Set<Class<? extends T>> findNonAutoExtending(Set<Class<? extends T>> set) {
-        Linked<Class<? extends T>> n = null;
+        Tiny<Class<? extends T>> n = null;
         if (set != null) {
             for (Class<? extends T> c : set) {
                 if (!LazyExtensionActivationMap.isAutoActivate(c)) {
-                    n = new Linked<>(c, n);
+                    n = new Tiny<>(c, n);
                 }
             }
         }
-        return Linked.toSetOrNull(n);
+        return Tiny.toSetOrNull(n);
     }
 
     public static boolean isAutoActivate(Class<?> clazz) {
@@ -97,9 +97,9 @@ public final class LazyExtensionActivationMap {
             return null;
         }
 
-        HashMap<Class<? extends Annotation>, Linked<Class<? extends Extension>>> annotatedFields = new HashMap<>(0);
-        HashMap<Class<? extends Annotation>, Linked<Class<? extends Extension>>> annotatedMethods = new HashMap<>(0);
-        HashMap<Class<? extends Annotation>, Linked<Class<? extends Extension>>> annotatedTypes = new HashMap<>(0);
+        HashMap<Class<? extends Annotation>, Tiny<Class<? extends Extension>>> annotatedFields = new HashMap<>(0);
+        HashMap<Class<? extends Annotation>, Tiny<Class<? extends Extension>>> annotatedMethods = new HashMap<>(0);
+        HashMap<Class<? extends Annotation>, Tiny<Class<? extends Extension>>> annotatedTypes = new HashMap<>(0);
 
         for (Class<? extends Extension> c : uel.value()) {
             ExtensionModel<? extends Extension> em = ExtensionModel.of(c);
@@ -112,15 +112,15 @@ public final class LazyExtensionActivationMap {
         if (annotatedFields.size() == 0 && annotatedMethods.size() == 0 && annotatedTypes.size() == 0) {
             System.err.println("Why use " + uel);
         }
-        return new LazyExtensionActivationMap(Linked.toMapOrNull(annotatedFields), Linked.toMapOrNull(annotatedMethods), Linked.toMapOrNull(annotatedTypes));
+        return new LazyExtensionActivationMap(Tiny.toMapOrNull(annotatedFields), Tiny.toMapOrNull(annotatedMethods), Tiny.toMapOrNull(annotatedTypes));
     }
 
     @Nullable
-    private static <T> void stats(Class<? extends Extension> extensionType, HashMap<Class<? extends T>, Linked<Class<? extends Extension>>> map,
+    private static <T> void stats(Class<? extends Extension> extensionType, HashMap<Class<? extends T>, Tiny<Class<? extends Extension>>> map,
             @Nullable Set<Class<? extends T>> set) {
         if (set != null) {
             for (Class<? extends T> c : set) {
-                map.compute(c, (k, v) -> new Linked<>(extensionType, v));
+                map.compute(c, (k, v) -> new Tiny<>(extensionType, v));
             }
         }
     }
