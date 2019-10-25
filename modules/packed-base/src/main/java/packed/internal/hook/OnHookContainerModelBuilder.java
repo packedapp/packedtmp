@@ -22,10 +22,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayDeque;
-import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
-import java.util.Set;
 
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
@@ -38,29 +36,31 @@ import packed.internal.reflect.ClassFinder;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.reflect.ConstructorFinder;
 import packed.internal.util.UncheckedThrowableFactory;
-import packed.internal.util.tiny.TinyPairNode;
+import packed.internal.util.tiny.Linked;
+import packed.internal.util.tiny.LinkedPair;
 import packed.internal.util.types.TypeUtil;
 
 /**
- *
+ * A builder for classes that may contain methods annotated with {@link OnHook}.
  */
 public final class OnHookContainerModelBuilder {
 
     private final static UncheckedThrowableFactory<? extends RuntimeException> tf = UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY;
 
-    final MutableOnHookMap<TinyPairNode<Node, MethodHandle>> allEntries = new MutableOnHookMap<>();
+    final MutableOnHookMap<LinkedPair<Node, MethodHandle>> allEntries = new MutableOnHookMap<>();
 
-    final MutableOnHookMap<TinyPairNode<Node, MethodHandle>> rootEntries;
+    final boolean isTopHook;
 
-    /** All non-root nodes. */
+    /** All non-root nodes, index by their the type of the hook. */
     private final IdentityHashMap<Class<? extends Hook>, Node> nodes = new IdentityHashMap<>();
 
     /** The root node. */
     private final Node root;
 
-    final ArrayDeque<Node> stack = new ArrayDeque<>();
+    final MutableOnHookMap<LinkedPair<Node, MethodHandle>> rootEntries;
 
-    final boolean isTopHook;
+    /** A stack that is used to process each node. */
+    final ArrayDeque<Node> stack = new ArrayDeque<>();
 
     public OnHookContainerModelBuilder(ClassProcessor cp, Class<?>... additionalParameters) {
         if (Hook.class.isAssignableFrom(cp.clazz())) {
@@ -97,7 +97,7 @@ public final class OnHookContainerModelBuilder {
             doContinue = false;
             for (Iterator<Node> iterator = nodes.values().iterator(); iterator.hasNext();) {
                 Node b = iterator.next();
-                if (!b.hasUnresolvedDependencies()) {
+                if (!Linked.anyMatch(b.dependencies, e -> e.index == 0)) {
                     b.index = index--;
                     stack.addFirst(b);
                     iterator.remove();
@@ -151,10 +151,10 @@ public final class OnHookContainerModelBuilder {
         MethodHandle mh = node.cp.unreflect(method, tf);
 
         // Let first see if it is a base book.
-        final IdentityHashMap<Class<?>, TinyPairNode<Node, MethodHandle>> mm;
+        final IdentityHashMap<Class<?>, LinkedPair<Node, MethodHandle>> mm;
 
         // Keep track of all dangling stuff on root
-        final IdentityHashMap<Class<?>, TinyPairNode<Node, MethodHandle>> roots;
+        final IdentityHashMap<Class<?>, LinkedPair<Node, MethodHandle>> roots;
         if (hookType == AnnotatedFieldHook.class) {
             mm = allEntries.annotatedFieldsLazyInit();
             roots = node == root && root.builderConstructor == null ? rootEntries.annotatedFieldsLazyInit() : null;
@@ -175,16 +175,16 @@ public final class OnHookContainerModelBuilder {
         if (mm != null) {
             ParameterizedType pt = (ParameterizedType) hook.getParameterizedType();
             Class<?> typeVariable = (Class<?>) pt.getActualTypeArguments()[0];
-            mm.compute(typeVariable, (k, v) -> new TinyPairNode<>(node, mh, v));
+            mm.compute(typeVariable, (k, v) -> new LinkedPair<>(node, mh, v));
             if (roots != null) {
-                roots.compute(typeVariable, (k, v) -> new TinyPairNode<>(node, mh, v));
+                roots.compute(typeVariable, (k, v) -> new LinkedPair<>(node, mh, v));
             }
         } else {
             if (hookType == node.cp.clazz()) {
                 tf.newThrowableForMethod("Hook cannot depend on itself", method);
             }
             TypeUtil.checkClassIsInstantiable(hookType);
-            IdentityHashMap<Class<?>, TinyPairNode<Node, MethodHandle>> m = allEntries.customHooksLazyInit();
+            IdentityHashMap<Class<?>, LinkedPair<Node, MethodHandle>> m = allEntries.customHooksLazyInit();
             m.compute(hookType, (k, v) -> {
 
                 // Lazy create new node if one does not already exist for the hookType
@@ -202,9 +202,9 @@ public final class OnHookContainerModelBuilder {
                 // Or maybe we need to this for circles??
                 // If we have pure tests
                 if (node != root) {
-                    node.addDependency(nodeRef);
+                    node.dependencies = new Linked<>(node, node.dependencies);
                 }
-                return new TinyPairNode<>(node, mh, v);
+                return new LinkedPair<>(node, mh, v);
             });
         }
     }
@@ -220,13 +220,13 @@ public final class OnHookContainerModelBuilder {
 
         /** Any dependencies on other nodes. */
         @Nullable
-        private Set<Node> dependencies;
+        private Linked<Node> dependencies;
 
         /** The index of this node. */
         int index;
 
         /** The type of on node container. */
-        final Class<?> onNodeContainerType;
+        final Class<?> containerType;
 
         /**
          * A node without a builder
@@ -236,13 +236,12 @@ public final class OnHookContainerModelBuilder {
          */
         private Node(ClassProcessor cp) {
             this.cp = cp;
-            this.onNodeContainerType = cp.clazz();
+            this.containerType = cp.clazz();
             this.builderConstructor = null;
         }
 
         private Node(ClassProcessor cps, Class<?> type) {
-            this.onNodeContainerType = requireNonNull(type);
-
+            this.containerType = requireNonNull(type);
             Class<?> builderClass = ClassFinder.findDeclaredClass(type, "Builder", Hook.Builder.class);
             this.cp = cps.spawn(builderClass);
 
@@ -250,25 +249,6 @@ public final class OnHookContainerModelBuilder {
             if (builderConstructor.type().returnType() != cp.clazz()) {
                 throw new IllegalStateException("OOPS");
             }
-        }
-
-        private void addDependency(Node b) {
-            Set<Node> d = dependencies;
-            if (d == null) {
-                d = dependencies = new HashSet<>();
-            }
-            d.add(b);
-        }
-
-        private boolean hasUnresolvedDependencies() {
-            if (dependencies != null) {
-                for (Node ch : dependencies) {
-                    if (ch.index == 0) {
-                        return true;
-                    }
-                }
-            }
-            return false;
         }
 
         @Override

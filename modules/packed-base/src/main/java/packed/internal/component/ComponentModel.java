@@ -60,7 +60,8 @@ public final class ComponentModel {
      */
     private ComponentModel(ComponentModel.Builder builder) {
         this.componentType = requireNonNull(builder.componentType);
-        this.hookGroups = builder.extensionBuilders.values().stream().map(e -> e.build()).toArray(i -> new ComponentExtensionHookRequest[i]);
+        this.hookGroups = builder.extensionBuilders.entrySet().stream().map(e -> e.getValue().build(e.getKey()))
+                .toArray(i -> new ComponentExtensionHookRequest[i]);
     }
 
     public <T> ComponentConfiguration<T> addExtensionsToContainer(PackedContainerConfiguration containerConfiguration,
@@ -180,7 +181,8 @@ public final class ComponentModel {
         private void onAnnotatedType(Annotation a, Set<Class<? extends Extension>> extensionTypes) throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
-                    extensionBuilders.computeIfAbsent(eType, etype -> new ComponentExtensionHookRequest.Builder(hookProcessor, etype)).onAnnotatedType(componentType, a);
+                    extensionBuilders.computeIfAbsent(eType, etype -> new ComponentExtensionHookRequest.Builder(hookProcessor, etype))
+                            .onAnnotatedType(componentType, a);
                 }
             }
         }
@@ -188,7 +190,8 @@ public final class ComponentModel {
         private void onAnnotatedField(Annotation a, Field field, Set<Class<? extends Extension>> extensionTypes) throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
-                    extensionBuilders.computeIfAbsent(eType, etype -> new ComponentExtensionHookRequest.Builder(hookProcessor, etype)).onAnnotatedField(field, a);
+                    extensionBuilders.computeIfAbsent(eType, etype -> new ComponentExtensionHookRequest.Builder(hookProcessor, etype)).onAnnotatedField(field,
+                            a);
                 }
             }
         }
@@ -196,7 +199,8 @@ public final class ComponentModel {
         private void onAnnotatedMethod(Annotation a, Method method, Set<Class<? extends Extension>> extensionTypes) throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
-                    extensionBuilders.computeIfAbsent(eType, etype -> new ComponentExtensionHookRequest.Builder(hookProcessor, etype)).onAnnotatedMethod(method, a);
+                    extensionBuilders.computeIfAbsent(eType, etype -> new ComponentExtensionHookRequest.Builder(hookProcessor, etype)).onAnnotatedMethod(method,
+                            a);
                 }
             }
         }

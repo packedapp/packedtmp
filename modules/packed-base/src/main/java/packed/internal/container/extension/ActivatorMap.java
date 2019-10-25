@@ -24,7 +24,7 @@ import app.packed.container.Extension;
 import app.packed.container.UseExtension;
 import app.packed.container.UseExtensionLazily;
 import app.packed.lang.Nullable;
-import packed.internal.util.tiny.TinyNode;
+import packed.internal.util.tiny.Linked;
 
 /**
  *
@@ -75,15 +75,15 @@ public final class ActivatorMap {
 
     @Nullable
     static <T> Set<Class<? extends T>> findNonAutoExtending(Set<Class<? extends T>> set) {
-        TinyNode<Class<? extends T>> n = null;
+        Linked<Class<? extends T>> n = null;
         if (set != null) {
             for (Class<? extends T> c : set) {
                 if (!ActivatorMap.isAutoActivate(c)) {
-                    n = new TinyNode<>(c, n);
+                    n = new Linked<>(c, n);
                 }
             }
         }
-        return TinyNode.toSetOrNull(n);
+        return Linked.toSetOrNull(n);
     }
 
     public static boolean isAutoActivate(Class<?> clazz) {
@@ -96,9 +96,9 @@ public final class ActivatorMap {
             return null;
         }
 
-        HashMap<Class<? extends Annotation>, TinyNode<Class<? extends Extension>>> annotatedFields = new HashMap<>(0);
-        HashMap<Class<? extends Annotation>, TinyNode<Class<? extends Extension>>> annotatedMethods = new HashMap<>(0);
-        HashMap<Class<? extends Annotation>, TinyNode<Class<? extends Extension>>> annotatedTypes = new HashMap<>(0);
+        HashMap<Class<? extends Annotation>, Linked<Class<? extends Extension>>> annotatedFields = new HashMap<>(0);
+        HashMap<Class<? extends Annotation>, Linked<Class<? extends Extension>>> annotatedMethods = new HashMap<>(0);
+        HashMap<Class<? extends Annotation>, Linked<Class<? extends Extension>>> annotatedTypes = new HashMap<>(0);
 
         for (Class<? extends Extension> c : uel.value()) {
             ExtensionModel<? extends Extension> em = ExtensionModel.of(c);
@@ -111,15 +111,15 @@ public final class ActivatorMap {
         if (annotatedFields.size() == 0 && annotatedMethods.size() == 0 && annotatedTypes.size() == 0) {
             System.err.println("Why use " + uel);
         }
-        return new ActivatorMap(TinyNode.toMapOrNull(annotatedFields), TinyNode.toMapOrNull(annotatedMethods), TinyNode.toMapOrNull(annotatedTypes));
+        return new ActivatorMap(Linked.toMapOrNull(annotatedFields), Linked.toMapOrNull(annotatedMethods), Linked.toMapOrNull(annotatedTypes));
     }
 
     @Nullable
-    private static <T> void stats(Class<? extends Extension> extensionType, HashMap<Class<? extends T>, TinyNode<Class<? extends Extension>>> map,
+    private static <T> void stats(Class<? extends Extension> extensionType, HashMap<Class<? extends T>, Linked<Class<? extends Extension>>> map,
             @Nullable Set<Class<? extends T>> set) {
         if (set != null) {
             for (Class<? extends T> c : set) {
-                map.compute(c, (k, v) -> new TinyNode<>(extensionType, v));
+                map.compute(c, (k, v) -> new Linked<>(extensionType, v));
             }
         }
     }

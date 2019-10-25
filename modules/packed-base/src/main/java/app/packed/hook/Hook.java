@@ -15,11 +15,14 @@
  */
 package app.packed.hook;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.container.InternalExtensionException;
 import app.packed.lang.Nullable;
-import packed.internal.hook.testit.UseIt2;
+import packed.internal.hook.UseIt2;
+import packed.internal.reflect.ClassProcessor;
 
 /**
  * A marker interface
@@ -28,6 +31,9 @@ import packed.internal.hook.testit.UseIt2;
  * 
  * Builds must have at least one method annotated with {@link OnHook}
  */
+
+// Hvis den kun kommer til at blive brugt til componenter....
+// Kommer an paa den applicator
 
 // Custom hooks must declare a static (with any visibility) class named Builder extending #Builder and the with Hook
 // type as type Variable;
@@ -67,8 +73,15 @@ public interface Hook {
          */
         @Nullable
         static <T extends Hook> T test(Lookup caller, Class<T> hookType, Class<?> target) {
+            requireNonNull(caller, "caller is null");
+            requireNonNull(hookType, "hookType is null");
+            requireNonNull(target, "target is null");
+
+            ClassProcessor cpHook = new ClassProcessor(caller, hookType, false);
+            ClassProcessor cpTarget = new ClassProcessor(caller, target, false);
+
             try {
-                return UseIt2.test(caller, hookType, target);
+                return UseIt2.test(cpHook, cpTarget);
             } catch (InternalExtensionException ee) {
                 AssertionError ar = new AssertionError(ee.getMessage());
                 ar.setStackTrace(ee.getStackTrace());

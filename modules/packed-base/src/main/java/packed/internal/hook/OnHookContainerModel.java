@@ -37,7 +37,7 @@ import packed.internal.hook.OnHookContainerModelBuilder.Node;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.UncheckedThrowableFactory;
-import packed.internal.util.tiny.TinyPairNode;
+import packed.internal.util.tiny.LinkedPair;
 
 /**
  *
@@ -45,6 +45,7 @@ import packed.internal.util.tiny.TinyPairNode;
 public final class OnHookContainerModel {
 
     static final boolean DEBUG = false;
+
     private final ImmutableOnHookMap<Link> allLinks;
 
     /** Constructors for each builder. */
@@ -53,12 +54,12 @@ public final class OnHookContainerModel {
     /** Methods annotated with {@link OnHook} that takes a non-base {@link Hook}. */
     private final Link[] customHooks;
 
-    final ImmutableOnHookMap<Link> rootLinks;
-
     final boolean isHookTop;
 
+    final ImmutableOnHookMap<Link> rootLinks;
+
     OnHookContainerModel(OnHookContainerModelBuilder b) {
-        Function<TinyPairNode<Node, MethodHandle>, Link> ff = e -> {
+        Function<LinkedPair<Node, MethodHandle>, Link> ff = e -> {
             Link l = null;
             for (; e != null; e = e.next) {
                 l = new Link(e.element2, e.element1.index, l);
@@ -79,7 +80,7 @@ public final class OnHookContainerModel {
         if (DEBUG) {
             for (int i = 0; i < list.size(); i++) {
                 OnHookContainerModelBuilder.Node n = list.get(i);
-                String msg = i + " " + n.index + " " + n.onNodeContainerType;
+                String msg = i + " " + n.index + " " + n.containerType;
                 if (n.builderConstructor != null) {
                     msg += " " + n.builderConstructor.type().returnType();
                 }
@@ -98,7 +99,7 @@ public final class OnHookContainerModel {
             if (b.allEntries.customHooks != null) {
                 // We reverse the order here so instead of Dependent->Dependency we get Dependency->Dependent
                 // We do this so we do not automatically invoke methods on the root object. which is never cached.
-                for (TinyPairNode<Node, MethodHandle> l = b.allEntries.customHooks.get(n.onNodeContainerType); l != null; l = l.next) {
+                for (LinkedPair<Node, MethodHandle> l = b.allEntries.customHooks.get(n.containerType); l != null; l = l.next) {
                     customHooks[l.element1.index] = new Link(l.element2, i, customHooks[l.element1.index]);
                 }
             }
@@ -162,7 +163,7 @@ public final class OnHookContainerModel {
     }
 
     @Nullable
-    public Object process(@Nullable Object parent, ClassProcessor cpTarget, UncheckedThrowableFactory<?> tf) throws Throwable {
+    Object process(@Nullable Object parent, ClassProcessor cpTarget, UncheckedThrowableFactory<?> tf) throws Throwable {
         HookProcessor hc = new HookProcessor(cpTarget, tf);
         HookRequest.Builder hb = new HookRequest.Builder(this, hc);
         Object[] array = hb.array;
@@ -190,7 +191,7 @@ public final class OnHookContainerModel {
         return builderConstructors.length;
     }
 
-    public void tryProcesAnnotatedField(HookProcessor hc, Field field, Annotation annotation, HookRequest.Builder hr) throws Throwable {
+    void tryProcesAnnotatedField(HookProcessor hc, Field field, Annotation annotation, HookRequest.Builder hr) throws Throwable {
         for (Link link = allLinks.annotatedFields.get(annotation.annotationType()); link != null; link = link.next) {
             if (link.index == 0 && !isHookTop) {
                 hr.delayedFields.add(new DelayedAnnotatedField(hc.cp, field, annotation, link.mh));
@@ -206,7 +207,7 @@ public final class OnHookContainerModel {
         }
     }
 
-    public void tryProcesAnnotatedMethod(HookProcessor hc, Method method, Annotation annotation, HookRequest.Builder hr) throws Throwable {
+    void tryProcesAnnotatedMethod(HookProcessor hc, Method method, Annotation annotation, HookRequest.Builder hr) throws Throwable {
         for (Link link = allLinks.annotatedMethods.get(annotation.annotationType()); link != null; link = link.next) {
             if (link.index == 0 && !isHookTop) {
                 hr.delayedMethods.add(new DelayedAnnotatedMethod(hc.cp, method, annotation, link.mh));

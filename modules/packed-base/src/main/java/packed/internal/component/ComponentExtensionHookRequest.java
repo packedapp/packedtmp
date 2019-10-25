@@ -21,11 +21,8 @@ import java.lang.reflect.UndeclaredThrowableException;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.Extension;
-import app.packed.hook.Hook;
-import app.packed.lang.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.ExtensionModel;
-import packed.internal.hook.CachedHook;
 import packed.internal.hook.HookProcessor;
 import packed.internal.hook.HookRequest;
 import packed.internal.util.ThrowableUtil;
@@ -51,18 +48,11 @@ final class ComponentExtensionHookRequest extends HookRequest {
 
     static final class Builder extends HookRequest.Builder {
 
-        @Nullable
-        private CachedHook<Hook> callback;
-
-        /** The type of extension that will be activated. */
-        private final Class<? extends Extension> extensionType;
-
         public Builder(HookProcessor hookProcessor, Class<? extends Extension> extensionType) {
             super(ExtensionModel.of(extensionType).hooks(), hookProcessor);
-            this.extensionType = requireNonNull(extensionType);
         }
 
-        public ComponentExtensionHookRequest build() {
+        public ComponentExtensionHookRequest build(Class<? extends Extension> extensionType) {
             try {
                 return new ComponentExtensionHookRequest(this, extensionType);
             } catch (Throwable e) {

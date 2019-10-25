@@ -22,16 +22,16 @@ import app.packed.lang.Nullable;
 /**
  *
  */
-public class TinyPairNode<E1, E2> {
+public class LinkedPair<E1, E2> {
 
     public final E1 element1;
 
     public final E2 element2;
 
     @Nullable
-    public final TinyPairNode<E1, E2> next;
+    public final LinkedPair<E1, E2> next;
 
-    public TinyPairNode(E1 element1, E2 element2, @Nullable TinyPairNode<E1, E2> next) {
+    public LinkedPair(E1 element1, E2 element2, @Nullable LinkedPair<E1, E2> next) {
         this.element1 = requireNonNull(element1);
         this.element2 = requireNonNull(element2);
         this.next = next;

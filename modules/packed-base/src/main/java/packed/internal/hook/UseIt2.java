@@ -13,16 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hook.testit;
+package packed.internal.hook;
 
-import static java.util.Objects.requireNonNull;
-
-import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.UndeclaredThrowableException;
 
 import app.packed.hook.Hook;
-import packed.internal.hook.OnHookContainerModel;
-import packed.internal.hook.OnHookContainerModelBuilder;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.UncheckedThrowableFactory;
@@ -33,15 +28,9 @@ import packed.internal.util.UncheckedThrowableFactory;
 public class UseIt2 {
 
     @SuppressWarnings("unchecked")
-    public static <T extends Hook> T test(Lookup caller, Class<T> hookType, Class<?> target) {
-        requireNonNull(caller, "caller is null");
-        requireNonNull(hookType, "hookType is null");
-        requireNonNull(target, "target is null");
-        ClassProcessor cp = new ClassProcessor(caller, hookType, false);
-
-        OnHookContainerModelBuilder ohs = new OnHookContainerModelBuilder(cp);
+    public static <T extends Hook> T test(ClassProcessor cpHook, ClassProcessor cpTarget) {
+        OnHookContainerModelBuilder ohs = new OnHookContainerModelBuilder(cpHook);
         OnHookContainerModel m = ohs.build();
-        ClassProcessor cpTarget = new ClassProcessor(caller, target, false);
 
         try {
             return (T) m.process(null, cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR);
