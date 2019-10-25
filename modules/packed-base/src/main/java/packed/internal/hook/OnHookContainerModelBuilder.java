@@ -74,6 +74,7 @@ public final class OnHookContainerModelBuilder {
         }
     }
 
+    @Nullable
     public OnHookContainerModel build() {
         // Find all methods annotated with @OnHook and process them.
         root.cp.findMethods(m -> onMethod(root, m));
@@ -110,6 +111,9 @@ public final class OnHookContainerModelBuilder {
         if (!nodes.isEmpty()) {
             // Okay, we got some circles.
             throw new UnsupportedOperationException("Not supported currently");
+        }
+        if (allEntries.isEmpty()) {
+            return null;
         }
         return new OnHookContainerModel(this);
     }

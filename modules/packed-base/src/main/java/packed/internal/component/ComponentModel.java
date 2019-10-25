@@ -64,7 +64,7 @@ public final class ComponentModel {
         this.componentType = requireNonNull(builder.cp.clazz());
 
         try {
-            this.sourceHook = builder.sourceHook == null ? null : builder.sourceHook.build();
+            this.sourceHook = builder.csb == null ? null : builder.csb.build();
         } catch (Throwable ee) {
             ThrowableUtil.rethrowErrorOrRuntimeException(ee);
             throw new UndeclaredThrowableException(ee);
@@ -139,14 +139,14 @@ public final class ComponentModel {
     /** A builder object for a component model. */
     private static final class Builder {
 
-        private final CustomExtensionHooksMap activatorMap;
-
         private final ClassProcessor cp;
 
         /** A map of builders for every activated extension. */
         private final IdentityHashMap<Class<? extends Extension>, HookRequest.Builder> extensionBuilders = new IdentityHashMap<>();
 
-        HookRequest.Builder sourceHook;
+        final ContainerSourceModel csm;
+
+        HookRequest.Builder csb;
 
         /**
          * Creates a new component model builder
@@ -156,8 +156,8 @@ public final class ComponentModel {
          * 
          */
         private Builder(ContainerSourceModel csm, ClassProcessor cp) {
+            this.csm = requireNonNull(csm);
             this.cp = requireNonNull(cp);
-            this.activatorMap = csm.activatorMap;
         }
 
         /**
@@ -166,13 +166,19 @@ public final class ComponentModel {
          * @return a new model
          */
         private ComponentModel build() {
+            final CustomExtensionHooksMap activatorMap = csm.activatorMap;
             Class<?> componentType = cp.clazz();
 
             try (HookTargetProcessor htp = new HookTargetProcessor(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
+                HookRequest.Builder csb = this.csb = csm.hooks == null ? null : new HookRequest.Builder(csm.hooks, htp);
+
                 for (Annotation a : componentType.getAnnotations()) {
                     onAnnotatedType(htp, componentType, a, CustomExtensionHooksMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
                     if (activatorMap != null) {
                         onAnnotatedType(htp, componentType, a, activatorMap.onAnnotatedType(a.annotationType()));
+                    }
+                    if (csb != null) {
+                        csb.onAnnotatedType(componentType, a);
                     }
                 }
                 cp.findMethodsAndFields(method -> {
@@ -181,12 +187,18 @@ public final class ComponentModel {
                         if (activatorMap != null) {
                             onAnnotatedMethod(htp, a, method, activatorMap.onAnnotatedMethod(a.annotationType()));
                         }
+                        if (csb != null) {
+                            csb.onAnnotatedMethod(method, a);
+                        }
                     }
                 }, field -> {
                     for (Annotation a : field.getAnnotations()) {
                         onAnnotatedField(htp, a, field, CustomExtensionHooksMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
                         if (activatorMap != null) {
                             onAnnotatedField(htp, a, field, activatorMap.onAnnotatedMethod(a.annotationType()));
+                        }
+                        if (csb != null) {
+                            csb.onAnnotatedField(field, a);
                         }
                     }
                 });

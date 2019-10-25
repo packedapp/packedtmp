@@ -36,6 +36,7 @@ import app.packed.container.ExtensionInstantiationContext;
 import app.packed.container.ExtensionWirelet;
 import app.packed.container.InternalExtensionException;
 import app.packed.hook.OnHook;
+import app.packed.lang.Nullable;
 import packed.internal.hook.DefaultHookUsage;
 import packed.internal.hook.OnHookContainerModel;
 import packed.internal.hook.OnHookContainerModelBuilder;
@@ -96,7 +97,8 @@ public final class ExtensionModel<E extends Extension> {
 
     public final Map<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, BiFunction<?, ?, ?>> pipelines;
 
-    public final OnHookContainerModel hooks;
+    @Nullable
+    private final OnHookContainerModel hooks;
 
     final DefaultHookUsage nonActivatingHooks;
 
@@ -120,9 +122,13 @@ public final class ExtensionModel<E extends Extension> {
         this.optional = Optional.of(extensionType); // No need to create an optional every time we need this
 
         this.hooks = builder.hooks.build();
-        this.nonActivatingHooks = DefaultHookUsage.ofOrNull(CustomExtensionHooksMap.findNonAutoExtending(hooks.annotatedFieldHooks()),
-                CustomExtensionHooksMap.findNonAutoExtending(hooks.annotatedMethodHooks()), CustomExtensionHooksMap.findNonAutoExtending(hooks.annotatedTypeHooks()));
-
+        if (hooks == null) {
+            this.nonActivatingHooks = null;
+        } else {
+            this.nonActivatingHooks = DefaultHookUsage.ofOrNull(CustomExtensionHooksMap.findNonAutoExtending(hooks.annotatedFieldHooks()),
+                    CustomExtensionHooksMap.findNonAutoExtending(hooks.annotatedMethodHooks()),
+                    CustomExtensionHooksMap.findNonAutoExtending(hooks.annotatedTypeHooks()));
+        }
     }
 
     /**
@@ -130,6 +136,7 @@ public final class ExtensionModel<E extends Extension> {
      * 
      * @return a hook model
      */
+    @Nullable
     public OnHookContainerModel hooks() {
         return hooks;
     }

@@ -91,6 +91,7 @@ public final class CustomExtensionHooksMap {
     }
 
     public static CustomExtensionHooksMap of(Class<?> cl) {
+
         UseExtensionLazily uel = cl.getAnnotation(UseExtensionLazily.class);
         if (uel == null) {
             return null;
