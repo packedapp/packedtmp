@@ -24,6 +24,8 @@ import java.lang.reflect.ParameterizedType;
 import java.util.ArrayDeque;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.function.Function;
 
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
@@ -256,6 +258,92 @@ final class OnHookModelBuilder {
         @Override
         public String toString() {
             return builderConstructor == null ? "" : builderConstructor.type().toString();
+        }
+    }
+
+    static final class MutableOnHookMap<V> {
+
+        /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedFieldHook} as a parameter. */
+        IdentityHashMap<Class<?>, V> annotatedFields;
+
+        /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedMethodHook} as a parameter. */
+        IdentityHashMap<Class<?>, V> annotatedMethods;
+
+        /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedTypeHook} as a parameter. */
+        IdentityHashMap<Class<?>, V> annotatedTypes;
+
+        /** Methods annotated with {@link OnHook} that takes a {@link AssignableToHook} as a parameter. */
+        IdentityHashMap<Class<?>, V> assignableTos;
+
+        /** Methods annotated with {@link OnHook} that takes a non-base {@link Hook}. */
+        IdentityHashMap<Class<?>, V> customHooks;
+
+        IdentityHashMap<Class<?>, V> annotatedFieldsLazyInit() {
+            IdentityHashMap<Class<?>, V> a = annotatedFields;
+            if (a == null) {
+                a = annotatedFields = new IdentityHashMap<>(1);
+            }
+            return a;
+        }
+
+        boolean isEmpty() {
+            return annotatedFields == null && annotatedMethods == null && annotatedTypes == null && assignableTos == null && customHooks == null;
+        }
+
+        IdentityHashMap<Class<?>, V> annotatedMethodsLazyInit() {
+            IdentityHashMap<Class<?>, V> a = annotatedMethods;
+            if (a == null) {
+                a = annotatedMethods = new IdentityHashMap<>(1);
+            }
+            return a;
+        }
+
+        IdentityHashMap<Class<?>, V> annotatedTypesLazyInit() {
+            IdentityHashMap<Class<?>, V> a = annotatedTypes;
+            if (a == null) {
+                a = annotatedTypes = new IdentityHashMap<>(1);
+            }
+            return a;
+        }
+
+        IdentityHashMap<Class<?>, V> assignableTosLazyInit() {
+            IdentityHashMap<Class<?>, V> a = assignableTos;
+            if (a == null) {
+                a = assignableTos = new IdentityHashMap<>(1);
+            }
+            return a;
+        }
+
+        IdentityHashMap<Class<?>, V> customHooksLazyInit() {
+            IdentityHashMap<Class<?>, V> a = customHooks;
+            if (a == null) {
+                a = customHooks = new IdentityHashMap<>(1);
+            }
+            return a;
+        }
+
+        <E> ImmutableOnHookMap<E> toImmutable(Function<V, E> converter) {
+            if (isEmpty()) {
+                return null;
+            }
+            Map<Class<?>, E> annotatedFieldHooks = convert(annotatedFields, converter);
+            Map<Class<?>, E> annotatedMethoddHooks = convert(annotatedMethods, converter);
+            Map<Class<?>, E> annotatedTypeHooks = convert(annotatedTypes, converter);
+            Map<Class<?>, E> assignableToHooks = convert(assignableTos, converter);
+            return new ImmutableOnHookMap<E>(annotatedFieldHooks, annotatedMethoddHooks, annotatedTypeHooks, assignableToHooks);
+        }
+
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        private <VV, E> Map<Class<?>, E> convert(IdentityHashMap<Class<?>, VV> map, Function<VV, E> f) {
+            if (map == null) {
+                return null;
+            }
+            // Replace in map
+            IdentityHashMap m = map;
+
+            m.replaceAll((k, v) -> ((Function) f).apply(v));
+
+            return Map.copyOf(m);
         }
     }
 }

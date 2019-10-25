@@ -23,6 +23,9 @@ import java.util.Set;
  */
 // Taenker den her bliver offentlig, det eneste problem er at vi kan ikke tillade at folk
 // selv kan lave deres egne base hooks... Men det er maaske okay..
+// Vi vil gerne have metoderne paa ExtensionDescriptor...
+// Det der er, at det maaske istedet for at putte den direkte paa ExtensionDescriptor.
+// Er at vi saa kan skelne mellem runtime og compiletime...
 public interface HookUsage {
 
     Set<Class<? extends Annotation>> annotatedFields();

@@ -25,7 +25,7 @@ import app.packed.lang.Nullable;
  *
  */
 // Bruges til at kalde tilbage paa extensions
-public final class CachedHook<T> {
+final class CachedHook<T> {
 
     private final T hook;
 
@@ -38,22 +38,22 @@ public final class CachedHook<T> {
      * @param mh
      * @param hook
      */
-    public CachedHook(MethodHandle mh, T hook, @Nullable CachedHook<T> next) {
+    CachedHook(MethodHandle mh, T hook, @Nullable CachedHook<T> next) {
         this.mh = requireNonNull(mh);
         this.hook = hook;
         this.next = next;
     }
 
-    public T hook() {
+    T hook() {
         return hook;
     }
 
-    public MethodHandle mh() {
+    MethodHandle mh() {
         return mh;
     }
 
     @Nullable
-    public CachedHook<T> next() {
+    CachedHook<T> next() {
         return next;
     }
 }
