@@ -302,9 +302,6 @@ final class OnHookModelBuilder {
         }
 
         <E> ImmutableOnHookMap<E> toImmutable(Function<V, E> converter) {
-            if (isEmpty()) {
-                return null;
-            }
             Map<Class<?>, E> annotatedFieldHooks = convert(annotatedFields, converter);
             Map<Class<?>, E> annotatedMethoddHooks = convert(annotatedMethods, converter);
             Map<Class<?>, E> annotatedTypeHooks = convert(annotatedTypes, converter);

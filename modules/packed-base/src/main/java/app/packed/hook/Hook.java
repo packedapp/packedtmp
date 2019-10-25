@@ -85,11 +85,17 @@ public interface Hook {
 
             ClassProcessor cpHook = new ClassProcessor(caller, hookType, false);
             ClassProcessor cpTarget = new ClassProcessor(caller, target, false);
-            try {
 
-                HookTargetProcessor hc = new HookTargetProcessor(cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR);
-                HookRequestBuilder hb = new HookRequestBuilder(OnHookModel.newInstance(cpHook), hc, true);
+            HookTargetProcessor hc = new HookTargetProcessor(cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR);
+            try {
+                OnHookModel ohm = OnHookModel.newInstance(cpHook);
                 try {
+                    if (ohm == null) {
+                        throw new AssertionError("There must be at least one method annotated with @OnHook on " + hookType);
+                    }
+
+                    HookRequestBuilder hb = new HookRequestBuilder(OnHookModel.newInstance(cpHook), hc, true);
+
                     return (T) hb.singleConsume(cpTarget);
                 } catch (InternalExtensionException ee) {
                     AssertionError ar = new AssertionError(ee.getMessage());
