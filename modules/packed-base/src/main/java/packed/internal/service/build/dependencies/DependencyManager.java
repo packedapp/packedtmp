@@ -27,6 +27,7 @@ import java.util.StringJoiner;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionInstantiationContext;
+import app.packed.container.ExtensionWirelet;
 import app.packed.lang.Key;
 import app.packed.lang.Nullable;
 import app.packed.lang.reflect.ExecutableDescriptor;
@@ -36,7 +37,6 @@ import app.packed.service.Dependency;
 import app.packed.service.InjectionException;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
-import packed.internal.container.extension.ExtensionWireletPipelineModel;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
@@ -163,7 +163,7 @@ public final class DependencyManager {
                             }
                         }
 
-                        if (!k.hasQualifier() && ExtensionWireletPipelineModel.class.isAssignableFrom(k.typeLiteral().rawType())) {
+                        if (!k.hasQualifier() && ExtensionWirelet.Pipeline.class.isAssignableFrom(k.typeLiteral().rawType())) {
                             // Den virker ikke super godt med det optional....
 
                             if (entry instanceof ComponentFactoryBuildEntry) {
