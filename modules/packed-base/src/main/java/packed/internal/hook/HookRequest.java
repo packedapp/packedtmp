@@ -45,12 +45,13 @@ public final class HookRequest {
     final List<DelayedAnnotatedMethod> delayedMethods;
 
     protected HookRequest(HookRequest.Builder builder) throws Throwable {
-        this.customHooksCallback = builder.hooks.compute(builder.array);
+        this.customHooksCallback = builder.onHookModel.compute(builder.array);
         this.delayedMethods = builder.delayedMethods;
         this.delayedFields = builder.delayedFields;
     }
 
     public void invokeIt(Object target, Object additional) throws Throwable {
+        // TODO support static....
         for (TinyPair<Hook, MethodHandle> c = customHooksCallback; c != null; c = c.next) {
             Hook hook = c.element1;
             MethodHandle mh = c.element2;
@@ -94,11 +95,11 @@ public final class HookRequest {
 
         final HookTargetProcessor hookProcessor;
 
-        final OnHookModel hooks;
+        private final OnHookModel onHookModel;
 
         public Builder(OnHookModel model, HookTargetProcessor hookProcessor) {
             this.array = new Object[model.builderConstructors.length];
-            this.hooks = requireNonNull(model);
+            this.onHookModel = requireNonNull(model);
             this.hookProcessor = requireNonNull(hookProcessor);
         }
 
@@ -107,11 +108,11 @@ public final class HookRequest {
         }
 
         public void onAnnotatedField(Field field, Annotation annotation) throws Throwable {
-            hooks.tryProcesAnnotatedField(this, field, annotation);
+            onHookModel.tryProcesAnnotatedField(this, field, annotation);
         }
 
         public void onAnnotatedMethod(Method method, Annotation annotation) throws Throwable {
-            hooks.tryProcesAnnotatedMethod(this, method, annotation);
+            onHookModel.tryProcesAnnotatedMethod(this, method, annotation);
         }
 
         public void onAnnotatedType(Class<?> clazz, Annotation annotation) throws Throwable {
@@ -119,16 +120,16 @@ public final class HookRequest {
         }
 
         public Object singleConsume(ClassProcessor cp) throws Throwable {
-            cp.findMethodsAndFields(hooks.allLinks.annotatedMethods == null ? null : f -> {
+            cp.findMethodsAndFields(onHookModel.allLinks.annotatedMethods == null ? null : f -> {
                 for (Annotation a : f.getAnnotations()) {
-                    hooks.tryProcesAnnotatedMethod(this, f, a);
+                    onHookModel.tryProcesAnnotatedMethod(this, f, a);
                 }
-            }, hooks.allLinks.annotatedFields == null ? null : f -> {
+            }, onHookModel.allLinks.annotatedFields == null ? null : f -> {
                 for (Annotation a : f.getAnnotations()) {
-                    hooks.tryProcesAnnotatedField(this, f, a);
+                    onHookModel.tryProcesAnnotatedField(this, f, a);
                 }
             });
-            hooks.compute(array);
+            onHookModel.compute(array);
             Object a = array[0];
             return a == null ? null : (((Hook.Builder<?>) a).build());
         }

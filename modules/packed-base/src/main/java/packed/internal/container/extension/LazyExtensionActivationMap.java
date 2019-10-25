@@ -24,6 +24,8 @@ import app.packed.container.Extension;
 import app.packed.container.UseExtension;
 import app.packed.container.UseExtensionLazily;
 import app.packed.lang.Nullable;
+import packed.internal.hook.DefaultHookUsage;
+import packed.internal.hook.OnHookModel;
 import packed.internal.util.Tiny;
 
 /**
@@ -71,6 +73,13 @@ public final class LazyExtensionActivationMap {
     @Nullable
     public Set<Class<? extends Extension>> onAnnotatedType(Class<? extends Annotation> annotationType) {
         return annotatedTypes == null ? null : annotatedTypes.get(annotationType);
+    }
+
+    @Nullable
+    public static DefaultHookUsage findNonExtending(OnHookModel hooks) {
+        return DefaultHookUsage.ofOrNull(LazyExtensionActivationMap.findNonAutoExtending(hooks.annotatedFieldHooks()),
+                LazyExtensionActivationMap.findNonAutoExtending(hooks.annotatedMethodHooks()),
+                LazyExtensionActivationMap.findNonAutoExtending(hooks.annotatedTypeHooks()));
     }
 
     @Nullable

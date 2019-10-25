@@ -87,7 +87,7 @@ public final class ExtensionModel<E extends Extension> {
     public final Class<? extends Extension> extensionType;
 
     @Nullable
-    private final OnHookModel hooks;
+    private final OnHookModel onHookModel;
 
     final DefaultHookUsage nonActivatingHooks;
 
@@ -123,14 +123,8 @@ public final class ExtensionModel<E extends Extension> {
         this.dependencies = Set.copyOf(builder.dependencies);
         this.optional = Optional.of(extensionType); // No need to create an optional every time we need this
 
-        this.hooks = builder.onHookModel;
-        if (hooks == null) {
-            this.nonActivatingHooks = null;
-        } else {
-            this.nonActivatingHooks = DefaultHookUsage.ofOrNull(LazyExtensionActivationMap.findNonAutoExtending(hooks.annotatedFieldHooks()),
-                    LazyExtensionActivationMap.findNonAutoExtending(hooks.annotatedMethodHooks()),
-                    LazyExtensionActivationMap.findNonAutoExtending(hooks.annotatedTypeHooks()));
-        }
+        this.onHookModel = builder.onHookModel;
+        this.nonActivatingHooks = onHookModel == null ? null : LazyExtensionActivationMap.findNonExtending(onHookModel);
     }
 
     /**
@@ -179,7 +173,7 @@ public final class ExtensionModel<E extends Extension> {
      */
     @Nullable
     public static OnHookModel onHookModelOf(Class<? extends Extension> extensionType) {
-        return of(extensionType).hooks;
+        return of(extensionType).onHookModel;
     }
 
     /** A builder for {@link ExtensionModel}. */
