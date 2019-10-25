@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
 import app.packed.lang.Nullable;
@@ -30,7 +31,7 @@ import app.packed.lang.Nullable;
  */
 public final class Tiny<E> {
 
-    public final E element;
+    private final E element;
 
     @Nullable
     final Tiny<E> next;
@@ -51,6 +52,19 @@ public final class Tiny<E> {
             }
         }
         return false;
+    }
+
+    public static <A> A[] toArrayOrNull(@Nullable Tiny<A> node, IntFunction<A[]> generator) {
+        // Maybe have Tiny<?>, see ReferencePipeline#toArray[]
+        throw new UnsupportedOperationException();
+    }
+
+    public static <A> A[] toArray(@Nullable Tiny<A> node, A[] empty, IntFunction<A[]> generator) {
+        if (node == null) {
+            return empty;
+        }
+        // Maybe have Tiny<?>, see ReferencePipeline#toArray[]
+        throw new UnsupportedOperationException();
     }
 
     public static <T> Set<T> toSet(@Nullable Tiny<T> node) {
@@ -85,7 +99,7 @@ public final class Tiny<E> {
         return Set.copyOf(set);
     }
 
-    public static <K, V> Map<K, Set<V>> toMapOrNull(Map<K, Tiny<V>> map) {
+    public static <K, V> Map<K, Set<V>> toMultiSetMapOrNull(Map<K, Tiny<V>> map) {
         if (map == null) {
             return null;
         }
