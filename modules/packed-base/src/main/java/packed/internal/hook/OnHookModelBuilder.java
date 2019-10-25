@@ -40,10 +40,8 @@ import packed.internal.util.TinyPair;
 import packed.internal.util.UncheckedThrowableFactory;
 import packed.internal.util.types.TypeUtil;
 
-/**
- * A builder for classes that may contain methods annotated with {@link OnHook}.
- */
-public final class OnHookModelBuilder {
+/** A builder for classes that may contain methods annotated with {@link OnHook}. */
+final class OnHookModelBuilder {
 
     private final static UncheckedThrowableFactory<? extends RuntimeException> tf = UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY;
 
@@ -62,7 +60,7 @@ public final class OnHookModelBuilder {
     /** A stack that is used to process each node. */
     final ArrayDeque<Node> stack = new ArrayDeque<>();
 
-    public OnHookModelBuilder(ClassProcessor cp, Class<?>... additionalParameters) {
+    OnHookModelBuilder(ClassProcessor cp, Class<?>... additionalParameters) {
         if (Hook.class.isAssignableFrom(cp.clazz())) {
             this.root = new Node(cp, cp.clazz());
             rootEntries = allEntries;
@@ -75,7 +73,7 @@ public final class OnHookModelBuilder {
     }
 
     @Nullable
-    public OnHookModel build() {
+    OnHookModel build() {
         // Find all methods annotated with @OnHook and process them.
         root.cp.findMethods(m -> onMethod(root, m));
         for (Node b = stack.pollFirst(); b != null; b = stack.pollFirst()) {

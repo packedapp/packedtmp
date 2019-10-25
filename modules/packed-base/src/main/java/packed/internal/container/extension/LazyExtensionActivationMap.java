@@ -111,8 +111,10 @@ public final class LazyExtensionActivationMap {
         }
         if (annotatedFields.size() == 0 && annotatedMethods.size() == 0 && annotatedTypes.size() == 0) {
             System.err.println("Why use " + uel);
+            return null;
         }
-        return new LazyExtensionActivationMap(Tiny.toMultiSetMapOrNull(annotatedFields), Tiny.toMultiSetMapOrNull(annotatedMethods), Tiny.toMultiSetMapOrNull(annotatedTypes));
+        return new LazyExtensionActivationMap(Tiny.toMultiSetMapOrNull(annotatedFields), Tiny.toMultiSetMapOrNull(annotatedMethods),
+                Tiny.toMultiSetMapOrNull(annotatedTypes));
     }
 
     @Nullable

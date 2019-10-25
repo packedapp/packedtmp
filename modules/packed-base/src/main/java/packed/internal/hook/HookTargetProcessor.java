@@ -27,12 +27,14 @@ import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.UncheckedThrowableFactory;
 
 /**
- * A single one of these is created by class that is analyzed
+ * A single one of these is created by class that is analyzed. Is used to make sure that no instance
+ * {@link MethodHandle} and {@link VarHandle}. Is created after the component has analyzed. This is done in order to
+ * avoid someone trying to create instances of them, outside of stuff because of grall..
  */
 // HookGate
 public final class HookTargetProcessor implements AutoCloseable {
 
-    public final ClassProcessor cp;
+    final ClassProcessor cp;
 
     /** Whether or not the processor is closed. */
     private boolean isClosed;

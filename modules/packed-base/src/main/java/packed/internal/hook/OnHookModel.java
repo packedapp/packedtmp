@@ -56,6 +56,11 @@ public final class OnHookModel {
 
     final ImmutableOnHookMap<Link> rootLinks;
 
+    @Nullable
+    public static OnHookModel newInstance(ClassProcessor cp, Class<?>... additionalParameters) {
+        return new OnHookModelBuilder(cp, additionalParameters).build();
+    }
+
     OnHookModel(OnHookModelBuilder b) {
         Function<TinyPair<Node, MethodHandle>, Link> ff = e -> {
             Link l = null;

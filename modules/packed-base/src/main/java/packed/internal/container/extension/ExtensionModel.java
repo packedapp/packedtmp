@@ -41,7 +41,6 @@ import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
 import packed.internal.hook.DefaultHookUsage;
 import packed.internal.hook.OnHookModel;
-import packed.internal.hook.OnHookModelBuilder;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.reflect.ConstructorFinder;
@@ -124,7 +123,7 @@ public final class ExtensionModel<E extends Extension> {
         this.dependencies = Set.copyOf(builder.dependencies);
         this.optional = Optional.of(extensionType); // No need to create an optional every time we need this
 
-        this.hooks = builder.ohmb.build();
+        this.hooks = builder.onHookModel;
         if (hooks == null) {
             this.nonActivatingHooks = null;
         } else {
@@ -196,7 +195,7 @@ public final class ExtensionModel<E extends Extension> {
         private final Class<? extends Extension> extensionType;
 
         /** A builder for all methods annotated with {@link OnHook} on the extension. */
-        private OnHookModelBuilder ohmb;
+        private OnHookModel onHookModel;
 
         /**
          * Creates a new builder.
@@ -228,7 +227,7 @@ public final class ExtensionModel<E extends Extension> {
 
             ClassProcessor cp = new ClassProcessor(MethodHandles.lookup(), extensionType, true);
             this.constructor = ConstructorFinder.find(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-            this.ohmb = new OnHookModelBuilder(cp, ContainerConfiguration.class);
+            this.onHookModel = OnHookModel.newInstance(cp, ContainerConfiguration.class);
 
             if (composerType != null) {
                 ExtensionComposer<?> composer = ConstructorFinder.invoke(cp.spawn(composerType));

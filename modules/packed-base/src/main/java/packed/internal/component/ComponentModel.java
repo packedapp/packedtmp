@@ -173,7 +173,7 @@ public final class ComponentModel {
             Class<?> componentType = cp.clazz();
 
             try (HookTargetProcessor htp = new HookTargetProcessor(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
-                HookRequest.Builder csb = this.csb = csm.hooks == null ? null : new HookRequest.Builder(csm.hooks, htp);
+                HookRequest.Builder csb = this.csb = csm.onHookModel == null ? null : new HookRequest.Builder(csm.onHookModel, htp);
 
                 for (Annotation a : componentType.getAnnotations()) {
                     onAnnotatedType(htp, componentType, a, LazyExtensionActivationMap.EXTENSION_ACTIVATORS.get(a.annotationType()));

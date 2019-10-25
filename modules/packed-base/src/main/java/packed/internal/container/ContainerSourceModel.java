@@ -24,11 +24,12 @@ import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
 import app.packed.hook.Hook;
+import app.packed.hook.OnHook;
 import app.packed.lang.InvalidDeclarationException;
+import app.packed.lang.Nullable;
 import packed.internal.component.ComponentModel;
 import packed.internal.container.extension.LazyExtensionActivationMap;
 import packed.internal.hook.OnHookModel;
-import packed.internal.hook.OnHookModelBuilder;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.reflect.ClassProcessor;
@@ -48,6 +49,9 @@ public final class ContainerSourceModel implements ComponentLookup {
         }
     };
 
+    @Nullable
+    public final LazyExtensionActivationMap activatorMap;
+
     /** A cache of component models that have been accessed without a lookup object. */
     // most likely they will have the same class loader as the container source
     private final ClassValue<ComponentModel> componentsNoLookup = new ClassValue<>() {
@@ -61,6 +65,10 @@ public final class ContainerSourceModel implements ComponentLookup {
     /** The default lookup object, when the user has specified no Lookup value */
     ComponentLookup defaultLookup;
 
+    /** Any methods annotated with {@link OnHook} on the container source. */
+    @Nullable
+    public final OnHookModel onHookModel;
+
     /** A cache of lookup values, in 99 % of all cases this will hold no more than 1 value. */
     private final LookupValue<PerLookup> lookups = new LookupValue<>() {
 
@@ -72,8 +80,6 @@ public final class ContainerSourceModel implements ComponentLookup {
 
     /** The type of container source. Typically, a subclass of {@link Bundle}. */
     private final Class<? extends ContainerSource> sourceType;
-
-    public final OnHookModel hooks;
 
     /**
      * Creates a new container source model.
@@ -87,19 +93,20 @@ public final class ContainerSourceModel implements ComponentLookup {
         }
         this.sourceType = requireNonNull(sourceType);
 
-        OnHookModelBuilder builder = new OnHookModelBuilder(new ClassProcessor(MethodHandles.lookup(), sourceType, true),
-                ContainerConfiguration.class);
-        hooks = builder.build();
-
-        activatorMap = LazyExtensionActivationMap.of(sourceType);
+        this.onHookModel = OnHookModel.newInstance(new ClassProcessor(MethodHandles.lookup(), sourceType, true), ContainerConfiguration.class);
+        this.activatorMap = LazyExtensionActivationMap.of(sourceType);
     }
-
-    public final LazyExtensionActivationMap activatorMap;
 
     /** {@inheritDoc} */
     @Override
     public ComponentModel componentModelOf(Class<?> componentType) {
         return componentsNoLookup.get(componentType);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ClassProcessor newClassProcessor(Class<?> clazz, boolean registerNatives) {
+        return new ClassProcessor(MethodHandles.lookup(), clazz, registerNatives);
     }
 
     @Override
@@ -188,12 +195,6 @@ public final class ContainerSourceModel implements ComponentLookup {
             }
             return factory;
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ClassProcessor newClassProcessor(Class<?> clazz, boolean registerNatives) {
-        return new ClassProcessor(MethodHandles.lookup(), clazz, registerNatives);
     }
 }
 
