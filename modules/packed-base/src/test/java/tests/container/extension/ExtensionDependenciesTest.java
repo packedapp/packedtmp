@@ -35,7 +35,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
     public void testCanCallUseFromOnExtensionAdded() {
         appOf(c -> {
             c.use(Ex1.class);
-            assertThat(c.extensions()).containsExactly(Ex1.class, Ex2.class, Ex3.class);
+            assertThat(c.extensions()).containsExactly(Ex3.class, Ex2.class, Ex1.class);
         });
     }
 

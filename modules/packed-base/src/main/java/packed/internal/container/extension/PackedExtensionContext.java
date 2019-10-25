@@ -49,12 +49,12 @@ public final class PackedExtensionContext implements ExtensionContext {
      * 
      * @param pcc
      *            the configuration of the container the extension is registered in
-     * @param extensionModel
-     *            the extension model
+     * @param extensionType
+     *            the extension type to create a context for
      */
-    public PackedExtensionContext(PackedContainerConfiguration pcc, ExtensionModel<?> extensionModel) {
+    private PackedExtensionContext(PackedContainerConfiguration pcc, Class<? extends Extension> extensionType) {
         this.pcc = requireNonNull(pcc);
-        this.extensionModel = requireNonNull(extensionModel);
+        this.extensionModel = ExtensionModel.of(extensionType);
     }
 
     /** {@inheritDoc} */
@@ -106,7 +106,7 @@ public final class PackedExtensionContext implements ExtensionContext {
      * 
      * @param pcc
      */
-    public void initialize(PackedContainerConfiguration pcc) {
+    private void initialize(PackedContainerConfiguration pcc) {
         // Sets Extension.context = this
         this.extension = extensionModel.newInstance(this);
         ModuleAccess.extension().setExtensionContext(extension, this);
@@ -188,7 +188,7 @@ public final class PackedExtensionContext implements ExtensionContext {
     public <T extends Extension> T use(Class<T> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
 
-        // We allow an extension to use itself, alternative would be to throw an IAE, but why?
+        // We allow an extension to use itself, alternative would be to throw an IAE, but for what reason?
         if (extensionType == extension.getClass()) {
             return (T) extension;
         }
@@ -203,6 +203,22 @@ public final class PackedExtensionContext implements ExtensionContext {
             throw new InternalExtensionException("The specified extension type is not among " + extensionModel.extensionType.getSimpleName()
                     + " dependencies, extensionType = " + extensionType + ", valid dependencies = " + extensionModel.dependencies);
         }
+
         return (T) pcc.useExtension(extensionType, this).extension;
+    }
+
+    /**
+     * Creates and initializes a new extension and its context.
+     * 
+     * @param pcc
+     *            the configuration of the container.
+     * @param extensionType
+     *            the type of extension to initialize
+     * @return the new extension context
+     */
+    public static PackedExtensionContext of(PackedContainerConfiguration pcc, Class<? extends Extension> extensionType) {
+        PackedExtensionContext pec = new PackedExtensionContext(pcc, extensionType);
+        pec.initialize(pcc);
+        return pec;
     }
 }

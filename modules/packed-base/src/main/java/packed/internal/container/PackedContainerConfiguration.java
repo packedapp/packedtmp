@@ -53,13 +53,12 @@ import packed.internal.artifact.PackedArtifactContext;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.component.AbstractComponent;
 import packed.internal.component.AbstractComponentConfiguration;
-import packed.internal.component.ComponentModel;
 import packed.internal.component.AbstractCoreComponentConfiguration;
+import packed.internal.component.ComponentModel;
 import packed.internal.component.FactoryComponentConfiguration;
 import packed.internal.component.InstantiatedComponentConfiguration;
 import packed.internal.component.StaticComponentConfiguration;
 import packed.internal.config.ConfigSiteUtil;
-import packed.internal.container.extension.ExtensionModel;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.hook.applicator.DelayedAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarFieldDelayerAccessor;
@@ -505,12 +504,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             }
             initializeName(State.EXTENSION_USED, null); // initializes name of container, if not already set
 
-            // Retrieves the extension model for the specified extension. This will throw ExtensionDeclarationException
-            // If the extension is not correctly implemented.
-            ExtensionModel<? extends Extension> model = ExtensionModel.of(extensionType);
-
-            extensions.put(extensionType, pec = new PackedExtensionContext(this, model));
-            pec.initialize(this); // initializes the extension, might use additional new extensions
+            extensions.put(extensionType, pec = PackedExtensionContext.of(this, extensionType));
         }
         return pec;
     }
