@@ -96,7 +96,7 @@ public final class ContainerSourceModel implements ComponentLookup {
         }
         this.sourceType = requireNonNull(sourceType);
 
-        this.onHookModel = OnHookModel.newInstance(new ClassProcessor(MethodHandles.lookup(), sourceType, true), ContainerConfiguration.class);
+        this.onHookModel = OnHookModel.newInstance(new ClassProcessor(MethodHandles.lookup(), sourceType, true), false, ContainerConfiguration.class);
         this.activatorMap = LazyExtensionActivationMap.of(sourceType);
         this.dependenciesTotalOrder = ExtensionUseModel2.totalOrder(sourceType);
     }

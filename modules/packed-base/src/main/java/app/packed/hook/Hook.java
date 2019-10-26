@@ -24,8 +24,8 @@ import app.packed.container.InternalExtensionException;
 import app.packed.lang.Nullable;
 import packed.internal.hook.HookRequestBuilder;
 import packed.internal.hook.HookRequestBuilder.Mode;
-import packed.internal.hook.HookTargetProcessor;
 import packed.internal.hook.OnHookModel;
+import packed.internal.hook.UnreflectGate;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.UncheckedThrowableFactory;
@@ -87,15 +87,15 @@ public interface Hook {
             ClassProcessor cpHook = new ClassProcessor(caller, hookType, false);
             ClassProcessor cpTarget = new ClassProcessor(caller, target, false);
 
-            HookTargetProcessor hc = new HookTargetProcessor(cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR);
+            UnreflectGate hc = new UnreflectGate(cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR);
             try {
-                OnHookModel ohm = OnHookModel.newInstance(cpHook);
+                OnHookModel ohm = OnHookModel.newInstance(cpHook, true);
                 try {
                     if (ohm == null) {
                         throw new AssertionError("There must be at least one method annotated with @OnHook on " + hookType);
                     }
 
-                    HookRequestBuilder hb = new HookRequestBuilder(OnHookModel.newInstance(cpHook), hc, Mode.TEST_CLASS);
+                    HookRequestBuilder hb = new HookRequestBuilder(ohm, hc, Mode.TEST_CLASS);
 
                     return (T) hb.singleConsume(cpTarget);
                 } catch (InternalExtensionException ee) {
@@ -124,15 +124,15 @@ public interface Hook {
             ClassProcessor cpHook = new ClassProcessor(caller, container.getClass(), false);
             ClassProcessor cpTarget = new ClassProcessor(caller, target, false);
 
-            HookTargetProcessor hc = new HookTargetProcessor(cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR);
+            UnreflectGate hc = new UnreflectGate(cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR);
             try {
-                OnHookModel ohm = OnHookModel.newInstance(cpHook);
+                OnHookModel ohm = OnHookModel.newInstance(cpHook, false);
                 try {
                     if (ohm == null) {
                         throw new AssertionError("There must be at least one method annotated with @OnHook on " + container.getClass());
                     }
 
-                    HookRequestBuilder hb = new HookRequestBuilder(OnHookModel.newInstance(cpHook), hc, Mode.TEST_INSTANCE);
+                    HookRequestBuilder hb = new HookRequestBuilder(ohm, hc, Mode.TEST_INSTANCE);
 
                     hb.singleConsumeNoInstantiate(cpTarget, container);
                     return container;

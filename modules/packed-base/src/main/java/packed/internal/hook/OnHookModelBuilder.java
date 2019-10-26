@@ -36,6 +36,7 @@ import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
+import packed.internal.hook.OnHookModel.ImmutableOnHookMap;
 import packed.internal.reflect.ClassFinder;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.reflect.ConstructorFinder;
@@ -56,14 +57,14 @@ final class OnHookModelBuilder {
     /** All non-root nodes, index by their the type of the hook. */
     private final IdentityHashMap<Class<? extends Hook>, Node> nodes = new IdentityHashMap<>();
 
-    /** The root node. */
+    /** The root node, is not in {@link #nodes}. */
     private final Node root;
 
-    /** A stack that is used to process each node. */
+    /** A stack that is used for processing each node. */
     final ArrayDeque<Node> stack = new ArrayDeque<>();
 
-    OnHookModelBuilder(ClassProcessor cp, Class<?>... additionalParameters) {
-        if (Hook.class.isAssignableFrom(cp.clazz())) {
+    OnHookModelBuilder(ClassProcessor cp, boolean instantiateRoot, Class<?>... additionalParameters) {
+        if (instantiateRoot) {
             this.root = new Node(cp, cp.clazz());
         } else {
             this.root = new Node(cp);

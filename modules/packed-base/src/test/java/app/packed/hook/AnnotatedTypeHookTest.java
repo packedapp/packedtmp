@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
 
-import packed.internal.hook.HookTargetProcessor;
+import packed.internal.hook.UnreflectGate;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.UncheckedThrowableFactory;
 import testutil.stubs.annotation.AnnotationInstances;
@@ -43,8 +43,8 @@ public class AnnotatedTypeHookTest {
         assertThat(h.type()).isSameAs(Object.class);
     }
 
-    private static HookTargetProcessor newHookController() {
+    private static UnreflectGate newHookController() {
         ClassProcessor cp = new ClassProcessor(MethodHandles.lookup(), AnnotatedTypeHookTest.class, false);
-        return new HookTargetProcessor(cp, UncheckedThrowableFactory.ASSERTION_ERROR);
+        return new UnreflectGate(cp, UncheckedThrowableFactory.ASSERTION_ERROR);
     }
 }

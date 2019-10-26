@@ -23,18 +23,22 @@ import app.packed.lang.Nullable;
 /**
  *
  */
-public class DefaultHookUsage {
+public final class DefaultHookUsage {
 
+    @Nullable
     public final Set<Class<? extends Annotation>> annotatedFields;
 
+    @Nullable
     public final Set<Class<? extends Annotation>> annotatedMethods;
 
+    @Nullable
     public final Set<Class<? extends Annotation>> annotatedTypes;
 
+    @Nullable
     public final Set<Class<?>> assignableTos;
 
-    DefaultHookUsage(Set<Class<? extends Annotation>> annotatedFields, Set<Class<? extends Annotation>> annotatedMethods,
-            Set<Class<? extends Annotation>> annotatedTypes, Set<Class<?>> assignableTos) {
+    private DefaultHookUsage(@Nullable Set<Class<? extends Annotation>> annotatedFields, @Nullable Set<Class<? extends Annotation>> annotatedMethods,
+            @Nullable Set<Class<? extends Annotation>> annotatedTypes, @Nullable Set<Class<?>> assignableTos) {
         this.annotatedFields = annotatedFields;
         this.annotatedMethods = annotatedMethods;
         this.annotatedTypes = annotatedTypes;

@@ -20,9 +20,14 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
+import app.packed.hook.AnnotatedFieldHook;
+import app.packed.hook.AnnotatedMethodHook;
+import app.packed.hook.AnnotatedTypeHook;
+import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
@@ -129,8 +134,8 @@ public final class OnHookModel {
      * @return the new model, or null if the no {@link OnHook} annotations was present
      */
     @Nullable
-    public static OnHookModel newInstance(ClassProcessor cp, Class<?>... additionalParameters) {
-        return new OnHookModelBuilder(cp, additionalParameters).build();
+    public static OnHookModel newInstance(ClassProcessor cp, boolean instantiateRoot, Class<?>... additionalParameters) {
+        return new OnHookModelBuilder(cp, instantiateRoot, additionalParameters).build();
     }
 
     static class Link {
@@ -144,6 +149,43 @@ public final class OnHookModel {
             this.index = index;
             this.next = next;
         }
+    }
 
+    // Lad os lige taenke over om vi skal bruge det andet steds...
+    static final class ImmutableOnHookMap<V> {
+
+        /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedFieldHook} as a parameter. */
+        @Nullable
+        final Map<Class<?>, V> annotatedFields;
+
+        /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedMethodHook} as a parameter. */
+        @Nullable
+        final Map<Class<?>, V> annotatedMethods;
+
+        /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedTypeHook} as a parameter. */
+        @Nullable
+        final Map<Class<?>, V> annotatedTypes;
+
+        /** Methods annotated with {@link OnHook} that takes a {@link AssignableToHook} as a parameter. */
+        @Nullable
+        final Map<Class<?>, V> assignableTos;
+
+        ImmutableOnHookMap(Map<Class<?>, V> annotatedFields, Map<Class<?>, V> annotatedMethod, Map<Class<?>, V> annotatedTypes,
+                Map<Class<?>, V> assignableTos) {
+            this.annotatedFields = annotatedFields;
+            this.annotatedMethods = annotatedMethod;
+            this.annotatedTypes = annotatedTypes;
+            this.assignableTos = assignableTos;
+        }
+
+        @Override
+        public String toString() {
+            return "AnnotatedFields: " + toString(annotatedFields) + ", " + "annotatedMethods: " + toString(annotatedMethods) + ", " + "annotatedTypes: "
+                    + toString(annotatedTypes) + ", " + "assignableTos: " + toString(assignableTos) + ", ";
+        }
+
+        private String toString(Map<?, ?> m) {
+            return m == null ? "{}" : m.keySet().toString();
+        }
     }
 }

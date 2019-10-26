@@ -30,7 +30,7 @@ import app.packed.lang.Nullable;
 import app.packed.lang.reflect.FieldDescriptor;
 import app.packed.lang.reflect.UncheckedIllegalAccessException;
 import app.packed.lang.reflect.VarOperator;
-import packed.internal.hook.HookTargetProcessor;
+import packed.internal.hook.UnreflectGate;
 import packed.internal.hook.applicator.PackedFieldHookApplicator;
 import packed.internal.moduleaccess.AppPackedHookAccess;
 import packed.internal.moduleaccess.ModuleAccess;
@@ -53,26 +53,26 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
 
             /** {@inheritDoc} */
             @Override
-            public <T extends Annotation> AnnotatedFieldHook<T> newAnnotatedFieldHook(HookTargetProcessor processor, Field field, T annotation) {
-                return new AnnotatedFieldHook<>(processor, field, annotation);
+            public <T extends Annotation> AnnotatedFieldHook<T> newAnnotatedFieldHook(UnreflectGate gate, Field field, T annotation) {
+                return new AnnotatedFieldHook<>(gate, field, annotation);
             }
 
             /** {@inheritDoc} */
             @Override
-            public <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(HookTargetProcessor processor, Method method, T annotation) {
-                return new AnnotatedMethodHook<>(processor, method, annotation);
+            public <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(UnreflectGate gate, Method method, T annotation) {
+                return new AnnotatedMethodHook<>(gate, method, annotation);
             }
 
             /** {@inheritDoc} */
             @Override
-            public <T extends Annotation> AnnotatedTypeHook<T> newAnnotatedTypeHook(HookTargetProcessor processor, Class<?> type, T annotation) {
-                return new AnnotatedTypeHook<>(processor, type, annotation);
+            public <T extends Annotation> AnnotatedTypeHook<T> newAnnotatedTypeHook(UnreflectGate gate, Class<?> type, T annotation) {
+                return new AnnotatedTypeHook<>(gate, type, annotation);
             }
 
             /** {@inheritDoc} */
             @Override
-            public <T> AssignableToHook<T> newAssignableToHook(HookTargetProcessor processor, Class<T> type) {
-                return new AssignableToHook<>(processor, type);
+            public <T> AssignableToHook<T> newAssignableToHook(UnreflectGate gate, Class<T> type) {
+                return new AssignableToHook<>(gate, type);
             }
         });
     }
@@ -81,7 +81,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     private final T annotation;
 
     /** The processor for this hook. */
-    private final HookTargetProcessor processor;
+    private final UnreflectGate gate;
 
     /** A field descriptor, is lazily created via {@link #field()}. */
     @Nullable
@@ -93,7 +93,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     /**
      * Creates a new hook instance.
      * 
-     * @param processor
+     * @param gate
      *            the processor for this hook
      * @param field
      *            the annotated field
@@ -101,8 +101,8 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      *            the annotation value, no validation whether or not the given annotation value is equivalent to an
      *            annotation value on the specified field is performed
      */
-    AnnotatedFieldHook(HookTargetProcessor processor, Field field, T annotation) {
-        this.processor = requireNonNull(processor);
+    AnnotatedFieldHook(UnreflectGate gate, Field field, T annotation) {
+        this.gate = requireNonNull(gate);
         this.field = requireNonNull(field);
         this.annotation = requireNonNull(annotation);
     }
@@ -117,7 +117,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     }
 
     public <E> HookApplicator<E> applicator(VarOperator<E> operator) {
-        processor.checkOpen(); // we do not want people to invoke this method, after the aggregate has been built
+        gate.checkOpen(); // we do not want people to invoke this method, after the aggregate has been built
         return new PackedFieldHookApplicator<E>(this, operator, field);
     }
 
@@ -140,7 +140,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
         if (!Modifier.isStatic(field.getModifiers())) {
             throw new UnsupportedOperationException("Cannot invoke this method on a non-static field " + field);
         }
-        processor.checkOpen(); // we do not want people to invoke this method, after the aggregate has been built
+        gate.checkOpen(); // we do not want people to invoke this method, after the aggregate has been built
         // Should it be per hook group instead of container model?
         return operator.applyStaticHook(this);
     }
@@ -157,7 +157,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     public AnnotatedFieldHook<T> checkAssignableTo(Class<?> type) {
         requireNonNull(type, "type is null");
         if (!type.isAssignableFrom(field.getType())) {
-            processor.tf().fail("NotAssignable");
+            gate.tf().fail("NotAssignable");
         }
         return this;
     }
@@ -174,7 +174,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     public AnnotatedFieldHook<T> checkExactType(Class<?> type) {
         requireNonNull(type, "type is null");
         if (field.getType() != type) {
-            processor.tf().fail("NotAssignable");
+            gate.tf().fail("NotAssignable");
         }
         return this;
     }
@@ -195,7 +195,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      */
     public AnnotatedFieldHook<T> checkFinal() {
         if (!Modifier.isFinal(field.getModifiers())) {
-            processor.tf().fail(failedModifierCheck(false, "final"));
+            gate.tf().fail(failedModifierCheck(false, "final"));
         }
         return this;
     }
@@ -211,7 +211,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      */
     public AnnotatedFieldHook<T> checkNotFinal() {
         if (Modifier.isFinal(field.getModifiers())) {
-            processor.tf().fail(failedModifierCheck(true, "final"));
+            gate.tf().fail(failedModifierCheck(true, "final"));
         }
         return this;
     }
@@ -228,7 +228,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      */
     public AnnotatedFieldHook<T> checkNotStatic() {
         if (Modifier.isStatic(field.getModifiers())) {
-            processor.tf().fail(failedModifierCheck(true, "static"));
+            gate.tf().fail(failedModifierCheck(true, "static"));
         }
         return this;
     }
@@ -245,7 +245,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      */
     public AnnotatedFieldHook<T> checkStatic() {
         if (!Modifier.isStatic(field.getModifiers())) {
-            processor.tf().fail(failedModifierCheck(false, "static"));
+            gate.tf().fail(failedModifierCheck(false, "static"));
         }
         return this;
     }
@@ -302,7 +302,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      * @see Lookup#unreflectGetter(java.lang.reflect.Field)
      */
     public MethodHandle getter() {
-        return processor.unreflectGetter(field);
+        return gate.unreflectGetter(field);
     }
 
     /**
@@ -323,7 +323,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
         if (Modifier.isFinal(field.getModifiers())) {
             throw new UnsupportedOperationException("Field is final, cannot create a setter for this field, field = " + field);
         }
-        return processor.unreflectSetter(field);
+        return gate.unreflectSetter(field);
     }
 
     /**
@@ -337,6 +337,6 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      * @see Lookup#unreflectVarHandle(java.lang.reflect.Field)
      */
     public VarHandle varHandle() {
-        return processor.unreflectVarhandle(field);
+        return gate.unreflectVarhandle(field);
     }
 }

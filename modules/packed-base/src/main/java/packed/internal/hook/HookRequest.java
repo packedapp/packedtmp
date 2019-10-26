@@ -23,7 +23,9 @@ import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
+import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ClassProcessor;
@@ -36,11 +38,11 @@ import packed.internal.util.UncheckedThrowableFactory;
  */
 public final class HookRequest {
 
-    /** A list of custom hook callbacks for the particular extension. */
-    private final TinyPair<Hook, MethodHandle> customHooksCallback;
-
     @Nullable
     private final Tiny<BaseHookCallback> baseHooksCallback;
+
+    /** A list of custom hook callbacks for the particular extension. */
+    private final TinyPair<Hook, MethodHandle> customHooksCallback;
 
     /** Used for creating {@link MethodHandle} and {@link VarHandle} for base hook callbacks. */
     private final ClassProcessor delayedProcessor;
@@ -59,7 +61,7 @@ public final class HookRequest {
         }
         // Invoke OnHook methods on the Bundle or Extension that takes a base hook
         if (baseHooksCallback != null) {
-            try (HookTargetProcessor hp = new HookTargetProcessor(delayedProcessor.copy(), UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
+            try (UnreflectGate hp = new UnreflectGate(delayedProcessor.copy(), UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
                 for (Tiny<BaseHookCallback> t = baseHooksCallback; t != null; t = t.next) {
                     invokeHook(t.element.mh, t.element.toHook(hp), target, additional);
                 }
@@ -88,8 +90,14 @@ public final class HookRequest {
 
     /// This is necessary because we can only fields and methods once. Without scanning everything again
     static class BaseHookCallback {
+
+        /** Is null for {@link AssignableToHook}. */
+        @Nullable
         private final Annotation annotation;
+
         private final Object member;
+
+        /** The method handle to method annotated with {@link OnHook}. */
         private final MethodHandle mh;
 
         BaseHookCallback(Object member, Annotation annotation, MethodHandle mh) {
@@ -98,7 +106,7 @@ public final class HookRequest {
             this.mh = requireNonNull(mh);
         }
 
-        private Hook toHook(HookTargetProcessor hp) {
+        private Hook toHook(UnreflectGate hp) {
             if (annotation == null) {
                 return ModuleAccess.hook().newAssignableToHook(hp, (Class<?>) member);
             } else if (member instanceof Field) {

@@ -44,7 +44,7 @@ public class HookRequestBuilder {
 
     Tiny<BaseHookCallback> baseHooksCallback;
 
-    final HookTargetProcessor hookProcessor;
+    final UnreflectGate hookProcessor;
 
     /** Whether or not we are called from {@link Hook.Builder#test(java.lang.invoke.MethodHandles.Lookup, Class, Class)} */
     @SuppressWarnings("javadoc") // eclipse...TODO raise bug
@@ -52,11 +52,11 @@ public class HookRequestBuilder {
 
     private final OnHookModel onHookModel;
 
-    public HookRequestBuilder(OnHookModel model, HookTargetProcessor hookProcessor) {
+    public HookRequestBuilder(OnHookModel model, UnreflectGate hookProcessor) {
         this(model, hookProcessor, Mode.NORMAL);
     }
 
-    public HookRequestBuilder(OnHookModel model, HookTargetProcessor hookProcessor, Mode mode) {
+    public HookRequestBuilder(OnHookModel model, UnreflectGate hookProcessor, Mode mode) {
         this.array = new Object[model.builderConstructors.length];
         this.onHookModel = requireNonNull(model);
         this.hookProcessor = requireNonNull(hookProcessor);
@@ -159,7 +159,7 @@ public class HookRequestBuilder {
     public void onAnnotatedType(Class<?> clazz, Annotation annotation) throws Throwable {
         Map<Class<?>, Link> annotatedTypes = onHookModel.allLinks.annotatedTypes;
         if (annotatedTypes != null) {
-            for (Link link = onHookModel.allLinks.annotatedTypes.get(annotation.annotationType()); link != null; link = link.next) {
+            for (Link link = annotatedTypes.get(annotation.annotationType()); link != null; link = link.next) {
                 if (link.index == 0 && mode != Mode.TEST_CLASS) {
                     baseHooksCallback = new Tiny<>(new BaseHookCallback(clazz, annotation, link.mh), baseHooksCallback);
                 } else {

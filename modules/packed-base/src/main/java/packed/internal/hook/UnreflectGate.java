@@ -31,24 +31,29 @@ import packed.internal.util.UncheckedThrowableFactory;
  * {@link MethodHandle} and {@link VarHandle}. Is created after the component has analyzed. This is done in order to
  * avoid someone trying to create instances of them, outside of stuff because of grall..
  */
-// HookGate
-public final class HookTargetProcessor implements AutoCloseable {
+// Har faktisk intet med Hooks at goere, andet end fejlmeddellsen
+public final class UnreflectGate implements AutoCloseable {
 
     final ClassProcessor cp;
 
-    /** Whether or not the processor is closed. */
+    /** Whether or not the processor is closed. In which we cannot unreflect any members anymore. */
     private boolean isClosed;
 
     private final UncheckedThrowableFactory<? extends RuntimeException> tf;
 
     @SuppressWarnings("unchecked")
-    public HookTargetProcessor(ClassProcessor cp, UncheckedThrowableFactory<?> tf) {
+    public UnreflectGate(ClassProcessor cp, UncheckedThrowableFactory<?> tf) {
         this.cp = requireNonNull(cp);
         // A hack to allow us to throw AssertionError, as we have no way to indicate
         // Error || RuntimeException
         this.tf = (UncheckedThrowableFactory<? extends RuntimeException>) tf;
     }
 
+    /**
+     * 
+     * @throws IllegalStateException
+     *             if the processor is closed.
+     */
     public void checkOpen() {
         if (isClosed) {
             throw new IllegalStateException("The underlying hook processor is no longer open after the hook has been built.");

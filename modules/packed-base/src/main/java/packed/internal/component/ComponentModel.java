@@ -35,7 +35,7 @@ import packed.internal.container.extension.ExtensionModel;
 import packed.internal.container.extension.LazyExtensionActivationMap;
 import packed.internal.hook.HookRequest;
 import packed.internal.hook.HookRequestBuilder;
-import packed.internal.hook.HookTargetProcessor;
+import packed.internal.hook.UnreflectGate;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.UncheckedThrowableFactory;
@@ -174,7 +174,7 @@ public final class ComponentModel {
             final LazyExtensionActivationMap activatorMap = csm.activatorMap;
             Class<?> componentType = cp.clazz();
 
-            try (HookTargetProcessor htp = new HookTargetProcessor(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
+            try (UnreflectGate htp = new UnreflectGate(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
                 this.csb = csm.onHookModel == null ? null : new HookRequestBuilder(csm.onHookModel, htp);
 
                 findAssinableTo(htp, activatorMap, componentType);
@@ -188,14 +188,14 @@ public final class ComponentModel {
             return new ComponentModel(this);
         }
 
-        private void findAssinableTo(HookTargetProcessor htp, LazyExtensionActivationMap activatorMap, Class<?> componentType) throws Throwable {
+        private void findAssinableTo(UnreflectGate htp, LazyExtensionActivationMap activatorMap, Class<?> componentType) throws Throwable {
             HashSet<Class<?>> seen = new HashSet<>();
             for (Class<?> current = componentType; current != Object.class; current = current.getSuperclass()) {
                 putInto(htp, activatorMap, seen, componentType, current);
             }
         }
 
-        public void putInto(HookTargetProcessor htp, LazyExtensionActivationMap activatorMap, HashSet<Class<?>> seen, Class<?> actualType, Class<?> clazz)
+        public void putInto(UnreflectGate htp, LazyExtensionActivationMap activatorMap, HashSet<Class<?>> seen, Class<?> actualType, Class<?> clazz)
                 throws Throwable {
             for (Class<?> cl : clazz.getInterfaces()) {
                 if (seen.add(cl)) {
@@ -212,7 +212,7 @@ public final class ComponentModel {
             }
         }
 
-        private void findAssinableTo0(HookTargetProcessor hookProcessor, Class<?> hookType, Class<?> actualType, Set<Class<? extends Extension>> extensionTypes)
+        private void findAssinableTo0(UnreflectGate hookProcessor, Class<?> hookType, Class<?> actualType, Set<Class<? extends Extension>> extensionTypes)
                 throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
@@ -222,7 +222,7 @@ public final class ComponentModel {
             }
         }
 
-        private void findAnnotatedFields(HookTargetProcessor htp, LazyExtensionActivationMap activatorMap, Field field) throws Throwable {
+        private void findAnnotatedFields(UnreflectGate htp, LazyExtensionActivationMap activatorMap, Field field) throws Throwable {
             for (Annotation a : field.getAnnotations()) {
                 findAnnotatedFields0(htp, a, field, LazyExtensionActivationMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
                 if (activatorMap != null) {
@@ -234,7 +234,7 @@ public final class ComponentModel {
             }
         }
 
-        private void findAnnotatedFields0(HookTargetProcessor hookProcessor, Annotation a, Field field, Set<Class<? extends Extension>> extensionTypes)
+        private void findAnnotatedFields0(UnreflectGate hookProcessor, Annotation a, Field field, Set<Class<? extends Extension>> extensionTypes)
                 throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
@@ -244,7 +244,7 @@ public final class ComponentModel {
             }
         }
 
-        private void findAnnotatedMethods(HookTargetProcessor htp, LazyExtensionActivationMap activatorMap, Method method) throws Throwable {
+        private void findAnnotatedMethods(UnreflectGate htp, LazyExtensionActivationMap activatorMap, Method method) throws Throwable {
             for (Annotation a : method.getAnnotations()) {
                 findAnnotatedMethods0(htp, a, method, LazyExtensionActivationMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
                 if (activatorMap != null) {
@@ -256,7 +256,7 @@ public final class ComponentModel {
             }
         }
 
-        private void findAnnotatedMethods0(HookTargetProcessor hookProcessor, Annotation a, Method method, Set<Class<? extends Extension>> extensionTypes)
+        private void findAnnotatedMethods0(UnreflectGate hookProcessor, Annotation a, Method method, Set<Class<? extends Extension>> extensionTypes)
                 throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
@@ -266,7 +266,7 @@ public final class ComponentModel {
             }
         }
 
-        private void findAnnotatedTypes(HookTargetProcessor htp, LazyExtensionActivationMap activatorMap, Class<?> componentType) throws Throwable {
+        private void findAnnotatedTypes(UnreflectGate htp, LazyExtensionActivationMap activatorMap, Class<?> componentType) throws Throwable {
             for (Annotation a : componentType.getAnnotations()) {
                 findAnnotatedTypes0(htp, componentType, a, LazyExtensionActivationMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
                 if (activatorMap != null) {
@@ -278,7 +278,7 @@ public final class ComponentModel {
             }
         }
 
-        private void findAnnotatedTypes0(HookTargetProcessor hookProcessor, Class<?> componentType, Annotation a,
+        private void findAnnotatedTypes0(UnreflectGate hookProcessor, Class<?> componentType, Annotation a,
                 Set<Class<? extends Extension>> extensionTypes) throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
