@@ -26,6 +26,7 @@ import java.util.Map;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
+import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
 import packed.internal.hook.HookRequest.DelayedAnnotatedMember;
 import packed.internal.hook.OnHookModel.Link;
@@ -96,6 +97,25 @@ public class HookRequestBuilder {
             result = new TinyPair<>((Hook) array[link.index], link.mh, result);
         }
         return result;
+    }
+
+    public void onAssignableTo(Class<?> hookType, Class<?> actualType) throws Throwable {
+        Map<Class<?>, Link> assignableTos = onHookModel.allLinks.assignableTos;
+        if (assignableTos != null) {
+            for (Link link = assignableTos.get(hookType); link != null; link = link.next) {
+                if (link.index == 0 && !isTest) {
+                    delayedMembers = new Tiny<>(new DelayedAnnotatedMember(actualType, null, link.mh), delayedMembers);
+                } else {
+                    Hook.Builder<?> builder = builderOf(array, link.index);
+                    AssignableToHook<?> hook = ModuleAccess.hook().newAssignableToHook(hookProcessor, actualType);
+                    if (link.mh.type().parameterCount() == 1) {
+                        link.mh.invoke(hook);
+                    } else {
+                        link.mh.invoke(builder, hook);
+                    }
+                }
+            }
+        }
     }
 
     public void onAnnotatedField(Field field, Annotation annotation) throws Throwable {

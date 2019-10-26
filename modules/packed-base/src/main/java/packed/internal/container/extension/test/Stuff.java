@@ -36,6 +36,13 @@ public class Stuff<T> implements Hook {
         Hook.Builder.test(MethodHandles.lookup(), FF.class, String.class);
     }
 
+    // Det fungere ikke rigtigt...
+    // Problemet, problemet er at det er builderen vi skal parameterize.
+    // Men det er parent hook, vi aflevere..
+
+    // Saa vi skal have en type hjaelper som tager
+    // Dvs. isTest. nok er mere er builder...
+
     public static class Builder extends Stuff<AnnotatedFieldHook<Left>> implements Hook.Builder<FF> {
 
         /** {@inheritDoc} */
@@ -44,7 +51,6 @@ public class Stuff<T> implements Hook {
             // TODO Auto-generated method stub
             return null;
         }
-
     }
 
     public static class FF implements Hook {

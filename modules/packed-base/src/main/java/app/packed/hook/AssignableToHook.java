@@ -81,7 +81,7 @@ public final class AssignableToHook<T> implements Hook {
     // Syntes det er rimeligt at klassen er til raadighed,
     // Den er det jo paa runtime
     // Check den virker generics, f.eks. med List
-    Class<? extends T> type() {
+    public Class<? extends T> type() {
         return type;
     }
 }

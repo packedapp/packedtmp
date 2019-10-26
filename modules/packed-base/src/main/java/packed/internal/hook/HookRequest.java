@@ -67,7 +67,9 @@ public final class HookRequest {
                     DelayedAnnotatedMember m = t.element;
                     MethodHandle mh = m.mh;
                     Hook amh;
-                    if (m.member instanceof Field) {
+                    if (m.annotation == null) {
+                        amh = ModuleAccess.hook().newAssignableToHook(hp, (Class<?>) m.member);
+                    } else if (m.member instanceof Field) {
                         amh = ModuleAccess.hook().newAnnotatedFieldHook(hp, (Field) m.member, m.annotation);
                     } else if (m.member instanceof Method) {
                         amh = ModuleAccess.hook().newAnnotatedMethodHook(hp, (Method) m.member, m.annotation);
@@ -93,7 +95,7 @@ public final class HookRequest {
 
         DelayedAnnotatedMember(Object member, Annotation annotation, MethodHandle mh) {
             this.member = requireNonNull(member);
-            this.annotation = requireNonNull(annotation);
+            this.annotation = annotation; // Null for AssignableTo
             this.mh = requireNonNull(mh);
         }
     }

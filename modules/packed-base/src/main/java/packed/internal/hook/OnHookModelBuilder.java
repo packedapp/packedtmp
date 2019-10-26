@@ -122,7 +122,7 @@ final class OnHookModelBuilder {
     }
 
     private void onMethod(Node node, Method method) {
-        System.out.println(method);
+        // System.out.println(method);
         if (!method.isAnnotationPresent(OnHook.class)) {
             return;
         }

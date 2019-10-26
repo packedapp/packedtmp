@@ -68,10 +68,11 @@ public final class OnHookModel {
             }
             System.out.println("------");
 
-            System.out.println("Methods " + allLinks.annotatedMethods);
+            System.out.println("An Methods " + allLinks.annotatedMethods);
 
-            System.out.println("Fields " + allLinks.annotatedFields);
-            System.out.println("Types " + allLinks.annotatedTypes);
+            System.out.println("An Fields " + allLinks.annotatedFields);
+            System.out.println("An Types " + allLinks.annotatedTypes);
+            System.out.println("Types " + allLinks.assignableTos);
             System.out.println("------");
             // System.out.println("Methods " + allLinks.annotatedMethods);
 
