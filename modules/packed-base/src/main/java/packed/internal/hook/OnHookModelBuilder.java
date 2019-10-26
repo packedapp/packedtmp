@@ -64,11 +64,7 @@ final class OnHookModelBuilder {
     final ArrayDeque<Node> stack = new ArrayDeque<>();
 
     OnHookModelBuilder(ClassProcessor cp, boolean instantiateRoot, Class<?>... additionalParameters) {
-        if (instantiateRoot) {
-            this.root = new Node(cp, cp.clazz());
-        } else {
-            this.root = new Node(cp);
-        }
+        this.root = new Node(cp, instantiateRoot);
     }
 
     @Nullable
@@ -261,10 +257,24 @@ final class OnHookModelBuilder {
             this.containerType = requireNonNull(type);
             Class<?> builderClass = ClassFinder.findDeclaredClass(type, "Builder", Hook.Builder.class);
             this.cp = cps.spawn(builderClass);
-
             this.builderConstructor = ConstructorFinder.find(cp, tf);
             if (builderConstructor.type().returnType() != cp.clazz()) {
                 throw new IllegalStateException("OOPS");
+            }
+        }
+
+        private Node(ClassProcessor cps, boolean instantiateRoot) {
+            this.containerType = cps.clazz();
+            if (instantiateRoot) {
+                Class<?> builderClass = ClassFinder.findDeclaredClass(containerType, "Builder", Hook.Builder.class);
+                this.cp = cps.spawn(builderClass);
+                this.builderConstructor = ConstructorFinder.find(cp, tf);
+                if (builderConstructor.type().returnType() != cp.clazz()) {
+                    throw new IllegalStateException("OOPS");
+                }
+            } else {
+                this.cp = requireNonNull(cps);
+                this.builderConstructor = null;
             }
         }
 
