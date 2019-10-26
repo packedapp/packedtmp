@@ -18,6 +18,7 @@ package packed.internal.container.extension;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -25,7 +26,6 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionProperties;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.UseExtension;
-import packed.internal.container.extension.load.RetainThrowableClassValue;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -95,6 +95,19 @@ public class ExtensionUseModel2 {
         calc(deq, result, type);
         // TODO Auto-generated method stub
         return List.copyOf(new ArrayList<>(result));
+    }
+
+    public static List<Class<? extends Extension>> totalOrderOfExtensionReversed(Collection<Class<? extends Extension>> extensions) {
+        LinkedHashSet<Class<? extends Extension>> result = new LinkedHashSet<>();
+        ArrayDeque<Class<? extends Extension>> deq = new ArrayDeque<>();
+        for (Class<? extends Extension> type : extensions) {
+            calc(deq, result, type);
+            result.add(type);
+        }
+        // TODO Auto-generated method stub
+        ArrayList<Class<? extends Extension>> list = new ArrayList<>(result);
+        Collections.reverse(list);
+        return List.copyOf(list);
     }
 
     private static void calc(ArrayDeque<Class<? extends Extension>> stack, LinkedHashSet<Class<? extends Extension>> ordered, Class<?> cl) {

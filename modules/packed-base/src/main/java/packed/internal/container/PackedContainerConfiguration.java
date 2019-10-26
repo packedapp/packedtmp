@@ -24,14 +24,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
 import app.packed.api.Contract;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentExtension;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
@@ -47,7 +45,6 @@ import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
 import app.packed.lang.Nullable;
 import app.packed.service.Factory;
-import app.packed.service.ServiceExtension;
 import packed.internal.artifact.BuildOutput;
 import packed.internal.artifact.PackedArtifactContext;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
@@ -59,6 +56,7 @@ import packed.internal.component.FactoryComponentConfiguration;
 import packed.internal.component.InstantiatedComponentConfiguration;
 import packed.internal.component.StaticComponentConfiguration;
 import packed.internal.config.ConfigSiteUtil;
+import packed.internal.container.extension.ExtensionUseModel2;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.hook.applicator.DelayedAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarFieldDelayerAccessor;
@@ -198,23 +196,13 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         installPrepare(State.GET_NAME_INVOKED);
         // We could actually end of installing new extensions...
 
-        // Here we need sorting...
-        LinkedHashSet<Class<? extends Extension>> s = new LinkedHashSet<>();
-        if (extensions.containsKey(ComponentExtension.class)) {
-            s.add(ComponentExtension.class);
-        }
-        if (extensions.containsKey(ServiceExtension.class)) {
-            s.add(ServiceExtension.class);
-        }
-        s.addAll(extensions.keySet());
-        ArrayList<Class<? extends Extension>> l = new ArrayList<>(s);
-        Collections.reverse(l);
-
-        for (Class<? extends Extension> c : l) {
+        // TODO we want to cache this at some point....
+        for (Class<? extends Extension> c : ExtensionUseModel2.totalOrderOfExtensionReversed(extensions.keySet())) {
             PackedExtensionContext e = extensions.get(c);
-            // System.out.println("On Configured " + e.model.extensionType);
-            activeExtension = e;
-            e.onConfigured();
+            if (e != null) {
+                activeExtension = e;
+                e.onConfigured();
+            }
         }
         activeExtension = null;
 

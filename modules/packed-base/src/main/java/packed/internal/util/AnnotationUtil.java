@@ -48,4 +48,9 @@ public final class AnnotationUtil {
         }
         return annotationType;
     }
+
+    public static boolean hasRuntimeRetentionPolicy(Class<? extends Annotation> annotationType) {
+        Retention r = annotationType.getAnnotation(Retention.class);
+        return r != null && r.value() == RetentionPolicy.RUNTIME;
+    }
 }

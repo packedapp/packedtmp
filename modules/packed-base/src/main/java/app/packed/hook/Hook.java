@@ -23,6 +23,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import app.packed.container.InternalExtensionException;
 import app.packed.lang.Nullable;
 import packed.internal.hook.HookRequestBuilder;
+import packed.internal.hook.HookRequestBuilder.Mode;
 import packed.internal.hook.HookTargetProcessor;
 import packed.internal.hook.OnHookModel;
 import packed.internal.reflect.ClassProcessor;
@@ -94,9 +95,47 @@ public interface Hook {
                         throw new AssertionError("There must be at least one method annotated with @OnHook on " + hookType);
                     }
 
-                    HookRequestBuilder hb = new HookRequestBuilder(OnHookModel.newInstance(cpHook), hc, true);
+                    HookRequestBuilder hb = new HookRequestBuilder(OnHookModel.newInstance(cpHook), hc, Mode.TEST_CLASS);
 
                     return (T) hb.singleConsume(cpTarget);
+                } catch (InternalExtensionException ee) {
+                    AssertionError ar = new AssertionError(ee.getMessage());
+                    ar.setStackTrace(ee.getStackTrace());
+                    throw ar;
+                } catch (Throwable t) {
+                    ThrowableUtil.rethrowErrorOrRuntimeException(t);
+                    throw new UndeclaredThrowableException(t);
+                } finally {
+                    hc.close();
+                }
+            } catch (InternalExtensionException ee) {
+                AssertionError ar = new AssertionError(ee.getMessage());
+                ar.setStackTrace(ee.getStackTrace());
+                throw ar;
+            }
+        }
+
+        @Nullable
+        static <T> T test(Lookup caller, T container, Class<?> target) {
+            requireNonNull(caller, "caller is null");
+            requireNonNull(container, "container is null");
+            requireNonNull(target, "target is null");
+
+            ClassProcessor cpHook = new ClassProcessor(caller, container.getClass(), false);
+            ClassProcessor cpTarget = new ClassProcessor(caller, target, false);
+
+            HookTargetProcessor hc = new HookTargetProcessor(cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR);
+            try {
+                OnHookModel ohm = OnHookModel.newInstance(cpHook);
+                try {
+                    if (ohm == null) {
+                        throw new AssertionError("There must be at least one method annotated with @OnHook on " + container.getClass());
+                    }
+
+                    HookRequestBuilder hb = new HookRequestBuilder(OnHookModel.newInstance(cpHook), hc, Mode.TEST_INSTANCE);
+
+                    hb.singleConsumeNoInstantiate(cpTarget, container);
+                    return container;
                 } catch (InternalExtensionException ee) {
                     AssertionError ar = new AssertionError(ee.getMessage());
                     ar.setStackTrace(ee.getStackTrace());

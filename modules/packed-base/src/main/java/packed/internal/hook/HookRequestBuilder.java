@@ -48,19 +48,19 @@ public class HookRequestBuilder {
 
     /** Whether or not we are called from {@link Hook.Builder#test(java.lang.invoke.MethodHandles.Lookup, Class, Class)} */
     @SuppressWarnings("javadoc") // eclipse...TODO raise bug
-    private final boolean isTest;
+    private final Mode mode;
 
     private final OnHookModel onHookModel;
 
     public HookRequestBuilder(OnHookModel model, HookTargetProcessor hookProcessor) {
-        this(model, hookProcessor, false);
+        this(model, hookProcessor, Mode.NORMAL);
     }
 
-    public HookRequestBuilder(OnHookModel model, HookTargetProcessor hookProcessor, boolean isTest) {
+    public HookRequestBuilder(OnHookModel model, HookTargetProcessor hookProcessor, Mode mode) {
         this.array = new Object[model.builderConstructors.length];
         this.onHookModel = requireNonNull(model);
         this.hookProcessor = requireNonNull(hookProcessor);
-        this.isTest = isTest;
+        this.mode = mode;
     }
 
     public HookRequest build() throws Throwable {
@@ -103,7 +103,7 @@ public class HookRequestBuilder {
         Map<Class<?>, Link> assignableTos = onHookModel.allLinks.assignableTos;
         if (assignableTos != null) {
             for (Link link = assignableTos.get(hookType); link != null; link = link.next) {
-                if (link.index == 0 && !isTest) {
+                if (link.index == 0 && mode != Mode.TEST_CLASS) {
                     baseHooksCallback = new Tiny<>(new BaseHookCallback(actualType, null, link.mh), baseHooksCallback);
                 } else {
                     Hook.Builder<?> builder = builderOf(array, link.index);
@@ -126,7 +126,7 @@ public class HookRequestBuilder {
         Map<Class<?>, Link> annotatedFields = onHookModel.allLinks.annotatedFields;
         if (annotatedFields != null) {
             for (Link link = annotatedFields.get(annotation.annotationType()); link != null; link = link.next) {
-                if (link.index == 0 && !isTest) {
+                if (link.index == 0 && mode != Mode.TEST_CLASS) {
                     baseHooksCallback = new Tiny<>(new BaseHookCallback(field, annotation, link.mh), baseHooksCallback);
                 } else {
                     Hook.Builder<?> builder = builderOf(array, link.index);
@@ -145,7 +145,7 @@ public class HookRequestBuilder {
         Map<Class<?>, Link> annotatedMethods = onHookModel.allLinks.annotatedMethods;
         if (annotatedMethods != null) {
             for (Link link = annotatedMethods.get(annotation.annotationType()); link != null; link = link.next) {
-                if (link.index == 0 && !isTest) {
+                if (link.index == 0 && mode != Mode.TEST_CLASS) {
                     baseHooksCallback = new Tiny<>(new BaseHookCallback(method, annotation, link.mh), baseHooksCallback);
                 } else {
                     Hook.Builder<?> builder = builderOf(array, link.index);
@@ -160,7 +160,7 @@ public class HookRequestBuilder {
         Map<Class<?>, Link> annotatedTypes = onHookModel.allLinks.annotatedTypes;
         if (annotatedTypes != null) {
             for (Link link = onHookModel.allLinks.annotatedTypes.get(annotation.annotationType()); link != null; link = link.next) {
-                if (link.index == 0 && !isTest) {
+                if (link.index == 0 && mode != Mode.TEST_CLASS) {
                     baseHooksCallback = new Tiny<>(new BaseHookCallback(clazz, annotation, link.mh), baseHooksCallback);
                 } else {
                     Hook.Builder<?> builder = builderOf(array, link.index);
@@ -185,5 +185,24 @@ public class HookRequestBuilder {
         compute();
         Object a = array[0];
         return a == null ? null : (((Hook.Builder<?>) a).build());
+    }
+
+    public void singleConsumeNoInstantiate(ClassProcessor cp, Object instance) throws Throwable {
+        array[0] = instance;
+        cp.findMethodsAndFields(onHookModel.allLinks.annotatedMethods == null ? null : f -> {
+            for (Annotation a : f.getAnnotations()) {
+                onAnnotatedMethod(f, a);
+            }
+        }, onHookModel.allLinks.annotatedFields == null ? null : f -> {
+            for (Annotation a : f.getAnnotations()) {
+                onAnnotatedField(f, a);
+            }
+        });
+        compute();
+        new HookRequest(this).invoke(instance, null);
+    }
+
+    public enum Mode {
+        NORMAL, TEST_CLASS, TEST_INSTANCE;
     }
 }

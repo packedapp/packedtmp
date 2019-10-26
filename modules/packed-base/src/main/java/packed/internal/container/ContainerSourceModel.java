@@ -19,15 +19,18 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.util.List;
 
 import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
+import app.packed.container.Extension;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import app.packed.lang.InvalidDeclarationException;
 import app.packed.lang.Nullable;
 import packed.internal.component.ComponentModel;
+import packed.internal.container.extension.ExtensionUseModel2;
 import packed.internal.container.extension.LazyExtensionActivationMap;
 import packed.internal.hook.OnHookModel;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
@@ -95,7 +98,10 @@ public final class ContainerSourceModel implements ComponentLookup {
 
         this.onHookModel = OnHookModel.newInstance(new ClassProcessor(MethodHandles.lookup(), sourceType, true), ContainerConfiguration.class);
         this.activatorMap = LazyExtensionActivationMap.of(sourceType);
+        this.dependenciesTotalOrder = ExtensionUseModel2.totalOrder(sourceType);
     }
+
+    public final List<Class<? extends Extension>> dependenciesTotalOrder;
 
     /** {@inheritDoc} */
     @Override

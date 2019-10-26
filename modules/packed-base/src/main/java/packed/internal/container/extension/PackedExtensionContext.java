@@ -18,6 +18,7 @@ package packed.internal.container.extension;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicLong;
 
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
@@ -30,6 +31,12 @@ import packed.internal.moduleaccess.ModuleAccess;
 
 /** The default implementation of {@link ExtensionContext} with addition methods only available inside this module. */
 public final class PackedExtensionContext implements ExtensionContext {
+
+    /** Generates unique extension IDs. */
+    private static final AtomicLong NEXT_ID = new AtomicLong();
+
+    /** The unique id of this extension. */
+    public final long id = NEXT_ID.incrementAndGet();
 
     /** The extension instance this context wraps, initialized in {@link #initialize(PackedContainerConfiguration)}. */
     @Nullable
@@ -199,6 +206,10 @@ public final class PackedExtensionContext implements ExtensionContext {
         // There would be significant overhead to instantiating a new map and caching the extension.
         // A better solution is that each extension caches the extensions they use (if they want to).
         // This saves a check + map lookup for each additional request.
+
+        // We can use a simple bitmap here as well... But we need to move this method to PEC.
+        // And then look up the context before we can check.
+
         if (!extensionModel.dependenciesDirect.contains(extensionType)) {
             throw new InternalExtensionException("The specified extension type is not among " + extensionModel.extensionType.getSimpleName()
                     + " dependencies, extensionType = " + extensionType + ", valid dependencies = " + extensionModel.dependenciesDirect);
