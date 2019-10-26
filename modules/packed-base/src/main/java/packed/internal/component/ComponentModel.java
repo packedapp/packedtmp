@@ -21,13 +21,13 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Set;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.ContainerSource;
 import app.packed.container.Extension;
-import app.packed.container.UseExtension;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
 import packed.internal.container.ContainerSourceModel;
@@ -189,35 +189,36 @@ public final class ComponentModel {
         }
 
         private void findAssinableTo(HookTargetProcessor htp, LazyExtensionActivationMap activatorMap, Class<?> componentType) throws Throwable {
-
-            IdentityHashMap<Class<?>, Class<? extends Extension>> into = new IdentityHashMap<>();
+            HashSet<Class<?>> seen = new HashSet<>();
             for (Class<?> current = componentType; current != Object.class; current = current.getSuperclass()) {
-
-                putInto(into, current);
-                UseExtension ue = current.getAnnotation(UseExtension.class);
-                if (ue != null) {
-                    for (Class<? extends Extension> eType : ue.value()) {
-                        into.put(current, eType);
-                    }
-                }
-            }
-            for (var e : into.entrySet()) {
-                extensionBuilders.computeIfAbsent(e.getValue(), etype -> new HookRequestBuilder(ExtensionModel.onHookModelOf(etype), htp))
-                        .onAssignableTo(e.getKey(), componentType);
+                putInto(htp, activatorMap, seen, componentType, current);
             }
         }
 
-        public static void putInto(IdentityHashMap<Class<?>, Class<? extends Extension>> into, Class<?> clazz) {
+        public void putInto(HookTargetProcessor htp, LazyExtensionActivationMap activatorMap, HashSet<Class<?>> seen, Class<?> actualType, Class<?> clazz)
+                throws Throwable {
             for (Class<?> cl : clazz.getInterfaces()) {
-
-                UseExtension ue = cl.getAnnotation(UseExtension.class);
-
-                if (ue != null) {
-                    for (Class<? extends Extension> eType : ue.value()) {
-                        into.put(cl, eType);
-                    }
+                if (seen.add(cl)) {
+                    findAssinableTo0(htp, cl, actualType, LazyExtensionActivationMap.EXTENSION_ACTIVATORS.get(cl));
                 }
-                putInto(into, cl);
+
+                if (activatorMap != null) {
+                    findAssinableTo0(htp, cl, actualType, activatorMap.onAssignableTo(cl));
+                }
+                if (csb != null) {
+                    csb.onAssignableTo(cl, actualType);
+                }
+                putInto(htp, activatorMap, seen, actualType, cl);
+            }
+        }
+
+        private void findAssinableTo0(HookTargetProcessor hookProcessor, Class<?> hookType, Class<?> actualType, Set<Class<? extends Extension>> extensionTypes)
+                throws Throwable {
+            if (extensionTypes != null) {
+                for (Class<? extends Extension> eType : extensionTypes) {
+                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequestBuilder(ExtensionModel.onHookModelOf(etype), hookProcessor))
+                            .onAssignableTo(hookType, actualType);
+                }
             }
         }
 

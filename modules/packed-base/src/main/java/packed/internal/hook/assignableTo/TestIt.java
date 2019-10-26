@@ -16,11 +16,18 @@
 package packed.internal.hook.assignableTo;
 
 import app.packed.artifact.App;
+import app.packed.component.ComponentConfiguration;
 import app.packed.container.BaseBundle;
+import app.packed.container.Extension;
+import app.packed.container.UseExtension;
+import app.packed.hook.AssignableToHook;
+import app.packed.hook.OnHook;
+import packed.internal.hook.assignableTo.TestIt.FooExtension;
 
 /**
  *
  */
+@UseExtension(FooExtension.class)
 public class TestIt extends BaseBundle {
 
     /** {@inheritDoc} */
@@ -33,7 +40,37 @@ public class TestIt extends BaseBundle {
         App.of(new TestIt());
     }
 
-    public static class XXX implements FooBar {
+    public static class XXX implements Runnable, FooBar {
+
+        /** {@inheritDoc} */
+        @Override
+        public void run() {
+            // TODO Auto-generated method stub
+
+        }
+    }
+
+    public interface FooBar {
 
     }
+
+    public static class FooExtension extends Extension {
+
+        FooExtension() {
+            System.out.println("Installed FooExtension");
+        }
+
+        @OnHook
+        public static void foo(AssignableToHook<FooBar> foob, ComponentConfiguration<?> cc) {
+            System.out.println("NICE " + foob.type() + " virker");
+            System.out.println(cc.path());
+        }
+
+        @OnHook
+        public static void fsoo(AssignableToHook<Runnable> foob, ComponentConfiguration<?> cc) {
+            System.out.println("NICE " + foob.type() + " virker");
+            System.out.println(cc.path());
+        }
+    }
+
 }

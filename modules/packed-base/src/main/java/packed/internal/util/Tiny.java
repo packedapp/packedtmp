@@ -18,6 +18,7 @@ package packed.internal.util;
 import static java.util.Objects.requireNonNull;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -110,10 +111,16 @@ public final class Tiny<E> {
             Entry<K, Tiny<V>> e = map.entrySet().iterator().next();
             return Map.of(e.getKey(), toSet(e.getValue()));
         case 2:
-            e = map.entrySet().iterator().next();
-            Entry<K, Tiny<V>> e1 = map.entrySet().iterator().next();
+            Iterator<Entry<K, Tiny<V>>> iter = map.entrySet().iterator();
+            e = iter.next();
+            Entry<K, Tiny<V>> e1 = iter.next();
             return Map.of(e.getKey(), toSet(e.getValue()), e1.getKey(), toSet(e1.getValue()));
         }
         throw new UnsupportedOperationException("Unsupported");
+    }
+
+    @Override
+    public String toString() {
+        return toSet(this).toString();
     }
 }

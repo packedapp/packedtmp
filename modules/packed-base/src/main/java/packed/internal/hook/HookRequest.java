@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -41,6 +42,7 @@ public final class HookRequest {
     @Nullable
     private final Tiny<BaseHookCallback> baseHooksCallback;
 
+    /** Used for creating {@link MethodHandle} and {@link VarHandle} for base hook callbacks. */
     private final ClassProcessor delayedProcessor;
 
     HookRequest(HookRequestBuilder builder) throws Throwable {

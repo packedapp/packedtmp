@@ -20,6 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -81,7 +83,9 @@ public final class ExtensionModel<E extends Extension> {
     // Contract>);
     public final Map<Class<? extends Contract>, BiFunction<?, ? super ExtensionDescriptorContext, ?>> contracts;
 
-    public final Set<Class<? extends Extension>> dependencies;
+    public final Set<Class<? extends Extension>> dependenciesDirect;
+
+    public final List<Class<? extends Extension>> dependenciesTotalOrder;
 
     /** The type of the extension this model describes. */
     public final Class<? extends Extension> extensionType;
@@ -120,7 +124,8 @@ public final class ExtensionModel<E extends Extension> {
         this.onConfigured = builder.onConfiguredAction;
         this.onInstantiation = builder.onInstantiation;
         this.onLinkage = builder.onLinkage;
-        this.dependencies = Set.copyOf(builder.dependencies);
+        this.dependenciesDirect = Set.copyOf(builder.dependenciesDirect);
+        this.dependenciesTotalOrder = builder.dependenciesTotalOrder;
         this.optional = Optional.of(extensionType); // No need to create an optional every time we need this
 
         this.onHookModel = builder.onHookModel;
@@ -183,7 +188,9 @@ public final class ExtensionModel<E extends Extension> {
         private MethodHandle constructor;
 
         /** A list of dependencies on other extensions. */
-        private List<Class<? extends Extension>> dependencies;
+        private Set<Class<? extends Extension>> dependenciesDirect;
+
+        private List<Class<? extends Extension>> dependenciesTotalOrder;
 
         /** The type of extension we are building a model for. */
         private final Class<? extends Extension> extensionType;
@@ -217,7 +224,8 @@ public final class ExtensionModel<E extends Extension> {
                     composerType = (Class<? extends ExtensionComposer<?>>) c;
                 }
             }
-            this.dependencies = ExtensionDependencyValidator.dependenciesOf(extensionType);
+            this.dependenciesDirect = Collections.unmodifiableSet(new HashSet<>(ExtensionUseModel2.directDependenciesOf(extensionType)));
+            this.dependenciesTotalOrder = ExtensionUseModel2.totalOrder(extensionType);
 
             ClassProcessor cp = new ClassProcessor(MethodHandles.lookup(), extensionType, true);
             this.constructor = ConstructorFinder.find(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);

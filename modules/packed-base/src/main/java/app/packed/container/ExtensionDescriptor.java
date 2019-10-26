@@ -54,7 +54,7 @@ public final class ExtensionDescriptor {
      * @return any other extensions this extension depends on
      */
     public Set<Class<? extends Extension>> dependencies() {
-        return model.dependencies;
+        return model.dependenciesDirect;
     }
 
     /**

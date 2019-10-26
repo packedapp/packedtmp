@@ -113,6 +113,12 @@ public final class OnHookModel {
         return allLinks == null || allLinks.annotatedTypes == null ? null : (Set) allLinks.annotatedTypes.keySet();
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Nullable
+    public Set<Class<?>> assignableTos() {
+        return allLinks == null || allLinks.assignableTos == null ? null : (Set) allLinks.assignableTos.keySet();
+    }
+
     /**
      * Creates a new model.
      * 

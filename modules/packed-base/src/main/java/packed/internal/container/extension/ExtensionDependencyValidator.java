@@ -35,6 +35,8 @@ import packed.internal.util.StringFormatter;
  * <p>
  * We do not cache exceptions
  */
+
+// I think the new one is simpler...??
 final class ExtensionDependencyValidator {
 
     private static final Map<Class<? extends Extension>, List<Class<? extends Extension>>> VALIDATED = Collections.synchronizedMap(new WeakHashMap<>());

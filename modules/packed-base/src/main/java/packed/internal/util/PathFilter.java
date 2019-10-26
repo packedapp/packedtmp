@@ -13,14 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hook.assignableTo;
+package packed.internal.util;
 
-import app.packed.container.UseExtension;
+import java.util.function.Predicate;
 
 /**
  *
  */
-@UseExtension(FooExtension.class)
-public interface FooBar {
+public final class PathFilter implements Predicate<CharSequence> {
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean test(CharSequence t) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public PathFilter of(String expression) {
+        // Simpler language
+
+        // **//*
+        return null;
+    }
+
+    // Probably needs to evaluate all...
+    public PathFilter ofRegexp(String expression) {
+        return null;
+    }
 }

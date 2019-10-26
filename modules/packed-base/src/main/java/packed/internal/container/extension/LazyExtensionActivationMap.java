@@ -52,12 +52,17 @@ public final class LazyExtensionActivationMap {
     @Nullable
     private final Map<Class<? extends Annotation>, Set<Class<? extends Extension>>> annotatedTypes;
 
+    @Nullable
+    private final Map<Class<?>, Set<Class<? extends Extension>>> assignableTo;
+
     private LazyExtensionActivationMap(@Nullable Map<Class<? extends Annotation>, Set<Class<? extends Extension>>> annotatedFields,
             @Nullable Map<Class<? extends Annotation>, Set<Class<? extends Extension>>> annotatedMethods,
-            @Nullable Map<Class<? extends Annotation>, Set<Class<? extends Extension>>> annotatedTypes) {
+            @Nullable Map<Class<? extends Annotation>, Set<Class<? extends Extension>>> annotatedTypes,
+            @Nullable Map<Class<?>, Set<Class<? extends Extension>>> assignableTo) {
         this.annotatedFields = annotatedFields;
         this.annotatedMethods = annotatedMethods;
         this.annotatedTypes = annotatedTypes;
+        this.assignableTo = assignableTo;
     }
 
     @Nullable
@@ -76,9 +81,14 @@ public final class LazyExtensionActivationMap {
     }
 
     @Nullable
+    public Set<Class<? extends Extension>> onAssignableTo(Class<?> type) {
+        return assignableTo == null ? null : assignableTo.get(type);
+    }
+
+    @Nullable
     public static DefaultHookUsage findNonExtending(OnHookModel hooks) {
         return DefaultHookUsage.ofOrNull(findNonAutoExtending(hooks.annotatedFieldHooks()), findNonAutoExtending(hooks.annotatedMethodHooks()),
-                findNonAutoExtending(hooks.annotatedTypeHooks()));
+                findNonAutoExtending(hooks.annotatedTypeHooks()), findNonAutoExtending(hooks.assignableTos()));
     }
 
     @Nullable
@@ -99,30 +109,51 @@ public final class LazyExtensionActivationMap {
     }
 
     public static LazyExtensionActivationMap of(Class<?> cl) {
-
-        UseExtensionLazily uel = cl.getAnnotation(UseExtensionLazily.class);
-        if (uel == null) {
-            return null;
-        }
-
         HashMap<Class<? extends Annotation>, Tiny<Class<? extends Extension>>> annotatedFields = new HashMap<>(0);
         HashMap<Class<? extends Annotation>, Tiny<Class<? extends Extension>>> annotatedMethods = new HashMap<>(0);
         HashMap<Class<? extends Annotation>, Tiny<Class<? extends Extension>>> annotatedTypes = new HashMap<>(0);
+        HashMap<Class<?>, Tiny<Class<? extends Extension>>> assignableTos = new HashMap<>(0);
 
-        for (Class<? extends Extension> c : uel.value()) {
-            ExtensionModel<? extends Extension> em = ExtensionModel.of(c);
-            if (em.nonActivatingHooks != null) {
-                stats(c, annotatedFields, em.nonActivatingHooks.annotatedFields);
-                stats(c, annotatedMethods, em.nonActivatingHooks.annotatedMethods);
-                stats(c, annotatedTypes, em.nonActivatingHooks.annotatedTypes);
+        UseExtensionLazily uel = cl.getAnnotation(UseExtensionLazily.class);
+        if (uel != null) {
+            for (Class<? extends Extension> c : uel.value()) {
+                ExtensionModel<? extends Extension> em = ExtensionModel.of(c);
+                DefaultHookUsage dhu = em.nonActivatingHooks;
+                if (dhu != null) {
+                    stats(c, annotatedFields, dhu.annotatedFields);
+                    stats(c, annotatedMethods, dhu.annotatedMethods);
+                    stats(c, annotatedTypes, dhu.annotatedTypes);
+                    stats(c, assignableTos, dhu.assignableTos);
+                }
             }
         }
-        if (annotatedFields.size() == 0 && annotatedMethods.size() == 0 && annotatedTypes.size() == 0) {
-            System.err.println("Why use " + uel);
+
+        // we also need all OnHook on bundles which do not have activating annotations.
+        // Problem is that if an Extension has an un-activated OnHook method.
+        // We just ignore it. Because we just assume that are added via normal mechanisms...
+        UseExtension uela = cl.getAnnotation(UseExtension.class);
+        if (uela != null) {
+            for (Class<? extends Extension> c : uela.value()) {
+                ExtensionModel<? extends Extension> em = ExtensionModel.of(c);
+                DefaultHookUsage dhu = em.nonActivatingHooks;
+                if (dhu != null) {
+                    stats(c, annotatedFields, dhu.annotatedFields);
+                    stats(c, annotatedMethods, dhu.annotatedMethods);
+                    stats(c, annotatedTypes, dhu.annotatedTypes);
+                    stats(c, assignableTos, dhu.assignableTos);
+                }
+            }
+        }
+        if (uela == null && uel == null) {
+            return null;
+        }
+
+        if (annotatedFields.size() == 0 && annotatedMethods.size() == 0 && annotatedTypes.size() == 0 && assignableTos.size() == 0) {
+            System.err.println("Why use " + uel + " or " + uela);
             return null;
         }
         return new LazyExtensionActivationMap(Tiny.toMultiSetMapOrNull(annotatedFields), Tiny.toMultiSetMapOrNull(annotatedMethods),
-                Tiny.toMultiSetMapOrNull(annotatedTypes));
+                Tiny.toMultiSetMapOrNull(annotatedTypes), Tiny.toMultiSetMapOrNull(assignableTos));
     }
 
     @Nullable

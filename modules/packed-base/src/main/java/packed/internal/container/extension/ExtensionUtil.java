@@ -33,7 +33,7 @@ final class ExtensionUtil {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         protected List<Class<? extends Extension>> computeValue(Class<?> type) {
-            List<Class<?>> list = USE_DEPENDENCIES_UNCHECKED.get(type);
+            List<Class<?>> list = USE_DEPENDENCIES_OPTIONAL.get(type);
             for (Class<?> c : list) {
                 if (!Extension.class.isAssignableFrom(c)) {
                     throw new InternalExtensionException("@" + UseExtension.class.getSimpleName() + " " + StringFormatter.format(type)
@@ -50,7 +50,7 @@ final class ExtensionUtil {
      * First we load any classes exactly once. In case they reference an 'illegal' extension we check that in
      * {@link #USE_DEPENDENCIES} instead.
      */
-    private static final ClassValue<List<Class<?>>> USE_DEPENDENCIES_UNCHECKED = new ClassValue<>() {
+    private static final ClassValue<List<Class<?>>> USE_DEPENDENCIES_OPTIONAL = new ClassValue<>() {
 
         @Override
         protected List<Class<?>> computeValue(Class<?> type) {

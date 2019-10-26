@@ -31,19 +31,23 @@ public class DefaultHookUsage {
 
     public final Set<Class<? extends Annotation>> annotatedTypes;
 
+    public final Set<Class<?>> assignableTos;
+
     DefaultHookUsage(Set<Class<? extends Annotation>> annotatedFields, Set<Class<? extends Annotation>> annotatedMethods,
-            Set<Class<? extends Annotation>> annotatedTypes) {
+            Set<Class<? extends Annotation>> annotatedTypes, Set<Class<?>> assignableTos) {
         this.annotatedFields = annotatedFields;
         this.annotatedMethods = annotatedMethods;
         this.annotatedTypes = annotatedTypes;
+        this.assignableTos = assignableTos;
     }
 
     @Nullable
     public static DefaultHookUsage ofOrNull(@Nullable Set<Class<? extends Annotation>> annotatedFields,
-            @Nullable Set<Class<? extends Annotation>> annotatedMethods, @Nullable Set<Class<? extends Annotation>> annotatedTypes) {
-        if (annotatedFields == null && annotatedMethods == null && annotatedTypes == null) {
+            @Nullable Set<Class<? extends Annotation>> annotatedMethods, @Nullable Set<Class<? extends Annotation>> annotatedTypes,
+            @Nullable Set<Class<?>> assignableTos) {
+        if (annotatedFields == null && annotatedMethods == null && annotatedTypes == null && assignableTos == null) {
             return null;
         }
-        return new DefaultHookUsage(annotatedFields, annotatedMethods, annotatedTypes);
+        return new DefaultHookUsage(annotatedFields, annotatedMethods, annotatedTypes, assignableTos);
     }
 }

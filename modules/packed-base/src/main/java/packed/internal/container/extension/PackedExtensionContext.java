@@ -199,9 +199,9 @@ public final class PackedExtensionContext implements ExtensionContext {
         // There would be significant overhead to instantiating a new map and caching the extension.
         // A better solution is that each extension caches the extensions they use (if they want to).
         // This saves a check + map lookup for each additional request.
-        if (!extensionModel.dependencies.contains(extensionType)) {
+        if (!extensionModel.dependenciesDirect.contains(extensionType)) {
             throw new InternalExtensionException("The specified extension type is not among " + extensionModel.extensionType.getSimpleName()
-                    + " dependencies, extensionType = " + extensionType + ", valid dependencies = " + extensionModel.dependencies);
+                    + " dependencies, extensionType = " + extensionType + ", valid dependencies = " + extensionModel.dependenciesDirect);
         }
 
         return (T) pcc.useExtension(extensionType, this).extension;
