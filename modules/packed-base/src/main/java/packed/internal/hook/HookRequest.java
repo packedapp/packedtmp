@@ -36,29 +36,29 @@ import packed.internal.util.UncheckedThrowableFactory;
 public final class HookRequest {
 
     /** A list of custom hook callbacks for the particular extension. */
-    final TinyPair<Hook, MethodHandle> customHooksCallback;
+    private final TinyPair<Hook, MethodHandle> customHooksCallback;
 
     @Nullable
-    final Tiny<DelayedAnnotatedMember> delayedMembers;
+    private final Tiny<BaseHookCallback> baseHooksCallback;
 
-    final ClassProcessor delayedProcessor;
+    private final ClassProcessor delayedProcessor;
 
-    protected HookRequest(HookRequestBuilder builder) throws Throwable {
+    HookRequest(HookRequestBuilder builder) throws Throwable {
         this.customHooksCallback = builder.compute();
-        this.delayedMembers = builder.delayedMembers;
+        this.baseHooksCallback = builder.baseHooksCallback;
         this.delayedProcessor = builder.hookProcessor.cp;
     }
 
-    public void invokeIt(Object target, Object additional) throws Throwable {
-        // TODO support static....
-
+    public void invoke(Object target, Object additional) throws Throwable {
+        // First we process all hooks implemented by users.
+        //
         for (TinyPair<Hook, MethodHandle> c = customHooksCallback; c != null; c = c.next) {
             invokeHook(c.element2, c.element1, target, additional);
         }
         // Invoke OnHook methods on the Bundle or Extension that takes a base hook
-        if (delayedMembers != null) {
+        if (baseHooksCallback != null) {
             try (HookTargetProcessor hp = new HookTargetProcessor(delayedProcessor.copy(), UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
-                for (Tiny<DelayedAnnotatedMember> t = delayedMembers; t != null; t = t.next) {
+                for (Tiny<BaseHookCallback> t = baseHooksCallback; t != null; t = t.next) {
                     invokeHook(t.element.mh, t.element.toHook(hp), target, additional);
                 }
             }
@@ -66,20 +66,31 @@ public final class HookRequest {
     }
 
     private void invokeHook(MethodHandle mh, Hook hook, Object target, Object additional) throws Throwable {
-        if (mh.type().parameterCount() == 2) {
-            mh.invoke(target, hook);
+        // Its somewhat of a hack, but will do for now.
+        // As neither ContainerSource or Bundle can implement Hook (Dobbeltcheck)
+        boolean isStatic = Hook.class.isAssignableFrom(mh.type().parameterType(0));
+        if (isStatic) {
+            if (mh.type().parameterCount() == 1) {
+                mh.invoke(hook);
+            } else {
+                mh.invoke(hook, additional);
+            }
         } else {
-            mh.invoke(target, hook, additional);
+            if (mh.type().parameterCount() == 2) {
+                mh.invoke(target, hook);
+            } else {
+                mh.invoke(target, hook, additional);
+            }
         }
     }
 
     /// This is necessary because we can only fields and methods once. Without scanning everything again
-    static class DelayedAnnotatedMember {
+    static class BaseHookCallback {
         private final Annotation annotation;
         private final Object member;
         private final MethodHandle mh;
 
-        DelayedAnnotatedMember(Object member, Annotation annotation, MethodHandle mh) {
+        BaseHookCallback(Object member, Annotation annotation, MethodHandle mh) {
             this.member = requireNonNull(member);
             this.annotation = annotation; // Null for AssignableTo
             this.mh = requireNonNull(mh);

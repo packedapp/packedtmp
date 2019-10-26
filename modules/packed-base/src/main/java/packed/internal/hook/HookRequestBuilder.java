@@ -28,7 +28,7 @@ import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
-import packed.internal.hook.HookRequest.DelayedAnnotatedMember;
+import packed.internal.hook.HookRequest.BaseHookCallback;
 import packed.internal.hook.OnHookModel.Link;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ClassProcessor;
@@ -42,7 +42,7 @@ public class HookRequestBuilder {
 
     private final Object[] array;
 
-    Tiny<DelayedAnnotatedMember> delayedMembers;
+    Tiny<BaseHookCallback> baseHooksCallback;
 
     final HookTargetProcessor hookProcessor;
 
@@ -104,7 +104,7 @@ public class HookRequestBuilder {
         if (assignableTos != null) {
             for (Link link = assignableTos.get(hookType); link != null; link = link.next) {
                 if (link.index == 0 && !isTest) {
-                    delayedMembers = new Tiny<>(new DelayedAnnotatedMember(actualType, null, link.mh), delayedMembers);
+                    baseHooksCallback = new Tiny<>(new BaseHookCallback(actualType, null, link.mh), baseHooksCallback);
                 } else {
                     Hook.Builder<?> builder = builderOf(array, link.index);
                     AssignableToHook<?> hook = ModuleAccess.hook().newAssignableToHook(hookProcessor, actualType);
@@ -127,7 +127,7 @@ public class HookRequestBuilder {
         if (annotatedFields != null) {
             for (Link link = annotatedFields.get(annotation.annotationType()); link != null; link = link.next) {
                 if (link.index == 0 && !isTest) {
-                    delayedMembers = new Tiny<>(new DelayedAnnotatedMember(field, annotation, link.mh), delayedMembers);
+                    baseHooksCallback = new Tiny<>(new BaseHookCallback(field, annotation, link.mh), baseHooksCallback);
                 } else {
                     Hook.Builder<?> builder = builderOf(array, link.index);
                     AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(hookProcessor, field, annotation);
@@ -146,7 +146,7 @@ public class HookRequestBuilder {
         if (annotatedMethods != null) {
             for (Link link = annotatedMethods.get(annotation.annotationType()); link != null; link = link.next) {
                 if (link.index == 0 && !isTest) {
-                    delayedMembers = new Tiny<>(new DelayedAnnotatedMember(method, annotation, link.mh), delayedMembers);
+                    baseHooksCallback = new Tiny<>(new BaseHookCallback(method, annotation, link.mh), baseHooksCallback);
                 } else {
                     Hook.Builder<?> builder = builderOf(array, link.index);
                     AnnotatedMethodHook<Annotation> hook = ModuleAccess.hook().newAnnotatedMethodHook(hookProcessor, method, annotation);
@@ -161,7 +161,7 @@ public class HookRequestBuilder {
         if (annotatedTypes != null) {
             for (Link link = onHookModel.allLinks.annotatedTypes.get(annotation.annotationType()); link != null; link = link.next) {
                 if (link.index == 0 && !isTest) {
-                    delayedMembers = new Tiny<>(new DelayedAnnotatedMember(clazz, annotation, link.mh), delayedMembers);
+                    baseHooksCallback = new Tiny<>(new BaseHookCallback(clazz, annotation, link.mh), baseHooksCallback);
                 } else {
                     Hook.Builder<?> builder = builderOf(array, link.index);
                     AnnotatedTypeHook<Annotation> hook = ModuleAccess.hook().newAnnotatedTypeHook(hookProcessor, clazz, annotation);

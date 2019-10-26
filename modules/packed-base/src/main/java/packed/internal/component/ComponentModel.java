@@ -110,7 +110,7 @@ public final class ComponentModel {
         try {
             // First invoke any OnHook methods on the container source (bundle)
             if (sourceHook != null) {
-                sourceHook.invokeIt(cs, acc);
+                sourceHook.invoke(cs, acc);
             }
 
             // Next, invoke any OnHook methods on relevant extensions.
@@ -119,7 +119,7 @@ public final class ComponentModel {
                 Extension extension = acc.container.use(he.extensionType);
 
                 // Invoke each method annotated with @OnHook on the extension instance
-                he.request.invokeIt(extension, acc);
+                he.request.invoke(extension, acc);
             }
         } catch (Throwable t) {
             ThrowableUtil.rethrowErrorOrRuntimeException(t);

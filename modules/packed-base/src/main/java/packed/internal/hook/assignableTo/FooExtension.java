@@ -15,6 +15,7 @@
  */
 package packed.internal.hook.assignableTo;
 
+import app.packed.component.ComponentConfiguration;
 import app.packed.container.Extension;
 import app.packed.hook.AssignableToHook;
 import app.packed.hook.OnHook;
@@ -29,7 +30,8 @@ public class FooExtension extends Extension {
     }
 
     @OnHook
-    public void foo(AssignableToHook<FooBar> foob) {
+    public static void foo(AssignableToHook<FooBar> foob, ComponentConfiguration<?> cc) {
         System.out.println("NICE " + foob.type() + " virker");
+        System.out.println(cc.path());
     }
 }
