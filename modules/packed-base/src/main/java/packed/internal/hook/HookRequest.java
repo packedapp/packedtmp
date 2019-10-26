@@ -66,16 +66,7 @@ public final class HookRequest {
                 for (Tiny<DelayedAnnotatedMember> t = delayedMembers; t != null; t = t.next) {
                     DelayedAnnotatedMember m = t.element;
                     MethodHandle mh = m.mh;
-                    Hook amh;
-                    if (m.annotation == null) {
-                        amh = ModuleAccess.hook().newAssignableToHook(hp, (Class<?>) m.member);
-                    } else if (m.member instanceof Field) {
-                        amh = ModuleAccess.hook().newAnnotatedFieldHook(hp, (Field) m.member, m.annotation);
-                    } else if (m.member instanceof Method) {
-                        amh = ModuleAccess.hook().newAnnotatedMethodHook(hp, (Method) m.member, m.annotation);
-                    } else {
-                        amh = ModuleAccess.hook().newAnnotatedTypeHook(hp, (Class<?>) m.member, m.annotation);
-                    }
+                    Hook amh = m.toHook(hp);
 
                     if (mh.type().parameterCount() == 2) {
                         mh.invoke(target, amh);
@@ -97,6 +88,18 @@ public final class HookRequest {
             this.member = requireNonNull(member);
             this.annotation = annotation; // Null for AssignableTo
             this.mh = requireNonNull(mh);
+        }
+
+        private Hook toHook(HookTargetProcessor hp) {
+            if (annotation == null) {
+                return ModuleAccess.hook().newAssignableToHook(hp, (Class<?>) member);
+            } else if (member instanceof Field) {
+                return ModuleAccess.hook().newAnnotatedFieldHook(hp, (Field) member, annotation);
+            } else if (member instanceof Method) {
+                return ModuleAccess.hook().newAnnotatedMethodHook(hp, (Method) member, annotation);
+            } else {
+                return ModuleAccess.hook().newAnnotatedTypeHook(hp, (Class<?>) member, annotation);
+            }
         }
     }
 
