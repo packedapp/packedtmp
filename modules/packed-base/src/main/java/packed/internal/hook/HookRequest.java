@@ -51,30 +51,25 @@ public final class HookRequest {
 
     public void invokeIt(Object target, Object additional) throws Throwable {
         // TODO support static....
+
         for (TinyPair<Hook, MethodHandle> c = customHooksCallback; c != null; c = c.next) {
-            Hook hook = c.element1;
-            MethodHandle mh = c.element2;
-            if (mh.type().parameterCount() == 2) {
-                mh.invoke(target, hook);
-            } else {
-                mh.invoke(target, hook, additional);
-            }
+            invokeHook(c.element2, c.element1, target, additional);
         }
         // Invoke OnHook methods on the Bundle or Extension that takes a base hook
         if (delayedMembers != null) {
             try (HookTargetProcessor hp = new HookTargetProcessor(delayedProcessor.copy(), UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
                 for (Tiny<DelayedAnnotatedMember> t = delayedMembers; t != null; t = t.next) {
-                    DelayedAnnotatedMember m = t.element;
-                    MethodHandle mh = m.mh;
-                    Hook amh = m.toHook(hp);
-
-                    if (mh.type().parameterCount() == 2) {
-                        mh.invoke(target, amh);
-                    } else {
-                        mh.invoke(target, amh, additional);
-                    }
+                    invokeHook(t.element.mh, t.element.toHook(hp), target, additional);
                 }
             }
+        }
+    }
+
+    private void invokeHook(MethodHandle mh, Hook hook, Object target, Object additional) throws Throwable {
+        if (mh.type().parameterCount() == 2) {
+            mh.invoke(target, hook);
+        } else {
+            mh.invoke(target, hook, additional);
         }
     }
 
