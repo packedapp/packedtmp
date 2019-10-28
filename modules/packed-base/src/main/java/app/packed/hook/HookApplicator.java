@@ -50,5 +50,6 @@ public interface HookApplicator<T> {
     // Vi skal hellere ikke have en version kun til extension
 
     // Vil gerne vaek fra at vaere taet knyttet til ComponentConfiguration
+
     <S> void onReady(ComponentConfiguration<?> cc, Class<S> sidecarType, BiConsumer<S, T> consumer);
 }

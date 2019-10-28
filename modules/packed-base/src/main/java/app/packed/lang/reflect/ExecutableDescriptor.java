@@ -28,6 +28,8 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
+import packed.internal.reflect.PackedIllegalAccessException;
+
 /**
  * An executable descriptor.
  * <p>
@@ -58,6 +60,38 @@ public abstract class ExecutableDescriptor implements Member, AnnotatedElement {
             this.parameters[i] = new ParameterDescriptor(this, parameters[i], i);
         }
         this.parameterTypes = executable.getParameterTypes();
+    }
+
+    /**
+     * Applies this operator the specified static method.
+     * 
+     * @param caller
+     *            the caller
+     * @param operator
+     *            the method to apply the operator on
+     * @return the result of applying the operator
+     * @throws IllegalArgumentException
+     *             if the method is not static, or if the operator cannot be applied on the method. For example, if the
+     *             operator requires two parameter, but the method only takes one
+     */
+    public final <T> T applyOperator(Lookup caller, MethodOperator<T> operator) {
+        MethodHandle mh;
+        try {
+            mh = unreflect(caller);
+        } catch (IllegalAccessException e) {
+            throw new PackedIllegalAccessException(e);
+        }
+        return operator.apply(mh);
+    }
+
+    public final <T> T applyOperator(Lookup caller, MethodOperator<T> operator, Object instance) {
+        MethodHandle mh;
+        try {
+            mh = unreflect(caller);
+        } catch (IllegalAccessException e) {
+            throw new PackedIllegalAccessException(e);
+        }
+        return operator.apply(mh, instance);
     }
 
     /**

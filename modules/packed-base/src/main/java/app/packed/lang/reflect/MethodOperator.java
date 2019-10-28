@@ -18,13 +18,8 @@ package app.packed.lang.reflect;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.MethodType;
-import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 
-import app.packed.hook.AnnotatedMethodHook;
-import packed.internal.reflect.PackedIllegalAccessException;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -37,35 +32,20 @@ import packed.internal.util.ThrowableUtil;
 
 public abstract class MethodOperator<T> {
 
-    MethodOperator() {}
+    protected MethodOperator() {}
 
     /**
-     * Applies this operator the specified static method.
+     * Applies this operator to the specified method handle.
      * 
-     * @param caller
-     *            the caller
-     * @param method
-     *            the method to apply the operator on
-     * @return the result of applying the operator
-     * @throws IllegalArgumentException
-     *             if the method is not static, or if the operator cannot be applied on the method. For example, if the
-     *             operator requires two parameter, but the method only takes one
+     * @param mh
+     *            the method handle to apply the operator on
+     * @return the result of applying this operator
      */
-    public final T applyStatic(Lookup caller, Method method) {
-        MethodHandle mh;
-        try {
-            mh = caller.unreflect(method);
-        } catch (IllegalAccessException e) {
-            throw new PackedIllegalAccessException(e);
-        }
-        return apply(mh);
-    }
-
-    public abstract MethodType type();
-
-    public abstract T applyStaticHook(AnnotatedMethodHook<?> packedAnnotatedMethodHook);
-
     public abstract T apply(MethodHandle mh);
+
+    public T apply(MethodHandle mh, Object instance) {
+        return apply(mh.bindTo(instance));
+    }
 
     public static <T> MethodOperator<Object> invokeOnce() {
         return new MethodOperator.InvokeOnce<>();
@@ -79,12 +59,6 @@ public abstract class MethodOperator<T> {
 
         /** {@inheritDoc} */
         @Override
-        public T applyStaticHook(AnnotatedMethodHook<?> hook) {
-            return apply(hook.methodHandle());
-        }
-
-        /** {@inheritDoc} */
-        @Override
         public T apply(MethodHandle mh) {
             try {
                 return (T) mh.invoke();
@@ -93,43 +67,14 @@ public abstract class MethodOperator<T> {
                 throw new UndeclaredThrowableException(e);
             }
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public MethodType type() {
-            return MethodType.methodType(void.class);
-        }
     }
 
     static class RunnableInternalMethodOperation extends MethodOperator<Runnable> {
-
-        public Runnable apply(Lookup lookup, Method method, Object instance) {
-            MethodHandle mh;
-            try {
-                mh = lookup.unreflect(method);
-            } catch (IllegalAccessException e) {
-                throw new PackedIllegalAccessException(e);
-            }
-            mh = mh.bindTo(instance);
-            return new StaticRunnable(mh);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Runnable applyStaticHook(AnnotatedMethodHook<?> hook) {
-            return new StaticRunnable(hook.methodHandle());
-        }
 
         /** {@inheritDoc} */
         @Override
         public Runnable apply(MethodHandle mh) {
             return new StaticRunnable(mh);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public MethodType type() {
-            return MethodType.methodType(void.class);
         }
     }
 
@@ -156,3 +101,25 @@ public abstract class MethodOperator<T> {
     }
 
 }
+//
+/// **
+// * Applies this operator the specified static method.
+// *
+// * @param caller
+// * the caller
+// * @param method
+// * the method to apply the operator on
+// * @return the result of applying the operator
+// * @throws IllegalArgumentException
+// * if the method is not static, or if the operator cannot be applied on the method. For example, if the
+// * operator requires two parameter, but the method only takes one
+// */
+// public final T applyMethod(Lookup caller, Method method) {
+// MethodHandle mh;
+// try {
+// mh = caller.unreflect(method);
+// } catch (IllegalAccessException e) {
+// throw new PackedIllegalAccessException(e);
+// }
+// return apply(mh);
+// }

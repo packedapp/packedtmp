@@ -101,7 +101,7 @@ public final class AnnotatedMethodHook<T extends Annotation> implements Hook {
             throw new IllegalArgumentException("Cannot invoke this method on a non-static method, method = " + method);
         }
         processor.checkOpen();
-        return operator.applyStaticHook(this);
+        return operator.apply(methodHandle());
     }
 
     /**

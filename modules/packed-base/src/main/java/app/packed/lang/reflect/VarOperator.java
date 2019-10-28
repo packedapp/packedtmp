@@ -32,6 +32,7 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
+
 public abstract class VarOperator<T> {
 
     VarOperator() {}
@@ -94,14 +95,15 @@ public abstract class VarOperator<T> {
 
         /** {@inheritDoc} */
         @Override
-        public boolean isSimpleGetter() {
-            return true;
+        public T applyStaticHook(AnnotatedFieldHook<?> hook) {
+            return invoke(hook.getter());
         }
 
         /** {@inheritDoc} */
         @Override
-        public T applyStaticHook(AnnotatedFieldHook<?> hook) {
-            return invoke(hook.getter());
+        public boolean isSimpleGetter() {
+            // TODO Auto-generated method stub
+            return false;
         }
     }
 
@@ -126,6 +128,12 @@ public abstract class VarOperator<T> {
                 throw new UndeclaredThrowableException(e);
             }
         }
+
+        // /** {@inheritDoc} */
+        // @Override
+        // public boolean isSimpleGetter() {
+        // return true;
+        // }
     }
 
     static class SupplierInternalFieldOperation<T> extends VarOperator<Supplier<T>> {
