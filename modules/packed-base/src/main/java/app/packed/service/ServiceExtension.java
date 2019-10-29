@@ -253,6 +253,12 @@ public final class ServiceExtension extends Extension {
         return node.provider().provideFactory(use(ComponentExtension.class).install(factory), factory, factory.factory.function);
     }
 
+    // Will install a stateless component...
+    <T> ServiceConfiguration<T> provideProtoype(Factory<T> factory) {
+        // Hvordan FFF fungere det her???? Vi skal jo vaere knyttet til en component.
+        throw new UnsupportedOperationException();
+    }
+
     <T> ServiceComponentConfiguration<T> provide(ComponentConfiguration<T> existing) {
         // IDeen er lidt at man f.eks. kan lave en ComponentExtension et andet sted, som saa kan bruges her.
         throw new UnsupportedOperationException();

@@ -149,7 +149,7 @@ public abstract class BaseBundle extends Bundle {
     }
 
     protected final <T> ComponentConfiguration<T> installHelper(Class<T> implementation) {
-        return component().installStatic(implementation);
+        return component().installStateless(implementation);
     }
 
     /**

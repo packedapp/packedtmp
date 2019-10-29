@@ -42,18 +42,6 @@ import app.packed.service.Factory;
 public interface ComponentConfiguration<T> {
 
     /**
-     * Registers an action that will be performed whenever a name is assigned to the component.
-     * <p>
-     * This method is mainly used by extensions.
-     * 
-     * @param action
-     *            the action to be performed when the name of the component is finalized
-     */
-    default void onNamed(Consumer<? super ComponentConfiguration<T>> action) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
      * Checks that the component is still configurable or throws an {@link IllegalStateException}.
      * <p>
      * A component is typically only configurable inside of {@link Bundle#configure()}.
@@ -100,6 +88,26 @@ public interface ComponentConfiguration<T> {
      * @see #setName(String)
      */
     String getName();
+
+    default boolean isStateful() {
+        return false;// Alternative we have a Component.Mode with Stateful, Stateless, Other
+    }
+
+    default boolean isStateless() {
+        return !isStateless();
+    }
+
+    /**
+     * Registers an action that will be performed whenever a name is assigned to the component.
+     * <p>
+     * This method is mainly used by extensions.
+     * 
+     * @param action
+     *            the action to be performed when the name of the component is finalized
+     */
+    default void onNamed(Consumer<? super ComponentConfiguration<T>> action) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Returns the full path of the component.

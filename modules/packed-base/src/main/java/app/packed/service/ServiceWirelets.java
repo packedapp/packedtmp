@@ -17,7 +17,9 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
+import java.time.ZoneId;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -30,6 +32,12 @@ import packed.internal.service.build.wirelets.PackedUpstreamInjectionWirelet;
 /**
  * Various wirelets that can be used to transform and filter services being pull and pushed into containers.
  */
+
+// Syntes det giver mening kun at prefixe have upstream....
+// Eller evt mapTo, og mapFrom.... ddd.mapTo og ma
+
+// peekTo.. peekFrom
+/// link(new SomeBundle()
 public final class ServiceWirelets {
 
     /** No instantiation. */
@@ -49,9 +57,12 @@ public final class ServiceWirelets {
     public static void main(String[] args) {
         provideMapped(new Mapper<Long, Integer>(e -> e.intValue()) {});
 
+        mapTo(new Factory1<TimeZone, ZoneId>(TimeZone::toZoneId) {});
+
         provideMapped(Long.class, Integer.class, e -> e.intValue());
 
         provideMapped(Key.of(Long.class), Key.of(Integer.class), e -> e.intValue());
+        mapTo(new Factory1<Long, Integer>(Long::intValue) {});
     }
 
     public static <F, T> Wirelet mapUpstream(Class<F> fromKey, Class<T> toKey, Function<? super F, ? extends T> mapper) {
@@ -63,6 +74,15 @@ public final class ServiceWirelets {
     }
 
     public static Wirelet mapUpstream(Mapper<?, ?> mapper) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @param factory
+     *            a factory taking at least one argument (well
+     * @return stuff
+     */
+    public static Wirelet mapTo(Factory<?> factory) {
         throw new UnsupportedOperationException();
     }
 

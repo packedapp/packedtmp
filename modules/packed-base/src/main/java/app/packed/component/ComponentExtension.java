@@ -99,7 +99,7 @@ public final class ComponentExtension extends Extension {
     }
 
     /**
-     * Installs a component that does not have any instance representing it.
+     * Installs a stateless component.
      * <p>
      * This method uses the {@link ServiceExtension}.
      * 
@@ -109,7 +109,7 @@ public final class ComponentExtension extends Extension {
      *            the type of instantiate and use as the component instance
      * @return the configuration of the component
      */
-    public <T> ComponentConfiguration<T> installStatic(Class<T> implementation) {
+    public <T> ComponentConfiguration<T> installStateless(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         return pcc().installStatic(implementation, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
     }

@@ -24,6 +24,13 @@ import app.packed.component.ComponentConfiguration;
  */
 // RuntimeMemberOperator
 public interface HookApplicator<T> {
+
+    // Ideen med at have target er at den skal matche typen paa component configuration...
+    //// Paa den maade kan ogsaa lave mixins/sidecars. Fordi sidecars skal have en unik type...
+    default Class<?> target() {
+        return Class.class;
+    }
+
     // Well it also works for instances
 
     // Kan maaske have nogle lifecycles here?????
