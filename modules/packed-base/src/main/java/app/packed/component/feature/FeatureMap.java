@@ -28,7 +28,7 @@ import java.util.Set;
 // ProvidedServices... getAll(ProvidedServices.class)
 public final class FeatureMap {
 
-    private final IdentityHashMap<FeatureKey<?>, Object> features = new IdentityHashMap<>();
+    final IdentityHashMap<FeatureKey<?>, Object> features = new IdentityHashMap<>();
 
     @SuppressWarnings("unchecked")
     public <T> T get(FeatureKey<T> key) {

@@ -85,7 +85,7 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
     @Override
     @Nullable
     public BuildEntry<?> declaringEntry() {
-        return (exportedEntry instanceof BuildEntry) ? ((BuildEntry<?>) exportedEntry).declaringEntry() : null;
+        return exportedEntry.declaringEntry();
     }
 
     /** {@inheritDoc} */
