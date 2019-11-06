@@ -43,15 +43,17 @@ public final class MemberFinder {
 
         // Step 1, .getMethods() is the easiest way to find all default methods. Even if we also have to call
         // getDeclaredMethods() later.
-        for (Method m : actualType.getMethods()) {
-            // Filter methods whose declaring class is in java.base and bridge methods
-            if (m.getDeclaringClass().getModule() != JAVA_BASE_MODULE && !m.isBridge()) {
-                // Should we also ignore methods on base bundle class????
-                methodConsumer.accept(m);// move this to step 2???
-                types.put(new MethodEntry(m), packages);
+        if (methodConsumer != null) {
+            for (Method m : actualType.getMethods()) {
+                // Filter methods whose declaring class is in java.base and bridge methods
+                if (m.getDeclaringClass().getModule() != JAVA_BASE_MODULE && !m.isBridge()) {
+                    // Should we also ignore methods on base bundle class????
+                    methodConsumer.accept(m);// move this to step 2???
+                    types.put(new MethodEntry(m), packages);
+                }
             }
-        }
 
+        }
         // Step 2 process all declared methods
         for (Class<?> c = actualType; c != baseType && c.getModule() != JAVA_BASE_MODULE; c = c.getSuperclass()) {
             // First process every field
@@ -60,38 +62,39 @@ public final class MemberFinder {
                     fieldConsumer.accept(field);
                 }
             }
-
-            for (Method m : c.getDeclaredMethods()) {
-                int mod = m.getModifiers();
-                if (Modifier.isStatic(mod)) {
-                    if (c == actualType && !Modifier.isPublic(mod)) { // we have already processed public static methods
-                        // only include static methods in the top level class
-                        // We do this, because it would be strange to include
-                        // static methods on any interfaces this class implements.
-                        // But it would also be strange to include static methods on sub classes
-                        // but not include static methods on interfaces.
+            if (methodConsumer != null) {
+                for (Method m : c.getDeclaredMethods()) {
+                    int mod = m.getModifiers();
+                    if (Modifier.isStatic(mod)) {
+                        if (c == actualType && !Modifier.isPublic(mod)) { // we have already processed public static methods
+                            // only include static methods in the top level class
+                            // We do this, because it would be strange to include
+                            // static methods on any interfaces this class implements.
+                            // But it would also be strange to include static methods on sub classes
+                            // but not include static methods on interfaces.
+                            methodConsumer.accept(m);
+                        }
+                    } else if (!m.isBridge()) {
+                        switch (mod & (Modifier.PUBLIC | Modifier.PROTECTED | Modifier.PRIVATE)) {
+                        case Modifier.PUBLIC:
+                            continue; // we have already added the method in the first step
+                        default: // default access
+                            HashSet<Package> pkg = types.computeIfAbsent(new MethodEntry(m), key -> new HashSet<>());
+                            if (pkg != packages && pkg.add(c.getPackage())) {
+                                break;
+                            } else {
+                                continue;
+                            }
+                        case Modifier.PROTECTED:
+                            if (types.putIfAbsent(new MethodEntry(m), packages) != null) {
+                                continue;
+                            }
+                            // otherwise fall-through
+                        case Modifier.PRIVATE:
+                            // Private methods are never overridden
+                        }
                         methodConsumer.accept(m);
                     }
-                } else if (!m.isBridge()) {
-                    switch (mod & (Modifier.PUBLIC | Modifier.PROTECTED | Modifier.PRIVATE)) {
-                    case Modifier.PUBLIC:
-                        continue; // we have already added the method in the first step
-                    default: // default access
-                        HashSet<Package> pkg = types.computeIfAbsent(new MethodEntry(m), key -> new HashSet<>());
-                        if (pkg != packages && pkg.add(c.getPackage())) {
-                            break;
-                        } else {
-                            continue;
-                        }
-                    case Modifier.PROTECTED:
-                        if (types.putIfAbsent(new MethodEntry(m), packages) != null) {
-                            continue;
-                        }
-                        // otherwise fall-through
-                    case Modifier.PRIVATE:
-                        // Private methods are never overridden
-                    }
-                    methodConsumer.accept(m);
                 }
             }
         }

@@ -26,10 +26,13 @@
     <!-- Locate the root directory of the multi-module build -->
     <root.dir>${project.basedir}/..</root.dir>
     
-    <!-- Versions -->
-    <assertj.version>3.14.0</assertj.version>
-    <junit.version>5.5.2</junit.version>
-    <jmh.version>1.22</jmh.version>
+    <!-- Test Dependencies Versions -->
+    <version.test.assertj>3.14.0</version.test.assertj>
+    <version.test.junit>5.5.2</version.test.junit>
+    <version.test.jmh>1.22</version.test.jmh>
+    
+    <!-- Pluging Versions -->
+    <version.plugin.jacoco>0.8.5</version.plugin.jacoco>
   </properties>
 
   <!-- ==================================================================== -->
@@ -46,23 +49,23 @@
       <dependency>
         <groupId>org.openjdk.jmh</groupId>
         <artifactId>jmh-core</artifactId>
-        <version>${jmh.version}</version>
+        <version>${version.test.jmh}</version>
       </dependency>
       <dependency>
         <groupId>org.openjdk.jmh</groupId>
         <artifactId>jmh-generator-annprocess</artifactId>
-        <version>${jmh.version}</version>
+        <version>${version.test.jmh}</version>
       </dependency>
       <!-- Testing -->
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter</artifactId>
-        <version>${junit.version}</version>
+        <version>${version.test.junit}</version>
       </dependency>
       <dependency>
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
-        <version>${assertj.version}</version>
+        <version>${version.test.assertj}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -119,16 +122,16 @@
               </dependency>
             </dependencies>
       </plugin>
-      <!--
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.5</version>
+        <version>${version.plugin.jacoco}</version>
         <configuration>
           <excludes>
             <exclude>packed/internal/thirdparty/**/*</exclude>
           </excludes>
         </configuration>
+        <!--
         <executions>
           <execution>
             <goals>
@@ -143,8 +146,8 @@
             </goals>
           </execution>
         </executions>
+        -->
       </plugin>
-      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
