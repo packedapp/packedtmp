@@ -101,17 +101,6 @@ public interface ServiceComponentConfiguration<T> extends ServiceConfiguration<T
     @Override
     InstantiationMode instantiationMode();
 
-    /**
-     * 
-     * 
-     * .provide(instance) cannot be lazy
-     * 
-     * @return this configuration
-     * @throws UnsupportedOperationException
-     *             if the service cannot be lazy
-     */
-    ServiceComponentConfiguration<T> lazy();
-
     ServiceComponentConfiguration<T> prototype();
 
     /**

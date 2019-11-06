@@ -45,47 +45,48 @@ public class FieldInstanceTest {
         MixedFields.test(c -> c.provide(Factory.findInjectable(new TypeLiteral<MixedFields>() {})));
     }
 
-    /** Tests lazy {@link Provide#instantionMode()} on instance fields. */
-    @Test
-    public void provideLazy() {
-        MixedFields.test(c -> c.provide(MixedFields.class).lazy());
-        MixedFields.test(c -> c.provide(Factory.findInjectable(MixedFields.class)).lazy());
-        MixedFields.test(c -> c.provide(Factory.findInjectable(new TypeLiteral<MixedFields>() {})));
-    }
+    // /** Tests lazy {@link Provide#instantionMode()} on instance fields. */
+    // @Test
+    // public void provideLazy() {
+    // MixedFields.test(c -> c.provide(MixedFields.class).lazy());
+    // MixedFields.test(c -> c.provide(Factory.findInjectable(MixedFields.class)).lazy());
+    // MixedFields.test(c -> c.provide(Factory.findInjectable(new TypeLiteral<MixedFields>() {})));
+    // }
 
-    /**
-     * An extra test for lazy {@link Provide#instantionMode()} on instance fields. Which makes sure that the lazy parent is
-     * not created before it is needed by the provided fields.
-     */
-    // TODO decide if we want lazy test
-    public void provideLazy2() {
-        // Singleton
-        Injector i = of(c -> {
-            c.provideInstance(new AtomicBoolean(false));
-            c.provide(SingletonField.class).lazy();
-        });
-        assertThat(i.use(AtomicBoolean.class)).isTrue();
-        SingletonField f = i.use(SingletonField.class);
-        assertThat(i.use(Short.class)).isEqualTo((short) 1);
-        f.s = 2;
-        assertThat(i.use(Short.class)).isEqualTo((short) 1);
-
-        // Lazy
-        i = of(c -> {
-            c.provideInstance(new AtomicBoolean(false));
-            c.provide(LazyField.class).lazy();
-        });
-        assertThat(i.use(AtomicBoolean.class)).isFalse();
-        assertThat(i.use(Short.class)).isEqualTo((short) 1);
-        assertThat(i.use(AtomicBoolean.class)).isTrue();
-        i.use(LazyField.class).s = 2;
-        assertThat(i.use(Short.class)).isEqualTo((short) 1);
-        // InstanceFieldsLazy.test(c -> c.bindLazy(Factory.findInjectable(InstanceFieldsLazy.class)));
-        // InstanceFieldsLazy.test(c -> c.bindLazy(new TypeLiteral<InstanceFieldsLazy>() {}));
-
-        // Correct support FOR LAZY->LAZY and LAZY->PROTOTYPE is not implemented yet.
-        // As we instantiate the parent no matter what
-    }
+    // /**
+    // * An extra test for lazy {@link Provide#instantionMode()} on instance fields. Which makes sure that the lazy parent
+    // is
+    // * not created before it is needed by the provided fields.
+    // */
+    // // TODO decide if we want lazy test
+    // public void provideLazy2() {
+    // // Singleton
+    // Injector i = of(c -> {
+    // c.provideInstance(new AtomicBoolean(false));
+    // c.provide(SingletonField.class).lazy();
+    // });
+    // assertThat(i.use(AtomicBoolean.class)).isTrue();
+    // SingletonField f = i.use(SingletonField.class);
+    // assertThat(i.use(Short.class)).isEqualTo((short) 1);
+    // f.s = 2;
+    // assertThat(i.use(Short.class)).isEqualTo((short) 1);
+    //
+    // // Lazy
+    // i = of(c -> {
+    // c.provideInstance(new AtomicBoolean(false));
+    // c.provide(LazyField.class).lazy();
+    // });
+    // assertThat(i.use(AtomicBoolean.class)).isFalse();
+    // assertThat(i.use(Short.class)).isEqualTo((short) 1);
+    // assertThat(i.use(AtomicBoolean.class)).isTrue();
+    // i.use(LazyField.class).s = 2;
+    // assertThat(i.use(Short.class)).isEqualTo((short) 1);
+    // // InstanceFieldsLazy.test(c -> c.bindLazy(Factory.findInjectable(InstanceFieldsLazy.class)));
+    // // InstanceFieldsLazy.test(c -> c.bindLazy(new TypeLiteral<InstanceFieldsLazy>() {}));
+    //
+    // // Correct support FOR LAZY->LAZY and LAZY->PROTOTYPE is not implemented yet.
+    // // As we instantiate the parent no matter what
+    // }
 
     /** Can never bind prototypes that have non-static provided fields. */
     @Test
@@ -106,11 +107,11 @@ public class FieldInstanceTest {
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO check message
 
-        a = assertThatThrownBy(() -> of(c -> {
-            c.provideInstance(new AtomicBoolean());
-            c.provide(LazyField.class).prototype();
-        }));
-        a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
+        // a = assertThatThrownBy(() -> of(c -> {
+        // c.provideInstance(new AtomicBoolean());
+        // c.provide(LazyField.class).prototype();
+        // }));
+        // a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO check message
 
         a = assertThatThrownBy(() -> Injector.configure(c -> {
@@ -129,20 +130,20 @@ public class FieldInstanceTest {
         });
     }
 
-    static class LazyField {
-
-        @Provide(instantionMode = InstantiationMode.LAZY)
-        Short s = 1;
-
-        LazyField(AtomicBoolean b) {
-            b.set(true);
-        }
-    }
+    // static class LazyField {
+    //
+    // @Provide(instantionMode = InstantiationMode.LAZY)
+    // Short s = 1;
+    //
+    // LazyField(AtomicBoolean b) {
+    // b.set(true);
+    // }
+    // }
 
     static class MixedFields {
 
-        @Provide(instantionMode = InstantiationMode.LAZY)
-        Long l = 1L;
+        // @Provide(instantionMode = InstantiationMode.LAZY)
+        // Long l = 1L;
 
         @Provide(instantionMode = InstantiationMode.PROTOTYPE)
         Integer p = 1;
@@ -153,18 +154,18 @@ public class FieldInstanceTest {
         static void test(Consumer<? super InjectorConfigurator> configurator) {
             Injector i = of(c -> configurator.accept(c));
             MixedFields f = i.use(MixedFields.class);
-            f.l = 2L;
+            // f.l = 2L;
             f.s = 2;
             f.p = 2;
 
             assertThat(i.use(Short.class)).isEqualTo((short) 1);
-            assertThat(i.use(Long.class)).isEqualTo(2L);
+            // assertThat(i.use(Long.class)).isEqualTo(2L);
             assertThat(i.use(Integer.class)).isEqualTo(2);
-            f.l = 3L;
+            // f.l = 3L;
             f.s = 3;
             f.p = 3;
             assertThat(i.use(Short.class)).isEqualTo((short) 1);
-            assertThat(i.use(Long.class)).isEqualTo(2L);
+            // assertThat(i.use(Long.class)).isEqualTo(2L);
             assertThat(i.use(Integer.class)).isEqualTo(3);
         }
     }

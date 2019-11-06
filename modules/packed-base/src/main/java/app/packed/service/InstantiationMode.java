@@ -39,6 +39,7 @@ public enum InstantiationMode {
      * A single instance of the service is created the first time it is requested. Concurrent calls by other threads while
      * constructing the value will block. Guaranteeing that only a single instance will ever be created.
      */
+    @Deprecated
     LAZY,
 
     /** A new instance of the service is created every time the service is requested. */

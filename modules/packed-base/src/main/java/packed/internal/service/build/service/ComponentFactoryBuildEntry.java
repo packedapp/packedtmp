@@ -30,7 +30,6 @@ import packed.internal.service.build.ServiceExtensionInstantiationContext;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.run.CachingPrototypeInjectorEntry;
 import packed.internal.service.run.InjectorEntry;
-import packed.internal.service.run.LazyInjectorEntry;
 import packed.internal.service.run.PrototypeInjectorEntry;
 
 /**
@@ -79,10 +78,6 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         return instantionMode;
     }
 
-    public void lazy() {
-        instantiateAs(InstantiationMode.LAZY);
-    }
-
     // public boolean needsInstance() {
     // return declaringEntry != null && mha.type().parameterCount() != dependencies.size();
     // }
@@ -93,8 +88,6 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         switch (instantionMode) {
         case SINGLETON:
             return new CachingPrototypeInjectorEntry<>(this, context);
-        case LAZY:
-            return new LazyInjectorEntry<>(this, context);
         default:
             return new PrototypeInjectorEntry<>(this, context);
         }

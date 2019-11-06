@@ -56,27 +56,27 @@ public class QualifierTest {
 
     @Test
     public void multipleFields() {
-        Stub.A = 1L;
+        // Stub.A = 1L;
         Stub.B = 1L;
         Stub.C = 1L;
         Stub.L = 1L;
         Injector i = of(c -> c.provide(Stub.class));
-        Stub.A = 2L;
+        // Stub.A = 2L;
         Stub.B = 2L;
         Stub.C = 2L;
         Stub.L = 2L;
 
-        assertThat(i.use(new Key<@StringQualifier("A") Long>() {})).isEqualTo(2L);
+        // assertThat(i.use(new Key<@StringQualifier("A") Long>() {})).isEqualTo(2L);
         assertThat(i.use(new Key<@StringQualifier("B") Long>() {})).isEqualTo(2L);
         assertThat(i.use(new Key<@StringQualifier("C") Long>() {})).isEqualTo(1L);
         assertThat(i.use(new Key<Long>() {})).isEqualTo(1L);
 
-        Stub.A = 3L;
+        // Stub.A = 3L;
         Stub.B = 3L;
         Stub.C = 3L;
         Stub.L = 3L;
 
-        assertThat(i.use(new Key<@StringQualifier("A") Long>() {})).isEqualTo(2L);
+        // assertThat(i.use(new Key<@StringQualifier("A") Long>() {})).isEqualTo(2L);
         assertThat(i.use(new Key<@StringQualifier("B") Long>() {})).isEqualTo(3L);
         assertThat(i.use(new Key<@StringQualifier("C") Long>() {})).isEqualTo(1L);
         assertThat(i.use(new Key<Long>() {})).isEqualTo(1L);
@@ -130,9 +130,9 @@ public class QualifierTest {
 
     static class Stub {
 
-        @Provide(instantionMode = InstantiationMode.LAZY)
-        @StringQualifier("A")
-        private static Long A;
+        // @Provide(instantionMode = InstantiationMode.LAZY)
+        // @StringQualifier("A")
+        // private static Long A;
 
         @Provide(instantionMode = InstantiationMode.PROTOTYPE)
         @StringQualifier("B")

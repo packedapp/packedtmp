@@ -44,13 +44,14 @@ public class FieldStaticTest {
         MixedFieldsInstantiable.test(c -> c.provide(Factory.findInjectable(new TypeLiteral<MixedFieldsInstantiable>() {})));
     }
 
-    /** Tests lazy {@link Provide#instantionMode()} on static fields. */
-    @Test
-    public void provideLazy() {
-        MixedFieldsNoInstantiation.test(c -> c.provide(MixedFieldsNoInstantiation.class).lazy());
-        MixedFieldsNoInstantiation.test(c -> c.provide(Factory.findInjectable(MixedFieldsNoInstantiation.class)).lazy());
-        MixedFieldsNoInstantiation.test(c -> c.provide(Factory.findInjectable(new TypeLiteral<MixedFieldsNoInstantiation>() {})).lazy());
-    }
+    // /** Tests lazy {@link Provide#instantionMode()} on static fields. */
+    // @Test
+    // public void provideLazy() {
+    // MixedFieldsNoInstantiation.test(c -> c.provide(MixedFieldsNoInstantiation.class).lazy());
+    // MixedFieldsNoInstantiation.test(c -> c.provide(Factory.findInjectable(MixedFieldsNoInstantiation.class)).lazy());
+    // MixedFieldsNoInstantiation.test(c -> c.provide(Factory.findInjectable(new TypeLiteral<MixedFieldsNoInstantiation>()
+    // {})).lazy());
+    // }
 
     /** Tests prototype {@link Provide#instantionMode()} on static fields. */
     @Test
@@ -62,9 +63,9 @@ public class FieldStaticTest {
 
     /** A helper class that can be instantiated. */
     static class MixedFieldsInstantiable {
-
-        @Provide(instantionMode = InstantiationMode.LAZY)
-        private static Long L;
+        //
+        // @Provide(instantionMode = InstantiationMode.LAZY)
+        // private static Long L;
 
         @Provide(instantionMode = InstantiationMode.PROTOTYPE)
         private static Integer P;
@@ -73,13 +74,13 @@ public class FieldStaticTest {
         private static Short S;
 
         MixedFieldsInstantiable() {
-            assertThat(L).isEqualByComparingTo(1L);
+            // assertThat(L).isEqualByComparingTo(1L);
             assertThat(P).isEqualByComparingTo(1);
             assertThat(S).isEqualByComparingTo((short) 1);
         }
 
         static void test(Consumer<? super InjectorConfigurator> configurator) {
-            L = 1L;
+            // L = 1L;
             P = 1;
             S = 1;
             Injector i = Injector.configure(c -> {
@@ -87,18 +88,18 @@ public class FieldStaticTest {
                 configurator.accept(c);
             });
             assertThat(i.use(MixedFieldsInstantiable.class)).isNotNull();
-            L = 2L;
+            // L = 2L;
             S = 2;
             P = 2;
 
             assertThat(i.use(Short.class)).isEqualTo((short) 1);
-            assertThat(i.use(Long.class)).isEqualTo(2L);
+            // assertThat(i.use(Long.class)).isEqualTo(2L);
             assertThat(i.use(Integer.class)).isEqualTo(2);
-            L = 3L;
+            // L = 3L;
             S = 3;
             P = 3;
             assertThat(i.use(Short.class)).isEqualTo((short) 1);
-            assertThat(i.use(Long.class)).isEqualTo(2L);
+            // assertThat(i.use(Long.class)).isEqualTo(2L);
             assertThat(i.use(Integer.class)).isEqualTo(3);
         }
     }
@@ -109,8 +110,8 @@ public class FieldStaticTest {
      */
     static class MixedFieldsNoInstantiation {
 
-        @Provide(instantionMode = InstantiationMode.LAZY)
-        private static Long L;
+        // @Provide(instantionMode = InstantiationMode.LAZY)
+        // private static Long L;
 
         @Provide(instantionMode = InstantiationMode.PROTOTYPE)
         private static Integer P;
@@ -123,7 +124,7 @@ public class FieldStaticTest {
         }
 
         static void test(Consumer<? super InjectorConfigurator> configurator) {
-            L = 1L;
+            // L = 1L;
             P = 1;
             S = 1;
             Injector i = Injector.configure(c -> {
@@ -131,18 +132,18 @@ public class FieldStaticTest {
                 configurator.accept(c);
             });
 
-            L = 2L;
+            // L = 2L;
             S = 2;
             P = 2;
 
             assertThat(i.use(Short.class)).isEqualTo((short) 1);
-            assertThat(i.use(Long.class)).isEqualTo(2L);
+            // assertThat(i.use(Long.class)).isEqualTo(2L);
             assertThat(i.use(Integer.class)).isEqualTo(2);
-            L = 3L;
+            // L = 3L;
             S = 3;
             P = 3;
             assertThat(i.use(Short.class)).isEqualTo((short) 1);
-            assertThat(i.use(Long.class)).isEqualTo(2L);
+            // assertThat(i.use(Long.class)).isEqualTo(2L);
             assertThat(i.use(Integer.class)).isEqualTo(3);
         }
     }

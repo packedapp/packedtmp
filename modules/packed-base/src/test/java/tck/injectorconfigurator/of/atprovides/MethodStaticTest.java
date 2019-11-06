@@ -41,13 +41,14 @@ public class MethodStaticTest {
         MixedMethodsInstantiable.test(c -> c.provide(Factory.findInjectable(new TypeLiteral<MixedMethodsInstantiable>() {})));
     }
 
-    /** Tests lazy {@link Provide#instantionMode()} on static methods. */
-    @Test
-    public void provideLazy() {
-        MixedMethodsNoInstantiation.test(c -> c.provide(MixedMethodsNoInstantiation.class).lazy());
-        MixedMethodsNoInstantiation.test(c -> c.provide(Factory.findInjectable(MixedMethodsNoInstantiation.class)).lazy());
-        MixedMethodsNoInstantiation.test(c -> c.provide(Factory.findInjectable(new TypeLiteral<MixedMethodsNoInstantiation>() {})).lazy());
-    }
+    // /** Tests lazy {@link Provide#instantionMode()} on static methods. */
+    // @Test
+    // public void provideLazy() {
+    // MixedMethodsNoInstantiation.test(c -> c.provide(MixedMethodsNoInstantiation.class).lazy());
+    // MixedMethodsNoInstantiation.test(c -> c.provide(Factory.findInjectable(MixedMethodsNoInstantiation.class)).lazy());
+    // MixedMethodsNoInstantiation.test(c -> c.provide(Factory.findInjectable(new TypeLiteral<MixedMethodsNoInstantiation>()
+    // {})).lazy());
+    // }
 
     /** Tests prototype {@link Provide#instantionMode()} on static methods. */
     @Test
@@ -60,22 +61,22 @@ public class MethodStaticTest {
     /** A helper class that can be instantiated. */
     static class MixedMethodsInstantiable {
 
-        private static Long L;
+        // private static Long L;
 
         private static Integer P;
 
         private static Short S;
 
         MixedMethodsInstantiable() {
-            assertThat(L).isEqualByComparingTo(1L);
+            // assertThat(L).isEqualByComparingTo(1L);
             assertThat(P).isEqualByComparingTo(1);
             assertThat(S).isEqualByComparingTo((short) 1);
         }
 
-        @Provide(instantionMode = InstantiationMode.LAZY)
-        static Long l() {
-            return L;
-        }
+        // @Provide(instantionMode = InstantiationMode.LAZY)
+        // static Long l() {
+        // return L;
+        // }
 
         @Provide(instantionMode = InstantiationMode.PROTOTYPE)
         static Integer p() {
@@ -88,7 +89,7 @@ public class MethodStaticTest {
         }
 
         static void test(Consumer<? super InjectorConfigurator> configurator) {
-            L = 1L;
+            // L = 1L;
             P = 1;
             S = 1;
             Injector i = Injector.configure(c -> {
@@ -96,18 +97,18 @@ public class MethodStaticTest {
                 configurator.accept(c);
             });
             assertThat(i.use(MixedMethodsInstantiable.class)).isNotNull();
-            L = 2L;
+            // L = 2L;
             S = 2;
             P = 2;
 
             assertThat(i.use(Short.class)).isEqualTo((short) 1);
-            assertThat(i.use(Long.class)).isEqualTo(2L);
+            // assertThat(i.use(Long.class)).isEqualTo(2L);
             assertThat(i.use(Integer.class)).isEqualTo(2);
-            L = 3L;
+            // L = 3L;
             S = 3;
             P = 3;
             assertThat(i.use(Short.class)).isEqualTo((short) 1);
-            assertThat(i.use(Long.class)).isEqualTo(2L);
+            // assertThat(i.use(Long.class)).isEqualTo(2L);
             assertThat(i.use(Integer.class)).isEqualTo(3);
         }
     }
@@ -118,7 +119,7 @@ public class MethodStaticTest {
      */
     static class MixedMethodsNoInstantiation {
 
-        private static Long L;
+        // private static Long L;
 
         private static Integer P;
 
@@ -128,10 +129,10 @@ public class MethodStaticTest {
             throw new AssertionError("Cannot instantiate");
         }
 
-        @Provide(instantionMode = InstantiationMode.LAZY)
-        static Long l() {
-            return L;
-        }
+        // @Provide(instantionMode = InstantiationMode.LAZY)
+        // static Long l() {
+        // return L;
+        // }
 
         @Provide(instantionMode = InstantiationMode.PROTOTYPE)
         static Integer p() {
@@ -144,7 +145,7 @@ public class MethodStaticTest {
         }
 
         static void test(Consumer<? super InjectorConfigurator> configurator) {
-            L = 1L;
+            // L = 1L;
             P = 1;
             S = 1;
             Injector i = Injector.configure(c -> {
@@ -152,18 +153,18 @@ public class MethodStaticTest {
                 configurator.accept(c);
             });
 
-            L = 2L;
+            // L = 2L;
             S = 2;
             P = 2;
 
             assertThat(i.use(Short.class)).isEqualTo((short) 1);
-            assertThat(i.use(Long.class)).isEqualTo(2L);
+            // assertThat(i.use(Long.class)).isEqualTo(2L);
             assertThat(i.use(Integer.class)).isEqualTo(2);
-            L = 3L;
+            // L = 3L;
             S = 3;
             P = 3;
             assertThat(i.use(Short.class)).isEqualTo((short) 1);
-            assertThat(i.use(Long.class)).isEqualTo(2L);
+            // assertThat(i.use(Long.class)).isEqualTo(2L);
             assertThat(i.use(Integer.class)).isEqualTo(3);
         }
     }

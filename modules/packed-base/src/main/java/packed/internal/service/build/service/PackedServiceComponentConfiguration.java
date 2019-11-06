@@ -107,14 +107,6 @@ public final class PackedServiceComponentConfiguration<T> implements ServiceComp
 
     /** {@inheritDoc} */
     @Override
-    public ServiceComponentConfiguration<T> lazy() {
-        component.checkConfigurable();
-        ((ComponentFactoryBuildEntry<T>) buildEntry).lazy();
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public ComponentPath path() {
         return component.path();
     }

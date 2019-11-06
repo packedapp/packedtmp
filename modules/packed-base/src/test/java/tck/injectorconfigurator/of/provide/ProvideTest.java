@@ -23,18 +23,16 @@ import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.service.ServiceComponentConfiguration;
-import testutil.stubs.Letters.A;
-import testutil.stubs.Letters.B;
-import testutil.stubs.Letters.C;
-import testutil.stubs.Letters.E;
-import testutil.stubs.Letters.F;
-import testutil.stubs.Letters.H;
-import testutil.stubs.Letters.I;
 import app.packed.lang.Key;
 import app.packed.service.Factory;
 import app.packed.service.Injector;
 import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceComponentConfiguration;
+import testutil.stubs.Letters.A;
+import testutil.stubs.Letters.B;
+import testutil.stubs.Letters.C;
+import testutil.stubs.Letters.H;
+import testutil.stubs.Letters.I;
 
 /**
  *
@@ -49,8 +47,8 @@ public class ProvideTest {
             ServiceComponentConfiguration<A> a = conf.provide(A.class);
             ServiceComponentConfiguration<B> b = conf.provide(Factory.findInjectable(B.class));
             ServiceComponentConfiguration<C> c = conf.provideInstance(C0);
-            ServiceComponentConfiguration<E> e = conf.provide(E.class).lazy();
-            ServiceComponentConfiguration<F> f = conf.provide(Factory.findInjectable(F.class)).lazy();
+            // ServiceComponentConfiguration<E> e = conf.provide(E.class).lazy();
+            // ServiceComponentConfiguration<F> f = conf.provide(Factory.findInjectable(F.class)).lazy();
             ServiceComponentConfiguration<H> h = conf.provide(H.class).prototype();
             ServiceComponentConfiguration<I> i = conf.provide(Factory.findInjectable(I.class)).prototype();
         });

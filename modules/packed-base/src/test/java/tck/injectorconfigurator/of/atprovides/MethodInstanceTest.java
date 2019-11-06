@@ -45,15 +45,15 @@ public class MethodInstanceTest {
         MixedMethods.test(c -> c.provide(Factory.findInjectable(new TypeLiteral<MixedMethods>() {})));
     }
 
-    /** Tests lazy {@link Provide#instantionMode()} on instance methods. */
-    @Test
-    public void provideLazy() {
-        MixedMethods.test(c -> c.provide(MixedMethods.class).lazy());
-        MixedMethods.test(c -> c.provide(Factory.findInjectable(MixedMethods.class)).lazy());
-        MixedMethods.test(c -> c.provide(Factory.findInjectable(new TypeLiteral<MixedMethods>() {})).lazy());
-        // Correct support FOR LAZY->LAZY and LAZY->PROTOTYPE is not implemented yet.
-        // As we instantiate the parent no matter what. We just dont test it here
-    }
+    // /** Tests lazy {@link Provide#instantionMode()} on instance methods. */
+    // @Test
+    // public void provideLazy() {
+    // MixedMethods.test(c -> c.provide(MixedMethods.class).lazy());
+    // MixedMethods.test(c -> c.provide(Factory.findInjectable(MixedMethods.class)).lazy());
+    // MixedMethods.test(c -> c.provide(Factory.findInjectable(new TypeLiteral<MixedMethods>() {})).lazy());
+    // // Correct support FOR LAZY->LAZY and LAZY->PROTOTYPE is not implemented yet.
+    // // As we instantiate the parent no matter what. We just dont test it here
+    // }
 
     /** Can never bind prototypes that have non-static provided fields. */
     @Test
@@ -66,12 +66,12 @@ public class MethodInstanceTest {
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO check message
 
-        a = assertThatThrownBy(() -> Injector.configure(c -> {
-            c.lookup(MethodHandles.lookup());
-            c.provideInstance(new AtomicBoolean());
-            c.provide(LazyMethod.class).prototype();
-        }));
-        a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
+        // a = assertThatThrownBy(() -> Injector.configure(c -> {
+        // c.lookup(MethodHandles.lookup());
+        // c.provideInstance(new AtomicBoolean());
+        // // c.provide(LazyMethod.class).prototype();
+        // }));
+        // a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO check message
 
         a = assertThatThrownBy(() -> Injector.configure(c -> {
@@ -83,32 +83,32 @@ public class MethodInstanceTest {
         // TODO check message
     }
 
-    static class LazyMethod {
-
-        Short s = 1;
-
-        LazyMethod(AtomicBoolean b) {
-            b.set(true);
-        }
-
-        @Provide(instantionMode = InstantiationMode.LAZY)
-        public Short s() {
-            return s;
-        }
-    }
+    // static class LazyMethod {
+    //
+    // Short s = 1;
+    //
+    // LazyMethod(AtomicBoolean b) {
+    // b.set(true);
+    // }
+    //
+    // @Provide(instantionMode = InstantiationMode.LAZY)
+    // public Short s() {
+    // return s;
+    // }
+    // }
 
     static class MixedMethods {
 
-        Long l = 1L;
+        // Long l = 1L;
 
         Integer p = 1;
 
         Short s = 1;
 
-        @Provide(instantionMode = InstantiationMode.LAZY)
-        Long l() {
-            return l;
-        }
+        // @Provide(instantionMode = InstantiationMode.LAZY)
+        // Long l() {
+        // return l;
+        // }
 
         @Provide(instantionMode = InstantiationMode.PROTOTYPE)
         Integer p() {
@@ -126,18 +126,18 @@ public class MethodInstanceTest {
                 configurator.accept(c);
             });
             MixedMethods f = i.use(MixedMethods.class);
-            f.l = 2L;
+            // f.l = 2L;
             f.s = 2;
             f.p = 2;
 
             assertThat(i.use(Short.class)).isEqualTo((short) 1);
-            assertThat(i.use(Long.class)).isEqualTo(2L);
+            // assertThat(i.use(Long.class)).isEqualTo(2L);
             assertThat(i.use(Integer.class)).isEqualTo(2);
-            f.l = 3L;
+            // f.l = 3L;
             f.s = 3;
             f.p = 3;
             assertThat(i.use(Short.class)).isEqualTo((short) 1);
-            assertThat(i.use(Long.class)).isEqualTo(2L);
+            // assertThat(i.use(Long.class)).isEqualTo(2L);
             assertThat(i.use(Integer.class)).isEqualTo(3);
         }
     }

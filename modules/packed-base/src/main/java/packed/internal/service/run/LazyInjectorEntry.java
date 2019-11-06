@@ -50,6 +50,12 @@ public final class LazyInjectorEntry<T> extends InjectorEntry<T> implements Prov
     }
 
     /** {@inheritDoc} */
+    @Override
+    public InstantiationMode instantiationMode() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public T getInstance(PrototypeRequest site) {
@@ -60,12 +66,6 @@ public final class LazyInjectorEntry<T> extends InjectorEntry<T> implements Prov
             }
             ((LazyInjectorEntry.Sync) i).tryCreate();
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public InstantiationMode instantiationMode() {
-        return InstantiationMode.LAZY;
     }
 
     /** {@inheritDoc} */
