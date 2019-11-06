@@ -1,7 +1,8 @@
 Packed
 ======
 ![experimental](https://img.shields.io/badge/stability-work_in_progress-lightgrey.svg)
-[![Build Status](https://api.travis-ci.org/packedapp/packedtmp.svg?branch=master)](https://travis-ci.org/packedapp/packedtmp) 
+[![Build Status](https://api.travis-ci.org/packedapp/packedtmp.svg?branch=master)](https://travis-ci.org/packedapp/packedtmp)
+[![Actions Status](https://github.com/packedapp/packedtmp/workflows/Java%20CI/badge.svg)](https://github.com/packedapp/packedtmp/actions)
 [![License](http://img.shields.io/:license-apache-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.html) 
 [![Coverage Status](https://coveralls.io/repos/github/packedapp/packedtmp/badge.svg?branch=master)](https://coveralls.io/github/packedapp/packedtmp?branch=master)
 [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/packedapp/packedtmp.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/packedapp/packedtmp/context:java)
