@@ -37,6 +37,8 @@ import packed.internal.util.InternalErrorException;
  * <p>
  * Unlike the {@link Field} class, this interface contains no mutable operations, so it can be freely shared.
  */
+// Do we want to revert back to an interface???
+// Thinking about not storing fields
 public final class FieldDescriptor extends VarDescriptor implements Member, AnnotatedElement {
 
     /** The field that is being wrapped. */

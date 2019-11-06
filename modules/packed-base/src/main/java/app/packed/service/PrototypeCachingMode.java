@@ -18,6 +18,10 @@ package app.packed.service;
 /**
  *
  */
+// Issues...
+// How does this work with Packlets?
+// for example map(e->e) vs rebind..
+// I think the safe bet is jut not supporting it.
 enum PrototypeCachingMode {
     SINGLETON, PER_ARTIFACT, PER_CONTAINER, PER_COMPONENT;
 }

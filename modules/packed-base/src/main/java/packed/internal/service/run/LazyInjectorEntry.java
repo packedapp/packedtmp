@@ -28,6 +28,8 @@ import packed.internal.service.build.service.ComponentFactoryBuildEntry;
 import packed.internal.util.ThrowableUtil;
 
 /** A lazy runtime node if the service was not requested at configuration time. */
+// we don't support lazy services anymore.
+// But we keep this around if we want to support lazy instantiated components at some point
 public final class LazyInjectorEntry<T> extends InjectorEntry<T> implements Provider<T> {
 
     /** The lazily instantiated instance. */
@@ -133,14 +135,3 @@ public final class LazyInjectorEntry<T> extends InjectorEntry<T> implements Prov
         return getInstance(null);
     }
 }
-
-// @Override
-// public void initInstance(T instance) {
-// // This is method is only ever called doing the container construction.
-// // So there is no need to synchronize in order to make sure only one instance is created.
-// // However, if we allow lazy creation, for example, via implementing Provider.
-// // We need some way to make sure exactly one instance is created.
-// // Maybe the container should always just call #getInstance() on this class.
-//
-// this.instance = requireNonNull(instance);
-// }

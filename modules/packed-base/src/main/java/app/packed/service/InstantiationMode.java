@@ -25,9 +25,9 @@ package app.packed.service;
 // Maybe Service.Mode?
 
 // None -> must be from component
-public enum InstantiationMode {
 
-    // NONE,
+// We keep this around for a bit.
+public enum InstantiationMode {
 
     /**
      * A single instance of the service is created when the injector or container where the entity is registered is created.
@@ -35,22 +35,22 @@ public enum InstantiationMode {
      */
     SINGLETON,
 
-    /**
-     * A single instance of the service is created the first time it is requested. Concurrent calls by other threads while
-     * constructing the value will block. Guaranteeing that only a single instance will ever be created.
-     */
-    @Deprecated
-    LAZY,
+    // /**
+    // * A single instance of the service is created the first time it is requested. Concurrent calls by other threads while
+    // * constructing the value will block. Guaranteeing that only a single instance will ever be created.
+    // */
+    // @Deprecated
+    // LAZY,
 
     /** A new instance of the service is created every time the service is requested. */
     PROTOTYPE;
 
-    /**
-     * Returns true if the instantiation mode is either {@link #SINGLETON} or {@link #LAZY}, otherwise false.
-     * 
-     * @return true if the instantiation mode is either {@link #SINGLETON} or {@link #LAZY}, otherwise false
-     */
-    public boolean isSingleton() {
-        return this != PROTOTYPE;
-    }
+    // /**
+    // * Returns true if the instantiation mode is either {@link #SINGLETON} or {@link #LAZY}, otherwise false.
+    // *
+    // * @return true if the instantiation mode is either {@link #SINGLETON} or {@link #LAZY}, otherwise false
+    // */
+    // public boolean isSingleton() {
+    // return this != PROTOTYPE;
+    // }
 }
