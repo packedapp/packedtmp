@@ -130,6 +130,7 @@
             <exclude>packed/internal/thirdparty/**/*</exclude>
           </excludes>
         </configuration>
+      
         <!--
         <executions>
           <execution>
