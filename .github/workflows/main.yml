@@ -24,7 +24,6 @@ jobs:
       - name: Build with Maven
         run: ./mvnw package --file pom.xml
     
-    
   coverage:
     name: Coverage
     runs-on: ubuntu-18.04
