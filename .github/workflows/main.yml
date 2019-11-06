@@ -37,5 +37,8 @@ jobs:
         with:
           java-version: 11
           architecture: x64
+      - name: Make Maven Wrapper executable
+        if: contains(matrix.os, 'win') == false
+        run: chmod +x ./mvnw  
       - name: Build project
         run: ./mvnw jacoco:prepare-agent verify jacoco:report coveralls:report -DrepoToken=${{ secrets.coveralls }}
