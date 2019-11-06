@@ -131,6 +131,10 @@ public final class ParameterDescriptor extends VarDescriptor {
         return parameter.getDeclaringExecutable().getDeclaringClass();
     }
 
+    public ExecutableDescriptor getDeclaringExecutable() {
+        return ExecutableDescriptor.of(parameter.getDeclaringExecutable());
+    }
+
     /**
      * Return a descriptor of the executable declaring this parameter.
      *

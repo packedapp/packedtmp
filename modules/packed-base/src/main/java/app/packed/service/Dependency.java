@@ -332,6 +332,12 @@ public final class Dependency {
         Optionality optionallaity = null;
         Class<?> rawType = tl.rawType();
 
+        if (desc instanceof ParameterDescriptor) {
+            ParameterDescriptor pd = (ParameterDescriptor) desc;
+            if (pd.isVarArgs()) {
+                throw new InvalidDeclarationException(ErrorMessageBuilder.of(desc).cannot("use varargs for injection for " + pd.getDeclaringExecutable()));
+            }
+        }
         if (rawType.isPrimitive()) {
             tl = tl.box();
         } else if (rawType == Optional.class) {
