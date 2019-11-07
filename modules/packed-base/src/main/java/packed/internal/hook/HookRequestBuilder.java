@@ -38,7 +38,7 @@ import packed.internal.util.TinyPair;
 /**
  *
  */
-public class HookRequestBuilder {
+public final class HookRequestBuilder {
 
     private final Object[] array;
 
@@ -61,6 +61,16 @@ public class HookRequestBuilder {
         this.onHookModel = requireNonNull(model);
         this.hookProcessor = requireNonNull(hookProcessor);
         this.mode = mode;
+    }
+
+    public static <T> T testContainer(OnHookModel model, MemberUnreflector hookProcessor, ClassProcessor cpTarget, T container) throws Throwable {
+        HookRequestBuilder hb = new HookRequestBuilder(model, hookProcessor, Mode.TEST_INSTANCE);
+        return hb.singleConsumeNoInstantiate(cpTarget, container);
+    }
+
+    public static Object testContainer(OnHookModel model, MemberUnreflector hookProcessor, ClassProcessor cpTarget) throws Throwable {
+        HookRequestBuilder hb = new HookRequestBuilder(model, hookProcessor, Mode.TEST_CLASS);
+        return hb.singleConsume(cpTarget);
     }
 
     public HookRequest build() throws Throwable {
@@ -97,25 +107,6 @@ public class HookRequestBuilder {
             result = new TinyPair<>((Hook) array[link.index], link.mh, result);
         }
         return result;
-    }
-
-    public void onAssignableTo(Class<?> hookType, Class<?> actualType) throws Throwable {
-        Map<Class<?>, Link> assignableTos = onHookModel.allLinks.assignableTos;
-        if (assignableTos != null) {
-            for (Link link = assignableTos.get(hookType); link != null; link = link.next) {
-                if (link.index == 0 && mode != Mode.TEST_CLASS) {
-                    baseHooksCallback = new Tiny<>(new BaseHookCallback(actualType, null, link.mh), baseHooksCallback);
-                } else {
-                    Hook.Builder<?> builder = builderOf(array, link.index);
-                    AssignableToHook<?> hook = ModuleAccess.hook().newAssignableToHook(hookProcessor, actualType);
-                    if (link.mh.type().parameterCount() == 1) {
-                        link.mh.invoke(hook);
-                    } else {
-                        link.mh.invoke(builder, hook);
-                    }
-                }
-            }
-        }
     }
 
     void foo(HookBaseType hbt, Class<?> qualifierType, Annotation annotation, Object memberOrClass) {
@@ -171,8 +162,26 @@ public class HookRequestBuilder {
         }
     }
 
+    public void onAssignableTo(Class<?> hookType, Class<?> actualType) throws Throwable {
+        Map<Class<?>, Link> assignableTos = onHookModel.allLinks.assignableTos;
+        if (assignableTos != null) {
+            for (Link link = assignableTos.get(hookType); link != null; link = link.next) {
+                if (link.index == 0 && mode != Mode.TEST_CLASS) {
+                    baseHooksCallback = new Tiny<>(new BaseHookCallback(actualType, null, link.mh), baseHooksCallback);
+                } else {
+                    Hook.Builder<?> builder = builderOf(array, link.index);
+                    AssignableToHook<?> hook = ModuleAccess.hook().newAssignableToHook(hookProcessor, actualType);
+                    if (link.mh.type().parameterCount() == 1) {
+                        link.mh.invoke(hook);
+                    } else {
+                        link.mh.invoke(builder, hook);
+                    }
+                }
+            }
+        }
+    }
+
     public Object singleConsume(ClassProcessor cp) throws Throwable {
-        //
         cp.findMethodsAndFields(onHookModel.allLinks.annotatedMethods == null ? null : f -> {
             for (Annotation a : f.getAnnotations()) {
                 onAnnotatedMethod(f, a);
@@ -187,7 +196,7 @@ public class HookRequestBuilder {
         return a == null ? null : (((Hook.Builder<?>) a).build());
     }
 
-    public void singleConsumeNoInstantiate(ClassProcessor cp, Object instance) throws Throwable {
+    public <T> T singleConsumeNoInstantiate(ClassProcessor cp, T instance) throws Throwable {
         array[0] = instance;
         cp.findMethodsAndFields(onHookModel.allLinks.annotatedMethods == null ? null : f -> {
             for (Annotation a : f.getAnnotations()) {
@@ -200,6 +209,7 @@ public class HookRequestBuilder {
         });
         compute();
         new HookRequest(this).invoke(instance, null);
+        return instance;
     }
 
     public enum Mode {

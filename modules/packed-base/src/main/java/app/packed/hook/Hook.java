@@ -22,7 +22,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 
 import app.packed.lang.Nullable;
 import packed.internal.hook.HookRequestBuilder;
-import packed.internal.hook.HookRequestBuilder.Mode;
 import packed.internal.hook.MemberUnreflector;
 import packed.internal.hook.OnHookModel;
 import packed.internal.reflect.ClassProcessor;
@@ -91,8 +90,7 @@ public interface Hook {
                 if (model == null) {
                     throw new AssertionError(hookType + " must have at least one method annotated with @" + OnHook.class.getSimpleName());
                 }
-                HookRequestBuilder hb = new HookRequestBuilder(model, hc, Mode.TEST_CLASS);
-                return (T) hb.singleConsume(cpTarget);
+                return (T) HookRequestBuilder.testContainer(model, hc, cpTarget);
             } catch (AssertionErrorRuntimeException ee) {
                 throw ee.convert();
             } catch (Throwable t) {
@@ -115,16 +113,13 @@ public interface Hook {
                 if (model == null) {
                     throw new AssertionError(container.getClass() + " must have at least one method annotated with @" + OnHook.class.getSimpleName());
                 }
-                HookRequestBuilder hb = new HookRequestBuilder(model, hc, Mode.TEST_INSTANCE);
-                hb.singleConsumeNoInstantiate(cpTarget, container);
-                return container;
+                return HookRequestBuilder.testContainer(model, hc, cpTarget, container);
             } catch (AssertionErrorRuntimeException ee) {
                 throw ee.convert();
             } catch (Throwable t) {
                 ThrowableUtil.rethrowErrorOrRuntimeException(t);
                 throw new UndeclaredThrowableException(t);
             }
-
         }
     }
 }
