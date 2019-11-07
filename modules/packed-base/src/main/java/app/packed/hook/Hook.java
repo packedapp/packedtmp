@@ -90,7 +90,7 @@ public interface Hook {
                 if (model == null) {
                     throw new AssertionError(hookType + " must have at least one method annotated with @" + OnHook.class.getSimpleName());
                 }
-                return (T) HookRequestBuilder.testContainer(model, hc, cpTarget);
+                return (T) HookRequestBuilder.testContainer(model, hc, cpTarget, null);
             } catch (AssertionErrorRuntimeException ee) {
                 throw ee.convert();
             } catch (Throwable t) {
@@ -113,13 +113,18 @@ public interface Hook {
                 if (model == null) {
                     throw new AssertionError(container.getClass() + " must have at least one method annotated with @" + OnHook.class.getSimpleName());
                 }
-                return HookRequestBuilder.testContainer(model, hc, cpTarget, container);
+                HookRequestBuilder.testContainer(model, hc, cpTarget, container);
+                return container;
             } catch (AssertionErrorRuntimeException ee) {
                 throw ee.convert();
             } catch (Throwable t) {
                 ThrowableUtil.rethrowErrorOrRuntimeException(t);
                 throw new UndeclaredThrowableException(t);
             }
+        }
+
+        private static Object test(Lookup caller, ClassProcessor chHook, Object container, Class<?> target) {
+            return null;
         }
     }
 }

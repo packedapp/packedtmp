@@ -63,9 +63,14 @@ public final class HookRequestBuilder {
         this.mode = mode;
     }
 
-    public static <T> T testContainer(OnHookModel model, MemberUnreflector hookProcessor, ClassProcessor cpTarget, T container) throws Throwable {
-        HookRequestBuilder hb = new HookRequestBuilder(model, hookProcessor, Mode.TEST_INSTANCE);
-        return hb.singleConsumeNoInstantiate(cpTarget, container);
+    public static Object testContainer(OnHookModel model, MemberUnreflector hookProcessor, ClassProcessor cpTarget, Object container) throws Throwable {
+        if (container == null) {
+            HookRequestBuilder hb = new HookRequestBuilder(model, hookProcessor, Mode.TEST_CLASS);
+            return hb.singleConsume(cpTarget);
+        } else {
+            HookRequestBuilder hb = new HookRequestBuilder(model, hookProcessor, Mode.TEST_INSTANCE);
+            return hb.singleConsumeNoInstantiate(cpTarget, container);
+        }
     }
 
     public static Object testContainer(OnHookModel model, MemberUnreflector hookProcessor, ClassProcessor cpTarget) throws Throwable {
