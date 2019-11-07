@@ -229,7 +229,7 @@ public final class ExtensionModel<E extends Extension> {
 
             ClassProcessor cp = new ClassProcessor(MethodHandles.lookup(), extensionType, true);
             this.constructor = ConstructorFinder.find(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-            this.onHookModel = OnHookModel.newInstance(cp, false, ContainerConfiguration.class);
+            this.onHookModel = OnHookModel.newInstance(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
 
             if (composerType != null) {
                 ExtensionComposer<?> composer = ConstructorFinder.invoke(cp.spawn(composerType));

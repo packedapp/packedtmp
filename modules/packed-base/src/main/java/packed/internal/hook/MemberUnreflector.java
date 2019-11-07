@@ -31,8 +31,7 @@ import packed.internal.util.UncheckedThrowableFactory;
  * {@link MethodHandle} and {@link VarHandle}. Is created after the component has analyzed. This is done in order to
  * avoid someone trying to create instances of them, outside of stuff because of grall..
  */
-// Har faktisk intet med Hooks at goere, andet end fejlmeddellsen
-public final class UnreflectGate implements AutoCloseable {
+public final class MemberUnreflector implements AutoCloseable {
 
     final ClassProcessor cp;
 
@@ -42,7 +41,7 @@ public final class UnreflectGate implements AutoCloseable {
     private final UncheckedThrowableFactory<? extends RuntimeException> tf;
 
     @SuppressWarnings("unchecked")
-    public UnreflectGate(ClassProcessor cp, UncheckedThrowableFactory<?> tf) {
+    public MemberUnreflector(ClassProcessor cp, UncheckedThrowableFactory<?> tf) {
         this.cp = requireNonNull(cp);
         // A hack to allow us to throw AssertionError, as we have no way to indicate
         // Error || RuntimeException

@@ -19,43 +19,49 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static testutil.util.TestMemberFinder.findField;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.lang.invoke.VarHandle;
 import java.lang.invoke.WrongMethodTypeException;
 import java.lang.reflect.Field;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.container.InternalExtensionException;
 import app.packed.lang.reflect.FieldDescriptor;
-import packed.internal.hook.UnreflectGate;
+import packed.internal.hook.MemberUnreflector;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.UncheckedThrowableFactory;
 import testutil.stubs.annotation.AnnotationInstances;
 import testutil.stubs.annotation.Left;
 
 /** Tests {@link AnnotatedFieldHook}. */
-// TODO, check error messages
-// Applicators
+// TODO, check error messages + Applicators
 public class AnnotatedFieldHookTest {
 
-    static final Field FIELD = findField("foo");
+    /** {@link #field} as a {@link Field} instance. */
+    private static final Field FIELD = findField("field");
 
-    String foo = "GotIt";
+    /** The field used while testing. */
+    private String field = "GotIt";
 
     /**
-     * Tests the basics.
+     * Tests the basic methods.
      * 
      * @see AnnotatedFieldHook#annotation()
      * @see AnnotatedFieldHook#field()
      */
     @Test
     public void basics() {
-        UnreflectGate hc = newHookController();
-        AnnotatedFieldHook<Left> h = new AnnotatedFieldHook<>(hc, findField("foo"), AnnotationInstances.LEFT);
+        MemberUnreflector hc = new MemberUnreflector(new ClassProcessor(MethodHandles.lookup(), AnnotatedFieldHookTest.class, false),
+                UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+        AnnotatedFieldHook<Left> h = new AnnotatedFieldHook<>(hc, findField("field"), AnnotationInstances.LEFT);
         hc.close(); // We close it here, because these checks should work, even if it is closed
 
         assertThat(h.annotation()).isSameAs(AnnotationInstances.LEFT);
-        assertThat(h.field()).isEqualTo(FieldDescriptor.of(findField("foo")));
+        assertThat(h.field()).isEqualTo(FieldDescriptor.of(findField("field")));
+        assertThat(h.field()).isSameAs(h.field()); // we should cache it
     }
 
     // /** Tests {@link #applyStatic()} */
@@ -92,40 +98,41 @@ public class AnnotatedFieldHookTest {
             String FIELD = "";
         }
 
-        UnreflectGate hc = newHookController();
-        AnnotatedFieldHook<Left> sff = new AnnotatedFieldHook<>(hc, findField(Tester.class, "SF_FIELD"), AnnotationInstances.LEFT);
-        AnnotatedFieldHook<Left> f = new AnnotatedFieldHook<>(hc, findField(Tester.class, "FIELD"), AnnotationInstances.LEFT);
-        hc.close(); // We close it here, because these checks should work, even if it is closed
+        MemberUnreflector unreflector = new MemberUnreflector(new ClassProcessor(MethodHandles.lookup(), AnnotatedFieldHookTest.class, false),
+                UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+        AnnotatedFieldHook<Left> sff = new AnnotatedFieldHook<>(unreflector, findField(Tester.class, "SF_FIELD"), AnnotationInstances.LEFT);
+        AnnotatedFieldHook<Left> f = new AnnotatedFieldHook<>(unreflector, findField(Tester.class, "FIELD"), AnnotationInstances.LEFT);
+        unreflector.close(); // We close it here, because these checks should work, even if it is closed
 
         // checkAssignableTo
         assertThat(f.checkAssignableTo(String.class)).isSameAs(f);
         assertThat(f.checkAssignableTo(CharSequence.class)).isSameAs(f);
-        assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> f.checkAssignableTo(Long.class));
+        assertThatExceptionOfType(InternalExtensionException.class).isThrownBy(() -> f.checkAssignableTo(Long.class));
 
         // checkExactType
         assertThat(f.checkExactType(String.class)).isSameAs(f);
-        assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> f.checkExactType(CharSequence.class));
-        assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> f.checkExactType(Long.class));
+        assertThatExceptionOfType(InternalExtensionException.class).isThrownBy(() -> f.checkExactType(CharSequence.class));
+        assertThatExceptionOfType(InternalExtensionException.class).isThrownBy(() -> f.checkExactType(Long.class));
 
         // checkFinal
-        assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> f.checkFinal());
+        assertThatExceptionOfType(InternalExtensionException.class).isThrownBy(() -> f.checkFinal());
         assertThat(sff.checkFinal()).isSameAs(sff);
 
         // checkNotFinal
         assertThat(f.checkNotFinal()).isSameAs(f);
-        assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> sff.checkNotFinal());
+        assertThatExceptionOfType(InternalExtensionException.class).isThrownBy(() -> sff.checkNotFinal());
 
         // checkNotStatic
         assertThat(f.checkNotStatic()).isSameAs(f);
-        assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> sff.checkNotStatic());
+        assertThatExceptionOfType(InternalExtensionException.class).isThrownBy(() -> sff.checkNotStatic());
 
         // checkStatic
-        assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> f.checkFinal());
+        assertThatExceptionOfType(InternalExtensionException.class).isThrownBy(() -> f.checkFinal());
         assertThat(sff.checkFinal()).isSameAs(sff);
     }
 
     /**
-     * Tests the various handle methods.
+     * Tests the various methods that create instances of {@link MethodHandle} and {@link VarHandle}.
      * 
      * @see AnnotatedFieldHook#getter()
      * @see AnnotatedFieldHook#setter()
@@ -133,49 +140,45 @@ public class AnnotatedFieldHookTest {
      */
     @Test
     public void handles() throws Throwable {
-        UnreflectGate hc = newHookController();
-        AnnotatedFieldHook<Left> h = new AnnotatedFieldHook<>(hc, FIELD, AnnotationInstances.LEFT);
+        MemberUnreflector unflector = new MemberUnreflector(new ClassProcessor(MethodHandles.lookup(), AnnotatedFieldHookTest.class, false),
+                UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+        AnnotatedFieldHook<Left> h = new AnnotatedFieldHook<>(unflector, FIELD, AnnotationInstances.LEFT);
         AnnotatedFieldHookTest t = new AnnotatedFieldHookTest();
 
         // getter
         assertThat(h.getter().type()).isSameAs(MethodType.methodType(String.class, AnnotatedFieldHookTest.class));
         assertThat(h.getter().invoke(t)).isEqualTo("GotIt");
-        t.foo = "notBad";
+        t.field = "notBad";
         assertThat(h.getter().invoke(t)).isEqualTo("notBad");
         assertThatExceptionOfType(WrongMethodTypeException.class).isThrownBy(() -> h.getter().invoke());
 
         // setter
-        assertThat(t.foo).isEqualTo("notBad");
+        assertThat(t.field).isEqualTo("notBad");
         assertThat(h.setter().invoke(t, "fooBar")).isNull();
-        assertThat(t.foo).isEqualTo("fooBar");
+        assertThat(t.field).isEqualTo("fooBar");
         assertThat(h.getter().invoke(t)).isEqualTo("fooBar");
 
         assertThatExceptionOfType(WrongMethodTypeException.class).isThrownBy(() -> h.setter().invoke(t));
         assertThatExceptionOfType(WrongMethodTypeException.class).isThrownBy(() -> h.setter().invoke(t, 123));
         // cannot set final fields
         assertThatExceptionOfType(UnsupportedOperationException.class)
-                .isThrownBy(() -> new AnnotatedFieldHook<>(hc, findField("FIELD"), AnnotationInstances.LEFT).setter());
+                .isThrownBy(() -> new AnnotatedFieldHook<>(unflector, findField("FIELD"), AnnotationInstances.LEFT).setter());
 
         // varHandle
         assertThat(h.varHandle().get(t)).isEqualTo("fooBar");
         h.varHandle().set(t, "blabla");
-        assertThat(t.foo).isEqualTo("blabla");
+        assertThat(t.field).isEqualTo("blabla");
 
-        // Tests that we cannot call any of the handle methods after having closed the controller
-        // This is done in order to make certain that people don't cache the hooks, and calls it at
-        // some later, being surprised that the field was not added to native image generation
+        // Tests that we cannot call any of the handle methods after having closed the unreflector
+        // This is done in order to make certain that people don't cache the hooks, and calls it at later
+        // with the surprising behavior that the field was not added to native image generation
 
         // Previous we cached the handles, but it was a little inconsistent, because if you, for example,
         // called getter() in scope. You could also call it out scope and have the same method handle returned
-        hc.close();
+        unflector.close();
 
         assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> h.getter());
         assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> h.setter());
         assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> h.varHandle());
-    }
-
-    private static UnreflectGate newHookController() {
-        ClassProcessor cp = new ClassProcessor(MethodHandles.lookup(), AnnotatedFieldHookTest.class, false);
-        return new UnreflectGate(cp, UncheckedThrowableFactory.ASSERTION_ERROR);
     }
 }

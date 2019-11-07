@@ -44,7 +44,7 @@ public class HookRequestBuilder {
 
     Tiny<BaseHookCallback> baseHooksCallback;
 
-    final UnreflectGate hookProcessor;
+    final MemberUnreflector hookProcessor;
 
     /** Whether or not we are called from {@link Hook.Builder#test(java.lang.invoke.MethodHandles.Lookup, Class, Class)} */
     @SuppressWarnings("javadoc") // eclipse...TODO raise bug
@@ -52,11 +52,11 @@ public class HookRequestBuilder {
 
     private final OnHookModel onHookModel;
 
-    public HookRequestBuilder(OnHookModel model, UnreflectGate hookProcessor) {
+    public HookRequestBuilder(OnHookModel model, MemberUnreflector hookProcessor) {
         this(model, hookProcessor, Mode.NORMAL);
     }
 
-    public HookRequestBuilder(OnHookModel model, UnreflectGate hookProcessor, Mode mode) {
+    public HookRequestBuilder(OnHookModel model, MemberUnreflector hookProcessor, Mode mode) {
         this.array = new Object[model.builderConstructors.length];
         this.onHookModel = requireNonNull(model);
         this.hookProcessor = requireNonNull(hookProcessor);

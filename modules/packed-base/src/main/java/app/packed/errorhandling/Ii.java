@@ -13,19 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hook;
+package app.packed.errorhandling;
 
 /**
  *
  */
-public enum HookBaseType {
-
-    ANNOTATED_FIELD,
-
-    ANNOTATED_METHOD,
-
-    ANNOTATED_TYPE,
-
-    ASSIGNABLE_TO;
-
+public class Ii {
+    /**
+     * All possible chars for representing a number as a String
+     */
+    static final char[] digits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+            'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
 }

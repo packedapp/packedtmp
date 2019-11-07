@@ -45,21 +45,6 @@ public abstract class UncheckedThrowableFactory<T extends Throwable> {
         }
     };
 
-    public static final UncheckedThrowableFactory<AssertionError> ASSERTION_ERROR = new UncheckedThrowableFactory<AssertionError>() {
-
-        /** {@inheritDoc} */
-        @Override
-        protected AssertionError newThrowable0(String message) {
-            return new AssertionError(message);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public AssertionError newThrowable(String message, Throwable cause) {
-            return new AssertionError(message, cause);
-        }
-    };
-
     public final T newThrowable(CharSequence msg) {
         return newThrowable(msg.toString());
     }
@@ -92,4 +77,47 @@ public abstract class UncheckedThrowableFactory<T extends Throwable> {
     }
 
     public abstract T newThrowable(String message, Throwable cause);
+
+    public static class AssertionErrorRuntimeException extends RuntimeException {
+
+        /**
+         * @param message
+         * @param cause
+         */
+        public AssertionErrorRuntimeException(String message, Throwable cause) {
+            super(message, cause);
+        }
+
+        /**
+         * @param message
+         */
+        public AssertionErrorRuntimeException(String message) {
+            super(message);
+        }
+
+        public AssertionError convert() {
+            AssertionError ar = new AssertionError(getMessage());
+            ar.setStackTrace(getStackTrace());
+            return ar;
+        }
+
+        /** */
+        private static final long serialVersionUID = 1L;
+
+        public static final UncheckedThrowableFactory<AssertionErrorRuntimeException> FACTORY = new UncheckedThrowableFactory<>() {
+
+            /** {@inheritDoc} */
+            @Override
+            protected AssertionErrorRuntimeException newThrowable0(String message) {
+                return new AssertionErrorRuntimeException(message);
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public AssertionErrorRuntimeException newThrowable(String message, Throwable cause) {
+                return new AssertionErrorRuntimeException(message, cause);
+            }
+        };
+
+    }
 }

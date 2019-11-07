@@ -20,15 +20,14 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.UndeclaredThrowableException;
 
-import app.packed.container.InternalExtensionException;
 import app.packed.lang.Nullable;
 import packed.internal.hook.HookRequestBuilder;
 import packed.internal.hook.HookRequestBuilder.Mode;
+import packed.internal.hook.MemberUnreflector;
 import packed.internal.hook.OnHookModel;
-import packed.internal.hook.UnreflectGate;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.util.ThrowableUtil;
-import packed.internal.util.UncheckedThrowableFactory;
+import packed.internal.util.UncheckedThrowableFactory.AssertionErrorRuntimeException;
 
 /**
  * A marker interface
@@ -87,31 +86,18 @@ public interface Hook {
             ClassProcessor cpHook = new ClassProcessor(caller, hookType, false);
             ClassProcessor cpTarget = new ClassProcessor(caller, target, false);
 
-            UnreflectGate hc = new UnreflectGate(cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR);
-            try {
-                OnHookModel ohm = OnHookModel.newInstance(cpHook, true);
-                try {
-                    if (ohm == null) {
-                        throw new AssertionError("There must be at least one method annotated with @OnHook on " + hookType);
-                    }
-
-                    HookRequestBuilder hb = new HookRequestBuilder(ohm, hc, Mode.TEST_CLASS);
-
-                    return (T) hb.singleConsume(cpTarget);
-                } catch (InternalExtensionException ee) {
-                    AssertionError ar = new AssertionError(ee.getMessage());
-                    ar.setStackTrace(ee.getStackTrace());
-                    throw ar;
-                } catch (Throwable t) {
-                    ThrowableUtil.rethrowErrorOrRuntimeException(t);
-                    throw new UndeclaredThrowableException(t);
-                } finally {
-                    hc.close();
+            try (MemberUnreflector hc = new MemberUnreflector(cpTarget, AssertionErrorRuntimeException.FACTORY)) {
+                OnHookModel model = OnHookModel.newInstance(cpHook, true, AssertionErrorRuntimeException.FACTORY);
+                if (model == null) {
+                    throw new AssertionError(hookType + " must have at least one method annotated with @" + OnHook.class.getSimpleName());
                 }
-            } catch (InternalExtensionException ee) {
-                AssertionError ar = new AssertionError(ee.getMessage());
-                ar.setStackTrace(ee.getStackTrace());
-                throw ar;
+                HookRequestBuilder hb = new HookRequestBuilder(model, hc, Mode.TEST_CLASS);
+                return (T) hb.singleConsume(cpTarget);
+            } catch (AssertionErrorRuntimeException ee) {
+                throw ee.convert();
+            } catch (Throwable t) {
+                ThrowableUtil.rethrowErrorOrRuntimeException(t);
+                throw new UndeclaredThrowableException(t);
             }
         }
 
@@ -124,33 +110,21 @@ public interface Hook {
             ClassProcessor cpHook = new ClassProcessor(caller, container.getClass(), false);
             ClassProcessor cpTarget = new ClassProcessor(caller, target, false);
 
-            UnreflectGate hc = new UnreflectGate(cpTarget, UncheckedThrowableFactory.ASSERTION_ERROR);
-            try {
-                OnHookModel ohm = OnHookModel.newInstance(cpHook, false);
-                try {
-                    if (ohm == null) {
-                        throw new AssertionError("There must be at least one method annotated with @OnHook on " + container.getClass());
-                    }
-
-                    HookRequestBuilder hb = new HookRequestBuilder(ohm, hc, Mode.TEST_INSTANCE);
-
-                    hb.singleConsumeNoInstantiate(cpTarget, container);
-                    return container;
-                } catch (InternalExtensionException ee) {
-                    AssertionError ar = new AssertionError(ee.getMessage());
-                    ar.setStackTrace(ee.getStackTrace());
-                    throw ar;
-                } catch (Throwable t) {
-                    ThrowableUtil.rethrowErrorOrRuntimeException(t);
-                    throw new UndeclaredThrowableException(t);
-                } finally {
-                    hc.close();
+            try (MemberUnreflector hc = new MemberUnreflector(cpTarget, AssertionErrorRuntimeException.FACTORY)) {
+                OnHookModel model = OnHookModel.newInstance(cpHook, true, AssertionErrorRuntimeException.FACTORY);
+                if (model == null) {
+                    throw new AssertionError(container.getClass() + " must have at least one method annotated with @" + OnHook.class.getSimpleName());
                 }
-            } catch (InternalExtensionException ee) {
-                AssertionError ar = new AssertionError(ee.getMessage());
-                ar.setStackTrace(ee.getStackTrace());
-                throw ar;
+                HookRequestBuilder hb = new HookRequestBuilder(model, hc, Mode.TEST_INSTANCE);
+                hb.singleConsumeNoInstantiate(cpTarget, container);
+                return container;
+            } catch (AssertionErrorRuntimeException ee) {
+                throw ee.convert();
+            } catch (Throwable t) {
+                ThrowableUtil.rethrowErrorOrRuntimeException(t);
+                throw new UndeclaredThrowableException(t);
             }
+
         }
     }
 }

@@ -23,7 +23,7 @@ import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.AssignableToHook;
-import packed.internal.hook.UnreflectGate;
+import packed.internal.hook.MemberUnreflector;
 
 /** An access class for accessing package private members in app.packed.hook. */
 public interface AppPackedHookAccess extends SecretAccess {
@@ -41,7 +41,7 @@ public interface AppPackedHookAccess extends SecretAccess {
      *            the annotation value
      * @return the new annotated field hook
      */
-    <T extends Annotation> AnnotatedFieldHook<T> newAnnotatedFieldHook(UnreflectGate controller, Field field, T annotation);
+    <T extends Annotation> AnnotatedFieldHook<T> newAnnotatedFieldHook(MemberUnreflector controller, Field field, T annotation);
 
     /**
      * Creates a new instance of {@link AnnotatedMethodHook}.
@@ -56,7 +56,7 @@ public interface AppPackedHookAccess extends SecretAccess {
      *            the annotation value
      * @return the new annotated field hook
      */
-    <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(UnreflectGate controller, Method method, T annotation);
+    <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(MemberUnreflector controller, Method method, T annotation);
 
     /**
      * Creates a new instance of {@link AnnotatedTypeHook}.
@@ -71,7 +71,7 @@ public interface AppPackedHookAccess extends SecretAccess {
      *            the annotation value
      * @return the new annotated type hook
      */
-    <T extends Annotation> AnnotatedTypeHook<T> newAnnotatedTypeHook(UnreflectGate controller, Class<?> type, T annotation);
+    <T extends Annotation> AnnotatedTypeHook<T> newAnnotatedTypeHook(MemberUnreflector controller, Class<?> type, T annotation);
 
-    <T> AssignableToHook<T> newAssignableToHook(UnreflectGate processor, Class<T> type);
+    <T> AssignableToHook<T> newAssignableToHook(MemberUnreflector processor, Class<T> type);
 }

@@ -50,7 +50,7 @@ import packed.internal.util.types.TypeUtil;
 /** A builder for classes that may contain methods annotated with {@link OnHook}. */
 final class OnHookModelBuilder {
 
-    private final static UncheckedThrowableFactory<? extends RuntimeException> tf = UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY;
+    private final UncheckedThrowableFactory<? extends RuntimeException> tf;
 
     final MutableOnHookMap<TinyPair<Node, MethodHandle>> allEntries = new MutableOnHookMap<>();
 
@@ -63,8 +63,9 @@ final class OnHookModelBuilder {
     /** A stack that is used for processing each node. */
     final ArrayDeque<Node> stack = new ArrayDeque<>();
 
-    OnHookModelBuilder(ClassProcessor cp, boolean instantiateRoot, Class<?>... additionalParameters) {
-        this.root = instantiateRoot ? new Node(cp, cp.clazz()) : new Node(cp);
+    OnHookModelBuilder(ClassProcessor cp, boolean instantiateRoot, UncheckedThrowableFactory<? extends RuntimeException> tf, Class<?>... additionalParameters) {
+        this.root = instantiateRoot ? new Node(cp, tf, cp.clazz()) : new Node(cp);
+        this.tf = requireNonNull(tf);
     }
 
     @Nullable
@@ -202,7 +203,7 @@ final class OnHookModelBuilder {
 
                 // Lazy create new node if one does not already exist for the hookType
                 Node nodeRef = nodes.computeIfAbsent(hookType, ignore -> {
-                    Node newNode = new Node(root.cp, hookType);
+                    Node newNode = new Node(root.cp, tf, hookType);
                     stack.addLast(newNode); // make sure it will be processed at some later point.
                     return newNode;
                 });
@@ -253,7 +254,7 @@ final class OnHookModelBuilder {
             this.builderConstructor = null;
         }
 
-        private Node(ClassProcessor cps, Class<?> type) {
+        private Node(ClassProcessor cps, UncheckedThrowableFactory<? extends RuntimeException> tf, Class<?> type) {
             this.containerType = requireNonNull(type);
             Class<?> builderClass = ClassFinder.findDeclaredClass(type, "Builder", Hook.Builder.class);
             this.cp = cps.spawn(builderClass);

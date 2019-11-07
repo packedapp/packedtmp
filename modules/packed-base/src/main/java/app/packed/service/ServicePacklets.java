@@ -15,10 +15,10 @@
  */
 package app.packed.service;
 
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import static java.util.Objects.requireNonNull;
 
-import app.packed.artifact.ArtifactConfigurator;
+import java.util.function.Consumer;
+
 import app.packed.container.Wirelet;
 import app.packed.lang.Key;
 import packed.internal.service.build.wirelets.PackedDownstreamInjectionWirelet;
@@ -27,73 +27,31 @@ import packed.internal.service.build.wirelets.PackedUpstreamInjectionWirelet;
 /**
  *
  */
-// 4 basic types of operation
 
-// Provide
-// Map will take services and remove existing and output a new one
-// Filter
-// Peek
-
-// Map, Provide -> (Singleton if all singleton, otherwise... Men ville masske vaere rart at kunne styre
-
-// Mangler support for Contracts
-// Mangler support for at kunne specificere providePrototype ect....
 public class ServicePacklets {
 
-    // provideTo -> Keeps original
-    // provideFrom -> Keeps original
+    public static Wirelet mapFrom(Class<?> originalKey, Class<?> newKey) {
+        return mapFrom(requireNonNull(originalKey, "originalKey is null"), requireNonNull(newKey, "newKey is null"));
+    }
 
-    // provideInstanceTo
-
-    // mapTo -> removes original
-    // mapFrom -> removes original
-
-    // filterTo (Keys.., Classes
-    // filterFrom
-
-    public static Wirelet provideAllTo(Injector injector, Wirelet... wirelets) {
+    public static Wirelet mapFrom(Factory<?> mapper) {
+        // What if we have zero dependencies???? Fail or allow
         throw new UnsupportedOperationException();
     }
 
-    public static Wirelet provideAllTo(ArtifactConfigurator<? super InjectorConfigurator> configurator, Wirelet... wirelets) {
-
-        // Den her kan man styre prototyper o.s.v. hvis man har behov for det....
-
-        // Ideen er at man kan lave noget med requirements or provides.....
-        // En injector
-        // Godt nok advancerede....
+    public static Wirelet mapFrom(Key<?> originalKey, Key<?> newKey) {
         throw new UnsupportedOperationException();
     }
 
-    public static Wirelet provideTo(Factory<?> mapper) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static Wirelet provideInstanceTo(Object instance) {
-        throw new UnsupportedOperationException();
+    public static Wirelet mapTo(Class<?> originalKey, Class<?> newKey) {
+        return mapTo(requireNonNull(originalKey, "originalKey is null"), requireNonNull(newKey, "newKey is null"));
     }
 
     public static Wirelet mapTo(Factory<?> mapper) {
         throw new UnsupportedOperationException();
     }
 
-    public static Wirelet mapTo(Class<?> originalKey, Class<?> newKey) {
-        throw new UnsupportedOperationException();// Should be assignable...
-    }
-
     public static Wirelet mapTo(Key<?> originalKey, Key<?> newKey) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static Wirelet filterTo(Class<?>... keys) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static Wirelet filterTo(Key<?>... keys) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static Wirelet filterTo(Predicate<? extends ServiceDescriptor> filter) {
         throw new UnsupportedOperationException();
     }
 
@@ -121,4 +79,5 @@ public class ServicePacklets {
     public static Wirelet peekTo(Consumer<? super ServiceDescriptor> action) {
         return new PackedDownstreamInjectionWirelet.PeekDownstreamWirelet(action);
     }
+
 }

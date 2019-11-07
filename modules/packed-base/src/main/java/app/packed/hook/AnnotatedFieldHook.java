@@ -30,7 +30,7 @@ import app.packed.lang.Nullable;
 import app.packed.lang.reflect.FieldDescriptor;
 import app.packed.lang.reflect.UncheckedIllegalAccessException;
 import app.packed.lang.reflect.VarOperator;
-import packed.internal.hook.UnreflectGate;
+import packed.internal.hook.MemberUnreflector;
 import packed.internal.hook.applicator.PackedFieldHookApplicator;
 import packed.internal.moduleaccess.AppPackedHookAccess;
 import packed.internal.moduleaccess.ModuleAccess;
@@ -53,25 +53,25 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
 
             /** {@inheritDoc} */
             @Override
-            public <T extends Annotation> AnnotatedFieldHook<T> newAnnotatedFieldHook(UnreflectGate gate, Field field, T annotation) {
+            public <T extends Annotation> AnnotatedFieldHook<T> newAnnotatedFieldHook(MemberUnreflector gate, Field field, T annotation) {
                 return new AnnotatedFieldHook<>(gate, field, annotation);
             }
 
             /** {@inheritDoc} */
             @Override
-            public <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(UnreflectGate gate, Method method, T annotation) {
+            public <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(MemberUnreflector gate, Method method, T annotation) {
                 return new AnnotatedMethodHook<>(gate, method, annotation);
             }
 
             /** {@inheritDoc} */
             @Override
-            public <T extends Annotation> AnnotatedTypeHook<T> newAnnotatedTypeHook(UnreflectGate gate, Class<?> type, T annotation) {
+            public <T extends Annotation> AnnotatedTypeHook<T> newAnnotatedTypeHook(MemberUnreflector gate, Class<?> type, T annotation) {
                 return new AnnotatedTypeHook<>(gate, type, annotation);
             }
 
             /** {@inheritDoc} */
             @Override
-            public <T> AssignableToHook<T> newAssignableToHook(UnreflectGate gate, Class<T> type) {
+            public <T> AssignableToHook<T> newAssignableToHook(MemberUnreflector gate, Class<T> type) {
                 return new AssignableToHook<>(gate, type);
             }
         });
@@ -81,7 +81,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     private final T annotation;
 
     /** The processor for this hook. */
-    private final UnreflectGate gate;
+    private final MemberUnreflector unreflector;
 
     /** A field descriptor, is lazily created via {@link #field()}. */
     @Nullable
@@ -93,7 +93,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     /**
      * Creates a new hook instance.
      * 
-     * @param gate
+     * @param unreflector
      *            the processor for this hook
      * @param field
      *            the annotated field
@@ -101,8 +101,8 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      *            the annotation value, no validation whether or not the given annotation value is equivalent to an
      *            annotation value on the specified field is performed
      */
-    AnnotatedFieldHook(UnreflectGate gate, Field field, T annotation) {
-        this.gate = requireNonNull(gate);
+    AnnotatedFieldHook(MemberUnreflector unreflector, Field field, T annotation) {
+        this.unreflector = requireNonNull(unreflector);
         this.field = requireNonNull(field);
         this.annotation = requireNonNull(annotation);
     }
@@ -117,7 +117,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     }
 
     public <E> HookApplicator<E> applicator(VarOperator<E> operator) {
-        gate.checkOpen(); // we do not want people to invoke this method, after the aggregate has been built
+        unreflector.checkOpen(); // we do not want people to invoke this method, after the aggregate has been built
         return new PackedFieldHookApplicator<E>(this, operator, field);
     }
 
@@ -140,7 +140,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
         if (!Modifier.isStatic(field.getModifiers())) {
             throw new UnsupportedOperationException("Cannot invoke this method on a non-static field " + field);
         }
-        gate.checkOpen(); // we do not want people to invoke this method, after the aggregate has been built
+        unreflector.checkOpen(); // we do not want people to invoke this method, after the aggregate has been built
         // Should it be per hook group instead of container model?
         return operator.applyStaticHook(this);
     }
@@ -157,7 +157,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     public AnnotatedFieldHook<T> checkAssignableTo(Class<?> type) {
         requireNonNull(type, "type is null");
         if (!type.isAssignableFrom(field.getType())) {
-            gate.tf().fail("NotAssignable");
+            unreflector.tf().fail("NotAssignable");
         }
         return this;
     }
@@ -174,7 +174,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     public AnnotatedFieldHook<T> checkExactType(Class<?> type) {
         requireNonNull(type, "type is null");
         if (field.getType() != type) {
-            gate.tf().fail("NotAssignable");
+            unreflector.tf().fail("NotAssignable");
         }
         return this;
     }
@@ -195,7 +195,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      */
     public AnnotatedFieldHook<T> checkFinal() {
         if (!Modifier.isFinal(field.getModifiers())) {
-            gate.tf().fail(failedModifierCheck(false, "final"));
+            unreflector.tf().fail(failedModifierCheck(false, "final"));
         }
         return this;
     }
@@ -211,7 +211,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      */
     public AnnotatedFieldHook<T> checkNotFinal() {
         if (Modifier.isFinal(field.getModifiers())) {
-            gate.tf().fail(failedModifierCheck(true, "final"));
+            unreflector.tf().fail(failedModifierCheck(true, "final"));
         }
         return this;
     }
@@ -228,7 +228,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      */
     public AnnotatedFieldHook<T> checkNotStatic() {
         if (Modifier.isStatic(field.getModifiers())) {
-            gate.tf().fail(failedModifierCheck(true, "static"));
+            unreflector.tf().fail(failedModifierCheck(true, "static"));
         }
         return this;
     }
@@ -245,7 +245,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      */
     public AnnotatedFieldHook<T> checkStatic() {
         if (!Modifier.isStatic(field.getModifiers())) {
-            gate.tf().fail(failedModifierCheck(false, "static"));
+            unreflector.tf().fail(failedModifierCheck(false, "static"));
         }
         return this;
     }
@@ -302,7 +302,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      * @see Lookup#unreflectGetter(java.lang.reflect.Field)
      */
     public MethodHandle getter() {
-        return gate.unreflectGetter(field);
+        return unreflector.unreflectGetter(field);
     }
 
     /**
@@ -323,7 +323,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
         if (Modifier.isFinal(field.getModifiers())) {
             throw new UnsupportedOperationException("Field is final, cannot create a setter for this field, field = " + field);
         }
-        return gate.unreflectSetter(field);
+        return unreflector.unreflectSetter(field);
     }
 
     /**
@@ -337,6 +337,6 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      * @see Lookup#unreflectVarHandle(java.lang.reflect.Field)
      */
     public VarHandle varHandle() {
-        return gate.unreflectVarhandle(field);
+        return unreflector.unreflectVarhandle(field);
     }
 }

@@ -61,7 +61,7 @@ public final class HookRequest {
         }
         // Invoke OnHook methods on the Bundle or Extension that takes a base hook
         if (baseHooksCallback != null) {
-            try (UnreflectGate hp = new UnreflectGate(delayedProcessor.copy(), UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
+            try (MemberUnreflector hp = new MemberUnreflector(delayedProcessor.copy(), UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
                 for (Tiny<BaseHookCallback> t = baseHooksCallback; t != null; t = t.next) {
                     invokeHook(t.element.mh, t.element.toHook(hp), target, additional);
                 }
@@ -106,7 +106,7 @@ public final class HookRequest {
             this.mh = requireNonNull(mh);
         }
 
-        private Hook toHook(UnreflectGate hp) {
+        private Hook toHook(MemberUnreflector hp) {
             if (annotation == null) {
                 return ModuleAccess.hook().newAssignableToHook(hp, (Class<?>) member);
             } else if (member instanceof Field) {
