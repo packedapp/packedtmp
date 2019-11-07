@@ -56,26 +56,11 @@ public final class HookRequestBuilder {
         this(model, hookProcessor, Mode.NORMAL);
     }
 
-    public HookRequestBuilder(OnHookModel model, MemberUnreflector hookProcessor, Mode mode) {
+    private HookRequestBuilder(OnHookModel model, MemberUnreflector hookProcessor, Mode mode) {
         this.array = new Object[model.builderConstructors.length];
         this.onHookModel = requireNonNull(model);
         this.hookProcessor = requireNonNull(hookProcessor);
         this.mode = mode;
-    }
-
-    public static Object testContainer(OnHookModel model, MemberUnreflector hookProcessor, ClassProcessor cpTarget, Object container) throws Throwable {
-        if (container == null) {
-            HookRequestBuilder hb = new HookRequestBuilder(model, hookProcessor, Mode.TEST_CLASS);
-            return hb.singleConsume(cpTarget);
-        } else {
-            HookRequestBuilder hb = new HookRequestBuilder(model, hookProcessor, Mode.TEST_INSTANCE);
-            return hb.singleConsumeNoInstantiate(cpTarget, container);
-        }
-    }
-
-    public static Object testContainer(OnHookModel model, MemberUnreflector hookProcessor, ClassProcessor cpTarget) throws Throwable {
-        HookRequestBuilder hb = new HookRequestBuilder(model, hookProcessor, Mode.TEST_CLASS);
-        return hb.singleConsume(cpTarget);
     }
 
     public HookRequest build() throws Throwable {
@@ -186,38 +171,31 @@ public final class HookRequestBuilder {
         }
     }
 
-    public Object singleConsume(ClassProcessor cp) throws Throwable {
-        cp.findMethodsAndFields(onHookModel.allLinks.annotatedMethods == null ? null : f -> {
+    public static Object testContainer(OnHookModel model, MemberUnreflector hookProcessor, ClassProcessor cp, Object container) throws Throwable {
+        HookRequestBuilder hb = new HookRequestBuilder(model, hookProcessor, container == null ? Mode.TEST_CLASS : Mode.TEST_INSTANCE);
+        hb.array[0] = container; // we could have done if (container != null) ... instead, but this is easier
+
+        cp.findMethodsAndFields(hb.onHookModel.allLinks.annotatedMethods == null ? null : f -> {
             for (Annotation a : f.getAnnotations()) {
-                onAnnotatedMethod(f, a);
+                hb.onAnnotatedMethod(f, a);
             }
-        }, onHookModel.allLinks.annotatedFields == null ? null : f -> {
+        }, hb.onHookModel.allLinks.annotatedFields == null ? null : f -> {
             for (Annotation a : f.getAnnotations()) {
-                onAnnotatedField(f, a);
+                hb.onAnnotatedField(f, a);
             }
         });
-        compute();
-        Object a = array[0];
-        return a == null ? null : (((Hook.Builder<?>) a).build());
+        hb.compute();
+
+        if (container == null) {
+            Object a = hb.array[0];
+            return a == null ? null : (((Hook.Builder<?>) a).build());
+        } else {
+            new HookRequest(hb).invoke(container, null);
+            return container;
+        }
     }
 
-    public <T> T singleConsumeNoInstantiate(ClassProcessor cp, T instance) throws Throwable {
-        array[0] = instance;
-        cp.findMethodsAndFields(onHookModel.allLinks.annotatedMethods == null ? null : f -> {
-            for (Annotation a : f.getAnnotations()) {
-                onAnnotatedMethod(f, a);
-            }
-        }, onHookModel.allLinks.annotatedFields == null ? null : f -> {
-            for (Annotation a : f.getAnnotations()) {
-                onAnnotatedField(f, a);
-            }
-        });
-        compute();
-        new HookRequest(this).invoke(instance, null);
-        return instance;
-    }
-
-    public enum Mode {
+    private enum Mode {
         NORMAL, TEST_CLASS, TEST_INSTANCE;
     }
 }

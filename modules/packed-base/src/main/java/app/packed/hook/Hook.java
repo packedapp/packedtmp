@@ -80,10 +80,7 @@ public interface Hook {
         static <T extends Hook> T test(Lookup caller, Class<T> hookType, Class<?> target) {
             requireNonNull(caller, "caller is null");
             requireNonNull(hookType, "hookType is null");
-            requireNonNull(target, "target is null");
-
             ClassProcessor cpHook = new ClassProcessor(caller, hookType, false);
-
             return (T) test(caller, cpHook, null, target);
         }
 
@@ -91,19 +88,17 @@ public interface Hook {
         static <T> T test(Lookup caller, T container, Class<?> target) {
             requireNonNull(caller, "caller is null");
             requireNonNull(container, "container is null");
-            requireNonNull(target, "target is null");
-
             ClassProcessor cpHook = new ClassProcessor(caller, container.getClass(), false);
-
             test(caller, cpHook, container, target);
             return container;
         }
 
         private static Object test(Lookup caller, ClassProcessor cpHook, Object container, Class<?> target) {
+            requireNonNull(target, "target is null");
             ClassProcessor cpTarget = new ClassProcessor(caller, target, false);
 
             try (MemberUnreflector hc = new MemberUnreflector(cpTarget, AssertionErrorRuntimeException.FACTORY)) {
-                OnHookModel model = OnHookModel.newInstance(cpHook, true, AssertionErrorRuntimeException.FACTORY);
+                OnHookModel model = OnHookModel.newInstance(cpHook, container == null, AssertionErrorRuntimeException.FACTORY);
                 if (model == null) {
                     throw new AssertionError(cpHook.clazz() + " must have at least one method annotated with @" + OnHook.class.getSimpleName());
                 }
