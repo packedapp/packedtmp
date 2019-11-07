@@ -83,20 +83,8 @@ public interface Hook {
             requireNonNull(target, "target is null");
 
             ClassProcessor cpHook = new ClassProcessor(caller, hookType, false);
-            ClassProcessor cpTarget = new ClassProcessor(caller, target, false);
 
-            try (MemberUnreflector hc = new MemberUnreflector(cpTarget, AssertionErrorRuntimeException.FACTORY)) {
-                OnHookModel model = OnHookModel.newInstance(cpHook, true, AssertionErrorRuntimeException.FACTORY);
-                if (model == null) {
-                    throw new AssertionError(hookType + " must have at least one method annotated with @" + OnHook.class.getSimpleName());
-                }
-                return (T) HookRequestBuilder.testContainer(model, hc, cpTarget, null);
-            } catch (AssertionErrorRuntimeException ee) {
-                throw ee.convert();
-            } catch (Throwable t) {
-                ThrowableUtil.rethrowErrorOrRuntimeException(t);
-                throw new UndeclaredThrowableException(t);
-            }
+            return (T) test(caller, cpHook, null, target);
         }
 
         @Nullable
@@ -117,7 +105,7 @@ public interface Hook {
             try (MemberUnreflector hc = new MemberUnreflector(cpTarget, AssertionErrorRuntimeException.FACTORY)) {
                 OnHookModel model = OnHookModel.newInstance(cpHook, true, AssertionErrorRuntimeException.FACTORY);
                 if (model == null) {
-                    throw new AssertionError(container.getClass() + " must have at least one method annotated with @" + OnHook.class.getSimpleName());
+                    throw new AssertionError(cpHook.clazz() + " must have at least one method annotated with @" + OnHook.class.getSimpleName());
                 }
                 return HookRequestBuilder.testContainer(model, hc, cpTarget, container);
             } catch (AssertionErrorRuntimeException ee) {
