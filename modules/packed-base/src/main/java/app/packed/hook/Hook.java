@@ -106,6 +106,12 @@ public interface Hook {
             requireNonNull(target, "target is null");
 
             ClassProcessor cpHook = new ClassProcessor(caller, container.getClass(), false);
+
+            test(caller, cpHook, container, target);
+            return container;
+        }
+
+        private static Object test(Lookup caller, ClassProcessor cpHook, Object container, Class<?> target) {
             ClassProcessor cpTarget = new ClassProcessor(caller, target, false);
 
             try (MemberUnreflector hc = new MemberUnreflector(cpTarget, AssertionErrorRuntimeException.FACTORY)) {
@@ -113,18 +119,13 @@ public interface Hook {
                 if (model == null) {
                     throw new AssertionError(container.getClass() + " must have at least one method annotated with @" + OnHook.class.getSimpleName());
                 }
-                HookRequestBuilder.testContainer(model, hc, cpTarget, container);
-                return container;
+                return HookRequestBuilder.testContainer(model, hc, cpTarget, container);
             } catch (AssertionErrorRuntimeException ee) {
                 throw ee.convert();
             } catch (Throwable t) {
                 ThrowableUtil.rethrowErrorOrRuntimeException(t);
                 throw new UndeclaredThrowableException(t);
             }
-        }
-
-        private static Object test(Lookup caller, ClassProcessor chHook, Object container, Class<?> target) {
-            return null;
         }
     }
 }
