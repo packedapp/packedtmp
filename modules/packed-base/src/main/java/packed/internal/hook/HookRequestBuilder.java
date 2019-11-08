@@ -104,7 +104,7 @@ public final class HookRequestBuilder {
     }
 
     public void onAnnotatedField(Field field, Annotation annotation) throws Throwable {
-        Map<Class<?>, Link> annotatedFields = onHookModel.allLinks.annotatedFields;
+        Map<Class<?>, Link> annotatedFields = onHookModel.annotatedFields;
         if (annotatedFields != null) {
             for (Link link = annotatedFields.get(annotation.annotationType()); link != null; link = link.next) {
                 if (link.index == 0 && mode != Mode.TEST_CLASS) {
@@ -123,7 +123,7 @@ public final class HookRequestBuilder {
     }
 
     public void onAnnotatedMethod(Method method, Annotation annotation) throws Throwable {
-        Map<Class<?>, Link> annotatedMethods = onHookModel.allLinks.annotatedMethods;
+        Map<Class<?>, Link> annotatedMethods = onHookModel.annotatedMethods;
         if (annotatedMethods != null) {
             for (Link link = annotatedMethods.get(annotation.annotationType()); link != null; link = link.next) {
                 if (link.index == 0 && mode != Mode.TEST_CLASS) {
@@ -138,7 +138,7 @@ public final class HookRequestBuilder {
     }
 
     public void onAnnotatedType(Class<?> clazz, Annotation annotation) throws Throwable {
-        Map<Class<?>, Link> annotatedTypes = onHookModel.allLinks.annotatedTypes;
+        Map<Class<?>, Link> annotatedTypes = onHookModel.annotatedTypes;
         if (annotatedTypes != null) {
             for (Link link = annotatedTypes.get(annotation.annotationType()); link != null; link = link.next) {
                 if (link.index == 0 && mode != Mode.TEST_CLASS) {
@@ -153,7 +153,7 @@ public final class HookRequestBuilder {
     }
 
     public void onAssignableTo(Class<?> hookType, Class<?> actualType) throws Throwable {
-        Map<Class<?>, Link> assignableTos = onHookModel.allLinks.assignableTos;
+        Map<Class<?>, Link> assignableTos = onHookModel.assignableTos;
         if (assignableTos != null) {
             for (Link link = assignableTos.get(hookType); link != null; link = link.next) {
                 if (link.index == 0 && mode != Mode.TEST_CLASS) {
@@ -175,11 +175,11 @@ public final class HookRequestBuilder {
         HookRequestBuilder hb = new HookRequestBuilder(model, hookProcessor, container == null ? Mode.TEST_CLASS : Mode.TEST_INSTANCE);
         hb.array[0] = container; // we could have done if (container != null) ... instead, but this is easier
 
-        cp.findMethodsAndFields(hb.onHookModel.allLinks.annotatedMethods == null ? null : f -> {
+        cp.findMethodsAndFields(hb.onHookModel.annotatedMethods == null ? null : f -> {
             for (Annotation a : f.getAnnotations()) {
                 hb.onAnnotatedMethod(f, a);
             }
-        }, hb.onHookModel.allLinks.annotatedFields == null ? null : f -> {
+        }, hb.onHookModel.annotatedFields == null ? null : f -> {
             for (Annotation a : f.getAnnotations()) {
                 hb.onAnnotatedField(f, a);
             }

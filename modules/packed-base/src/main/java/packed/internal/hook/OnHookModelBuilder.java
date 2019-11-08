@@ -26,8 +26,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayDeque;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.function.Function;
 
 import app.packed.container.Bundle;
 import app.packed.container.Extension;
@@ -38,7 +36,6 @@ import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
-import packed.internal.hook.OnHookModel.ImmutableOnHookMap;
 import packed.internal.reflect.ClassFinder;
 import packed.internal.reflect.ClassProcessor;
 import packed.internal.reflect.ConstructorFinder;
@@ -52,7 +49,20 @@ import packed.internal.util.types.TypeUtil;
 /** A builder for classes that may contain methods annotated with {@link OnHook}. */
 final class OnHookModelBuilder {
 
-    final MutableOnHookMap<TinyPair<Node, MethodHandle>> allEntries = new MutableOnHookMap<>();
+    /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedFieldHook} as a parameter. */
+    IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> annotatedFields;
+
+    /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedMethodHook} as a parameter. */
+    IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> annotatedMethods;
+
+    /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedTypeHook} as a parameter. */
+    IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> annotatedTypes;
+
+    /** Methods annotated with {@link OnHook} that takes a {@link AssignableToHook} as a parameter. */
+    IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> assignableTos;
+
+    /** Methods annotated with {@link OnHook} that takes a non-base {@link Hook}. */
+    IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> customHooks;
 
     /** All non-root nodes, the key being the type of the hook. */
     private final IdentityHashMap<Class<? extends Hook>, HookBuilderNode> nodes = new IdentityHashMap<>();
@@ -78,7 +88,7 @@ final class OnHookModelBuilder {
             Node bb = b;
             bb.cp.findMethods(m -> onMethod(bb, m));
         }
-        if (allEntries.isEmpty()) {
+        if (annotatedFields == null && annotatedMethods == null && annotatedTypes == null && assignableTos == null && customHooks == null) {
             return null;
         }
 
@@ -150,6 +160,8 @@ final class OnHookModelBuilder {
             throw tf.newThrowableForMethod("The first parameter of a method annotated with @" + OnHook.class.getSimpleName() + " must be of type "
                     + Hook.class.getCanonicalName() + " was " + parameters[0].getType(), method);
         }
+
+        // Validate remaining parameters
         for (int i = 1; i < parameters.length; i++) {
             if (node instanceof HookBuilderNode) {
                 throw tf.newThrowableForMethod(
@@ -166,65 +178,84 @@ final class OnHookModelBuilder {
             // }
         }
 
-        // Creates a method handle for the method annotated with @OnHook
-        MethodHandle mh = node.cp.unreflect(method, tf);
-
-        // Let first see if it is a base book.
-        IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> mm = null;
+        // Process the hook either as a base hook (Annotated*Hook+InstanceOfHook) or a custom hook (anything else implementing
+        // Hook)
         if (hookType == AnnotatedFieldHook.class) {
-            mm = allEntries.annotatedFieldsLazyInit();
+            IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> mm = annotatedFields;
+            if (mm == null) {
+                mm = annotatedFields = new IdentityHashMap<>(1);
+            }
+            onMethodBaseHook(node, hookT, hookType, method, mm);
         } else if (hookType == AnnotatedMethodHook.class) {
-            mm = allEntries.annotatedMethodsLazyInit();
+            IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> mm = annotatedMethods;
+            if (mm == null) {
+                mm = annotatedMethods = new IdentityHashMap<>(1);
+            }
+            onMethodBaseHook(node, hookT, hookType, method, mm);
         } else if (hookType == AnnotatedTypeHook.class) {
-            mm = allEntries.annotatedTypesLazyInit();
+            IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> mm = annotatedTypes;
+            if (mm == null) {
+                mm = annotatedTypes = new IdentityHashMap<>(1);
+            }
+            onMethodBaseHook(node, hookT, hookType, method, mm);
         } else if (hookType == AssignableToHook.class) {
-            mm = allEntries.assignableTosLazyInit();
+            IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> mm = assignableTos;
+            if (mm == null) {
+                mm = assignableTos = new IdentityHashMap<>(1);
+            }
+            onMethodBaseHook(node, hookT, hookType, method, mm);
         } else {
-            onMethodCustomHook(node, hookType, method, mh);
-        }
-
-        if (mm != null) {
-            Type t = hookT;
-            if (!(t instanceof ParameterizedType)) {
-                throw tf.newThrowableForMethod(hookType.getSimpleName() + " must be parameterized, cannot be a raw type", method);
-            }
-            ParameterizedType pt = (ParameterizedType) t;
-            Type type = pt.getActualTypeArguments()[0];
-            if (!(type instanceof Class)) {
-                throw tf.newThrowable("Only class qualified supported, was " + pt);
-            }
-            Class<?> qualifierType = (Class<?>) type;
-
-            if (hookType != AssignableToHook.class && !AnnotationUtil.hasRuntimeRetentionPolicy((Class<? extends Annotation>) qualifierType)) {
-                throw tf.newThrowable(hookType + " must be qualified with an annotation that has runtime retention policy");
-            }
-
-            mm.compute(qualifierType, (k, v) -> new TinyPair<>(node, mh, v));
+            onMethodCustomHook(node, hookType, method);
         }
     }
 
-    void onMethodCustomHook(Node node, Class<? extends Hook> hookType, Method method, MethodHandle mh) {
+    @SuppressWarnings("unchecked")
+    void onMethodBaseHook(Node node, Type t, Class<? extends Hook> hookType, Method method, IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> mm) {
+        MethodHandle mh = node.cp.unreflect(method, tf);
+
+        if (!(t instanceof ParameterizedType)) {
+            throw tf.newThrowableForMethod(hookType.getSimpleName() + " must be parameterized, cannot be a raw type", method);
+        }
+        ParameterizedType pt = (ParameterizedType) t;
+        Type type = pt.getActualTypeArguments()[0];
+        if (!(type instanceof Class)) {
+            throw tf.newThrowable("Only class qualified supported, was " + pt);
+        }
+        Class<?> qualifierType = (Class<?>) type;
+
+        if (hookType != AssignableToHook.class && !AnnotationUtil.hasRuntimeRetentionPolicy((Class<? extends Annotation>) qualifierType)) {
+            throw tf.newThrowable(hookType + " must be qualified with an annotation that has runtime retention policy");
+        }
+
+        mm.compute(qualifierType, (k, v) -> new TinyPair<>(node, mh, v));
+    }
+
+    void onMethodCustomHook(Node node, Class<? extends Hook> hookType, Method method) {
         if (hookType == node.cp.clazz()) {
             tf.newThrowableForMethod("Hook cannot depend on itself", method);
         }
-        IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> m = allEntries.customHooksLazyInit();
+
+        MethodHandle mh = node.cp.unreflect(method, tf);
+        IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> m = customHooks;
+        if (m == null) {
+            m = customHooks = new IdentityHashMap<>(1);
+        }
 
         m.compute(hookType, (k, v) -> {
 
             // Lazy create new node if one does not already exist for the hookType
-            Node nodeRef = nodes.computeIfAbsent(hookType, ignore -> {
+            HookBuilderNode customHookRef = nodes.computeIfAbsent(hookType, ignore -> {
                 HookBuilderNode newNode = new HookBuilderNode(root.cp, tf, hookType);
                 stack.addLast(newNode); // make sure it will be processed at some later point.
                 return newNode;
             });
 
             // Test if the builder of a hooks depends on the hook itself
-            if (node == nodeRef) {
+            if (node == customHookRef) {
                 throw tf.newThrowableForMethod("Hook cannot depend on itself", method);
             }
 
-            // Or maybe we need to this for circles??
-            // If we have pure tests
+            // This looks wrong, shouldnt it be a dependency on customHookRef????
             if (node instanceof HookBuilderNode) {
                 HookBuilderNode bn = (HookBuilderNode) node;
                 bn.dependencies = new Tiny<>(bn, bn.dependencies);
@@ -233,86 +264,14 @@ final class OnHookModelBuilder {
         });
     }
 
-    static final class MutableOnHookMap<V> {
+    static class HookBuilderNode extends Node {
 
-        /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedFieldHook} as a parameter. */
-        IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> annotatedFields;
+        /** Dependencies on other nodes (will never contain a link to the root node). */
+        @Nullable
+        Tiny<HookBuilderNode> dependencies;
 
-        /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedMethodHook} as a parameter. */
-        IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> annotatedMethods;
-
-        /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedTypeHook} as a parameter. */
-        IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> annotatedTypes;
-
-        /** Methods annotated with {@link OnHook} that takes a {@link AssignableToHook} as a parameter. */
-        IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> assignableTos;
-
-        /** Methods annotated with {@link OnHook} that takes a non-base {@link Hook}. */
-        IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> customHooks;
-
-        private IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> annotatedFieldsLazyInit() {
-            IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> a = annotatedFields;
-            if (a == null) {
-                a = annotatedFields = new IdentityHashMap<>(1);
-            }
-            return a;
-        }
-
-        private IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> annotatedMethodsLazyInit() {
-            IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> a = annotatedMethods;
-            if (a == null) {
-                a = annotatedMethods = new IdentityHashMap<>(1);
-            }
-            return a;
-        }
-
-        private IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> annotatedTypesLazyInit() {
-            IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> a = annotatedTypes;
-            if (a == null) {
-                a = annotatedTypes = new IdentityHashMap<>(1);
-            }
-            return a;
-        }
-
-        private IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> assignableTosLazyInit() {
-            IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> a = assignableTos;
-            if (a == null) {
-                a = assignableTos = new IdentityHashMap<>(1);
-            }
-            return a;
-        }
-
-        @SuppressWarnings({ "rawtypes", "unchecked" })
-        private <VV, E> Map<Class<?>, E> convert(IdentityHashMap<Class<?>, VV> map, Function<VV, E> f) {
-            if (map == null) {
-                return null;
-            }
-            // Replace in map
-            IdentityHashMap m = map;
-
-            m.replaceAll((k, v) -> ((Function) f).apply(v));
-
-            return Map.copyOf(m);
-        }
-
-        private IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> customHooksLazyInit() {
-            IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> a = customHooks;
-            if (a == null) {
-                a = customHooks = new IdentityHashMap<>(1);
-            }
-            return a;
-        }
-
-        private boolean isEmpty() {
-            return annotatedFields == null && annotatedMethods == null && annotatedTypes == null && assignableTos == null && customHooks == null;
-        }
-
-        <E> ImmutableOnHookMap<E> toImmutable(Function<TinyPair<Node, MethodHandle>, E> converter) {
-            Map<Class<?>, E> annotatedFieldHooks = convert(annotatedFields, converter);
-            Map<Class<?>, E> annotatedMethoddHooks = convert(annotatedMethods, converter);
-            Map<Class<?>, E> annotatedTypeHooks = convert(annotatedTypes, converter);
-            Map<Class<?>, E> assignableToHooks = convert(assignableTos, converter);
-            return new ImmutableOnHookMap<E>(annotatedFieldHooks, annotatedMethoddHooks, annotatedTypeHooks, assignableToHooks);
+        private HookBuilderNode(ClassProcessor cps, UncheckedThrowableFactory<? extends RuntimeException> tf, Class<?> type) {
+            super(cps, tf, type);
         }
     }
 
@@ -323,12 +282,12 @@ final class OnHookModelBuilder {
         @Nullable
         final MethodHandle builderConstructor;
 
+        /** The class processor for the entity that contains the methods annotated with {@link OnHook}. */
+        private final ClassProcessor cp;
+
         /** The type of hook for non-root nodes. */
         @Nullable
         final Class<?> hookType;
-
-        /** The class processor for the entity that contains the methods annotated with {@link OnHook}. */
-        private final ClassProcessor cp;
 
         /** The index of this node. */
         int index;
@@ -361,17 +320,6 @@ final class OnHookModelBuilder {
         @Override
         public String toString() {
             return builderConstructor == null ? "" : builderConstructor.type().toString();
-        }
-    }
-
-    static class HookBuilderNode extends Node {
-
-        /** Dependencies on other nodes (will never contain a link to the root node). */
-        @Nullable
-        Tiny<HookBuilderNode> dependencies;
-
-        private HookBuilderNode(ClassProcessor cps, UncheckedThrowableFactory<? extends RuntimeException> tf, Class<?> type) {
-            super(cps, tf, type);
         }
     }
 }

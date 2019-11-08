@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,13 +42,33 @@ public final class OnHookModel {
 
     static final boolean DEBUG = true;
 
-    final ImmutableOnHookMap<Link> allLinks;
-
     /** Constructors for each builder. */
     final MethodHandle[] builderConstructors;
 
     /** Methods annotated with {@link OnHook} that takes a non-base {@link Hook}. */
     final Link[] customHooks;
+
+    /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedFieldHook} as a parameter. */
+    @Nullable
+    final Map<Class<?>, Link> annotatedFields;
+
+    /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedMethodHook} as a parameter. */
+    @Nullable
+    final Map<Class<?>, Link> annotatedMethods;
+
+    /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedTypeHook} as a parameter. */
+    @Nullable
+    final Map<Class<?>, Link> annotatedTypes;
+
+    /** Methods annotated with {@link OnHook} that takes a {@link AssignableToHook} as a parameter. */
+    @Nullable
+    final Map<Class<?>, Link> assignableTos;
+
+    @Override
+    public String toString() {
+        return "AnnotatedFields: " + toString(annotatedFields) + ", " + "annotatedMethods: " + toString(annotatedMethods) + ", " + "annotatedTypes: "
+                + toString(annotatedTypes) + ", " + "assignableTos: " + toString(assignableTos) + ", ";
+    }
 
     OnHookModel(OnHookModelBuilder b) {
         Function<TinyPair<Node, MethodHandle>, Link> ff = e -> {
@@ -57,8 +78,10 @@ public final class OnHookModel {
             }
             return l;
         };
-
-        allLinks = b.allEntries.toImmutable(ff);
+        annotatedFields = toImmutable0(b.annotatedFields, ff);
+        annotatedMethods = toImmutable0(b.annotatedMethods, ff);
+        annotatedTypes = toImmutable0(b.annotatedTypes, ff);
+        assignableTos = toImmutable0(b.assignableTos, ff);
 
         this.customHooks = new Link[b.stack.size()];
         this.builderConstructors = new MethodHandle[b.stack.size()];
@@ -74,11 +97,11 @@ public final class OnHookModel {
             }
             System.out.println("------");
 
-            System.out.println("An Methods " + allLinks.annotatedMethods);
+            System.out.println("An Methods " + annotatedMethods);
 
-            System.out.println("An Fields " + allLinks.annotatedFields);
-            System.out.println("An Types " + allLinks.annotatedTypes);
-            System.out.println("Types " + allLinks.assignableTos);
+            System.out.println("An Fields " + annotatedFields);
+            System.out.println("An Types " + annotatedTypes);
+            System.out.println("Types " + assignableTos);
             System.out.println("------");
             // System.out.println("Methods " + allLinks.annotatedMethods);
 
@@ -86,14 +109,27 @@ public final class OnHookModel {
         for (int i = 0; i < list.size(); i++) {
             OnHookModelBuilder.Node n = list.get(i);// b.result.get(i);
             builderConstructors[i] = n.builderConstructor;
-            if (b.allEntries.customHooks != null) {
+            if (b.customHooks != null) {
                 // We reverse the order here so instead of Dependent->Dependency we get Dependency->Dependent
                 // We do this so we do not automatically invoke methods on the root object. which is never cached.
-                for (TinyPair<Node, MethodHandle> l = b.allEntries.customHooks.get(n.hookType); l != null; l = l.next) {
+                for (TinyPair<Node, MethodHandle> l = b.customHooks.get(n.hookType); l != null; l = l.next) {
                     customHooks[l.element1.index] = new Link(l.element2, i, customHooks[l.element1.index]);
                 }
             }
         }
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private Map<Class<?>, Link> toImmutable0(IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> map, Function<TinyPair<Node, MethodHandle>, Link> f) {
+        if (map == null) {
+            return null;
+        }
+        // Replace in map
+        IdentityHashMap m = map;
+
+        m.replaceAll((k, v) -> ((Function) f).apply(v));
+
+        return Map.copyOf(m);
     }
 
     /**
@@ -104,25 +140,25 @@ public final class OnHookModel {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Nullable
     public Set<Class<? extends Annotation>> annotatedFieldHooks() {
-        return allLinks == null || allLinks.annotatedFields == null ? null : (Set) allLinks.annotatedFields.keySet();
+        return annotatedFields == null ? null : (Set) annotatedFields.keySet();
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Nullable
     public Set<Class<? extends Annotation>> annotatedMethodHooks() {
-        return allLinks == null || allLinks.annotatedMethods == null ? null : (Set) allLinks.annotatedMethods.keySet();
+        return annotatedMethods == null ? null : (Set) annotatedMethods.keySet();
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Nullable
     public Set<Class<? extends Annotation>> annotatedTypeHooks() {
-        return allLinks == null || allLinks.annotatedTypes == null ? null : (Set) allLinks.annotatedTypes.keySet();
+        return annotatedTypes == null ? null : (Set) annotatedTypes.keySet();
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Nullable
     public Set<Class<?>> assignableTos() {
-        return allLinks == null || allLinks.assignableTos == null ? null : (Set) allLinks.assignableTos.keySet();
+        return assignableTos == null ? null : (Set) assignableTos.keySet();
     }
 
     /**
@@ -153,41 +189,7 @@ public final class OnHookModel {
         }
     }
 
-    // Lad os lige taenke over om vi skal bruge det andet steds...
-    static final class ImmutableOnHookMap<V> {
-
-        /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedFieldHook} as a parameter. */
-        @Nullable
-        final Map<Class<?>, V> annotatedFields;
-
-        /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedMethodHook} as a parameter. */
-        @Nullable
-        final Map<Class<?>, V> annotatedMethods;
-
-        /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedTypeHook} as a parameter. */
-        @Nullable
-        final Map<Class<?>, V> annotatedTypes;
-
-        /** Methods annotated with {@link OnHook} that takes a {@link AssignableToHook} as a parameter. */
-        @Nullable
-        final Map<Class<?>, V> assignableTos;
-
-        ImmutableOnHookMap(Map<Class<?>, V> annotatedFields, Map<Class<?>, V> annotatedMethod, Map<Class<?>, V> annotatedTypes,
-                Map<Class<?>, V> assignableTos) {
-            this.annotatedFields = annotatedFields;
-            this.annotatedMethods = annotatedMethod;
-            this.annotatedTypes = annotatedTypes;
-            this.assignableTos = assignableTos;
-        }
-
-        @Override
-        public String toString() {
-            return "AnnotatedFields: " + toString(annotatedFields) + ", " + "annotatedMethods: " + toString(annotatedMethods) + ", " + "annotatedTypes: "
-                    + toString(annotatedTypes) + ", " + "assignableTos: " + toString(assignableTos) + ", ";
-        }
-
-        private String toString(Map<?, ?> m) {
-            return m == null ? "{}" : m.keySet().toString();
-        }
+    private String toString(Map<?, ?> m) {
+        return m == null ? "{}" : m.keySet().toString();
     }
 }
