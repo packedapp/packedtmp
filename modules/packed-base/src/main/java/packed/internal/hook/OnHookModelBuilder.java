@@ -55,7 +55,7 @@ final class OnHookModelBuilder {
     final MutableOnHookMap<TinyPair<Node, MethodHandle>> allEntries = new MutableOnHookMap<>();
 
     /** All non-root nodes, the key being the type of the hook. */
-    private final IdentityHashMap<Class<? extends Hook>, Node> nodes = new IdentityHashMap<>();
+    private final IdentityHashMap<Class<? extends Hook>, HookBuilderNode> nodes = new IdentityHashMap<>();
 
     /** The root node, is not in {@link #nodes}. */
     private final Node root;
@@ -66,7 +66,7 @@ final class OnHookModelBuilder {
     private final UncheckedThrowableFactory<? extends RuntimeException> tf;
 
     OnHookModelBuilder(ClassProcessor cp, boolean instantiateRoot, UncheckedThrowableFactory<? extends RuntimeException> tf, Class<?>... additionalParameters) {
-        this.root = instantiateRoot ? new Node(cp, tf, cp.clazz()) : new Node(cp);
+        this.root = instantiateRoot ? new HookBuilderNode(cp, tf, cp.clazz()) : new Node(cp);
         this.tf = requireNonNull(tf);
     }
 
@@ -89,8 +89,8 @@ final class OnHookModelBuilder {
         boolean doContinue = true;
         while (doContinue && !nodes.isEmpty()) {
             doContinue = false;
-            for (Iterator<Node> iterator = nodes.values().iterator(); iterator.hasNext();) {
-                Node b = iterator.next();
+            for (Iterator<HookBuilderNode> iterator = nodes.values().iterator(); iterator.hasNext();) {
+                HookBuilderNode b = iterator.next();
                 if (!Tiny.anyMatch(b.dependencies, e -> e.index == 0)) {
                     b.index = index--;
                     stack.addFirst(b);
@@ -151,7 +151,7 @@ final class OnHookModelBuilder {
                     + Hook.class.getCanonicalName() + " was " + parameters[0].getType(), method);
         }
         for (int i = 1; i < parameters.length; i++) {
-            if (node != root) {
+            if (node instanceof HookBuilderNode) {
                 throw tf.newThrowableForMethod(
                         "Implementations of Hook.Builder can only take a single parameter for methods annotated with @" + OnHook.class.getSimpleName(), method);
             }
@@ -179,6 +179,8 @@ final class OnHookModelBuilder {
             mm = allEntries.annotatedTypesLazyInit();
         } else if (hookType == AssignableToHook.class) {
             mm = allEntries.assignableTosLazyInit();
+        } else {
+            onMethodCustomHook(node, hookType, method, mh);
         }
 
         if (mm != null) {
@@ -198,34 +200,36 @@ final class OnHookModelBuilder {
             }
 
             mm.compute(qualifierType, (k, v) -> new TinyPair<>(node, mh, v));
-        } else {
-            if (hookType == node.cp.clazz()) {
-                tf.newThrowableForMethod("Hook cannot depend on itself", method);
-            }
-            TypeUtil.checkClassIsInstantiable(hookType);
-            IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> m = allEntries.customHooksLazyInit();
-            m.compute(hookType, (k, v) -> {
-
-                // Lazy create new node if one does not already exist for the hookType
-                Node nodeRef = nodes.computeIfAbsent(hookType, ignore -> {
-                    Node newNode = new Node(root.cp, tf, hookType);
-                    stack.addLast(newNode); // make sure it will be processed at some later point.
-                    return newNode;
-                });
-
-                // Test if the builder of a hooks depends on the hook itself
-                if (node == nodeRef) {
-                    throw tf.newThrowableForMethod("Hook cannot depend on itself", method);
-                }
-
-                // Or maybe we need to this for circles??
-                // If we have pure tests
-                if (node != root) {
-                    node.dependencies = new Tiny<>(node, node.dependencies);
-                }
-                return new TinyPair<>(node, mh, v);
-            });
         }
+    }
+
+    void onMethodCustomHook(Node node, Class<? extends Hook> hookType, Method method, MethodHandle mh) {
+        if (hookType == node.cp.clazz()) {
+            tf.newThrowableForMethod("Hook cannot depend on itself", method);
+        }
+        IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> m = allEntries.customHooksLazyInit();
+        m.compute(hookType, (k, v) -> {
+
+            // Lazy create new node if one does not already exist for the hookType
+            Node nodeRef = nodes.computeIfAbsent(hookType, ignore -> {
+                HookBuilderNode newNode = new HookBuilderNode(root.cp, tf, hookType);
+                stack.addLast(newNode); // make sure it will be processed at some later point.
+                return newNode;
+            });
+
+            // Test if the builder of a hooks depends on the hook itself
+            if (node == nodeRef) {
+                throw tf.newThrowableForMethod("Hook cannot depend on itself", method);
+            }
+
+            // Or maybe we need to this for circles??
+            // If we have pure tests
+            if (node instanceof HookBuilderNode) {
+                HookBuilderNode bn = (HookBuilderNode) node;
+                bn.dependencies = new Tiny<>(bn, bn.dependencies);
+            }
+            return new TinyPair<>(node, mh, v);
+        });
     }
 
     static final class MutableOnHookMap<V> {
@@ -325,10 +329,6 @@ final class OnHookModelBuilder {
         /** The class processor for the entity that contains the methods annotated with {@link OnHook}. */
         private final ClassProcessor cp;
 
-        /** Dependencies on other nodes (will never contain a link to the root node). */
-        @Nullable
-        private Tiny<Node> dependencies;
-
         /** The index of this node. */
         int index;
 
@@ -350,6 +350,8 @@ final class OnHookModelBuilder {
             Class<?> builderClass = ClassFinder.findDeclaredClass(type, "Builder", Hook.Builder.class);
             this.cp = cps.spawn(builderClass);
             this.builderConstructor = ConstructorFinder.find(cp, tf);
+            // TypeUtil.checkClassIsInstantiable(hookType);
+
             if (builderConstructor.type().returnType() != cp.clazz()) {
                 throw new IllegalStateException("OOPS");
             }
@@ -361,18 +363,14 @@ final class OnHookModelBuilder {
         }
     }
 
-    // static class BuilderNode extends Node {
-    // private BuilderNode(ClassProcessor cps, UncheckedThrowableFactory<? extends RuntimeException> tf, Class<?> type) {
-    // super()
-    // this.hookType = requireNonNull(type);
-    // Class<?> builderClass = ClassFinder.findDeclaredClass(type, "Builder", Hook.Builder.class);
-    // this.cp = cps.spawn(builderClass);
-    // this.builderConstructor = ConstructorFinder.find(cp, tf);
-    // if (builderConstructor.type().returnType() != cp.clazz()) {
-    // throw new IllegalStateException("OOPS");
-    // }
-    // }
-    //
-    // static BuilderNode
-    // }
+    static class HookBuilderNode extends Node {
+
+        /** Dependencies on other nodes (will never contain a link to the root node). */
+        @Nullable
+        Tiny<HookBuilderNode> dependencies;
+
+        private HookBuilderNode(ClassProcessor cps, UncheckedThrowableFactory<? extends RuntimeException> tf, Class<?> type) {
+            super(cps, tf, type);
+        }
+    }
 }
