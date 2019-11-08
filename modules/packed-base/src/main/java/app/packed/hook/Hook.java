@@ -98,7 +98,7 @@ public interface Hook {
             ClassProcessor cpTarget = new ClassProcessor(caller, target, false);
 
             try (MemberUnreflector hc = new MemberUnreflector(cpTarget, AssertionErrorRuntimeException.FACTORY)) {
-                OnHookModel model = OnHookModel.newInstance(cpHook, container == null, AssertionErrorRuntimeException.FACTORY);
+                OnHookModel model = OnHookModel.newModel(cpHook, container == null, AssertionErrorRuntimeException.FACTORY);
                 if (model == null) {
                     throw new AssertionError(cpHook.clazz() + " must have at least one method annotated with @" + OnHook.class.getSimpleName());
                 }

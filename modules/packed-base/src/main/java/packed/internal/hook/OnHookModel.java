@@ -171,7 +171,7 @@ public final class OnHookModel {
      * @return the new model, or null if the no {@link OnHook} annotations was present
      */
     @Nullable
-    public static OnHookModel newInstance(ClassProcessor cp, boolean instantiateRoot, UncheckedThrowableFactory<? extends RuntimeException> tf,
+    public static OnHookModel newModel(ClassProcessor cp, boolean instantiateRoot, UncheckedThrowableFactory<? extends RuntimeException> tf,
             Class<?>... additionalParameters) {
         return new OnHookModelBuilder(cp, instantiateRoot, tf, additionalParameters).build();
     }
