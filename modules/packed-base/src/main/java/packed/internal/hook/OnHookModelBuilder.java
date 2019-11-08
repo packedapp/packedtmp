@@ -208,6 +208,7 @@ final class OnHookModelBuilder {
             tf.newThrowableForMethod("Hook cannot depend on itself", method);
         }
         IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> m = allEntries.customHooksLazyInit();
+
         m.compute(hookType, (k, v) -> {
 
             // Lazy create new node if one does not already exist for the hookType
@@ -235,46 +236,46 @@ final class OnHookModelBuilder {
     static final class MutableOnHookMap<V> {
 
         /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedFieldHook} as a parameter. */
-        IdentityHashMap<Class<?>, V> annotatedFields;
+        IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> annotatedFields;
 
         /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedMethodHook} as a parameter. */
-        IdentityHashMap<Class<?>, V> annotatedMethods;
+        IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> annotatedMethods;
 
         /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedTypeHook} as a parameter. */
-        IdentityHashMap<Class<?>, V> annotatedTypes;
+        IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> annotatedTypes;
 
         /** Methods annotated with {@link OnHook} that takes a {@link AssignableToHook} as a parameter. */
-        IdentityHashMap<Class<?>, V> assignableTos;
+        IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> assignableTos;
 
         /** Methods annotated with {@link OnHook} that takes a non-base {@link Hook}. */
-        IdentityHashMap<Class<?>, V> customHooks;
+        IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> customHooks;
 
-        private IdentityHashMap<Class<?>, V> annotatedFieldsLazyInit() {
-            IdentityHashMap<Class<?>, V> a = annotatedFields;
+        private IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> annotatedFieldsLazyInit() {
+            IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> a = annotatedFields;
             if (a == null) {
                 a = annotatedFields = new IdentityHashMap<>(1);
             }
             return a;
         }
 
-        private IdentityHashMap<Class<?>, V> annotatedMethodsLazyInit() {
-            IdentityHashMap<Class<?>, V> a = annotatedMethods;
+        private IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> annotatedMethodsLazyInit() {
+            IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> a = annotatedMethods;
             if (a == null) {
                 a = annotatedMethods = new IdentityHashMap<>(1);
             }
             return a;
         }
 
-        private IdentityHashMap<Class<?>, V> annotatedTypesLazyInit() {
-            IdentityHashMap<Class<?>, V> a = annotatedTypes;
+        private IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> annotatedTypesLazyInit() {
+            IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> a = annotatedTypes;
             if (a == null) {
                 a = annotatedTypes = new IdentityHashMap<>(1);
             }
             return a;
         }
 
-        private IdentityHashMap<Class<?>, V> assignableTosLazyInit() {
-            IdentityHashMap<Class<?>, V> a = assignableTos;
+        private IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> assignableTosLazyInit() {
+            IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> a = assignableTos;
             if (a == null) {
                 a = assignableTos = new IdentityHashMap<>(1);
             }
@@ -294,8 +295,8 @@ final class OnHookModelBuilder {
             return Map.copyOf(m);
         }
 
-        private IdentityHashMap<Class<?>, V> customHooksLazyInit() {
-            IdentityHashMap<Class<?>, V> a = customHooks;
+        private IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> customHooksLazyInit() {
+            IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> a = customHooks;
             if (a == null) {
                 a = customHooks = new IdentityHashMap<>(1);
             }
@@ -306,7 +307,7 @@ final class OnHookModelBuilder {
             return annotatedFields == null && annotatedMethods == null && annotatedTypes == null && assignableTos == null && customHooks == null;
         }
 
-        <E> ImmutableOnHookMap<E> toImmutable(Function<V, E> converter) {
+        <E> ImmutableOnHookMap<E> toImmutable(Function<TinyPair<Node, MethodHandle>, E> converter) {
             Map<Class<?>, E> annotatedFieldHooks = convert(annotatedFields, converter);
             Map<Class<?>, E> annotatedMethoddHooks = convert(annotatedMethods, converter);
             Map<Class<?>, E> annotatedTypeHooks = convert(annotatedTypes, converter);
