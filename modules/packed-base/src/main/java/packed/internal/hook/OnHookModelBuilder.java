@@ -312,15 +312,15 @@ final class OnHookModelBuilder {
     }
 
     /** A node represents a "container" class with one or more methods annotated with {@link OnHook}. */
-    static final class Node {
+    static class Node {
 
         /** A constructor for the builder if this node is a custom hook. */
         @Nullable
         final MethodHandle builderConstructor;
 
-        /** The type of on node container. */
+        /** The type of hook for non-root nodes. */
         @Nullable
-        final Class<?> containerType;
+        final Class<?> hookType;
 
         /** The class processor for the entity that contains the methods annotated with {@link OnHook}. */
         private final ClassProcessor cp;
@@ -340,13 +340,13 @@ final class OnHookModelBuilder {
          *            the class processor for the node
          */
         private Node(ClassProcessor cp) {
-            this.cp = cp;
-            this.containerType = null;
+            this.cp = requireNonNull(cp);
+            this.hookType = null;
             this.builderConstructor = null;
         }
 
         private Node(ClassProcessor cps, UncheckedThrowableFactory<? extends RuntimeException> tf, Class<?> type) {
-            this.containerType = requireNonNull(type);
+            this.hookType = requireNonNull(type);
             Class<?> builderClass = ClassFinder.findDeclaredClass(type, "Builder", Hook.Builder.class);
             this.cp = cps.spawn(builderClass);
             this.builderConstructor = ConstructorFinder.find(cp, tf);
@@ -360,4 +360,19 @@ final class OnHookModelBuilder {
             return builderConstructor == null ? "" : builderConstructor.type().toString();
         }
     }
+
+    // static class BuilderNode extends Node {
+    // private BuilderNode(ClassProcessor cps, UncheckedThrowableFactory<? extends RuntimeException> tf, Class<?> type) {
+    // super()
+    // this.hookType = requireNonNull(type);
+    // Class<?> builderClass = ClassFinder.findDeclaredClass(type, "Builder", Hook.Builder.class);
+    // this.cp = cps.spawn(builderClass);
+    // this.builderConstructor = ConstructorFinder.find(cp, tf);
+    // if (builderConstructor.type().returnType() != cp.clazz()) {
+    // throw new IllegalStateException("OOPS");
+    // }
+    // }
+    //
+    // static BuilderNode
+    // }
 }
