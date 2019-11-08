@@ -34,5 +34,4 @@ public final class MethodHandleUtil {
             throw new ExceptionInInitializerError(e);
         }
     }
-
 }

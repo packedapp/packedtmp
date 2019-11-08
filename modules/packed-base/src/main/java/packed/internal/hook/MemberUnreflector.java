@@ -38,14 +38,13 @@ public final class MemberUnreflector implements AutoCloseable {
     /** Whether or not the processor is closed. In which we cannot unreflect any members anymore. */
     private boolean isClosed;
 
-    private final UncheckedThrowableFactory<? extends RuntimeException> tf;
+    private final UncheckedThrowableFactory<?> tf;
 
-    @SuppressWarnings("unchecked")
     public MemberUnreflector(ClassProcessor cp, UncheckedThrowableFactory<?> tf) {
         this.cp = requireNonNull(cp);
         // A hack to allow us to throw AssertionError, as we have no way to indicate
         // Error || RuntimeException
-        this.tf = (UncheckedThrowableFactory<? extends RuntimeException>) tf;
+        this.tf = tf;
     }
 
     /**

@@ -47,7 +47,7 @@ public final class ConstructorFinder {
      *            the parameter types the constructor must take
      * @return a method handle
      */
-    public static <T extends Throwable> MethodHandle find(ClassProcessor cp, UncheckedThrowableFactory<T> tf, Class<?>... parameterTypes) throws T {
+    public static <T extends RuntimeException> MethodHandle find(ClassProcessor cp, UncheckedThrowableFactory<T> tf, Class<?>... parameterTypes) throws T {
         Class<?> onType = cp.clazz();
         if (Modifier.isAbstract(onType.getModifiers())) {
             throw tf.newThrowable("'" + StringFormatter.format(onType) + "' cannot be an abstract class");
@@ -80,7 +80,8 @@ public final class ConstructorFinder {
         return cp.unreflectConstructor(constructor, tf);
     }
 
-    public static <T extends Throwable> MethodHandle findExactlyOne(ClassProcessor cp, UncheckedThrowableFactory<T> tf, MethodType... parameterTypes) throws T {
+    public static <T extends RuntimeException> MethodHandle findExactlyOne(ClassProcessor cp, UncheckedThrowableFactory<T> tf, MethodType... parameterTypes)
+            throws T {
         throw new UnsupportedOperationException();
     }
 

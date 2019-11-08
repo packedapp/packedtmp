@@ -28,7 +28,10 @@ import app.packed.container.InternalExtensionException;
 // Make rename to something like UncheckedThrowableFactory....
 // Og saa laver vi et check
 
-public abstract class UncheckedThrowableFactory<T extends Throwable> {
+// HVorfor var det lige jeg lavede den om...... Hmmm
+// I think I got tired of having throws T on every method that could fail.
+
+public abstract class UncheckedThrowableFactory<T extends RuntimeException> {
 
     public static final UncheckedThrowableFactory<InternalExtensionException> INTERNAL_EXTENSION_EXCEPTION_FACTORY = new UncheckedThrowableFactory<InternalExtensionException>() {
 

@@ -43,7 +43,7 @@ import packed.internal.util.UncheckedThrowableFactory;
 // So ConstructorFinder is probably a bad name..
 public class ConstructorFinder2 {
 
-    static <E extends Throwable, T> Constructor<T> findConstructor(Class<T> type, UncheckedThrowableFactory<E> tf, MethodType... types) throws E {
+    static <T> Constructor<T> findConstructor(Class<T> type, UncheckedThrowableFactory<?> tf, MethodType... types) {
         // types.length == 0-> EmptyConstructor
         // Maaske tage et saet????
         // Fails if more than 1 constructor

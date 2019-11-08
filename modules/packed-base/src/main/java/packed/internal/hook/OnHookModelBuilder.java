@@ -29,6 +29,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Function;
 
+import app.packed.container.Bundle;
+import app.packed.container.Extension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
@@ -50,11 +52,9 @@ import packed.internal.util.types.TypeUtil;
 /** A builder for classes that may contain methods annotated with {@link OnHook}. */
 final class OnHookModelBuilder {
 
-    private final UncheckedThrowableFactory<? extends RuntimeException> tf;
-
     final MutableOnHookMap<TinyPair<Node, MethodHandle>> allEntries = new MutableOnHookMap<>();
 
-    /** All non-root nodes, index by their the type of the hook. */
+    /** All non-root nodes, the key being the type of the hook. */
     private final IdentityHashMap<Class<? extends Hook>, Node> nodes = new IdentityHashMap<>();
 
     /** The root node, is not in {@link #nodes}. */
@@ -62,6 +62,8 @@ final class OnHookModelBuilder {
 
     /** A stack that is used for processing each node. */
     final ArrayDeque<Node> stack = new ArrayDeque<>();
+
+    private final UncheckedThrowableFactory<? extends RuntimeException> tf;
 
     OnHookModelBuilder(ClassProcessor cp, boolean instantiateRoot, UncheckedThrowableFactory<? extends RuntimeException> tf, Class<?>... additionalParameters) {
         this.root = instantiateRoot ? new Node(cp, tf, cp.clazz()) : new Node(cp);
@@ -123,25 +125,27 @@ final class OnHookModelBuilder {
 
     @SuppressWarnings("unchecked")
     private void onMethod(Node node, Method method) {
-        // System.out.println(method);
+        // Ignore any method that is not annotated with @OnHook
         if (!method.isAnnotationPresent(OnHook.class)) {
             return;
         }
+
         if (method.getParameterCount() == 0) {
             throw tf.newThrowableForMethod(
                     "Methods annotated with @" + OnHook.class.getSimpleName() + " must take at least 1 parameter of type " + Hook.class.getCanonicalName(),
                     method);
         }
+
         Parameter[] parameters = method.getParameters();
         Parameter hook = parameters[0];
 
         Type hookT = getResolvedType(node.cp.clazz(), method, hook.getParameterizedType());
 
         Class<?> rawHookType = GTypeLiteral.get(hookT).getRawType();
-        // System.out.println(hookT.getClass());
 
         @SuppressWarnings("rawtypes")
         Class<? extends Hook> hookType = (Class) GTypeLiteral.get(hookT).getRawType();
+
         if (!Hook.class.isAssignableFrom(rawHookType)) {
             throw tf.newThrowableForMethod("The first parameter of a method annotated with @" + OnHook.class.getSimpleName() + " must be of type "
                     + Hook.class.getCanonicalName() + " was " + parameters[0].getType(), method);
@@ -162,6 +166,7 @@ final class OnHookModelBuilder {
             // }
         }
 
+        // Creates a method handle for the method annotated with @OnHook
         MethodHandle mh = node.cp.unreflect(method, tf);
 
         // Let first see if it is a base book.
@@ -177,7 +182,7 @@ final class OnHookModelBuilder {
         }
 
         if (mm != null) {
-            Type t = hookT; // .getParameterizedType();
+            Type t = hookT;
             if (!(t instanceof ParameterizedType)) {
                 throw tf.newThrowableForMethod(hookType.getSimpleName() + " must be parameterized, cannot be a raw type", method);
             }
@@ -223,53 +228,6 @@ final class OnHookModelBuilder {
         }
     }
 
-    static final class Node {
-
-        /** A constructor for the builder if this node is a custom hook. */
-        @Nullable
-        final MethodHandle builderConstructor;
-
-        /** The type of on node container. */
-        final Class<?> containerType;
-
-        /** The class processor for the entity that contains the methods annotated with {@link OnHook}. */
-        private final ClassProcessor cp;
-
-        /** Any dependencies on other nodes. */
-        @Nullable
-        private Tiny<Node> dependencies;
-
-        /** The index of this node. */
-        int index;
-
-        /**
-         * A node without a builder
-         * 
-         * @param cp
-         *            the class processor for the node
-         */
-        private Node(ClassProcessor cp) {
-            this.cp = cp;
-            this.containerType = cp.clazz();
-            this.builderConstructor = null;
-        }
-
-        private Node(ClassProcessor cps, UncheckedThrowableFactory<? extends RuntimeException> tf, Class<?> type) {
-            this.containerType = requireNonNull(type);
-            Class<?> builderClass = ClassFinder.findDeclaredClass(type, "Builder", Hook.Builder.class);
-            this.cp = cps.spawn(builderClass);
-            this.builderConstructor = ConstructorFinder.find(cp, tf);
-            if (builderConstructor.type().returnType() != cp.clazz()) {
-                throw new IllegalStateException("OOPS");
-            }
-        }
-
-        @Override
-        public String toString() {
-            return builderConstructor == null ? "" : builderConstructor.type().toString();
-        }
-    }
-
     static final class MutableOnHookMap<V> {
 
         /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedFieldHook} as a parameter. */
@@ -287,7 +245,7 @@ final class OnHookModelBuilder {
         /** Methods annotated with {@link OnHook} that takes a non-base {@link Hook}. */
         IdentityHashMap<Class<?>, V> customHooks;
 
-        IdentityHashMap<Class<?>, V> annotatedFieldsLazyInit() {
+        private IdentityHashMap<Class<?>, V> annotatedFieldsLazyInit() {
             IdentityHashMap<Class<?>, V> a = annotatedFields;
             if (a == null) {
                 a = annotatedFields = new IdentityHashMap<>(1);
@@ -295,11 +253,7 @@ final class OnHookModelBuilder {
             return a;
         }
 
-        boolean isEmpty() {
-            return annotatedFields == null && annotatedMethods == null && annotatedTypes == null && assignableTos == null && customHooks == null;
-        }
-
-        IdentityHashMap<Class<?>, V> annotatedMethodsLazyInit() {
+        private IdentityHashMap<Class<?>, V> annotatedMethodsLazyInit() {
             IdentityHashMap<Class<?>, V> a = annotatedMethods;
             if (a == null) {
                 a = annotatedMethods = new IdentityHashMap<>(1);
@@ -307,7 +261,7 @@ final class OnHookModelBuilder {
             return a;
         }
 
-        IdentityHashMap<Class<?>, V> annotatedTypesLazyInit() {
+        private IdentityHashMap<Class<?>, V> annotatedTypesLazyInit() {
             IdentityHashMap<Class<?>, V> a = annotatedTypes;
             if (a == null) {
                 a = annotatedTypes = new IdentityHashMap<>(1);
@@ -315,28 +269,12 @@ final class OnHookModelBuilder {
             return a;
         }
 
-        IdentityHashMap<Class<?>, V> assignableTosLazyInit() {
+        private IdentityHashMap<Class<?>, V> assignableTosLazyInit() {
             IdentityHashMap<Class<?>, V> a = assignableTos;
             if (a == null) {
                 a = assignableTos = new IdentityHashMap<>(1);
             }
             return a;
-        }
-
-        IdentityHashMap<Class<?>, V> customHooksLazyInit() {
-            IdentityHashMap<Class<?>, V> a = customHooks;
-            if (a == null) {
-                a = customHooks = new IdentityHashMap<>(1);
-            }
-            return a;
-        }
-
-        <E> ImmutableOnHookMap<E> toImmutable(Function<V, E> converter) {
-            Map<Class<?>, E> annotatedFieldHooks = convert(annotatedFields, converter);
-            Map<Class<?>, E> annotatedMethoddHooks = convert(annotatedMethods, converter);
-            Map<Class<?>, E> annotatedTypeHooks = convert(annotatedTypes, converter);
-            Map<Class<?>, E> assignableToHooks = convert(assignableTos, converter);
-            return new ImmutableOnHookMap<E>(annotatedFieldHooks, annotatedMethoddHooks, annotatedTypeHooks, assignableToHooks);
         }
 
         @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -350,6 +288,76 @@ final class OnHookModelBuilder {
             m.replaceAll((k, v) -> ((Function) f).apply(v));
 
             return Map.copyOf(m);
+        }
+
+        private IdentityHashMap<Class<?>, V> customHooksLazyInit() {
+            IdentityHashMap<Class<?>, V> a = customHooks;
+            if (a == null) {
+                a = customHooks = new IdentityHashMap<>(1);
+            }
+            return a;
+        }
+
+        private boolean isEmpty() {
+            return annotatedFields == null && annotatedMethods == null && annotatedTypes == null && assignableTos == null && customHooks == null;
+        }
+
+        <E> ImmutableOnHookMap<E> toImmutable(Function<V, E> converter) {
+            Map<Class<?>, E> annotatedFieldHooks = convert(annotatedFields, converter);
+            Map<Class<?>, E> annotatedMethoddHooks = convert(annotatedMethods, converter);
+            Map<Class<?>, E> annotatedTypeHooks = convert(annotatedTypes, converter);
+            Map<Class<?>, E> assignableToHooks = convert(assignableTos, converter);
+            return new ImmutableOnHookMap<E>(annotatedFieldHooks, annotatedMethoddHooks, annotatedTypeHooks, assignableToHooks);
+        }
+    }
+
+    /** A node represents a "container" class with one or more methods annotated with {@link OnHook}. */
+    static final class Node {
+
+        /** A constructor for the builder if this node is a custom hook. */
+        @Nullable
+        final MethodHandle builderConstructor;
+
+        /** The type of on node container. */
+        @Nullable
+        final Class<?> containerType;
+
+        /** The class processor for the entity that contains the methods annotated with {@link OnHook}. */
+        private final ClassProcessor cp;
+
+        /** Dependencies on other nodes (will never contain a link to the root node). */
+        @Nullable
+        private Tiny<Node> dependencies;
+
+        /** The index of this node. */
+        int index;
+
+        /**
+         * Creates a node for a container that does not have a builder defined. This is, for example, the case for both
+         * {@link Bundle} and {@link Extension} which is instantiated elsewhere then the hook subsystem.
+         * 
+         * @param cp
+         *            the class processor for the node
+         */
+        private Node(ClassProcessor cp) {
+            this.cp = cp;
+            this.containerType = null;
+            this.builderConstructor = null;
+        }
+
+        private Node(ClassProcessor cps, UncheckedThrowableFactory<? extends RuntimeException> tf, Class<?> type) {
+            this.containerType = requireNonNull(type);
+            Class<?> builderClass = ClassFinder.findDeclaredClass(type, "Builder", Hook.Builder.class);
+            this.cp = cps.spawn(builderClass);
+            this.builderConstructor = ConstructorFinder.find(cp, tf);
+            if (builderConstructor.type().returnType() != cp.clazz()) {
+                throw new IllegalStateException("OOPS");
+            }
+        }
+
+        @Override
+        public String toString() {
+            return builderConstructor == null ? "" : builderConstructor.type().toString();
         }
     }
 }

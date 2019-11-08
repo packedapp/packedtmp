@@ -21,6 +21,8 @@ import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.hook.AnnotatedFieldHook;
+import app.packed.hook.AnnotatedMethodHook;
+import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import app.packed.lang.Qualifier;
@@ -40,7 +42,8 @@ public class HookTest {
     public static class Foo<T extends Annotation, S> {
 
         @OnHook
-        public void foo(AnnotatedFieldHook<Left> h) {
+        public void foo(AnnotatedFieldHook<Left> h) throws Throwable {
+            System.out.println(h.getter().invoke());
             System.err.println("CXXX");
         }
 
@@ -50,18 +53,29 @@ public class HookTest {
         }
 
         @OnHook
-        public void foox(AnnotatedFieldHook<T> h) {
-            System.err.println("CXXX");
+        public void foox(AnnotatedMethodHook<T> h) {
+            System.err.println("CXXX - Method " + h.method());
+        }
+
+        @OnHook
+        public void foox(AnnotatedTypeHook<T> h) {
+            System.err.println("CXXX Tyoe");
         }
     }
 
+    @Left
     public static class Foox {
 
         @Left
-        public String ss = "dddd";
+        public static String ss = "dddd";
 
         @Left
-        public String sss = "ssss";
+        public static String sss = "ssss";
+
+        @Left
+        public static String sss() {
+            return "Ssqw";
+        }
     }
 
     @Qualifier
