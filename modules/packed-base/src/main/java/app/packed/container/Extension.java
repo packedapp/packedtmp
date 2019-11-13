@@ -145,7 +145,7 @@ public abstract class Extension {
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
-     * This method delegates to {@link ExtensionContext#checkConfigurable()}.
+     * This method delegate all calls to {@link ExtensionContext#checkConfigurable()}.
      * 
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
@@ -172,7 +172,10 @@ public abstract class Extension {
     }
 
     /**
-     * Returns an extension of the specified type.
+     * Returns an extension of the specified type. Only extension types that have been explicitly registered as dependencies
+     * via ... are supported. Specifying an .... extension will result in an {@link IllegalArgumentException} being thrown.
+     * <p>
+     * In order for one extension to use another dependency
      * <p>
      * Invoking this method is similar to calling {@link ContainerConfiguration#use(Class)}. However, this method also keeps
      * track of which extensions uses other extensions. And forming any kind of circle in the dependency graph will fail
@@ -189,6 +192,8 @@ public abstract class Extension {
      * @throws UnsupportedOperationException
      *             if the specified extension type is not specified via {@link UseExtension} on this extension.
      */
+    // TODO change to IAE instead of UOE???? Fix ExtensionContext as well
+    // throw new IAE("The specified extension....
     protected final <E extends Extension> E use(Class<E> extensionType) {
         return context().use(extensionType);
     }

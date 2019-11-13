@@ -42,12 +42,6 @@ public final class OnHookModel {
 
     static final boolean DEBUG = true;
 
-    /** Constructors for each builder. */
-    final MethodHandle[] builderConstructors;
-
-    /** Methods annotated with {@link OnHook} that takes a non-base {@link Hook}. */
-    final Link[] customHooks;
-
     /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedFieldHook} as a parameter. */
     @Nullable
     final Map<Class<?>, Link> annotatedFields;
@@ -64,11 +58,11 @@ public final class OnHookModel {
     @Nullable
     final Map<Class<?>, Link> assignableTos;
 
-    @Override
-    public String toString() {
-        return "AnnotatedFields: " + toString(annotatedFields) + ", " + "annotatedMethods: " + toString(annotatedMethods) + ", " + "annotatedTypes: "
-                + toString(annotatedTypes) + ", " + "assignableTos: " + toString(assignableTos) + ", ";
-    }
+    /** Constructors for each builder. */
+    final MethodHandle[] builderConstructors;
+
+    /** Methods annotated with {@link OnHook} that takes a non-base {@link Hook}. */
+    final Link[] customHooks;
 
     OnHookModel(OnHookModelBuilder b) {
         Function<TinyPair<Node, MethodHandle>, Link> ff = e -> {
@@ -119,19 +113,6 @@ public final class OnHookModel {
         }
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private Map<Class<?>, Link> toImmutable0(IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> map, Function<TinyPair<Node, MethodHandle>, Link> f) {
-        if (map == null) {
-            return null;
-        }
-        // Replace in map
-        IdentityHashMap m = map;
-
-        m.replaceAll((k, v) -> ((Function) f).apply(v));
-
-        return Map.copyOf(m);
-    }
-
     /**
      * Returns an immutable set of all annotations on fields that are we are hooked on.
      * 
@@ -161,6 +142,29 @@ public final class OnHookModel {
         return assignableTos == null ? null : (Set) assignableTos.keySet();
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private Map<Class<?>, Link> toImmutable0(IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> map, Function<TinyPair<Node, MethodHandle>, Link> f) {
+        if (map == null) {
+            return null;
+        }
+        // Replace in map
+        IdentityHashMap m = map;
+
+        m.replaceAll((k, v) -> ((Function) f).apply(v));
+
+        return Map.copyOf(m);
+    }
+
+    @Override
+    public String toString() {
+        return "AnnotatedFields: " + toString(annotatedFields) + ", " + "annotatedMethods: " + toString(annotatedMethods) + ", " + "annotatedTypes: "
+                + toString(annotatedTypes) + ", " + "assignableTos: " + toString(assignableTos) + ", ";
+    }
+
+    private String toString(Map<?, ?> m) {
+        return m == null ? "{}" : m.keySet().toString();
+    }
+
     /**
      * Creates a new model.
      * 
@@ -187,9 +191,5 @@ public final class OnHookModel {
             this.index = index;
             this.next = next;
         }
-    }
-
-    private String toString(Map<?, ?> m) {
-        return m == null ? "{}" : m.keySet().toString();
     }
 }

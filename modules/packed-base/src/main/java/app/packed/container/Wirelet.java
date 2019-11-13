@@ -87,6 +87,7 @@ import packed.internal.container.FixedWireletList;
 
 // Paclet??? Har bare altid syntes det loed lidt dumt naar noget opkaldt efter projektet..
 // Packlet...
+// Plug
 public abstract class Wirelet {
 
     // For bedre error messages. This operation can only be used if the parent or child bundle

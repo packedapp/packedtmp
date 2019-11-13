@@ -23,7 +23,7 @@ import app.packed.lang.Nullable;
 /**
  *
  */
-public final class DefaultHookUsage {
+public final class BaseHookQualifierList {
 
     @Nullable
     public final Set<Class<? extends Annotation>> annotatedFields;
@@ -37,7 +37,7 @@ public final class DefaultHookUsage {
     @Nullable
     public final Set<Class<?>> assignableTos;
 
-    private DefaultHookUsage(@Nullable Set<Class<? extends Annotation>> annotatedFields, @Nullable Set<Class<? extends Annotation>> annotatedMethods,
+    private BaseHookQualifierList(@Nullable Set<Class<? extends Annotation>> annotatedFields, @Nullable Set<Class<? extends Annotation>> annotatedMethods,
             @Nullable Set<Class<? extends Annotation>> annotatedTypes, @Nullable Set<Class<?>> assignableTos) {
         this.annotatedFields = annotatedFields;
         this.annotatedMethods = annotatedMethods;
@@ -46,12 +46,12 @@ public final class DefaultHookUsage {
     }
 
     @Nullable
-    public static DefaultHookUsage ofOrNull(@Nullable Set<Class<? extends Annotation>> annotatedFields,
+    public static BaseHookQualifierList ofOrNull(@Nullable Set<Class<? extends Annotation>> annotatedFields,
             @Nullable Set<Class<? extends Annotation>> annotatedMethods, @Nullable Set<Class<? extends Annotation>> annotatedTypes,
             @Nullable Set<Class<?>> assignableTos) {
         if (annotatedFields == null && annotatedMethods == null && annotatedTypes == null && assignableTos == null) {
             return null;
         }
-        return new DefaultHookUsage(annotatedFields, annotatedMethods, annotatedTypes, assignableTos);
+        return new BaseHookQualifierList(annotatedFields, annotatedMethods, annotatedTypes, assignableTos);
     }
 }

@@ -38,7 +38,7 @@ import app.packed.lang.reflect.VarOperator;
  * This class contains various utility methods that are useful when writing extensions that make use of
  * {@link ServiceExtension}.
  */
-class ServiceExtensionSupport {
+class ExtensionToServiceExtensionSupport {
 
     public static final VarOperator<?> INJECT_FIELD = null;
 

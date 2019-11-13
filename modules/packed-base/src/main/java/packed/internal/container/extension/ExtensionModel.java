@@ -41,7 +41,7 @@ import app.packed.container.ExtensionWirelet;
 import app.packed.container.InternalExtensionException;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
-import packed.internal.hook.DefaultHookUsage;
+import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ClassProcessor;
@@ -93,7 +93,7 @@ public final class ExtensionModel<E extends Extension> {
     @Nullable
     private final OnHookModel onHookModel;
 
-    final DefaultHookUsage nonActivatingHooks;
+    final BaseHookQualifierList nonActivatingHooks;
 
     public final Consumer<? super Extension> onAdd;
 

@@ -43,6 +43,9 @@ import packed.internal.hook.MemberUnreflector;
 // Does not currently support generic types...
 
 // InstanceOfHook, AssignableToTypeHook
+
+// I think InstanceOfHook is much better as it emphasizes that you need an instance
+//
 public final class AssignableToHook<T> implements Hook {
 
     /** The builder for the component type. */

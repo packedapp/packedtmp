@@ -65,12 +65,12 @@ final class OnHookModelBuilder {
     IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> customHooks;
 
     /** All non-root nodes, the key being the type of the hook. */
-    private final IdentityHashMap<Class<? extends Hook>, HookBuilderNode> nodes = new IdentityHashMap<>();
+    private IdentityHashMap<Class<? extends Hook>, HookBuilderNode> nodes;
 
-    /** The root node, is not in {@link #nodes}. */
+    /** The root node (is never in {@link #nodes}). */
     private final Node root;
 
-    /** A stack that is used for processing each node. */
+    /** A stack used for processing node. */
     final ArrayDeque<Node> stack = new ArrayDeque<>();
 
     private final UncheckedThrowableFactory<? extends RuntimeException> tf;
@@ -83,11 +83,13 @@ final class OnHookModelBuilder {
     @Nullable
     OnHookModel build() {
         // Find all methods annotated with @OnHook and process them.
+        // If we support it on components, we need a little change..
         root.cp.findMethods(m -> onMethod(root, m));
         for (Node b = stack.pollFirst(); b != null; b = stack.pollFirst()) {
             Node bb = b;
             bb.cp.findMethods(m -> onMethod(bb, m));
         }
+
         if (annotatedFields == null && annotatedMethods == null && annotatedTypes == null && assignableTos == null && customHooks == null) {
             return null;
         }
@@ -95,26 +97,27 @@ final class OnHookModelBuilder {
         // Uses a simple iterative algorithm, to make sure there are no interdependencies between the custom hooks
         // It is potentially O(n^2) but this should not be a problem in practice
         // We add each no with no dependencies to the end of the stack.
-        int index = nodes.size();
-        boolean doContinue = true;
-        while (doContinue && !nodes.isEmpty()) {
-            doContinue = false;
-            for (Iterator<HookBuilderNode> iterator = nodes.values().iterator(); iterator.hasNext();) {
-                HookBuilderNode b = iterator.next();
-                if (!Tiny.anyMatch(b.dependencies, e -> e.index == 0)) {
-                    b.index = index--;
-                    stack.addFirst(b);
-                    iterator.remove();
-                    doContinue = true;
+        if (nodes != null) {
+            int index = nodes.size();
+            boolean doContinue = true;
+            while (doContinue && !nodes.isEmpty()) {
+                doContinue = false;
+                for (Iterator<HookBuilderNode> iterator = nodes.values().iterator(); iterator.hasNext();) {
+                    HookBuilderNode b = iterator.next();
+                    if (!Tiny.anyMatch(b.dependencies, e -> e.index == 0)) {
+                        b.index = index--;
+                        stack.addFirst(b);
+                        iterator.remove();
+                        doContinue = true;
+                    }
                 }
+            }
+            // Check if there are any remaining circles -> Not a DAG
+            if (!nodes.isEmpty()) {
+                throw new UnsupportedOperationException("Not supported currently");
             }
         }
         stack.addFirst(root);
-
-        if (!nodes.isEmpty()) {
-            // Okay, we got some circles.
-            throw new UnsupportedOperationException("Not supported currently");
-        }
 
         return new OnHookModel(this);
     }
@@ -213,6 +216,7 @@ final class OnHookModelBuilder {
     void onMethodBaseHook(Node node, Type t, Class<? extends Hook> hookType, Method method, IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> mm) {
         MethodHandle mh = node.cp.unreflect(method, tf);
 
+        // https://github.com/google/gson/blob/master/gson/src/main/java/com/google/gson/internal/%24Gson%24Types.java
         if (!(t instanceof ParameterizedType)) {
             throw tf.newThrowableForMethod(hookType.getSimpleName() + " must be parameterized, cannot be a raw type", method);
         }
@@ -232,7 +236,7 @@ final class OnHookModelBuilder {
 
     void onMethodCustomHook(Node node, Class<? extends Hook> hookType, Method method) {
         if (hookType == node.cp.clazz()) {
-            tf.newThrowableForMethod("Hook cannot depend on itself", method);
+            throw tf.newThrowableForMethod("Hook cannot depend on itself", method);
         }
 
         MethodHandle mh = node.cp.unreflect(method, tf);
@@ -244,6 +248,9 @@ final class OnHookModelBuilder {
         m.compute(hookType, (k, v) -> {
 
             // Lazy create new node if one does not already exist for the hookType
+            if (nodes == null) {
+                nodes = new IdentityHashMap<>();
+            }
             HookBuilderNode customHookRef = nodes.computeIfAbsent(hookType, ignore -> {
                 HookBuilderNode newNode = new HookBuilderNode(root.cp, tf, hookType);
                 stack.addLast(newNode); // make sure it will be processed at some later point.

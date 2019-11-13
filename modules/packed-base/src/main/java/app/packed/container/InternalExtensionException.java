@@ -16,8 +16,8 @@
 package app.packed.container;
 
 /**
- * An extension thrown to indicate that some part of an an extension was not properly implemented according to the
- * extension requirements in packed. As a user of the extension there is normally nothing else you can do, but report
+ * An exception thrown to indicate that some part of an extension was not properly implemented according to the basic
+ * contract of Packed's extension mechanism. As a user of the extension there is normally nothing you can do, but report
  * the error to the developer of the extension.
  */
 public class InternalExtensionException extends RuntimeException {

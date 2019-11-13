@@ -13,14 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.component;
 
 /**
  *
  */
-// Thrown whenever a bundle or similar is wrong...
-// Have an InvalidComponentException also???
-// ComponentDeclarationException (People can extend it...???)
-class InvalidContainerException {
+public class Dddd {
 
+    /**
+     * 
+     */
+    public Dddd() {
+
+    }
+
+    public static void main(String[] args) {
+        // System.out.println(System.nanoTime());
+
+        System.out.println(2 << 29);
+        // 243951294005
+    }
 }

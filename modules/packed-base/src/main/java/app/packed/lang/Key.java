@@ -285,9 +285,9 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
      * @see Field#getType()
      * @see Field#getGenericType()
      */
+    // I think throw IAE. And then have package private methods that take a ThrowableFactory.
     public static Key<?> fromField(Field field) {
-        requireNonNull(field, "field is null");
-        TypeLiteral<?> tl = TypeLiteral.fromField(field).box();
+        TypeLiteral<?> tl = TypeLiteral.fromField(field).box(); // checks null
         Annotation annotation = QualifierHelper.findQualifier(field, field.getAnnotations());
         return fromTypeLiteralNullableAnnotation(field, tl, annotation);
     }

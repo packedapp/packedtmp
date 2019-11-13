@@ -24,7 +24,7 @@ import app.packed.container.Extension;
 import app.packed.container.UseExtension;
 import app.packed.container.UseExtensionLazily;
 import app.packed.lang.Nullable;
-import packed.internal.hook.DefaultHookUsage;
+import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
 import packed.internal.util.Tiny;
 
@@ -86,8 +86,8 @@ public final class LazyExtensionActivationMap {
     }
 
     @Nullable
-    public static DefaultHookUsage findNonExtending(OnHookModel hooks) {
-        return DefaultHookUsage.ofOrNull(findNonAutoExtending(hooks.annotatedFieldHooks()), findNonAutoExtending(hooks.annotatedMethodHooks()),
+    public static BaseHookQualifierList findNonExtending(OnHookModel hooks) {
+        return BaseHookQualifierList.ofOrNull(findNonAutoExtending(hooks.annotatedFieldHooks()), findNonAutoExtending(hooks.annotatedMethodHooks()),
                 findNonAutoExtending(hooks.annotatedTypeHooks()), findNonAutoExtending(hooks.assignableTos()));
     }
 
@@ -118,7 +118,7 @@ public final class LazyExtensionActivationMap {
         if (uel != null) {
             for (Class<? extends Extension> c : uel.value()) {
                 ExtensionModel<? extends Extension> em = ExtensionModel.of(c);
-                DefaultHookUsage dhu = em.nonActivatingHooks;
+                BaseHookQualifierList dhu = em.nonActivatingHooks;
                 if (dhu != null) {
                     stats(c, annotatedFields, dhu.annotatedFields);
                     stats(c, annotatedMethods, dhu.annotatedMethods);
@@ -135,7 +135,7 @@ public final class LazyExtensionActivationMap {
         if (uela != null) {
             for (Class<? extends Extension> c : uela.value()) {
                 ExtensionModel<? extends Extension> em = ExtensionModel.of(c);
-                DefaultHookUsage dhu = em.nonActivatingHooks;
+                BaseHookQualifierList dhu = em.nonActivatingHooks;
                 if (dhu != null) {
                     stats(c, annotatedFields, dhu.annotatedFields);
                     stats(c, annotatedMethods, dhu.annotatedMethods);

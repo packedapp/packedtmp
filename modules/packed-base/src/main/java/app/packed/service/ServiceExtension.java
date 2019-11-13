@@ -306,6 +306,14 @@ public final class ServiceExtension extends Extension {
         return node.provider().provideInstance(cc, instance);
     }
 
+    public void require(Class<?>... keys) {
+        checkConfigurable();
+        ConfigSite cs = captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE);
+        for (Class<?> key : keys) {
+            node.dependencies().require(Dependency.of(key), cs);
+        }
+    }
+
     /**
      * Explicitly adds the specified key to the list of required services. There are typically two situations in where
      * explicitly adding required services can be useful:

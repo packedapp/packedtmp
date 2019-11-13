@@ -25,8 +25,8 @@ import packed.internal.container.extension.ExtensionModel;
 /**
  * An extension descriptor.
  * <p>
- * A extension descriptor describes an extension and defines various methods to obtain information about the extension.
- * An instance of this class is normally acquired by calling {@link #of(Class)}.
+ * This class describes an extension and defines various methods to obtain information about the extension. An instance
+ * of this class is normally acquired by calling {@link #of(Class)}.
  */
 public final class ExtensionDescriptor {
 
@@ -48,8 +48,8 @@ public final class ExtensionDescriptor {
     }
 
     /**
-     * Returns any other extensions this extension depends on. The returned set does not include any transitive
-     * dependencies.
+     * Returns an immutable set of any other extensions this extension depends on. The returned set does not include
+     * transitive dependencies.
      * 
      * @return any other extensions this extension depends on
      */
@@ -68,9 +68,9 @@ public final class ExtensionDescriptor {
     }
 
     /**
-     * Returns the extension type this descriptor describes.
+     * Returns the type of extension this descriptor describes.
      * 
-     * @return the extension type this descriptor describes
+     * @return the type of extension this descriptor describes
      */
     public Class<? extends Extension> type() {
         return model.extensionType;
@@ -80,11 +80,11 @@ public final class ExtensionDescriptor {
     // Map<Class<? extends Hook>, List<Object>>
 
     /**
-     * Returns an extension descriptor for the specified extension type.
+     * Returns a descriptor for the specified extension type.
      * 
      * @param extensionType
      *            the extension type to return a descriptor for
-     * @return an extension descriptor for the specified extension type
+     * @return a descriptor for the specified extension type
      */
     public static ExtensionDescriptor of(Class<? extends Extension> extensionType) {
         // Maybe just create one descriptor for each model and keep it

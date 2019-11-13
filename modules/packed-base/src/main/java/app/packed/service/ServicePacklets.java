@@ -43,6 +43,21 @@ public class ServicePacklets {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Returns a wirelet
+     * 
+     * @param originalKey
+     *            the key of the service to map
+     * @param newKey
+     *            the new key of the service
+     * @return the new wirelet
+     * 
+     * @see #mapTo(Key, Key)
+     * @see #mapTo(Factory)
+     */
+    // What kind of exception (if any) do we throw if the original key not there???
+    // WiringException??
+    // Can we have an ifPresent(Key.., Wirelet)? Nah,
     public static Wirelet mapTo(Class<?> originalKey, Class<?> newKey) {
         return mapTo(requireNonNull(originalKey, "originalKey is null"), requireNonNull(newKey, "newKey is null"));
     }
@@ -76,8 +91,14 @@ public class ServicePacklets {
         return new PackedUpstreamInjectionWirelet.PeekUpstream(action);
     }
 
+    /**
+     * <p>
+     * Note: That every service available for the ... Service that are not required (mandatory or optionally) are ignored.
+     * 
+     * @param action
+     * @return the new packlet
+     */
     public static Wirelet peekTo(Consumer<? super ServiceDescriptor> action) {
         return new PackedDownstreamInjectionWirelet.PeekDownstreamWirelet(action);
     }
-
 }

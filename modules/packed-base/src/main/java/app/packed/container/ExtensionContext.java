@@ -19,10 +19,10 @@ import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 
 /**
- * A instance of this interface is available to an extension via {@link Extension#context()} or via constructor
- * injection into the extension. Since the extension itself defines most methods in this interface via protected final
- * methods. This interface is typically used to be able to provide this methods to code that is not located on the
- * extension implementation. This is typically the case if the extension is too complex to contain in a single class.
+ * An instance of this interface is available via {@link Extension#context()} or via constructor injection into an
+ * extension. Since the extension itself defines most methods in this interface via protected final methods. This
+ * interface is typically used to be able to provide these methods to code that is not located on the extension
+ * implementation or in the same package as the extension itself.
  */
 public interface ExtensionContext {
 
@@ -52,7 +52,7 @@ public interface ExtensionContext {
 
     /**
      * Returns an extension of the specified type. The specified type must be among the dependencies of underlying
-     * extension. Otherwise an {@link UnsupportedOperationException} is thrown.
+     * extension. Otherwise an {@link InternalExtensionException} is thrown.
      * <p>
      * This method is similar to {@link ContainerConfiguration#use(Class)}. However, this method also makes sure that the
      * extension do request any other extensions that are in the set of its dependencies. Thereby potentially forming cycles
@@ -63,11 +63,11 @@ public interface ExtensionContext {
      * @param extensionType
      *            the type of extension to return
      * @return an extension of the specified type
-     * @throws IllegalStateException
-     *             if used from the constructor of the container. Or if the underlying container is no longer configurable
+     * @throws InternalExtensionException
+     *             if the specified extension type is not among the dependencies of this extension. Or if calling this
+     *             method from the constructor of the extension. Or if the underlying container is no longer configurable
      *             and an extension of the specified type has not already been installed
-     * @throws UnsupportedOperationException
-     *             if the specified extension type is not among the dependencies of this extension
+     * 
      * @see ContainerConfiguration#use(Class)
      */
     <E extends Extension> E use(Class<E> extensionType);

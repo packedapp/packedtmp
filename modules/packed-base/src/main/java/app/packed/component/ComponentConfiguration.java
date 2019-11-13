@@ -117,6 +117,7 @@ public interface ComponentConfiguration<T> {
      * If building an image, the path of the instantiated component might be prefixed with another path.
      * 
      * @return the full path of the component
+     * @see #onNamed(Consumer)
      */
     ComponentPath path();
 
