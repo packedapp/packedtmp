@@ -42,7 +42,7 @@ import app.packed.lang.Nullable;
 
 // Environment <- Immutable??, Attachable??
 // See #Extension Implementation notes for information about how to make sure it can be instantiated...
-public interface ContainerConfiguration extends ComponentConfiguration<Object> {
+public interface ContainerConfiguration extends ComponentConfiguration<Void> {
 
     /**
      * Returns the build context. A single build context object is shared among all containers for the same artifact.

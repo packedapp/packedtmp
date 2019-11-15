@@ -197,6 +197,10 @@ public abstract class BaseBundle extends Bundle {
         return service().provide(implementation);
     }
 
+    protected final <T> ServiceComponentConfiguration<T> provide(ComponentConfiguration<T> configuration) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      *
      * <p>

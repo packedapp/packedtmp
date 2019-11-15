@@ -48,6 +48,9 @@ public class ServicePackletCandidates {
     // filterTo (Keys.., Classes
     // filterFrom
 
+    // retainTo()
+    // retainFrom();
+
     public static Wirelet filterTo(Class<?>... keys) {
         throw new UnsupportedOperationException();
     }

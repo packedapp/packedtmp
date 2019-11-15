@@ -42,12 +42,12 @@ public class WTest extends BaseBundle {
 
     public static void main(String[] args) {
         ArtifactImage ai = ArtifactImage.of(new WTest(), new MyWirelet("hejhej"), new MyWirelet("hejhej3"));
-        App.of(ai);
-        App.of(ai, new MyWirelet("A1"), new MyWirelet("A4"));
+        App.open(ai);
+        App.open(ai, new MyWirelet("A1"), new MyWirelet("A4"));
 
-        App.of(ai, new MyWirelet("A2"));
+        App.open(ai, new MyWirelet("A2"));
         System.out.println("-----");
-        App.of(ai, new MyWirelet("A4"));
+        App.open(ai, new MyWirelet("A4"));
     }
 
     @UseExtension(ServiceExtension.class)

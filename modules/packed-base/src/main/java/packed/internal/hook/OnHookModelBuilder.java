@@ -124,6 +124,7 @@ final class OnHookModelBuilder {
 
     private Type getResolvedType(Class<?> c, Method p, Type t) {
         if (TypeUtil.isFreeFromTypeVariables(t)) {
+
             return t;
         }
 

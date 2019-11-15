@@ -42,37 +42,37 @@ public class AppConstructionMicro {
 
     @Benchmark
     public App emptyApp() {
-        return App.of(VariousBundles.empty());
+        return App.open(VariousBundles.empty());
     }
 
     @Benchmark
     public App oneComponent() {
-        return App.of(VariousBundles.oneComponent());
+        return App.open(VariousBundles.oneComponent());
     }
 
     @Benchmark
     public App fiveComponents() {
-        return App.of(VariousBundles.fiveComponents());
+        return App.open(VariousBundles.fiveComponents());
     }
 
     @Benchmark
     public App oneContainer() {
-        return App.of(VariousBundles.oneContainer());
+        return App.open(VariousBundles.oneContainer());
     }
 
     @Benchmark
     public App emptyAppFromImage() {
-        return App.of(VariousBundles.EMPTY_IMAGE);
+        return App.open(VariousBundles.EMPTY_IMAGE);
     }
 
     @Benchmark
     public App oneComponentFromImage() {
-        return App.of(VariousBundles.ONE_COMPONENT_IMAGE);
+        return App.open(VariousBundles.ONE_COMPONENT_IMAGE);
     }
 
     @Benchmark
     public App fiveComponentsFromImage() {
-        return App.of(VariousBundles.FIVE_CONTAINER_IMAGE);
+        return App.open(VariousBundles.FIVE_CONTAINER_IMAGE);
     }
 
 }

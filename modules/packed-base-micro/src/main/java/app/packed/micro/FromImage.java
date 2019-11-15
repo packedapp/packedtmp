@@ -80,22 +80,22 @@ public class FromImage {
 
     @Benchmark
     public App empty() {
-        return App.of(EMPTY);
+        return App.open(EMPTY);
     }
 
     @Benchmark
     public App useExtension() {
-        return App.of(USE_EXTENSION);
+        return App.open(USE_EXTENSION);
     }
 
     @Benchmark
     public App install() {
-        return App.of(INSTALL);
+        return App.open(INSTALL);
     }
 
     @Benchmark
     public App newExtensionAutoActivate() {
-        return App.of(INSTALL_AUTO_ACTIVATE);
+        return App.open(INSTALL_AUTO_ACTIVATE);
     }
 
     static class MyStuff {

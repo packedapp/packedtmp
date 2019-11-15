@@ -13,36 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.build.dependencies;
+package app.packed.artifact;
 
-import app.packed.artifact.App;
-import app.packed.container.BaseBundle;
-import app.packed.service.Provide;
+import java.util.concurrent.CompletableFuture;
+
+import app.packed.container.ContainerSource;
+import app.packed.container.Wirelet;
 
 /**
  *
  */
-public class Stiff extends BaseBundle {
 
-    /** {@inheritDoc} */
-    @Override
-    protected void configure() {
-        provide(XXX.class);
+// Open/Close == Sync
+
+// Start tror jeg bliver fjernet.....
+// Hvis man vil starte lazy maa man specificere det som wirelet.
+
+public interface App2 extends AutoCloseable {
+
+    static App2 open(ContainerSource source, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
     }
 
-    public static void main(String[] args) {
-        App.open(new Stiff());
+    static CompletableFuture<App2> openAsync(ContainerSource source, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
     }
+}
 
-    public static class XXX {
+class CloseOption {
 
-        public XXX(String ss) {
-
-        }
-
-        @Provide
-        public String fooo() {
-            return "ddd";
-        }
-    }
 }

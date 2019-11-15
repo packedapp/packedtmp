@@ -65,7 +65,7 @@ import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.moduleaccess.ModuleAccess;
 
 /** The default implementation of {@link ContainerConfiguration}. */
-public final class PackedContainerConfiguration extends AbstractComponentConfiguration<Object> implements ContainerConfiguration {
+public final class PackedContainerConfiguration extends AbstractComponentConfiguration<Void> implements ContainerConfiguration {
 
     @Nullable
     public PackedExtensionContext activeExtension;

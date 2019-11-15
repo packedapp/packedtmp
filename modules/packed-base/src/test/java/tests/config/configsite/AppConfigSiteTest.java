@@ -34,7 +34,7 @@ public class AppConfigSiteTest {
     @Test
     public void configSiteEmptyApp() {
         StackFrame f1 = ConfigSiteTestHelper.caller();
-        App app = App.of(new BaseBundle() {
+        App app = App.open(new BaseBundle() {
             @Override
             protected void configure() {}
         });
@@ -50,7 +50,7 @@ public class AppConfigSiteTest {
         AtomicReference<StackFrame> ar = new AtomicReference<>();
 
         StackFrame f1 = ConfigSiteTestHelper.caller();
-        App app = App.of(new BaseBundle() {
+        App app = App.open(new BaseBundle() {
             @Override
             protected void configure() {
                 ar.set(ConfigSiteTestHelper.caller());
@@ -87,7 +87,7 @@ public class AppConfigSiteTest {
         AtomicReference<StackFrame> ar2 = new AtomicReference<>();
 
         StackFrame f1 = ConfigSiteTestHelper.caller();
-        App app = App.of(new BaseBundle() {
+        App app = App.open(new BaseBundle() {
             @Override
             protected void configure() {
                 ar1.set(ConfigSiteTestHelper.caller());

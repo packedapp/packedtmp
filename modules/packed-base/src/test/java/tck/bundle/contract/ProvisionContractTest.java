@@ -41,7 +41,7 @@ public class ProvisionContractTest {
 
     @Test
     public void empty() {
-        ContractSet c = BundleDescriptor.constractOf(new BaseBundle() {
+        ContractSet c = BundleDescriptor.contractsOf(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -59,7 +59,7 @@ public class ProvisionContractTest {
 
     @Test
     public void provides() {
-        ContractSet c = BundleDescriptor.constractOf(new BaseBundle() {
+        ContractSet c = BundleDescriptor.contractsOf(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -78,7 +78,7 @@ public class ProvisionContractTest {
 
     @Test
     public void requires() {
-        ContractSet c = BundleDescriptor.constractOf(new BaseBundle() {
+        ContractSet c = BundleDescriptor.contractsOf(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -96,7 +96,7 @@ public class ProvisionContractTest {
 
     @Test
     public void optional() {
-        ContractSet c = BundleDescriptor.constractOf(new BaseBundle() {
+        ContractSet c = BundleDescriptor.contractsOf(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -115,7 +115,7 @@ public class ProvisionContractTest {
     /** A service will never be both requires and optional. */
     @Test
     public void requiresOverrideOptional() {
-        ContractSet c = BundleDescriptor.constractOf(new BaseBundle() {
+        ContractSet c = BundleDescriptor.contractsOf(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -134,7 +134,7 @@ public class ProvisionContractTest {
 
     @Test
     public void all() {
-        ContractSet c = BundleDescriptor.constractOf(new BaseBundle() {
+        ContractSet c = BundleDescriptor.contractsOf(new BaseBundle() {
 
             @Override
             protected void configure() {

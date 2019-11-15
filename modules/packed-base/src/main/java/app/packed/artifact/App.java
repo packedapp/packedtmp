@@ -29,6 +29,7 @@ import app.packed.component.ComponentStream.Option;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
+import app.packed.lang.Key;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.OnInitialize;
 import app.packed.lifecycle.RunState;
@@ -54,6 +55,14 @@ public interface App extends AutoCloseable {
     default void close() {
         shutdown();
     }
+
+    class CloseOption extends Wirelet {
+        CloseOption error(Throwable cause) {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    default void close(CloseOption... options) {}
 
     /**
      * Returns the configuration site of this app.
@@ -101,6 +110,10 @@ public interface App extends AutoCloseable {
      */
     ComponentPath path();
 
+    // Only use #close();
+    /// You close the app... That makes total sense.
+    // Rename of to Open....
+    //// Also those, starting, stopping,... I think that is wirelets....
     App shutdown();// syntes sgu hellere man skal have shutdown().await(Terminated.class)
 
     /**
@@ -187,10 +200,14 @@ public interface App extends AutoCloseable {
      *            the key of the service to return
      * @return stuff
      * @throws UnsupportedOperationException
-     *             if no service with the specified key exist
+     *             if a service with the specified key exist
      * @see Injector#use(Class)
      */
     <T> T use(Class<T> key);
+
+    default <T> T use(Key<T> key) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * <p>
@@ -217,7 +234,7 @@ public interface App extends AutoCloseable {
      * @throws RuntimeException
      *             if the application could not be constructed properly
      */
-    static App of(ContainerSource source, Wirelet... wirelets) {
+    static App open(ContainerSource source, Wirelet... wirelets) {
         return AppArtifactDriver.INSTANCE.newArtifact(source, wirelets);
     }
 

@@ -36,7 +36,7 @@ public class AppTester {
     }
 
     public AppTester(ContainerSource source, Wirelet... wirelets) {
-        this(App.of(source, wirelets));
+        this(App.open(source, wirelets));
     }
 
     public void assertPathExist(CharSequence s) {
@@ -57,6 +57,6 @@ public class AppTester {
     }
 
     public static AppTester of(ContainerSource source, Wirelet... wirelets) {
-        return new AppTester(App.of(source, wirelets));
+        return new AppTester(App.open(source, wirelets));
     }
 }

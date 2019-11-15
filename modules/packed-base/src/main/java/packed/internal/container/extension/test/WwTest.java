@@ -56,7 +56,7 @@ public class WwTest<A extends Annotation> extends BaseBundle {
     }
 
     public static void main(String[] args) {
-        App.of(new WwTest<Left>());
+        App.open(new WwTest<Left>());
     }
 
     @Left

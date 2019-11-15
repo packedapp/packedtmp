@@ -19,6 +19,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import app.packed.container.Bundle;
+
 /**
  * A helper class for creating native images.
  */
@@ -39,6 +41,10 @@ public final class NativeImage {
 
     public static Mode mode() {
         return Mode.NO_IMAGE;
+    }
+
+    public static void registerBundle(Bundle bundle) {
+        /// Hmmmmmmmmmmmmm
     }
 
     public static void registerField(Field field) {}

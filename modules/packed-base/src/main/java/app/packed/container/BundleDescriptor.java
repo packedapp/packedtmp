@@ -233,7 +233,7 @@ public class BundleDescriptor {
         return descriptor == null ? Optional.empty() : descriptor.version();
     }
 
-    public static ContractSet constractOf(Bundle bundle) {
+    public static ContractSet contractsOf(Bundle bundle) {
         return BundleDescriptor.of(bundle).contracts();
     }
 

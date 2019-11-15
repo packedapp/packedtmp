@@ -42,7 +42,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Test
     public void instanceMethod() {
-        App.of(new BaseBundle() {
+        App.open(new BaseBundle() {
             @Override
             public void configure() {
                 assertThat(extensions()).isEmpty();
@@ -56,7 +56,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Test
     public void staticField() {
-        App.of(new BaseBundle() {
+        App.open(new BaseBundle() {
             @Override
             public void configure() {
                 assertThat(extensions()).isEmpty();
@@ -68,7 +68,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Test
     public void instanceField() {
-        App.of(new BaseBundle() {
+        App.open(new BaseBundle() {
             @Override
             public void configure() {
                 assertThat(extensions()).isEmpty();
@@ -80,7 +80,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Test
     public void staticMethod() {
-        App.of(new BaseBundle() {
+        App.open(new BaseBundle() {
             @Override
             public void configure() {
                 assertThat(extensions()).isEmpty();

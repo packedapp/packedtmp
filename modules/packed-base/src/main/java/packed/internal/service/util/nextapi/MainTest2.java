@@ -31,7 +31,7 @@ public class MainTest2 extends BaseBundle {
     }
 
     public static void main(String[] args) {
-        App a = App.of(new MainTest2());
+        App a = App.open(new MainTest2());
         System.out.println();
         a.stream().forEach(e -> System.out.println(e.path()));
     }

@@ -27,14 +27,14 @@ import app.packed.artifact.PackedApp;
 import app.packed.container.BaseBundle;
 import app.packed.container.ContainerConfiguration;
 
-/** Tests {@link App#of(app.packed.container.Bundle, app.packed.container.Wirelet...)} */
+/** Tests {@link App#open(app.packed.container.Bundle, app.packed.container.Wirelet...)} */
 public class AppOfTest {
 
     /** Tests an empty app. */
     @Test
     public void emptyApp() {
         AtomicReference<ContainerConfiguration> ar = new AtomicReference<>();
-        App app = App.of(new BaseBundle() {
+        App app = App.open(new BaseBundle() {
             @Override
             public void configure() {
                 ar.set(configuration());

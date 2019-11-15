@@ -37,7 +37,7 @@ public class TestIt extends BaseBundle {
     }
 
     public static void main(String[] args) {
-        App.of(new TestIt());
+        App.open(new TestIt());
     }
 
     public static class XXX implements Runnable, FooBar {

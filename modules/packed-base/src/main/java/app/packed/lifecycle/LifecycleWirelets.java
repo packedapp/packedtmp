@@ -27,7 +27,7 @@ import app.packed.service.ServiceWirelets;
 
 /**
  * Wirelets that can be used when creating an {@link App} instance. For example, via
- * {@link App#of(ContainerSource, Wirelet...)} or {@link App#run(ContainerSource, Wirelet...)}.
+ * {@link App#open(ContainerSource, Wirelet...)} or {@link App#run(ContainerSource, Wirelet...)}.
  */
 // InvalidWireletApplicationException -> Thrown when trying to apply a wirelet in a situation where it cannot be used
 
