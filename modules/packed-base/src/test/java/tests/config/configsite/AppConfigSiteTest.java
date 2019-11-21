@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.artifact.App;
 import app.packed.component.Component;
 import app.packed.container.BaseBundle;
+import packed.internal.config.ConfigSiteSupport;
 import testutil.util.ConfigSiteTestHelper;
 
 /** Tests {@link App#configSite()}. */
@@ -33,6 +34,9 @@ public class AppConfigSiteTest {
     /** Tests that the keep the root configuration site. */
     @Test
     public void configSiteEmptyApp() {
+        if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
+            return;
+        }
         StackFrame f1 = ConfigSiteTestHelper.caller();
         App app = App.open(new BaseBundle() {
             @Override
@@ -47,6 +51,10 @@ public class AppConfigSiteTest {
     /** Tests an app with two components. */
     @Test
     public void configSiteTwoComponentsOneContainer() {
+        if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
+            return;
+        }
+
         AtomicReference<StackFrame> ar = new AtomicReference<>();
 
         StackFrame f1 = ConfigSiteTestHelper.caller();
@@ -83,6 +91,10 @@ public class AppConfigSiteTest {
     /** Tests an app with a child container. */
     @Test
     public void configSiteComponentInContainerContainer() {
+        if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
+            return;
+        }
+
         AtomicReference<StackFrame> ar1 = new AtomicReference<>();
         AtomicReference<StackFrame> ar2 = new AtomicReference<>();
 

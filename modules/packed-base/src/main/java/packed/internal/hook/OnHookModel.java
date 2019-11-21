@@ -40,7 +40,7 @@ import packed.internal.util.UncheckedThrowableFactory;
 /** A model of a container with {@link OnHook} methods. */
 public final class OnHookModel {
 
-    static final boolean DEBUG = true;
+    static final boolean DEBUG = false;
 
     /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedFieldHook} as a parameter. */
     @Nullable

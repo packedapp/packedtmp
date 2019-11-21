@@ -12,6 +12,8 @@ module app.packed.base {
     exports app.packed.lifecycle;
     exports app.packed.service;
 
+    requires static org.graalvm.sdk;
+
     // uses app.packed.util.ModuleEnv;
     // provides app.packed.util.ModuleEnv with packed.internal.bundle.DefaultBS;
 }

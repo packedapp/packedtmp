@@ -175,7 +175,7 @@ public final class ArtifactImage implements ContainerSource {
     }
 
     /**
-     * Creates a new image from the specified source.
+     * Builds a new artifact image from the specified source.
      *
      * @param source
      *            the source of the image
@@ -186,7 +186,8 @@ public final class ArtifactImage implements ContainerSource {
      * @throws RuntimeException
      *             if the image could not be constructed
      */
-    public static ArtifactImage of(ContainerSource source, Wirelet... wirelets) {
+    // rename to build()????
+    public static ArtifactImage build(ContainerSource source, Wirelet... wirelets) {
         if (source instanceof ArtifactImage) {
             return ((ArtifactImage) source).with(wirelets);
         }

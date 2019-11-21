@@ -266,7 +266,7 @@ public abstract class BaseBundle extends Bundle {
 
 class MyBundle2 extends BaseBundle {
 
-    private static final ArtifactImage IMAGE = ArtifactImage.of(new MyBundle2());
+    private static final ArtifactImage IMAGE = ArtifactImage.build(new MyBundle2());
 
     @Override
     protected void configure() {

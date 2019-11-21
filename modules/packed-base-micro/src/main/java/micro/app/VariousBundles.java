@@ -24,10 +24,10 @@ import app.packed.container.Bundle;
  */
 public class VariousBundles {
 
-    public static final ArtifactImage EMPTY_IMAGE = ArtifactImage.of(empty());
-    public static final ArtifactImage ONE_COMPONENT_IMAGE = ArtifactImage.of(oneComponent());
-    public static final ArtifactImage FIVE_CONTAINER_IMAGE = ArtifactImage.of(fiveComponents());
-    public static final ArtifactImage ONE_CONTAINER_IMAGE = ArtifactImage.of(oneContainer());
+    public static final ArtifactImage EMPTY_IMAGE = ArtifactImage.build(empty());
+    public static final ArtifactImage ONE_COMPONENT_IMAGE = ArtifactImage.build(oneComponent());
+    public static final ArtifactImage FIVE_CONTAINER_IMAGE = ArtifactImage.build(fiveComponents());
+    public static final ArtifactImage ONE_CONTAINER_IMAGE = ArtifactImage.build(oneContainer());
 
     public static Bundle empty() {
         return new Bundle() {

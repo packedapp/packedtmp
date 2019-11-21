@@ -44,16 +44,16 @@ abstract class AppBundle extends BaseBundle {
      * 
      * </pre>
      * <p>
-     * Invoking this method is identical to invoking {@link ArtifactImage#of(ContainerSource, Wirelet...)}.
+     * Invoking this method is identical to invoking {@link ArtifactImage#build(ContainerSource, Wirelet...)}.
      * 
      * @param source
      *            the could to create the image from
      * @param wirelets
      * @return a new artifact image from the specified source
-     * @see ArtifactImage#of(ContainerSource, Wirelet...)
+     * @see ArtifactImage#build(ContainerSource, Wirelet...)
      */
     protected static ArtifactImage newImage(ContainerSource source, Wirelet... wirelets) {
-        return ArtifactImage.of(source, wirelets);
+        return ArtifactImage.build(source, wirelets);
     }
 
     // runMain????.. maybe still so similar. Do we want to throw Exception???

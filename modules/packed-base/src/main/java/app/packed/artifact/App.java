@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
 
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
@@ -31,7 +30,6 @@ import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.lang.Key;
 import app.packed.lifecycle.LifecycleOperations;
-import app.packed.lifecycle.OnInitialize;
 import app.packed.lifecycle.RunState;
 import app.packed.service.Injector;
 
@@ -44,25 +42,24 @@ import app.packed.service.Injector;
  * 
  * You can easily have Hundreds of Thousands of applications running in the same JVM.
  */
-// Maybe move to artifact.... App is the default artifact type...
 public interface App extends AutoCloseable {
 
-    /**
-     * An alias for {@link #shutdown()} to support the {@link AutoCloseable} interface. This method has the exact same
-     * semantics as {@link #shutdown()} and both can be used interchangeable.
-     **/
+    /** Closes the app (synchronously). **/
     @Override
-    default void close() {
-        shutdown();
+    void close();
+
+    default App close(CloseOption... options) {
+        return this;
     }
 
-    class CloseOption extends Wirelet {
-        CloseOption error(Throwable cause) {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    default void close(CloseOption... options) {}
+    /**
+     * Initiates an orderly asynchronously shutdown of the application. In which currently running tasks will be executed,
+     * but no new tasks will be started. Invocation has no additional effect if the application has already been shut down.
+     *
+     * @return a future that can be used to query whether the application has completed shutdown (terminated). Or is still
+     *         in the process of being shut down
+     */
+    CompletableFuture<App> closeAsync(CloseOption... options);// syntes sgu hellere man skal have shutdown().await(Terminated.class)
 
     /**
      * Returns the configuration site of this app.
@@ -84,9 +81,6 @@ public interface App extends AutoCloseable {
      * @see ComponentConfiguration#setDescription(String)
      */
     Optional<String> description();
-
-    // TODO dont know about this method... could use use(Injector.class) <- Injector.class is always the exported injector
-    Injector injector();
 
     /**
      * Returns the name of this application.
@@ -110,70 +104,6 @@ public interface App extends AutoCloseable {
      */
     ComponentPath path();
 
-    // Only use #close();
-    /// You close the app... That makes total sense.
-    // Rename of to Open....
-    //// Also those, starting, stopping,... I think that is wirelets....
-    App shutdown();// syntes sgu hellere man skal have shutdown().await(Terminated.class)
-
-    /**
-     * Initiates an orderly asynchronously shutdown of the application because of an exceptional condition. Invocation has
-     * no additional effect if the application has already been shut down.
-     *
-     * @param cause
-     *            the cause of the shutdown
-     * @return a future that can be used to query whether the application has completed shutdown (terminated). Or is still
-     *         in the process of being shut down
-     */
-    App shutdown(Throwable cause);
-
-    /**
-     * Initiates an orderly asynchronously shutdown of the application. In which currently running tasks will be executed,
-     * but no new tasks will be started. Invocation has no additional effect if the application has already been shut down.
-     * <p>
-     * There are (currently) no method similar to {@link ExecutorService#shutdownNow()}.
-     *
-     * @return a future that can be used to query whether the application has completed shutdown (terminated). Or is still
-     *         in the process of being shut down
-     */
-    CompletableFuture<App> shutdownAsync();// syntes sgu hellere man skal have shutdown().await(Terminated.class)
-
-    /**
-     * Initiates an orderly asynchronously shutdown of the application because of an exceptional condition. Invocation has
-     * no additional effect if the application has already been shut down.
-     *
-     * @param cause
-     *            the cause of the shutdown
-     * @return a future that can be used to query whether the application has completed shutdown (terminated). Or is still
-     *         in the process of being shut down
-     */
-    CompletableFuture<App> shutdownAsync(Throwable cause);
-
-    /**
-     * <p>
-     * If the application has previous been started this method return immediately. already started
-     * 
-     * @return this application
-     */
-    App start();
-
-    /**
-     * Initiates an asynchronously startup of the application. Normally, there is no need to call this methods since most
-     * methods on the container will lazily start the container whenever it is needed. For example, invoking
-     * {@link #use(Class)} will automatically start the container if it has not already been started by another action.
-     * <p>
-     * If the container is in the process of being initialized when invoking this method, for example, from a method
-     * annotated with {@link OnInitialize}. The container will automatically be started immediately after it have been
-     * constructed.
-     * <p>
-     * Invocation has no additional effect if the container has already been started or shut down.
-     *
-     * @return a future that can be used to query whether the application has completed startup or is still in the process
-     *         of starting up. Can also be used to retrieve any exception that might have prevented the container in
-     *         starting properly
-     */
-    CompletableFuture<App> startAsync();
-
     /**
      * Returns the state of application.
      * 
@@ -194,6 +124,9 @@ public interface App extends AutoCloseable {
     ComponentStream stream(ComponentStream.Option... options);
 
     /**
+     * <p>
+     * If the the app is not already running
+     * 
      * @param <T>
      *            the type of service to return
      * @param key
@@ -203,11 +136,11 @@ public interface App extends AutoCloseable {
      *             if a service with the specified key exist
      * @see Injector#use(Class)
      */
-    <T> T use(Class<T> key);
-
-    default <T> T use(Key<T> key) {
-        throw new UnsupportedOperationException();
+    default <T> T use(Class<T> key) {
+        return use(Key.of(key));
     }
+
+    <T> T use(Key<T> key);
 
     /**
      * <p>
@@ -223,34 +156,31 @@ public interface App extends AutoCloseable {
     Component useComponent(CharSequence path);
 
     /**
-     * Creates a new application from the specified source. The state of the returned application is
-     * {@link RunState#INITIALIZED}.
+     * Create and starts an application from the specified source. Returning it in a running state.
+     * 
+     * The state of the returned application is {@link RunState#INITIALIZED}.
      *
      * @param source
      *            the source of the application
      * @param wirelets
      *            any wirelets to use in the construction of the application
-     * @return a new application
+     * @return the new running application
      * @throws RuntimeException
-     *             if the application could not be constructed properly
+     *             if the application could not be constructed or started properly
      */
     static App open(ContainerSource source, Wirelet... wirelets) {
+        // Open/Close == Sync
+
+        // Start tror jeg bliver fjernet.....
+        // Hvis man vil starte lazy maa man specificere det som wirelet.
+
         return AppArtifactDriver.INSTANCE.newArtifact(source, wirelets);
     }
 
-    static App initialized(ContainerSource source, Wirelet... wirelets) {
-        // Skal ogsaa matche metoder på hosts...
-        return AppArtifactDriver.INSTANCE.newArtifact(source, wirelets);
-    }
-
-    static App starting(ContainerSource source, Wirelet... wirelets) {
-        App app = AppArtifactDriver.INSTANCE.newArtifact(source, wirelets);
-        app.startAsync();
-        return app;
-    }
-
-    static App started(ContainerSource source, Wirelet... wirelets) {
-        return AppArtifactDriver.INSTANCE.newArtifact(source, wirelets).start();
+    static CompletableFuture<App> openAsync(ContainerSource source, Wirelet... wirelets) {
+        // Ideally we would want to initialize the container before doing async I think....
+        // Other the user can just do this themself....
+        return CompletableFuture.supplyAsync(() -> open(source, wirelets));
     }
 
     /**
@@ -270,9 +200,99 @@ public interface App extends AutoCloseable {
         ((PackedApp) AppArtifactDriver.INSTANCE.newArtifact(source, wirelets)).execute();
     }
 
+    class CloseOption extends Wirelet {
+        // *<p>*
+        // There are (currently) no method similar to {@link ExecutorService#shutdownNow()}.
+
+        // Now == shutdownNow();
+        CloseOption now() {
+            throw new UnsupportedOperationException();
+        }
+
+        CloseOption now(Throwable cause) {
+            throw new UnsupportedOperationException();
+        }
+
+        CloseOption error(Throwable cause) {
+            throw new UnsupportedOperationException();
+        }
+    }
+
     // static void runThrowing(AnyBundle bundle, Wirelet... wirelets) throws Throwable
     // Basalt set har vi vel bare en Wiring property der angiver det
     // Basically we unwrap exceptions accordingly to some scheme in some way
+
+    // /**
+    // * Initiates an orderly asynchronously shutdown of the application because of an exceptional condition. Invocation has
+    // * no additional effect if the application has already been shut down.
+    // *
+    // * @param cause
+    // * the cause of the shutdown
+    // * @return a future that can be used to query whether the application has completed shutdown (terminated). Or is still
+    // * in the process of being shut down
+    // */
+    // App close(Throwable cause);
+
+    // /**
+    // * Initiates an orderly asynchronously shutdown of the application because of an exceptional condition. Invocation has
+    // * no additional effect if the application has already been shut down.
+    // *
+    // * @param cause
+    // * the cause of the shutdown
+    // * @return a future that can be used to query whether the application has completed shutdown (terminated). Or is still
+    // * in the process of being shut down
+    // */
+    // CompletableFuture<App> closeAsync(Throwable cause);
+
+    // TODO dont know about this method... could use use(Injector.class) <- Injector.class is always the exported injector
+    // Injector injector();
+
+    // // Only use #close();
+    // /// You close the app... That makes total sense.
+    // // Rename of to Open....
+    // //// Also those, starting, stopping,... I think that is wirelets....
+    // App shutdown();// syntes sgu hellere man skal have shutdown().await(Terminated.class)
+
+    // /**
+    // * <p>
+    // * If the application has previous been started this method return immediately. already started
+    // *
+    // * @return this application
+    // */
+    // App start();
+    //
+    // /**
+    // * Initiates an asynchronously startup of the application. Normally, there is no need to call this methods since most
+    // * methods on the container will lazily start the container whenever it is needed. For example, invoking
+    // * {@link #use(Class)} will automatically start the container if it has not already been started by another action.
+    // * <p>
+    // * If the container is in the process of being initialized when invoking this method, for example, from a method
+    // * annotated with {@link OnInitialize}. The container will automatically be started immediately after it have been
+    // * constructed.
+    // * <p>
+    // * Invocation has no additional effect if the container has already been started or shut down.
+    // *
+    // * @return a future that can be used to query whether the application has completed startup or is still in the process
+    // * of starting up. Can also be used to retrieve any exception that might have prevented the container in
+    // * starting properly
+    // */
+    // CompletableFuture<App> startAsync();
+
+    // static App initialized(ContainerSource source, Wirelet... wirelets) {
+    // // Skal ogsaa matche metoder på hosts...
+    // return AppArtifactDriver.INSTANCE.newArtifact(source, wirelets);
+    // }
+    //
+    // static App starting(ContainerSource source, Wirelet... wirelets) {
+    // App app = AppArtifactDriver.INSTANCE.newArtifact(source, wirelets);
+    // app.startAsync();
+    // return app;
+    // }
+    //
+    // static App started(ContainerSource source, Wirelet... wirelets) {
+    // return AppArtifactDriver.INSTANCE.newArtifact(source, wirelets).start();
+    // }
+
 }
 
 /** An artifact driver for creating {@link App} instances. */
@@ -309,6 +329,22 @@ final class PackedApp implements App {
 
     /** {@inheritDoc} */
     @Override
+    public void close() {}
+
+    /** {@inheritDoc} */
+    @Override
+    public CompletableFuture<App> closeAsync(CloseOption... options) {
+        throw new UnsupportedOperationException();
+    }
+
+    // /** {@inheritDoc} */
+    // @Override
+    // public CompletableFuture<App> closeAsync(Throwable cause) {
+    // throw new UnsupportedOperationException();
+    // }
+
+    /** {@inheritDoc} */
+    @Override
     public ConfigSite configSite() {
         return context.configSite();
     }
@@ -320,7 +356,6 @@ final class PackedApp implements App {
     }
 
     public void execute() {
-        start();
         runMainSync();
         // try {
         // app.state().await(RunState.TERMINATED);
@@ -329,12 +364,12 @@ final class PackedApp implements App {
         // }
 
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public Injector injector() {
-        return context.injector();
-    }
+    //
+    // /** {@inheritDoc} */
+    // @Override
+    // public Injector injector() {
+    // return context.injector();
+    // }
 
     /** {@inheritDoc} */
     @Override
@@ -357,44 +392,6 @@ final class PackedApp implements App {
 
     /** {@inheritDoc} */
     @Override
-    public App shutdown() {
-        // throw new UnsupportedOperationException();
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public App shutdown(Throwable cause) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public CompletableFuture<App> shutdownAsync() {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public CompletableFuture<App> shutdownAsync(Throwable cause) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public App start() {
-        // throw new UnsupportedOperationException();
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public CompletableFuture<App> startAsync() {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public LifecycleOperations<? extends App> state() {
         throw new UnsupportedOperationException();
     }
@@ -407,7 +404,13 @@ final class PackedApp implements App {
 
     /** {@inheritDoc} */
     @Override
-    public <T> T use(Class<T> key) {
+    public ComponentStream stream(Option... options) {
+        return context.stream(options);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T> T use(Key<T> key) {
         return context.use(key);
     }
 
@@ -415,11 +418,5 @@ final class PackedApp implements App {
     @Override
     public Component useComponent(CharSequence path) {
         return context.useComponent(path);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentStream stream(Option... options) {
-        return context.stream(options);
     }
 }

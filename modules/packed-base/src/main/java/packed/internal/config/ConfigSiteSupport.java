@@ -34,7 +34,7 @@ public interface ConfigSiteSupport {
     Predicate<StackFrame> FILTER = f -> !f.getClassName().startsWith("app.packed.") && !f.getClassName().startsWith("packed.")
             && !f.getClassName().startsWith("java.");
 
-    boolean STACK_FRAME_CAPTURING_DIABLED = false;
+    public boolean STACK_FRAME_CAPTURING_DIABLED = true;
 
     /** A configuration site originating from an annotated method. */
     public static final class AnnotatedFieldConfigSite implements ConfigSite {

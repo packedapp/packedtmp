@@ -156,7 +156,7 @@ public class ClassProcessor {
         }
 
         if (registerForNative) {
-            NativeImage.registerMethod(method);
+            NativeImage.register(method);
         }
         return mh;
     }
@@ -172,7 +172,7 @@ public class ClassProcessor {
         }
 
         if (registerForNative) {
-            NativeImage.registerConstructor(constructor);
+            NativeImage.register(constructor);
         }
         return mh;
     }

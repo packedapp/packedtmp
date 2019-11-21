@@ -17,6 +17,7 @@ package app.packed.artifact;
 
 import app.packed.component.Component;
 import app.packed.component.ComponentContext;
+import app.packed.lang.Key;
 import app.packed.service.Injector;
 
 /**
@@ -32,9 +33,7 @@ public interface ArtifactContext extends ComponentContext {
     /**
      * 
      */
-    default void execute() {
-        //
-    }
+    default void execute() {}
 
     // start() osv smider UnsupportedOperationException hvis LifeycleExtension ikke er installeret???
     // Naeh syntes bare man returnere oejeblikligt
@@ -60,7 +59,7 @@ public interface ArtifactContext extends ComponentContext {
         return void.class;
     }
 
-    <T> T use(Class<T> key);
+    <T> T use(Key<T> key);
 
     Component useComponent(CharSequence path);
 }

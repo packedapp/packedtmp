@@ -58,7 +58,7 @@ public class ExtensionActivation {
             @Override
             protected void configure() {}
         };
-        return ArtifactImage.of(b);
+        return ArtifactImage.build(b);
     }
 
     @Benchmark
@@ -69,7 +69,7 @@ public class ExtensionActivation {
                 use(MyExtension.class);
             }
         };
-        return ArtifactImage.of(b);
+        return ArtifactImage.build(b);
     }
 
     @Benchmark
@@ -80,7 +80,7 @@ public class ExtensionActivation {
                 use(ComponentExtension.class).installInstance("foo");
             }
         };
-        return ArtifactImage.of(b);
+        return ArtifactImage.build(b);
     }
 
     @Benchmark
@@ -92,7 +92,7 @@ public class ExtensionActivation {
                 use(ComponentExtension.class).installInstance("foo");
             }
         };
-        return ArtifactImage.of(b);
+        return ArtifactImage.build(b);
     }
 
     @Benchmark
@@ -103,7 +103,7 @@ public class ExtensionActivation {
                 use(ComponentExtension.class).installInstance(new MyStuff());
             }
         };
-        return ArtifactImage.of(b);
+        return ArtifactImage.build(b);
     }
 
     static class MyStuff {

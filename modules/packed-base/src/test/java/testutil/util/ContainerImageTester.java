@@ -30,7 +30,7 @@ public class ContainerImageTester {
     private final ArtifactImage image;
 
     public ContainerImageTester(ContainerSource source, Wirelet... wirelets) {
-        this(ArtifactImage.of(source, wirelets));
+        this(ArtifactImage.build(source, wirelets));
     }
 
     public AppTester newApp(Wirelet... wirelets) {

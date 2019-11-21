@@ -15,7 +15,7 @@
  */
 package app.packed.lang;
 
-import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -47,11 +47,13 @@ public final class NativeImage {
         /// Hmmmmmmmmmmmmm
     }
 
-    public static void registerField(Field field) {}
+    public static void registerField(Field field) {
+        RegNative2.register(field);
+    }
 
-    public static void registerConstructor(Constructor<?> c) {}
-
-    public static void registerMethod(Method m) {}
+    public static void register(Executable m) {
+        RegNative2.register(m);
+    }
 
     // Problemet er lidt. Hvordan kan vi lave de statements
     // der kalder Buildint_NATIVE som noops naar man er native?

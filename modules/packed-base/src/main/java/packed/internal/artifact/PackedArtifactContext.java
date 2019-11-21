@@ -19,6 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.concurrent.CompletableFuture;
 
 import app.packed.artifact.ArtifactContext;
+import app.packed.lang.Key;
 import app.packed.lang.Nullable;
 import app.packed.service.Injector;
 import packed.internal.component.AbstractComponent;
@@ -65,7 +66,7 @@ public final class PackedArtifactContext extends AbstractComponent implements Ar
     }
 
     @Override
-    public <T> T use(Class<T> key) {
+    public <T> T use(Key<T> key) {
         return injector.use(key);
     }
 
