@@ -28,6 +28,9 @@ import app.packed.service.Injector;
  * An instance of this interface is normally acquired via {@link ArtifactDriver#newArtifact(ArtifactContext)}.
  */
 // Rename to ArtifactContext....
+
+// We need lifecycle and a good story about
+
 public interface ArtifactContext extends ComponentContext {
 
     /**

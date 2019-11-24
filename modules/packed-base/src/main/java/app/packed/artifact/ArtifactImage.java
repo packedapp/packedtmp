@@ -18,6 +18,7 @@ package app.packed.artifact;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
@@ -207,6 +208,24 @@ public final class ArtifactImage implements ContainerSource {
     // }
     // return of(b, wirelets);
     // }
+
+    void run(String[] args, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
+    void run(Wirelet... wirelets) {
+        // Paa den anden side, hvis vi f.eks. faar Job<R>
+        // Saa vil run jo se anderledes ud
+        // Will create an artifact of unknown type....
+        // Ideen er lidt at App.run()... aldrig egentlig laver en app.
+        throw new UnsupportedOperationException();
+    }
+
+    CompletableFuture<Void> runAsync(Wirelet... wirelets) {
+        // Will create an artifact of unknown type....
+        // Ideen er lidt at App.run()... aldrig egentlig laver en app.
+        throw new UnsupportedOperationException();
+    }
 }
 
 // De kunne jo strength taget vaere metoder paa imaged og ikke wirelets.

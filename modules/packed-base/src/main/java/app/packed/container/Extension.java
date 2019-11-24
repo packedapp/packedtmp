@@ -65,6 +65,7 @@ import packed.internal.moduleaccess.ModuleAccess;
 // "InjectorExtension:" Activate
 //// Her er der noget vi gerne vil have viral.
 
+// Extensions provide functionality that are orthogonal to your domain
 public abstract class Extension {
 
     /** A stack walker used from {@link #captureStackFrame(String)}. */
@@ -93,7 +94,7 @@ public abstract class Extension {
     }
 
     /** The extension context. This field should never be read directly, but only accessed via {@link #context()}. */
-    private ExtensionContext context;
+    ExtensionContext context;
 
     /**
      * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
