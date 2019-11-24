@@ -67,14 +67,14 @@ public interface ComponentConfiguration<T> extends BaseComponentConfiguration {
     default Class<?> type() {
         throw new UnsupportedOperationException();
     }
-
-    default boolean isStateful() {
-        return false;// Alternative we have a Component.Mode with Stateful, Stateless, Other
-    }
-
-    default boolean isStateless() {
-        return !isStateless();
-    }
+    //
+    // default boolean isStateful() {
+    // return false;// Alternative we have a Component.Mode with Stateful, Stateless, Other
+    // }
+    //
+    // default boolean isStateless() {
+    // return !isStateless();
+    // }
 }
 
 interface XCC2<T> {

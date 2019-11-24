@@ -15,6 +15,7 @@
  */
 package app.packed.container;
 
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 
@@ -71,4 +72,14 @@ public interface ExtensionContext {
      * @see ContainerConfiguration#use(Class)
      */
     <E extends Extension> E use(Class<E> extensionType);
+
+    /**
+     * @param <T>
+     *            the type of the component
+     * @param instance
+     *            the instance to install
+     * @return the configuration of the component
+     * @see BaseBundle#installInstance(Object)
+     */
+    <T> ComponentConfiguration<T> installInstance(T instance);
 }

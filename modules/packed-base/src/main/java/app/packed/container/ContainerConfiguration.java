@@ -18,8 +18,10 @@ package app.packed.container;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 
+import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.lang.Nullable;
+import app.packed.service.ServiceExtension;
 
 /**
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured via
@@ -42,7 +44,30 @@ import app.packed.lang.Nullable;
 
 // Environment <- Immutable??, Attachable??
 // See #Extension Implementation notes for information about how to make sure it can be instantiated...
-public interface ContainerConfiguration extends ComponentConfiguration<Void> {
+public interface ContainerConfiguration extends BaseComponentConfiguration {
+
+    /**
+     * @param <T>
+     *            the type of the component
+     * @param instance
+     *            the instance to install
+     * @return the configuration of the component
+     * @see BaseBundle#installInstance(Object)
+     */
+    <T> ComponentConfiguration<T> installInstance(T instance);
+
+    /**
+     * Installs a stateless component.
+     * <p>
+     * This method uses the {@link ServiceExtension}.
+     * 
+     * @param <T>
+     *            the type of the component
+     * @param implementation
+     *            the type of instantiate and use as the component instance
+     * @return the configuration of the component
+     */
+    <T> ComponentConfiguration<T> installStateless(Class<T> implementation);
 
     /**
      * Returns the build context. A single build context object is shared among all containers for the same artifact.

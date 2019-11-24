@@ -16,7 +16,6 @@
 package micro.app;
 
 import app.packed.artifact.ArtifactImage;
-import app.packed.component.ComponentExtension;
 import app.packed.container.Bundle;
 
 /**
@@ -41,7 +40,7 @@ public class VariousBundles {
 
             @Override
             public void configure() {
-                use(ComponentExtension.class).installInstance("foo");
+                installInstance("foo");
             }
         };
     }
@@ -51,11 +50,11 @@ public class VariousBundles {
 
             @Override
             public void configure() {
-                use(ComponentExtension.class).installInstance("foo").setName("1");
-                use(ComponentExtension.class).installInstance("foo").setName("2");
-                use(ComponentExtension.class).installInstance("foo").setName("3");
-                use(ComponentExtension.class).installInstance("foo").setName("4");
-                use(ComponentExtension.class).installInstance("foo").setName("5");
+                installInstance("foo").setName("1");
+                installInstance("foo").setName("2");
+                installInstance("foo").setName("3");
+                installInstance("foo").setName("4");
+                installInstance("foo").setName("5");
             }
         };
     }

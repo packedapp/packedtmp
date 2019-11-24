@@ -17,6 +17,7 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
@@ -25,7 +26,7 @@ import packed.internal.container.PackedContainerConfiguration;
 /**
  *
  */
-public abstract class AbstractCoreComponentConfiguration<T> extends AbstractComponentConfiguration<T> {
+public abstract class AbstractCoreComponentConfiguration<T> extends AbstractComponentConfiguration<T> implements ComponentConfiguration<T> {
 
     final ComponentModel componentModel;
 

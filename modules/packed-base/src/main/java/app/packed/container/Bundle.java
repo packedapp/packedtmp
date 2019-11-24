@@ -61,6 +61,28 @@ public abstract class Bundle implements ContainerSource {
         });
     }
 
+    /**
+     * Install the specified component instance.
+     * <p>
+     * If this install operation is the first install operation of the container. The component will be installed as the
+     * root component of the container. All subsequent install operations on this bundle will have have component as its
+     * parent. If you wish to have a specific component as a parent, the various install methods on
+     * {@link ComponentConfiguration} can be used to specify a specific parent.
+     *
+     * @param <T>
+     *            the type of component to install
+     * @param instance
+     *            the component instance to install
+     * @return this configuration
+     */
+    protected final <T> ComponentConfiguration<T> installInstance(T instance) {
+        return configuration.installInstance(instance);
+    }
+
+    protected final <T> ComponentConfiguration<T> installHelper(Class<T> implementation) {
+        return configuration.installStateless(implementation);
+    }
+
     // /**
     // * Returns the build context. A single build context object is shared among all containers for the same artifact.
     // *

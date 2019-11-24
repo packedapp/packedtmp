@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Set;
 
-import app.packed.component.ComponentConfiguration;
 import app.packed.container.ContainerSource;
 import app.packed.container.Extension;
 import app.packed.hook.OnHook;
@@ -106,7 +105,7 @@ public final class ComponentModel {
         return s;
     }
 
-    <T> ComponentConfiguration<T> invokeOnHookOnInstall(ContainerSource cs, AbstractComponentConfiguration<T> acc) {
+    <T> AbstractComponentConfiguration<T> invokeOnHookOnInstall(ContainerSource cs, AbstractComponentConfiguration<T> acc) {
         try {
             // First invoke any OnHook methods on the container source (bundle)
             if (sourceHook != null) {
@@ -278,8 +277,8 @@ public final class ComponentModel {
             }
         }
 
-        private void findAnnotatedTypes0(MemberUnreflector hookProcessor, Class<?> componentType, Annotation a,
-                Set<Class<? extends Extension>> extensionTypes) throws Throwable {
+        private void findAnnotatedTypes0(MemberUnreflector hookProcessor, Class<?> componentType, Annotation a, Set<Class<? extends Extension>> extensionTypes)
+                throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
                     extensionBuilders.computeIfAbsent(eType, etype -> new HookRequestBuilder(ExtensionModel.onHookModelOf(etype), hookProcessor))

@@ -33,6 +33,10 @@ import packed.internal.inject.util.InjectConfigSiteOperations;
 /**
  * An extension that provides basic functionality for installing components in a container.
  */
+// Nahhhh, maaske et interface og saa direkte paa ContainerConfiguration...
+
+// Kill this... den fungere ikke
+
 public final class ComponentExtension extends Extension {
 
     /** The configuration of the container, should only be accessed via {@link #pcc()}. */
@@ -41,10 +45,6 @@ public final class ComponentExtension extends Extension {
 
     /** Should never be initialized by users. */
     ComponentExtension() {}
-
-    void addRule(ComponentRule rule) {
-
-    }
 
     /**
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
@@ -86,35 +86,6 @@ public final class ComponentExtension extends Extension {
     }
 
     /**
-     * @param <T>
-     *            the type of the component
-     * @param instance
-     *            the instance to install
-     * @return the configuration of the component
-     * @see BaseBundle#installInstance(Object)
-     */
-    public <T> ComponentConfiguration<T> installInstance(T instance) {
-        requireNonNull(instance, "instance is null");
-        return pcc().installInstance(instance, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
-    }
-
-    /**
-     * Installs a stateless component.
-     * <p>
-     * This method uses the {@link ServiceExtension}.
-     * 
-     * @param <T>
-     *            the type of the component
-     * @param implementation
-     *            the type of instantiate and use as the component instance
-     * @return the configuration of the component
-     */
-    public <T> ComponentConfiguration<T> installStateless(Class<T> implementation) {
-        requireNonNull(implementation, "implementation is null");
-        return pcc().installStatic(implementation, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
-    }
-
-    /**
      * Returns the container configuration that this extension wraps.
      * 
      * @return the container configuration that this extension wraps
@@ -129,6 +100,14 @@ public final class ComponentExtension extends Extension {
         return p;
     }
 
+}
+
+class Old {
+
+    void addRule(ComponentRule rule) {
+
+    }
+
     // Scans this package...
     // Se nederst i filen paa ComponentScan, som vi har droppet fordi der er rigeligt annoteringer....
     void scan() {}
@@ -138,6 +117,9 @@ public final class ComponentExtension extends Extension {
     // Alternative to ComponentScan
     void scanForInstall(Class<?>... classesInPackages) {}
 
+    // De fungere ikke paa en type sikker maade
+    // Forstaaet saadan at enhver nu kan vaeree parent for alle andre typer.
+    // F.eks. kan vi ikke sige at actors kun kan have actor boern
     public void useParent() {
 
     }

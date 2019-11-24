@@ -148,28 +148,6 @@ public abstract class BaseBundle extends Bundle {
         return component().install(factory);
     }
 
-    protected final <T> ComponentConfiguration<T> installHelper(Class<T> implementation) {
-        return component().installStateless(implementation);
-    }
-
-    /**
-     * Install the specified component instance.
-     * <p>
-     * If this install operation is the first install operation of the container. The component will be installed as the
-     * root component of the container. All subsequent install operations on this bundle will have have component as its
-     * parent. If you wish to have a specific component as a parent, the various install methods on
-     * {@link ComponentConfiguration} can be used to specify a specific parent.
-     *
-     * @param <T>
-     *            the type of component to install
-     * @param instance
-     *            the component instance to install
-     * @return this configuration
-     */
-    protected final <T> ComponentConfiguration<T> installInstance(T instance) {
-        return component().installInstance(instance);
-    }
-
     /**
      * Returns a lifecycle extension instance, installing it if it has not already been installed.
      * 

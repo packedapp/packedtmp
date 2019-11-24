@@ -38,8 +38,7 @@ import app.packed.service.Provide;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceExtension;
 import packed.internal.component.AbstractCoreComponentConfiguration;
-import packed.internal.component.FactoryComponentConfiguration;
-import packed.internal.component.InstantiatedComponentConfiguration;
+import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.container.FixedWireletList;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.inject.factoryhandle.FactoryHandle;
@@ -98,12 +97,11 @@ public final class ServiceProvidingManager {
     public void addProvidesHook(AtProvidesHook hook, ComponentConfiguration cc) {
         // The parent node is not added until #provideFactory or #provideInstance
         AbstractComponentBuildEntry parentNode;
-        if (cc instanceof InstantiatedComponentConfiguration) {
-            Object instance = ((InstantiatedComponentConfiguration) cc).instance;
-            parentNode = new ComponentInstanceBuildEntry<>(node, cc.configSite(), cc, instance);
+        PackedSingletonConfiguration psc = (PackedSingletonConfiguration) cc;
+        if (psc.instance != null) {
+            parentNode = new ComponentInstanceBuildEntry<>(node, cc.configSite(), cc, psc.instance);
         } else {
-            Factory<?> factory = ((FactoryComponentConfiguration) cc).factory;
-
+            Factory<?> factory = psc.factory;
             MethodHandle mh = ((PackedExtensionContext) node.context()).container().lookup.toMethodHandle(factory.handle());
             parentNode = new ComponentFactoryBuildEntry<>(node, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
         }

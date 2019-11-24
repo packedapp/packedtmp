@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.component.feature.FeatureMap;
@@ -41,7 +42,7 @@ import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.hook.applicator.DelayedAccessor;
 
 /** A common superclass for all component configuration classes. */
-public abstract class AbstractComponentConfiguration<T> implements ComponentHolder, ComponentConfiguration<T> {
+public abstract class AbstractComponentConfiguration<T> implements ComponentHolder, BaseComponentConfiguration {
 
     /** The artifact this component is a part of. */
     private final PackedArtifactBuildContext artifact;

@@ -33,7 +33,6 @@ import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.artifact.ArtifactImage;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentExtension;
 import app.packed.container.Bundle;
 import app.packed.container.Extension;
 import app.packed.container.UseExtension;
@@ -77,7 +76,7 @@ public class ExtensionActivation {
         Bundle b = new Bundle() {
             @Override
             public void configure() {
-                use(ComponentExtension.class).installInstance("foo");
+                installInstance("foo");
             }
         };
         return ArtifactImage.build(b);
@@ -89,7 +88,7 @@ public class ExtensionActivation {
             @Override
             public void configure() {
                 use(MyExtension.class);
-                use(ComponentExtension.class).installInstance("foo");
+                installInstance("foo");
             }
         };
         return ArtifactImage.build(b);
@@ -100,7 +99,7 @@ public class ExtensionActivation {
         Bundle b = new Bundle() {
             @Override
             public void configure() {
-                use(ComponentExtension.class).installInstance(new MyStuff());
+                installInstance(new MyStuff());
             }
         };
         return ArtifactImage.build(b);

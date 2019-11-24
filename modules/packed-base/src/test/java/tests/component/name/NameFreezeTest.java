@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentExtension;
 import app.packed.container.ContainerConfiguration;
 import testutil.util.AbstractArtifactTest;
 import testutil.util.ContainerConfigurationTester;
@@ -45,22 +44,18 @@ public class NameFreezeTest extends AbstractArtifactTest {
     @Test
     public void component_setName_cannotBeCalledAfter_getName() {
         checkThrowsISE(c -> {
-            c.use(ComponentExtension.class, e -> {
-                ComponentConfiguration<?> ci = e.installInstance(1);
-                ci.getName();
-                ci.setName("foo");
-            });
+            ComponentConfiguration<?> ci = c.installInstance(1);
+            ci.getName();
+            ci.setName("foo");
         }, "Cannot call #setName(String) after name has been initialized via call to #getName()");
     }
 
     @Test
     public void component_setName_cannotBeCalledAfter_install() {
         checkThrowsISE(c -> {
-            c.use(ComponentExtension.class, e -> {
-                ComponentConfiguration<?> ci = e.installInstance(1);
-                e.installInstance(1L);
-                ci.setName("foo");
-            });
+            ComponentConfiguration<?> ci = c.installInstance(1);
+            c.installInstance(1L);
+            ci.setName("foo");
         }, "Cannot call this method after having installed components");
 
         // TODO we should actually have, more or less all the different kind of installs we have in
@@ -70,33 +65,27 @@ public class NameFreezeTest extends AbstractArtifactTest {
     @Test
     public void component_setName_cannotBeCalledAfter_link() {
         checkThrowsISE(c -> {
-            c.use(ComponentExtension.class, e -> {
-                ComponentConfiguration<?> ci = e.installInstance(1);
-                c.link(emptyBundle());
-                ci.setName("foo");
-            });
+            ComponentConfiguration<?> ci = c.installInstance(1);
+            c.link(emptyBundle());
+            ci.setName("foo");
         }, "Cannot call this method after #link() has been invoked");
     }
 
     @Test
     public void component_setName_cannotBeCalledAfter_path() {
         checkThrowsISE(c -> {
-            c.use(ComponentExtension.class, e -> {
-                ComponentConfiguration<?> ci = e.installInstance(1);
-                ci.path();
-                ci.setName("foo");
-            });
+            ComponentConfiguration<?> ci = c.installInstance(1);
+            ci.path();
+            ci.setName("foo");
         }, "Cannot call #setName(String) after name has been initialized via call to #path()");
     }
 
     @Test
     public void component_setName_cannotBeCalledAfter_setName() {
         checkThrowsISE(c -> {
-            c.use(ComponentExtension.class, e -> {
-                ComponentConfiguration<?> ci = e.installInstance(1);
-                ci.setName("foo");
-                ci.setName("foo");
-            });
+            ComponentConfiguration<?> ci = c.installInstance(1);
+            ci.setName("foo");
+            ci.setName("foo");
         }, "#setName(String) can only be called once");
     }
 
@@ -122,8 +111,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
     // Og det er maaske lidt skjult naar man bruger f.eks. Bundle...
     // Saa lad os lige gennemtaenke det igen...
     public void container_setName_cannotBeCalledAfter_install() {
-        checkThrowsISE(c -> c.use(ComponentExtension.class, e -> e.installInstance("Foo")).setName("Bar"),
-                "Cannot call this method after having installed components");
+        checkThrowsISE(c -> c.installInstance("Foo").setName("Bar"), "Cannot call this method after having installed components");
         // TODO we should actually have, more or less all the different kind of installs we have in
         // ComponentExtension
     }

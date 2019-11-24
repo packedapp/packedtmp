@@ -19,7 +19,7 @@ import java.lang.module.ModuleDescriptor.Provides;
 
 import app.packed.lang.Key;
 import app.packed.lang.Nullable;
-import packed.internal.component.FactoryComponentConfiguration;
+import packed.internal.component.PackedSingletonConfiguration;
 
 /**
  *
@@ -36,7 +36,7 @@ public interface Dependable extends WithDependencies {
     // Hmm, en prototype @Provides kan jo ogsaa have det...
     // Saa maaske skal den ikke vaere paa dette interface
     // Nej det er vel mere Dependable....
-    FactoryComponentConfiguration<?> declaringComponent();
+    PackedSingletonConfiguration<?> declaringComponent();
 
     Key<?> key();
 }

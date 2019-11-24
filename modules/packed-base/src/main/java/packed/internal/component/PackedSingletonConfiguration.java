@@ -15,8 +15,6 @@
  */
 package packed.internal.component;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.List;
 
 import app.packed.config.ConfigSite;
@@ -28,18 +26,23 @@ import packed.internal.inject.Instantiable;
 /**
  *
  */
-public final class FactoryComponentConfiguration<T> extends AbstractCoreComponentConfiguration<T> implements Instantiable {
+public final class PackedSingletonConfiguration<T> extends AbstractCoreComponentConfiguration<T> implements Instantiable {
 
     public final Factory<T> factory;
+
+    public final T instance;
 
     /**
      * @param configSite
      * @param containerConfiguration
      * @param model
      */
-    public FactoryComponentConfiguration(ConfigSite configSite, PackedContainerConfiguration containerConfiguration, ComponentModel model, Factory<T> factory) {
+    public PackedSingletonConfiguration(ConfigSite configSite, PackedContainerConfiguration containerConfiguration, ComponentModel model, Factory<T> factory,
+            T instance) {
         super(configSite, containerConfiguration, model);
-        this.factory = requireNonNull(factory);
+        this.factory = factory;
+        this.instance = instance;
+
     }
 
     /** {@inheritDoc} */

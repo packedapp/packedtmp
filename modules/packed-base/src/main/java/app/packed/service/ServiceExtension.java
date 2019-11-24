@@ -302,7 +302,7 @@ public final class ServiceExtension extends Extension {
      */
     public <T> ServiceComponentConfiguration<T> provideInstance(T instance) {
         // configurability is checked by ComponentExtension
-        ComponentConfiguration<T> cc = use(ComponentExtension.class).installInstance(instance);
+        ComponentConfiguration<T> cc = installInstance(instance);
         return node.provider().provideInstance(cc, instance);
     }
 

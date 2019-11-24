@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
@@ -231,5 +232,11 @@ public final class PackedExtensionContext implements ExtensionContext {
         PackedExtensionContext pec = new PackedExtensionContext(pcc, extensionType);
         pec.initialize(pcc);
         return pec;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T> ComponentConfiguration<T> installInstance(T instance) {
+        return pcc.installInstance(instance);
     }
 }

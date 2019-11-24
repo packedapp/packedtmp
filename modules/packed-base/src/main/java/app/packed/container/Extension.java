@@ -20,6 +20,7 @@ import java.lang.StackWalker.StackFrame;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 
+import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.extension.AbstractExtensionModelBuilder;
@@ -153,6 +154,18 @@ public abstract class Extension {
      */
     protected final void checkConfigurable() {
         context().checkConfigurable();
+    }
+
+    /**
+     * @param <T>
+     *            the type of the component
+     * @param instance
+     *            the instance to install
+     * @return the configuration of the component
+     * @see BaseBundle#installInstance(Object)
+     */
+    protected final <T> ComponentConfiguration<T> installInstance(T instance) {
+        return context().installInstance(instance);
     }
 
     /**
