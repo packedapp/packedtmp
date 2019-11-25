@@ -26,7 +26,6 @@ import app.packed.api.Contract;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
-import app.packed.container.ExtensionInstantiationContext;
 import app.packed.container.ExtensionWirelet;
 import app.packed.lang.Nullable;
 
@@ -53,7 +52,7 @@ public abstract class AbstractExtensionModelBuilder {
     @Nullable
     Consumer<? super Extension> onExtensionInstantiatedAction;
 
-    public BiConsumer<? super Extension, ? super ExtensionInstantiationContext> onInstantiation;
+    // public BiConsumer<? super Extension, ? super ExtensionInstantiationContext> onInstantiation;
 
     @Nullable
     public BiConsumer<? super Extension, ? super Extension> onLinkage;

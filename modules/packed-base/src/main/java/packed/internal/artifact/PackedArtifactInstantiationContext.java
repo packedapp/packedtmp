@@ -20,8 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.IdentityHashMap;
 
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.Extension;
-import app.packed.container.ExtensionInstantiationContext;
 import app.packed.lang.Nullable;
 import packed.internal.container.WireletContext;
 
@@ -50,8 +48,6 @@ public final class PackedArtifactInstantiationContext {
 
     /** All context objects. */
     private final IdentityHashMap<ContainerConfiguration, IdentityHashMap<Class<?>, Object>> map = new IdentityHashMap<>();
-
-    public final IdentityHashMap<Class<? extends Extension>, ExtensionInstantiationContext> instContexts = new IdentityHashMap<>();
 
     public final WireletContext wirelets;
 

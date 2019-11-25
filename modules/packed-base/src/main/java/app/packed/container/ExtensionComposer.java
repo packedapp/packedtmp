@@ -172,22 +172,22 @@ public abstract class ExtensionComposer<E extends Extension> {
         context().onExtensionInstantiated((Consumer<? super Extension>) action);
     }
 
-    /**
-     * Invoked whenever the container is being instantiated. In case of a container image this means that method might be
-     * invoked multiple times. Even by ___multiple threads___
-     * 
-     * @param action
-     *            an instantiation context object
-     */
-    // Maa koeres efter trae ting??? Eller ogsaa skal det foregaa paa trae tingen...
-    // Nope det skal ikke foregaa paa trae tingen. Fordi den skal kun bruges hvis man ikke
-    // har extension communication
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected final void onInstantiation(BiConsumer<? super E, ? super ExtensionInstantiationContext> action) {
-        requireNonNull(action, "action is null");
-        BiConsumer<? super E, ? super ExtensionInstantiationContext> a = context().onInstantiation;
-        context().onInstantiation = a == null ? (BiConsumer) action : a.andThen((BiConsumer) action);
-    }
+    // /**
+    // * Invoked whenever the container is being instantiated. In case of a container image this means that method might be
+    // * invoked multiple times. Even by ___multiple threads___
+    // *
+    // * @param action
+    // * an instantiation context object
+    // */
+    // // Maa koeres efter trae ting??? Eller ogsaa skal det foregaa paa trae tingen...
+    // // Nope det skal ikke foregaa paa trae tingen. Fordi den skal kun bruges hvis man ikke
+    // // har extension communication
+    // @SuppressWarnings({ "unchecked", "rawtypes" })
+    // protected final void onInstantiation(BiConsumer<? super E, ? super ExtensionInstantiationContext> action) {
+    // requireNonNull(action, "action is null");
+    // BiConsumer<? super E, ? super ExtensionInstantiationContext> a = context().onInstantiation;
+    // context().onInstantiation = a == null ? (BiConsumer) action : a.andThen((BiConsumer) action);
+    // }
 
     /**
      * Registers a (callback) action that is invoked, by the runtime, whenever this extension type has been registered in

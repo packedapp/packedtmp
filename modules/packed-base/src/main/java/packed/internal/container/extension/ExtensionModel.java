@@ -35,7 +35,6 @@ import app.packed.component.Component;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
-import app.packed.container.ExtensionInstantiationContext;
 import app.packed.container.ExtensionWirelet;
 import app.packed.container.InternalExtensionException;
 import app.packed.hook.OnHook;
@@ -98,7 +97,7 @@ public final class ExtensionModel<E extends Extension> {
 
     public final Consumer<? super Extension> onConfigured;
 
-    public final BiConsumer<? super Extension, ? super ExtensionInstantiationContext> onInstantiation;
+    // public final BiConsumer<? super Extension, ? super ExtensionInstantiationContext> onInstantiation;
 
     public final BiConsumer<? super Extension, ? super Extension> onLinkage;
 
@@ -121,7 +120,7 @@ public final class ExtensionModel<E extends Extension> {
         this.contracts = Map.copyOf(builder.contracts);
         this.onAdd = builder.onExtensionInstantiatedAction;
         this.onConfigured = builder.onConfiguredAction;
-        this.onInstantiation = builder.onInstantiation;
+        // this.onInstantiation = builder.onInstantiation;
         this.onLinkage = builder.onLinkage;
         this.dependenciesDirect = Set.copyOf(builder.dependenciesDirect);
         this.dependenciesTotalOrder = builder.dependenciesTotalOrder;
