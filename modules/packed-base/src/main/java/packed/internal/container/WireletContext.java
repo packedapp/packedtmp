@@ -23,6 +23,7 @@ import java.util.List;
 
 import app.packed.container.Extension;
 import app.packed.container.ExtensionWirelet;
+import app.packed.container.MutableWireletList;
 import app.packed.container.Wirelet;
 import app.packed.lang.Nullable;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;

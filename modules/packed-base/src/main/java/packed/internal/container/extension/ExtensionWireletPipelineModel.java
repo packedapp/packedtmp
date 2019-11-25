@@ -21,8 +21,8 @@ import java.util.function.BiFunction;
 
 import app.packed.container.Extension;
 import app.packed.container.ExtensionWirelet;
+import app.packed.container.MutableWireletList;
 import app.packed.container.ExtensionWirelet.Pipeline;
-import packed.internal.container.MutableWireletList;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 
 /** A descriptor for an {@link Pipeline}. */

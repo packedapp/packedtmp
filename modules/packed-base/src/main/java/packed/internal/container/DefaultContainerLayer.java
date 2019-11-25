@@ -24,7 +24,7 @@ import app.packed.container.ContainerLayer;
 import app.packed.container.Wirelet;
 
 /** The default implementation of Layer. */
-class DefaultLayer implements ContainerLayer {
+class DefaultContainerLayer implements ContainerLayer {
 
     final PackedContainerConfiguration container;
 
@@ -34,13 +34,13 @@ class DefaultLayer implements ContainerLayer {
     /** The name of the layer. */
     private final String name;
 
-    DefaultLayer(PackedContainerConfiguration container, String name, ContainerLayer... dependencies) {
+    DefaultContainerLayer(PackedContainerConfiguration container, String name, ContainerLayer... dependencies) {
         this.container = requireNonNull(container);
         this.name = requireNonNull(name, "name is null");
         requireNonNull(dependencies, "dependencies is null");
         for (ContainerLayer l : dependencies) {
             requireNonNull(l, "layer is null");
-            if (!(l instanceof DefaultLayer)) {
+            if (!(l instanceof DefaultContainerLayer)) {
                 throw new IllegalArgumentException("Only Layer instances created by this runtime is allowed, was type " + l.getClass());
             }
         }

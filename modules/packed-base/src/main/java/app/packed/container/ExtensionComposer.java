@@ -24,7 +24,6 @@ import java.util.function.Function;
 
 import app.packed.api.Contract;
 import app.packed.lang.Nullable;
-import packed.internal.container.MutableWireletList;
 import packed.internal.container.extension.AbstractExtensionModelBuilder;
 
 /**

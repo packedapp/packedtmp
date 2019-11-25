@@ -87,7 +87,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** All registered extensions, in order of registration. */
     private final LinkedHashMap<Class<? extends Extension>, PackedExtensionContext> extensions = new LinkedHashMap<>();
 
-    private HashMap<String, DefaultLayer> layers;
+    private HashMap<String, DefaultContainerLayer> layers;
 
     /** The current lookup object, updated via {@link #lookup(Lookup)} */
     public ComponentLookup lookup; // Should be more private
@@ -483,11 +483,11 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** {@inheritDoc} */
     @Override
     public ContainerLayer newLayer(String name, ContainerLayer... dependencies) {
-        HashMap<String, DefaultLayer> l = layers;
+        HashMap<String, DefaultContainerLayer> l = layers;
         if (l == null) {
             l = layers = new HashMap<>();
         }
-        DefaultLayer newLayer = new DefaultLayer(this, name, dependencies);
+        DefaultContainerLayer newLayer = new DefaultContainerLayer(this, name, dependencies);
         if (l.putIfAbsent(name, newLayer) != null) {
             throw new IllegalArgumentException("A layer with the name '" + name + "' has already been added");
         }

@@ -19,8 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
-import packed.internal.container.MutableWireletList;
-
 /**
  * Extensions that define their own wirelets must extend this class.
  * 

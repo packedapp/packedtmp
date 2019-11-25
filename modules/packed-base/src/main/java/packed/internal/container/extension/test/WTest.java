@@ -25,9 +25,9 @@ import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
 import app.packed.container.ExtensionWirelet;
+import app.packed.container.MutableWireletList;
 import app.packed.container.UseExtension;
 import app.packed.service.ServiceExtension;
-import packed.internal.container.MutableWireletList;
 
 /**
  *
