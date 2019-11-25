@@ -42,6 +42,9 @@ public abstract class ExtensionComposer<E extends Extension> {
         requireNonNull(pipelineType, "pipelineType is null");
         requireNonNull(pipelineFactory, "pipelineFactory is null");
         // Validation??? Pipeline model...
+
+        // Hmmm, har jo samme problem som dependencies her....
+
         context().pipelines.putIfAbsent(pipelineType, pipelineFactory);
     }
 

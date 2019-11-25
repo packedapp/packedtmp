@@ -13,24 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package packed.internal.container.extension;
 
 /**
  *
  */
+final class GlobalExtensionLoader {
 
-// I sidste ende kommer det nok an paa hvor mange metoder der er...
+    // Okay vi har en global laas.
 
-// Er der 2-3 Saa smider vi dem paa context, ellers
+    // Laeser et trae ind af gangen
+    // Checker det.
+    // Opdatere det med alt hvad vi har laest ind.
 
-public interface ExtensionTreeNode<E extends Extension> extends ExtensionContext {
-
-    E extension();
 }
-
-////// With Node
-// + No need to have Extension<E extension Extension>
-
-// On ExtensionContext
-// + One less class
-// -

@@ -365,7 +365,6 @@ public final class ServiceExtension extends Extension {
         @Override
         protected void configure() {
             onConfigured(e -> e.node.build());
-            // onInstantiation((e, c) -> e.node.onInstantiate(c));
             onLinkage((p, c) -> p.node.link(c.node));
 
             // Descriptors and contracts
