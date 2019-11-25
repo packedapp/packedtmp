@@ -26,7 +26,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.container.UseExtension;
-import app.packed.container.UseExtensionLazily;
+import app.packed.container.LazyExtensionUsage;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.Hook;
@@ -36,7 +36,7 @@ import app.packed.lang.Qualifier;
 /**
  *
  */
-@UseExtensionLazily(WwTest.MyExtension.class)
+@LazyExtensionUsage(WwTest.MyExtension.class)
 public class WwTest<A extends Annotation> extends BaseBundle {
 
     /** {@inheritDoc} */
@@ -56,7 +56,7 @@ public class WwTest<A extends Annotation> extends BaseBundle {
     }
 
     public static void main(String[] args) {
-        App.open(new WwTest<Left>());
+        App.open(new WwTest<Left>() {});
     }
 
     @Left

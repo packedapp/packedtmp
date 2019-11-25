@@ -27,6 +27,7 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 import app.packed.container.InternalExtensionException;
 import app.packed.lang.Nullable;
+import app.packed.service.Factory;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.moduleaccess.ModuleAccess;
 
@@ -238,5 +239,11 @@ public final class PackedExtensionContext implements ExtensionContext {
     @Override
     public <T> ComponentConfiguration<T> installInstance(T instance) {
         return pcc.installInstance(instance);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T> ComponentConfiguration<T> install(Factory<T> factory) {
+        return pcc.install(factory);
     }
 }

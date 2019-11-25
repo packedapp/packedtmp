@@ -18,7 +18,6 @@ package app.packed.container;
 import java.util.function.Supplier;
 
 import app.packed.artifact.ArtifactImage;
-import app.packed.component.Component;
 
 /**
  * A source of container
@@ -43,10 +42,6 @@ import app.packed.component.Component;
 // The only reason we want to allow repeatable bundles. Is So we can create a descriptor
 // before we make the actual app.
 /// For example, dump the contents of app in a file that is deployed alongside the app....
-
-// Hmm ArtifactSource??? Only DynamicContainerSource is a bit of unknown.
-// ArtifactSource type....
-// Rename to ContainerSource??? I think it makes more sense....
 public interface ContainerSource {}
 
 class AdditionalMethods {
@@ -71,20 +66,4 @@ class AdditionalMethods {
     // Why not just create an App????? Because it instantiates shit...
     // Just create a image then....
     static void validate(ContainerSource source) {}
-}
-
-// Not sure we can link to ContainerImages...
-// So ContainerSource is maybe more like an AppSource
-class LiveReload /* implements ContainerSource */ {
-    // Bliver redeployet hver gang en fil aendrer sig....
-    // Det bliver loaded i sit eget module layer...
-
-    // LiveReload af en single App, men ikke hosten..
-}
-
-abstract class SoftLink implements Component {
-    // I sidste ende er alt jo en bundle....
-
-    // Ideen er egentlig at man kan live replace alle componenter....
-    //// Det skal maaske ikke vaere en softlink....
 }

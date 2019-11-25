@@ -35,7 +35,6 @@ import app.packed.component.Component;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
-import app.packed.container.ExtensionDescriptorContext;
 import app.packed.container.ExtensionInstantiationContext;
 import app.packed.container.ExtensionWirelet;
 import app.packed.container.InternalExtensionException;
@@ -81,7 +80,7 @@ public final class ExtensionModel<E extends Extension> {
     // Can 2 extensions define the same contract???? Don't think so
     // If not we could have a Contract.class->ContractFactory Map and a Contract.of(ContainerSource, Class<T extends
     // Contract>);
-    public final Map<Class<? extends Contract>, BiFunction<?, ? super ExtensionDescriptorContext, ?>> contracts;
+    public final Map<Class<? extends Contract>, Object> contracts;
 
     public final Set<Class<? extends Extension>> dependenciesDirect;
 

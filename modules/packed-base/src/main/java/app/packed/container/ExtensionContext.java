@@ -18,6 +18,7 @@ package app.packed.container;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
+import app.packed.service.Factory;
 
 /**
  * An instance of this interface is available via {@link Extension#context()} or via constructor injection into an
@@ -28,7 +29,7 @@ import app.packed.config.ConfigSite;
 public interface ExtensionContext {
 
     /**
-     * Checks that the underlying extension is configurable, throwing {@link IllegalStateException} if it is not.
+     * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
      * An extension is no longer configurable after the extension's onConfigured method has been invoked by the runtime.
      * 
@@ -38,40 +39,20 @@ public interface ExtensionContext {
     void checkConfigurable();
 
     /**
-     * Returns the config site of the container to which the underlying extension belongs.
+     * Returns the config site of the container the extension is a part of.
      * 
-     * @return the config site of the container to which the underlying extension belongs
+     * @return the config site of the container the extension is a part of
      */
     ConfigSite containerConfigSite();
 
     /**
-     * Returns the path of the container to which the underlying extension belongs.
+     * Returns the path of the container the extension is a part of.
      * 
-     * @return the path of the container to which the underlying extension belongs
+     * @return the path of the container the extension is a part of
      */
     ComponentPath containerPath();
 
-    /**
-     * Returns an extension of the specified type. The specified type must be among the dependencies of underlying
-     * extension. Otherwise an {@link InternalExtensionException} is thrown.
-     * <p>
-     * This method is similar to {@link ContainerConfiguration#use(Class)}. However, this method also makes sure that the
-     * extension do request any other extensions that are in the set of its dependencies. Thereby potentially forming cycles
-     * in the dependency graph.
-     * 
-     * @param <E>
-     *            the type of extension to return
-     * @param extensionType
-     *            the type of extension to return
-     * @return an extension of the specified type
-     * @throws InternalExtensionException
-     *             if the specified extension type is not among the dependencies of this extension. Or if calling this
-     *             method from the constructor of the extension. Or if the underlying container is no longer configurable
-     *             and an extension of the specified type has not already been installed
-     * 
-     * @see ContainerConfiguration#use(Class)
-     */
-    <E extends Extension> E use(Class<E> extensionType);
+    <T> ComponentConfiguration<T> install(Factory<T> factory);
 
     /**
      * @param <T>
@@ -79,7 +60,30 @@ public interface ExtensionContext {
      * @param instance
      *            the instance to install
      * @return the configuration of the component
-     * @see BaseBundle#installInstance(Object)
+     * @see ContainerConfiguration#installInstance(Object)
      */
     <T> ComponentConfiguration<T> installInstance(T instance);
+
+    /**
+     * Returns an extension of the specified type. The specified type must be among the extension's dependencies as
+     * specified via.... Otherwise an {@link InternalExtensionException} is thrown.
+     * <p>
+     * This method works similar to {@link ContainerConfiguration#use(Class)}. However, this method checks that only
+     * extensions that have been declared as dependencies are. This is done in order to make sure that no extensions ever
+     * depend on each other.
+     * 
+     * @param <E>
+     *            the type of extension to return
+     * @param extensionType
+     *            the type of extension to return
+     * @return an extension of the specified type
+     * @throws IllegalStateException
+     *             If invoked from the constructor of the extension. Or if the underlying container is no longer
+     *             configurable and an extension of the specified type has not already been installed
+     * @throws UnsupportedOperationException
+     *             if the specified extension type is not specified via {@link UseExtension} on this extension.
+     * 
+     * @see ContainerConfiguration#use(Class)
+     */
+    <E extends Extension> E use(Class<E> extensionType);
 }

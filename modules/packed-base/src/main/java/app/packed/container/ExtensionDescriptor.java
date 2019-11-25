@@ -50,6 +50,8 @@ public final class ExtensionDescriptor {
     /**
      * Returns an immutable set of any other extensions this extension depends on. The returned set does not include
      * transitive dependencies.
+     * <p>
+     * The returned set includes optional dependencies specified via ... that could be resolved successfully.
      * 
      * @return any other extensions this extension depends on
      */

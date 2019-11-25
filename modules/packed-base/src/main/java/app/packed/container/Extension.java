@@ -22,15 +22,22 @@ import java.util.Optional;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
+import app.packed.service.Factory;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.extension.AbstractExtensionModelBuilder;
 import packed.internal.moduleaccess.AppPackedExtensionAccess;
 import packed.internal.moduleaccess.ModuleAccess;
 
 /**
- * Container extensions allows you to extend the basic functionality of containers.
- * <p>
- * Subclasses of this class must give open rights to app.packed.base
+ * All config Extensions are the main way that function primary way to add features to Packed.
+ * 
+ * For example,
+ * 
+ * 
+ * 
+ * 
+ * 
+ * allows you to extend the basic functionality of containers.
  * <p>
  * Extensions form the basis, extensible model
  * 
@@ -40,8 +47,8 @@ import packed.internal.moduleaccess.ModuleAccess;
  * <p>
  * Every extension implementations must provide either an empty constructor, or a constructor taking a single parameter
  * of type {@link ExtensionContext}. The constructor should have package private accessibility to make sure users do not
- * try an manually instantiate it, but instead use {@link ContainerConfiguration#use(Class)}. It also recommended that
- * the extension itself is declared final.
+ * try an manually instantiate it, but instead use {@link ContainerConfiguration#use(Class)}. It is also recommended
+ * that the extension itself is declared final.
  */
 
 // Step1
@@ -69,7 +76,7 @@ import packed.internal.moduleaccess.ModuleAccess;
 // Extensions provide functionality that are orthogonal to your domain
 public abstract class Extension {
 
-    /** A stack walker used from {@link #captureStackFrame(String)}. */
+    /** A stack walker used by {@link #captureStackFrame(String)}. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
     static {
@@ -81,21 +88,21 @@ public abstract class Extension {
                 composer.doConfigure(context);
             }
 
+            @Override
+            public void pipelineInitialize(ExtensionWirelet.Pipeline<?, ?, ?> pipeline) {
+                pipeline.onInitialize();
+            }
+
             /** {@inheritDoc} */
             @Override
             public void setExtensionContext(Extension extension, ExtensionContext context) {
                 extension.context = context;
             }
-
-            @Override
-            public void pipelineInitialize(ExtensionWirelet.Pipeline<?, ?, ?> pipeline) {
-                pipeline.onInitialize();
-            }
         });
     }
 
     /** The extension context. This field should never be read directly, but only accessed via {@link #context()}. */
-    ExtensionContext context;
+    private ExtensionContext context;
 
     /**
      * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
@@ -157,18 +164,6 @@ public abstract class Extension {
     }
 
     /**
-     * @param <T>
-     *            the type of the component
-     * @param instance
-     *            the instance to install
-     * @return the configuration of the component
-     * @see BaseBundle#installInstance(Object)
-     */
-    protected final <T> ComponentConfiguration<T> installInstance(T instance) {
-        return context().installInstance(instance);
-    }
-
-    /**
      * Returns this extension's context. Or fails with {@link IllegalStateException} if invoked from the constructor of the
      * extension.
      * 
@@ -185,6 +180,22 @@ public abstract class Extension {
         return c;
     }
 
+    protected final <T> ComponentConfiguration<T> install(Factory<T> factory) {
+        return context.install(factory);
+    }
+
+    /**
+     * @param <T>
+     *            the type of the component
+     * @param instance
+     *            the instance to install
+     * @return the configuration of the component
+     * @see ContainerConfiguration#installInstance(Object)
+     */
+    protected final <T> ComponentConfiguration<T> installInstance(T instance) {
+        return context().installInstance(instance);
+    }
+
     /**
      * Returns an extension of the specified type. Only extension types that have been explicitly registered as dependencies
      * via ... are supported. Specifying an .... extension will result in an {@link IllegalArgumentException} being thrown.
@@ -194,6 +205,8 @@ public abstract class Extension {
      * Invoking this method is similar to calling {@link ContainerConfiguration#use(Class)}. However, this method also keeps
      * track of which extensions uses other extensions. And forming any kind of circle in the dependency graph will fail
      * with a runtime exception.
+     * <p>
+     * This method delegate all calls to {@link ExtensionContext#use(Class)}.
      * 
      * @param <E>
      *            the type of extension to return
@@ -208,6 +221,8 @@ public abstract class Extension {
      */
     // TODO change to IAE instead of UOE???? Fix ExtensionContext as well
     // throw new IAE("The specified extension....
+    // Kan ikke smide InternalExtensionException her.
+    // Saa skulle vi jo goere det alle steder
     protected final <E extends Extension> E use(Class<E> extensionType) {
         return context().use(extensionType);
     }

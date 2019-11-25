@@ -13,17 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package packed.internal.component.lifecycle;
 
-// Two strategies. Either clone all the contents.
-// Or recursively call back into parent pipeline
-// protected abstract T split();
-// Lige nu har vi behov for denne i forbindelse med at lave descriptors...
+/**
+ *
+ */
+public class LifecycleState {
 
-//Analyze, Model, ..
-public interface ExtensionDescriptorContext {
-
-    boolean hasPipelines();// <---
-
-    <T extends ExtensionWirelet.Pipeline<?, ?, ?>> T get(Class<T> pipelineType);
 }

@@ -25,7 +25,7 @@ import packed.internal.component.ComponentHolder;
 /**
  *
  */
-public class DefaultHost extends AbstractComponent implements ComponentHolder {
+public class PackedHost extends AbstractComponent implements ComponentHolder {
 
     // App is not a component, so can't really use children. Unless, we attach the artifact
     // to the component, which we probably should
@@ -36,7 +36,7 @@ public class DefaultHost extends AbstractComponent implements ComponentHolder {
     /**
      * @param configuration
      */
-    DefaultHost(AbstractComponentConfiguration<?> configuration, PackedArtifactInstantiationContext ic) {
+    PackedHost(AbstractComponentConfiguration<?> configuration, PackedArtifactInstantiationContext ic) {
         super(null, configuration, ic);
     }
 }

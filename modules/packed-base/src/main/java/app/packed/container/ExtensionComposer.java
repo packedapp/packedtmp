@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import app.packed.api.Contract;
 import packed.internal.container.MutableWireletList;
@@ -81,6 +82,12 @@ public abstract class ExtensionComposer<E extends Extension> {
         }
     }
 
+    protected final <C extends Contract> void exposeContract(Class<C> contractType, Function<? super E, C> contractFactory) {
+        requireNonNull(contractType, "contractType is null");
+        requireNonNull(contractFactory, "contractFactory is null");
+        context().contracts.putIfAbsent(contractType, contractFactory);
+    }
+
     /**
      * Exposes a contract of the specified type.
      * <p>
@@ -96,8 +103,8 @@ public abstract class ExtensionComposer<E extends Extension> {
      * @throws InternalExtensionException
      *             if trying to register a contract type that has already been registered with another extension
      */
-    protected final <C extends Contract> void exposeContract(Class<C> contractType,
-            BiFunction<? super E, ? super ExtensionDescriptorContext, C> contractFactory) {
+    protected final <C extends Contract, T extends ExtensionWirelet.Pipeline<?, ?, ?>> void exposeContract(Class<C> contractType, Class<T> pipelineType,
+            BiFunction<? super E, T, C> contractFactory) {
         requireNonNull(contractType, "contractType is null");
         requireNonNull(contractFactory, "contractFactory is null");
         context().contracts.putIfAbsent(contractType, contractFactory);

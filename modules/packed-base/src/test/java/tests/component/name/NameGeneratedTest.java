@@ -21,7 +21,7 @@ import java.util.function.Function;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.ContainerSource;
-import app.packed.container.ContainerWirelets;
+import app.packed.container.Wirelet;
 import testutil.util.AbstractArtifactTest;
 import testutil.util.ContainerConfigurationTester;
 
@@ -42,7 +42,7 @@ public class NameGeneratedTest extends AbstractArtifactTest {
         appOf(cs.apply(c -> {})).nameIs(defaultName);
         appOf(cs.apply(c -> {})).nameIs(defaultName);
         // We can override default name
-        appOf(cs.apply(c -> c.getNameIs("Boo")), ContainerWirelets.name("Boo")).nameIs("Boo");
+        appOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.name("Boo")).nameIs("Boo");
 
         // Images
         imageOf(cs.apply(c -> {})).nameIs(defaultName);
@@ -50,8 +50,8 @@ public class NameGeneratedTest extends AbstractArtifactTest {
         imageOf(cs.apply(c -> {})).newApp().nameIs(defaultName);
 
         // We can override default name from images
-        imageOf(cs.apply(c -> c.getNameIs("Boo")), ContainerWirelets.name("Boo")).nameIs("Boo");
-        imageOf(cs.apply(c -> c.getNameIs("Boo")), ContainerWirelets.name("Boo")).newApp().nameIs("Boo");
+        imageOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.name("Boo")).nameIs("Boo");
+        imageOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.name("Boo")).newApp().nameIs("Boo");
 
         // As a child
         appOf(new AbstractConsumableBundle(c -> {

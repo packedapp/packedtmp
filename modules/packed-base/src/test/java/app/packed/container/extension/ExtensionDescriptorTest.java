@@ -60,7 +60,7 @@ public class ExtensionDescriptorTest {
             /** {@inheritDoc} */
             @Override
             protected void configure() {
-                exposeContract(SomeContract.class, (e, c) -> new SomeContract());
+                exposeContract(SomeContract.class, e -> new SomeContract());
             }
         }
 

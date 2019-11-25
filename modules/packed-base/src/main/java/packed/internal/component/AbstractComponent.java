@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -68,6 +69,8 @@ public abstract class AbstractComponent implements Component {
     /** The parent component, iff this component has a parent. */
     @Nullable
     final AbstractComponent parent;
+
+    final ReentrantLock lock = new ReentrantLock();
 
     /**
      * Creates a new abstract component.

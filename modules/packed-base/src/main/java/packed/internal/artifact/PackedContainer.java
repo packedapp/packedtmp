@@ -35,7 +35,7 @@ import packed.internal.service.run.DefaultInjector;
 /// Naehhhh, Det er jo en container....
 // Man skal ikke kunne iterere igennem den jo...
 
-public final class PackedArtifactContext extends AbstractComponent implements ArtifactContext {
+public final class PackedContainer extends AbstractComponent implements ArtifactContext {
 
     private final Injector injector;
 
@@ -49,7 +49,7 @@ public final class PackedArtifactContext extends AbstractComponent implements Ar
      * @param instantiationContext
      *            the instantiation context of the container
      */
-    public PackedArtifactContext(@Nullable AbstractComponent parent, PackedContainerConfiguration configuration,
+    public PackedContainer(@Nullable AbstractComponent parent, PackedContainerConfiguration configuration,
             PackedArtifactInstantiationContext instantiationContext) {
         super(parent, configuration, instantiationContext);
         Injector i = instantiationContext.get(configuration, DefaultInjector.class);

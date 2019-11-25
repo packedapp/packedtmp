@@ -30,11 +30,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import app.packed.api.Contract;
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.BundleDescriptor.Builder;
@@ -42,7 +42,6 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerLayer;
 import app.packed.container.ContainerSource;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionDescriptorContext;
 import app.packed.container.ExtensionInstantiationContext;
 import app.packed.container.ExtensionWirelet.Pipeline;
 import app.packed.container.InternalExtensionException;
@@ -51,8 +50,8 @@ import app.packed.lang.Nullable;
 import app.packed.service.Factory;
 import app.packed.service.ServiceExtension;
 import packed.internal.artifact.BuildOutput;
-import packed.internal.artifact.PackedArtifactContext;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
+import packed.internal.artifact.PackedContainer;
 import packed.internal.component.AbstractComponent;
 import packed.internal.component.AbstractComponentConfiguration;
 import packed.internal.component.AbstractCoreComponentConfiguration;
@@ -71,6 +70,9 @@ import packed.internal.moduleaccess.ModuleAccess;
 
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration<Void> implements ContainerConfiguration {
+
+    /** A stack walker used from {@link #captureStackFrame(String)}. */
+    private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
     @Nullable
     public PackedExtensionContext activeExtension;
@@ -118,20 +120,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     }
 
     /**
-     * @param <T>
-     *            the type of the component
-     * @param instance
-     *            the instance to install
-     * @return the configuration of the component
-     * @see BaseBundle#installInstance(Object)
-     */
-    @Override
-    public <T> ComponentConfiguration<T> installInstance(T instance) {
-        requireNonNull(instance, "instance is null");
-        return installInstance(instance, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
-    }
-
-    /**
      * Creates a new container configuration when {@link #link(Bundle, Wirelet...) linking a bundle}.
      * 
      * @param parent
@@ -157,15 +145,66 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             if (c != null) {
                 c.accept(e.extension(), builder);
             }
-            for (BiFunction<?, ? super ExtensionDescriptorContext, ?> s : e.model().contracts.values()) {
+            for (Object s : e.model().contracts.values()) {
                 // TODO need a context
-
-                Contract con = (Contract) ((BiFunction) s).apply(e.extension(), null);
+                Contract con;
+                if (s instanceof Function) {
+                    con = (Contract) ((Function) s).apply(e.extension());
+                } else { // BiFcuntoin
+                    con = (Contract) ((BiFunction) s).apply(e.extension(), null);
+                }
                 requireNonNull(con);
                 builder.addContract(con);
             }
         }
         builder.extensions.addAll(extensions.keySet());
+    }
+
+    /**
+     * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
+     * not located on any subclasses of {@link Extension} or any class that implements {@link ContainerSource}.
+     * <p>
+     * Invoking this method typically takes in the order of 1-2 microseconds.
+     * <p>
+     * If capturing of stack-frame-based config sites has been disable via, for example, fooo. This method returns
+     * {@link ConfigSite#UNKNOWN}.
+     * 
+     * @param operation
+     *            the operation
+     * @return a stack frame capturing config site, or {@link ConfigSite#UNKNOWN} if stack frame capturing has been disabled
+     * @see StackWalker
+     */
+    // TODO add stuff about we also ignore non-concrete container sources...
+    protected final ConfigSite captureStackFrame(String operation) {
+        // API-NOTE This method is not available on ExtensionContext to encourage capturing of stack frames to be limited
+        // to the extension class in order to simplify the filtering mechanism.
+
+        if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
+            return ConfigSite.UNKNOWN;
+        }
+        Optional<StackFrame> sf = STACK_WALKER.walk(e -> e.filter(f -> !captureStackFrameIgnoreFilter(f)).findFirst());
+        return sf.isPresent() ? configSite().thenStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
+    }
+
+    /**
+     * @param frame
+     *            the frame to filter
+     * @return whether or not to filter the frame
+     */
+    private final boolean captureStackFrameIgnoreFilter(StackFrame frame) {
+        Class<?> c = frame.getDeclaringClass();
+        // Det virker ikke skide godt, hvis man f.eks. er en metode on a abstract bundle der override configure()...
+        // Syntes bare vi filtrer app.packed.base modulet fra...
+        // Kan vi ikke checke om imod vores container source.
+
+        // ((PackedExtensionContext) context()).container().source
+        // Nah hvis man koere fra config er det jo fint....
+        // Fra config() paa en bundle er det fint...
+        // Fra alt andet ikke...
+
+        // Dvs ourContainerSource
+        return Extension.class.isAssignableFrom(c)
+                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && ContainerSource.class.isAssignableFrom(c));
     }
 
     /**
@@ -191,12 +230,12 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return this;
     }
 
-    public PackedArtifactContext doInstantiate(WireletContext wirelets) {
+    public PackedContainer doInstantiate(WireletContext wirelets) {
         PackedArtifactInstantiationContext pic = new PackedArtifactInstantiationContext(wirelets);
         extensionsPrepareInstantiation(pic);
 
         // Will instantiate the whole container hierachy
-        PackedArtifactContext pc = new PackedArtifactContext(null, this, pic);
+        PackedContainer pc = new PackedContainer(null, this, pic);
         methodHandlePassing0(pc, pic);
         return pc;
     }
@@ -310,18 +349,33 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return extensions.get(extensionType);
     }
 
-    public <T> ComponentConfiguration<T> install(Factory<T> factory, ConfigSite configSite) {
+    /** {@inheritDoc} */
+    @Override
+    public <T> ComponentConfiguration<T> install(Class<T> implementation) {
+        requireNonNull(implementation, "implementation is null");
+        return install(Factory.findInjectable(implementation));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T> ComponentConfiguration<T> install(Factory<T> factory) {
+        requireNonNull(factory, "factory is null");
+        ConfigSite configSite = captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL);
         ComponentModel model = lookup.componentModelOf(factory.rawType());
+        PackedSingletonConfiguration<T> cc = new PackedSingletonConfiguration<>(configSite, this, model, factory);
         installPrepare(State.INSTALL_INVOKED);
-        AbstractCoreComponentConfiguration<T> cc = new PackedSingletonConfiguration<T>(configSite, this, model, factory, null);
         currentComponent = cc;
         return cc.runHooks(source);
     }
 
-    public <T> ComponentConfiguration<T> installInstance(T instance, ConfigSite configSite) {
+    /** {@inheritDoc} */
+    @Override
+    public <T> ComponentConfiguration<T> installInstance(T instance) {
+        requireNonNull(instance, "instance is null");
+        ConfigSite configSite = captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL);
         ComponentModel model = lookup.componentModelOf(instance.getClass());
+        PackedSingletonConfiguration<T> cc = new PackedSingletonConfiguration<>(configSite, this, model, instance);
         installPrepare(State.INSTALL_INVOKED);
-        AbstractCoreComponentConfiguration<T> cc = new PackedSingletonConfiguration<T>(configSite, this, model, null, instance);
         currentComponent = cc;
         return cc.runHooks(source);
     }
@@ -351,76 +405,23 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     @Override
     public <T> ComponentConfiguration<T> installStateless(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        return installStatic(implementation, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
-    }
-
-    /** A stack walker used from {@link #captureStackFrame(String)}. */
-    private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
-
-    public <T> ComponentConfiguration<T> installStatic(Class<T> implementation, ConfigSite configSite) {
+        ConfigSite configSite = captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL);
         ComponentModel descriptor = lookup.componentModelOf(implementation);
-        installPrepare(State.INSTALL_INVOKED);
         AbstractCoreComponentConfiguration<T> cc = new StaticComponentConfiguration<T>(configSite, this, descriptor, implementation);
+        installPrepare(State.INSTALL_INVOKED);
         currentComponent = cc;
         return cc.runHooks(source);
     }
 
-    /**
-     * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
-     * not located on any subclasses of {@link Extension} or any class that implements {@link ContainerSource}.
-     * <p>
-     * Invoking this method typically takes in the order of 1-2 microseconds.
-     * <p>
-     * If capturing of stack-frame-based config sites has been disable via, for example, fooo. This method returns
-     * {@link ConfigSite#UNKNOWN}.
-     * 
-     * @param operation
-     *            the operation
-     * @return a stack frame capturing config site, or {@link ConfigSite#UNKNOWN} if stack frame capturing has been disabled
-     * @see StackWalker
-     */
-    // TODO add stuff about we also ignore non-concrete container sources...
-    protected final ConfigSite captureStackFrame(String operation) {
-        // API-NOTE This method is not available on ExtensionContext to encourage capturing of stack frames to be limited
-        // to the extension class in order to simplify the filtering mechanism.
-
-        if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
-            return ConfigSite.UNKNOWN;
-        }
-        Optional<StackFrame> sf = STACK_WALKER.walk(e -> e.filter(f -> !captureStackFrameIgnoreFilter(f)).findFirst());
-        return sf.isPresent() ? configSite().thenStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
-    }
-
-    /**
-     * @param frame
-     *            the frame to filter
-     * @return whether or not to filter the frame
-     */
-    private final boolean captureStackFrameIgnoreFilter(StackFrame frame) {
-        Class<?> c = frame.getDeclaringClass();
-        // Det virker ikke skide godt, hvis man f.eks. er en metode on a abstract bundle der override configure()...
-        // Syntes bare vi filtrer app.packed.base modulet fra...
-        // Kan vi ikke checke om imod vores container source.
-
-        // ((PackedExtensionContext) context()).container().source
-        // Nah hvis man koere fra config er det jo fint....
-        // Fra config() paa en bundle er det fint...
-        // Fra alt andet ikke...
-
-        // Dvs ourContainerSource
-        return Extension.class.isAssignableFrom(c)
-                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && ContainerSource.class.isAssignableFrom(c));
+    /** {@inheritDoc} */
+    @Override
+    protected PackedContainer instantiate(AbstractComponent parent, PackedArtifactInstantiationContext ic) {
+        return new PackedContainer(parent, this, ic);
     }
 
     /** {@inheritDoc} */
     @Override
-    protected PackedArtifactContext instantiate(AbstractComponent parent, PackedArtifactInstantiationContext ic) {
-        return new PackedArtifactContext(parent, this, ic);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isTopContainer() {
+    public boolean isArtifactRoot() {
         return parent == null; // TODO change when we have hosts.
     }
 
@@ -554,7 +555,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * 
      * @param extensionType
      *            the type of extension
-     * @param callingExtension
+     * @param caller
      *            non-null if it is another extension that is requesting the extension
      * @return the extension's context
      * @throws IllegalStateException
@@ -563,7 +564,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * @throws InternalExtensionException
      *             if the
      */
-    public PackedExtensionContext useExtension(Class<? extends Extension> extensionType, @Nullable PackedExtensionContext callingExtension) {
+    public PackedExtensionContext useExtension(Class<? extends Extension> extensionType, @Nullable PackedExtensionContext caller) {
         requireNonNull(extensionType, "extensionType is null");
         PackedExtensionContext pec = extensions.get(extensionType);
 
@@ -571,15 +572,20 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         // Which will fail with ConcurrentModificationException (see ExtensionDependenciesTest)
         if (pec == null) {
             // Checks that we are still configurable
-            if (callingExtension == null) {
+            if (caller == null) {
                 checkConfigurable();
             } else {
-                callingExtension.checkConfigurable();
+                caller.checkConfigurable();
             }
             initializeName(State.EXTENSION_USED, null); // initializes name of container, if not already set
-
             extensions.put(extensionType, pec = PackedExtensionContext.of(this, extensionType));
         }
         return pec;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<? extends ContainerSource> sourceType() {
+        return source.getClass();
     }
 }

@@ -20,15 +20,11 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.packed.artifact.ArtifactImage;
 import app.packed.service.Injector;
 import app.packed.service.InjectorConfigurator;
+import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
 import packed.internal.container.FixedWireletList;
 
-// Wire vs link....
-
-// Interface -> kan man let implementere, uden at fucke et nedarvnings hiraki op
-// Klasse -> Vi kan have protected metoder
 /**
  * Packlets are an umbrella term for small pieces of glue code, that is used to connect, wire, instantiate, debug your
  * applications.
@@ -36,9 +32,9 @@ import packed.internal.container.FixedWireletList;
  * A wiring operation is a piece of glue code that wire bundles and/or runtimes together, through operations such as
  * {@link InjectorConfigurator#provideAll(Injector, Wirelet...)} or
  * <p>
- * As a rule of thumb wirelets are evaluated in order. For example, ContainerWirelets.name("ffff"),
- * ContainerWirelets.name("sdsdsd"). Will first the change the name to ffff, and then change it to sdsds. Maybe an
- * example with.noStart + start_await it better.
+ * As a rule of thumb wirelets are evaluated in order. For example, Wirelet.name("ffff"), Wirelet.name("sdsdsd"). Will
+ * first the change the name to ffff, and then change it to sdsds. Maybe an example with.noStart + start_await it
+ * better.
  * 
  * <p>
  * A typical usage for wiring operations is for rebinding services under another key when wiring an injector into
@@ -50,45 +46,12 @@ import packed.internal.container.FixedWireletList;
  * Show example where we rebind X to Y, and Y to X, maybe with a peek inbetween
  * 
  * Operations is order Example with rebind
- * 
  * <p>
- * In order to work properly with {@link ArtifactImage artifact images}, wirelets must be safe to access by multiple
- * concurrent threads.
+ * Wirelet implementations must be immutable and safe to access by multiple concurrent threads.
+ * 
+ * @apiNote User-code should never directly extend this class only {@link ExtensionWirelet}. Future versions of this
+ *          class may make use of sealed types if they become available.
  */
-// https://martinfowler.com/articles/collection-pipeline/
-// A bundling always has a bundle (source) and a target???
-
-// WiringOptions
-/// kunne have en bundle.disableConfigSite()... <- Saa har man den kun paa toplevel app'en....
-//// NoConfiguSite, ForceConfigSite
-
-//// ExportTransient -> Meaning everything is exported out again from the bundle
-//// exportTransient(Filter) <-Kunne ogsaa vaere paa WiredBundle
-
-// Push wirelets down to sub containers...
-//// Should not be supported because it would break encapsulation....
-//// Would be nice with debugging options... For example, enable TOMCAT high debug mode
-// This is implementation detail...
-//// Basically propagation of support options...
-
-// Hierachical composition
-
-// Wiring methods
-// Linked: refering to the process of linking multiple bundles together. Linkages is final
-// Hosted: referers to wiring multiple apps together
-// Detached:
-
-// TODO move to component, if it will see general use...
-// TODO ConfigSite disabled, enabled, hierachical
-
-// Properties
-//// Inherited/Not-Inherited (F.eks. Logging, Disable ConfigSite, ...)
-//// OutputTargetType == App, Injector, Analyze, Image
-
-// Paclet??? Har bare altid syntes det loed lidt dumt naar noget opkaldt efter projektet..
-// Packlet...
-// Plug
-// Arglets...
 public abstract class Wirelet {
 
     // For bedre error messages. This operation can only be used if the parent or child bundle
@@ -151,30 +114,67 @@ public abstract class Wirelet {
         return this;
     }
 
-    // Okay... hvordan klare vi det her med Bundle.lookup()
-    // Maaske i foerste omgang ved ikke at supportere det.
-    // static Wirelet lookup(MethodHandles.Lookup lookup) {
-    // throw new UnsupportedOperationException();
-    // }
-
-    // The tree ways of locality for wirelets....
-    // We also have build time and configuration time...
-    // The various dimensions
-    //// For example instantiations wirelets...
-    //// Skal de hele vejen ned... de skal de vel...
-    // Lifecycle Phases, Virality
-    enum Locality {
-
-        /** In the container, and all children even if different artifacts. */
-        INHERITED_ALL,
-
-        /** In the container, and all children within the same artifact */
-        INHERITED_ARTIFACT,
-
-        /** Only within the same container (default). */
-        PER_CONTAINER;
+    /**
+     * Returns a wirelet that will set the name of a container once wired, overriding any name that might already have been
+     * set, for example, via {@link Bundle#setName(String)}.
+     * 
+     * @param name
+     *            the name of the container
+     * @return a wirelet that will set name of a container once wired
+     */
+    // setName
+    public static Wirelet name(String name) {
+        return new ComponentNameWirelet(name);
     }
 }
+
+// Okay... hvordan klare vi det her med Bundle.lookup()
+// Maaske i foerste omgang ved ikke at supportere det.
+// static Wirelet lookup(MethodHandles.Lookup lookup) {
+// throw new UnsupportedOperationException();
+// }
+// Det er jo i forbindelse med ServiceWirelets vi supportere det.
+// Men tror alt maa wrappes i en injector. Og saa bruge lookup();
+
+// Wire vs link....
+
+// Interface -> kan man let implementere, uden at fucke et nedarvnings hiraki op
+// Klasse -> Vi kan have protected metoder
+
+// https://martinfowler.com/articles/collection-pipeline/
+// A bundling always has a bundle (source) and a target???
+
+// WiringOptions
+/// kunne have en bundle.disableConfigSite()... <- Saa har man den kun paa toplevel app'en....
+//// NoConfiguSite, ForceConfigSite
+
+//// ExportTransient -> Meaning everything is exported out again from the bundle
+//// exportTransient(Filter) <-Kunne ogsaa vaere paa WiredBundle
+
+// Push wirelets down to sub containers...
+//// Should not be supported because it would break encapsulation....
+//// Would be nice with debugging options... For example, enable TOMCAT high debug mode
+// This is implementation detail...
+//// Basically propagation of support options...
+
+// Hierachical composition
+
+// Wiring methods
+// Linked: refering to the process of linking multiple bundles together. Linkages is final
+// Hosted: referers to wiring multiple apps together
+// Detached:
+
+// TODO move to component, if it will see general use...
+// TODO ConfigSite disabled, enabled, hierachical
+
+// Properties
+//// OutputTargetType == App, Injector, Analyze, Image
+
+// Paclet??? Har bare altid syntes det loed lidt dumt naar noget opkaldt efter projektet..
+// Packlet...
+// Plug
+// Arglets...
+
 // However, extensions are not that simple.
 // support for GraalVM
 // Support for Artifact Image generation.

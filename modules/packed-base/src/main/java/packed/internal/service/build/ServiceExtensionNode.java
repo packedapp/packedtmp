@@ -25,7 +25,6 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.ExtensionContext;
-import app.packed.container.ExtensionDescriptorContext;
 import app.packed.container.ExtensionInstantiationContext;
 import app.packed.lang.Key;
 import app.packed.lang.Nullable;
@@ -153,7 +152,7 @@ public final class ServiceExtensionNode {
         children.add(child);
     }
 
-    public ServiceContract newServiceContract(ExtensionDescriptorContext context) {
+    public ServiceContract newServiceContract(ServiceWireletPipeline swp) {
         // requireNonNull(context);
         return ServiceContract.newContract(c -> {
             if (exporter != null) {

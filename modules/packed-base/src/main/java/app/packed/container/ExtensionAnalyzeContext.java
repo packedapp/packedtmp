@@ -15,24 +15,16 @@
  */
 package app.packed.container;
 
-/**
- *
- */
+// Two strategies. Either clone all the contents.
+// Or recursively call back into parent pipeline
+// protected abstract T split();
+// Lige nu har vi behov for denne i forbindelse med at lave descriptors...
 
-// UseExtension -> mandatory....
-// Problemet er at UseExtension betyder noget andet paa extension ends
+//Analyze, Model, ..
 
-// Why do need to declare extensions..
-// Because we can reference extension from onConfigured();
-// And we have no idea what other extensions they use until we run
-// onConfigured on them,
+public interface ExtensionAnalyzeContext {
 
-// Should not be documented...
-public @interface ExtensionProperties {
+    boolean hasPipelines();// <---
 
-    Class<? extends Extension>[] extensions() default {};
-
-    String[] extensionsOptional() default {};
-
-    boolean viral() default false;
+    <T extends ExtensionWirelet.Pipeline<?, ?, ?>> T get(Class<T> pipelineType);
 }

@@ -20,12 +20,10 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.BiConsumer;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentExtension;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
 import app.packed.container.ExtensionContext;
-import app.packed.container.UseExtension;
 import app.packed.container.Wirelet;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
@@ -66,7 +64,6 @@ import packed.internal.service.run.AbstractInjector;
 // Maybe have an Bundle.onExtensionActivation(Extension e) <- man kan overskrive....
 // Eller @BundleStuff(onActivation = FooActivator.class) -> ForActivator extends BundleController
 
-@UseExtension(ComponentExtension.class)
 public final class ServiceExtension extends Extension {
 
     /** The extension node that does most of the work. */
@@ -94,7 +91,9 @@ public final class ServiceExtension extends Extension {
      * @see #export(Key)
      */
     public <T> ServiceConfiguration<T> export(Class<T> key) {
-        return export(Key.of(key));
+        requireNonNull(key, "key is null");
+        checkConfigurable();
+        return node.exports().export(Key.of(key), captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
     }
 
     /**
@@ -250,7 +249,7 @@ public final class ServiceExtension extends Extension {
      */
     public <T> ServiceComponentConfiguration<T> provide(Factory<T> factory) {
         // configurability is checked by ComponentExtension
-        return node.provider().provideFactory(use(ComponentExtension.class).install(factory), factory, factory.factory.function);
+        return node.provider().provideFactory(install(factory), factory, factory.factory.function);
     }
 
     // Will install a stateless component...
@@ -259,7 +258,9 @@ public final class ServiceExtension extends Extension {
         throw new UnsupportedOperationException();
     }
 
-    <T> ServiceComponentConfiguration<T> provide(ComponentConfiguration<T> existing) {
+    <T> ServiceComponentConfiguration<T> provide(ComponentConfiguration<T> c) {
+        // return node.provider().provideFactory(install(factory), factory, factory.factory.function);
+
         // IDeen er lidt at man f.eks. kan lave en ComponentExtension et andet sted, som saa kan bruges her.
         throw new UnsupportedOperationException();
     }
@@ -369,7 +370,7 @@ public final class ServiceExtension extends Extension {
 
             // Descriptors and contracts
             // What about runtime????
-            exposeContract(ServiceContract.class, (e, c) -> e.node.newServiceContract(c));
+            exposeContract(ServiceContract.class, ServiceWireletPipeline.class, (e, c) -> e.node.newServiceContract(c));
 
             exposeDescriptor((e, b) -> e.node.buildDescriptor(b));
 

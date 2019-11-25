@@ -13,22 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
-
-import static java.util.Objects.requireNonNull;
+package app.packed.component.feature;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Member;
 
-import app.packed.container.BaseBundle;
+import app.packed.component.Component;
+import app.packed.component.ComponentConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
-import app.packed.lang.Nullable;
-import app.packed.service.Factory;
-import app.packed.service.ServiceExtension;
-import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.container.extension.PackedExtensionContext;
-import packed.internal.inject.util.InjectConfigSiteOperations;
+import app.packed.service.InjectionException;
 
 /**
  * An extension that provides basic functionality for installing components in a container.
@@ -37,72 +35,7 @@ import packed.internal.inject.util.InjectConfigSiteOperations;
 
 // Kill this... den fungere ikke
 
-public final class ComponentExtension extends Extension {
-
-    /** The configuration of the container, should only be accessed via {@link #pcc()}. */
-    @Nullable
-    private PackedContainerConfiguration pcc;
-
-    /** Should never be initialized by users. */
-    ComponentExtension() {}
-
-    /**
-     * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
-     * <p>
-     * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
-     * <p>
-     * This method uses the {@link ServiceExtension} to instantiate the an instance of the component. (only if there are
-     * dependencies???)
-     * 
-     * @param <T>
-     *            the type of the component
-     * @param implementation
-     *            the type of instantiate and use as the component instance
-     * @return the configuration of the component
-     */
-    // Den eneste grund for at de her metoder ikke er paa ComponentConfiguration er actors
-    // Eller i andre situation hvor man ikke vil have at man installere alm componenter..
-    // Men okay. Maaske skal man wrappe det saa. Det er jo let nok at simulere med useParent
-    public <T> ComponentConfiguration<T> install(Class<T> implementation) {
-        requireNonNull(implementation, "implementation is null");
-        return pcc().install(Factory.findInjectable(implementation), captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
-    }
-
-    /**
-     * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
-     * <p>
-     * This method uses the {@link ServiceExtension} to instantiate an component instance from the factory.
-     * 
-     * @param <T>
-     *            the type of the component
-     * @param factory
-     *            the factory to install
-     * @return the configuration of the component
-     * @see BaseBundle#install(Factory)
-     */
-    public <T> ComponentConfiguration<T> install(Factory<T> factory) {
-        requireNonNull(factory, "factory is null");
-        return pcc().install(factory, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
-    }
-
-    /**
-     * Returns the container configuration that this extension wraps.
-     * 
-     * @return the container configuration that this extension wraps
-     * @throws IllegalStateException
-     *             if thrown by {@link #context()}
-     */
-    private PackedContainerConfiguration pcc() {
-        PackedContainerConfiguration p = pcc;
-        if (p == null) {
-            p = pcc = ((PackedExtensionContext) context()).container();
-        }
-        return p;
-    }
-
-}
-
-class Old {
+final class ComponentExtension extends Extension {
 
     void addRule(ComponentRule rule) {
 
@@ -199,6 +132,57 @@ class ComponentRule {
     }
 }
 
+/**
+ * Typically used together with component scanning to indicate that a class should be installed.
+ * 
+ * Unlike many other popular dependency injection frameworks. There are usually no requirements in Cake to use
+ * <code>@Inject</code> annotations on the constructor or method that must have dependencies injected. However, in some
+ * situations an annotation can be used for providing greater control over how dependencies are being injected.
+ * <p>
+ * One such example is if a dependency should only be injected if it is available. Injecting {@code null} instead of
+ * throwing an {@link InjectionException}.
+ */
+@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.TYPE })
+@Retention(RetentionPolicy.RUNTIME)
+
+// Giver kun mening sammen ComponentScan....
+@interface Install {
+
+    Class<?> as() default Component.class; // @install(as = Actor.class)
+
+    /**
+     * The description of the component. The default value is the empty string, which means that no description will be set.
+     *
+     * @return the description of the component
+     * @see ComponentConfiguration#setDescription(String)
+     * @see Component#description()
+     */
+    String description() default "";
+
+    /**
+     * The name of the component. The default value is the empty string, which means that the container will automatically
+     * generate a unique name for the component.
+     *
+     * @return the name of the component
+     * @see ComponentConfiguration#setName(String)
+     * @see Component#name()
+     */
+    String name() default "";
+
+    boolean instantiable() default true;
+
+}
+/// **
+// * Returns any children that should be installed for the component.
+// *
+// * @return any children that should be installed for the component
+// */
+// Class<?>[] children() default {};
+
+// Would also solve our problems with mixin cycles.
+// Cannot come up with any situations where you would reference
+// from a component with a mixin to another component with a mixin
+// Class<?>[] mixins() default {};
 // I think the default should be only to scan the module you are in....
 // And the allow Regexp for modules() so that you can specify "*" for all modules
 // Maybe the same for packages....

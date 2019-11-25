@@ -15,6 +15,8 @@
  */
 package packed.internal.component;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.List;
 
 import app.packed.config.ConfigSite;
@@ -32,17 +34,21 @@ public final class PackedSingletonConfiguration<T> extends AbstractCoreComponent
 
     public final T instance;
 
+    public PackedSingletonConfiguration(ConfigSite configSite, PackedContainerConfiguration containerConfiguration, ComponentModel model, Factory<T> factory) {
+        super(configSite, containerConfiguration, model);
+        this.factory = requireNonNull(factory);
+        this.instance = null;
+    }
+
     /**
      * @param configSite
      * @param containerConfiguration
      * @param model
      */
-    public PackedSingletonConfiguration(ConfigSite configSite, PackedContainerConfiguration containerConfiguration, ComponentModel model, Factory<T> factory,
-            T instance) {
+    public PackedSingletonConfiguration(ConfigSite configSite, PackedContainerConfiguration containerConfiguration, ComponentModel model, T instance) {
         super(configSite, containerConfiguration, model);
-        this.factory = factory;
-        this.instance = instance;
-
+        this.factory = null;
+        this.instance = requireNonNull(instance);
     }
 
     /** {@inheritDoc} */

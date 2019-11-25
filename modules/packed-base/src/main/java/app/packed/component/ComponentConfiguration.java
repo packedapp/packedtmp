@@ -27,7 +27,7 @@ import app.packed.service.Factory;
 
 /**
  * This class represents the configuration of a component. Actual instances of this interface is usually obtained by
- * calling one of the install methods on, for example, {@link BaseBundle} or {@link ComponentExtension}..
+ * calling one of the install methods on, for example, {@link BaseBundle}.
  * <p>
  * It it also possible to install components at runtime via {@link Component}.
  */
@@ -65,6 +65,7 @@ public interface ComponentConfiguration<T> extends BaseComponentConfiguration {
     ComponentConfiguration<T> setName(String name);
 
     default Class<?> type() {
+        // instanceType???
         throw new UnsupportedOperationException();
     }
     //

@@ -22,47 +22,46 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An annotation indicating that the annotated type requires
+ * An annotation indicating that the runtime must install one or more extensions of annotated type requires
  * 
  * A meta-annotation that can be placed on annotations...
  * 
- * That has a number of uses depending on what types it is placed on
+ * The annotation can currently be used in the following places:
  * 
- * Bundle.
+ * On a {@link Bundle}.
  * 
- * Extension
+ * On an {@link Extension}
  * 
- * Annotation, Instances
+ * On Annotation, Instances
  * 
  * ComponentType??? Ja det er jo saadan hvad InstanceOf
  * 
  * Inherited???? Hmmm, Actor
  */
-
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-// RequireExtension?????
-
-// @UseExtensionIfHooked(ServiceExtension.class)
-//// Uses the service extension, if any of the hooks that needs activation is encountered, otherwise not.
 public @interface UseExtension {
 
     /**
-     * A number of optional extensions. Will be evaluated the first time the annotated type is encountered.
+     * Optional extension types that will only be installed if they are available at runtime.
+     * <p>
+     * Checking whether or not optional dependencies are available will be done only one per annotated type. Caching the
+     * result
      * 
      * @return optional extensions
      */
     String[] optional() default {};
 
     /**
-     * Returns the extensions that are used.
+     * Returns any extension the annotated type uses.
      * 
-     * @return the extensions that are used
+     * @return any extension the annotated type uses
      */
     Class<? extends Extension>[] value() default {};
 }
-
+// @UseExtensionIfHooked(ServiceExtension.class)
+//// Uses the service extension, if any of the hooks that needs activation is encountered, otherwise not.
 // Vi havde en module some target, men det er bare accident waiting to happen
 // En der faar annoteret et modul og glemmer alt om det....
 

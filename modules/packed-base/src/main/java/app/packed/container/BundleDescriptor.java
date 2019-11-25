@@ -58,10 +58,6 @@ import packed.internal.moduleaccess.ModuleAccess;
 
 // Description, Tags, runtimeType = {Container/Injector}, BundleFactory.class, Descriptor=InjectorBundleDescriptor
 // (maaske faas den fra BundleFactory)
-// Bundles do now support selectively deciding which bundles can import other bundles.
-// This is supported by modularity.
-// For example, that only ZBundle can import CXbundle. This is modules..
-
 // includes implementation details....
 // name, id, type, stuff I think this is in the descriptor???
 

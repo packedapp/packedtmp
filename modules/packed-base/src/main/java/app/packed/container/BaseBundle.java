@@ -18,7 +18,6 @@ package app.packed.container;
 import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentExtension;
 import app.packed.lang.Key;
 import app.packed.lang.Qualifier;
 import app.packed.lifecycle.LifecycleExtension;
@@ -63,15 +62,6 @@ import app.packed.service.ServiceExtension;
  *          extending the class difficult unless we defined the methods as non-final.
  */
 public abstract class BaseBundle extends Bundle {
-
-    /**
-     * Returns a component extension instance, installing it if it has not already been installed.
-     * 
-     * @return a component extension instance
-     */
-    protected final ComponentExtension component() {
-        return use(ComponentExtension.class);
-    }
 
     /**
      * Exposes an internal service outside of this bundle, equivalent to calling {@code expose(Key.of(key))}. A typical use
@@ -138,14 +128,6 @@ public abstract class BaseBundle extends Bundle {
 
     protected final void exportAll() {
         service().exportAll();
-    }
-
-    protected final <T> ComponentConfiguration<T> install(Class<T> implementation) {
-        return component().install(implementation);
-    }
-
-    protected final <T> ComponentConfiguration<T> install(Factory<T> factory) {
-        return component().install(factory);
     }
 
     /**

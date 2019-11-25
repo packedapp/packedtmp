@@ -15,36 +15,61 @@
  */
 package app.packed.container;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.VarHandle;
 import java.util.Set;
 
 import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.lang.Nullable;
+import app.packed.service.Factory;
 import app.packed.service.ServiceExtension;
 
 /**
- * The configuration of a container. This class is rarely used directly. Instead containers are typically configured via
- * a bundle.
+ * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
+ * extending {@link Bundle} or {@link BaseBundle}.
  */
-// Basic functionality
-/// Name
-// Check Configurable
-/// Extensions
-/// Wiring to other containers
-/// Lookup
-
-// Missing
-/// Attachments!!
-/// Layers!!!
-
-// Optional<Class<? extends AnyBundle>> bundleType();
-// -- or Class<?> configuratorType() <- This is the class for which all access is checked relative to
-/// Why shouldnt it be able to have @Install even if !A Bundle
-
-// Environment <- Immutable??, Attachable??
-// See #Extension Implementation notes for information about how to make sure it can be instantiated...
 public interface ContainerConfiguration extends BaseComponentConfiguration {
+
+    /**
+     * Returns an unmodifiable set view of the extensions that are currently being used by the container.
+     * 
+     * @return an unmodifiable set view of the extensions that are currently being used by the container
+     * 
+     * @see #use(Class)
+     */
+    Set<Class<? extends Extension>> extensions();
+
+    /**
+     * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
+     * <p>
+     * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
+     * <p>
+     * This method uses the {@link ServiceExtension} to instantiate the an instance of the component. (only if there are
+     * dependencies???)
+     * 
+     * @param <T>
+     *            the type of the component
+     * @param implementation
+     *            the type of instantiate and use as the component instance
+     * @return the configuration of the component
+     */
+    <T> ComponentConfiguration<T> install(Class<T> implementation);
+
+    /**
+     * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
+     * <p>
+     * This method uses the {@link ServiceExtension} to instantiate an component instance from the factory.
+     * 
+     * @param <T>
+     *            the type of the component
+     * @param factory
+     *            the factory to install
+     * @return the configuration of the component
+     * @see BaseBundle#install(Factory)
+     */
+    <T> ComponentConfiguration<T> install(Factory<T> factory);
 
     /**
      * @param <T>
@@ -70,28 +95,14 @@ public interface ContainerConfiguration extends BaseComponentConfiguration {
     <T> ComponentConfiguration<T> installStateless(Class<T> implementation);
 
     /**
-     * Returns the build context. A single build context object is shared among all containers for the same artifact.
+     * Returns whether or not this container is the root container in an artifact.
      * 
-     * @return the build context
+     * @return whether or not this container is the root container in an artifact
      */
-    // ArtifactBuildContext buildContext();
+    boolean isArtifactRoot();
 
     /**
-     * Returns an unmodifiable set view of the extensions that are currently in use by the container.
-     * 
-     * @return an unmodifiable set view of the extensions that are currently in use by the container
-     */
-    Set<Class<? extends Extension>> extensions();
-
-    /**
-     * Returns whether or not this container is the top level container for an artifact.
-     * 
-     * @return whether or not this container is the top level container for an artifact
-     */
-    boolean isTopContainer();
-
-    /**
-     * Links the specified bundle.
+     * Creates a new container with this container as its parent by linking the specified bundle.
      * 
      * @param bundle
      *            the bundle to link
@@ -101,13 +112,14 @@ public interface ContainerConfiguration extends BaseComponentConfiguration {
     void link(Bundle bundle, Wirelet... wirelets);
 
     /**
-     * Registers a {@link Lookup} object that will be used for accessing fields and invoking methods on registered
-     * components.
+     * Registers a {@link Lookup} object that will be used for accessing members on components that are registered with the
+     * container.
      * <p>
-     * The lookup object passed to this method is never made available through the public API. Its use is strictly
-     * internally.
+     * Lookup objects passed to this method are never made directly available to extensions. Instead the lookup is used to
+     * create {@link MethodHandle} and {@link VarHandle} that are passed along to extensions.
      * <p>
-     * This method allows passing null, which clears any lookup object that has previously been set.
+     * This method allows passing null, which clears any lookup object that has previously been set. This is useful if allow
+     * 
      * 
      * @param lookup
      *            the lookup object
@@ -125,8 +137,14 @@ public interface ContainerConfiguration extends BaseComponentConfiguration {
      *            dependencies on other layers
      * @return the new layer
      */
-    // Moved to ComponentExtension??? All the linkage und so weither is there...
     ContainerLayer newLayer(String name, ContainerLayer... dependencies);
+
+    /**
+     * Returns the class that defines the container.
+     * 
+     * @return the class that defines the container
+     */
+    Class<? extends ContainerSource> sourceType();
 
     /**
      * Returns an extension of the specified type. If this is the first time an extension of the specified type is
@@ -139,10 +157,16 @@ public interface ContainerConfiguration extends BaseComponentConfiguration {
      *            the type of extension to return
      * @return an extension of the specified type
      * @throws IllegalStateException
-     *             if the configuration is no longer configurable and an extension of the specified type has not already
+     *             if this configuration is no longer configurable and an extension of the specified type has not already
      *             been installed
-     * @see Extension#use(Class)
-     * @see ContainerConfiguration#extensions()
+     * @see #extensions()
      */
     <T extends Extension> T use(Class<T> extensionType);
 }
+
+/**
+ * Returns the build context. A single build context object is shared among all containers for the same artifact.
+ * 
+ * @return the build context
+ */
+// ArtifactBuildContext buildContext();

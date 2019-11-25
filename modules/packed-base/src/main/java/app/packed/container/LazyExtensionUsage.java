@@ -38,7 +38,9 @@ import java.lang.annotation.Target;
 // Or use @UseExtensionLazily(SomeExtension.class) on the bundle
 // taenker det kun er rigtige komponenter... Man kan f.eks. godt link andre containere...
 
-public @interface UseExtensionLazily {
+// UseExtensionLazily /
+public @interface LazyExtensionUsage {
+
     String[] optional() default {};
 
     Class<? extends Extension>[] value();

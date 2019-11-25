@@ -22,7 +22,7 @@ import java.util.Set;
 
 import app.packed.container.Extension;
 import app.packed.container.UseExtension;
-import app.packed.container.UseExtensionLazily;
+import app.packed.container.LazyExtensionUsage;
 import app.packed.lang.Nullable;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
@@ -114,7 +114,7 @@ public final class LazyExtensionActivationMap {
         HashMap<Class<? extends Annotation>, Tiny<Class<? extends Extension>>> annotatedTypes = new HashMap<>(0);
         HashMap<Class<?>, Tiny<Class<? extends Extension>>> assignableTos = new HashMap<>(0);
 
-        UseExtensionLazily uel = cl.getAnnotation(UseExtensionLazily.class);
+        LazyExtensionUsage uel = cl.getAnnotation(LazyExtensionUsage.class);
         if (uel != null) {
             for (Class<? extends Extension> c : uel.value()) {
                 ExtensionModel<? extends Extension> em = ExtensionModel.of(c);

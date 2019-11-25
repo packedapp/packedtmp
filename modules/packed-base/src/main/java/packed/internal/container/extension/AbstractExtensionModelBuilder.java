@@ -26,7 +26,6 @@ import app.packed.api.Contract;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
-import app.packed.container.ExtensionDescriptorContext;
 import app.packed.container.ExtensionInstantiationContext;
 import app.packed.container.ExtensionWirelet;
 import app.packed.lang.Nullable;
@@ -40,7 +39,7 @@ public abstract class AbstractExtensionModelBuilder {
     // Also, I think we want to do this atomically, so that we do not have half an extension registered somewhere.
     // This means we want to synchronize things.
     // So add all shit, quick validation-> Sync->Validate final -> AddAll ->UnSync
-    public final IdentityHashMap<Class<? extends Contract>, BiFunction<?, ? super ExtensionDescriptorContext, ?>> contracts = new IdentityHashMap<>();
+    public final IdentityHashMap<Class<? extends Contract>, Object> contracts = new IdentityHashMap<>();
 
     /** An action that will be run immediately after an extension has been configured. */
     @Nullable

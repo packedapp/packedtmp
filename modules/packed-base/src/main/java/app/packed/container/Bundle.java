@@ -26,6 +26,8 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.lang.Nullable;
+import app.packed.service.Factory;
+import app.packed.service.ServiceExtension;
 import packed.internal.moduleaccess.AppPackedContainerAccess;
 import packed.internal.moduleaccess.ModuleAccess;
 
@@ -61,38 +63,6 @@ public abstract class Bundle implements ContainerSource {
         });
     }
 
-    /**
-     * Install the specified component instance.
-     * <p>
-     * If this install operation is the first install operation of the container. The component will be installed as the
-     * root component of the container. All subsequent install operations on this bundle will have have component as its
-     * parent. If you wish to have a specific component as a parent, the various install methods on
-     * {@link ComponentConfiguration} can be used to specify a specific parent.
-     *
-     * @param <T>
-     *            the type of component to install
-     * @param instance
-     *            the component instance to install
-     * @return this configuration
-     */
-    protected final <T> ComponentConfiguration<T> installInstance(T instance) {
-        return configuration.installInstance(instance);
-    }
-
-    protected final <T> ComponentConfiguration<T> installHelper(Class<T> implementation) {
-        return configuration.installStateless(implementation);
-    }
-
-    // /**
-    // * Returns the build context. A single build context object is shared among all containers for the same artifact.
-    // *
-    // * @return the build context
-    // * @see ContainerConfiguration#buildContext()
-    // */
-    // protected final ArtifactBuildContext buildContext() {
-    // return configuration.buildContext();
-    // }
-
     /** The configuration of the container. */
     private ContainerConfiguration configuration;
 
@@ -127,6 +97,16 @@ public abstract class Bundle implements ContainerSource {
     protected final ConfigSite configSite() {
         return configuration.configSite();
     }
+
+    // /**
+    // * Returns the build context. A single build context object is shared among all containers for the same artifact.
+    // *
+    // * @return the build context
+    // * @see ContainerConfiguration#buildContext()
+    // */
+    // protected final ArtifactBuildContext buildContext() {
+    // return configuration.buildContext();
+    // }
 
     /**
      * Returns the container configuration that this bundle wraps.
@@ -216,13 +196,72 @@ public abstract class Bundle implements ContainerSource {
     }
 
     /**
+     * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
+     * <p>
+     * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
+     * <p>
+     * This method uses the {@link ServiceExtension} to instantiate the an instance of the component. (only if there are
+     * dependencies???)
+     * 
+     * @param <T>
+     *            the type of the component
+     * @param implementation
+     *            the type of instantiate and use as the component instance
+     * @return the configuration of the component
+     */
+    // Den eneste grund for at de her metoder ikke er paa ComponentConfiguration er actors
+    // Eller i andre situation hvor man ikke vil have at man installere alm componenter..
+    // Men okay. Maaske skal man wrappe det saa. Det er jo let nok at simulere med useParent
+    protected final <T> ComponentConfiguration<T> install(Class<T> implementation) {
+        return configuration().install(implementation);
+    }
+
+    /**
+     * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
+     * <p>
+     * This method uses the {@link ServiceExtension} to instantiate an component instance from the factory.
+     * 
+     * @param <T>
+     *            the type of the component
+     * @param factory
+     *            the factory to install
+     * @return the configuration of the component
+     * @see BaseBundle#install(Factory)
+     */
+    protected final <T> ComponentConfiguration<T> install(Factory<T> factory) {
+        return configuration().install(factory);
+    }
+
+    protected final <T> ComponentConfiguration<T> installHelper(Class<T> implementation) {
+        return configuration().installStateless(implementation);
+    }
+
+    /**
+     * Install the specified component instance.
+     * <p>
+     * If this install operation is the first install operation of the container. The component will be installed as the
+     * root component of the container. All subsequent install operations on this bundle will have have component as its
+     * parent. If you wish to have a specific component as a parent, the various install methods on
+     * {@link ComponentConfiguration} can be used to specify a specific parent.
+     *
+     * @param <T>
+     *            the type of component to install
+     * @param instance
+     *            the component instance to install
+     * @return this configuration
+     */
+    protected final <T> ComponentConfiguration<T> installInstance(T instance) {
+        return configuration().installInstance(instance);
+    }
+
+    /**
      * Returns whether or not this bundle will configure the top container in an artifact.
      * 
      * @return whether or not this bundle will configure the top container in an artifact
-     * @see ContainerConfiguration#isTopContainer()
+     * @see ContainerConfiguration#isArtifactRoot()
      */
     protected final boolean isTopContainer() {
-        return configuration.isTopContainer();
+        return configuration.isArtifactRoot();
     }
 
     /**
