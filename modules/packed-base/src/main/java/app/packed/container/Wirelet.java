@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import app.packed.service.Injector;
 import app.packed.service.InjectorConfigurator;
@@ -49,21 +50,10 @@ import packed.internal.container.FixedWireletList;
  * <p>
  * Wirelet implementations must be immutable and safe to access by multiple concurrent threads.
  * 
- * @apiNote User-code should never directly extend this class only {@link ExtensionWirelet}. Future versions of this
- *          class may make use of sealed types if they become available.
+ * @apiNote User-code should never extend this class directly. Future versions of this class may make use of sealed
+ *          types if they become available.
  */
 public abstract class Wirelet {
-
-    // For bedre error messages. This operation can only be used if the parent or child bundle
-    // has installed the XXX extension (As an alternative, annotated the key with
-    // @RequiresExtension(JMXExtension.class)....)
-    // Or even better the actual WiringOperation.....
-    // protected void useAttachment(Key...., Class<?> requiredExtension);
-
-    // Bootstrap classes... Classes that are only available for injection.... (Not even initialized....)
-    // bundleLink.bootstrapWith(StringArgs.of("sdsdsd");
-    // bundleLink.bootstrapWith(Configuration.read("c:/sdasdasd\'");
-    // run(new XBundle(), Configuration.read("c:/sdad"));
 
     /**
      * Returns a composed {@code Wirelet} that performs, in sequence, this operation followed by the {@code after}
@@ -94,6 +84,31 @@ public abstract class Wirelet {
         return FixedWireletList.of(l.toArray(i -> new Wirelet[i]));
     }
 
+    /**
+     * Returns a wirelet that will set the name of a container once wired, overriding any name that might already have been
+     * set, for example, via {@link Bundle#setName(String)}.
+     * 
+     * @param name
+     *            the name of the container
+     * @return a wirelet that will set name of a container once wired
+     */
+    public static Wirelet name(String name) {
+        return new ComponentNameWirelet(name);
+    }
+}
+
+class BadIdea {
+    // For bedre error messages. This operation can only be used if the parent or child bundle
+    // has installed the XXX extension (As an alternative, annotated the key with
+    // @RequiresExtension(JMXExtension.class)....)
+    // Or even better the actual WiringOperation.....
+    // protected void useAttachment(Key...., Class<?> requiredExtension);
+
+    // Bootstrap classes... Classes that are only available for injection.... (Not even initialized....)
+    // bundleLink.bootstrapWith(StringArgs.of("sdsdsd");
+    // bundleLink.bootstrapWith(Configuration.read("c:/sdasdasd\'");
+    // run(new XBundle(), Configuration.read("c:/sdad"));
+
     // void verify();
     protected void check() {
         // checkApp() for Wirelet.appTimeToLive for example...
@@ -111,23 +126,20 @@ public abstract class Wirelet {
 
         // conditional(Predicate, Wirelet alt1) //alt1 if true, else no wirelet
         // conditional(Predicate, Wirelet alt1, Wirelet alt2). alt1 if true, otherwise alt2
-        return this;
+        throw new UnsupportedOperationException();
     }
 
-    /**
-     * Returns a wirelet that will set the name of a container once wired, overriding any name that might already have been
-     * set, for example, via {@link Bundle#setName(String)}.
-     * 
-     * @param name
-     *            the name of the container
-     * @return a wirelet that will set name of a container once wired
-     */
-    // setName
-    public static Wirelet name(String name) {
-        return new ComponentNameWirelet(name);
+    final Wirelet onCondition(Predicate<Environment> predicate) {
+        // Et problem hvis vi laver et image...
+        // Hvor vi laver en link med saadan en faetter
+        // Den vil evaluere til en ting naar vi laver imaged og en anden ting paa runtime
+        throw new UnsupportedOperationException();
+    }
+
+    interface Environment {
+
     }
 }
-
 // Okay... hvordan klare vi det her med Bundle.lookup()
 // Maaske i foerste omgang ved ikke at supportere det.
 // static Wirelet lookup(MethodHandles.Lookup lookup) {
