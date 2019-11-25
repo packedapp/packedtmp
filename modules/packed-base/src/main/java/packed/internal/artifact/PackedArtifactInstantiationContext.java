@@ -22,7 +22,6 @@ import java.util.IdentityHashMap;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionInstantiationContext;
-import app.packed.container.InternalExtensionException;
 import app.packed.container.ExtensionWirelet.Pipeline;
 import app.packed.lang.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
@@ -68,16 +67,12 @@ public final class PackedArtifactInstantiationContext {
             @Override
             public <T extends Pipeline<?, ?, ?>> T getPipeline(Class<T> pipelineType) {
                 // We need to check that someone does not request another extensions pipeline type.
-                if (!e.model().pipelines.containsKey(pipelineType)) {
-                    throw new InternalExtensionException(
-                            "The specified pipeline type is not amongst " + e.type().getSimpleName() + " pipeline types, pipelineType = " + pipelineType);
-                }
+                // if (!e.model().pipelines.containsKey(pipelineType)) {
+                // throw new InternalExtensionException(
+                // "The specified pipeline type is not amongst " + e.type().getSimpleName() + " pipeline types, pipelineType = " +
+                // pipelineType);
+                // }
                 return wirelets.getPipelin(pipelineType);
-            }
-
-            @Override
-            public Class<?> artifactType() {
-                return PackedArtifactInstantiationContext.this.artifactType();
             }
 
             @Nullable
@@ -94,11 +89,6 @@ public final class PackedArtifactInstantiationContext {
             @Override
             public <T> T use(Class<T> type) {
                 return PackedArtifactInstantiationContext.this.use(pcc, type);
-            }
-
-            @Override
-            public boolean isFromImage() {
-                return false;
             }
         };
     }

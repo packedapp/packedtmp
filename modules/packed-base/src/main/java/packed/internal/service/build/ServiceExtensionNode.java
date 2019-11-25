@@ -195,17 +195,17 @@ public final class ServiceExtensionNode {
         for (var e : specials.entrySet()) {
             Object instance;
 
-            if (e.getKey().key().typeLiteral().rawType() == ExtensionInstantiationContext.class) {
-                // DOES not really work c is the instantiation context for the service
-                // not nessesarily for the one we should inject....
+            // if (e.getKey().key().typeLiteral().rawType() == ExtensionInstantiationContext.class) {
+            // // DOES not really work c is the instantiation context for the service
+            // // not nessesarily for the one we should inject....
+            //
+            // requireNonNull(c);
+            // instance = c;
+            // } else { // pipeline
+            Class<?> pipelineClass = e.getKey().key().typeLiteral().rawType();
 
-                requireNonNull(c);
-                instance = c;
-            } else { // pipeline
-                Class<?> pipelineClass = e.getKey().key().typeLiteral().rawType();
-
-                instance = e.getKey().wrapIfOptional(requireNonNull(c.getPipeline((Class) pipelineClass)));
-            }
+            instance = e.getKey().wrapIfOptional(requireNonNull(c.getPipeline((Class) pipelineClass)));
+            // }
             BuildEntry<?> be = e.getValue();
             con.transformers.put(be, new SingletonInjectorEntry<Object>(ConfigSite.UNKNOWN, (Key) be.key, be.description, instance));
         }

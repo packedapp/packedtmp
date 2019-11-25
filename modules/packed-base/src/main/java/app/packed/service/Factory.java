@@ -44,6 +44,7 @@ import packed.internal.inject.factoryhandle.MappingFactoryHandle;
 import packed.internal.moduleaccess.AppPackedServiceAccess;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
+import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.util.BaseSupport;
 import packed.internal.util.types.TypeUtil;
 
@@ -82,6 +83,11 @@ public class Factory<T> {
             @Override
             public <T> FactoryHandle<T> toHandle(Factory<T> factory) {
                 return factory.factory.function;
+            }
+
+            @Override
+            public ServiceExtensionNode toNode(ServiceExtension e) {
+                return e.node;
             }
         });
     }

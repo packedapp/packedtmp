@@ -67,7 +67,7 @@ import packed.internal.service.run.AbstractInjector;
 public final class ServiceExtension extends Extension {
 
     /** The extension node that does most of the work. */
-    private final ServiceExtensionNode node;
+    final ServiceExtensionNode node;
 
     /** Should never be initialized by users. */
     ServiceExtension(ExtensionContext context) {
@@ -365,7 +365,7 @@ public final class ServiceExtension extends Extension {
         @Override
         protected void configure() {
             onConfigured(e -> e.node.build());
-            onInstantiation((e, c) -> e.node.onInstantiate(c));
+            // onInstantiation((e, c) -> e.node.onInstantiate(c));
             onLinkage((p, c) -> p.node.link(c.node));
 
             // Descriptors and contracts

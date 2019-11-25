@@ -15,7 +15,6 @@
  */
 package app.packed.container;
 
-import app.packed.artifact.ArtifactImage;
 import app.packed.lang.Nullable;
 
 /**
@@ -30,12 +29,12 @@ import app.packed.lang.Nullable;
 // Hmm saa syntes jeg alle extension*Context skulle have det
 public interface ExtensionInstantiationContext {
 
-    /**
-     * Returns the type of artifact that is being instantiated.
-     * 
-     * @return the type of artifact that is being instantiated
-     */
-    Class<?> artifactType();
+    // /**
+    // * Returns the type of artifact that is being instantiated.
+    // *
+    // * @return the type of artifact that is being instantiated
+    // */
+    // Class<?> artifactType();
 
     @Nullable
     <T> T get(Class<T> type);
@@ -43,12 +42,12 @@ public interface ExtensionInstantiationContext {
     @Nullable
     <T extends ExtensionWirelet.Pipeline<?, ?, ?>> T getPipeline(Class<T> pipelineType);
 
-    /**
-     * Returns whether or not the artifact is being created from an {@link ArtifactImage}.
-     * 
-     * @return whether or not the artifact is being created from an {@link ArtifactImage}
-     */
-    boolean isFromImage();
+    // /**
+    // * Returns whether or not the artifact is being created from an {@link ArtifactImage}.
+    // *
+    // * @return whether or not the artifact is being created from an {@link ArtifactImage}
+    // */
+    // boolean isFromImage();
 
     void put(Object obj);
 

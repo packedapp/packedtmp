@@ -42,8 +42,6 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerLayer;
 import app.packed.container.ContainerSource;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionInstantiationContext;
-import app.packed.container.ExtensionWirelet.Pipeline;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
 import app.packed.lang.Nullable;
@@ -286,51 +284,16 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     @Override
     protected void extensionsPrepareInstantiation(PackedArtifactInstantiationContext ic) {
-        for (PackedExtensionContext e : extensions.values()) {
-            if (e.model().onInstantiation != null) {
-                e.model().onInstantiation.accept(e.extension(), new ExtensionInstantiationContext() {
-                    @Override
-                    public Class<?> artifactType() {
-                        return ic.artifactType();
-                    }
-
-                    @Nullable
-                    @Override
-                    public <T> T get(Class<T> type) {
-                        return ic.get(PackedContainerConfiguration.this, type);
-                    }
-
-                    @Override
-                    public <T extends Pipeline<?, ?, ?>> T getPipeline(Class<T> pipelineType) {
-
-                        // uncommented temporary to get WTest to run.
-
-                        // We need to check that someone does not request another extensions pipeline type.
-                        // if (!e.model.pipelines.containsKey(pipelineType)) {
-                        // throw new ExtensionDeclarationException("The specified pipeline type is not amongst " + e.type().getSimpleName()
-                        // + " pipeline types, pipelineType = " + pipelineType);
-                        // }
-                        return ic.wirelets.getPipelin(pipelineType);
-                    }
-
-                    @Override
-                    public boolean isFromImage() {
-                        return false;
-                    }
-
-                    @Override
-                    public void put(Object obj) {
-                        ic.put(PackedContainerConfiguration.this, obj);
-                    }
-
-                    @Override
-                    public <T> T use(Class<T> type) {
-                        return ic.use(PackedContainerConfiguration.this, type);
-                    }
-                });
-            }
-
+        PackedExtensionContext ee = extensions.get(ServiceExtension.class);
+        if (ee != null) {
+            ModuleAccess.service().toNode(((ServiceExtension) ee.extension())).onInstantiate(ic.newContext(this, ee));
         }
+
+        // for (PackedExtensionContext e : extensions.values()) {
+        // if (e.model().onInstantiation != null) {
+        // e.model().onInstantiation.accept(e.extension(), ic.newContext(this, e));
+        // }
+        // }
         super.extensionsPrepareInstantiation(ic);
     }
 
