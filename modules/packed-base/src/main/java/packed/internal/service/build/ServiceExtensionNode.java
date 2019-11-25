@@ -25,13 +25,13 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.ExtensionContext;
-import app.packed.container.ExtensionInstantiationContext;
 import app.packed.lang.Key;
 import app.packed.lang.Nullable;
 import app.packed.service.Dependency;
 import app.packed.service.Inject;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceContract;
+import packed.internal.container.WireletContext;
 import packed.internal.inject.AtInject;
 import packed.internal.inject.AtInjectHook;
 import packed.internal.service.build.dependencies.DependencyManager;
@@ -187,7 +187,7 @@ public final class ServiceExtensionNode {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void onInstantiate(ExtensionInstantiationContext c) {
+    public DefaultInjector onInstantiate(WireletContext wc) {
         LinkedHashMap<Key<?>, InjectorEntry<?>> snm = new LinkedHashMap<>();
         DefaultInjector publicInjector = new DefaultInjector(context().containerConfigSite(), "Internal Descriptor", snm);
 
@@ -204,7 +204,7 @@ public final class ServiceExtensionNode {
             // } else { // pipeline
             Class<?> pipelineClass = e.getKey().key().typeLiteral().rawType();
 
-            instance = e.getKey().wrapIfOptional(requireNonNull(c.getPipeline((Class) pipelineClass)));
+            instance = e.getKey().wrapIfOptional(requireNonNull(wc.getPipelin((Class) pipelineClass)));
             // }
             BuildEntry<?> be = e.getValue();
             con.transformers.put(be, new SingletonInjectorEntry<Object>(ConfigSite.UNKNOWN, (Key) be.key, be.description, instance));
@@ -226,7 +226,7 @@ public final class ServiceExtensionNode {
             }
         }
 
-        c.put(publicInjector);
+        return publicInjector;
     }
 
     public ServiceProvidingManager provider() {

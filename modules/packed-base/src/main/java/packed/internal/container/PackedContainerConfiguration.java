@@ -65,6 +65,7 @@ import packed.internal.hook.applicator.DelayedAccessor.SidecarFieldDelayerAccess
 import packed.internal.hook.applicator.DelayedAccessor.SidecarMethodDelayerAccessor;
 import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.moduleaccess.ModuleAccess;
+import packed.internal.service.run.DefaultInjector;
 
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration<Void> implements ContainerConfiguration {
@@ -286,7 +287,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     protected void extensionsPrepareInstantiation(PackedArtifactInstantiationContext ic) {
         PackedExtensionContext ee = extensions.get(ServiceExtension.class);
         if (ee != null) {
-            ModuleAccess.service().toNode(((ServiceExtension) ee.extension())).onInstantiate(ic.newContext(this, ee));
+            DefaultInjector di = ModuleAccess.service().toNode(((ServiceExtension) ee.extension())).onInstantiate(ic.wirelets);
+            ic.put(this, di);
         }
 
         // for (PackedExtensionContext e : extensions.values()) {

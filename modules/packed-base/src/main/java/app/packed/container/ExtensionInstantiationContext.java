@@ -15,8 +15,6 @@
  */
 package app.packed.container;
 
-import app.packed.lang.Nullable;
-
 /**
  *
  */
@@ -36,11 +34,11 @@ public interface ExtensionInstantiationContext {
     // */
     // Class<?> artifactType();
 
-    @Nullable
-    <T> T get(Class<T> type);
+    // @Nullable
+    // <T> T get(Class<T> type);
 
-    @Nullable
-    <T extends ExtensionWirelet.Pipeline<?, ?, ?>> T getPipeline(Class<T> pipelineType);
+    // @Nullable
+    // <T extends ExtensionWirelet.Pipeline<?, ?, ?>> T getPipeline(Class<T> pipelineType);
 
     // /**
     // * Returns whether or not the artifact is being created from an {@link ArtifactImage}.
@@ -49,7 +47,7 @@ public interface ExtensionInstantiationContext {
     // */
     // boolean isFromImage();
 
-    void put(Object obj);
+    // void put(Object obj);
 
     <T> T use(Class<T> type);
 }
