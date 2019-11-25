@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.api.Contract;
+import app.packed.lang.Nullable;
 import packed.internal.container.MutableWireletList;
 import packed.internal.container.extension.AbstractExtensionModelBuilder;
 
@@ -42,6 +43,16 @@ public abstract class ExtensionComposer<E extends Extension> {
         requireNonNull(pipelineFactory, "pipelineFactory is null");
         // Validation??? Pipeline model...
         context().pipelines.putIfAbsent(pipelineType, pipelineFactory);
+    }
+
+    /**
+     * Will process each extension top down..
+     * 
+     * @param action
+     *            the action to perform
+     */
+    protected final void completeEach(Consumer<? super E> action) {
+
     }
 
     /** Configures the composer. This method is invoked exactly once for a given implementation. */
@@ -82,14 +93,11 @@ public abstract class ExtensionComposer<E extends Extension> {
         }
     }
 
-    protected final <C extends Contract> void exposeContract(Class<C> contractType, Function<? super E, C> contractFactory) {
-        requireNonNull(contractType, "contractType is null");
-        requireNonNull(contractFactory, "contractFactory is null");
-        context().contracts.putIfAbsent(contractType, contractFactory);
-    }
-
     /**
      * Exposes a contract of the specified type.
+     * <p>
+     * if no pipeline of the specified type is available then null is passed as the second argument to {@link BiFunction}.
+     * 
      * <p>
      * If the specified contract factory does not return a non-null object of the specified contract type when invoked, the
      * runtime will will throw a {@link InternalExtensionException}.
@@ -104,13 +112,22 @@ public abstract class ExtensionComposer<E extends Extension> {
      *             if trying to register a contract type that has already been registered with another extension
      */
     protected final <C extends Contract, T extends ExtensionWirelet.Pipeline<?, ?, ?>> void exposeContract(Class<C> contractType, Class<T> pipelineType,
-            BiFunction<? super E, T, C> contractFactory) {
+            BiFunction<? super E, @Nullable T, C> contractFactory) {
+        // check pipelinetype is registered
+        requireNonNull(contractType, "contractType is null");
+        requireNonNull(contractFactory, "contractFactory is null");
+        context().contracts.putIfAbsent(contractType, contractFactory);
+    }
+
+    protected final <C extends Contract> void exposeContract(Class<C> contractType, Function<? super E, C> contractFactory) {
         requireNonNull(contractType, "contractType is null");
         requireNonNull(contractFactory, "contractFactory is null");
         context().contracts.putIfAbsent(contractType, contractFactory);
     }
 
     @SuppressWarnings("unchecked")
+    // Den er ikke saerlig god den her....
+    //// Kan bedre lide exposeContract
     protected final void exposeDescriptor(BiConsumer<? super E, ? super BundleDescriptor.Builder> builder) {
         context().builder = (BiConsumer<? super Extension, ? super BundleDescriptor.Builder>) requireNonNull(builder, "builder is null");
     }
@@ -186,15 +203,5 @@ public abstract class ExtensionComposer<E extends Extension> {
     @SuppressWarnings("unchecked")
     protected final void onLinkage(BiConsumer<? super E, ? super E> action) {
         context().onLinkage((BiConsumer<? super Extension, ? super Extension>) action);
-    }
-
-    /**
-     * Will process each extension top down..
-     * 
-     * @param action
-     *            the action to perform
-     */
-    protected final void completeEach(Consumer<? super E> action) {
-
     }
 }

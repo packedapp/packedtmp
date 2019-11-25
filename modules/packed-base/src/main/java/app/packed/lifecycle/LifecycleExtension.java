@@ -101,7 +101,7 @@ public final class LifecycleExtension extends Extension {
         /** {@inheritDoc} */
         @Override
         protected void configure() {
-            onInstantiation((e, c) -> c.put(new LifecycleSidecar()));
+            // onInstantiation((e, c) -> c.put(new LifecycleSidecar()));
         }
     }
 }

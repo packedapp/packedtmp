@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package packed.internal.container.extension;
+
+import app.packed.container.ExtensionWirelet;
 
 // Two strategies. Either clone all the contents.
 // Or recursively call back into parent pipeline
@@ -22,7 +24,7 @@ package app.packed.container;
 
 //Analyze, Model, ..
 
-public interface ExtensionAnalyzeContext {
+interface ExtensionAnalyzeContext {
 
     boolean hasPipelines();// <---
 

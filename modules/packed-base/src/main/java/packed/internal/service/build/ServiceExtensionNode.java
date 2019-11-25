@@ -28,6 +28,7 @@ import app.packed.container.ExtensionContext;
 import app.packed.container.ExtensionInstantiationContext;
 import app.packed.lang.Key;
 import app.packed.lang.Nullable;
+import app.packed.service.Dependency;
 import app.packed.service.Inject;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceContract;
@@ -70,7 +71,7 @@ public final class ServiceExtensionNode {
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, BuildEntry<?>> resolvedEntries = new LinkedHashMap<>();
 
-    public final LinkedHashMap<Class<?>, BuildEntry<?>> specials = new LinkedHashMap<>();
+    public final LinkedHashMap<Dependency, BuildEntry<?>> specials = new LinkedHashMap<>();
 
     /**
      * Creates a new builder.
@@ -194,14 +195,16 @@ public final class ServiceExtensionNode {
         for (var e : specials.entrySet()) {
             Object instance;
 
-            if (e.getKey() == ExtensionInstantiationContext.class) {
+            if (e.getKey().key().typeLiteral().rawType() == ExtensionInstantiationContext.class) {
                 // DOES not really work c is the instantiation context for the service
                 // not nessesarily for the one we should inject....
 
                 requireNonNull(c);
                 instance = c;
             } else { // pipeline
-                instance = requireNonNull(c.getPipeline((Class) e.getKey()));
+                Class<?> pipelineClass = e.getKey().key().typeLiteral().rawType();
+
+                instance = e.getKey().wrapIfOptional(requireNonNull(c.getPipeline((Class) pipelineClass)));
             }
             BuildEntry<?> be = e.getValue();
             con.transformers.put(be, new SingletonInjectorEntry<Object>(ConfigSite.UNKNOWN, (Key) be.key, be.description, instance));

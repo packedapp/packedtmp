@@ -151,6 +151,17 @@ public final class DependencyManager {
                                 }
                             }
                         }
+                        if (!k.hasQualifier() && ExtensionWirelet.Pipeline.class.isAssignableFrom(k.typeLiteral().rawType())) {
+                            if (entry instanceof ComponentFactoryBuildEntry) {
+                                Optional<Class<? extends Extension>> op = ((ComponentFactoryBuildEntry) entry).componentConfiguration.extension();
+                                if (op.isPresent()) {
+                                    BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
+                                            new SingletonInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "foo", "Ignore"));
+                                    resolveTo = ben;
+                                    node.specials.put(dependency, ben);
+                                }
+                            }
+                        }
                         if (!k.hasQualifier() && ExtensionInstantiationContext.class.isAssignableFrom(k.typeLiteral().rawType())) {
                             if (entry instanceof ComponentFactoryBuildEntry) {
                                 Optional<Class<? extends Extension>> op = ((ComponentFactoryBuildEntry) entry).componentConfiguration.extension();
@@ -158,7 +169,7 @@ public final class DependencyManager {
                                     BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
                                             new SingletonInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "foo", "Ignore"));
                                     resolveTo = ben;
-                                    node.specials.put(k.typeLiteral().rawType(), ben);
+                                    node.specials.put(dependency, ben);
                                 }
                             }
                         }

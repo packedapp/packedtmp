@@ -17,12 +17,13 @@ package packed.internal.container.extension.test;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Optional;
+
 import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
-import app.packed.container.ExtensionInstantiationContext;
 import app.packed.container.ExtensionWirelet;
 import app.packed.container.UseExtension;
 import app.packed.service.ServiceExtension;
@@ -71,8 +72,8 @@ public class WTest extends BaseBundle {
     }
 
     public static class RuntimeService {
-        public RuntimeService(MyExtension e, ExtensionInstantiationContext eis) {
-            System.out.println("new RuntimeService " + e.i + "  " + eis.getPipeline(MyPipeline.class).val);
+        public RuntimeService(MyExtension e, Optional<MyPipeline> mp) {
+            System.out.println("new RuntimeService " + e.i + "  " + mp.get().val);
         }
     }
 
