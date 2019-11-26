@@ -15,12 +15,10 @@
  */
 package app.packed.container;
 
-import app.packed.artifact.App;
-import app.packed.artifact.ArtifactImage;
 import app.packed.component.ComponentConfiguration;
+import app.packed.entrypoint.EntryPointExtension;
 import app.packed.lang.Key;
 import app.packed.lang.Qualifier;
-import app.packed.lifecycle.LifecycleExtension;
 import app.packed.lifecycle.OnStart;
 import app.packed.service.Factory;
 import app.packed.service.Injector;
@@ -135,8 +133,8 @@ public abstract class BaseBundle extends Bundle {
      * 
      * @return a lifecycle extension instance
      */
-    protected final LifecycleExtension lifecycle() {
-        return use(LifecycleExtension.class);
+    protected final EntryPointExtension lifecycle() {
+        return use(EntryPointExtension.class);
     }
 
     /**
@@ -223,116 +221,3 @@ public abstract class BaseBundle extends Bundle {
         BundleDescriptor.of(bundle).print();
     }
 }
-
-class MyBundle2 extends BaseBundle {
-
-    private static final ArtifactImage IMAGE = ArtifactImage.build(new MyBundle2());
-
-    @Override
-    protected void configure() {
-        lifecycle().main(() -> System.out.println("HelloWorld"));
-    }
-
-    public static void main(String[] args) {
-        App.run(IMAGE);
-    }
-}
-/// **
-// * @param builder
-// * the injector configuration to delagate to
-// * @param freeze
-// * @apiNote we take an AbstractBundleConfigurator instead of a BundleConfigurator to make sure we never parse an
-// * external configurator by accident. And we some let the bundle implementation invoke
-// * {@link #lookup(java.lang.invoke.MethodHandles.Lookup)} on a random interface. Thereby letting the Lookup
-// * object escape.
-// */
-// final void configure(InjectorBuilder builder, boolean freeze) {
-//
-// // Maybe we can do some access checkes on the Configurator. To allow for testing....
-// //
-// // if (this.injectorBuilder != null) {
-// // throw new IllegalStateException();
-// // } else if (isFrozen && freeze) {
-// // // vi skal have love til f.eks. at koere en gang descriptor af, saa det er kun hvis vi skal freeze den ogsaa doer.
-// // throw new IllegalStateException("Cannot configure this bundle, after it has been been frozen");
-// // }
-// // this.injectorBuilder = requireNonNull(builder);
-// // try {
-// // configure();
-// // } finally {
-// // this.injectorBuilder = null;
-// // if (freeze) {
-// // isFrozen = true;
-// // }
-// // }
-// throw new UnsupportedOperationException();
-// }
-//// /**
-//// * Returns the bundle support object which
-//// *
-//// * @return the bundle support object
-//// */
-//// protected final ContainerBuildContext context() {
-//// // Vi laver en bundle nyt per configuration.....
-//// ContainerBuildContext s = context;
-//// if (s == null) {
-//// throw new IllegalStateException("This method can only be called from within Bundle.configure(). Maybe you tried to
-//// call Bundle.configure directly");
-//// }
-//// return s;
-//// }
-/**
- * A injector bundle provides a simple way to package services into a resuable container nice little thingy.
- * 
- * Bundles provide a simply way to package components and service. For example, so they can be used easily across
- * multiple containers. Or simply for organizing a complex project into distinct sections, such that each section
- * addresses a separate concern.
- * <p>
- * Bundle are useually
- *
- * <pre>
- * class WebServerBundle extends Bundle {
- *
- *     private port = 8080; //default port
- *
- *     protected void configure() {
- *        install(new WebServer(port));
- *     }
- *
- *     public WebServerBundle setPort(int port) {
- *         checkNotFrozen();
- *         this.port = port;
- *         return this;
- *     }
- * }
- * </pre>
- *
- * The bundle is used like this:
- *
- * <pre>
- * ContainerBuilder b = new ContainerBuilder();
- * b.use(WebServiceBundle.class).setPort(8080);
- *
- * Container c = cc.newContainer();
- * </pre>
- * <p>
- * Bundles must have a single public no argument constructor.
- * <p>
- * Bundles are strictly a configuration and initialization time concept. Bundles are not available
- */
-//
-/// **
-// * Opens the bundle for modification later on
-// */
-// protected final void open() {
-// // Nope....
-// }
-// ID256 BundleHash????? API wise. SpecHash..
-
-// protected void lookup(Lookup lookup, LookupAccessController accessController) {}
-// protected final void checkNotNativeRuntime() {
-// if (GraalSupport.inImageRuntimeCode()) {
-// StackFrame f = StackWalker.getInstance().walk(e -> e.skip(1).findFirst().get());
-// throw new IllegalStateException("Cannot call " + f.getMethodName() + "() when running as a native-image");
-// }
-// }

@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.artifact;
+package packed.internal.host;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 import app.packed.artifact.App;
+import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.component.AbstractComponent;
 import packed.internal.component.AbstractComponentConfiguration;
-import packed.internal.component.ComponentHolder;
 
 /**
  *
  */
-public class PackedHost extends AbstractComponent implements ComponentHolder {
+public class PackedHost extends AbstractComponent implements Host {
 
     // App is not a component, so can't really use children. Unless, we attach the artifact
     // to the component, which we probably should

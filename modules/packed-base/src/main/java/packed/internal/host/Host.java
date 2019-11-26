@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle;
+package packed.internal.host;
+
+import app.packed.component.Component;
 
 /**
  *
  */
-public class LifecycleModel {
+public interface Host extends Component {
 
 }

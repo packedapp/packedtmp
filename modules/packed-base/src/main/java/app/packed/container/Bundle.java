@@ -63,7 +63,7 @@ public abstract class Bundle implements ContainerSource {
         });
     }
 
-    /** The configuration of the container. */
+    /** The configuration of the container. Should only be read via {@link #configuration}. */
     private ContainerConfiguration configuration;
 
     /** The state of the bundle. 0 not-initialized, 1 in-progress, 2 completed. */
@@ -72,17 +72,10 @@ public abstract class Bundle implements ContainerSource {
     /**
      * Checks that the {@link #configure()} method has not already been invoked. This is typically used to make sure that
      * users of extensions does not try to configure the extension after it has been configured.
-     *
-     * <pre>
-     * {@code
-     * public void setJMXEnabled(boolean enabled) {
-     *     requireConfigurable(); //will throw IllegalStateException if configure() has already been called
-     *     this.jmxEnabled = enabled;
-     * }}
-     * </pre>
      * 
      * @throws IllegalStateException
-     *             if the {@link #configure()} method has already been invoked once for this extension instance
+     *             if {@link #configure()} has been invoked
+     * @see ContainerConfiguration#checkConfigurable()
      */
     protected final void checkConfigurable() {
         configuration().checkConfigurable();
@@ -95,31 +88,20 @@ public abstract class Bundle implements ContainerSource {
      * @see ContainerConfiguration#configSite()
      */
     protected final ConfigSite configSite() {
-        return configuration.configSite();
+        return configuration().configSite();
     }
-
-    // /**
-    // * Returns the build context. A single build context object is shared among all containers for the same artifact.
-    // *
-    // * @return the build context
-    // * @see ContainerConfiguration#buildContext()
-    // */
-    // protected final ArtifactBuildContext buildContext() {
-    // return configuration.buildContext();
-    // }
 
     /**
      * Returns the container configuration that this bundle wraps.
      * 
      * @return the container configuration that this bundle wraps
      * @throws IllegalStateException
-     *             if called outside {@link #configure()}
+     *             if called from outside of {@link #configure()}
      */
     protected final ContainerConfiguration configuration() {
         ContainerConfiguration c = configuration;
         if (c == null) {
-            throw new IllegalStateException(
-                    "This method can only be called from within this bundles #configure() method. Maybe you tried to call #configure() directly");
+            throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
         }
         return c;
     }
@@ -166,10 +148,11 @@ public abstract class Bundle implements ContainerSource {
     }
 
     /**
-     * Returns an unmodifiable set view of the extensions that are currently in use by the container.
+     * Returns an unmodifiable view of the extensions that are currently being used.
      * 
-     * @return an unmodifiable set view of the extensions that are currently in use by the container
+     * @return an unmodifiable view of the extensions that are currently being used
      * @see ContainerConfiguration#extensions()
+     * @see #use(Class)
      */
     protected final Set<Class<? extends Extension>> extensions() {
         return configuration().extensions();
@@ -261,7 +244,7 @@ public abstract class Bundle implements ContainerSource {
      * @see ContainerConfiguration#isArtifactRoot()
      */
     protected final boolean isTopContainer() {
-        return configuration.isArtifactRoot();
+        return configuration().isArtifactRoot();
     }
 
     /**
@@ -274,7 +257,7 @@ public abstract class Bundle implements ContainerSource {
      * @see ContainerConfiguration#link(Bundle, Wirelet...)
      */
     protected final void link(Bundle bundle, Wirelet... wirelets) {
-        configuration.link(bundle, wirelets);
+        configuration().link(bundle, wirelets);
     }
 
     /**
@@ -356,6 +339,8 @@ public abstract class Bundle implements ContainerSource {
      * @param extensionType
      *            the type of extension to return
      * @return an extension of the specified type
+     * @throws IllegalStateException
+     *             if called from outside {@link #configure()}
      * @see ContainerConfiguration#use(Class)
      */
     protected final <T extends Extension> T use(Class<T> extensionType) {

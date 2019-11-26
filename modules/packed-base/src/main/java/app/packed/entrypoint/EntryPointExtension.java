@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle;
+package app.packed.entrypoint;
 
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,6 +30,8 @@ import app.packed.hook.OnHook;
 import app.packed.lang.InvalidDeclarationException;
 import app.packed.lang.Key;
 import app.packed.lang.reflect.MethodOperator;
+import app.packed.lifecycle.OnStart;
+import app.packed.lifecycle.OnStop;
 import app.packed.service.ServiceExtension;
 import packed.internal.util.StringFormatter;
 
@@ -58,7 +60,7 @@ import packed.internal.util.StringFormatter;
 
 // Smide denne ind under LifecycleExtension
 
-public final class LifecycleExtension extends Extension {
+public final class EntryPointExtension extends Extension {
 
     public <T> void main(Class<T> serviceKey, Consumer<? super T> consumer) {
         main(Key.of(serviceKey), consumer);
@@ -96,7 +98,7 @@ public final class LifecycleExtension extends Extension {
         // TODO check that we do not have multiple @Main methods
     }
 
-    static class Composer extends ExtensionComposer<LifecycleExtension> {
+    static class Composer extends ExtensionComposer<EntryPointExtension> {
 
         /** {@inheritDoc} */
         @Override

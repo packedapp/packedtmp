@@ -21,7 +21,7 @@ import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
-import app.packed.lifecycle.StringArgs;
+import app.packed.entrypoint.StringArgs;
 import app.packed.service.ServiceWirelets;
 
 /**

@@ -33,11 +33,12 @@ import app.packed.service.ServiceExtension;
 public interface ContainerConfiguration extends BaseComponentConfiguration {
 
     /**
-     * Returns an unmodifiable set view of the extensions that are currently being used by the container.
+     * Returns an unmodifiable view of the extensions that are currently being used.
      * 
-     * @return an unmodifiable set view of the extensions that are currently being used by the container
+     * @return an unmodifiable view of the extensions that are currently being used
      * 
      * @see #use(Class)
+     * @see Bundle#extensions()
      */
     Set<Class<? extends Extension>> extensions();
 

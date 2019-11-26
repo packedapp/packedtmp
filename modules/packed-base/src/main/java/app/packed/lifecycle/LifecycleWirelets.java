@@ -23,6 +23,7 @@ import app.packed.artifact.App;
 import app.packed.container.ContainerSource;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
+import app.packed.entrypoint.StringArgs;
 import app.packed.service.ServiceWirelets;
 
 /**
@@ -49,6 +50,7 @@ public final class LifecycleWirelets {
      * @return a wirelet that provides the specified arguments to the linked container
      */
     static Wirelet args(String... args) {
+        // Skal vi lave et hack, saa man bare ignorere den hvis
         return ServiceWirelets.provide(StringArgs.of(args));
     }
 

@@ -13,39 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.component;
+
+// Sealed type....
+
+// SingleLetter
+// H <- Host
+// S <- ActorSystem
+// A <- Actor
+// I <- Instance
+// M <- Many
+// C <- Container
 
 /**
- *
+ * The various types of components that are available in Packed.
  */
-// foreach, will take each node in top->down manner
-
-public interface ExtensionTree<E extends Extension> extends Iterable<E> {
-
-    /**
-     * Returns the number of nodes in this tree.
-     * 
-     * @return the number of nodes in this tree
-     */
-    int size();
-
-    int degree();
-
-    // Host...
+enum ComponentType {
+    CONTAINER, COMPONENT_INSTANCE, HOST;
 }
-
-// Tree Operations
-
-// get Root(s)
-// is Fully connected
-// size()
-
-// Node operations
-// boolean isRoot();
-// Tree connectedTree();
-// root
-// parent
-// children
-// sieblings
-// forEachChild
-// int index.... from [0 to size-1] In order of usage????

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle;
+package app.packed.entrypoint;
 
 import app.packed.component.ComponentPath;
 import app.packed.component.feature.Feature;
@@ -35,7 +35,7 @@ public interface MainDescriptor extends Feature {
     /**
      * The path to the component that defines the main method.
      * <p>
-     * If using {@link LifecycleExtension#main(Runnable)} the component path will point to the container in which the
+     * If using {@link EntryPointExtension#main(Runnable)} the component path will point to the container in which the
      * extension is used.
      * 
      * @return the path to the component that defines the main method

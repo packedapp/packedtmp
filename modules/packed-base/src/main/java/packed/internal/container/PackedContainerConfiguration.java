@@ -81,7 +81,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     /** The component that was last installed. */
     @Nullable
-    protected AbstractCoreComponentConfiguration<?> currentComponent;
+    private AbstractCoreComponentConfiguration<?> currentComponent;
 
     /** All registered extensions, in order of registration. */
     private final LinkedHashMap<Class<? extends Extension>, PackedExtensionContext> extensions = new LinkedHashMap<>();
@@ -92,10 +92,10 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     private ComponentLookup lookup;
 
     /** A container model object, shared among all container sources of the same type. */
-    public final ContainerSourceModel model;
+    private final ContainerSourceModel model;
 
     /** The source of the container configuration. */
-    public final ContainerSource source;
+    private final ContainerSource source;
 
     /** Any wirelets that was given by the user when creating this configuration. */
     public final WireletContext wireletContext;
@@ -407,7 +407,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         dcc.configure();
         addChild(dcc);
 
-        // in addition to addChild, we also keep track of just the containers.
+        // We have an extra list for all containers.
         if (containers == null) {
             containers = new ArrayList<>(5);
         }

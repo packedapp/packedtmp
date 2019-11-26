@@ -31,6 +31,8 @@ import packed.internal.container.ExtensionModelLoadContext;
  */
 // Ville vaere rart at kunne gruppe metoderne efter et system og et prefix
 // I think move to Extension when done... any rename to Composer
+
+// Skal vi have en metode der styrer om install er paa extension eller generic
 public abstract class ExtensionComposer<E extends Extension> {
 
     /** The context that all calls are delegated to, must only be accessed via {@link #context}. */

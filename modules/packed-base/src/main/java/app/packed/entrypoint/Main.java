@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle;
+package app.packed.entrypoint;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -21,6 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.container.UseExtension;
+import app.packed.lifecycle.RunState;
 
 /**
  * A application can have a single main entry point which is the first instructions in a program that is executed, Must
@@ -50,7 +51,7 @@ import app.packed.container.UseExtension;
 // Ogsaa selvom vi ikke har shutdown metoder...
 
 // Det samme kan man sige om CLI
-@UseExtension(LifecycleExtension.class)
+@UseExtension(EntryPointExtension.class)
 public @interface Main {
 
     /**

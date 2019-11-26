@@ -31,6 +31,10 @@ import java.util.Optional;
  */
 public abstract class ExtensionWirelet<T extends ExtensionWirelet.Pipeline<?, T, ?>> extends Wirelet {
 
+    protected void extensionNotAvailable(Class<? extends Extension> extensionType) {
+        // throw exception();
+    }
+
     /**
      * Extension wirelet pipelines
      */

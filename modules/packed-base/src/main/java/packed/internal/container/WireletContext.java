@@ -133,7 +133,8 @@ public final class WireletContext {
     public void initializex(PackedExtensionContext pec, Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>> etype) {
         List<ExtensionWirelet<?>> ewp = pipelines.get(etype);
         if (ewp != null) {
-            ExtensionWireletPipelineModel m = ExtensionWireletPipelineModel.ofWireletType((Class<? extends ExtensionWirelet<?>>) ewp.iterator().next().getClass());
+            ExtensionWireletPipelineModel m = ExtensionWireletPipelineModel
+                    .ofWireletType((Class<? extends ExtensionWirelet<?>>) ewp.iterator().next().getClass());
             ExtensionWirelet.Pipeline<?, ?, ?> pip = m.newPipeline(pec.extension(), new MutableWireletList<>(ewp));
             ModuleAccess.extension().pipelineInitialize(pip);
             actualpipelines.put(etype, pip);
