@@ -51,7 +51,6 @@ import packed.internal.artifact.BuildOutput;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.component.AbstractComponent;
 import packed.internal.component.AbstractComponentConfiguration;
-import packed.internal.component.AbstractCoreComponentConfiguration;
 import packed.internal.component.ComponentModel;
 import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.component.StaticComponentConfiguration;
@@ -81,7 +80,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     /** The component that was last installed. */
     @Nullable
-    private AbstractCoreComponentConfiguration<?> currentComponent;
+    private AbstractComponentConfiguration<?> currentComponent;
 
     /** All registered extensions, in order of registration. */
     private final LinkedHashMap<Class<? extends Extension>, PackedExtensionContext> extensions = new LinkedHashMap<>();
@@ -384,7 +383,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         requireNonNull(implementation, "implementation is null");
         ConfigSite configSite = captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL);
         ComponentModel descriptor = lookup.componentModelOf(implementation);
-        AbstractCoreComponentConfiguration<T> cc = new StaticComponentConfiguration<T>(configSite, this, descriptor, implementation);
+        StaticComponentConfiguration<T> cc = new StaticComponentConfiguration<T>(configSite, this, descriptor, implementation);
         installPrepare(State.INSTALL_INVOKED);
         currentComponent = cc;
         return cc.runHooks(source);
