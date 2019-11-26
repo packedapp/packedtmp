@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
-import app.packed.container.UseExtension;
 import testutil.util.AbstractArtifactTest;
 
 /**
@@ -50,7 +49,6 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
         });
     }
 
-    @UseExtension(Ex2.class)
     static final class Ex1 extends Extension {
 
         static class Composer extends ExtensionComposer<Ex1> {
@@ -58,12 +56,12 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
             /** {@inheritDoc} */
             @Override
             protected void configure() {
+                addDependencies(Ex2.class);
                 onExtensionInstantiated(e -> e.use(Ex2.class));
             }
         }
     }
 
-    @UseExtension(Ex3.class)
     static final class Ex2 extends Extension {
 
         static class Composer extends ExtensionComposer<Ex2> {
@@ -71,6 +69,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
             /** {@inheritDoc} */
             @Override
             protected void configure() {
+                addDependencies(Ex3.class);
                 onExtensionInstantiated(e -> e.use(Ex3.class));
             }
         }
@@ -80,7 +79,6 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
 
     }
 
-    @UseExtension(ExRecursive2.class)
     static final class ExRecursive1 extends Extension {
 
         static class Composer extends ExtensionComposer<ExRecursive1> {
@@ -88,6 +86,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
             /** {@inheritDoc} */
             @Override
             protected void configure() {
+                addDependencies(ExRecursive2.class);
                 onExtensionInstantiated(e -> e.use(ExRecursive2.class));
             }
         }

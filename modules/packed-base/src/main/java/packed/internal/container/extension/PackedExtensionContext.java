@@ -25,7 +25,6 @@ import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
-import app.packed.container.InternalExtensionException;
 import app.packed.lang.Nullable;
 import app.packed.service.Factory;
 import packed.internal.container.PackedContainerConfiguration;
@@ -213,7 +212,7 @@ public final class PackedExtensionContext implements ExtensionContext {
         // And then look up the context before we can check.
 
         if (!extensionModel.dependenciesDirect.contains(extensionType)) {
-            throw new InternalExtensionException("The specified extension type is not among " + extensionModel.extensionType.getSimpleName()
+            throw new UnsupportedOperationException("The specified extension type is not among " + extensionModel.extensionType.getSimpleName()
                     + " dependencies, extensionType = " + extensionType + ", valid dependencies = " + extensionModel.dependenciesDirect);
         }
 

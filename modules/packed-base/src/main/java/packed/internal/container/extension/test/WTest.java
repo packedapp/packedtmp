@@ -26,7 +26,6 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
 import app.packed.container.ExtensionWirelet;
 import app.packed.container.MutableWireletList;
-import app.packed.container.UseExtension;
 import app.packed.service.ServiceExtension;
 
 /**
@@ -51,7 +50,7 @@ public class WTest extends BaseBundle {
         App.open(ai, new MyWirelet("A4"));
     }
 
-    @UseExtension(ServiceExtension.class)
+    // @UseExtension(ServiceExtension.class)
     public static class MyExtension extends Extension {
         int i;
 
@@ -66,6 +65,7 @@ public class WTest extends BaseBundle {
             protected void configure() {
                 addPipeline(MyPipeline.class, (e, w) -> new MyPipeline(w));
                 onConfigured(e -> e.use(ServiceExtension.class).provide(RuntimeService.class));
+                addDependencies(ServiceExtension.class);
                 // onInstantiation((e, c) -> System.out.println("Inst " + c.getPipelin(MyPipeline.class)));
             }
         }

@@ -15,13 +15,9 @@
  */
 package packed.internal.container.extension;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -66,7 +62,8 @@ public final class ExtensionModel<E extends Extension> {
                 throw new IllegalArgumentException(
                         "The specified type '" + StringFormatter.format(type) + "' does not extend '" + StringFormatter.format(Extension.class) + "'");
             }
-            return new Builder((Class<? extends Extension>) type).build();
+            return ExtensionModelLoader.load((Class<? extends Extension>) type, null);
+
         }
     };
 
@@ -180,18 +177,12 @@ public final class ExtensionModel<E extends Extension> {
     }
 
     /** A builder for {@link ExtensionModel}. */
-    private static final class Builder extends AbstractExtensionModelBuilder {
+    static final class Builder extends AbstractExtensionModelBuilder {
 
         /** The constructor used to create a new extension instance. */
         private MethodHandle constructor;
 
-        /** A list of dependencies on other extensions. */
-        private Set<Class<? extends Extension>> dependenciesDirect;
-
         private List<Class<? extends Extension>> dependenciesTotalOrder;
-
-        /** The type of extension we are building a model for. */
-        private final Class<? extends Extension> extensionType;
 
         /** A builder for all methods annotated with {@link OnHook} on the extension. */
         private OnHookModel onHookModel;
@@ -202,8 +193,8 @@ public final class ExtensionModel<E extends Extension> {
          * @param extensionType
          *            the type of extension we are building a model for
          */
-        private Builder(Class<? extends Extension> extensionType) {
-            this.extensionType = requireNonNull(extensionType);
+        Builder(Class<? extends Extension> extensionType, ExtensionModelLoader.Runtime runtime) {
+            super(extensionType, runtime);
         }
 
         /**
@@ -212,7 +203,7 @@ public final class ExtensionModel<E extends Extension> {
          * @return the extension model
          */
         @SuppressWarnings("unchecked")
-        private ExtensionModel<?> build() {
+        ExtensionModel<?> build() {
             Class<? extends ExtensionComposer<?>> composerType = null;
             for (Class<?> c : extensionType.getDeclaredClasses()) {
                 if (c.getSimpleName().equals("Composer")) {
@@ -222,7 +213,8 @@ public final class ExtensionModel<E extends Extension> {
                     composerType = (Class<? extends ExtensionComposer<?>>) c;
                 }
             }
-            this.dependenciesDirect = Collections.unmodifiableSet(new HashSet<>(ExtensionUseModel2.directDependenciesOf(extensionType)));
+            // this.dependenciesDirect = Collections.unmodifiableSet(new
+            // HashSet<>(ExtensionUseModel2.directDependenciesOf(extensionType)));
             this.dependenciesTotalOrder = ExtensionUseModel2.totalOrder(extensionType);
 
             ClassProcessor cp = new ClassProcessor(MethodHandles.lookup(), extensionType, true);

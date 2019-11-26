@@ -17,7 +17,9 @@ package packed.internal.container.extension;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -40,27 +42,48 @@ public abstract class AbstractExtensionModelBuilder {
     // So add all shit, quick validation-> Sync->Validate final -> AddAll ->UnSync
     public final IdentityHashMap<Class<? extends Contract>, Object> contracts = new IdentityHashMap<>();
 
-    /** An action that will be run immediately after an extension has been configured. */
-    @Nullable
-    public Consumer<? super Extension> onConfiguredAction;
+    private final Set<Class<? extends Extension>> dependencies = new HashSet<>();
+
+    /** A list of dependencies on other extensions. */
+    Set<Class<? extends Extension>> dependenciesDirect = new HashSet<>();
+
+    /** The type of extension we are building a model for. */
+    final Class<? extends Extension> extensionType;
+
+    // public BiConsumer<? super Extension, ? super ExtensionInstantiationContext> onInstantiation;
 
     /** An action that will be run immediately after all bundles have been configured. */
     @Nullable
     public Consumer<? super Extension> onCompleteEach;
 
+    /** An action that will be run immediately after an extension has been configured. */
+    @Nullable
+    public Consumer<? super Extension> onConfiguredAction;
     /** An action that will be run immediately after an extension has been instantiated. */
     @Nullable
     Consumer<? super Extension> onExtensionInstantiatedAction;
-
-    // public BiConsumer<? super Extension, ? super ExtensionInstantiationContext> onInstantiation;
 
     @Nullable
     public BiConsumer<? super Extension, ? super Extension> onLinkage;
 
     public final IdentityHashMap<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, BiFunction<?, ?, ?>> pipelines = new IdentityHashMap<>();
 
+    final ExtensionModelLoader.Runtime runtime;
+
     /** This class can only be overridden by another class in this package. */
-    AbstractExtensionModelBuilder() {}
+    AbstractExtensionModelBuilder(Class<? extends Extension> extensionType, ExtensionModelLoader.Runtime runtime) {
+        this.extensionType = requireNonNull(extensionType);
+        this.runtime = runtime;
+    }
+
+    @SafeVarargs
+    public final void addDependencies(Class<? extends Extension>... dependencies) {
+        requireNonNull(dependencies, "dependencies is null");
+        for (Class<? extends Extension> c : dependencies) {
+            ExtensionModelLoader.load(c, runtime);
+            dependenciesDirect.add(c);
+        }
+    }
 
     /**
      * Registers an action that is invoked when the extension has first been instantiated

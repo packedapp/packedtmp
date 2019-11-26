@@ -47,6 +47,11 @@ public abstract class ExtensionComposer<E extends Extension> {
         context().pipelines.putIfAbsent(pipelineType, pipelineFactory);
     }
 
+    @SafeVarargs
+    protected final void addDependencies(Class<? extends Extension>... dependencies) {
+        context().addDependencies(dependencies);
+    }
+
     /**
      * Will process each extension top down..
      * 
