@@ -117,6 +117,29 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         this.wireletContext = WireletContext.create(this, null, wirelets);
     }
 
+    @Override
+    protected String initializeNameDefaultName() {
+        // I think try and move some of this to ComponentNameWirelet
+        @Nullable
+        Class<? extends ContainerSource> source = this.sourceType();
+        if (Bundle.class.isAssignableFrom(source)) {
+            String nnn = source.getSimpleName();
+            if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
+                nnn = nnn.substring(0, nnn.length() - 6);
+            }
+            if (nnn.length() > 0) {
+                // checkName, if not just App
+                // TODO need prefix
+                return nnn;
+            }
+            if (nnn.length() == 0) {
+                return "Container";
+            }
+        }
+        // TODO think it should be named Artifact type, for example, app, injector, ...
+        return "Unknown";
+    }
+
     /**
      * Creates a new container configuration when {@link #link(Bundle, Wirelet...) linking a bundle}.
      * 

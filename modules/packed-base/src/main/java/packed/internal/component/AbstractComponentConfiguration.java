@@ -30,7 +30,6 @@ import app.packed.component.feature.FeatureMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerSource;
 import app.packed.container.Extension;
 import app.packed.lang.Nullable;
 import packed.internal.artifact.BuildOutput;
@@ -259,31 +258,7 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
         return this.name = n;
     }
 
-    private final String initializeNameDefaultName() {
-        if (this instanceof PackedContainerConfiguration) {
-            // I think try and move some of this to ComponentNameWirelet
-            @Nullable
-            Class<? extends ContainerSource> source = ((PackedContainerConfiguration) this).sourceType();
-            if (Bundle.class.isAssignableFrom(source)) {
-                String nnn = source.getSimpleName();
-                if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
-                    nnn = nnn.substring(0, nnn.length() - 6);
-                }
-                if (nnn.length() > 0) {
-                    // checkName, if not just App
-                    // TODO need prefix
-                    return nnn;
-                }
-                if (nnn.length() == 0) {
-                    return "Container";
-                }
-            }
-            // TODO think it should be named Artifact type, for example, app, injector, ...
-            return "Unknown";
-        } else {
-            return ((AbstractCoreComponentConfiguration<?>) this).componentModel.defaultPrefix();
-        }
-    }
+    protected abstract String initializeNameDefaultName();
 
     protected abstract AbstractComponent instantiate(AbstractComponent parent, PackedArtifactInstantiationContext ic);
 

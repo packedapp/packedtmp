@@ -59,4 +59,9 @@ public abstract class AbstractCoreComponentConfiguration<T> extends AbstractComp
         componentModel.invokeOnHookOnInstall(source, this);
         return this;
     }
+
+    @Override
+    protected String initializeNameDefaultName() {
+        return componentModel.defaultPrefix();
+    }
 }
