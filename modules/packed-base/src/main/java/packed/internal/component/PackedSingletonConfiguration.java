@@ -17,44 +17,36 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.List;
-
+import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.service.Dependency;
+import app.packed.container.ContainerSource;
 import app.packed.service.Factory;
+import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.inject.Instantiable;
 
 /**
  *
  */
-public final class PackedSingletonConfiguration<T> extends AbstractCoreComponentConfiguration<T> implements Instantiable {
+public final class PackedSingletonConfiguration<T> extends AbstractComponentConfiguration<T> implements ComponentConfiguration<T> {
 
     public final Factory<T> factory;
 
     public final T instance;
 
-    public PackedSingletonConfiguration(ConfigSite configSite, PackedContainerConfiguration containerConfiguration, ComponentModel model, Factory<T> factory) {
-        super(configSite, containerConfiguration, model);
+    final ComponentModel componentModel;
+
+    public PackedSingletonConfiguration(ConfigSite configSite, PackedContainerConfiguration pcc, ComponentModel componentModel, Factory<T> factory) {
+        super(configSite, pcc);
+        this.componentModel = requireNonNull(componentModel);
         this.factory = requireNonNull(factory);
         this.instance = null;
     }
 
-    /**
-     * @param configSite
-     * @param containerConfiguration
-     * @param model
-     */
-    public PackedSingletonConfiguration(ConfigSite configSite, PackedContainerConfiguration containerConfiguration, ComponentModel model, T instance) {
-        super(configSite, containerConfiguration, model);
+    public PackedSingletonConfiguration(ConfigSite configSite, PackedContainerConfiguration pcc, ComponentModel componentModel, T instance) {
+        super(configSite, pcc);
+        this.componentModel = requireNonNull(componentModel);
         this.factory = null;
         this.instance = requireNonNull(instance);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public List<Dependency> dependencies() {
-        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -70,4 +62,21 @@ public final class PackedSingletonConfiguration<T> extends AbstractCoreComponent
         super.setName(name);
         return this;
     }
+
+    @Override
+    protected String initializeNameDefaultName() {
+        return componentModel.defaultPrefix();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public AbstractComponent instantiate(AbstractComponent parent, PackedArtifactInstantiationContext paic) {
+        return new PackedComponent(parent, this, paic);
+    }
+
+    public PackedSingletonConfiguration<T> runHooks(ContainerSource source) {
+        componentModel.invokeOnHookOnInstall(source, this);
+        return this;
+    }
+
 }

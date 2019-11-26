@@ -53,7 +53,7 @@ import packed.internal.component.AbstractComponent;
 import packed.internal.component.AbstractComponentConfiguration;
 import packed.internal.component.ComponentModel;
 import packed.internal.component.PackedSingletonConfiguration;
-import packed.internal.component.StaticComponentConfiguration;
+import packed.internal.component.PackedStatelessComponentConfiguration;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.config.ConfigSiteUtil;
 import packed.internal.hook.applicator.DelayedAccessor;
@@ -383,7 +383,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         requireNonNull(implementation, "implementation is null");
         ConfigSite configSite = captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL);
         ComponentModel descriptor = lookup.componentModelOf(implementation);
-        StaticComponentConfiguration<T> cc = new StaticComponentConfiguration<T>(configSite, this, descriptor, implementation);
+        PackedStatelessComponentConfiguration<T> cc = new PackedStatelessComponentConfiguration<T>(configSite, this, descriptor, implementation);
         installPrepare(State.INSTALL_INVOKED);
         currentComponent = cc;
         return cc.runHooks(source);

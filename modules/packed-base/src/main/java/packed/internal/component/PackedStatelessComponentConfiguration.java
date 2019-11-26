@@ -26,13 +26,21 @@ import packed.internal.container.PackedContainerConfiguration;
 /**
  *
  */
-public abstract class AbstractCoreComponentConfiguration<T> extends AbstractComponentConfiguration<T> implements ComponentConfiguration<T> {
+public final class PackedStatelessComponentConfiguration<T> extends AbstractComponentConfiguration<T> implements ComponentConfiguration<T> {
 
     final ComponentModel componentModel;
+    /** The static implementation. */
+    public final Class<T> implementation;
 
-    public AbstractCoreComponentConfiguration(ConfigSite configSite, PackedContainerConfiguration pcc, ComponentModel componentModel) {
+    public PackedStatelessComponentConfiguration(ConfigSite configSite, PackedContainerConfiguration pcc, ComponentModel componentModel, Class<T> implementation) {
         super(configSite, pcc);
         this.componentModel = requireNonNull(componentModel);
+        this.implementation = requireNonNull(implementation);
+    }
+
+    @Override
+    protected String initializeNameDefaultName() {
+        return componentModel.defaultPrefix();
     }
 
     /** {@inheritDoc} */
@@ -41,27 +49,22 @@ public abstract class AbstractCoreComponentConfiguration<T> extends AbstractComp
         return new PackedComponent(parent, this, paic);
     }
 
+    public PackedStatelessComponentConfiguration<T> runHooks(ContainerSource source) {
+        componentModel.invokeOnHookOnInstall(source, this);
+        return this;
+    }
+
     /** {@inheritDoc} */
     @Override
-    public AbstractCoreComponentConfiguration<T> setDescription(String description) {
+    public PackedStatelessComponentConfiguration<T> setDescription(String description) {
         super.setDescription(description);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public AbstractCoreComponentConfiguration<T> setName(String name) {
+    public PackedStatelessComponentConfiguration<T> setName(String name) {
         super.setName(name);
         return this;
-    }
-
-    public AbstractCoreComponentConfiguration<T> runHooks(ContainerSource source) {
-        componentModel.invokeOnHookOnInstall(source, this);
-        return this;
-    }
-
-    @Override
-    protected String initializeNameDefaultName() {
-        return componentModel.defaultPrefix();
     }
 }
