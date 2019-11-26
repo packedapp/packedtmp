@@ -72,7 +72,7 @@ public final class ArtifactImage implements ContainerSource {
     /** The configuration of the root container. */
     private final PackedContainerConfiguration pcc;
 
-    /** A wirelet context. */
+    /** Any wirelets that have been applied to the image. */
     @Nullable
     private final WireletContext wc;
 
@@ -122,6 +122,7 @@ public final class ArtifactImage implements ContainerSource {
      * @return the name
      */
     public String name() {
+        // Return Optional<String>????
         return wc == null ? pcc.getName() : wc.name();
     }
 
@@ -150,7 +151,6 @@ public final class ArtifactImage implements ContainerSource {
      * 
      * @return the original source type of this image
      */
-    // sourceType?? bundleType.. Igen kommer lidt an paa den DynamicContainerSource....
     @SuppressWarnings("unchecked")
     public Class<? extends Bundle> sourceType() {
         return (Class<? extends Bundle>) pcc.source.getClass();
@@ -187,14 +187,17 @@ public final class ArtifactImage implements ContainerSource {
      * @throws RuntimeException
      *             if the image could not be constructed
      */
-    // rename to build()????
     public static ArtifactImage build(ContainerSource source, Wirelet... wirelets) {
         if (source instanceof ArtifactImage) {
             return ((ArtifactImage) source).with(wirelets);
         }
+        // TODO check that it is a bundle????
         PackedContainerConfiguration pcc = new PackedContainerConfiguration(BuildOutput.image(), source, wirelets);
         return new ArtifactImage(pcc.doBuild(), pcc.wireletContext);
     }
+}
+
+class BadIdeas {
 
     // public static ArtifactImage of(Class<? extends Bundle> bundle, Wirelet... wirelets) {
     // requireNonNull(bundle, "bundle is null");
@@ -209,6 +212,7 @@ public final class ArtifactImage implements ContainerSource {
     // return of(b, wirelets);
     // }
 
+    // Skal bruge en artifact driver til at instantiatere dem jo....
     void run(String[] args, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
@@ -218,6 +222,9 @@ public final class ArtifactImage implements ContainerSource {
         // Saa vil run jo se anderledes ud
         // Will create an artifact of unknown type....
         // Ideen er lidt at App.run()... aldrig egentlig laver en app.
+
+        // ArtifactDriver'en kan jo ogsaa goere et ellet andet.
+
         throw new UnsupportedOperationException();
     }
 

@@ -43,6 +43,9 @@ abstract class ConfigParser {
 // app.packed.config.json (embeds snake yaml...)
 // app.packed.config.xml (embeds snake yaml...)
 
+/// Syntes vi skal have nogle interfaces som de kan implemententere.
+// app.packed.xml
+
 class Config {
 
 }

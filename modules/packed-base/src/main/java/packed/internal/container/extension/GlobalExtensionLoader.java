@@ -15,10 +15,15 @@
  */
 package packed.internal.container.extension;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  *
  */
 final class GlobalExtensionLoader {
+
+    static final ReentrantLock lock = new ReentrantLock();
+    static Runtime runtime;
 
     // Okay vi har en global laas.
 
@@ -26,4 +31,7 @@ final class GlobalExtensionLoader {
     // Checker det.
     // Opdatere det med alt hvad vi har laest ind.
 
+    static class Runtime {
+
+    }
 }
