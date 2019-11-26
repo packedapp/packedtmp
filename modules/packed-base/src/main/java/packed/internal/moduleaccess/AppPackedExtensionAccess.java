@@ -19,7 +19,7 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
 import app.packed.container.ExtensionContext;
 import app.packed.container.ExtensionWirelet;
-import packed.internal.container.extension.AbstractExtensionModelBuilder;
+import packed.internal.container.AbstractExtensionModelBuilder;
 
 /** A support class for calling package private methods in the app.packed.extension package. */
 public interface AppPackedExtensionAccess extends SecretAccess {

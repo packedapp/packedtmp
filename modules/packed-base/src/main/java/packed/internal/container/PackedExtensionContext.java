@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.extension;
+package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,7 +27,6 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 import app.packed.lang.Nullable;
 import app.packed.service.Factory;
-import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.moduleaccess.ModuleAccess;
 
 /** The default implementation of {@link ExtensionContext} with addition methods only available inside this module. */

@@ -58,8 +58,6 @@ import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.component.StaticComponentConfiguration;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.config.ConfigSiteUtil;
-import packed.internal.container.extension.ExtensionUseModel2;
-import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.hook.applicator.DelayedAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarFieldDelayerAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarMethodDelayerAccessor;

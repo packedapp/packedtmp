@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.extension;
+package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
@@ -41,8 +41,6 @@ public abstract class AbstractExtensionModelBuilder {
     // This means we want to synchronize things.
     // So add all shit, quick validation-> Sync->Validate final -> AddAll ->UnSync
     public final IdentityHashMap<Class<? extends Contract>, Object> contracts = new IdentityHashMap<>();
-
-    private final Set<Class<? extends Extension>> dependencies = new HashSet<>();
 
     /** A list of dependencies on other extensions. */
     Set<Class<? extends Extension>> dependenciesDirect = new HashSet<>();

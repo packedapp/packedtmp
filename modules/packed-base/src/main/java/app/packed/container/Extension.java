@@ -24,7 +24,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.service.Factory;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.container.extension.AbstractExtensionModelBuilder;
+import packed.internal.container.AbstractExtensionModelBuilder;
 import packed.internal.moduleaccess.AppPackedExtensionAccess;
 import packed.internal.moduleaccess.ModuleAccess;
 

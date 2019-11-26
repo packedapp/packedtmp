@@ -30,8 +30,6 @@ import app.packed.hook.OnHook;
 import app.packed.lang.InvalidDeclarationException;
 import app.packed.lang.Nullable;
 import packed.internal.component.ComponentModel;
-import packed.internal.container.extension.ExtensionUseModel2;
-import packed.internal.container.extension.LazyExtensionActivationMap;
 import packed.internal.hook.OnHookModel;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FactoryHandle;

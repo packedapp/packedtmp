@@ -17,7 +17,7 @@ package packed.internal.artifact;
 
 import java.util.LinkedHashSet;
 
-import packed.internal.container.extension.ExtensionModel;
+import packed.internal.container.ExtensionModel;
 
 /**
  *

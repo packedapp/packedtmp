@@ -27,8 +27,6 @@ import app.packed.container.MutableWireletList;
 import app.packed.container.Wirelet;
 import app.packed.lang.Nullable;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
-import packed.internal.container.extension.ExtensionWireletPipelineModel;
-import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.util.StringFormatter;
 

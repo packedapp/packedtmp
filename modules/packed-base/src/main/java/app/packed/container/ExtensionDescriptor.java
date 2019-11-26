@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Set;
 
 import app.packed.api.Contract;
-import packed.internal.container.extension.ExtensionModel;
+import packed.internal.container.ExtensionModel;
 
 /**
  * An extension descriptor.

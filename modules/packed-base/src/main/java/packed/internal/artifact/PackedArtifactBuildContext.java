@@ -21,7 +21,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
 import app.packed.errorhandling.ErrorMessage;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.container.extension.PackedExtensionContext;
+import packed.internal.container.PackedExtensionContext;
 
 /** The default implementation of {@link ArtifactBuildContext} */
 public final class PackedArtifactBuildContext implements ArtifactBuildContext {

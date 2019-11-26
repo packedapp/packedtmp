@@ -36,7 +36,7 @@ import app.packed.service.Dependency;
 import app.packed.service.InjectionException;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
-import packed.internal.container.extension.PackedExtensionContext;
+import packed.internal.container.PackedExtensionContext;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.build.service.ComponentFactoryBuildEntry;

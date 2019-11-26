@@ -38,7 +38,7 @@ import packed.internal.artifact.PackedArtifactBuildContext;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.container.extension.PackedExtensionContext;
+import packed.internal.container.PackedExtensionContext;
 import packed.internal.hook.applicator.DelayedAccessor;
 
 /** A common superclass for all component configuration classes. */

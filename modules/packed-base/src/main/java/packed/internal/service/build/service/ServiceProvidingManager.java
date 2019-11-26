@@ -40,7 +40,7 @@ import app.packed.service.ServiceExtension;
 import packed.internal.component.AbstractCoreComponentConfiguration;
 import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.container.FixedWireletList;
-import packed.internal.container.extension.PackedExtensionContext;
+import packed.internal.container.PackedExtensionContext;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.service.build.BuildEntry;

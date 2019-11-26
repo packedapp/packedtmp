@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.extension;
+package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,6 +27,7 @@ import java.util.WeakHashMap;
 
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
+import packed.internal.container.ExtensionUtil;
 import packed.internal.util.StringFormatter;
 
 /**

@@ -24,7 +24,7 @@ import java.util.function.Function;
 
 import app.packed.api.Contract;
 import app.packed.lang.Nullable;
-import packed.internal.container.extension.AbstractExtensionModelBuilder;
+import packed.internal.container.AbstractExtensionModelBuilder;
 
 /**
  * An extension composer is used for specifying how an extension works.
