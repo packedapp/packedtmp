@@ -71,6 +71,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** A stack walker used from {@link #captureStackFrame(String)}. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
+    /** Any extension that is active. */
     @Nullable
     public PackedExtensionContext activeExtension;
 
@@ -87,11 +88,11 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     private HashMap<String, DefaultContainerLayer> layers;
 
-    /** The current lookup object, updated via {@link #lookup(Lookup)} */
-    private ComponentLookup lookup; // Should be more private
+    /** The current component lookup object, updated via {@link #lookup(Lookup)} */
+    private ComponentLookup lookup;
 
     /** A container model object, shared among all container sources of the same type. */
-    private final ContainerSourceModel model;
+    public final ContainerSourceModel model;
 
     /** The source of the container configuration. */
     public final ContainerSource source;
@@ -209,12 +210,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      */
     private void configure() {
         if (source instanceof Bundle) {
-            Bundle bundle = (Bundle) source;
-            // if (bundle.getClass().isAnnotationPresent(Install.class)) {
-            // // Hmm don't know about that config site
-            // // installInstance(bundle, configSite());
-            // }
-            ModuleAccess.container().doConfigure(bundle, this);
+            ModuleAccess.container().doConfigure((Bundle) source, this);
         }
         // Initializes the name of the container, and sets the state to State.FINAL
         initializeName(State.FINAL, null);

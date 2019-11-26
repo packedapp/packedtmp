@@ -38,7 +38,7 @@ import packed.internal.util.LookupValue;
 import packed.internal.util.UncheckedThrowableFactory;
 
 /** A model of a container source, typically a subclass of {@link Bundle}. */
-public final class ContainerSourceModel implements ComponentLookup {
+public final class ContainerSourceModel extends ComponentLookup {
 
     /** A cache of model. */
     private static final ClassValue<ContainerSourceModel> MODEL_CACHE = new ClassValue<>() {
@@ -65,11 +65,9 @@ public final class ContainerSourceModel implements ComponentLookup {
     };
 
     /** The default lookup object, when the user has specified no Lookup value */
-    ComponentLookup defaultLookup;
+    private ComponentLookup defaultLookup;
 
-    /** Any methods annotated with {@link OnHook} on the container source. */
-    @Nullable
-    public final OnHookModel onHookModel;
+    final List<Class<? extends Extension>> dependenciesTotalOrder;
 
     /** A cache of lookup values, in 99 % of all cases this will hold no more than 1 value. */
     private final LookupValue<PerLookup> lookups = new LookupValue<>() {
@@ -79,6 +77,10 @@ public final class ContainerSourceModel implements ComponentLookup {
             return new PerLookup(ContainerSourceModel.this, lookup);
         }
     };
+
+    /** Any methods annotated with {@link OnHook} on the container source. */
+    @Nullable
+    private final OnHookModel onHookModel;
 
     /** The type of container source. Typically, a subclass of {@link Bundle}. */
     private final Class<? extends ContainerSource> sourceType;
@@ -101,22 +103,31 @@ public final class ContainerSourceModel implements ComponentLookup {
         this.dependenciesTotalOrder = ExtensionUseModel2.totalOrder(sourceType);
     }
 
-    public final List<Class<? extends Extension>> dependenciesTotalOrder;
-
     /** {@inheritDoc} */
     @Override
-    public ComponentModel componentModelOf(Class<?> componentType) {
+    ComponentModel componentModelOf(Class<?> componentType) {
         return componentsNoLookup.get(componentType);
+    }
+
+    /**
+     * If the underlying container source has any methods annotated with {@link OnHook} return the model. Otherwise returns
+     * null.
+     * 
+     * @return any hook model
+     */
+    @Nullable
+    public OnHookModel hooks() {
+        return onHookModel;
     }
 
     /** {@inheritDoc} */
     @Override
-    public ClassProcessor newClassProcessor(Class<?> clazz, boolean registerNatives) {
+    ClassProcessor newClassProcessor(Class<?> clazz, boolean registerNatives) {
         return new ClassProcessor(MethodHandles.lookup(), clazz, registerNatives);
     }
 
     @Override
-    public <T> FactoryHandle<T> readable(FactoryHandle<T> factory) {
+    <T> FactoryHandle<T> readable(FactoryHandle<T> factory) {
         // TODO needs to cached
         // TODO add field...
         if (factory instanceof ExecutableFactoryHandle) {
@@ -128,7 +139,11 @@ public final class ContainerSourceModel implements ComponentLookup {
         return factory;
     }
 
-    public ComponentLookup withLookup(Lookup lookup) {
+    public Class<? extends ContainerSource> sourceType() {
+        return sourceType;
+    }
+
+    ComponentLookup withLookup(Lookup lookup) {
         // Use default access (this) if we specify null lookup
 
         // We need to check this in a separate class. Because from Java 13.
@@ -156,10 +171,11 @@ public final class ContainerSourceModel implements ComponentLookup {
         return MODEL_CACHE.get(sourceType);
     }
 
-    static final class PerLookup implements ComponentLookup {
+    /** A component lookup class wrapping a {@link Lookup} object. */
+    private static final class PerLookup extends ComponentLookup {
 
         /** A cache of component class descriptors. */
-        final ClassValue<ComponentModel> components = new ClassValue<>() {
+        private final ClassValue<ComponentModel> components = new ClassValue<>() {
 
             @Override
             protected ComponentModel computeValue(Class<?> type) {
@@ -170,27 +186,27 @@ public final class ContainerSourceModel implements ComponentLookup {
         /** The actual lookup object we are wrapping. */
         private final Lookup lookup;
 
-        final ContainerSourceModel parent;
+        private final ContainerSourceModel parent;
 
-        public PerLookup(ContainerSourceModel parent, Lookup lookup) {
+        private PerLookup(ContainerSourceModel parent, Lookup lookup) {
             this.parent = requireNonNull(parent);
             this.lookup = requireNonNull(lookup);
         }
 
         /** {@inheritDoc} */
         @Override
-        public ComponentModel componentModelOf(Class<?> componentType) {
+        ComponentModel componentModelOf(Class<?> componentType) {
             return components.get(componentType);
         }
 
         /** {@inheritDoc} */
         @Override
-        public ClassProcessor newClassProcessor(Class<?> clazz, boolean registerNatives) {
+        ClassProcessor newClassProcessor(Class<?> clazz, boolean registerNatives) {
             return new ClassProcessor(lookup, clazz, registerNatives);
         }
 
         @Override
-        public <T> FactoryHandle<T> readable(FactoryHandle<T> factory) {
+        <T> FactoryHandle<T> readable(FactoryHandle<T> factory) {
             // TODO needs to cached
             // TODO add field...
             if (factory instanceof ExecutableFactoryHandle) {

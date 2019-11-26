@@ -177,7 +177,7 @@ public final class ExtensionModel<E extends Extension> {
     }
 
     /** A builder for {@link ExtensionModel}. */
-    static final class Builder extends ExtensionComposerContext {
+    static final class Builder extends ExtensionModelLoadContext {
 
         /** The constructor used to create a new extension instance. */
         private MethodHandle constructor;

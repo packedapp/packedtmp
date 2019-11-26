@@ -24,7 +24,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.service.Factory;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.container.ExtensionComposerContext;
+import packed.internal.container.ExtensionModelLoadContext;
 import packed.internal.moduleaccess.AppPackedExtensionAccess;
 import packed.internal.moduleaccess.ModuleAccess;
 
@@ -84,7 +84,7 @@ public abstract class Extension {
 
             /** {@inheritDoc} */
             @Override
-            public void configureComposer(ExtensionComposer<?> composer, ExtensionComposerContext context) {
+            public void configureComposer(ExtensionComposer<?> composer, ExtensionModelLoadContext context) {
                 composer.doConfigure(context);
             }
 

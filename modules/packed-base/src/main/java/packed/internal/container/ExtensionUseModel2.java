@@ -23,7 +23,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 import app.packed.container.Extension;
-import app.packed.container.ExtensionProps;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.UseExtension;
 import packed.internal.util.StringFormatter;
@@ -73,13 +72,13 @@ public class ExtensionUseModel2 {
                 loadOptional(list, type, ue.optional());
             }
             if (Extension.class.isAssignableFrom(type)) {
-                ExtensionProps ep = type.getAnnotation(ExtensionProps.class);
-                if (ep != null) {
-                    for (Class<? extends Extension> c : ep.dependencies()) {
-                        list.add(c);
-                    }
-                    loadOptional(list, type, ep.dependenciesOptional());
-                }
+                // ExtensionProps ep = type.getAnnotation(ExtensionProps.class);
+                // if (ep != null) {
+                // for (Class<? extends Extension> c : ep.dependencies()) {
+                // list.add(c);
+                // }
+                // loadOptional(list, type, ep.dependenciesOptional());
+                // }
             }
             return List.copyOf(new ArrayList<>(list));
         }

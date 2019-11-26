@@ -174,7 +174,7 @@ public final class ComponentModel {
             Class<?> componentType = cp.clazz();
 
             try (MemberUnreflector htp = new MemberUnreflector(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
-                this.csb = csm.onHookModel == null ? null : new HookRequestBuilder(csm.onHookModel, htp);
+                this.csb = csm.hooks() == null ? null : new HookRequestBuilder(csm.hooks(), htp);
 
                 findAssinableTo(htp, activatorMap, componentType);
                 findAnnotatedTypes(htp, activatorMap, componentType);

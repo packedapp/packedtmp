@@ -22,14 +22,15 @@ import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.reflect.ClassProcessor;
 
 /**
- * This class exists because we have to ways to access the members of a component. One with a {@link Lookup} object, and
- * one without.
+ * This class exists because we have two ways to access the members of a component instance. One with a {@link Lookup}
+ * object, and one using whatever power a module descriptor has given us.
  */
-interface ComponentLookup {
+abstract class ComponentLookup {
 
-    ComponentModel componentModelOf(Class<?> componentType);
+    abstract ComponentModel componentModelOf(Class<?> componentType);
 
-    ClassProcessor newClassProcessor(Class<?> clazz, boolean registerNatives);
+    abstract ClassProcessor newClassProcessor(Class<?> clazz, boolean registerNatives);
 
-    <T> FactoryHandle<T> readable(FactoryHandle<T> factory);
+    // Just return MethodHandle directly???
+    abstract <T> FactoryHandle<T> readable(FactoryHandle<T> factory);
 }

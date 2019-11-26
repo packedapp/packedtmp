@@ -152,7 +152,7 @@ public final class ArtifactImage implements ContainerSource {
      */
     @SuppressWarnings("unchecked")
     public Class<? extends Bundle> sourceType() {
-        return (Class<? extends Bundle>) pcc.source.getClass();
+        return (Class<? extends Bundle>) pcc.sourceType();
     }
 
     // What about wirelets??? Hmmm
@@ -196,6 +196,24 @@ public final class ArtifactImage implements ContainerSource {
     }
 }
 
+// De kunne jo strength taget vaere metoder paa imaged og ikke wirelets.
+// Vi kan jo sagtens internt lave det om til wirelets...
+// Der er bare ingen grund til at lave det public...
+final class ArtifactImageWirelets {
+
+    // retainStackTracesForEachInstantiation...
+    /// Her ligger vi jo lige 1000 ns oveni hvis vi vil se hvor den er instantieret.
+
+    // Maximum number of instantiations times...
+    // Could, for example, be one for native.
+    // The only think we want to instantiate the application once... And then forget everything
+
+    // Ideen er at vi kun skal lave en container en gang. F.eks. NativeBoot
+    static Wirelet oneShot() {
+        throw new UnsupportedOperationException();
+    }
+}
+
 class BadIdeas {
 
     // public static ArtifactImage of(Class<? extends Bundle> bundle, Wirelet... wirelets) {
@@ -230,24 +248,6 @@ class BadIdeas {
     CompletableFuture<Void> runAsync(Wirelet... wirelets) {
         // Will create an artifact of unknown type....
         // Ideen er lidt at App.run()... aldrig egentlig laver en app.
-        throw new UnsupportedOperationException();
-    }
-}
-
-// De kunne jo strength taget vaere metoder paa imaged og ikke wirelets.
-// Vi kan jo sagtens internt lave det om til wirelets...
-// Der er bare ingen grund til at lave det public...
-final class ArtifactImageWirelets {
-
-    // retainStackTracesForEachInstantiation...
-    /// Her ligger vi jo lige 1000 ns oveni hvis vi vil se hvor den er instantieret.
-
-    // Maximum number of instantiations times...
-    // Could, for example, be one for native.
-    // The only think we want to instantiate the application once... And then forget everything
-
-    // Ideen er at vi kun skal lave en container en gang. F.eks. NativeBoot
-    static Wirelet oneShot() {
         throw new UnsupportedOperationException();
     }
 }

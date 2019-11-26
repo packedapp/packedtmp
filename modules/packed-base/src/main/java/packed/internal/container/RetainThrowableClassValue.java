@@ -26,7 +26,7 @@ import app.packed.container.InternalExtensionException;
  */
 
 // Well almost easier to embed...Then we can better control the exceptions we throw...
-public abstract class RetainThrowableClassValue<T> {
+abstract class RetainThrowableClassValue<T> {
 
     private final Map<Class<?>, Throwable> m = Collections.synchronizedMap(new WeakHashMap<>());
 
