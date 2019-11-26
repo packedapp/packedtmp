@@ -29,7 +29,6 @@ import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.lang.Nullable;
 import packed.internal.artifact.BuildOutput;
-import packed.internal.artifact.PackedContainer;
 import packed.internal.component.ComponentConfigurationToComponentAdaptor;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.WireletContext;
@@ -139,8 +138,8 @@ public final class ArtifactImage implements ContainerSource {
      */
     <T> T newArtifact(ArtifactDriver<T> driver, Wirelet... wirelets) {
         WireletContext newWc = WireletContext.create(pcc, this.wc, wirelets);
-        PackedContainer pac = pcc.doInstantiate(newWc); // Does the actual instantiation
-        return driver.newArtifact(pac);
+        ArtifactContext context = pcc.instantiateArtifact(newWc); // Does the actual instantiation
+        return driver.newArtifact(context);
     }
 
     /**

@@ -128,7 +128,7 @@ public abstract class ArtifactDriver<T> {
         }
         PackedContainerConfiguration pcc = new PackedContainerConfiguration(BuildOutput.artifact(this), source, wirelets);
         pcc.doBuild();
-        ArtifactContext pac = pcc.doInstantiate(pcc.wireletContext);
+        ArtifactContext pac = pcc.instantiateArtifact(pcc.wireletContext);
         return newArtifact(pac);
     }
 
@@ -137,7 +137,7 @@ public abstract class ArtifactDriver<T> {
         C c = factory.apply(pcc);
         configurator.configure(c);
         pcc.doBuild();
-        ArtifactContext pac = pcc.doInstantiate(pcc.wireletContext);
+        ArtifactContext pac = pcc.instantiateArtifact(pcc.wireletContext);
         return newArtifact(pac);
     }
 }

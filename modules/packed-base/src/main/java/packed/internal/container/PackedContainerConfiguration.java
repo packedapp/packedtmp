@@ -49,7 +49,6 @@ import app.packed.service.Factory;
 import app.packed.service.ServiceExtension;
 import packed.internal.artifact.BuildOutput;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
-import packed.internal.artifact.PackedContainer;
 import packed.internal.component.AbstractComponent;
 import packed.internal.component.AbstractComponentConfiguration;
 import packed.internal.component.AbstractCoreComponentConfiguration;
@@ -61,6 +60,7 @@ import packed.internal.config.ConfigSiteUtil;
 import packed.internal.hook.applicator.DelayedAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarFieldDelayerAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarMethodDelayerAccessor;
+import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.service.run.DefaultInjector;
@@ -76,7 +76,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     /** Any child containers of this component (lazily initialized), in order of insertion. */
     @Nullable
-    public ArrayList<PackedContainerConfiguration> containers;
+    ArrayList<PackedContainerConfiguration> containers;
 
     /** The component that was last installed. */
     @Nullable
@@ -88,7 +88,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     private HashMap<String, DefaultContainerLayer> layers;
 
     /** The current lookup object, updated via {@link #lookup(Lookup)} */
-    public ComponentLookup lookup; // Should be more private
+    private ComponentLookup lookup; // Should be more private
 
     /** A container model object, shared among all container sources of the same type. */
     private final ContainerSourceModel model;
@@ -227,16 +227,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return this;
     }
 
-    public PackedContainer doInstantiate(WireletContext wirelets) {
-        PackedArtifactInstantiationContext pic = new PackedArtifactInstantiationContext(wirelets);
-        extensionsPrepareInstantiation(pic);
-
-        // Will instantiate the whole container hierachy
-        PackedContainer pc = new PackedContainer(null, this, pic);
-        methodHandlePassing0(pc, pic);
-        return pc;
-    }
-
     /** {@inheritDoc} */
     @Override
     public Set<Class<? extends Extension>> extensions() {
@@ -288,13 +278,18 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             DefaultInjector di = ModuleAccess.service().toNode(((ServiceExtension) ee.extension())).onInstantiate(ic.wirelets);
             ic.put(this, di);
         }
-
-        // for (PackedExtensionContext e : extensions.values()) {
-        // if (e.model().onInstantiation != null) {
-        // e.model().onInstantiation.accept(e.extension(), ic.newContext(this, e));
-        // }
-        // }
         super.extensionsPrepareInstantiation(ic);
+    }
+
+    /**
+     * Used to convert factories to method handle
+     * 
+     * @param handle
+     *            the factory handle
+     * @return the method handle
+     */
+    public MethodHandle fromFactoryHandle(FactoryHandle<?> handle) {
+        return lookup.readable(handle).toMethodHandle();
     }
 
     /**
@@ -382,6 +377,16 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return new PackedContainer(parent, this, ic);
     }
 
+    public PackedContainer instantiateArtifact(WireletContext wirelets) {
+        PackedArtifactInstantiationContext pic = new PackedArtifactInstantiationContext(wirelets);
+        extensionsPrepareInstantiation(pic);
+
+        // Will instantiate the whole container hierachy
+        PackedContainer pc = new PackedContainer(null, this, pic);
+        methodHandlePassing0(pc, pic);
+        return pc;
+    }
+
     /** {@inheritDoc} */
     @Override
     public boolean isArtifactRoot() {
@@ -417,21 +422,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         // type.
         // Maybe in the future LinkedBundle<- (LinkableContainerSource)
     }
-
-    // /** {@inheritDoc} */
-    // @Override
-    // public void link(Class<? extends Bundle> bundle, Wirelet... wirelets) {
-    // requireNonNull(bundle, "bundle is null");
-    // ContainerSourceModel csm = ContainerSourceModel.of(bundle);
-    // Bundle b;
-    // try {
-    // b = (Bundle) csm.emptyConstructor().invoke();
-    // } catch (Throwable e) {
-    // ThrowableUtil.rethrowErrorOrRuntimeException(e);
-    // throw new UndeclaredThrowableException(e);
-    // }
-    // link(b, wirelets);
-    // }
 
     /** {@inheritDoc} */
     @Override
@@ -507,6 +497,12 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     }
 
     /** {@inheritDoc} */
+    @Override
+    public Class<? extends ContainerSource> sourceType() {
+        return source.getClass();
+    }
+
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Extension> T use(Class<T> extensionType) {
@@ -544,11 +540,5 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             extensions.put(extensionType, pec = PackedExtensionContext.of(this, extensionType));
         }
         return pec;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Class<? extends ContainerSource> sourceType() {
-        return source.getClass();
     }
 }

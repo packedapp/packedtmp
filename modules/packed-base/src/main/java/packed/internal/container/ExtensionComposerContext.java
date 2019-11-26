@@ -32,7 +32,7 @@ import app.packed.container.ExtensionWirelet;
 import app.packed.lang.Nullable;
 
 /** A context object used for all registration for an {@link ExtensionComposer}. */
-public abstract class AbstractExtensionModelBuilder {
+public abstract class ExtensionComposerContext {
 
     public BiConsumer<? super Extension, ? super BundleDescriptor.Builder> builder;
 
@@ -69,7 +69,7 @@ public abstract class AbstractExtensionModelBuilder {
     final ExtensionModelLoader.Runtime runtime;
 
     /** This class can only be overridden by another class in this package. */
-    AbstractExtensionModelBuilder(Class<? extends Extension> extensionType, ExtensionModelLoader.Runtime runtime) {
+    ExtensionComposerContext(Class<? extends Extension> extensionType, ExtensionModelLoader.Runtime runtime) {
         this.extensionType = requireNonNull(extensionType);
         this.runtime = runtime;
     }

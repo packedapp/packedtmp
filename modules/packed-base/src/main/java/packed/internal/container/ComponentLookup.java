@@ -15,7 +15,6 @@
  */
 package packed.internal.container;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import packed.internal.component.ComponentModel;
@@ -26,15 +25,11 @@ import packed.internal.reflect.ClassProcessor;
  * This class exists because we have to ways to access the members of a component. One with a {@link Lookup} object, and
  * one without.
  */
-public interface ComponentLookup {
-
-    ClassProcessor newClassProcessor(Class<?> clazz, boolean registerNatives);
+interface ComponentLookup {
 
     ComponentModel componentModelOf(Class<?> componentType);
 
-    <T> FactoryHandle<T> readable(FactoryHandle<T> factory);
+    ClassProcessor newClassProcessor(Class<?> clazz, boolean registerNatives);
 
-    default MethodHandle toMethodHandle(FactoryHandle<?> factory) {
-        return readable(factory).toMethodHandle();
-    }
+    <T> FactoryHandle<T> readable(FactoryHandle<T> factory);
 }

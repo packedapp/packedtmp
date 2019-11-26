@@ -82,7 +82,7 @@ public class Factory<T> {
             /** {@inheritDoc} */
             @Override
             public <T> FactoryHandle<T> toHandle(Factory<T> factory) {
-                return factory.factory.function;
+                return factory.factory.handle;
             }
 
             @Override
@@ -194,10 +194,6 @@ public class Factory<T> {
         return factory.dependencies;
     }
 
-    public final FactoryHandle<T> handle() {
-        return factory.function;
-    }
-
     /**
      * The key under which If this factory is registered as a service with an {@link Injector}. This method returns the
      * (default) key that will be used, for example, when regist Returns the (default) key to which this factory will bound
@@ -241,7 +237,7 @@ public class Factory<T> {
      * @return a new mapped factory
      */
     public final <R> Factory<R> mapTo(TypeLiteral<R> type, Function<? super T, ? extends R> mapper) {
-        MappingFactoryHandle<T, R> f = new MappingFactoryHandle<>(type, factory.function, mapper);
+        MappingFactoryHandle<T, R> f = new MappingFactoryHandle<>(type, factory.handle, mapper);
         return new Factory<>(new FactorySupport<>(f, factory.dependencies));
     }
 
@@ -272,7 +268,7 @@ public class Factory<T> {
      * @return the type of those objects that this factory creates
      */
     public final TypeLiteral<T> typeLiteral() {
-        return factory.function.returnType();
+        return factory.handle.returnType();
     }
 
     public Factory<T> useExactType(Class<? extends T> type) {
@@ -334,7 +330,7 @@ public class Factory<T> {
     // Vi skal have en hel section omkring method handlers.
     public final Factory<T> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
-        return new Factory<>(new FactorySupport<T>(factory.function.withLookup(lookup), factory.dependencies));
+        return new Factory<>(new FactorySupport<T>(factory.handle.withLookup(lookup), factory.dependencies));
     }
 
     /**
@@ -501,11 +497,11 @@ final class FactorySupport<T> {
     final List<Dependency> dependencies;
 
     /** The function used to create a new instance. */
-    final FactoryHandle<T> function;
+    final FactoryHandle<T> handle;
 
     FactorySupport(FactoryHandle<T> function, List<Dependency> dependencies) {
         this.dependencies = requireNonNull(dependencies, "dependencies is null");
-        this.function = requireNonNull(function);
+        this.handle = requireNonNull(function);
         this.defaultKey = function.typeLiteral.toKey();
     }
 
@@ -516,7 +512,7 @@ final class FactorySupport<T> {
      * @return the scannable type of this factory
      */
     Class<? super T> getScannableType() {
-        return function.returnTypeRaw();
+        return handle.returnTypeRaw();
     }
 }
 

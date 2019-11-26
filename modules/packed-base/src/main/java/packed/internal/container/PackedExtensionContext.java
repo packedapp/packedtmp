@@ -18,7 +18,6 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicLong;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
@@ -32,21 +31,15 @@ import packed.internal.moduleaccess.ModuleAccess;
 /** The default implementation of {@link ExtensionContext} with addition methods only available inside this module. */
 public final class PackedExtensionContext implements ExtensionContext {
 
-    /** Generates unique extension IDs. */
-    private static final AtomicLong NEXT_ID = new AtomicLong();
-
-    /** The unique id of this extension. */
-    public final long id = NEXT_ID.incrementAndGet();
-
     /** The extension instance this context wraps, initialized in {@link #initialize(PackedContainerConfiguration)}. */
     @Nullable
     private Extension extension;
 
-    /** The model of the extension. */
-    private final ExtensionModel<?> extensionModel;
-
     /** Whether or not the extension has been configured. */
     private boolean isConfigured;
+
+    /** The model of the extension. */
+    private final ExtensionModel<?> model;
 
     /** The configuration of the container the extension is registered in. */
     private final PackedContainerConfiguration pcc;
@@ -61,7 +54,7 @@ public final class PackedExtensionContext implements ExtensionContext {
      */
     private PackedExtensionContext(PackedContainerConfiguration pcc, Class<? extends Extension> extensionType) {
         this.pcc = requireNonNull(pcc);
-        this.extensionModel = ExtensionModel.of(extensionType);
+        this.model = ExtensionModel.of(extensionType);
     }
 
     /** {@inheritDoc} */
@@ -115,15 +108,15 @@ public final class PackedExtensionContext implements ExtensionContext {
      */
     private void initialize(PackedContainerConfiguration pcc) {
         // Sets Extension.context = this
-        this.extension = extensionModel.newExtensionInstance(this);
+        this.extension = model.newExtensionInstance(this);
         ModuleAccess.extension().setExtensionContext(extension, this);
 
         // Run any onAdd action that has set via ExtensionComposer#onAdd().
         PackedExtensionContext existing = pcc.activeExtension;
         try {
             pcc.activeExtension = this;
-            if (extensionModel.onAdd != null) {
-                extensionModel.onAdd.accept(extension);
+            if (model.onAdd != null) {
+                model.onAdd.accept(extension);
             }
 
             if (pcc.wireletContext != null) {
@@ -131,14 +124,14 @@ public final class PackedExtensionContext implements ExtensionContext {
             }
 
             // Call any link callbacks
-            if (extensionModel.onLinkage != null) {
+            if (model.onLinkage != null) {
                 // First link any children
                 ArrayList<PackedContainerConfiguration> containers = pcc.containers;
                 if (containers != null) {
                     for (PackedContainerConfiguration child : containers) {
-                        PackedExtensionContext e = child.getExtension(extensionModel.extensionType);
+                        PackedExtensionContext e = child.getExtension(model.extensionType);
                         if (e != null) {
-                            extensionModel.onLinkage.accept(extension, e.extension);
+                            model.onLinkage.accept(extension, e.extension);
                         }
                     }
                 }
@@ -146,21 +139,32 @@ public final class PackedExtensionContext implements ExtensionContext {
                 // Second link any parent
                 if (pcc.parent instanceof PackedContainerConfiguration) {
                     PackedContainerConfiguration p = (PackedContainerConfiguration) pcc.parent;
-                    PackedExtensionContext e = p.getExtension(extensionModel.extensionType);
+                    PackedExtensionContext e = p.getExtension(model.extensionType);
                     // set activate extension???
                     if (e != null) {
-                        extensionModel.onLinkage.accept(e.extension, extension);
+                        model.onLinkage.accept(e.extension, extension);
                     }
                 }
             }
 
             // Registers this context with the artifact build context.
-            // In order to compute a total order among dependencies when
-            // processing the extensions
+            // In order to compute a total order among dependencies within the artifact
             pcc.artifact().usesExtension(this);
         } finally {
             pcc.activeExtension = existing;
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T> ComponentConfiguration<T> install(Factory<T> factory) {
+        return pcc.install(factory);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T> ComponentConfiguration<T> installInstance(T instance) {
+        return pcc.installInstance(instance);
     }
 
     /**
@@ -169,13 +173,13 @@ public final class PackedExtensionContext implements ExtensionContext {
      * @return the model of the extension
      */
     public ExtensionModel<?> model() {
-        return extensionModel;
+        return model;
     }
 
     /** Invoked by the container configuration, whenever the extension is configured. */
     public void onConfigured() {
-        if (extensionModel.onConfigured != null) {
-            extensionModel.onConfigured.accept(extension);
+        if (model.onConfigured != null) {
+            model.onConfigured.accept(extension);
         }
         isConfigured = true;
     }
@@ -186,7 +190,7 @@ public final class PackedExtensionContext implements ExtensionContext {
      * @return the type of extension this context wraps
      */
     public Class<? extends Extension> type() {
-        return extensionModel.extensionType;
+        return model.extensionType;
     }
 
     /** {@inheritDoc} */
@@ -210,9 +214,9 @@ public final class PackedExtensionContext implements ExtensionContext {
         // We can use a simple bitmap here as well... But we need to move this method to PEC.
         // And then look up the context before we can check.
 
-        if (!extensionModel.dependenciesDirect.contains(extensionType)) {
-            throw new UnsupportedOperationException("The specified extension type is not among " + extensionModel.extensionType.getSimpleName()
-                    + " dependencies, extensionType = " + extensionType + ", valid dependencies = " + extensionModel.dependenciesDirect);
+        if (!model.dependenciesDirect.contains(extensionType)) {
+            throw new UnsupportedOperationException("The specified extension type is not among " + model.extensionType.getSimpleName()
+                    + " dependencies, extensionType = " + extensionType + ", valid dependencies = " + model.dependenciesDirect);
         }
 
         return (T) pcc.useExtension(extensionType, this).extension;
@@ -231,17 +235,5 @@ public final class PackedExtensionContext implements ExtensionContext {
         PackedExtensionContext pec = new PackedExtensionContext(pcc, extensionType);
         pec.initialize(pcc);
         return pec;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T> ComponentConfiguration<T> installInstance(T instance) {
-        return pcc.installInstance(instance);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T> ComponentConfiguration<T> install(Factory<T> factory) {
-        return pcc.install(factory);
     }
 }

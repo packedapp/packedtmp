@@ -75,10 +75,6 @@ final class ExtensionModelLoader {
         return m;
     }
 
-    // Laeser et trae ind af gangen
-    // Checker det.
-    // Opdatere det med alt hvad vi har laest ind.
-
     static class Runtime {
         final ArrayDeque<Class<? extends Extension>> stack = new ArrayDeque<>();
 

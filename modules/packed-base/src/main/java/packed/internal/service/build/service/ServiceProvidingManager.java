@@ -43,6 +43,7 @@ import packed.internal.container.FixedWireletList;
 import packed.internal.container.PackedExtensionContext;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.util.InjectConfigSiteOperations;
+import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ErrorMessages;
 import packed.internal.service.build.ServiceExtensionNode;
@@ -102,7 +103,8 @@ public final class ServiceProvidingManager {
             parentNode = new ComponentInstanceBuildEntry<>(node, cc.configSite(), cc, psc.instance);
         } else {
             Factory<?> factory = psc.factory;
-            MethodHandle mh = ((PackedExtensionContext) node.context()).container().lookup.toMethodHandle(factory.handle());
+            FactoryHandle<?> handle = ModuleAccess.service().toHandle(factory);
+            MethodHandle mh = ((PackedExtensionContext) node.context()).container().fromFactoryHandle(handle);
             parentNode = new ComponentFactoryBuildEntry<>(node, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
         }
 
@@ -134,10 +136,10 @@ public final class ServiceProvidingManager {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> ServiceComponentConfiguration<T> provideFactory(ComponentConfiguration cc, Factory<T> factory, FactoryHandle<T> function) {
+    public <T> ServiceComponentConfiguration<T> provideFactory(ComponentConfiguration cc, Factory<T> factory, FactoryHandle<T> factoryHandle) {
         BuildEntry<?> c = componentConfigurationCache.get(cc);// remove??
         if (c == null) {
-            MethodHandle mh = ((PackedExtensionContext) node.context()).container().lookup.toMethodHandle(function);
+            MethodHandle mh = ((PackedExtensionContext) node.context()).container().fromFactoryHandle(factoryHandle);
             c = new ComponentFactoryBuildEntry<>(node, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
         }
         c.as((Key) factory.key());

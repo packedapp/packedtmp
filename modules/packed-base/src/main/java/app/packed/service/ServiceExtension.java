@@ -249,7 +249,7 @@ public final class ServiceExtension extends Extension {
      */
     public <T> ServiceComponentConfiguration<T> provide(Factory<T> factory) {
         // configurability is checked by ComponentExtension
-        return node.provider().provideFactory(install(factory), factory, factory.factory.function);
+        return node.provider().provideFactory(install(factory), factory, factory.factory.handle);
     }
 
     // Will install a stateless component...
