@@ -56,4 +56,18 @@ public final class PackedSingletonConfiguration<T> extends AbstractCoreComponent
     public List<Dependency> dependencies() {
         throw new UnsupportedOperationException();
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public PackedSingletonConfiguration<T> setDescription(String description) {
+        super.setDescription(description);
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PackedSingletonConfiguration<T> setName(String name) {
+        super.setName(name);
+        return this;
+    }
 }

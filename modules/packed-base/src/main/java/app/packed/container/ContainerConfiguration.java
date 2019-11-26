@@ -56,6 +56,7 @@ public interface ContainerConfiguration extends BaseComponentConfiguration {
      *            the type of instantiate and use as the component instance
      * @return the configuration of the component
      */
+    // Rename install to add
     <T> ComponentConfiguration<T> install(Class<T> implementation);
 
     /**

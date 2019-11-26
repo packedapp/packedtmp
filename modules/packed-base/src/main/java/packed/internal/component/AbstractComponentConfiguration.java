@@ -283,7 +283,6 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
         } else {
             return ((AbstractCoreComponentConfiguration<?>) this).componentModel.defaultPrefix();
         }
-
     }
 
     protected abstract AbstractComponent instantiate(AbstractComponent parent, PackedArtifactInstantiationContext ic);

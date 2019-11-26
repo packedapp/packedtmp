@@ -24,10 +24,14 @@ package app.packed.component;
 // I <- Instance
 // M <- Many
 // C <- Container
-
+// V <- VirtualContainer
 /**
  * The various types of components that are available in Packed.
  */
 enum ComponentType {
     CONTAINER, COMPONENT_INSTANCE, HOST;
 }
+
+// configuration tyoe
+// runtime tyoe
+// context type
