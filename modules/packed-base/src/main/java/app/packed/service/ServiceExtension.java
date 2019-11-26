@@ -30,6 +30,7 @@ import app.packed.hook.OnHook;
 import app.packed.lang.Key;
 import app.packed.lang.Qualifier;
 import app.packed.lifecycle.OnStart;
+import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.container.FixedWireletList;
 import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.service.build.ServiceExtensionNode;
@@ -248,8 +249,7 @@ public final class ServiceExtension extends Extension {
      * @return the configuration of the component that was installed
      */
     public <T> ServiceComponentConfiguration<T> provide(Factory<T> factory) {
-        // configurability is checked by ComponentExtension
-        return node.provider().provideFactory(install(factory), factory, factory.factory.handle);
+        return node.provider().provideFactory((PackedSingletonConfiguration<T>) install(factory));
     }
 
     // Will install a stateless component...

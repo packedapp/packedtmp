@@ -96,7 +96,11 @@ public interface BaseComponentConfiguration {
      * <p>
      * If building an image, the path of the instantiated component might be prefixed with another path.
      * 
-     * @return the full path of the component
+     * <p>
+     * Returns the path of this configuration. Invoking this method will initialize the name of the component. The component
+     * path returned does not maintain any reference to this configuration object.
+     * 
+     * @return the path of this configuration.
      * @see #onNamed(Consumer)
      */
     ComponentPath path();

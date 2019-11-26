@@ -17,12 +17,16 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
 import app.packed.service.Factory;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.inject.factoryhandle.FactoryHandle;
+import packed.internal.moduleaccess.ModuleAccess;
 
 /**
  *
@@ -79,4 +83,8 @@ public final class PackedSingletonConfiguration<T> extends AbstractComponentConf
         return this;
     }
 
+    public MethodHandle fromFactory() {
+        FactoryHandle<?> handle = ModuleAccess.service().toHandle(factory);
+        return container().fromFactoryHandle(handle);
+    }
 }

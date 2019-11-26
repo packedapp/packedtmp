@@ -17,7 +17,6 @@ package packed.internal.service.build.service;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -39,10 +38,7 @@ import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceExtension;
 import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.container.FixedWireletList;
-import packed.internal.container.PackedExtensionContext;
-import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.util.InjectConfigSiteOperations;
-import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ErrorMessages;
 import packed.internal.service.build.ServiceExtensionNode;
@@ -102,9 +98,7 @@ public final class ServiceProvidingManager {
             parentNode = new ComponentInstanceBuildEntry<>(node, cc.configSite(), cc, psc.instance);
         } else {
             Factory<?> factory = psc.factory;
-            FactoryHandle<?> handle = ModuleAccess.service().toHandle(factory);
-            MethodHandle mh = ((PackedExtensionContext) node.context()).container().fromFactoryHandle(handle);
-            parentNode = new ComponentFactoryBuildEntry<>(node, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
+            parentNode = new ComponentFactoryBuildEntry<>(node, cc, InstantiationMode.SINGLETON, psc.fromFactory(), (List) factory.dependencies());
         }
 
         // If any of the @Provide methods are instance members the parent node needs special treatment.
@@ -135,13 +129,12 @@ public final class ServiceProvidingManager {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> ServiceComponentConfiguration<T> provideFactory(ComponentConfiguration cc, Factory<T> factory, FactoryHandle<T> factoryHandle) {
+    public <T> ServiceComponentConfiguration<T> provideFactory(PackedSingletonConfiguration<T> cc) {
         BuildEntry<?> c = componentConfigurationCache.get(cc);// remove??
         if (c == null) {
-            MethodHandle mh = ((PackedExtensionContext) node.context()).container().fromFactoryHandle(factoryHandle);
-            c = new ComponentFactoryBuildEntry<>(node, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
+            c = new ComponentFactoryBuildEntry<>(node, cc, InstantiationMode.SINGLETON, cc.fromFactory(), (List) cc.factory.dependencies());
         }
-        c.as((Key) factory.key());
+        c.as((Key) cc.factory.key());
         providingEntries.add(c);
         return new PackedServiceComponentConfiguration<>(cc, (ComponentFactoryBuildEntry) c);
     }

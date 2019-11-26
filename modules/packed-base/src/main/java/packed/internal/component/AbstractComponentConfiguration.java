@@ -53,9 +53,9 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
     /** The configuration site of this component. */
     private final ConfigSite configSite;
 
-    /** The container this component belongs to, or null for the top level container. */
+    /** The container this component belongs to, or null for a root container. */
     @Nullable
-    public final PackedContainerConfiguration container;
+    private final PackedContainerConfiguration container;
 
     /** Ugly stuff. */
     public ArrayList<DelayedAccessor> del = new ArrayList<>();
@@ -126,11 +126,11 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
      *            the child to add
      */
     protected final void addChild(AbstractComponentConfiguration<?> child) {
+        requireNonNull(child.name);
         LinkedHashMap<String, AbstractComponentConfiguration<?>> c = children;
         if (c == null) {
             c = children = new LinkedHashMap<>();
         }
-        requireNonNull(child.name);
         children.put(child.name, child);
     }
 
@@ -262,12 +262,7 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
 
     protected abstract AbstractComponent instantiate(AbstractComponent parent, PackedArtifactInstantiationContext ic);
 
-    /**
-     * Returns the path of this configuration. Invoking this method will initialize the name of the component. The component
-     * path returned does not maintain any reference to this configuration object.
-     * 
-     * @return the path of this configuration.
-     */
+    /** {@inheritDoc} */
     @Override
     public final ComponentPath path() {
         initializeName(State.PATH_INVOKED, null);
@@ -310,7 +305,6 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
     }
 
     /** The state of the component configuration */
-    // FirstAction???
     public enum State {
 
         /** The initial state. */

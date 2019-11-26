@@ -115,7 +115,7 @@ public final class ComponentModel {
             // Next, invoke any OnHook methods on relevant extensions.
             for (ExtensionRequestPair he : extensionHooks) {
                 // Finds (possible installing) the extension with @OnHook methods
-                Extension extension = acc.container.use(he.extensionType);
+                Extension extension = acc.container().use(he.extensionType);
 
                 // Invoke each method annotated with @OnHook on the extension instance
                 he.request.invoke(extension, acc);
