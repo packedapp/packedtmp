@@ -25,7 +25,6 @@ import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
 import app.packed.container.ExtensionWirelet;
-import app.packed.container.MutableWireletList;
 import app.packed.service.ServiceExtension;
 
 /**
@@ -63,7 +62,7 @@ public class WTest extends BaseBundle {
             /** {@inheritDoc} */
             @Override
             protected void configure() {
-                addPipeline(MyPipeline.class, (e, w) -> new MyPipeline(w));
+                addPipeline(MyPipeline.class, e -> new MyPipeline());
                 onConfigured(e -> e.use(ServiceExtension.class).provide(RuntimeService.class));
                 addDependencies(ServiceExtension.class);
                 // onInstantiation((e, c) -> System.out.println("Inst " + c.getPipelin(MyPipeline.class)));
@@ -80,27 +79,6 @@ public class WTest extends BaseBundle {
     static final class MyPipeline extends ExtensionWirelet.Pipeline<MyExtension, MyPipeline, MyWirelet> {
 
         String val;
-
-        /**
-         * @param wirelets
-         */
-        protected MyPipeline(MutableWireletList<MyWirelet> wirelets) {
-            super(wirelets);
-        }
-
-        /**
-         * @param myPipeline
-         * @param wirelets
-         */
-        public MyPipeline(MyPipeline myPipeline, MutableWireletList<MyWirelet> wirelets) {
-            super(myPipeline, wirelets);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        protected MyPipeline spawn(MutableWireletList<MyWirelet> wirelets) {
-            return new MyPipeline(this, wirelets);
-        }
 
         @Override
         public void onInitialize() {

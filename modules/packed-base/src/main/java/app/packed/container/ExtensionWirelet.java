@@ -15,9 +15,8 @@
  */
 package app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.Spliterator;
 import java.util.function.Consumer;
@@ -51,10 +50,11 @@ public abstract class ExtensionWirelet<T extends ExtensionWirelet.Pipeline<?, T,
     // Drop that mutable list
     public static abstract class Pipeline<E extends Extension, P extends Pipeline<E, P, W>, W extends ExtensionWirelet<P>> implements Iterable<W> {
 
-        @Override
-        public Iterator<W> iterator() {
-            return wirelets.iterator();
-        }
+        /** Any previous pipeline. */
+        Optional<P> previous;
+
+        /** A list initially containing the wirelets that was used to create this pipeline. */
+        List<W> wirelets;
 
         @Override
         public void forEach(Consumer<? super W> action) {
@@ -62,32 +62,15 @@ public abstract class ExtensionWirelet<T extends ExtensionWirelet.Pipeline<?, T,
         }
 
         @Override
-        public Spliterator<W> spliterator() {
-            return wirelets.spliterator();
-        }
-
-        /** Any previous pipeline. */
-        private final Optional<P> previous;
-
-        /** A list initially containing the wirelets that was used to create this pipeline. */
-        private final MutableWireletList<W> wirelets;
-
-        protected Pipeline(MutableWireletList<W> wirelets) {
-            this.wirelets = requireNonNull(wirelets, "wirelets is null");
-            this.previous = Optional.empty();
-        }
-
-        protected Pipeline(P from, MutableWireletList<W> wirelets) {
-            this.wirelets = requireNonNull(wirelets, "wirelets is null");
-            this.previous = Optional.of(from);
+        public Iterator<W> iterator() {
+            return wirelets.iterator();
         }
 
         /** Invoked by the runtime immediately after the pipeline has been constructed. */
         protected void onInitialize() {}
 
         /**
-         * If this pipeline was {@link #spawn(MutableWireletList) spawned} from an existing pipeline, returns the pipeline,
-         * otherwise returns empty.
+         * If this pipeline was spawned from an existing pipeline, returns the pipeline, otherwise returns empty.
          * 
          * @return any pipeline this pipeline was spawned from
          */
@@ -101,19 +84,27 @@ public abstract class ExtensionWirelet<T extends ExtensionWirelet.Pipeline<?, T,
 
         // protected void optimize() <-- called by the runtime to optimize as much as possible
 
-        /**
-         * Spawns a new pipeline from this pipeline. This method is invoked by the runtime whenever
-         * 
-         * @param wirelets
-         *            the wirelets that was used
-         * @return the new pipeline
-         */
-        protected abstract P spawn(MutableWireletList<W> wirelets);
+        @Override
+        public Spliterator<W> spliterator() {
+            return wirelets.spliterator();
+        }
 
         @Override
         public String toString() {
             return wirelets.toString();
         }
+
+        // /**
+        // * @param filter
+        // * a predicate which returns {@code true} for wirelets to be removed
+        // * @param action
+        // * an action to be performed on each removed element
+        // * @return whether or not any wirelets was removed
+        // */
+        // public boolean removeIf(Predicate<? super W> filter, Consumer<? super W> action) {
+        // throw new UnsupportedOperationException();
+        // }
+
     }
 }
 

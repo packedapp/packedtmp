@@ -18,10 +18,12 @@ package app.packed.container;
 import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
 import java.lang.reflect.Modifier;
+import java.util.List;
 import java.util.Optional;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
+import app.packed.container.ExtensionWirelet.Pipeline;
 import app.packed.service.Factory;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ExtensionModelLoadContext;
@@ -88,15 +90,19 @@ public abstract class Extension {
                 composer.doConfigure(context);
             }
 
-            @Override
-            public void pipelineInitialize(ExtensionWirelet.Pipeline<?, ?, ?> pipeline) {
-                pipeline.onInitialize();
-            }
-
             /** {@inheritDoc} */
             @Override
             public void setExtensionContext(Extension extension, ExtensionContext context) {
                 extension.context = context;
+            }
+
+            /** {@inheritDoc} */
+            @SuppressWarnings({ "rawtypes", "unchecked" })
+            @Override
+            public void pipelineInitialize(Optional<Pipeline<?, ?, ?>> previous, List<?> wirelets, Pipeline<?, ?, ?> pipeline) {
+                pipeline.previous = (Optional) previous;
+                pipeline.wirelets = (List) wirelets;
+                pipeline.onInitialize();
             }
         });
     }

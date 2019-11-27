@@ -15,6 +15,9 @@
  */
 package packed.internal.moduleaccess;
 
+import java.util.List;
+import java.util.Optional;
+
 import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
 import app.packed.container.ExtensionContext;
@@ -24,6 +27,10 @@ import packed.internal.container.ExtensionModelLoadContext;
 /** A support class for calling package private methods in the app.packed.extension package. */
 public interface AppPackedExtensionAccess extends SecretAccess {
 
+    void configureComposer(ExtensionComposer<?> composer, ExtensionModelLoadContext context);
+
+    void pipelineInitialize(Optional<ExtensionWirelet.Pipeline<?, ?, ?>> previous, List<?> wirelets, ExtensionWirelet.Pipeline<?, ?, ?> pipeline);
+
     /**
      * Initializes the extension.
      * 
@@ -31,8 +38,4 @@ public interface AppPackedExtensionAccess extends SecretAccess {
      *            the extension context containing the extension
      */
     void setExtensionContext(Extension extension, ExtensionContext context);
-
-    void configureComposer(ExtensionComposer<?> composer, ExtensionModelLoadContext context);
-
-    void pipelineInitialize(ExtensionWirelet.Pipeline<?, ?, ?> pipeline);
 }

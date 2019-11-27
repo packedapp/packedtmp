@@ -369,7 +369,7 @@ public final class ServiceExtension extends Extension {
 
             // Descriptors and contracts
             // What about runtime????
-            addPipeline(ServiceWireletPipeline.class, (e, w) -> new ServiceWireletPipeline(w, e.node));
+            addPipeline(ServiceWireletPipeline.class, e -> new ServiceWireletPipeline(e.node));
             exposeContract(ServiceContract.class, ServiceWireletPipeline.class, (e, c) -> e.node.newServiceContract(c));
             exposeDescriptor((e, b) -> e.node.buildDescriptor(b));
 

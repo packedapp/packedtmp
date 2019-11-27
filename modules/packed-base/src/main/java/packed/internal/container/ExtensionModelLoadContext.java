@@ -21,8 +21,8 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import app.packed.api.Contract;
 import app.packed.container.BundleDescriptor;
@@ -64,7 +64,7 @@ public abstract class ExtensionModelLoadContext {
     @Nullable
     public BiConsumer<? super Extension, ? super Extension> onLinkage;
 
-    public final IdentityHashMap<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, BiFunction<?, ?, ?>> pipelines = new IdentityHashMap<>();
+    public final IdentityHashMap<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, Function<?, ?>> pipelines = new IdentityHashMap<>();
 
     final ExtensionModelLoader.Runtime runtime;
 

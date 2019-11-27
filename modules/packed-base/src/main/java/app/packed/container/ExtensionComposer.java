@@ -39,7 +39,7 @@ public abstract class ExtensionComposer<E extends Extension> {
     private ExtensionModelLoadContext context;
 
     protected final <P extends ExtensionWirelet.Pipeline<E, P, W>, W extends ExtensionWirelet<P>> void addPipeline(Class<P> pipelineType,
-            BiFunction<E, MutableWireletList<W>, P> pipelineFactory) {
+            Function<E, P> pipelineFactory) {
         requireNonNull(pipelineType, "pipelineType is null");
         requireNonNull(pipelineFactory, "pipelineFactory is null");
         // Validation??? Pipeline model...

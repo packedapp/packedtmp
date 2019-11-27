@@ -18,7 +18,6 @@ package packed.internal.service.build;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.container.ExtensionWirelet;
-import app.packed.container.MutableWireletList;
 import app.packed.service.ServiceExtension;
 import packed.internal.service.build.wirelets.ServiceWirelet;
 
@@ -27,26 +26,8 @@ public final class ServiceWireletPipeline extends ExtensionWirelet.Pipeline<Serv
 
     public final ServiceExtensionNode node;
 
-    /**
-     * @param wirelets
-     */
-    public ServiceWireletPipeline(MutableWireletList<ServiceWirelet> wirelets, ServiceExtensionNode node) {
-        super(wirelets);
+    public ServiceWireletPipeline(ServiceExtensionNode node) {
         this.node = requireNonNull(node);
     }
 
-    /**
-     * @param from
-     * @param wirelets
-     */
-    private ServiceWireletPipeline(ServiceWireletPipeline from, MutableWireletList<ServiceWirelet> wirelets) {
-        super(from, wirelets);
-        this.node = from.node;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected ServiceWireletPipeline spawn(MutableWireletList<ServiceWirelet> wirelets) {
-        return new ServiceWireletPipeline(this, wirelets);
-    }
 }

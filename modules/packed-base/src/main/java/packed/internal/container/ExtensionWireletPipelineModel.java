@@ -17,11 +17,10 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import app.packed.container.Extension;
 import app.packed.container.ExtensionWirelet;
-import app.packed.container.MutableWireletList;
 import app.packed.container.ExtensionWirelet.Pipeline;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 
@@ -46,7 +45,7 @@ public final class ExtensionWireletPipelineModel {
     private final ExtensionModel<?> extension;
 
     /** The factory used for creating new pipeline instances. */
-    private final BiFunction<?, ?, ?> factory;
+    private final Function<?, ?> factory;
 
     /** The type of pipeline. */
     private final Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>> type;
@@ -77,8 +76,8 @@ public final class ExtensionWireletPipelineModel {
      * @return a new pipeline instance
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public ExtensionWirelet.Pipeline<?, ?, ?> newPipeline(Extension extension, MutableWireletList<?> wirelets) {
-        return (ExtensionWirelet.Pipeline<?, ?, ?>) ((BiFunction) factory).apply(extension, wirelets);
+    public ExtensionWirelet.Pipeline<?, ?, ?> newPipeline(Extension extension) {
+        return (ExtensionWirelet.Pipeline<?, ?, ?>) ((Function) factory).apply(extension);
     }
 
     /**

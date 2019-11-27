@@ -20,10 +20,10 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Optional;
 
 import app.packed.container.Extension;
 import app.packed.container.ExtensionWirelet;
-import app.packed.container.MutableWireletList;
 import app.packed.container.Wirelet;
 import app.packed.lang.Nullable;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
@@ -135,8 +135,8 @@ public final class WireletContext {
         if (ewp != null) {
             ExtensionWireletPipelineModel m = ExtensionWireletPipelineModel
                     .ofWireletType((Class<? extends ExtensionWirelet<?>>) ewp.iterator().next().getClass());
-            ExtensionWirelet.Pipeline<?, ?, ?> pip = m.newPipeline(pec.extension(), new MutableWireletList<>(ewp));
-            ModuleAccess.extension().pipelineInitialize(pip);
+            ExtensionWirelet.Pipeline<?, ?, ?> pip = m.newPipeline(pec.extension());
+            ModuleAccess.extension().pipelineInitialize(Optional.empty(), ewp, pip);
             actualpipelines.put(etype, pip);
 
         }
@@ -149,8 +149,9 @@ public final class WireletContext {
             if (ewp != null) {
                 ExtensionWireletPipelineModel m = ExtensionWireletPipelineModel
                         .ofWireletType((Class<? extends ExtensionWirelet<?>>) ewp.iterator().next().getClass());
-                ExtensionWirelet.Pipeline<?, ?, ?> pip = m.newPipeline(pec.extension(), new MutableWireletList<>(ewp));
-                ModuleAccess.extension().pipelineInitialize(pip);
+
+                ExtensionWirelet.Pipeline<?, ?, ?> pip = m.newPipeline(pec.extension());
+                ModuleAccess.extension().pipelineInitialize(Optional.empty(), ewp, pip);
                 actualpipelines.put(p, pip);
             }
         }
