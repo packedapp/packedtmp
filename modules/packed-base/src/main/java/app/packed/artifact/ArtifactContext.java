@@ -15,28 +15,42 @@
  */
 package app.packed.artifact;
 
+import java.util.concurrent.CompletableFuture;
+
 import app.packed.component.Component;
 import app.packed.component.ComponentContext;
 import app.packed.lang.Key;
+import app.packed.lifecycle.StopOption;
 import app.packed.service.Injector;
 
 /**
  * An artifact runtime context provides precise control over a single (top level) container. Instances of this interface
- * is normally neither exposed or used by end users. Instead it is wrapped in thin facade objects, such as {@link App}
- * or {@link Injector}. Which will delegate all call to this context.
+ * is normally not used by end users. Instead it is wrapped in thin facade objects, such as {@link App} or
+ * {@link Injector}. Which will delegate all call to this context.
  * <p>
  * An instance of this interface is normally acquired via {@link ArtifactDriver#newArtifact(ArtifactContext)}.
  */
-// Rename to ArtifactContext....
-
-// We need lifecycle and a good story about
-
 public interface ArtifactContext extends ComponentContext {
 
     /**
      * 
      */
-    default void execute() {}
+    default void run() {}
+
+    @Override
+    Injector injector();
+
+    default Class<?> resultType() {
+        // Ideen er her taenkt at vi kan bruge den samme med Job...
+        //// En anden slags entry point annotering...
+        return void.class;
+    }
+
+    default void start() {}
+
+    default <T> CompletableFuture<T> startAsync(T result) {
+        throw new UnsupportedOperationException();
+    }
 
     // start() osv smider UnsupportedOperationException hvis LifeycleExtension ikke er installeret???
     // Naeh syntes bare man returnere oejeblikligt
@@ -53,14 +67,9 @@ public interface ArtifactContext extends ComponentContext {
 
     // Noget med entrypoint?? Nej tror ikke vi har behov for at expose dett..
 
-    @Override
-    Injector injector();
+    void stop(StopOption... options);
 
-    default Class<?> resultType() {
-        // Ideen er her taenkt at vi kan bruge den samme med Job...
-        //// En anden slags entry point annotering...
-        return void.class;
-    }
+    <T> CompletableFuture<T> stopAsync(T result, StopOption... options);
 
     <T> T use(Key<T> key);
 

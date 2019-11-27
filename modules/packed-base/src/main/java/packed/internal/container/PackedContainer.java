@@ -16,10 +16,12 @@
 package packed.internal.container;
 
 import java.util.LinkedHashMap;
+import java.util.concurrent.CompletableFuture;
 
 import app.packed.artifact.ArtifactContext;
 import app.packed.lang.Key;
 import app.packed.lang.Nullable;
+import app.packed.lifecycle.StopOption;
 import app.packed.service.Injector;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.component.AbstractComponent;
@@ -40,8 +42,7 @@ final class PackedContainer extends AbstractComponent implements ArtifactContext
      * @param instantiationContext
      *            the instantiation context of the container
      */
-    public PackedContainer(@Nullable AbstractComponent parent, PackedContainerConfiguration pcc,
-            PackedArtifactInstantiationContext instantiationContext) {
+    public PackedContainer(@Nullable AbstractComponent parent, PackedContainerConfiguration pcc, PackedArtifactInstantiationContext instantiationContext) {
         super(parent, pcc, instantiationContext);
         Injector i = instantiationContext.get(pcc, DefaultInjector.class);
         if (i == null) {
@@ -54,6 +55,20 @@ final class PackedContainer extends AbstractComponent implements ArtifactContext
     @Override
     public Injector injector() {
         return injector;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void stop(StopOption... options) {
+        // TODO Auto-generated method stub
+
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T> CompletableFuture<T> stopAsync(T result, StopOption... options) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
