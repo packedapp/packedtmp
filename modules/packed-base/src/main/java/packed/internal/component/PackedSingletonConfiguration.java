@@ -38,15 +38,15 @@ public final class PackedSingletonConfiguration<T> extends AbstractComponentConf
 
     final ComponentModel componentModel;
 
-    public PackedSingletonConfiguration(ConfigSite configSite, AbstractComponentConfiguration pcc, ComponentModel componentModel, Factory<T> factory) {
-        super(configSite, pcc);
+    public PackedSingletonConfiguration(ConfigSite configSite, AbstractComponentConfiguration parent, ComponentModel componentModel, Factory<T> factory) {
+        super(configSite, parent);
         this.componentModel = requireNonNull(componentModel);
         this.factory = requireNonNull(factory);
         this.instance = null;
     }
 
-    public PackedSingletonConfiguration(ConfigSite configSite, AbstractComponentConfiguration pcc, ComponentModel componentModel, T instance) {
-        super(configSite, pcc);
+    public PackedSingletonConfiguration(ConfigSite configSite, AbstractComponentConfiguration parent, ComponentModel componentModel, T instance) {
+        super(configSite, parent);
         this.componentModel = requireNonNull(componentModel);
         this.factory = null;
         this.instance = requireNonNull(instance);
@@ -74,7 +74,7 @@ public final class PackedSingletonConfiguration<T> extends AbstractComponentConf
     /** {@inheritDoc} */
     @Override
     public AbstractComponent instantiate(AbstractComponent parent, PackedArtifactInstantiationContext paic) {
-        return new PackedComponent(parent, this, paic);
+        return new PackedSingleton(parent, this, paic);
     }
 
     public PackedSingletonConfiguration<T> runHooks(ContainerSource source) {

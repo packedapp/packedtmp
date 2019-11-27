@@ -43,17 +43,17 @@ public class Stuff<T> implements Hook {
     // Saa vi skal have en type hjaelper som tager
     // Dvs. isTest. nok er mere er builder...
 
-    public static class Builder extends Stuff<AnnotatedFieldHook<Left>> implements Hook.Builder<FF> {
-
-        /** {@inheritDoc} */
-        @Override
-        public FF build() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-    }
-
     public static class FF implements Hook {
+
+        public static class Builder extends Stuff<AnnotatedFieldHook<Left>> implements Hook.Builder<FF> {
+
+            /** {@inheritDoc} */
+            @Override
+            public FF build() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+        }
 
     }
 

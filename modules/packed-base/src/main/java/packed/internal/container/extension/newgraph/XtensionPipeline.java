@@ -65,13 +65,6 @@ abstract class XtensionPipeline<E extends Extension, P extends XtensionPipeline<
     public void onParentConfigured(@Nullable Object extension) {
 
     }
-
-    /**
-     * Splits this pipeline into a new pipeline. This method is used by the runtime when a user uses wirelets to instantiate
-     * an artifact image. Or tries to create a new artifact image from an existing image.
-     */
-    // Pipelines maa vaere registreret i et Map.... Som man saa kan traekke paaa..
-    // F.eks. i forbindelse med BuildContract...
 }
 
 // removeAll(CannotBeUsedOnImageWirelet.class,

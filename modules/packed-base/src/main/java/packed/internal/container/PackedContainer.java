@@ -35,20 +35,20 @@ final class PackedContainer extends AbstractComponent implements ArtifactContext
      * 
      * @param parent
      *            the parent of the container if it is a non-root container
-     * @param configuration
+     * @param pcc
      *            the configuration of the container
      * @param instantiationContext
      *            the instantiation context of the container
      */
-    public PackedContainer(@Nullable AbstractComponent parent, PackedContainerConfiguration configuration,
+    public PackedContainer(@Nullable AbstractComponent parent, PackedContainerConfiguration pcc,
             PackedArtifactInstantiationContext instantiationContext) {
-        super(parent, configuration, instantiationContext);
-        Injector i = instantiationContext.get(configuration, DefaultInjector.class);
+        super(parent, pcc, instantiationContext);
+        Injector i = instantiationContext.get(pcc, DefaultInjector.class);
         if (i == null) {
-            i = new DefaultInjector(configuration.configSite(), configuration.getDescription(), new LinkedHashMap<>());
+            i = new DefaultInjector(pcc.configSite(), pcc.getDescription(), new LinkedHashMap<>());
         }
         this.injector = i;
-        instantiationContext.put(configuration, this);
+        instantiationContext.put(pcc, this);
     }
 
     @Override

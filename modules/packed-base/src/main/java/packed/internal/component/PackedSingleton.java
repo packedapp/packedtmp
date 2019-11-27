@@ -21,9 +21,9 @@ import packed.internal.artifact.PackedArtifactInstantiationContext;
 /**
  *
  */
-final class PackedComponent extends AbstractComponent implements Component {
+final class PackedSingleton extends AbstractComponent implements Component {
 
-    PackedComponent(AbstractComponent container, AbstractComponentConfiguration configuration, PackedArtifactInstantiationContext ic) {
-        super(container, configuration, ic);
+    PackedSingleton(AbstractComponent parent, PackedSingletonConfiguration<?> configuration, PackedArtifactInstantiationContext ic) {
+        super(parent, configuration, ic);
     }
 }

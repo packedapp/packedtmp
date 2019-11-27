@@ -53,9 +53,12 @@ public abstract class AbstractComponent implements Component {
     @Nullable
     private final String description;
 
-    final Optional<Class<? extends Extension>> extension;
+    /** Any extension the component belongs to. */
+    private final Optional<Class<? extends Extension>> extension;
 
     final FeatureMap features = new FeatureMap();
+
+    final ReentrantLock lock = new ReentrantLock();
 
     /** The name of the component. The name is guaranteed to be unique between siblings. */
     // TODO I think we need to remove final. Problem is with Host. Where we putIfAbsent.
@@ -70,8 +73,6 @@ public abstract class AbstractComponent implements Component {
     @Nullable
     final AbstractComponent parent;
 
-    final ReentrantLock lock = new ReentrantLock();
-
     /**
      * Creates a new abstract component.
      * 
@@ -80,7 +81,7 @@ public abstract class AbstractComponent implements Component {
      * @param configuration
      *            the configuration used for creating this component
      */
-    public AbstractComponent(@Nullable AbstractComponent parent, AbstractComponentConfiguration configuration, PackedArtifactInstantiationContext ic) {
+    protected AbstractComponent(@Nullable AbstractComponent parent, AbstractComponentConfiguration configuration, PackedArtifactInstantiationContext ic) {
         this.parent = parent;
         this.configSite = requireNonNull(configuration.configSite());
         this.description = configuration.getDescription();
@@ -131,6 +132,7 @@ public abstract class AbstractComponent implements Component {
         return Optional.ofNullable(description);
     }
 
+    /** {@inheritDoc} */
     @Override
     public Optional<Class<? extends Extension>> extension() {
         return extension;

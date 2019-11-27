@@ -79,21 +79,6 @@ public final class PackedArtifactInstantiationContext {
         map.computeIfAbsent(configuration, e -> new IdentityHashMap<>()).put(obj.getClass(), obj);
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> T use(ContainerConfiguration configuration, Class<T> type) {
-        requireNonNull(configuration, "configuration is null");
-        requireNonNull(type, "type is null");
-        var e = map.get(configuration);
-        if (e == null) {
-            throw new IllegalArgumentException();
-        }
-        Object o = e.get(type);
-        if (o == null) {
-            throw new IllegalStateException();
-        }
-        return (T) o;
-    }
-
     /**
      * Returns a list of wirelets that used to instantiate. This may include wirelets that are not present at build time if
      * using an image.
@@ -107,3 +92,17 @@ public final class PackedArtifactInstantiationContext {
     // link(SomeBundle.class, LifecycleWirelets.startBeforeAnythingElse());
     // link(SomeBundle.class, LifecycleWirelets.start(SomeGroup)); //all in same group will be started
 }
+// @SuppressWarnings("unchecked")
+// public <T> T use(ContainerConfiguration configuration, Class<T> type) {
+// requireNonNull(configuration, "configuration is null");
+// requireNonNull(type, "type is null");
+// var e = map.get(configuration);
+// if (e == null) {
+// throw new IllegalArgumentException();
+// }
+// Object o = e.get(type);
+// if (o == null) {
+// throw new IllegalStateException();
+// }
+// return (T) o;
+// }

@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.extension.newgraph;
+package packed.internal.component;
+
+import app.packed.component.Component;
+import packed.internal.artifact.PackedArtifactInstantiationContext;
 
 /**
  *
  */
-class ExtensionIntegrationModl {
+final class PackedStatelessComponent extends AbstractComponent implements Component {
 
-    // None
-    // Pit (as in Service)
-    // Viral
+    PackedStatelessComponent(AbstractComponent parent, PackedStatelessComponentConfiguration<?> configuration, PackedArtifactInstantiationContext ic) {
+        super(parent, configuration, ic);
+    }
 }

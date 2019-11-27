@@ -32,3 +32,10 @@ interface ExtensionOracle<E extends Extension> {
 
     Set<E> childrenOf(E extension);
 }
+
+class ExtensionIntegrationModl {
+
+    // None
+    // Pit (as in Service)
+    // Viral
+}

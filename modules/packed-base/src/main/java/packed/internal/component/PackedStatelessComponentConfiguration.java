@@ -21,22 +21,17 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
-import packed.internal.container.PackedContainerConfiguration;
 
 /**
  *
  */
 public final class PackedStatelessComponentConfiguration<T> extends AbstractComponentConfiguration implements ComponentConfiguration<T> {
 
-    final ComponentModel componentModel;
-    /** The static implementation. */
-    public final Class<T> implementation;
+    private final ComponentModel componentModel;
 
-    public PackedStatelessComponentConfiguration(ConfigSite configSite, PackedContainerConfiguration pcc, ComponentModel componentModel,
-            Class<T> implementation) {
-        super(configSite, pcc);
+    public PackedStatelessComponentConfiguration(ConfigSite configSite, AbstractComponentConfiguration parent, ComponentModel componentModel) {
+        super(configSite, parent);
         this.componentModel = requireNonNull(componentModel);
-        this.implementation = requireNonNull(implementation);
     }
 
     @Override
@@ -47,7 +42,7 @@ public final class PackedStatelessComponentConfiguration<T> extends AbstractComp
     /** {@inheritDoc} */
     @Override
     public AbstractComponent instantiate(AbstractComponent parent, PackedArtifactInstantiationContext paic) {
-        return new PackedComponent(parent, this, paic);
+        return new PackedStatelessComponent(parent, this, paic);
     }
 
     public PackedStatelessComponentConfiguration<T> runHooks(ContainerSource source) {
