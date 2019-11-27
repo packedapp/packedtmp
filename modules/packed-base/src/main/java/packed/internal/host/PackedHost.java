@@ -36,7 +36,7 @@ public class PackedHost extends AbstractComponent implements Host {
     /**
      * @param configuration
      */
-    PackedHost(AbstractComponentConfiguration<?> configuration, PackedArtifactInstantiationContext ic) {
+    PackedHost(AbstractComponentConfiguration configuration, PackedArtifactInstantiationContext ic) {
         super(null, configuration, ic);
     }
 }

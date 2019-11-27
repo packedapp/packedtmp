@@ -105,7 +105,7 @@ public final class ComponentModel {
         return s;
     }
 
-    <T> AbstractComponentConfiguration<T> invokeOnHookOnInstall(ContainerSource cs, AbstractComponentConfiguration<T> acc) {
+    <T> AbstractComponentConfiguration invokeOnHookOnInstall(ContainerSource cs, AbstractComponentConfiguration acc) {
         try {
             // First invoke any OnHook methods on the container source (bundle)
             if (sourceHook != null) {

@@ -24,14 +24,13 @@ import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
 import app.packed.service.Factory;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
-import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.moduleaccess.ModuleAccess;
 
 /**
  *
  */
-public final class PackedSingletonConfiguration<T> extends AbstractComponentConfiguration<T> implements ComponentConfiguration<T> {
+public final class PackedSingletonConfiguration<T> extends AbstractComponentConfiguration implements ComponentConfiguration<T> {
 
     public final Factory<T> factory;
 
@@ -39,14 +38,14 @@ public final class PackedSingletonConfiguration<T> extends AbstractComponentConf
 
     final ComponentModel componentModel;
 
-    public PackedSingletonConfiguration(ConfigSite configSite, PackedContainerConfiguration pcc, ComponentModel componentModel, Factory<T> factory) {
+    public PackedSingletonConfiguration(ConfigSite configSite, AbstractComponentConfiguration pcc, ComponentModel componentModel, Factory<T> factory) {
         super(configSite, pcc);
         this.componentModel = requireNonNull(componentModel);
         this.factory = requireNonNull(factory);
         this.instance = null;
     }
 
-    public PackedSingletonConfiguration(ConfigSite configSite, PackedContainerConfiguration pcc, ComponentModel componentModel, T instance) {
+    public PackedSingletonConfiguration(ConfigSite configSite, AbstractComponentConfiguration pcc, ComponentModel componentModel, T instance) {
         super(configSite, pcc);
         this.componentModel = requireNonNull(componentModel);
         this.factory = null;

@@ -23,7 +23,7 @@ import packed.internal.artifact.PackedArtifactInstantiationContext;
  */
 final class PackedComponent extends AbstractComponent implements Component {
 
-    PackedComponent(AbstractComponent container, AbstractComponentConfiguration<?> configuration, PackedArtifactInstantiationContext ic) {
+    PackedComponent(AbstractComponent container, AbstractComponentConfiguration configuration, PackedArtifactInstantiationContext ic) {
         super(container, configuration, ic);
     }
 }

@@ -162,7 +162,7 @@ public final class PackedComponentPath implements ComponentPath {
         }
     }
 
-    static ComponentPath of(AbstractComponentConfiguration<?> cc) {
+    static ComponentPath of(AbstractComponentConfiguration cc) {
         int depth = cc.depth();
         switch (depth) {
         case 0:
@@ -171,7 +171,7 @@ public final class PackedComponentPath implements ComponentPath {
             return new PackedComponentPath(cc.name);
         default:
             String[] paths = new String[depth];
-            AbstractComponentConfiguration<?> acc = cc;
+            AbstractComponentConfiguration acc = cc;
             for (int i = depth - 1; i >= 0; i--) {
                 paths[i] = acc.name;
                 acc = acc.parent;

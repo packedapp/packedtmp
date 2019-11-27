@@ -26,13 +26,14 @@ import packed.internal.container.PackedContainerConfiguration;
 /**
  *
  */
-public final class PackedStatelessComponentConfiguration<T> extends AbstractComponentConfiguration<T> implements ComponentConfiguration<T> {
+public final class PackedStatelessComponentConfiguration<T> extends AbstractComponentConfiguration implements ComponentConfiguration<T> {
 
     final ComponentModel componentModel;
     /** The static implementation. */
     public final Class<T> implementation;
 
-    public PackedStatelessComponentConfiguration(ConfigSite configSite, PackedContainerConfiguration pcc, ComponentModel componentModel, Class<T> implementation) {
+    public PackedStatelessComponentConfiguration(ConfigSite configSite, PackedContainerConfiguration pcc, ComponentModel componentModel,
+            Class<T> implementation) {
         super(configSite, pcc);
         this.componentModel = requireNonNull(componentModel);
         this.implementation = requireNonNull(implementation);

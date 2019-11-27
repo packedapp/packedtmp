@@ -33,13 +33,7 @@ import packed.internal.moduleaccess.ModuleAccess;
 /**
  * All config Extensions are the main way that function primary way to add features to Packed.
  * 
- * For example,
- * 
- * 
- * 
- * 
- * 
- * allows you to extend the basic functionality of containers.
+ * For example, allows you to extend the basic functionality of containers.
  * <p>
  * Extensions form the basis, extensible model
  * 
@@ -91,18 +85,18 @@ public abstract class Extension {
             }
 
             /** {@inheritDoc} */
-            @Override
-            public void setExtensionContext(Extension extension, ExtensionContext context) {
-                extension.context = context;
-            }
-
-            /** {@inheritDoc} */
             @SuppressWarnings({ "rawtypes", "unchecked" })
             @Override
             public void pipelineInitialize(Optional<Pipeline<?, ?, ?>> previous, List<?> wirelets, Pipeline<?, ?, ?> pipeline) {
                 pipeline.previous = (Optional) previous;
                 pipeline.wirelets = (List) wirelets;
                 pipeline.onInitialize();
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public void setExtensionContext(Extension extension, ExtensionContext context) {
+                extension.context = context;
             }
         });
     }
@@ -187,7 +181,7 @@ public abstract class Extension {
     }
 
     protected final <T> ComponentConfiguration<T> install(Factory<T> factory) {
-        return context.install(factory);
+        return context().install(factory);
     }
 
     /**
@@ -203,8 +197,10 @@ public abstract class Extension {
     }
 
     /**
-     * Returns an extension of the specified type. Only extension types that have been explicitly registered as dependencies
-     * via ... are supported. Specifying an .... extension will result in an {@link IllegalArgumentException} being thrown.
+     * Returns an extension of the specified type.
+     * <p>
+     * Only extension types that have been explicitly registered via {@link ExtensionComposer#addDependencies(Class...)} can
+     * be specified.
      * <p>
      * In order for one extension to use another dependency
      * <p>
@@ -223,12 +219,9 @@ public abstract class Extension {
      *             If invoked from the constructor of the extension. Or if the underlying container is no longer
      *             configurable and an extension of the specified type has not already been installed
      * @throws UnsupportedOperationException
-     *             if the specified extension type is not specified via {@link UseExtension} on this extension.
+     *             if the specified extension type has not been specified via
+     *             {@link ExtensionComposer#addDependencies(Class...)} when configuring the extension
      */
-    // TODO change to IAE instead of UOE???? Fix ExtensionContext as well
-    // throw new IAE("The specified extension....
-    // Kan ikke smide InternalExtensionException her.
-    // Saa skulle vi jo goere det alle steder
     protected final <E extends Extension> E use(Class<E> extensionType) {
         return context().use(extensionType);
     }

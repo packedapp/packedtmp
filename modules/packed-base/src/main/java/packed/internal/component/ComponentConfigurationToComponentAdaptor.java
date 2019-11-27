@@ -38,9 +38,9 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
 
     private volatile List<ComponentConfigurationToComponentAdaptor> children;
 
-    private final AbstractComponentConfiguration<?> componentConfiguration;
+    private final AbstractComponentConfiguration componentConfiguration;
 
-    public ComponentConfigurationToComponentAdaptor(AbstractComponentConfiguration<?> componentConfiguration) {
+    public ComponentConfigurationToComponentAdaptor(AbstractComponentConfiguration componentConfiguration) {
         this.componentConfiguration = requireNonNull(componentConfiguration);
     }
 
@@ -54,7 +54,7 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
                 c = List.of();
             } else {
                 ArrayList<ComponentConfigurationToComponentAdaptor> tmp = new ArrayList<>();
-                for (AbstractComponentConfiguration<?> acc : componentConfiguration.children.values()) {
+                for (AbstractComponentConfiguration acc : componentConfiguration.children.values()) {
                     tmp.add(new ComponentConfigurationToComponentAdaptor(acc));
                 }
                 c = children = List.copyOf(tmp);

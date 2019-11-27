@@ -42,12 +42,7 @@ public abstract class ExtensionWirelet<T extends ExtensionWirelet.Pipeline<?, T,
      */
     // Kan only define one pipeline per extension... Maybe...
     // Kunne jo godt have @Nullable GreenPipeline, @Nullable BlackPipeline
-
-    // Gaa tilbage til en tom constructor, og inline metoder fra MutableWireletList
-    // Og saa maaske en protected metode eller 2 man kan overskrive...
-
-    // extends Iterable<W>
-    // Drop that mutable list
+    // Kan ogsaa flytte E til ExtensionWirelet, hvis vi ikke har #extension() paa pipelinen
     public static abstract class Pipeline<E extends Extension, P extends Pipeline<E, P, W>, W extends ExtensionWirelet<P>> implements Iterable<W> {
 
         /** Any previous pipeline. */
@@ -57,12 +52,12 @@ public abstract class ExtensionWirelet<T extends ExtensionWirelet.Pipeline<?, T,
         List<W> wirelets;
 
         @Override
-        public void forEach(Consumer<? super W> action) {
+        public final void forEach(Consumer<? super W> action) {
             wirelets.forEach(action);
         }
 
         @Override
-        public Iterator<W> iterator() {
+        public final Iterator<W> iterator() {
             return wirelets.iterator();
         }
 
@@ -85,7 +80,7 @@ public abstract class ExtensionWirelet<T extends ExtensionWirelet.Pipeline<?, T,
         // protected void optimize() <-- called by the runtime to optimize as much as possible
 
         @Override
-        public Spliterator<W> spliterator() {
+        public final Spliterator<W> spliterator() {
             return wirelets.spliterator();
         }
 
@@ -105,17 +100,16 @@ public abstract class ExtensionWirelet<T extends ExtensionWirelet.Pipeline<?, T,
         // throw new UnsupportedOperationException();
         // }
 
+        // /**
+        // * Returns the extension this pipeline belongs to.
+        // *
+        // * @return the extension this pipeline belongs to
+        // */
+        // public final E extension() {
+        // return extension;
+        // }
     }
 }
-
-// /**
-// * Returns the extension this pipeline belongs to.
-// *
-// * @return the extension this pipeline belongs to
-// */
-// public final E extension() {
-// return extension;
-// }
 
 // Grunden til vi gerne lave callback paa denne maade.
 // Er at vi saa kan eksekvere dem i total order...

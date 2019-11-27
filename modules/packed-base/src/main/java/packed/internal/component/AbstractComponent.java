@@ -80,7 +80,7 @@ public abstract class AbstractComponent implements Component {
      * @param configuration
      *            the configuration used for creating this component
      */
-    public AbstractComponent(@Nullable AbstractComponent parent, AbstractComponentConfiguration<?> configuration, PackedArtifactInstantiationContext ic) {
+    public AbstractComponent(@Nullable AbstractComponent parent, AbstractComponentConfiguration configuration, PackedArtifactInstantiationContext ic) {
         this.parent = parent;
         this.configSite = requireNonNull(configuration.configSite());
         this.description = configuration.getDescription();
