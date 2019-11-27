@@ -17,7 +17,10 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Iterator;
 import java.util.Optional;
+import java.util.Spliterator;
+import java.util.function.Consumer;
 
 /**
  * Extensions that define their own wirelets must extend this class.
@@ -40,7 +43,28 @@ public abstract class ExtensionWirelet<T extends ExtensionWirelet.Pipeline<?, T,
      */
     // Kan only define one pipeline per extension... Maybe...
     // Kunne jo godt have @Nullable GreenPipeline, @Nullable BlackPipeline
-    public static abstract class Pipeline<E extends Extension, P extends Pipeline<E, P, W>, W extends ExtensionWirelet<P>> {
+
+    // Gaa tilbage til en tom constructor, og inline metoder fra MutableWireletList
+    // Og saa maaske en protected metode eller 2 man kan overskrive...
+
+    // extends Iterable<W>
+    // Drop that mutable list
+    public static abstract class Pipeline<E extends Extension, P extends Pipeline<E, P, W>, W extends ExtensionWirelet<P>> implements Iterable<W> {
+
+        @Override
+        public Iterator<W> iterator() {
+            return wirelets.iterator();
+        }
+
+        @Override
+        public void forEach(Consumer<? super W> action) {
+            wirelets.forEach(action);
+        }
+
+        @Override
+        public Spliterator<W> spliterator() {
+            return wirelets.spliterator();
+        }
 
         /** Any previous pipeline. */
         private final Optional<P> previous;
@@ -85,15 +109,6 @@ public abstract class ExtensionWirelet<T extends ExtensionWirelet.Pipeline<?, T,
          * @return the new pipeline
          */
         protected abstract P spawn(MutableWireletList<W> wirelets);
-
-        /**
-         * Returns a list of the wirelets this pipeline contains.
-         * 
-         * @return a list of the wirelets this pipeline contains
-         */
-        public final MutableWireletList<W> wirelets() {
-            return wirelets;
-        }
 
         @Override
         public String toString() {

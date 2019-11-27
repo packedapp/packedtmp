@@ -161,32 +161,6 @@ public final class DependencyManager {
                                 }
                             }
                         }
-                        // if (!k.hasQualifier() && ExtensionInstantiationContext.class.isAssignableFrom(k.typeLiteral().rawType())) {
-                        // if (entry instanceof ComponentFactoryBuildEntry) {
-                        // Optional<Class<? extends Extension>> op = ((ComponentFactoryBuildEntry) entry).componentConfiguration.extension();
-                        // if (op.isPresent()) {
-                        // BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
-                        // new SingletonInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "foo", "Ignore"));
-                        // resolveTo = ben;
-                        // node.specials.put(dependency, ben);
-                        // }
-                        // }
-                        // }
-                        //
-                        // if (!k.hasQualifier() && ExtensionWirelet.Pipeline.class.isAssignableFrom(k.typeLiteral().rawType())) {
-                        // // Den virker ikke super godt med det optional....
-                        //
-                        // if (entry instanceof ComponentFactoryBuildEntry) {
-                        // Optional<Class<? extends Extension>> op = ((ComponentFactoryBuildEntry) entry).componentConfiguration.extension();
-                        // if (op.isPresent()) {
-                        // Class<? extends Extension> cc = op.get();
-                        // if (cc == k.typeLiteral().type()) {
-                        // // PackedExtensionContext e = ((PackedExtensionContext) node.context()).pcc.getExtension(cc);
-                        // // resolveTo = e.serviceEntry(node);
-                        // }
-                        // }
-                        // }
-                        // }
                     }
                     recordResolvedDependency(entry, dependency, resolveTo, false);
                     entry.resolvedDependencies[i] = resolveTo;

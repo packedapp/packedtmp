@@ -30,6 +30,8 @@ import java.util.function.Predicate;
 // Det case for mutable... Vi sharer ikke laengere en liste... Saa folk kan ikke aendre
 
 // Kunne ogsaa starte med at WireletList -> WireletList<W>
+
+// Drop klassen, og flyt det hele til Pipeline....
 public final class MutableWireletList<W extends Wirelet> implements Iterable<W> {
 
     private List<W> list;

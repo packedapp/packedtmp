@@ -104,7 +104,7 @@ public class WTest extends BaseBundle {
 
         @Override
         public void onInitialize() {
-            for (MyWirelet w : wirelets()) {
+            for (MyWirelet w : this) {
                 this.val = w.msg;
             }
         }
