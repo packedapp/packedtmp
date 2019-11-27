@@ -48,9 +48,7 @@ public interface App extends AutoCloseable {
     @Override
     void close();
 
-    default App close(CloseOption... options) {
-        return this;
-    }
+    App close(CloseOption... options);
 
     /**
      * Initiates an orderly asynchronously shutdown of the application. In which currently running tasks will be executed,
@@ -59,22 +57,22 @@ public interface App extends AutoCloseable {
      * @return a future that can be used to query whether the application has completed shutdown (terminated). Or is still
      *         in the process of being shut down
      */
-    CompletableFuture<App> closeAsync(CloseOption... options);// syntes sgu hellere man skal have shutdown().await(Terminated.class)
+    CompletableFuture<App> closeAsync(CloseOption... options);
 
     /**
-     * Returns the configuration site of this app.
+     * Returns the configuration site of this application.
      * <p>
      * If this application was created from an {@link ArtifactImage image}, this method will return the site where the image
      * was created. Unless the AI.Wiring option is used when construction the application.
      * 
-     * @return the configuration site of this app
+     * @return the configuration site of this application
      */
     ConfigSite configSite();
 
     /**
      * Returns the description of this application. Or an empty optional if no description has been set
      * <p>
-     * The returned description is always identical to the description of the application's top container.
+     * The returned description is always identical to the description of the application's root container.
      *
      * @return the description of this application. Or an empty optional if no description has been set
      *
@@ -204,16 +202,16 @@ public interface App extends AutoCloseable {
         // *<p>*
         // There are (currently) no method similar to {@link ExecutorService#shutdownNow()}.
 
+        CloseOption error(Throwable cause) {
+            throw new UnsupportedOperationException();
+        }
+
         // Now == shutdownNow();
         CloseOption now() {
             throw new UnsupportedOperationException();
         }
 
         CloseOption now(Throwable cause) {
-            throw new UnsupportedOperationException();
-        }
-
-        CloseOption error(Throwable cause) {
             throw new UnsupportedOperationException();
         }
     }
@@ -333,8 +331,9 @@ final class PackedApp implements App {
 
     /** {@inheritDoc} */
     @Override
-    public CompletableFuture<App> closeAsync(CloseOption... options) {
-        throw new UnsupportedOperationException();
+    public App close(CloseOption... options) {
+        // TODO Auto-generated method stub
+        return this;
     }
 
     // /** {@inheritDoc} */
@@ -342,6 +341,12 @@ final class PackedApp implements App {
     // public CompletableFuture<App> closeAsync(Throwable cause) {
     // throw new UnsupportedOperationException();
     // }
+
+    /** {@inheritDoc} */
+    @Override
+    public CompletableFuture<App> closeAsync(CloseOption... options) {
+        throw new UnsupportedOperationException();
+    }
 
     /** {@inheritDoc} */
     @Override

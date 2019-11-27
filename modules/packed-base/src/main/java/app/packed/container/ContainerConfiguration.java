@@ -22,6 +22,7 @@ import java.util.Set;
 
 import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.StatelessConfiguration;
 import app.packed.lang.Nullable;
 import app.packed.service.Factory;
 import app.packed.service.ServiceExtension;
@@ -29,6 +30,9 @@ import app.packed.service.ServiceExtension;
 /**
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
  * extending {@link Bundle} or {@link BaseBundle}.
+ */
+/**
+ *
  */
 public interface ContainerConfiguration extends BaseComponentConfiguration {
 
@@ -88,13 +92,11 @@ public interface ContainerConfiguration extends BaseComponentConfiguration {
      * <p>
      * This method uses the {@link ServiceExtension}.
      * 
-     * @param <T>
-     *            the type of the component
      * @param implementation
      *            the type of instantiate and use as the component instance
      * @return the configuration of the component
      */
-    <T> ComponentConfiguration<T> installStateless(Class<T> implementation);
+    StatelessConfiguration installStateless(Class<?> implementation);
 
     /**
      * Returns whether or not this container is the root container in an artifact.
@@ -140,6 +142,14 @@ public interface ContainerConfiguration extends BaseComponentConfiguration {
      * @return the new layer
      */
     ContainerLayer newLayer(String name, ContainerLayer... dependencies);
+
+    /** {@inheritDoc} */
+    @Override
+    ContainerConfiguration setDescription(String description);
+
+    /** {@inheritDoc} */
+    @Override
+    ContainerConfiguration setName(String name);
 
     /**
      * Returns the class that defines the container.

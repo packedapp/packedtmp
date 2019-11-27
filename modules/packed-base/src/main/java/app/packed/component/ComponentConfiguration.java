@@ -18,13 +18,6 @@ package app.packed.component;
 import app.packed.container.BaseBundle;
 import app.packed.service.Factory;
 
-// isConfigurable();
-// add getChildren()?
-// add getComponentType() <- The type
-
-// Syntes stadig vi skal overskrive component annotations med mixins //non-repeat overwrite, repeat add...
-// Mixins er jo lidt limited nu. Kan jo ikke f.eks. lave
-
 /**
  * This class represents the configuration of a component. Actual instances of this interface is usually obtained by
  * calling one of the install methods on, for example, {@link BaseBundle}.
@@ -33,34 +26,11 @@ import app.packed.service.Factory;
  */
 public interface ComponentConfiguration<T> extends BaseComponentConfiguration {
 
-    /**
-     * Sets the description of this component.
-     *
-     * @param description
-     *            the description to set
-     * @return this configuration
-     * @see #getDescription()
-     * @see Component#description()
-     */
+    /** {@inheritDoc} */
     @Override
     ComponentConfiguration<T> setDescription(String description);
 
-    /**
-     * Sets the {@link Component#name() name} of the component. The name must consists only of alphanumeric characters and
-     * '_', '-' or '.'. The name is case sensitive.
-     * <p>
-     * If no name is set using this method. A name will be assigned to the component when the component is initialized, in
-     * such a way that it will have a unique name other sibling components.
-     *
-     * @param name
-     *            the name of the component
-     * @return this configuration
-     * @throws IllegalArgumentException
-     *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
-     *             characters and '_', '-' or '.'
-     * @see #getName()
-     * @see Component#name()
-     */
+    /** {@inheritDoc} */
     @Override
     ComponentConfiguration<T> setName(String name);
 
@@ -68,6 +38,15 @@ public interface ComponentConfiguration<T> extends BaseComponentConfiguration {
         // instanceType???
         throw new UnsupportedOperationException();
     }
+}
+
+interface XCC2<T> {
+    // isConfigurable();
+    // add getChildren()?
+    // add getComponentType() <- The type
+
+    // Syntes stadig vi skal overskrive component annotations med mixins //non-repeat overwrite, repeat add...
+    // Mixins er jo lidt limited nu. Kan jo ikke f.eks. lave
     //
     // default boolean isStateful() {
     // return false;// Alternative we have a Component.Mode with Stateful, Stateless, Other
@@ -76,10 +55,6 @@ public interface ComponentConfiguration<T> extends BaseComponentConfiguration {
     // default boolean isStateless() {
     // return !isStateless();
     // }
-}
-
-interface XCC2<T> {
-
     /**
      * 
      * @param implementation

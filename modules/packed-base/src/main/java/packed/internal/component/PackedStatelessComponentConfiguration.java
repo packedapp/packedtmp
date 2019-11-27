@@ -17,7 +17,7 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
@@ -25,7 +25,7 @@ import packed.internal.artifact.PackedArtifactInstantiationContext;
 /**
  *
  */
-public final class PackedStatelessComponentConfiguration<T> extends AbstractComponentConfiguration implements ComponentConfiguration<T> {
+public final class PackedStatelessComponentConfiguration extends AbstractComponentConfiguration implements StatelessConfiguration {
 
     private final ComponentModel componentModel;
 
@@ -45,21 +45,21 @@ public final class PackedStatelessComponentConfiguration<T> extends AbstractComp
         return new PackedStatelessComponent(parent, this, paic);
     }
 
-    public PackedStatelessComponentConfiguration<T> runHooks(ContainerSource source) {
+    public PackedStatelessComponentConfiguration runHooks(ContainerSource source) {
         componentModel.invokeOnHookOnInstall(source, this);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public PackedStatelessComponentConfiguration<T> setDescription(String description) {
+    public PackedStatelessComponentConfiguration setDescription(String description) {
         super.setDescription(description);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public PackedStatelessComponentConfiguration<T> setName(String name) {
+    public PackedStatelessComponentConfiguration setName(String name) {
         super.setName(name);
         return this;
     }

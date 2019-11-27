@@ -31,6 +31,7 @@ import java.util.function.Function;
 
 import app.packed.api.Contract;
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
@@ -315,23 +316,13 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         }
     }
 
-    /**
-     * Installs a stateless component.
-     * <p>
-     * This method uses the {@link ServiceExtension}.
-     * 
-     * @param <T>
-     *            the type of the component
-     * @param implementation
-     *            the type of instantiate and use as the component instance
-     * @return the configuration of the component
-     */
+    /** {@inheritDoc} */
     @Override
-    public <T> ComponentConfiguration<T> installStateless(Class<T> implementation) {
+    public StatelessConfiguration installStateless(Class<?> implementation) {
         requireNonNull(implementation, "implementation is null");
         ConfigSite configSite = captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL);
         ComponentModel descriptor = lookup.componentModelOf(implementation);
-        PackedStatelessComponentConfiguration<T> cc = new PackedStatelessComponentConfiguration<T>(configSite, this, descriptor);
+        PackedStatelessComponentConfiguration cc = new PackedStatelessComponentConfiguration(configSite, this, descriptor);
         installPrepare(State.INSTALL_INVOKED);
         currentComponent = cc;
         return cc.runHooks(source);

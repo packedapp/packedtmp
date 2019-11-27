@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
-
-import app.packed.component.Component;
-import packed.internal.artifact.PackedArtifactInstantiationContext;
+package app.packed.component;
 
 /**
  *
  */
-final class PackedStatelessComponent extends AbstractComponent implements Component {
+public interface StatelessConfiguration extends BaseComponentConfiguration {
 
-    PackedStatelessComponent(AbstractComponent parent, PackedStatelessComponentConfiguration configuration, PackedArtifactInstantiationContext ic) {
-        super(parent, configuration, ic);
-    }
+    /** {@inheritDoc} */
+    @Override
+    StatelessConfiguration setDescription(String description);
+
+    /** {@inheritDoc} */
+    @Override
+    StatelessConfiguration setName(String name);
 }

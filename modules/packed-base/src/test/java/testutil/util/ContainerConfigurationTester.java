@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
+import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
@@ -60,8 +61,8 @@ public class ContainerConfigurationTester {
         return this;
     }
 
-    public <T> ComponentConfiguration<T> installHelper(Class<T> implementation) {
-        ComponentConfiguration<T> conf = cc.installStateless(implementation);
+    public StatelessConfiguration installHelper(Class<?> implementation) {
+        StatelessConfiguration conf = cc.installStateless(implementation);
         assertThat(conf).isNotNull();
         return conf;
     }

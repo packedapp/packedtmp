@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
+import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.lang.Nullable;
 import app.packed.service.Factory;
@@ -215,7 +216,7 @@ public abstract class Bundle implements ContainerSource {
         return configuration().install(factory);
     }
 
-    protected final <T> ComponentConfiguration<T> installHelper(Class<T> implementation) {
+    protected final StatelessConfiguration installHelper(Class<?> implementation) {
         return configuration().installStateless(implementation);
     }
 
