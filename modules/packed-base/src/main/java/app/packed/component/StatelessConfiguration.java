@@ -27,4 +27,10 @@ public interface StatelessConfiguration extends BaseComponentConfiguration {
     /** {@inheritDoc} */
     @Override
     StatelessConfiguration setName(String name);
+
+    /** {@inheritDoc} */
+    @Override
+    default ComponentType type() {
+        return ComponentType.STATELESS;
+    }
 }

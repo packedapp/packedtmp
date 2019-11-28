@@ -16,6 +16,8 @@
  */
 package app.packed.component;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -26,6 +28,7 @@ import java.util.stream.Stream;
 import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
 import app.packed.component.feature.AFeature;
+import app.packed.container.Container;
 import app.packed.container.Extension;
 import packed.internal.component.PackedComponentStreamOption;
 
@@ -61,6 +64,9 @@ import packed.internal.component.PackedComponentStreamOption;
 // Is this available at runtime????
 // components().filter(ServiceFilters.hasDependency(String.class))).print();
 
+// ComponentStream<T extends Component> extends Stream<T> ????
+// Vi har mere eller mindre aldrig brug for at gemm
+// Men der skal lige lidt mere guf paa Component sub interfaces...Foerend jeg gider lave det
 public interface ComponentStream extends Stream<Component> {
 
     /** {@inheritDoc} */
@@ -72,6 +78,15 @@ public interface ComponentStream extends Stream<Component> {
     /** {@inheritDoc} */
     @Override
     ComponentStream dropWhile(Predicate<? super Component> predicate);
+
+    /**
+     * Returns a stream that only contains {@link Container containers}.
+     * 
+     * @return a stream that only contains containers
+     */
+    default ComponentStream containers() {
+        return filterOnType(ComponentType.CONTAINER);
+    }
 
     default <A> Stream<A> feature(Class<A> faetures) {
         throw new UnsupportedOperationException();
@@ -101,20 +116,9 @@ public interface ComponentStream extends Stream<Component> {
     @Override
     ComponentStream filter(Predicate<? super Component> predicate);
 
-    default ComponentStream inTopArtifact() {
-        // Maybe
-        return this;
-    }
-    // Component source();
-    // int sourceDepth(); <- so we for example, can get all children....
-    // alternative is filterOnDepth(Path relativeTo, int depth)
-    // stream.filterOnDepth(App.path(), 4);
-    // vs
-    // stream.filterOnRelativeDepth(4);
-
-    default ComponentStream inTopContainer() {
-        // Hvad hvis vi er filtreret?????
-        return this;
+    default ComponentStream filterOnType(ComponentType type) {
+        requireNonNull(type, "type is null");
+        return filter(e -> e.type() == type);
     }
 
     // /**
@@ -206,20 +210,23 @@ public interface ComponentStream extends Stream<Component> {
      * @see App#stream(Option...)
      * @see ArtifactImage#stream(Option...)
      */
+    // hideOrigin?
+    // showExtensions
+    // restrictSameContainer
     public interface Option {
 
         /**
-         * Excludes the component from where the stream originated. However, any descendants of the component will still be
-         * processed.
+         * Excludes the component from where the stream originated in the output stream. But process any of its descendents
+         * normally.
          * 
-         * @return an option that excludes the component from which the stream is created
+         * @return an option that excludes the component from where the stream is originated
          */
         static ComponentStream.Option excludeOrigin() {
             return PackedComponentStreamOption.EXCLUDE_ORIGIN_OPTION;
         }
 
         /**
-         * Include all components that is a part of an extension.
+         * Include components that are a part of an extension ({@link Component#extension()} is non-empty). Normally components
          * 
          * @return an option that includes all components that is a part of an extension
          */
@@ -252,3 +259,9 @@ public interface ComponentStream extends Stream<Component> {
         // processChildren, pro
     }
 }
+// Component source();
+// int sourceDepth(); <- so we for example, can get all children....
+// alternative is filterOnDepth(Path relativeTo, int depth)
+// stream.filterOnDepth(App.path(), 4);
+// vs
+// stream.filterOnRelativeDepth(4);

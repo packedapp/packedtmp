@@ -13,25 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.lang.reflect;
 
-// Sealed type....
+import java.lang.invoke.MethodHandle;
 
-// SingleLetter
-// H <- Host
-// S <- ActorSystem
-// A <- Actor
-// I <- Instance
-// M <- Many
-// C <- Container
-// V <- VirtualContainer
 /**
- * The various types of components that are available in Packed.
+ *
  */
-public enum ComponentType {
-    STATELESS, CONTAINER, COMPONENT_INSTANCE, HOST;
-}
+public abstract class MethodOp<T> {
 
-// configuration tyoe
-// runtime tyoe
-// context type
+    public abstract T apply(MethodHandle handle);
+
+    public abstract T apply(MethodHandle handle, Object instance);
+
+}

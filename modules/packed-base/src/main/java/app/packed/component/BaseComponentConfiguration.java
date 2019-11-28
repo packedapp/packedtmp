@@ -133,4 +133,6 @@ public interface BaseComponentConfiguration {
      * @see Component#name()
      */
     BaseComponentConfiguration setName(String name);
+
+    ComponentType type();
 }

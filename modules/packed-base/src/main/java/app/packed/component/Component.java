@@ -132,6 +132,8 @@ public interface Component {
     default <T> T use(AFeature<T, ?> feature) {
         throw new UnsupportedOperationException();
     }
+
+    ComponentType type();
 }
 
 // {

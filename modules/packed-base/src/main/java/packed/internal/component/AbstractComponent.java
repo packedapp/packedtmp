@@ -31,11 +31,11 @@ import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.component.feature.FeatureMap;
 import app.packed.config.ConfigSite;
+import app.packed.container.Container;
 import app.packed.container.Extension;
 import app.packed.lang.Nullable;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
-import packed.internal.container.PackedContainer;
 
 /** An abstract base implementation of {@link Component}. */
 public abstract class AbstractComponent implements Component {
@@ -192,12 +192,12 @@ public abstract class AbstractComponent implements Component {
         return name;
     }
 
-    PackedContainer container() {
+    Container container() {
         AbstractComponent c = this;
-        while (!(c instanceof PackedContainer)) {
+        while (!(c instanceof Container)) {
             c = c.parent;
         }
-        return (PackedContainer) c;
+        return (Container) c;
     }
 
     /** {@inheritDoc} */

@@ -16,7 +16,7 @@
 package packed.internal.component;
 
 import app.packed.artifact.App;
-import app.packed.component.ComponentStream.Option;
+import app.packed.artifact.ArtifactContext;
 import app.packed.container.BaseBundle;
 
 /**
@@ -37,20 +37,27 @@ public class Dddd extends BaseBundle {
 
         installInstance("sdfsdf").setName("Hej");
 
-        // installInstance("sdfsdf");
-        // installInstance("sdfsdf");
-        // installInstance("sdfsdf");
-        // installInstance("sdfsdf");
-        // if (depth > 0) {
-        // link(new Dddd(depth - 1));
-        // link(new Dddd(depth - 1));
-        // link(new Dddd(depth - 1));
-        // }
+        installInstance("sdfsdf");
+        installInstance("sdfsdf");
+        installInstance("sdfsdf");
+        installInstance("sdfsdf");
+        if (depth > 0) {
+            link(new Dddd(depth - 1));
+            link(new Dddd(depth - 1));
+            link(new Dddd(depth - 1));
+        }
     }
 
     public static void main(String[] args) {
-        try (App app = App.start(new Dddd(5))) {
-            app.stream(Option.inSameContainer()).forEach(c -> System.out.println(c.path() + " " + c.getClass()));
+        try (App app = App.start(new Dddd(2))) {
+            app.stream().forEach(c -> System.out.println(c.path() + " " + c.getClass()));
+            System.out.println(app.stream().count());
+
+            app.stream().containers().forEach(e -> {
+                System.out.println(e.getClass());
+                ArtifactContext c = (ArtifactContext) e;
+                System.out.println(c.injector());
+            });
         }
     }
 

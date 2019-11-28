@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import app.packed.artifact.App;
 import app.packed.artifact.Host;
+import app.packed.component.ComponentType;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.component.AbstractComponent;
 import packed.internal.component.AbstractComponentConfiguration;
@@ -39,5 +40,11 @@ public class PackedHost extends AbstractComponent implements Host {
      */
     PackedHost(AbstractComponentConfiguration configuration, PackedArtifactInstantiationContext ic) {
         super(null, configuration, ic);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentType type() {
+        return ComponentType.HOST;
     }
 }

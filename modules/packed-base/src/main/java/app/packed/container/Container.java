@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lang.reflect2;
+package app.packed.container;
 
-import java.lang.invoke.MethodHandle;
+import app.packed.component.Component;
+import app.packed.component.ComponentType;
 
 /**
  *
  */
-public abstract class MethodOp<T> {
+public interface Container extends Component {
 
-    public abstract T apply(MethodHandle handle);
-
-    public abstract T apply(MethodHandle handle, Object instance);
-
+    /** {@inheritDoc} */
+    @Override
+    default ComponentType type() {
+        return ComponentType.CONTAINER;
+    }
 }

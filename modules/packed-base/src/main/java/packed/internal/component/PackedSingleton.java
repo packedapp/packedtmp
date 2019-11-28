@@ -16,6 +16,7 @@
 package packed.internal.component;
 
 import app.packed.component.Component;
+import app.packed.component.ComponentType;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
 
 /**
@@ -25,5 +26,11 @@ final class PackedSingleton extends AbstractComponent implements Component {
 
     PackedSingleton(AbstractComponent parent, PackedSingletonConfiguration<?> configuration, PackedArtifactInstantiationContext ic) {
         super(parent, configuration, ic);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentType type() {
+        return ComponentType.COMPONENT_INSTANCE;
     }
 }

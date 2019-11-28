@@ -61,4 +61,5 @@ public final class PackedStatelessComponentConfiguration extends AbstractCompone
         super.setName(name);
         return this;
     }
+
 }

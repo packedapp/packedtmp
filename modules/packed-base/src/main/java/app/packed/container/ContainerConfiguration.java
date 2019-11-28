@@ -22,6 +22,7 @@ import java.util.Set;
 
 import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentType;
 import app.packed.component.StatelessConfiguration;
 import app.packed.lang.Nullable;
 import app.packed.service.Factory;
@@ -157,6 +158,12 @@ public interface ContainerConfiguration extends BaseComponentConfiguration {
      * @return the class that defines the container
      */
     Class<? extends ContainerSource> sourceType();
+
+    /** {@inheritDoc} */
+    @Override
+    default ComponentType type() {
+        return ComponentType.CONTAINER;
+    }
 
     /**
      * Returns an extension of the specified type. If this is the first time an extension of the specified type is

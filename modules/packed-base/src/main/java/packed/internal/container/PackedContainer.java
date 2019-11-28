@@ -15,10 +15,21 @@
  */
 package packed.internal.container;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import app.packed.artifact.ArtifactContext;
+import app.packed.component.Component;
+import app.packed.component.ComponentPath;
+import app.packed.component.ComponentStream;
+import app.packed.component.ComponentStream.Option;
+import app.packed.component.ComponentType;
+import app.packed.component.feature.FeatureMap;
+import app.packed.config.ConfigSite;
+import app.packed.container.Container;
+import app.packed.container.Extension;
 import app.packed.lang.Key;
 import app.packed.lang.Nullable;
 import app.packed.lifecycle.StopOption;
@@ -27,8 +38,8 @@ import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.component.AbstractComponent;
 import packed.internal.service.run.DefaultInjector;
 
-/** The default implementation of Container. */
-public final class PackedContainer extends AbstractComponent implements ArtifactContext {
+/** The default implementation of {@link Container}. */
+public final class PackedContainer extends AbstractComponent implements Container {
 
     private final Injector injector;
 
@@ -42,7 +53,7 @@ public final class PackedContainer extends AbstractComponent implements Artifact
      * @param instantiationContext
      *            the instantiation context of the container
      */
-    public PackedContainer(@Nullable AbstractComponent parent, PackedContainerConfiguration pcc, PackedArtifactInstantiationContext instantiationContext) {
+    PackedContainer(@Nullable AbstractComponent parent, PackedContainerConfiguration pcc, PackedArtifactInstantiationContext instantiationContext) {
         super(parent, pcc, instantiationContext);
         Injector i = instantiationContext.get(pcc, DefaultInjector.class);
         if (i == null) {
@@ -52,27 +63,101 @@ public final class PackedContainer extends AbstractComponent implements Artifact
         instantiationContext.put(pcc, this);
     }
 
-    @Override
-    public Injector injector() {
-        return injector;
+    public ArtifactContext newArtifactContext() {
+        return new ArtifactContextWrapper();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void stop(StopOption... options) {
-        // TODO Auto-generated method stub
+    /** Used to expose a container as an ArtifactContext. */
+    private class ArtifactContextWrapper implements ArtifactContext {
 
-    }
+        /** {@inheritDoc} */
+        @Override
+        public Collection<Component> children() {
+            return PackedContainer.this.children();
+        }
 
-    /** {@inheritDoc} */
-    @Override
-    public <T> CompletableFuture<T> stopAsync(T result, StopOption... options) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+        /** {@inheritDoc} */
+        @Override
+        public ConfigSite configSite() {
+            return PackedContainer.this.configSite();
+        }
 
-    @Override
-    public <T> T use(Key<T> key) {
-        return injector.use(key);
+        /** {@inheritDoc} */
+        @Override
+        public int depth() {
+            return PackedContainer.this.depth();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Optional<String> description() {
+            return PackedContainer.this.description();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Optional<Class<? extends Extension>> extension() {
+            return PackedContainer.this.extension();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public FeatureMap features() {
+            return PackedContainer.this.features();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Injector injector() {
+            return PackedContainer.this.injector;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public String name() {
+            return PackedContainer.this.name();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ComponentPath path() {
+            return PackedContainer.this.path();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void stop(StopOption... options) {
+
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public <T> CompletableFuture<T> stopAsync(T result, StopOption... options) {
+            return null;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ComponentStream stream(Option... options) {
+            return PackedContainer.this.stream(options);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ComponentType type() {
+            return PackedContainer.this.type();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public <T> T use(Key<T> key) {
+            return injector.use(key);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Component useComponent(CharSequence path) {
+            return PackedContainer.this.useComponent(path);
+        }
     }
 }

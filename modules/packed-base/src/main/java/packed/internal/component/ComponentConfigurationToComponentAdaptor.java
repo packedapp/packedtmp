@@ -25,6 +25,7 @@ import java.util.Optional;
 import app.packed.component.Component;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
+import app.packed.component.ComponentType;
 import app.packed.component.feature.FeatureMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
@@ -121,4 +122,9 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
         return componentConfiguration.extension();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public ComponentType type() {
+        throw new UnsupportedOperationException();
+    }
 }

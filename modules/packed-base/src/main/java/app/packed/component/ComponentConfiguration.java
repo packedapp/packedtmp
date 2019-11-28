@@ -34,9 +34,10 @@ public interface ComponentConfiguration<T> extends BaseComponentConfiguration {
     @Override
     ComponentConfiguration<T> setName(String name);
 
-    default Class<?> type() {
-        // instanceType???
-        throw new UnsupportedOperationException();
+    /** {@inheritDoc} */
+    @Override
+    default ComponentType type() {
+        return ComponentType.COMPONENT_INSTANCE;
     }
 }
 
