@@ -13,36 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.build.dependencies;
+package packed.internal.component;
 
 import app.packed.artifact.App;
+import app.packed.component.ComponentStream.Option;
 import app.packed.container.BaseBundle;
-import app.packed.service.Provide;
 
 /**
  *
  */
-public class Stiff extends BaseBundle {
+public class Dddd extends BaseBundle {
+
+    int depth;
+
+    Dddd(int depth) {
+        this.depth = depth;
+    }
 
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-        provide(XXX.class);
+        // System.out.println(Option.inSameContainer());
+
+        installInstance("sdfsdf").setName("Hej");
+
+        // installInstance("sdfsdf");
+        // installInstance("sdfsdf");
+        // installInstance("sdfsdf");
+        // installInstance("sdfsdf");
+        // if (depth > 0) {
+        // link(new Dddd(depth - 1));
+        // link(new Dddd(depth - 1));
+        // link(new Dddd(depth - 1));
+        // }
     }
 
     public static void main(String[] args) {
-        App.start(new Stiff());
-    }
-
-    public static class XXX {
-
-        public XXX(String ss) {
-
-        }
-
-        @Provide
-        public String fooo() {
-            return "ddd";
+        try (App app = App.start(new Dddd(5))) {
+            app.stream(Option.inSameContainer()).forEach(c -> System.out.println(c.path() + " " + c.getClass()));
         }
     }
+
 }

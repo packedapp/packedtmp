@@ -33,15 +33,15 @@ public final class ExtensionDescriptor {
     /** The extension model we wrap. */
     private final ExtensionModel<?> model;
 
-    /** Never instantiate. */
+    /** No public instantiation. */
     private ExtensionDescriptor(ExtensionModel<?> model) {
         this.model = requireNonNull(model);
     }
 
     /**
-     * Returns all the different types of contract types the extension provides.
+     * Returns all the different types of contracts the extension exposes.
      * 
-     * @return all the different types of contract types the extension provides
+     * @return all the different types of contracts the extension exposes
      */
     public Set<Class<? extends Contract>> contracts() {
         return model.contracts.keySet();
@@ -89,9 +89,8 @@ public final class ExtensionDescriptor {
      * @return a descriptor for the specified extension type
      */
     public static ExtensionDescriptor of(Class<? extends Extension> extensionType) {
-        // Maybe just create one descriptor for each model and keep it
         requireNonNull(extensionType, "extensionType is null");
-        return new ExtensionDescriptor(ExtensionModel.of(extensionType));
+        return new ExtensionDescriptor(ExtensionModel.of(extensionType)); // we could cache this
     }
 }
 // A method for transitive dependencies...

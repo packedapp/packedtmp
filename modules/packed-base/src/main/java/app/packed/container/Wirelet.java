@@ -133,6 +133,7 @@ class BadIdea {
         // Et problem hvis vi laver et image...
         // Hvor vi laver en link med saadan en faetter
         // Den vil evaluere til en ting naar vi laver imaged og en anden ting paa runtime
+        // F.eks. en System property der kun er sat paa runtime
         throw new UnsupportedOperationException();
     }
 

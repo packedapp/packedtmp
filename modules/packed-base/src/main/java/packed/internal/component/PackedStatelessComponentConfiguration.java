@@ -22,9 +22,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
 
-/**
- *
- */
+/** The default implementation of {@link StatelessConfiguration}. */
 public final class PackedStatelessComponentConfiguration extends AbstractComponentConfiguration implements StatelessConfiguration {
 
     private final ComponentModel componentModel;

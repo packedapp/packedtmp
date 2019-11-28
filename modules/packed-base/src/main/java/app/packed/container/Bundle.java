@@ -280,10 +280,12 @@ public abstract class Bundle implements ContainerSource {
         // For module email, if you are paranoid.
         // You can specify a LookupAccessManager where every lookup access.
         // With both the source and the target. For example, service of type XX from Module YY in Bundle BB needs access to FFF
+
+        // Its always an extension, its always a member, And there is probably a field hook of some kind
+        // Packed will access a constructor
     }
 
     protected final ContainerLayer newLayer(String name, ContainerLayer... dependencies) {
-        // Why is this not in Bundle????
         return configuration().newLayer(name, dependencies);
     }
 

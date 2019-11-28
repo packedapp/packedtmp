@@ -22,10 +22,14 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.StreamSupport;
 
+import app.packed.container.Bundle;
+import app.packed.container.BundleDescriptor;
+
 /**
  * A set of contracts guaranteed to contain no more then a single contract of a particular type.
  */
 public final class ContractSet extends Contract implements Iterable<Contract> {
+
     public static final ContractSet EMPTY = new ContractSet(new IdentityHashMap<>());
 
     // Do we want to maintain some kind of order????
@@ -100,5 +104,9 @@ public final class ContractSet extends Contract implements Iterable<Contract> {
 
     public static ContractSet of(Iterable<? extends Contract> contracts) {
         return of(StreamSupport.stream(contracts.spliterator(), false).toArray(Contract[]::new));
+    }
+
+    public static ContractSet contractsOf(Bundle bundle) {
+        return BundleDescriptor.of(bundle).contracts();
     }
 }

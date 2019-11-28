@@ -28,7 +28,7 @@ import packed.internal.component.AbstractComponent;
 import packed.internal.service.run.DefaultInjector;
 
 /** The default implementation of Container. */
-final class PackedContainer extends AbstractComponent implements ArtifactContext {
+public final class PackedContainer extends AbstractComponent implements ArtifactContext {
 
     private final Injector injector;
 

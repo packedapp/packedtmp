@@ -79,22 +79,22 @@ public class FromImage {
 
     @Benchmark
     public App empty() {
-        return App.open(EMPTY);
+        return App.start(EMPTY);
     }
 
     @Benchmark
     public App useExtension() {
-        return App.open(USE_EXTENSION);
+        return App.start(USE_EXTENSION);
     }
 
     @Benchmark
     public App install() {
-        return App.open(INSTALL);
+        return App.start(INSTALL);
     }
 
     @Benchmark
     public App newExtensionAutoActivate() {
-        return App.open(INSTALL_AUTO_ACTIVATE);
+        return App.start(INSTALL_AUTO_ACTIVATE);
     }
 
     static class MyStuff {

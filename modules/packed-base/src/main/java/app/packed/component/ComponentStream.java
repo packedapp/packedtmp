@@ -27,6 +27,7 @@ import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
 import app.packed.component.feature.AFeature;
 import app.packed.container.Extension;
+import packed.internal.component.PackedComponentStreamOption;
 
 /**
  * A specialization of the {@link Stream} interface that deals with streams of {@link Component components}. An instance
@@ -62,36 +63,22 @@ import app.packed.container.Extension;
 
 public interface ComponentStream extends Stream<Component> {
 
-    default ComponentStream inTopContainer() {
-        // Hvad hvis vi er filtreret?????
-        return this;
+    /** {@inheritDoc} */
+    @Override
+    default ComponentStream distinct() {
+        return this; // All components are distinct by default
     }
 
-    default ComponentStream onPath(String regexp) {
-        return this;
+    /** {@inheritDoc} */
+    @Override
+    ComponentStream dropWhile(Predicate<? super Component> predicate);
+
+    default <A> Stream<A> feature(Class<A> faetures) {
+        throw new UnsupportedOperationException();
     }
 
-    default ComponentStream inTopArtifact() {
-        // Maybe
-        return this;
-    }
-    // Component source();
-    // int sourceDepth(); <- so we for example, can get all children....
-    // alternative is filterOnDepth(Path relativeTo, int depth)
-    // stream.filterOnDepth(App.path(), 4);
-    // vs
-    // stream.filterOnRelativeDepth(4);
-
-    /**
-     * Returns a new list containing all of the components in this stream in the order they where encountered. Invoking this
-     * method is identical to invoking {@code stream.collect(Collectors.toList())}.
-     * <p>
-     * This is a <em>terminal operation</em>.
-     *
-     * @return a new list containing all of the components in this stream
-     */
-    default List<Component> toList() {
-        return collect(Collectors.toList());
+    default <T extends AFeature<?, ?>> Stream<T> feature(T feature) {
+        throw new UnsupportedOperationException();
     }
 
     // @SuppressWarnings("unchecked")
@@ -110,16 +97,24 @@ public interface ComponentStream extends Stream<Component> {
     // });
     // }
 
-    default <A> Stream<A> feature(Class<A> faetures) {
-        throw new UnsupportedOperationException();
-    }
+    /** {@inheritDoc} */
+    @Override
+    ComponentStream filter(Predicate<? super Component> predicate);
 
-    default ComponentStream withFeatures(Class<?>... faetures) {
-        throw new UnsupportedOperationException();
+    default ComponentStream inTopArtifact() {
+        // Maybe
+        return this;
     }
+    // Component source();
+    // int sourceDepth(); <- so we for example, can get all children....
+    // alternative is filterOnDepth(Path relativeTo, int depth)
+    // stream.filterOnDepth(App.path(), 4);
+    // vs
+    // stream.filterOnRelativeDepth(4);
 
-    default <T extends AFeature<?, ?>> Stream<T> feature(T feature) {
-        throw new UnsupportedOperationException();
+    default ComponentStream inTopContainer() {
+        // Hvad hvis vi er filtreret?????
+        return this;
     }
 
     // /**
@@ -153,21 +148,11 @@ public interface ComponentStream extends Stream<Component> {
 
     /** {@inheritDoc} */
     @Override
-    default ComponentStream distinct() {
-        return this; // All components are distinct by default
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    ComponentStream dropWhile(Predicate<? super Component> predicate);
-
-    /** {@inheritDoc} */
-    @Override
-    ComponentStream filter(Predicate<? super Component> predicate);
-
-    /** {@inheritDoc} */
-    @Override
     ComponentStream limit(long maxSize);
+
+    default ComponentStream onPath(String regexp) {
+        return this;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -192,6 +177,22 @@ public interface ComponentStream extends Stream<Component> {
     ComponentStream takeWhile(Predicate<? super Component> predicate);
 
     /**
+     * Returns a new list containing all of the components in this stream in the order they where encountered. Invoking this
+     * method is identical to invoking {@code stream.collect(Collectors.toList())}.
+     * <p>
+     * This is a <em>terminal operation</em>.
+     *
+     * @return a new list containing all of the components in this stream
+     */
+    default List<Component> toList() {
+        return collect(Collectors.toList());
+    }
+
+    default ComponentStream withFeatures(Class<?>... faetures) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * Skal kun indeholde ting vi ikke kan have i streamen.
      */
     /// Ideen er lidt at hvis vi har en masse virtuelle komponenter. Saa gider vi ikke have dem med i default viewet....
@@ -203,17 +204,27 @@ public interface ComponentStream extends Stream<Component> {
      * 
      * @see Component#stream(Option...)
      * @see App#stream(Option...)
-     * @see ArtifactImage#stream()
+     * @see ArtifactImage#stream(Option...)
      */
-    public static final class Option {
+    public interface Option {
 
         /**
-         * Include all components that is attached to an extension
+         * Excludes the component from where the stream originated. However, any descendants of the component will still be
+         * processed.
          * 
-         * @return an option that includes all components that are owned by extensions
+         * @return an option that excludes the component from which the stream is created
+         */
+        static ComponentStream.Option excludeOrigin() {
+            return PackedComponentStreamOption.EXCLUDE_ORIGIN_OPTION;
+        }
+
+        /**
+         * Include all components that is a part of an extension.
+         * 
+         * @return an option that includes all components that is a part of an extension
          */
         public static ComponentStream.Option includeExtensions() {
-            throw new UnsupportedOperationException();
+            return PackedComponentStreamOption.INCLUDE_EXTENSION_OPTION;
         }
 
         @SafeVarargs
@@ -221,27 +232,17 @@ public interface ComponentStream extends Stream<Component> {
             throw new UnsupportedOperationException();
         }
 
-        /**
-         * Excludes the component from which the stream is created for being included in the stream. But still processes
-         * descendents of the component.
-         * 
-         * @return an option that excludes the component from which the stream is created
-         */
-        public static ComponentStream.Option excludeSelf() {
+        public static ComponentStream.Option inSameArtifact() {
             throw new UnsupportedOperationException();
         }
 
         /**
-         * Only process components in the same container as the component stream source (or root).
+         * Only process components that are in the same container as the stream origin.
          * 
          * @return the option
          */
         public static ComponentStream.Option inSameContainer() {
-            throw new UnsupportedOperationException();
-        }
-
-        public static ComponentStream.Option inSameArtifact() {
-            throw new UnsupportedOperationException();
+            return PackedComponentStreamOption.IN_SAME_CONTAINER_OPTION;
         }
 
         // maxDepth, maxRelativeDepth

@@ -13,25 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.artifact;
 
-// Sealed type....
+import app.packed.component.Component;
 
-// SingleLetter
-// H <- Host
-// S <- ActorSystem
-// A <- Actor
-// I <- Instance
-// M <- Many
-// C <- Container
-// V <- VirtualContainer
 /**
- * The various types of components that are available in Packed.
+ *
  */
-enum ComponentType {
-    STATELESS, CONTAINER, COMPONENT_INSTANCE, HOST;
-}
+public interface Host extends Component {
 
-// configuration tyoe
-// runtime tyoe
-// context type
+}

@@ -32,11 +32,11 @@ import packed.internal.moduleaccess.ModuleAccess;
  */
 public final class PackedSingletonConfiguration<T> extends AbstractComponentConfiguration implements ComponentConfiguration<T> {
 
+    public final ComponentModel componentModel;
+
     public final Factory<T> factory;
 
     public final T instance;
-
-    final ComponentModel componentModel;
 
     public PackedSingletonConfiguration(ConfigSite configSite, AbstractComponentConfiguration parent, ComponentModel componentModel, Factory<T> factory) {
         super(configSite, parent);
@@ -52,20 +52,12 @@ public final class PackedSingletonConfiguration<T> extends AbstractComponentConf
         this.instance = requireNonNull(instance);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public PackedSingletonConfiguration<T> setDescription(String description) {
-        super.setDescription(description);
-        return this;
+    public MethodHandle fromFactory() {
+        FactoryHandle<?> handle = ModuleAccess.service().toHandle(factory);
+        return container().fromFactoryHandle(handle);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public PackedSingletonConfiguration<T> setName(String name) {
-        super.setName(name);
-        return this;
-    }
-
     @Override
     protected String initializeNameDefaultName() {
         return componentModel.defaultPrefix();
@@ -82,8 +74,17 @@ public final class PackedSingletonConfiguration<T> extends AbstractComponentConf
         return this;
     }
 
-    public MethodHandle fromFactory() {
-        FactoryHandle<?> handle = ModuleAccess.service().toHandle(factory);
-        return container().fromFactoryHandle(handle);
+    /** {@inheritDoc} */
+    @Override
+    public PackedSingletonConfiguration<T> setDescription(String description) {
+        super.setDescription(description);
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PackedSingletonConfiguration<T> setName(String name) {
+        super.setName(name);
+        return this;
     }
 }

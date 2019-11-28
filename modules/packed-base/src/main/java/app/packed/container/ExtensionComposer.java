@@ -31,12 +31,16 @@ import packed.internal.container.ExtensionModelLoadContext;
  */
 // Ville vaere rart at kunne gruppe metoderne efter et system og et prefix
 // I think move to Extension when done... any rename to Composer
-
 // Skal vi have en metode der styrer om install er paa extension eller generic
 public abstract class ExtensionComposer<E extends Extension> {
 
     /** The context that all calls are delegated to, must only be accessed via {@link #context}. */
     private ExtensionModelLoadContext context;
+
+    @SafeVarargs
+    protected final void addDependencies(Class<? extends Extension>... dependencies) {
+        context().addDependencies(dependencies);
+    }
 
     protected final <P extends ExtensionWirelet.Pipeline<E, P, W>, W extends ExtensionWirelet<P>> void addPipeline(Class<P> pipelineType,
             Function<E, P> pipelineFactory) {
@@ -47,11 +51,6 @@ public abstract class ExtensionComposer<E extends Extension> {
         // Hmmm, har jo samme problem som dependencies her....
 
         context().pipelines.putIfAbsent(pipelineType, pipelineFactory);
-    }
-
-    @SafeVarargs
-    protected final void addDependencies(Class<? extends Extension>... dependencies) {
-        context().addDependencies(dependencies);
     }
 
     /**

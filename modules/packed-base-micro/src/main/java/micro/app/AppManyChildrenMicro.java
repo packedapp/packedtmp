@@ -47,7 +47,7 @@ public class AppManyChildrenMicro {
 
     @Benchmark
     public App manyChildren() {
-        return App.open(new Bundle() {
+        return App.start(new Bundle() {
             @Override
             protected void configure() {
                 for (int i = 0; i < size; i++) {

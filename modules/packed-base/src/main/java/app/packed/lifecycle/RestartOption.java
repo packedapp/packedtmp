@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.host;
-
-import app.packed.component.Component;
+package app.packed.lifecycle;
 
 /**
  *
  */
-public interface Host extends Component {
+// Or is this a StopOption????
+// I Think so.... There is not much there anyway....
+class RestartOption {
 
 }

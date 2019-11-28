@@ -51,11 +51,13 @@ public abstract class ExtensionWirelet<T extends ExtensionWirelet.Pipeline<?, T,
         /** A list initially containing the wirelets that was used to create this pipeline. */
         List<W> wirelets;
 
+        /** {@inheritDoc} */
         @Override
         public final void forEach(Consumer<? super W> action) {
             wirelets.forEach(action);
         }
 
+        /** {@inheritDoc} */
         @Override
         public final Iterator<W> iterator() {
             return wirelets.iterator();
@@ -79,11 +81,13 @@ public abstract class ExtensionWirelet<T extends ExtensionWirelet.Pipeline<?, T,
 
         // protected void optimize() <-- called by the runtime to optimize as much as possible
 
+        /** {@inheritDoc} */
         @Override
         public final Spliterator<W> spliterator() {
             return wirelets.spliterator();
         }
 
+        /** {@inheritDoc} */
         @Override
         public String toString() {
             return wirelets.toString();

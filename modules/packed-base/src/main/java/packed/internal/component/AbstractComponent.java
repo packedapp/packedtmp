@@ -35,6 +35,7 @@ import app.packed.container.Extension;
 import app.packed.lang.Nullable;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
+import packed.internal.container.PackedContainer;
 
 /** An abstract base implementation of {@link Component}. */
 public abstract class AbstractComponent implements Component {
@@ -47,6 +48,7 @@ public abstract class AbstractComponent implements Component {
     private final ConfigSite configSite;
 
     /** The depth of the component in a tree of components. */
+    // Depth kan have 8 bit-> full depth, 8 bit, container depth, 8 bit artifact depth.
     private final int depth;
 
     /** The description of this component (optional). */
@@ -190,20 +192,41 @@ public abstract class AbstractComponent implements Component {
         return name;
     }
 
+    PackedContainer container() {
+        AbstractComponent c = this;
+        while (!(c instanceof PackedContainer)) {
+            c = c.parent;
+        }
+        return (PackedContainer) c;
+    }
+
     /** {@inheritDoc} */
     @Override
     public final ComponentPath path() {
         return PackedComponentPath.of(this);
     }
 
+    public boolean isInSameContainer(AbstractComponent other) {
+        return container() == other.container();
+    }
+
     /** {@inheritDoc} */
     @Override
-    public final ComponentStream stream() {
+    public final ComponentStream stream(ComponentStream.Option... options) {
+        return new PackedComponentStream(stream0(this, true, PackedComponentStreamOption.of(options)));
+    }
+
+    private final Stream<Component> stream0(AbstractComponent origin, boolean isRoot, PackedComponentStreamOption option) {
         Map<String, AbstractComponent> c = children;
-        if (c == null) {
-            return new PackedComponentStream(Stream.of(this));
+        if (c != null && !c.isEmpty()) {
+            if (option.processThisDeeper(origin, this)) {
+                Stream<Component> s = c.values().stream().flatMap(co -> co.stream0(origin, false, option));
+                return isRoot && option.excludeOrigin() ? s : Stream.concat(Stream.of(this), s);
+            }
+            return Stream.empty();
+        } else {
+            return isRoot && option.excludeOrigin() ? Stream.empty() : Stream.of(this);
         }
-        return new PackedComponentStream(Stream.concat(Stream.of(this), c.values().stream().flatMap(AbstractComponent::stream)));
     }
 
     /**

@@ -39,6 +39,7 @@ public interface Component {
      *
      * @return an unmodifiable view of all of this component's children
      */
+    // forEachChild(Consumer<? extends Component> action);
     Collection<Component> children();
 
     /**
@@ -112,11 +113,7 @@ public interface Component {
      */
     // What is the difference between components and children someone is going to ask....
     // So we renamed it to stream();
-    ComponentStream stream();
-
-    default ComponentStream stream(ComponentStream.Option... options) {
-        return stream();
-    }
+    ComponentStream stream(ComponentStream.Option... options);
 
     // Naah feature er vel readonly...
     // use kan komme paa ComponentContext og maaske ComponentConfiguration?

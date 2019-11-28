@@ -229,11 +229,13 @@ public class BundleDescriptor {
         return descriptor == null ? Optional.empty() : descriptor.version();
     }
 
-    public static ContractSet contractsOf(Bundle bundle) {
-        return BundleDescriptor.of(bundle).contracts();
-    }
-
-    // Or just have a descriptor() on ContainerImage();
+    /**
+     * Creates a bundle descriptor from the specified image.
+     * 
+     * @param image
+     *            the image to create a bundle descriptor for
+     * @return the bundle descriptor
+     */
     public static BundleDescriptor of(ArtifactImage image) {
         requireNonNull(image, "image is null");
         PackedContainerConfiguration conf = ModuleAccess.artifact().getConfiguration(image);
@@ -243,14 +245,12 @@ public class BundleDescriptor {
     }
 
     /**
-     * Returns a bundle descriptor for the specified bundle.
+     * Creates a bundle descriptor for the specified bundle.
      *
      * @param bundle
-     *            the bundle to return a descriptor for
+     *            the bundle to create a descriptor for
      * @return a descriptor for the specified bundle
      */
-    // ContainerSource????
-    // For example, we should be able to take an image...
     public static BundleDescriptor of(Bundle bundle) {
         requireNonNull(bundle, "bundle is null");
         PackedContainerConfiguration conf = new PackedContainerConfiguration(BuildOutput.descriptor(BundleDescriptor.class), bundle);
@@ -259,26 +259,6 @@ public class BundleDescriptor {
         conf.buildDescriptor(builder);
         return builder.build();
     }
-    // /**
-    // * <p>A stream builder has a lifecycle, which starts in a building
-    // * phase, during which elements can be added, and then transitions to a built
-    // * phase, after which elements may not be added. The built phase begins
-    // * when the {@link #build()} method is called, which creates an ordered
-    // * {@code Stream} whose elements are the elements that were added to the stream
-    // * builder, in the order they were added.
-    //
-    // /**
-    // * Builds the stream, transitioning this builder to the built state.
-    // * An {@code IllegalStateException} is thrown if there are further attempts
-    // * to operate on the builder after it has entered the built state.
-    // *
-    // * @return the built stream
-    // * @throws IllegalStateException if the builder has already transitioned to
-    // * the built state
-    // */
-    // Stream<T> build();
-    //
-    // }
 
     /**
      *

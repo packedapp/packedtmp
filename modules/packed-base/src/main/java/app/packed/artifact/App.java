@@ -50,17 +50,6 @@ public interface App extends AutoCloseable {
     @Override
     void close();
 
-    App close(StopOption... options);
-
-    /**
-     * Initiates an orderly asynchronously shutdown of the application. In which currently running tasks will be executed,
-     * but no new tasks will be started. Invocation has no additional effect if the application has already been shut down.
-     *
-     * @return a future that can be used to query whether the application has completed shutdown (terminated). Or is still
-     *         in the process of being shut down
-     */
-    CompletableFuture<App> closeAsync(StopOption... options);
-
     /**
      * Returns the configuration site of this application.
      * <p>
@@ -111,6 +100,17 @@ public interface App extends AutoCloseable {
      */
     LifecycleOperations<? extends App> state();
 
+    App stop(StopOption... options);
+
+    /**
+     * Initiates an orderly asynchronously shutdown of the application. In which currently running tasks will be executed,
+     * but no new tasks will be started. Invocation has no additional effect if the application has already been shut down.
+     *
+     * @return a future that can be used to query whether the application has completed shutdown (terminated). Or is still
+     *         in the process of being shut down
+     */
+    CompletableFuture<App> stopAsync(StopOption... options);
+
     /**
      * Returns a component stream consisting of this applications underlying container and all of its descendants in any
      * order.
@@ -155,29 +155,8 @@ public interface App extends AutoCloseable {
     // TODO throw UnknownPathException();;
     Component useComponent(CharSequence path);
 
-    /**
-     * Create and starts an application from the specified source. Returning it in a running state.
-     * 
-     * The state of the returned application is {@link RunState#INITIALIZED}.
-     *
-     * @param source
-     *            the source of the application
-     * @param wirelets
-     *            any wirelets to use in the construction of the application
-     * @return the new running application
-     * @throws RuntimeException
-     *             if the application could not be constructed or started properly
-     */
-    // Maybe open is a bit complicated when the lifecycle are named differently????
-    static App open(ContainerSource source, Wirelet... wirelets) {
-        PackedApp app = (PackedApp) AppArtifactDriver.INSTANCE.newArtifact(source, wirelets);
-        app.context.start();
-        return app;
-    }
-
-    static CompletableFuture<App> openAsync(ContainerSource source, Wirelet... wirelets) {
-        PackedApp app = (PackedApp) AppArtifactDriver.INSTANCE.newArtifact(source, wirelets);
-        return app.context.startAsync(app);
+    static App initialize(ContainerSource source, Wirelet... wirelets) {
+        return AppArtifactDriver.INSTANCE.newArtifact(source, wirelets);
     }
 
     /**
@@ -196,6 +175,32 @@ public interface App extends AutoCloseable {
     static void run(ContainerSource source, Wirelet... wirelets) {
         PackedApp app = (PackedApp) AppArtifactDriver.INSTANCE.newArtifact(source, wirelets);
         app.context.run();
+    }
+
+    /**
+     * Create and starts an application from the specified source. Returning it in a running state.
+     * 
+     * The state of the returned application is {@link RunState#INITIALIZED}.
+     *
+     * @param source
+     *            the source of the application
+     * @param wirelets
+     *            any wirelets to use in the construction of the application
+     * @return the new running application
+     * @throws RuntimeException
+     *             if the application could not be constructed or started properly
+     */
+    // Maybe open is a bit complicated when the lifecycle are named differently????
+    static App start(ContainerSource source, Wirelet... wirelets) {
+        PackedApp app = (PackedApp) AppArtifactDriver.INSTANCE.newArtifact(source, wirelets);
+        app.context.start();
+        return app;
+    }
+
+    static CompletableFuture<App> startAsync(ContainerSource source, Wirelet... wirelets) {
+        // Why return CompletableFuture???
+        PackedApp app = (PackedApp) AppArtifactDriver.INSTANCE.newArtifact(source, wirelets);
+        return app.context.startAsync(app);
     }
 }
 
@@ -239,19 +244,6 @@ final class PackedApp implements App {
 
     /** {@inheritDoc} */
     @Override
-    public App close(StopOption... options) {
-        context.stop(options);
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public CompletableFuture<App> closeAsync(StopOption... options) {
-        return context.stopAsync(this, options);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public ConfigSite configSite() {
         return context.configSite();
     }
@@ -278,6 +270,19 @@ final class PackedApp implements App {
     @Override
     public LifecycleOperations<? extends App> state() {
         throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public App stop(StopOption... options) {
+        context.stop(options);
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public CompletableFuture<App> stopAsync(StopOption... options) {
+        return context.stopAsync(this, options);
     }
 
     /** {@inheritDoc} */

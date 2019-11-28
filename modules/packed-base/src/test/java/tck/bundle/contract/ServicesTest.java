@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.api.ContractSet;
 import app.packed.container.BaseBundle;
-import app.packed.container.BundleDescriptor;
 import app.packed.lang.Key;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
@@ -41,7 +40,7 @@ public class ServicesTest {
 
     @Test
     public void empty() {
-        ContractSet c = BundleDescriptor.contractsOf(new BaseBundle() {
+        ContractSet c = ContractSet.contractsOf(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -59,7 +58,7 @@ public class ServicesTest {
 
     @Test
     public void provides() {
-        ContractSet c = BundleDescriptor.contractsOf(new BaseBundle() {
+        ContractSet c = ContractSet.contractsOf(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -78,7 +77,7 @@ public class ServicesTest {
 
     @Test
     public void requires() {
-        ContractSet c = BundleDescriptor.contractsOf(new BaseBundle() {
+        ContractSet c = ContractSet.contractsOf(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -96,7 +95,7 @@ public class ServicesTest {
 
     @Test
     public void optional() {
-        ContractSet c = BundleDescriptor.contractsOf(new BaseBundle() {
+        ContractSet c = ContractSet.contractsOf(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -115,7 +114,7 @@ public class ServicesTest {
     /** A service will never be both requires and optional. */
     @Test
     public void requiresOverrideOptional() {
-        ContractSet c = BundleDescriptor.contractsOf(new BaseBundle() {
+        ContractSet c = ContractSet.contractsOf(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -134,7 +133,7 @@ public class ServicesTest {
 
     @Test
     public void all() {
-        ContractSet c = BundleDescriptor.contractsOf(new BaseBundle() {
+        ContractSet c = ContractSet.contractsOf(new BaseBundle() {
 
             @Override
             protected void configure() {

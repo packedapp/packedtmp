@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import app.packed.component.Component;
 import app.packed.component.ComponentPath;
@@ -34,6 +33,9 @@ import app.packed.container.Extension;
  *
  */
 // Tvivler paa vi beholder ArtifactImage.stream()
+
+// Tror vi bliver noedt til at lave en adaptor per component type....
+// De metoder der ikke er relevante, smider vi bare UnsupportedOperationException...
 public final class ComponentConfigurationToComponentAdaptor implements Component {
 
     private volatile List<ComponentConfigurationToComponentAdaptor> children;
@@ -102,13 +104,15 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
 
     /** {@inheritDoc} */
     @Override
-    public ComponentStream stream() {
-        children();
-        List<ComponentConfigurationToComponentAdaptor> c = children;
-        if (c == null) {
-            return new PackedComponentStream(Stream.of(this));
-        }
-        return new PackedComponentStream(Stream.concat(Stream.of(this), c.stream().flatMap(ComponentConfigurationToComponentAdaptor::stream)));
+    public ComponentStream stream(ComponentStream.Option... options) {
+        throw new UnsupportedOperationException();
+        // children();
+        // List<ComponentConfigurationToComponentAdaptor> c = children;
+        // if (c == null) {
+        // return new PackedComponentStream(Stream.of(this));
+        // }
+        // return new PackedComponentStream(Stream.concat(Stream.of(this),
+        // c.stream().flatMap(ComponentConfigurationToComponentAdaptor::stream)));
     }
 
     /** {@inheritDoc} */

@@ -19,7 +19,11 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
+import app.packed.container.Bundle;
+import app.packed.container.BundleDescriptor;
 import app.packed.lang.Nullable;
+import packed.internal.artifact.BuildOutput;
+import packed.internal.container.PackedContainerConfiguration;
 
 /**
  *
@@ -78,6 +82,16 @@ public abstract class Contract {
             throw new Error("Could not find contract, type = " + contractType);
         }
         return t;
+    }
+
+    public static <T extends Contract> Optional<T> of(Bundle bundle, Class<T> contractType) {
+        requireNonNull(bundle, "bundle is null");
+        PackedContainerConfiguration conf = new PackedContainerConfiguration(BuildOutput.descriptor(BundleDescriptor.class), bundle);
+        conf.doBuild();
+        BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
+        conf.buildDescriptor(builder);
+        // BundleDescriptor d = builder.build();
+        throw new UnsupportedOperationException();
     }
 
     // Should probably be abstract, or final, and then have a toString(ContractStringBuilder b);

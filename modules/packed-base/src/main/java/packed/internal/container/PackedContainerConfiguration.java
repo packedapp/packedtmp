@@ -76,7 +76,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     @Nullable
     private AbstractComponentConfiguration currentComponent;
 
-    /** All registered extensions, in order of registration. */
+    /** All used extensions, in order of registration. */
     private final LinkedHashMap<Class<? extends Extension>, PackedExtensionContext> extensions = new LinkedHashMap<>();
 
     private HashMap<String, DefaultContainerLayer> layers;
@@ -284,25 +284,24 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     @Override
     public <T> ComponentConfiguration<T> install(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
-        ConfigSite configSite = captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL);
         ComponentModel model = lookup.componentModelOf(factory.rawType());
-        PackedSingletonConfiguration<T> cc = new PackedSingletonConfiguration<>(configSite, this, model, factory);
+        ConfigSite configSite = captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL);
+        PackedSingletonConfiguration<T> conf = new PackedSingletonConfiguration<>(configSite, this, model, factory);
         installPrepare(State.INSTALL_INVOKED);
-        currentComponent = cc;
-        return cc.runHooks(source);
+        currentComponent = conf;
+        return conf.runHooks(source);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T> ComponentConfiguration<T> installInstance(T instance) {
-        // Skal vi checke typer??? f.eks. at man ikke angiver extensions..
         requireNonNull(instance, "instance is null");
-        ConfigSite configSite = captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL);
         ComponentModel model = lookup.componentModelOf(instance.getClass());
-        PackedSingletonConfiguration<T> cc = new PackedSingletonConfiguration<>(configSite, this, model, instance);
+        ConfigSite configSite = captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL);
+        PackedSingletonConfiguration<T> conf = new PackedSingletonConfiguration<>(configSite, this, model, instance);
         installPrepare(State.INSTALL_INVOKED);
-        currentComponent = cc;
-        return cc.runHooks(source);
+        currentComponent = conf;
+        return conf.runHooks(source);
     }
 
     private void installPrepare(State state) {
@@ -320,12 +319,12 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     @Override
     public StatelessConfiguration installStateless(Class<?> implementation) {
         requireNonNull(implementation, "implementation is null");
+        ComponentModel model = lookup.componentModelOf(implementation);
         ConfigSite configSite = captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL);
-        ComponentModel descriptor = lookup.componentModelOf(implementation);
-        PackedStatelessComponentConfiguration cc = new PackedStatelessComponentConfiguration(configSite, this, descriptor);
+        PackedStatelessComponentConfiguration conf = new PackedStatelessComponentConfiguration(configSite, this, model);
         installPrepare(State.INSTALL_INVOKED);
-        currentComponent = cc;
-        return cc.runHooks(source);
+        currentComponent = conf;
+        return conf.runHooks(source);
     }
 
     /** {@inheritDoc} */

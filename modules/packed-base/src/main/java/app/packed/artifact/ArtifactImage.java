@@ -155,9 +155,8 @@ public final class ArtifactImage implements ContainerSource {
         return (Class<? extends Bundle>) pcc.sourceType();
     }
 
-    // What about wirelets??? Hmmm
-    public ComponentStream stream() {
-        return new ComponentConfigurationToComponentAdaptor(pcc).stream();
+    public ComponentStream stream(ComponentStream.Option... options) {
+        return new ComponentConfigurationToComponentAdaptor(pcc).stream(options);
     }
 
     /**

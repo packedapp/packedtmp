@@ -35,7 +35,7 @@ public class TestStuff extends BaseBundle {
     }
 
     public static void main(String[] args) {
-        App.open(new TestStuff());
+        App.start(new TestStuff());
     }
 
     public static class SingletonField {
