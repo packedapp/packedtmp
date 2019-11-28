@@ -17,6 +17,7 @@ package app.packed.component;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import app.packed.component.feature.AFeature;
 import app.packed.component.feature.FeatureMap;
@@ -39,8 +40,20 @@ public interface Component {
      *
      * @return an unmodifiable view of all of this component's children
      */
-    // forEachChild(Consumer<? extends Component> action);
     Collection<Component> children();
+
+    /**
+     * Iterat
+     * 
+     * <p>
+     * This operation does not allocate any objects internally.
+     * 
+     * @implNote Implementations of this method should never generate object (which is a bit difficult
+     * @param action
+     *            oops
+     */
+    // We want to take some options I think. But not as a options
+    void forEach(Consumer<? super Component> action);
 
     /**
      * Returns the configuration site of this component.
@@ -111,8 +124,6 @@ public interface Component {
      *
      * @return a component stream consisting of this component and all of its descendants in any order
      */
-    // What is the difference between components and children someone is going to ask....
-    // So we renamed it to stream();
     ComponentStream stream(ComponentStream.Option... options);
 
     // Naah feature er vel readonly...
@@ -124,7 +135,13 @@ public interface Component {
     ///// Fordi man ikke skal kunne f.eks. schedulere uden component context'en
 
     //// En ComponentContext.use(XXXX class)
-    /// Er det
+
+    /**
+     * Returns the type of component.
+     * 
+     * @return the type of component
+     */
+    ComponentType type();
 
     //// Hmm, hvis vi nu skal bruge container side car'en... eller artifact side'caren.
     /// Maaske det med at soege op i attribute map traet. Indtil man finder en venlig
@@ -132,8 +149,6 @@ public interface Component {
     default <T> T use(AFeature<T, ?> feature) {
         throw new UnsupportedOperationException();
     }
-
-    ComponentType type();
 }
 
 // {

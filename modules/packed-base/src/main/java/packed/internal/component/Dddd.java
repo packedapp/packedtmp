@@ -50,7 +50,7 @@ public class Dddd extends BaseBundle {
 
     public static void main(String[] args) {
         try (App app = App.start(new Dddd(2))) {
-            app.stream().forEach(c -> System.out.println(c.path() + " " + c.getClass()));
+            app.stream().forEach(c -> System.out.println(c.path() + " " + c.type()));
             System.out.println(app.stream().count());
 
             app.stream().containers().forEach(e -> {

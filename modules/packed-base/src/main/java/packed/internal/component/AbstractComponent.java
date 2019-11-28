@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -122,6 +123,14 @@ public abstract class AbstractComponent implements Component {
         return configSite;
     }
 
+    Container container() {
+        AbstractComponent c = this;
+        while (!(c instanceof Container)) {
+            c = c.parent;
+        }
+        return (Container) c;
+    }
+
     /** {@inheritDoc} */
     @Override
     public final int depth() {
@@ -188,26 +197,27 @@ public abstract class AbstractComponent implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public final String name() {
-        return name;
+    public void forEach(Consumer<? super Component> action) {
+        Map<String, AbstractComponent> c = children;
+        if (c != null) {
+            c.values().forEach(action);
+        }
     }
 
-    Container container() {
-        AbstractComponent c = this;
-        while (!(c instanceof Container)) {
-            c = c.parent;
-        }
-        return (Container) c;
+    public boolean isInSameContainer(AbstractComponent other) {
+        return container() == other.container();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final String name() {
+        return name;
     }
 
     /** {@inheritDoc} */
     @Override
     public final ComponentPath path() {
         return PackedComponentPath.of(this);
-    }
-
-    public boolean isInSameContainer(AbstractComponent other) {
-        return container() == other.container();
     }
 
     /** {@inheritDoc} */

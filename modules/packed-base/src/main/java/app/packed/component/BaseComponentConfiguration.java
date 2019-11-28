@@ -134,5 +134,10 @@ public interface BaseComponentConfiguration {
      */
     BaseComponentConfiguration setName(String name);
 
+    /**
+     * Returns the type of component this configuration creates.
+     * 
+     * @return the type of component this configuration creates
+     */
     ComponentType type();
 }

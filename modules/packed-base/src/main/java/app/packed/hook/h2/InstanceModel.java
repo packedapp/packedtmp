@@ -13,28 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.hook.h2;
 
-// Sealed type....
-
-// SingleLetter
-// H <- Host
-// S <- ActorSystem
-// A <- Actor
-// I <- Instance
-// M <- Many
-// C <- Container
-// V <- VirtualContainer
-
-// Task --> ComponentContext.addTask(Class).
-// Task --> ComponentContext.addTask(Class, Composer<? super TaskConfiguration>)).
 /**
- * The various types of components that are available in Packed.
+ *
  */
-public enum ComponentType {
-    STATELESS, CONTAINER, COMPONENT_INSTANCE, HOST;
-}
+public enum InstanceModel {
+    ZERO, ONE, MANY;
 
-// configuration tyoe
-// runtime tyoe
-// context type
+    public static void main(String[] args) {
+
+    }
+}

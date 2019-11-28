@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 import app.packed.artifact.ArtifactContext;
 import app.packed.component.Component;
@@ -158,6 +159,12 @@ public final class PackedContainer extends AbstractComponent implements Containe
         @Override
         public Component useComponent(CharSequence path) {
             return PackedContainer.this.useComponent(path);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void forEach(Consumer<? super Component> action) {
+            PackedContainer.this.forEach(action);
         }
     }
 }

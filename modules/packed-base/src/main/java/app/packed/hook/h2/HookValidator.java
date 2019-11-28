@@ -13,28 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.hook.h2;
 
-// Sealed type....
-
-// SingleLetter
-// H <- Host
-// S <- ActorSystem
-// A <- Actor
-// I <- Instance
-// M <- Many
-// C <- Container
-// V <- VirtualContainer
-
-// Task --> ComponentContext.addTask(Class).
-// Task --> ComponentContext.addTask(Class, Composer<? super TaskConfiguration>)).
 /**
- * The various types of components that are available in Packed.
+ *
  */
-public enum ComponentType {
-    STATELESS, CONTAINER, COMPONENT_INSTANCE, HOST;
-}
+public abstract class HookValidator {
 
-// configuration tyoe
-// runtime tyoe
-// context type
+    protected abstract void configure();
+
+    // Must be installed as singleton component (or maybe)
+
+    // Hvis man supportere den paa runtime...
+    protected final void addRuntimeController(Class<?> runtime) {
+
+    }
+}

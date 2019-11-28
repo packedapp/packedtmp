@@ -213,6 +213,9 @@ public interface ComponentStream extends Stream<Component> {
     // hideOrigin?
     // showExtensions
     // restrictSameContainer
+
+    // depth, depthContainers, depthArtifacts.
+    // The depth is always relative to the origin's depth
     public interface Option {
 
         /**

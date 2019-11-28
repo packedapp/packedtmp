@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import app.packed.component.Component;
 import app.packed.component.ComponentPath;
@@ -126,5 +127,11 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
     @Override
     public ComponentType type() {
         throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void forEach(Consumer<? super Component> action) {
+        children().forEach(action);
     }
 }
