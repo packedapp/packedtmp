@@ -43,19 +43,6 @@ public interface Component {
     Collection<Component> children();
 
     /**
-     * Iterat
-     * 
-     * <p>
-     * This operation does not allocate any objects internally.
-     * 
-     * @implNote Implementations of this method should never generate object (which is a bit difficult
-     * @param action
-     *            oops
-     */
-    // We want to take some options I think. But not as a options
-    void forEach(Consumer<? super Component> action);
-
-    /**
      * Returns the configuration site of this component.
      * 
      * @return the configuration site of this component
@@ -87,7 +74,7 @@ public interface Component {
      * @return the description of this component. Or an empty optional if no description was set when configuring the
      *         component
      *
-     * @see ComponentConfiguration#setDescription(String)
+     * @see SingletonConfiguration#setDescription(String)
      */
     Optional<String> description();
 
@@ -108,7 +95,7 @@ public interface Component {
      *
      * @return the name of this component
      *
-     * @see ComponentConfiguration#setName(String)
+     * @see SingletonConfiguration#setName(String)
      */
     String name();
 
@@ -125,6 +112,22 @@ public interface Component {
      * @return a component stream consisting of this component and all of its descendants in any order
      */
     ComponentStream stream(ComponentStream.Option... options);
+
+    /**
+     * 
+     * 
+     * <p>
+     * This operation does not allocate any objects internally.
+     * 
+     * @implNote Implementations of this method should never generate object (which is a bit difficult
+     * @param action
+     *            oops
+     */
+    // We want to take some options I think. But not as a options
+    // Well it is more or less the same options....
+    // Tror vi laver options om til en klasse. Og saa har to metoder.
+    // Og dropper varargs..
+    void traverse(Consumer<? super Component> action);
 
     // Naah feature er vel readonly...
     // use kan komme paa ComponentContext og maaske ComponentConfiguration?

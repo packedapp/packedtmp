@@ -37,7 +37,6 @@ import app.packed.lang.Nullable;
 import app.packed.service.ServiceDescriptor;
 import packed.internal.artifact.BuildOutput;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.moduleaccess.ModuleAccess;
 
 /**
  * A bundle descriptor.
@@ -230,26 +229,13 @@ public class BundleDescriptor {
     }
 
     /**
-     * Creates a bundle descriptor from the specified image.
-     * 
-     * @param image
-     *            the image to create a bundle descriptor for
-     * @return the bundle descriptor
-     */
-    public static BundleDescriptor of(ArtifactImage image) {
-        requireNonNull(image, "image is null");
-        PackedContainerConfiguration conf = ModuleAccess.artifact().getConfiguration(image);
-        BundleDescriptor.Builder builder = new BundleDescriptor.Builder(image.sourceType());
-        conf.buildDescriptor(builder);
-        return builder.build();
-    }
-
-    /**
      * Creates a bundle descriptor for the specified bundle.
      *
      * @param bundle
      *            the bundle to create a descriptor for
      * @return a descriptor for the specified bundle
+     * 
+     * @see ArtifactImage#descriptor()
      */
     public static BundleDescriptor of(Bundle bundle) {
         requireNonNull(bundle, "bundle is null");

@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
@@ -173,7 +173,7 @@ public abstract class Bundle implements ContainerSource {
      * 
      * @return the name of the container
      * @see #setName(String)
-     * @see ComponentConfiguration#setName(String)
+     * @see SingletonConfiguration#setName(String)
      */
     protected final String getName() {
         return configuration().getName();
@@ -196,7 +196,7 @@ public abstract class Bundle implements ContainerSource {
     // Den eneste grund for at de her metoder ikke er paa ComponentConfiguration er actors
     // Eller i andre situation hvor man ikke vil have at man installere alm componenter..
     // Men okay. Maaske skal man wrappe det saa. Det er jo let nok at simulere med useParent
-    protected final <T> ComponentConfiguration<T> install(Class<T> implementation) {
+    protected final <T> SingletonConfiguration<T> install(Class<T> implementation) {
         return configuration().install(implementation);
     }
 
@@ -212,7 +212,7 @@ public abstract class Bundle implements ContainerSource {
      * @return the configuration of the component
      * @see BaseBundle#install(Factory)
      */
-    protected final <T> ComponentConfiguration<T> install(Factory<T> factory) {
+    protected final <T> SingletonConfiguration<T> install(Factory<T> factory) {
         return configuration().install(factory);
     }
 
@@ -226,7 +226,7 @@ public abstract class Bundle implements ContainerSource {
      * If this install operation is the first install operation of the container. The component will be installed as the
      * root component of the container. All subsequent install operations on this bundle will have have component as its
      * parent. If you wish to have a specific component as a parent, the various install methods on
-     * {@link ComponentConfiguration} can be used to specify a specific parent.
+     * {@link SingletonConfiguration} can be used to specify a specific parent.
      *
      * @param <T>
      *            the type of component to install
@@ -234,7 +234,7 @@ public abstract class Bundle implements ContainerSource {
      *            the component instance to install
      * @return this configuration
      */
-    protected final <T> ComponentConfiguration<T> installInstance(T instance) {
+    protected final <T> SingletonConfiguration<T> installInstance(T instance) {
         return configuration().installInstance(instance);
     }
 

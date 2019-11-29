@@ -16,10 +16,16 @@
 package app.packed.artifact;
 
 import app.packed.component.Component;
+import app.packed.component.ComponentType;
 
 /**
  *
  */
 public interface Host extends Component {
 
+    /** {@inheritDoc} */
+    @Override
+    default ComponentType type() {
+        return ComponentType.HOST;
+    }
 }

@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.Test;
 
 import app.packed.artifact.App;
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
@@ -146,7 +146,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
     public static final class MyExtension extends Extension {
 
         @OnHook
-        protected void set(Foo s, ComponentConfiguration<?> a) {}
+        protected void set(Foo s, SingletonConfiguration<?> a) {}
 
         static class Composer extends ExtensionComposer<MyExtension> {
 

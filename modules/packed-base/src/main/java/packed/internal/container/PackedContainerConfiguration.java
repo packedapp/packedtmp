@@ -30,7 +30,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import app.packed.api.Contract;
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
@@ -275,14 +275,14 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** {@inheritDoc} */
     @Override
     // Flyt til AbstractComponentConfiguration????? Saa det er interfacet der styrer?
-    public <T> ComponentConfiguration<T> install(Class<T> implementation) {
+    public <T> SingletonConfiguration<T> install(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         return install(Factory.findInjectable(implementation));
     }
 
     /** {@inheritDoc} */
     @Override
-    public <T> ComponentConfiguration<T> install(Factory<T> factory) {
+    public <T> SingletonConfiguration<T> install(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
         ComponentModel model = lookup.componentModelOf(factory.rawType());
         ConfigSite configSite = captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL);
@@ -294,7 +294,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     /** {@inheritDoc} */
     @Override
-    public <T> ComponentConfiguration<T> installInstance(T instance) {
+    public <T> SingletonConfiguration<T> installInstance(T instance) {
         requireNonNull(instance, "instance is null");
         ComponentModel model = lookup.componentModelOf(instance.getClass());
         ConfigSite configSite = captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL);

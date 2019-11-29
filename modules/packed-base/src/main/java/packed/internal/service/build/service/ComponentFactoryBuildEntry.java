@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.util.List;
 
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.lang.InvalidDeclarationException;
 import app.packed.service.Dependency;
@@ -53,7 +53,7 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         this.mha = requireNonNull(mh);
     }
 
-    public ComponentFactoryBuildEntry(ServiceExtensionNode injectorBuilder, ComponentConfiguration<T> cc, InstantiationMode instantionMode, MethodHandle mh,
+    public ComponentFactoryBuildEntry(ServiceExtensionNode injectorBuilder, SingletonConfiguration<T> cc, InstantiationMode instantionMode, MethodHandle mh,
             List<Dependency> dependencies) {
         super(injectorBuilder, cc.configSite(), dependencies, null, cc);
         this.instantionMode = requireNonNull(instantionMode);

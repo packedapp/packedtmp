@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
@@ -157,13 +157,13 @@ public final class PackedExtensionContext implements ExtensionContext {
 
     /** {@inheritDoc} */
     @Override
-    public <T> ComponentConfiguration<T> install(Factory<T> factory) {
+    public <T> SingletonConfiguration<T> install(Factory<T> factory) {
         return pcc.install(factory);
     }
 
     /** {@inheritDoc} */
     @Override
-    public <T> ComponentConfiguration<T> installInstance(T instance) {
+    public <T> SingletonConfiguration<T> installInstance(T instance) {
         return pcc.installInstance(instance);
     }
 

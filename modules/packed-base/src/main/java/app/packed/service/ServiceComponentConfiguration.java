@@ -16,7 +16,7 @@
 package app.packed.service;
 
 import app.packed.component.Component;
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.BaseBundle;
 import app.packed.lang.Key;
@@ -24,7 +24,7 @@ import app.packed.lang.Nullable;
 
 /**
  * This configuration represents an entity that is both a {@link ServiceConfiguration configuration of as service} and a
- * {@link ComponentConfiguration configuration of as component}.
+ * {@link SingletonConfiguration configuration of as component}.
  * <p>
  * An instance of this interface is usually obtained by calling one of the provide methods on {@link ServiceExtension}
  * or {@link BaseBundle}.
@@ -37,7 +37,7 @@ import app.packed.lang.Nullable;
  * @see BaseBundle#provide(Factory)
  * @see BaseBundle#provideInstance(Object)
  */
-public interface ServiceComponentConfiguration<T> extends ServiceConfiguration<T>, ComponentConfiguration<T> {
+public interface ServiceComponentConfiguration<T> extends ServiceConfiguration<T>, SingletonConfiguration<T> {
 
     /**
      * Makes the main component instance available as a service by binding it to the specified key. If the specified key is

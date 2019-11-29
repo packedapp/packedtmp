@@ -15,7 +15,7 @@
  */
 package app.packed.container;
 
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.entrypoint.EntryPointExtension;
 import app.packed.lang.Key;
 import app.packed.lang.Qualifier;
@@ -155,7 +155,7 @@ public abstract class BaseBundle extends Bundle {
         return service().provide(implementation);
     }
 
-    protected final <T> ServiceComponentConfiguration<T> provide(ComponentConfiguration<T> configuration) {
+    protected final <T> ServiceComponentConfiguration<T> provide(SingletonConfiguration<T> configuration) {
         throw new UnsupportedOperationException();
     }
 

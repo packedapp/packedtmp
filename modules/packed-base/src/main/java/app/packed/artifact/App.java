@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import app.packed.component.Component;
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.component.ComponentStream.Option;
@@ -67,7 +67,7 @@ public interface App extends AutoCloseable {
      *
      * @return the description of this application. Or an empty optional if no description has been set
      *
-     * @see ComponentConfiguration#setDescription(String)
+     * @see SingletonConfiguration#setDescription(String)
      */
     Optional<String> description();
 

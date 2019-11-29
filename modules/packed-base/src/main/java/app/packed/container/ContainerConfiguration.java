@@ -21,7 +21,7 @@ import java.lang.invoke.VarHandle;
 import java.util.Set;
 
 import app.packed.component.BaseComponentConfiguration;
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.component.ComponentType;
 import app.packed.component.StatelessConfiguration;
 import app.packed.lang.Nullable;
@@ -62,7 +62,7 @@ public interface ContainerConfiguration extends BaseComponentConfiguration {
      * @return the configuration of the component
      */
     // Rename install to add
-    <T> ComponentConfiguration<T> install(Class<T> implementation);
+    <T> SingletonConfiguration<T> install(Class<T> implementation);
 
     /**
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
@@ -76,7 +76,7 @@ public interface ContainerConfiguration extends BaseComponentConfiguration {
      * @return the configuration of the component
      * @see BaseBundle#install(Factory)
      */
-    <T> ComponentConfiguration<T> install(Factory<T> factory);
+    <T> SingletonConfiguration<T> install(Factory<T> factory);
 
     /**
      * @param <T>
@@ -86,7 +86,7 @@ public interface ContainerConfiguration extends BaseComponentConfiguration {
      * @return the configuration of the component
      * @see BaseBundle#installInstance(Object)
      */
-    <T> ComponentConfiguration<T> installInstance(T instance);
+    <T> SingletonConfiguration<T> installInstance(T instance);
 
     /**
      * Installs a stateless component.

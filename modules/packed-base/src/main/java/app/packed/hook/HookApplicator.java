@@ -17,7 +17,7 @@ package app.packed.hook;
 
 import java.util.function.BiConsumer;
 
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 
 /**
  *
@@ -58,5 +58,5 @@ public interface HookApplicator<T> {
 
     // Vil gerne vaek fra at vaere taet knyttet til ComponentConfiguration
 
-    <S> void onReady(ComponentConfiguration<?> cc, Class<S> sidecarType, BiConsumer<S, T> consumer);
+    <S> void onReady(SingletonConfiguration<?> cc, Class<S> sidecarType, BiConsumer<S, T> consumer);
 }

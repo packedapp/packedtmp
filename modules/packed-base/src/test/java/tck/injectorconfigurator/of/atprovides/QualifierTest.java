@@ -40,16 +40,16 @@ public class QualifierTest {
     @Test
     public void cannotDefineSameProvidedKeys() {
 
-        AbstractThrowableAssert<?, ?> at = assertThatThrownBy(() -> of(c -> c.provide(MultipleIdenticalQualifiedFieldKeys.class)));
+        AbstractThrowableAssert<?, ?> at = assertThatThrownBy(() -> create(c -> c.provide(MultipleIdenticalQualifiedFieldKeys.class)));
         at.isExactlyInstanceOf(InvalidDeclarationException.class);
         at.hasNoCause();
         // TODO check message
 
-        at = assertThatThrownBy(() -> of(c -> c.provide(MultipleIdenticalQualifiedMethodKeys.class)));
+        at = assertThatThrownBy(() -> create(c -> c.provide(MultipleIdenticalQualifiedMethodKeys.class)));
         at.isExactlyInstanceOf(InvalidDeclarationException.class);
         at.hasNoCause();
 
-        at = assertThatThrownBy(() -> of(c -> c.provide(MultipleIdenticalQualifiedMemberKeys.class)));
+        at = assertThatThrownBy(() -> create(c -> c.provide(MultipleIdenticalQualifiedMemberKeys.class)));
         at.isExactlyInstanceOf(InvalidDeclarationException.class);
         at.hasNoCause();
     }
@@ -60,7 +60,7 @@ public class QualifierTest {
         Stub.B = 1L;
         Stub.C = 1L;
         Stub.L = 1L;
-        Injector i = of(c -> c.provide(Stub.class));
+        Injector i = create(c -> c.provide(Stub.class));
         // Stub.A = 2L;
         Stub.B = 2L;
         Stub.C = 2L;
@@ -82,7 +82,7 @@ public class QualifierTest {
         assertThat(i.use(new Key<Long>() {})).isEqualTo(1L);
     }
 
-    private static Injector of(Consumer<? super InjectorConfigurator> consumer) {
+    private static Injector create(Consumer<? super InjectorConfigurator> consumer) {
         return Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
             consumer.accept(c);

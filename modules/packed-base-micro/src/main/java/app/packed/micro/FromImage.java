@@ -33,7 +33,7 @@ import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.container.Bundle;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
@@ -105,7 +105,7 @@ public class FromImage {
 
     public static class MyExtension extends Extension {
 
-        public void foo(ComponentConfiguration<?> cc, Foo s) {}
+        public void foo(SingletonConfiguration<?> cc, Foo s) {}
 
         static class Composer extends ExtensionComposer<MyExtension> {
 

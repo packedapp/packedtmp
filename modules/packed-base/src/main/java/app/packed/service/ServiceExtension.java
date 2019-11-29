@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.BiConsumer;
 
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
@@ -162,7 +162,7 @@ public final class ServiceExtension extends Extension {
         node.exports().exportAll(captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
     }
 
-    public <T, C> void inject(Class<T> key, ComponentConfiguration<C> cc, BiConsumer<? super C, ? super T> action) {
+    public <T, C> void inject(Class<T> key, SingletonConfiguration<C> cc, BiConsumer<? super C, ? super T> action) {
         inject(Key.of(key), cc, action);
     }
 
@@ -185,7 +185,7 @@ public final class ServiceExtension extends Extension {
     // I guess ComponentContext should also be available here..
     // What about errors??? Well, it adds the key to the list of requirements...
     // manualInject?
-    public <T, C> void inject(Key<T> key, ComponentConfiguration<C> cc, BiConsumer<? super C, ? super T> action) {
+    public <T, C> void inject(Key<T> key, SingletonConfiguration<C> cc, BiConsumer<? super C, ? super T> action) {
         throw new UnsupportedOperationException();
     }
 
@@ -216,12 +216,12 @@ public final class ServiceExtension extends Extension {
      *            the configuration of the component that uses the annotation
      */
     @OnHook
-    void onHook(AtProvidesHook hook, ComponentConfiguration<?> cc) {
+    void onHook(AtProvidesHook hook, SingletonConfiguration<?> cc) {
         node.provider().addProvidesHook(hook, cc);
     }
 
     @OnHook
-    void onHook(AnnotatedMethodHook<Provide> hook, ComponentConfiguration<?> cc) {
+    void onHook(AnnotatedMethodHook<Provide> hook, SingletonConfiguration<?> cc) {
         // System.out.println("INVOKED " + hook.method());
     }
 
@@ -258,7 +258,7 @@ public final class ServiceExtension extends Extension {
         throw new UnsupportedOperationException();
     }
 
-    <T> ServiceComponentConfiguration<T> provide(ComponentConfiguration<T> c) {
+    <T> ServiceComponentConfiguration<T> provide(SingletonConfiguration<T> c) {
         // return node.provider().provideFactory(install(factory), factory, factory.factory.function);
 
         // IDeen er lidt at man f.eks. kan lave en ComponentExtension et andet sted, som saa kan bruges her.
@@ -303,7 +303,7 @@ public final class ServiceExtension extends Extension {
      */
     public <T> ServiceComponentConfiguration<T> provideInstance(T instance) {
         // configurability is checked by ComponentExtension
-        ComponentConfiguration<T> cc = installInstance(instance);
+        SingletonConfiguration<T> cc = installInstance(instance);
         return node.provider().provideInstance(cc, instance);
     }
 

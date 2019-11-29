@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package testutil.assertj;
+package app.packed.component;
 
 /**
  *
  */
-public class Ddd {
+public interface ComponentTraverser {
 
 }

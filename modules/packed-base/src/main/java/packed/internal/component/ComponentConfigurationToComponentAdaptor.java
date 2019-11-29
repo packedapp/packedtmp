@@ -17,31 +17,34 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
+import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.Component;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
-import app.packed.component.ComponentType;
+import app.packed.component.Singleton;
+import app.packed.component.Stateless;
 import app.packed.component.feature.FeatureMap;
 import app.packed.config.ConfigSite;
+import app.packed.container.Container;
 import app.packed.container.Extension;
+import packed.internal.container.PackedContainerConfiguration;
 
 /**
  *
  */
-// Tvivler paa vi beholder ArtifactImage.stream()
+public abstract class ComponentConfigurationToComponentAdaptor implements Component {
 
-// Tror vi bliver noedt til at lave en adaptor per component type....
-// De metoder der ikke er relevante, smider vi bare UnsupportedOperationException...
-public final class ComponentConfigurationToComponentAdaptor implements Component {
+    /** A cached, lazy initialized list of all children. */
+    private volatile Map<String, ComponentConfigurationToComponentAdaptor> children;
 
-    private volatile List<ComponentConfigurationToComponentAdaptor> children;
-
+    /** The component configuration to wrap. */
     private final AbstractComponentConfiguration componentConfiguration;
 
     public ComponentConfigurationToComponentAdaptor(AbstractComponentConfiguration componentConfiguration) {
@@ -51,87 +54,128 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
     /** {@inheritDoc} */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public Collection<Component> children() {
-        List<ComponentConfigurationToComponentAdaptor> c = children;
+    public final Collection<Component> children() {
+        Map<String, ComponentConfigurationToComponentAdaptor> c = children;
         if (c == null) {
             if (componentConfiguration.children == null) {
-                c = List.of();
+                c = Map.of();
             } else {
-                ArrayList<ComponentConfigurationToComponentAdaptor> tmp = new ArrayList<>();
+                LinkedHashMap<String, ComponentConfigurationToComponentAdaptor> m = new LinkedHashMap<>();
                 for (AbstractComponentConfiguration acc : componentConfiguration.children.values()) {
-                    tmp.add(new ComponentConfigurationToComponentAdaptor(acc));
+                    m.put(acc.name, of0(acc));
                 }
-                c = children = List.copyOf(tmp);
+                c = children = Map.copyOf(m);
             }
         }
-        return (Collection) c;
+        return (Collection) c.values();
     }
 
     /** {@inheritDoc} */
     @Override
-    public ConfigSite configSite() {
+    public final ConfigSite configSite() {
         return componentConfiguration.configSite();
     }
 
     /** {@inheritDoc} */
     @Override
-    public int depth() {
+    public final int depth() {
         return componentConfiguration.depth();
     }
 
     /** {@inheritDoc} */
     @Override
-    public Optional<String> description() {
+    public final Optional<String> description() {
         return Optional.ofNullable(componentConfiguration.getDescription());
     }
 
     /** {@inheritDoc} */
     @Override
-    public FeatureMap features() {
+    public final Optional<Class<? extends Extension>> extension() {
+        return componentConfiguration.extension();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final FeatureMap features() {
         // TODO we need to be able to freeze this for images
         return componentConfiguration.features();
     }
 
     /** {@inheritDoc} */
     @Override
-    public String name() {
+    public final String name() {
         return componentConfiguration.getName();
     }
 
     /** {@inheritDoc} */
     @Override
-    public ComponentPath path() {
+    public final ComponentPath path() {
         return componentConfiguration.path();
     }
 
     /** {@inheritDoc} */
     @Override
-    public ComponentStream stream(ComponentStream.Option... options) {
+    public final ComponentStream stream(ComponentStream.Option... options) {
+        return new PackedComponentStream(stream0(componentConfiguration, true, PackedComponentStreamOption.of(options)));
+    }
+
+    private final Stream<Component> stream0(AbstractComponentConfiguration origin, boolean isRoot, PackedComponentStreamOption option) {
+        // Also fix in ComponentConfigurationToComponentAdaptor when changing stuff here
+        children(); // lazy calc
+        Map<String, ComponentConfigurationToComponentAdaptor> c = children;
+        if (c != null && !c.isEmpty()) {
+            if (option.processThisDeeper(origin, componentConfiguration)) {
+                Stream<Component> s = c.values().stream().flatMap(co -> co.stream0(origin, false, option));
+                return isRoot && option.excludeOrigin() ? s : Stream.concat(Stream.of(this), s);
+            }
+            return Stream.empty();
+        } else {
+            return isRoot && option.excludeOrigin() ? Stream.empty() : Stream.of(this);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final void traverse(Consumer<? super Component> action) {
         throw new UnsupportedOperationException();
-        // children();
-        // List<ComponentConfigurationToComponentAdaptor> c = children;
-        // if (c == null) {
-        // return new PackedComponentStream(Stream.of(this));
-        // }
-        // return new PackedComponentStream(Stream.concat(Stream.of(this),
-        // c.stream().flatMap(ComponentConfigurationToComponentAdaptor::stream)));
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Optional<Class<? extends Extension>> extension() {
-        return componentConfiguration.extension();
+    public static Container of(PackedContainerConfiguration pcc) {
+        return (Container) of0(pcc);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ComponentType type() {
-        throw new UnsupportedOperationException();
+    private static ComponentConfigurationToComponentAdaptor of0(BaseComponentConfiguration bcc) {
+        if (bcc instanceof PackedContainerConfiguration) {
+            return new ContainerAdaptor((PackedContainerConfiguration) bcc);
+        } else if (bcc instanceof PackedStatelessComponentConfiguration) {
+            return new StatelessAdaptor((PackedStatelessComponentConfiguration) bcc);
+        } else if (bcc instanceof PackedSingletonConfiguration) {
+            return new SingleAdaptor((PackedSingletonConfiguration<?>) bcc);
+        } else {
+            // TODO add host, when we get a configuration class
+            throw new IllegalArgumentException("Unknown configuration type, type = " + bcc);
+        }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void forEach(Consumer<? super Component> action) {
-        children().forEach(action);
+    private final static class ContainerAdaptor extends ComponentConfigurationToComponentAdaptor implements Container {
+
+        public ContainerAdaptor(PackedContainerConfiguration pcc) {
+            super(pcc);
+        }
     }
+
+    private final static class SingleAdaptor extends ComponentConfigurationToComponentAdaptor implements Singleton {
+
+        public SingleAdaptor(PackedSingletonConfiguration<?> conf) {
+            super(conf);
+        }
+    }
+
+    private final static class StatelessAdaptor extends ComponentConfigurationToComponentAdaptor implements Stateless {
+
+        public StatelessAdaptor(PackedStatelessComponentConfiguration conf) {
+            super(conf);
+        }
+    }
+
 }

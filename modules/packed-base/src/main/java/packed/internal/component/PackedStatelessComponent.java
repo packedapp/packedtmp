@@ -15,14 +15,14 @@
  */
 package packed.internal.component;
 
-import app.packed.component.Component;
 import app.packed.component.ComponentType;
+import app.packed.component.Stateless;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
 
 /**
  *
  */
-final class PackedStatelessComponent extends AbstractComponent implements Component {
+final class PackedStatelessComponent extends AbstractComponent implements Stateless {
 
     PackedStatelessComponent(AbstractComponent parent, PackedStatelessComponentConfiguration configuration, PackedArtifactInstantiationContext ic) {
         super(parent, configuration, ic);

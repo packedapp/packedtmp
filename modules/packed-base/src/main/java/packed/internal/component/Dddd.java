@@ -15,9 +15,9 @@
  */
 package packed.internal.component;
 
-import app.packed.artifact.App;
-import app.packed.artifact.ArtifactContext;
+import app.packed.artifact.ArtifactImage;
 import app.packed.container.BaseBundle;
+import app.packed.container.Wirelet;
 
 /**
  *
@@ -34,31 +34,34 @@ public class Dddd extends BaseBundle {
     @Override
     protected void configure() {
         // System.out.println(Option.inSameContainer());
-
         installInstance("sdfsdf").setName("Hej");
-
         installInstance("sdfsdf");
         installInstance("sdfsdf");
         installInstance("sdfsdf");
         installInstance("sdfsdf");
         if (depth > 0) {
-            link(new Dddd(depth - 1));
+            link(new Dddd(depth - 1), Wirelet.name("X123123XXX"));
             link(new Dddd(depth - 1));
             link(new Dddd(depth - 1));
         }
     }
 
     public static void main(String[] args) {
-        try (App app = App.start(new Dddd(2))) {
-            app.stream().forEach(c -> System.out.println(c.path() + " " + c.type()));
-            System.out.println(app.stream().count());
+        ArtifactImage img = ArtifactImage.build(new Dddd(4));
 
-            app.stream().containers().forEach(e -> {
-                System.out.println(e.getClass());
-                ArtifactContext c = (ArtifactContext) e;
-                System.out.println(c.injector());
-            });
-        }
+        img.stream().forEach(c -> System.out.println(c.path() + " " + c.type()));
+
+        System.out.println("--------------");
+        // try (App app = App.start(new Dddd(1))) {
+        //
+        // // ComponentStream.Option.skipOrigin().andInSameArtifact();
+        //
+        // app.stream().forEach(c -> System.out.println(c.path() + " " + c.type()));
+        // System.out.println(app.stream().count());
+        //
+        // app.stream().containers().forEach(e -> {
+        // System.out.println(e.getClass());
+        // });
+        // }
     }
-
 }

@@ -15,7 +15,7 @@
  */
 package app.packed.container;
 
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.service.Factory;
@@ -52,7 +52,7 @@ public interface ExtensionContext {
      */
     ComponentPath containerPath();
 
-    <T> ComponentConfiguration<T> install(Factory<T> factory);
+    <T> SingletonConfiguration<T> install(Factory<T> factory);
 
     /**
      * @param <T>
@@ -62,7 +62,7 @@ public interface ExtensionContext {
      * @return the configuration of the component
      * @see ContainerConfiguration#installInstance(Object)
      */
-    <T> ComponentConfiguration<T> installInstance(T instance);
+    <T> SingletonConfiguration<T> installInstance(T instance);
 
     /**
      * Returns an extension of the specified type. The specified type must be among the extension's dependencies as

@@ -13,22 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.ztests;
-
-import java.util.function.BiConsumer;
-
-import app.packed.component.SingletonConfiguration;
-import app.packed.hook.AnnotatedFieldHook;
-import app.packed.lang.reflect.VarOperator;
+package app.packed.component;
 
 /**
  *
  */
-public class RuntimeAccessorList<T> {
+public interface Singleton extends Component {
 
-    public <S> void readyAll(SingletonConfiguration<?> cc, Class<S> sidecarType, BiConsumer<S, T> consumer) {}
-
-    public RuntimeAccessorList<T> add(AnnotatedFieldHook<?> hook, VarOperator<T> operator) {
-        return this;
+    /** {@inheritDoc} */
+    @Override
+    default ComponentType type() {
+        return ComponentType.COMPONENT_INSTANCE;
     }
 }

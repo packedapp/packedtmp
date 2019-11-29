@@ -163,8 +163,8 @@ public final class PackedContainer extends AbstractComponent implements Containe
 
         /** {@inheritDoc} */
         @Override
-        public void forEach(Consumer<? super Component> action) {
-            PackedContainer.this.forEach(action);
+        public void traverse(Consumer<? super Component> action) {
+            PackedContainer.this.traverse(action);
         }
     }
 }

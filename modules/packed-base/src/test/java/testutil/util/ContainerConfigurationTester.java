@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
@@ -67,8 +67,8 @@ public class ContainerConfigurationTester {
         return conf;
     }
 
-    public <T> ComponentConfiguration<T> installInstance(T instance) {
-        ComponentConfiguration<T> conf = cc.installInstance(instance);
+    public <T> SingletonConfiguration<T> installInstance(T instance) {
+        SingletonConfiguration<T> conf = cc.installInstance(instance);
         assertThat(conf).isNotNull();
         return conf;
     }

@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import app.packed.component.BaseComponentConfiguration;
-import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.component.feature.FeatureMap;
 import app.packed.config.ConfigSite;
@@ -263,6 +262,18 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
         return initializeName(State.GET_NAME_INVOKED, null);
     }
 
+    PackedContainerConfiguration containerX() {
+        AbstractComponentConfiguration c = this;
+        while (!(c instanceof PackedContainerConfiguration)) {
+            c = c.parent;
+        }
+        return (PackedContainerConfiguration) c;
+    }
+
+    public boolean isInSameContainer(AbstractComponentConfiguration other) {
+        return containerX() == other.containerX();
+    }
+
     final Map<String, AbstractComponent> initializeChildren(AbstractComponent parent, PackedArtifactInstantiationContext ic) {
         if (children == null) {
             return null;
@@ -368,7 +379,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
         /** */
         FINAL,
 
-        /** {@link ComponentConfiguration#getName()} or {@link ContainerConfiguration#getName()} has been invoked. */
+        /** {@link BaseComponentConfiguration#getName()} has been invoked. */
         GET_NAME_INVOKED,
 
         /** The initial state. */

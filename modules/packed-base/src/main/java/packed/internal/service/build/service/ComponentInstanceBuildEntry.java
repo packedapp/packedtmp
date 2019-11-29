@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.service.InstantiationMode;
 import packed.internal.service.build.ServiceExtensionInstantiationContext;
@@ -45,7 +45,7 @@ public final class ComponentInstanceBuildEntry<T> extends AbstractComponentBuild
      * @param instance
      *            the instance
      */
-    public ComponentInstanceBuildEntry(ServiceExtensionNode ib, ConfigSite configSite, ComponentConfiguration<T> cc, T instance) {
+    public ComponentInstanceBuildEntry(ServiceExtensionNode ib, ConfigSite configSite, SingletonConfiguration<T> cc, T instance) {
         super(ib, configSite, List.of(), null, cc);
         this.instance = requireNonNull(instance, "instance is null");
     }

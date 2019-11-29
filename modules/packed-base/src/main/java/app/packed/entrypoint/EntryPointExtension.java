@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
@@ -93,7 +93,7 @@ public final class EntryPointExtension extends Extension {
      * 
      * @param mh
      */
-    void addMain(ComponentConfiguration<?> cc, LifecycleHookAggregator mh) {
+    void addMain(SingletonConfiguration<?> cc, LifecycleHookAggregator mh) {
         mh.applyDelayed.onReady(cc, LifecycleSidecar.class, (s, r) -> r.run());
         // TODO check that we do not have multiple @Main methods
     }

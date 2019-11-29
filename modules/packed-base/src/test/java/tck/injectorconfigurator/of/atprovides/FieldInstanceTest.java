@@ -91,7 +91,7 @@ public class FieldInstanceTest {
     /** Can never bind prototypes that have non-static provided fields. */
     @Test
     public void xxx() {
-        of(c -> {
+        create(c -> {
             c.provideInstance(new AtomicBoolean());
             c.provide(SingletonField.class);
         });
@@ -100,7 +100,7 @@ public class FieldInstanceTest {
     /** Can never bind prototypes that have non-static provided fields. */
     @Test
     public void providePrototype() {
-        AbstractThrowableAssert<?, ?> a = assertThatThrownBy(() -> of(c -> {
+        AbstractThrowableAssert<?, ?> a = assertThatThrownBy(() -> create(c -> {
             c.provideInstance(new AtomicBoolean());
             c.provide(SingletonField.class).prototype();
         }));
@@ -123,7 +123,7 @@ public class FieldInstanceTest {
         // TODO check message
     }
 
-    private static Injector of(Consumer<? super InjectorConfigurator> consumer) {
+    private static Injector create(Consumer<? super InjectorConfigurator> consumer) {
         return Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
             consumer.accept(c);
@@ -152,7 +152,7 @@ public class FieldInstanceTest {
         Short s = 1;
 
         static void test(Consumer<? super InjectorConfigurator> configurator) {
-            Injector i = of(c -> configurator.accept(c));
+            Injector i = create(c -> configurator.accept(c));
             MixedFields f = i.use(MixedFields.class);
             // f.l = 2L;
             f.s = 2;

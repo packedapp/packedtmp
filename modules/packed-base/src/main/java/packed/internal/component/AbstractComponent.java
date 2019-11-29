@@ -131,6 +131,10 @@ public abstract class AbstractComponent implements Component {
         return (Container) c;
     }
 
+    public boolean isInSameContainer(AbstractComponent other) {
+        return container() == other.container();
+    }
+
     /** {@inheritDoc} */
     @Override
     public final int depth() {
@@ -197,19 +201,6 @@ public abstract class AbstractComponent implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public void forEach(Consumer<? super Component> action) {
-        Map<String, AbstractComponent> c = children;
-        if (c != null) {
-            c.values().forEach(action);
-        }
-    }
-
-    public boolean isInSameContainer(AbstractComponent other) {
-        return container() == other.container();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public final String name() {
         return name;
     }
@@ -227,6 +218,7 @@ public abstract class AbstractComponent implements Component {
     }
 
     private final Stream<Component> stream0(AbstractComponent origin, boolean isRoot, PackedComponentStreamOption option) {
+        // Also fix in ComponentConfigurationToComponentAdaptor when changing stuff here
         Map<String, AbstractComponent> c = children;
         if (c != null && !c.isEmpty()) {
             if (option.processThisDeeper(origin, this)) {
@@ -236,6 +228,15 @@ public abstract class AbstractComponent implements Component {
             return Stream.empty();
         } else {
             return isRoot && option.excludeOrigin() ? Stream.empty() : Stream.of(this);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void traverse(Consumer<? super Component> action) {
+        Map<String, AbstractComponent> c = children;
+        if (c != null) {
+            c.values().forEach(action);
         }
     }
 

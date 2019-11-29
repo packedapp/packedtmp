@@ -24,15 +24,15 @@ import app.packed.service.Factory;
  * <p>
  * It it also possible to install components at runtime via {@link Component}.
  */
-public interface ComponentConfiguration<T> extends BaseComponentConfiguration {
+public interface SingletonConfiguration<T> extends BaseComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    ComponentConfiguration<T> setDescription(String description);
+    SingletonConfiguration<T> setDescription(String description);
 
     /** {@inheritDoc} */
     @Override
-    ComponentConfiguration<T> setName(String name);
+    SingletonConfiguration<T> setName(String name);
 
     /** {@inheritDoc} */
     @Override
@@ -67,7 +67,7 @@ interface XCC2<T> {
      * @see #addMixin(Factory)
      * @see #addMixin(Object)
      */
-    default ComponentConfiguration<T> addMixin(Class<?> implementation) {
+    default SingletonConfiguration<T> addMixin(Class<?> implementation) {
         throw new UnsupportedOperationException();
     }
 
@@ -83,7 +83,7 @@ interface XCC2<T> {
      * @see #addMixin(Class)
      * @see #addMixin(Object)
      */
-    default ComponentConfiguration<T> addMixin(Factory<?> factory) {
+    default SingletonConfiguration<T> addMixin(Factory<?> factory) {
         throw new UnsupportedOperationException();
     }
 
@@ -100,11 +100,11 @@ interface XCC2<T> {
      * @see #addMixin(Class)
      * @see #addMixin(Factory)
      */
-    default ComponentConfiguration<T> addMixin(Object instance) {
+    default SingletonConfiguration<T> addMixin(Object instance) {
         throw new UnsupportedOperationException();
     }
 
-    default ComponentConfiguration<T> addMixinClass(Class<?> mixin) {
+    default SingletonConfiguration<T> addMixinClass(Class<?> mixin) {
         // Hvordan opfoere de sig med de forskellige typer... f.eks. prototype services...
         // Prototypeservice er en type!
 

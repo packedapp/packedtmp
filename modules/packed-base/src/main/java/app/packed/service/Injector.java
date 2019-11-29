@@ -24,7 +24,7 @@ import app.packed.artifact.App;
 import app.packed.artifact.ArtifactConfigurator;
 import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.ArtifactDriver;
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
@@ -148,7 +148,7 @@ public interface Injector {
      *
      * @return the description of this injector. Or an empty optional if no description has been set
      *
-     * @see ComponentConfiguration#setDescription(String)
+     * @see SingletonConfiguration#setDescription(String)
      */
     Optional<String> description();
 

@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Member;
 
 import app.packed.component.Component;
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.service.InjectionException;
@@ -57,7 +57,7 @@ final class ComponentExtension extends Extension {
 
     }
 
-    public <T> ComponentConfiguration<T> useParent(ComponentConfiguration<T> cc) {
+    public <T> SingletonConfiguration<T> useParent(SingletonConfiguration<T> cc) {
         // Ideen er at alle nye componenter bruger den som parent, incl linked containers...
 
         // may useAsParent is better
@@ -67,7 +67,7 @@ final class ComponentExtension extends Extension {
         return cc;
     }
 
-    public ComponentConfiguration<Void> useParent(String folder) {
+    public SingletonConfiguration<Void> useParent(String folder) {
         // Folk vil tro det er en component med navnet man skal bruge...
 
         // addFolder()??????
@@ -154,7 +154,7 @@ class ComponentRule {
      * The description of the component. The default value is the empty string, which means that no description will be set.
      *
      * @return the description of the component
-     * @see ComponentConfiguration#setDescription(String)
+     * @see SingletonConfiguration#setDescription(String)
      * @see Component#description()
      */
     String description() default "";
@@ -164,7 +164,7 @@ class ComponentRule {
      * generate a unique name for the component.
      *
      * @return the name of the component
-     * @see ComponentConfiguration#setName(String)
+     * @see SingletonConfiguration#setName(String)
      * @see Component#name()
      */
     String name() default "";

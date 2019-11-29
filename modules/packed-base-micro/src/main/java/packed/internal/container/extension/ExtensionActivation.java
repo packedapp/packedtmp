@@ -32,7 +32,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.artifact.ArtifactImage;
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.container.Bundle;
 import app.packed.container.Extension;
 import app.packed.container.UseExtension;
@@ -113,7 +113,7 @@ public class ExtensionActivation {
 
     public static class MyExtension extends Extension {
 
-        public void foo(ComponentConfiguration<?> cc, Foo s) {}
+        public void foo(SingletonConfiguration<?> cc, Foo s) {}
 
     }
 

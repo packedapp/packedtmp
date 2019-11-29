@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.ExtensionContext;
@@ -173,7 +173,7 @@ public final class ServiceExtensionNode {
      * @param group
      *            a inject group object
      */
-    public void onInjectGroup(ComponentConfiguration<?> cc, AtInjectHook group) {
+    public void onInjectGroup(SingletonConfiguration<?> cc, AtInjectHook group) {
         // new Exception().printStackTrace();
         // Hvis den er instans, Singlton Factory -> Saa skal det vel med i en liste
         // Hvis det er en ManyProvide-> Saa skal vi jo egentlig bare gemme den til den bliver instantieret.

@@ -35,6 +35,9 @@ import packed.internal.container.PackedContainerConfiguration;
 // Men ikke errorHandling, tror bare den eksistere
 // Logging ihvertfald
 // Eller AOP, eller maaske eksistere den bare.
+
+// Use an interface????
+
 public abstract class Contract {
 
     /** {@inheritDoc} */

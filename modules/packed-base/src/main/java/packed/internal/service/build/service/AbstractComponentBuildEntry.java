@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.lang.Nullable;
 import app.packed.service.Dependency;
@@ -33,7 +33,7 @@ import packed.internal.service.build.ServiceExtensionNode;
 public abstract class AbstractComponentBuildEntry<T> extends BuildEntry<T> {
 
     /** The configuration of the component this build entry belongs to */
-    public final ComponentConfiguration<?> componentConfiguration;
+    public final SingletonConfiguration<?> componentConfiguration;
 
     /**
      * @param serviceExtension
@@ -41,7 +41,7 @@ public abstract class AbstractComponentBuildEntry<T> extends BuildEntry<T> {
      * @param dependencies
      */
     public AbstractComponentBuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite, List<Dependency> dependencies,
-            AbstractComponentBuildEntry<?> declaringEntry, ComponentConfiguration<?> componentConfiguration) {
+            AbstractComponentBuildEntry<?> declaringEntry, SingletonConfiguration<?> componentConfiguration) {
         super(serviceExtension, declaringEntry, configSite, dependencies);
         this.componentConfiguration = requireNonNull(componentConfiguration);
     }

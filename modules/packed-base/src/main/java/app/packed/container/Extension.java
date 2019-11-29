@@ -21,7 +21,7 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Optional;
 
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.ExtensionWirelet.Pipeline;
 import app.packed.service.Factory;
@@ -180,7 +180,7 @@ public abstract class Extension {
         return c;
     }
 
-    protected final <T> ComponentConfiguration<T> install(Factory<T> factory) {
+    protected final <T> SingletonConfiguration<T> install(Factory<T> factory) {
         return context().install(factory);
     }
 
@@ -192,7 +192,7 @@ public abstract class Extension {
      * @return the configuration of the component
      * @see ContainerConfiguration#installInstance(Object)
      */
-    protected final <T> ComponentConfiguration<T> installInstance(T instance) {
+    protected final <T> SingletonConfiguration<T> installInstance(T instance) {
         return context().installInstance(instance);
     }
 

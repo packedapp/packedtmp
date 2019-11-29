@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.component.feature.FeatureMap;
 import app.packed.config.ConfigSite;
@@ -39,7 +39,7 @@ public final class PackedServiceComponentConfiguration<T> implements ServiceComp
     public final BuildEntry<T> buildEntry;
 
     /** The component we are exposing. */
-    private final ComponentConfiguration<T> component;
+    private final SingletonConfiguration<T> component;
 
     /**
      * Creates a new configuration object
@@ -47,7 +47,7 @@ public final class PackedServiceComponentConfiguration<T> implements ServiceComp
      * @param buildEntry
      *            the build entry to wrap
      */
-    public PackedServiceComponentConfiguration(ComponentConfiguration<T> component, BuildEntry<T> buildEntry) {
+    public PackedServiceComponentConfiguration(SingletonConfiguration<T> component, BuildEntry<T> buildEntry) {
         this.buildEntry = requireNonNull(buildEntry);
         this.component = component;
     }

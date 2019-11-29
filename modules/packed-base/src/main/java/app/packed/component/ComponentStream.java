@@ -224,7 +224,7 @@ public interface ComponentStream extends Stream<Component> {
          * 
          * @return an option that excludes the component from where the stream is originated
          */
-        static ComponentStream.Option excludeOrigin() {
+        static ComponentStream.Option skipOrigin() {
             return PackedComponentStreamOption.EXCLUDE_ORIGIN_OPTION;
         }
 
@@ -243,6 +243,10 @@ public interface ComponentStream extends Stream<Component> {
         }
 
         public static ComponentStream.Option inSameArtifact() {
+            throw new UnsupportedOperationException();
+        }
+
+        default ComponentStream.Option andInSameArtifact() {
             throw new UnsupportedOperationException();
         }
 

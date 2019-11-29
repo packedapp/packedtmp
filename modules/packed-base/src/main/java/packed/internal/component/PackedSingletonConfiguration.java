@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
 import app.packed.service.Factory;
@@ -30,7 +30,7 @@ import packed.internal.moduleaccess.ModuleAccess;
 /**
  *
  */
-public final class PackedSingletonConfiguration<T> extends AbstractComponentConfiguration implements ComponentConfiguration<T> {
+public final class PackedSingletonConfiguration<T> extends AbstractComponentConfiguration implements SingletonConfiguration<T> {
 
     public final ComponentModel componentModel;
 

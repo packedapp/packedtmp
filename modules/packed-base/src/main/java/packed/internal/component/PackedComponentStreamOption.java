@@ -115,4 +115,16 @@ public final class PackedComponentStreamOption implements ComponentStream.Option
         }
         return true;
     }
+
+    public boolean processThisDeeper(AbstractComponentConfiguration origin, AbstractComponentConfiguration actual) {
+        Class<? extends Extension> extensionType = actual.extension().orElse(null);
+        // if (s==0) return;
+        if (extensionType != null && ((s & INCLUDE_EXTENSIONS) != 0 || (includeExtensions == null && !includeExtensions.contains(extensionType)))) {
+            return false;
+        }
+        if ((s & IN_SAME_CONTAINER) != 0 && !origin.isInSameContainer(actual)) {
+            return false;
+        }
+        return true;
+    }
 }

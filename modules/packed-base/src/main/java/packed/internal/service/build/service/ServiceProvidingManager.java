@@ -25,7 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Wirelet;
 import app.packed.lang.Key;
@@ -56,7 +56,7 @@ import packed.internal.service.run.AbstractInjector;
 public final class ServiceProvidingManager {
 
     /** A map used to cache build entries, connect stuff */
-    private final IdentityHashMap<ComponentConfiguration<?>, BuildEntry<?>> componentConfigurationCache = new IdentityHashMap<>();
+    private final IdentityHashMap<SingletonConfiguration<?>, BuildEntry<?>> componentConfigurationCache = new IdentityHashMap<>();
 
     /** A map of build entries that provide services with the same key. */
     @Nullable
@@ -90,7 +90,7 @@ public final class ServiceProvidingManager {
      *            the configuration of the annotated component
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void addProvidesHook(AtProvidesHook hook, ComponentConfiguration cc) {
+    public void addProvidesHook(AtProvidesHook hook, SingletonConfiguration cc) {
         // The parent node is not added until #provideFactory or #provideInstance
         AbstractComponentBuildEntry parentNode;
         PackedSingletonConfiguration psc = (PackedSingletonConfiguration) cc;
@@ -140,7 +140,7 @@ public final class ServiceProvidingManager {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> ServiceComponentConfiguration<T> provideInstance(ComponentConfiguration cc, T instance) {
+    public <T> ServiceComponentConfiguration<T> provideInstance(SingletonConfiguration cc, T instance) {
         // First see if we have already installed the node. This happens in #set if the component container any members
         // annotated with @Provides
         BuildEntry<?> c = componentConfigurationCache.get(cc);

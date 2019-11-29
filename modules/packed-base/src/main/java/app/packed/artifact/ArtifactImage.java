@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import app.packed.component.Component;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
@@ -111,6 +112,20 @@ public final class ArtifactImage implements ContainerSource {
     }
 
     /**
+     * Creates a bundle descriptor from the specified image.
+     * 
+     * @return the bundle descriptor
+     * 
+     * @see BundleDescriptor#of(Bundle)
+     */
+    public BundleDescriptor descriptor() {
+        // Need to support wirelet context...
+        BundleDescriptor.Builder builder = new BundleDescriptor.Builder(sourceType());
+        pcc.buildDescriptor(builder);
+        return builder.build();
+    }
+
+    /**
      * Returns the name of this artifact.
      * <p>
      * The returned name is always identical to the name of the artifact's root container.
@@ -155,8 +170,15 @@ public final class ArtifactImage implements ContainerSource {
         return (Class<? extends Bundle>) pcc.sourceType();
     }
 
+    /**
+     * 
+     * @param options
+     *            options
+     * @return the component stream
+     * @see Component#stream(app.packed.component.ComponentStream.Option...)
+     */
     public ComponentStream stream(ComponentStream.Option... options) {
-        return new ComponentConfigurationToComponentAdaptor(pcc).stream(options);
+        return ComponentConfigurationToComponentAdaptor.of(pcc).stream(options);
     }
 
     /**

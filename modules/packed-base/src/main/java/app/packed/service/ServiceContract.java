@@ -230,7 +230,7 @@ public final class ServiceContract extends Contract {
     // I Think optional, jeg kunne godt forstille mig en contract som ikke har noget der svarer til empty.
     // Men det er ogsaa fint.. Det her gaelder kun for ServiceContract...
     public static ServiceContract of(ArtifactImage image) {
-        return BundleDescriptor.of(image).contracts().use(ServiceContract.class);
+        return image.descriptor().contracts().use(ServiceContract.class);
     }
 
     public static ServiceContract of(Bundle bundle) {

@@ -16,7 +16,7 @@
 package packed.internal.hook.assignableTo;
 
 import app.packed.artifact.App;
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.container.UseExtension;
@@ -61,13 +61,13 @@ public class TestIt extends BaseBundle {
         }
 
         @OnHook
-        public static void foo(AssignableToHook<FooBar> foob, ComponentConfiguration<?> cc) {
+        public static void foo(AssignableToHook<FooBar> foob, SingletonConfiguration<?> cc) {
             System.out.println("NICE " + foob.type() + " virker");
             System.out.println(cc.path());
         }
 
         @OnHook
-        public static void fsoo(AssignableToHook<Runnable> foob, ComponentConfiguration<?> cc) {
+        public static void fsoo(AssignableToHook<Runnable> foob, SingletonConfiguration<?> cc) {
             System.out.println("NICE " + foob.type() + " virker");
             System.out.println(cc.path());
         }
