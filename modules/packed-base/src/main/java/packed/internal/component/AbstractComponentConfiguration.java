@@ -43,6 +43,7 @@ import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.PackedExtensionContext;
 import packed.internal.hook.applicator.DelayedAccessor;
+import packed.internal.host.PackedHostConfiguration;
 
 /** A common superclass for all component configuration classes. */
 public abstract class AbstractComponentConfiguration implements ComponentHolder, BaseComponentConfiguration {
@@ -124,6 +125,15 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
         this.depth = 0;
         this.extension = null;
         this.artifact = new PackedArtifactBuildContext((PackedContainerConfiguration) this, output);
+    }
+
+    protected AbstractComponentConfiguration(ConfigSite configSite, PackedHostConfiguration parent, PackedContainerConfiguration pcc, BuildOutput output) {
+        this.configSite = requireNonNull(configSite);
+        this.parent = requireNonNull(parent);
+        this.container = null;
+        this.depth = parent.depth() + 1;
+        this.extension = null;
+        this.artifact = new PackedArtifactBuildContext(pcc, output);
     }
 
     /**

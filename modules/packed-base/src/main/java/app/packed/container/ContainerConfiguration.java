@@ -20,9 +20,10 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.util.Set;
 
+import app.packed.artifact.HostConfiguration;
 import app.packed.component.BaseComponentConfiguration;
-import app.packed.component.SingletonConfiguration;
 import app.packed.component.ComponentType;
+import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.lang.Nullable;
 import app.packed.service.Factory;
@@ -63,6 +64,8 @@ public interface ContainerConfiguration extends BaseComponentConfiguration {
      */
     // Rename install to add
     <T> SingletonConfiguration<T> install(Class<T> implementation);
+
+    HostConfiguration addHost();
 
     /**
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.

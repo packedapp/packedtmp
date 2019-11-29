@@ -21,10 +21,10 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import app.packed.component.Component;
-import app.packed.component.SingletonConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.component.ComponentStream.Option;
+import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
@@ -45,6 +45,8 @@ import app.packed.service.ServiceExtension;
  * You can easily have Hundreds of Thousands of applications running in the same JVM.
  */
 public interface App extends AutoCloseable {
+
+    static final ArtifactDriver<App> DRIVER = AppArtifactDriver.INSTANCE;
 
     /** Closes the app (synchronously). **/
     @Override

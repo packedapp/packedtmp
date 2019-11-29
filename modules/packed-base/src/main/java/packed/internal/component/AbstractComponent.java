@@ -88,7 +88,7 @@ public abstract class AbstractComponent implements Component {
         this.parent = parent;
         this.configSite = requireNonNull(configuration.configSite());
         this.description = configuration.getDescription();
-        this.depth = configuration.depth();
+        this.depth = parent == null ? 0 : parent.depth + 1; // If configuration is from image, depth will not match
         this.children = configuration.initializeChildren(this, ic);
         this.extension = configuration.extension();
         if (parent == null) {

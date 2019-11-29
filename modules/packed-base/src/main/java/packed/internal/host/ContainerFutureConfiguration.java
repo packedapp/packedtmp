@@ -23,6 +23,7 @@ import packed.internal.artifact.BuildOutput;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.component.AbstractComponent;
 import packed.internal.component.AbstractComponentConfiguration;
+import packed.internal.container.PackedContainerConfiguration;
 
 /**
  *
@@ -33,11 +34,11 @@ import packed.internal.component.AbstractComponentConfiguration;
 // Saa vi store den midt imellem.
 public class ContainerFutureConfiguration extends AbstractComponentConfiguration {
 
-    public final AbstractComponentConfiguration delegate;
+    public final PackedContainerConfiguration delegate;
 
-    ContainerFutureConfiguration(AbstractComponentConfiguration configuration, ArtifactImage image) {
-        super(configuration.configSite(), BuildOutput.image());
-        this.delegate = requireNonNull(configuration);
+    ContainerFutureConfiguration(PackedHostConfiguration host, PackedContainerConfiguration pcc, ArtifactImage image) {
+        super(pcc.configSite(), host, pcc, BuildOutput.image());
+        this.delegate = requireNonNull(pcc);
         setDescription("Oops");
         this.name = delegate.name;
     }
@@ -45,16 +46,18 @@ public class ContainerFutureConfiguration extends AbstractComponentConfiguration
     /** {@inheritDoc} */
     @Override
     protected String initializeNameDefaultName() {
-        return "DDDD";
+        return delegate.initializeNameDefaultName();
     }
 
     /** {@inheritDoc} */
     @Override
     protected AbstractComponent instantiate(AbstractComponent parent, PackedArtifactInstantiationContext ic) {
+
+        return delegate.instantiate(parent, ic);
         // Maaske, kan vi tilgaengeaeld nogen gange instantiered en PackedContainer direkte herfra...
 
         // return delegate.instantiate();
-        return new ContainerFuture(parent, this, ic);
+        // return new ContainerFuture(parent, this, ic);
     }
 
     /** {@inheritDoc} */

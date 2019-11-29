@@ -15,9 +15,52 @@
  */
 package packed.internal.host.test;
 
+import app.packed.artifact.App;
+import app.packed.artifact.ArtifactImage;
+import app.packed.artifact.HostConfiguration;
+import app.packed.container.BaseBundle;
+
 /**
  *
  */
-public class FooBar {
+public class FooBar extends BaseBundle {
 
+    static final ArtifactImage IMG = ArtifactImage.build(new TestBundle());
+
+    static final ArtifactImage IMG2 = ArtifactImage.build(new TestBundl2e());
+
+    /** {@inheritDoc} */
+    @Override
+    protected void configure() {
+        HostConfiguration hc = configuration().addHost();
+        hc.setName("Host");
+        hc.deploy(IMG, App.DRIVER);
+        hc.deploy(IMG, App.DRIVER);
+        hc.deploy(IMG, App.DRIVER);
+        // link(new TestBundle());
+    }
+
+    public static void main(String[] args) {
+        App.start(new FooBar()).stream().forEach(e -> System.out.println(e.path()));
+    }
+
+    static class TestBundle extends BaseBundle {
+
+        /** {@inheritDoc} */
+        @Override
+        protected void configure() {
+            setName("SSS");
+            installInstance("HejHej").setName("123");
+        }
+    }
+
+    static class TestBundl2e extends BaseBundle {
+
+        /** {@inheritDoc} */
+        @Override
+        protected void configure() {
+            setName("SSS");
+            installInstance("HejHej").setName("123");
+        }
+    }
 }

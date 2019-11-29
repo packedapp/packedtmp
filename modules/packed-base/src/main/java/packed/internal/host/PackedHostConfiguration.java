@@ -38,7 +38,7 @@ public class PackedHostConfiguration extends AbstractComponentConfiguration impl
      * @param configSite
      * @param parent
      */
-    protected PackedHostConfiguration(ConfigSite configSite, AbstractComponentConfiguration parent) {
+    public PackedHostConfiguration(ConfigSite configSite, AbstractComponentConfiguration parent) {
         super(configSite, parent);
     }
 
@@ -49,13 +49,13 @@ public class PackedHostConfiguration extends AbstractComponentConfiguration impl
         requireNonNull(driver, "driver is null");
         ArtifactImage img = (ArtifactImage) source;
         PackedContainerConfiguration pcc = ModuleAccess.artifact().getConfiguration(img);
-        addChild(new ContainerFutureConfiguration(pcc, img));
+        addChild(new ContainerFutureConfiguration(this, pcc, img));
     }
 
     /** {@inheritDoc} */
     @Override
     protected String initializeNameDefaultName() {
-        return "FooBar";
+        return "Host";
     }
 
     /** {@inheritDoc} */

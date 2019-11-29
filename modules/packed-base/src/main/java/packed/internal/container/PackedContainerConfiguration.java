@@ -57,6 +57,7 @@ import packed.internal.config.ConfigSiteUtil;
 import packed.internal.hook.applicator.DelayedAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarFieldDelayerAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarMethodDelayerAccessor;
+import packed.internal.host.PackedHostConfiguration;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.moduleaccess.ModuleAccess;
@@ -251,7 +252,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     }
 
     @Override
-    protected String initializeNameDefaultName() {
+    public String initializeNameDefaultName() {
         // I think try and move some of this to ComponentNameWirelet
         @Nullable
         Class<? extends ContainerSource> source = this.sourceType();
@@ -330,7 +331,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     /** {@inheritDoc} */
     @Override
-    protected PackedContainer instantiate(AbstractComponent parent, PackedArtifactInstantiationContext ic) {
+    public PackedContainer instantiate(AbstractComponent parent, PackedArtifactInstantiationContext ic) {
         return new PackedContainer(parent, this, ic);
     }
 
@@ -498,5 +499,15 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             extensions.put(extensionType, pec = PackedExtensionContext.of(this, extensionType));
         }
         return pec;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public HostConfiguration addHost() {
+        ConfigSite configSite = captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL);
+        PackedHostConfiguration conf = new PackedHostConfiguration(configSite, this);
+        installPrepare(State.INSTALL_INVOKED);
+        currentComponent = conf;
+        return conf;
     }
 }
