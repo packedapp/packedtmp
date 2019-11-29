@@ -16,11 +16,17 @@
 package app.packed.artifact;
 
 import app.packed.component.BaseComponentConfiguration;
+import app.packed.component.ComponentType;
+import app.packed.container.ContainerSource;
+import app.packed.container.Wirelet;
 
 /**
  *
  */
 public interface HostConfiguration extends BaseComponentConfiguration {
+
+    void deploy(ContainerSource source, ArtifactDriver<?> driver, Wirelet... wirelets);
+    // deploy permanently...
 
     /** {@inheritDoc} */
     @Override
@@ -29,13 +35,10 @@ public interface HostConfiguration extends BaseComponentConfiguration {
     /** {@inheritDoc} */
     @Override
     HostConfiguration setName(String name);
-}
 
-// Ideen er at vi har
-// ContainerConfiguration.addHost(Class<?> hostConfiguration);
-
-class AppHostConfiguration {
-    public AppHostConfiguration(HostConfiguration configuration) {
-
+    /** {@inheritDoc} */
+    @Override
+    default ComponentType type() {
+        return ComponentType.HOST;
     }
 }

@@ -15,36 +15,30 @@
  */
 package packed.internal.host;
 
-import java.util.concurrent.ConcurrentHashMap;
-
-import app.packed.artifact.App;
-import app.packed.artifact.Host;
 import app.packed.component.ComponentType;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.component.AbstractComponent;
-import packed.internal.component.AbstractComponentConfiguration;
 
 /**
  *
  */
-public class PackedHost extends AbstractComponent implements Host {
+public final class ContainerFuture extends AbstractComponent {
 
-    // App is not a component, so can't really use children. Unless, we attach the artifact
-    // to the component, which we probably should
-    // We need some kind of wrapper, because we also want to support artifacts.
-    // that are not apps
-    final ConcurrentHashMap<String, App> apps = new ConcurrentHashMap<>();
+    private final ContainerFutureConfiguration configuration;
 
     /**
+     * @param parent
      * @param configuration
+     * @param ic
      */
-    PackedHost(AbstractComponent parent, AbstractComponentConfiguration configuration, PackedArtifactInstantiationContext ic) {
+    protected ContainerFuture(AbstractComponent parent, ContainerFutureConfiguration configuration, PackedArtifactInstantiationContext ic) {
         super(parent, configuration, ic);
+        this.configuration = configuration;
     }
 
     /** {@inheritDoc} */
     @Override
     public ComponentType type() {
-        return ComponentType.HOST;
+        return configuration.delegate.type();
     }
 }

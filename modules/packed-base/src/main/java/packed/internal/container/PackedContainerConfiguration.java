@@ -30,6 +30,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import app.packed.api.Contract;
+import app.packed.artifact.HostConfiguration;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
@@ -346,7 +347,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** {@inheritDoc} */
     @Override
     public boolean isArtifactRoot() {
-        return parent == null; // TODO change when we have hosts.
+        return parent == null || parent instanceof HostConfiguration; // TODO change when we have hosts.
     }
 
     /** {@inheritDoc} */

@@ -51,6 +51,7 @@ public class Dddd extends BaseBundle {
 
         img.stream().forEach(c -> System.out.println(c.path() + " " + c.type()));
 
+        img.stream().forEach(c -> System.out.println(c.path() + " " + c.type()));
         System.out.println("--------------");
         // try (App app = App.start(new Dddd(1))) {
         //
