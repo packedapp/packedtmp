@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
 import app.packed.component.feature.AFeature;
+import app.packed.container.Bundle;
 import app.packed.container.Container;
 import app.packed.container.Extension;
 import packed.internal.component.PackedComponentStreamOption;
@@ -197,6 +198,19 @@ public interface ComponentStream extends Stream<Component> {
     }
 
     /**
+     * 
+     * <p>
+     * This method consumes the specified bundle.
+     * 
+     * @param bundle
+     *            the bundle to return a stream for
+     * @return a component the stream
+     * @see ArtifactImage#stream(Option...)
+     */
+    static ComponentStream of(Bundle bundle, Option... options) {
+        return ArtifactImage.build(bundle).stream(options);
+    }
+    /**
      * Skal kun indeholde ting vi ikke kan have i streamen.
      */
     /// Ideen er lidt at hvis vi har en masse virtuelle komponenter. Saa gider vi ikke have dem med i default viewet....
@@ -258,6 +272,8 @@ public interface ComponentStream extends Stream<Component> {
         public static ComponentStream.Option inSameContainer() {
             return PackedComponentStreamOption.IN_SAME_CONTAINER_OPTION;
         }
+
+        // FollowUnitialized guests...
 
         // maxDepth, maxRelativeDepth
         // maxDepth, maxAbsoluteDepth <---- Taenker man oftest vil bruge relative, saa denne er nok bedst

@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactImage;
 import app.packed.artifact.HostConfigurationContext;
+import app.packed.component.ComponentType;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
@@ -30,8 +31,10 @@ import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.moduleaccess.ModuleAccess;
 
 /**
- *
+ * The defa
  */
+// We don't actually store the HostConfiguration in this class.
+
 public final class PackedHostConfiguration extends AbstractComponentConfiguration implements HostConfigurationContext {
 
     /**
@@ -47,14 +50,21 @@ public final class PackedHostConfiguration extends AbstractComponentConfiguratio
     public void deploy(ContainerSource source, ArtifactDriver<?> driver, Wirelet... wirelets) {
         requireNonNull(source, "source is null");
         requireNonNull(driver, "driver is null");
+        // For now we create an image...
         ArtifactImage img = ArtifactImage.build(source, wirelets);
         PackedContainerConfiguration pcc = ModuleAccess.artifact().getConfiguration(img);
-        addChild(new FutureComponentConfiguration(this, pcc, img));
+
+        PackedGuestConfiguration pgc = new PackedGuestConfiguration(this, pcc, img);
+        pgc.initializeName(State.LINK_INVOKED, null);
+
+        System.out.println("PFFF " + pgc.name);
+        addChild(pgc);
     }
 
     /** {@inheritDoc} */
     @Override
     protected String initializeNameDefaultName() {
+        // Vi burde kunne extract AppHost fra <T>
         return "Host"; // Host for now, But if we have host driver...
     }
 
@@ -76,5 +86,11 @@ public final class PackedHostConfiguration extends AbstractComponentConfiguratio
     public PackedHostConfiguration setName(String name) {
         super.setName(name);
         return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentType type() {
+        return ComponentType.HOST;
     }
 }

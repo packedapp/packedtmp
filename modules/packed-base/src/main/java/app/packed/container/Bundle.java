@@ -205,6 +205,10 @@ public abstract class Bundle implements ContainerSource {
         return configuration().addHost(type);
     }
 
+    protected final <T extends HostConfiguration> T provideHost(Class<T> type) {
+        return configuration().addHost(type);
+    }
+
     /**
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
      * <p>

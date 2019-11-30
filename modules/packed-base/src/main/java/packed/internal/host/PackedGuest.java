@@ -22,16 +22,16 @@ import packed.internal.component.AbstractComponent;
 /**
  *
  */
-public final class ContainerFuture extends AbstractComponent {
+public final class PackedGuest extends AbstractComponent {
 
-    private final FutureComponentConfiguration configuration;
+    private final PackedGuestConfiguration configuration;
 
     /**
      * @param parent
      * @param configuration
      * @param ic
      */
-    protected ContainerFuture(AbstractComponent parent, FutureComponentConfiguration configuration, PackedArtifactInstantiationContext ic) {
+    protected PackedGuest(AbstractComponent parent, PackedGuestConfiguration configuration, PackedArtifactInstantiationContext ic) {
         super(parent, configuration, ic);
         this.configuration = configuration;
     }

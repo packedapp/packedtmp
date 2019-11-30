@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import app.packed.artifact.Host;
 import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.Component;
 import app.packed.component.ComponentPath;
@@ -35,6 +36,8 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Container;
 import app.packed.container.Extension;
 import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.host.PackedGuestConfiguration;
+import packed.internal.host.PackedHostConfiguration;
 
 /**
  *
@@ -151,6 +154,11 @@ public abstract class ComponentConfigurationToComponentAdaptor implements Compon
             return new StatelessAdaptor((PackedStatelessComponentConfiguration) bcc);
         } else if (bcc instanceof PackedSingletonConfiguration) {
             return new SingleAdaptor((PackedSingletonConfiguration<?>) bcc);
+        } else if (bcc instanceof PackedHostConfiguration) {
+            return new HostAdaptor((PackedHostConfiguration) bcc);
+        } else if (bcc instanceof PackedGuestConfiguration) {
+            PackedGuestConfiguration pgc = (PackedGuestConfiguration) bcc;
+            return new ContainerAdaptor(pgc.delegate);
         } else {
             // TODO add host, when we get a configuration class
             throw new IllegalArgumentException("Unknown configuration type, type = " + bcc);
@@ -174,6 +182,13 @@ public abstract class ComponentConfigurationToComponentAdaptor implements Compon
     private final static class StatelessAdaptor extends ComponentConfigurationToComponentAdaptor implements Stateless {
 
         public StatelessAdaptor(PackedStatelessComponentConfiguration conf) {
+            super(conf);
+        }
+    }
+
+    private final static class HostAdaptor extends ComponentConfigurationToComponentAdaptor implements Host {
+
+        public HostAdaptor(PackedHostConfiguration conf) {
             super(conf);
         }
     }

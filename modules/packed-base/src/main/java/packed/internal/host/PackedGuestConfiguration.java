@@ -34,27 +34,28 @@ import packed.internal.container.PackedContainerConfiguration;
 // Bl.a. fordi jo skal store wirelets et sted. Det kan ikke vaere i hosten.
 // Og vi kan heller ikke goere det i guesten, hvis den f.eks. er et image.
 // Saa vi store den midt imellem.
-public class FutureComponentConfiguration extends AbstractComponentConfiguration {
+public class PackedGuestConfiguration extends AbstractComponentConfiguration {
 
     public final PackedContainerConfiguration delegate;
 
-    FutureComponentConfiguration(PackedHostConfiguration host, PackedContainerConfiguration pcc, ArtifactImage image) {
+    PackedGuestConfiguration(PackedHostConfiguration host, PackedContainerConfiguration pcc, ArtifactImage image) {
         super(pcc.configSite(), host, pcc, BuildOutput.image());
         this.delegate = requireNonNull(pcc);
-        setDescription("Oops");
-        this.name = delegate.name;
+        this.description = pcc.getDescription();
     }
 
     /** {@inheritDoc} */
     @Override
     protected String initializeNameDefaultName() {
+        if (delegate.name != null) {
+            return delegate.name;
+        }
         return delegate.initializeNameDefaultName();
     }
 
     /** {@inheritDoc} */
     @Override
     protected AbstractComponent instantiate(AbstractComponent parent, PackedArtifactInstantiationContext ic) {
-
         return delegate.instantiate(parent, ic);
         // Maaske, kan vi tilgaengeaeld nogen gange instantiered en PackedContainer direkte herfra...
 

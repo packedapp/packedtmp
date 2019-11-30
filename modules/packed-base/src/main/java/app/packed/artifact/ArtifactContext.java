@@ -30,6 +30,8 @@ import app.packed.service.Injector;
  * <p>
  * An instance of this interface is normally acquired via {@link ArtifactDriver#newArtifact(ArtifactContext)}.
  */
+
+// Det er jo i virkeligheden ContainerText, men den kan bare ikke lukkes ned....
 public interface ArtifactContext extends ComponentContext {
 
     /**

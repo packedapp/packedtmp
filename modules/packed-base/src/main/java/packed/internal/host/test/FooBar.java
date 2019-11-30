@@ -16,31 +16,29 @@
 package packed.internal.host.test;
 
 import app.packed.artifact.App;
-import app.packed.artifact.ArtifactImage;
+import app.packed.component.ComponentStream;
 import app.packed.container.BaseBundle;
-import app.packed.container.Wirelet;
 
 /**
  *
  */
 public class FooBar extends BaseBundle {
 
-    static final ArtifactImage IMG = ArtifactImage.build(new TestBundle());
-
-    static final ArtifactImage IMG2 = ArtifactImage.build(new TestBundl2e());
-
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-        MyHostConf hc = addHost(MyHostConf.class).as(AppHost.class);
-        export(AppHost.class); // export(hc); <- Virker kun med ServiceInstanceConfiguration
-        hc.deploy(IMG, App.DRIVER);
-        hc.deploy(IMG2, App.DRIVER);
-        hc.deploy(IMG2, App.DRIVER, Wirelet.name("XXXX"));
+        MyHostConf hc = provideHost(MyHostConf.class);
+        hc.deploy(new TestBundle(), App.DRIVER);
+        hc.deploy(new TestBundle(), App.DRIVER);
+
+        // link(new TestBundle());
+        // link(new TestBundle());
     }
 
     public static void main(String[] args) {
-        App.start(new FooBar()).stream().forEach(e -> System.out.println(e.path()));
+        App.start(new FooBar()).stream().sorted().forEach(e -> System.out.println(e.path() + " " + e.type()));
+        System.out.println();
+        ComponentStream.of(new FooBar()).forEach(e -> System.out.println(e.path()));
     }
 
     static class TestBundl2e extends BaseBundle {
@@ -48,7 +46,7 @@ public class FooBar extends BaseBundle {
         /** {@inheritDoc} */
         @Override
         protected void configure() {
-            setName("SSS1");
+            setName("Ss1?");
             installInstance("HejHej").setName("123");
         }
     }
@@ -58,7 +56,7 @@ public class FooBar extends BaseBundle {
         /** {@inheritDoc} */
         @Override
         protected void configure() {
-            setName("SSS2");
+            setName("Sss2?");
             installInstance("HejHej").setName("123");
         }
     }

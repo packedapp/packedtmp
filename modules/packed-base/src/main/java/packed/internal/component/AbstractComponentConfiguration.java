@@ -73,7 +73,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
 
     /** The description of the component. */
     @Nullable
-    private String description;
+    protected String description;
 
     /** Any extension this component belongs to. */
     @Nullable
@@ -143,6 +143,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
      *            the child to add
      */
     protected final void addChild(AbstractComponentConfiguration child) {
+        System.err.println("----> Adding " + child.name);
         requireNonNull(child.name);
         LinkedHashMap<String, AbstractComponentConfiguration> c = children;
         if (c == null) {

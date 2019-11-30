@@ -365,6 +365,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         // finalize name of this container
         initializeName(State.LINK_INVOKED, null);
         installPrepare(State.LINK_INVOKED);
+        currentComponent = null;// need to clear out current component...
 
         // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
         // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
@@ -380,7 +381,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             containers = new ArrayList<>(5);
         }
         containers.add(dcc);
-
         // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
         // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return
         // type.
