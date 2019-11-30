@@ -13,27 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
-
-import app.packed.component.BaseComponentConfiguration;
-import app.packed.component.ComponentType;
+package packed.internal.host.test;
 
 /**
  *
  */
-public interface HostConfiguration extends BaseComponentConfiguration {
+public interface AppHost {
 
-    /** {@inheritDoc} */
-    @Override
-    HostConfiguration setDescription(String description);
-
-    /** {@inheritDoc} */
-    @Override
-    HostConfiguration setName(String name);
-
-    /** {@inheritDoc} */
-    @Override
-    default ComponentType type() {
-        return ComponentType.HOST;
-    }
 }

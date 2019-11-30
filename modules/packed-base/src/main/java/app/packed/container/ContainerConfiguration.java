@@ -33,10 +33,18 @@ import app.packed.service.ServiceExtension;
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
  * extending {@link Bundle} or {@link BaseBundle}.
  */
-/**
- *
- */
 public interface ContainerConfiguration extends BaseComponentConfiguration {
+
+    /**
+     * Installs a host and returns the configuration of it.
+     * 
+     * @param <T>
+     *            the type of host configuration to return
+     * @param type
+     *            the type of host configuration to return
+     * @return a host configuration of the specified type
+     */
+    <T extends HostConfiguration> T addHost(Class<T> type);
 
     /**
      * Returns an unmodifiable view of the extensions that are currently being used.
@@ -64,8 +72,6 @@ public interface ContainerConfiguration extends BaseComponentConfiguration {
      */
     // Rename install to add
     <T> SingletonConfiguration<T> install(Class<T> implementation);
-
-    HostConfiguration addHost();
 
     /**
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.

@@ -18,6 +18,7 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import java.util.function.Function;
 
 import app.packed.api.Contract;
 import app.packed.artifact.HostConfiguration;
+import app.packed.artifact.HostConfigurationContext;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
@@ -61,7 +63,10 @@ import packed.internal.host.PackedHostConfiguration;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.moduleaccess.ModuleAccess;
+import packed.internal.reflect.ClassProcessor;
+import packed.internal.reflect.ConstructorFinder;
 import packed.internal.service.run.DefaultInjector;
+import packed.internal.util.UncheckedThrowableFactory;
 
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
@@ -348,7 +353,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** {@inheritDoc} */
     @Override
     public boolean isArtifactRoot() {
-        return parent == null || parent instanceof HostConfiguration; // TODO change when we have hosts.
+        return parent == null || parent instanceof HostConfigurationContext; // TODO change when we have hosts.
     }
 
     /** {@inheritDoc} */
@@ -501,13 +506,23 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return pec;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public HostConfiguration addHost() {
+    private HostConfigurationContext addHost() {
         ConfigSite configSite = captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL);
         PackedHostConfiguration conf = new PackedHostConfiguration(configSite, this);
         installPrepare(State.INSTALL_INVOKED);
         currentComponent = conf;
         return conf;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T extends HostConfiguration> T addHost(Class<T> hostType) {
+        ClassProcessor cp = new ClassProcessor(MethodHandles.lookup(), hostType, true);
+        MethodHandle mh = ConstructorFinder.find(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, HostConfigurationContext.class);
+        try {
+            return (T) mh.invoke(addHost());
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 }

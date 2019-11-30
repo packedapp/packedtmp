@@ -29,14 +29,16 @@ import packed.internal.container.PackedContainerConfiguration;
  *
  */
 // Vi pakker altid containere ind i future configuration.
+// ISaeer pga images, hvor vi f.eks. har et permanent name i imaged
+// Men vi vil jo gerne aendre det.
 // Bl.a. fordi jo skal store wirelets et sted. Det kan ikke vaere i hosten.
 // Og vi kan heller ikke goere det i guesten, hvis den f.eks. er et image.
 // Saa vi store den midt imellem.
-public class ContainerFutureConfiguration extends AbstractComponentConfiguration {
+public class FutureComponentConfiguration extends AbstractComponentConfiguration {
 
     public final PackedContainerConfiguration delegate;
 
-    ContainerFutureConfiguration(PackedHostConfiguration host, PackedContainerConfiguration pcc, ArtifactImage image) {
+    FutureComponentConfiguration(PackedHostConfiguration host, PackedContainerConfiguration pcc, ArtifactImage image) {
         super(pcc.configSite(), host, pcc, BuildOutput.image());
         this.delegate = requireNonNull(pcc);
         setDescription("Oops");

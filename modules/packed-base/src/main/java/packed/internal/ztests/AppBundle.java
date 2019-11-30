@@ -16,7 +16,6 @@
 package packed.internal.ztests;
 
 import app.packed.artifact.App;
-import app.packed.artifact.ArtifactImage;
 import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerSource;
@@ -39,23 +38,6 @@ import app.packed.service.ServiceWirelets;
 // Det fungere ikke skide godt med nedarvning
 abstract class AppBundle extends BaseBundle {
 
-    /**
-     * Creates a new artifact image from the specified source. Is typically used like this: <pre>
-     * 
-     * </pre>
-     * <p>
-     * Invoking this method is identical to invoking {@link ArtifactImage#build(ContainerSource, Wirelet...)}.
-     * 
-     * @param source
-     *            the could to create the image from
-     * @param wirelets
-     * @return a new artifact image from the specified source
-     * @see ArtifactImage#build(ContainerSource, Wirelet...)
-     */
-    protected static ArtifactImage newImage(ContainerSource source, Wirelet... wirelets) {
-        return ArtifactImage.build(source, wirelets);
-    }
-
     // runMain????.. maybe still so similar. Do we want to throw Exception???
     // I think so... Wirelet.throw(Exception.class); <- Argument to runThrowing...
     // executeMain
@@ -69,5 +51,4 @@ abstract class AppBundle extends BaseBundle {
     static protected void run(ContainerSource source, Wirelet... wirelets) {
         App.run(source, wirelets);
     }
-
 }

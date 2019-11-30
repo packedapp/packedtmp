@@ -41,6 +41,7 @@ public interface ArtifactContext extends ComponentContext {
     Injector injector();
 
     default Class<?> resultType() {
+
         // Ideen er her taenkt at vi kan bruge den samme med Job...
         //// En anden slags entry point annotering...
         return void.class;

@@ -17,8 +17,8 @@ package packed.internal.host.test;
 
 import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
-import app.packed.artifact.HostConfiguration;
 import app.packed.container.BaseBundle;
+import app.packed.container.Wirelet;
 
 /**
  *
@@ -32,26 +32,15 @@ public class FooBar extends BaseBundle {
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-        HostConfiguration hc = configuration().addHost();
-        hc.setName("Host");
+        MyHostConf hc = addHost(MyHostConf.class).as(AppHost.class);
+        export(AppHost.class); // export(hc); <- Virker kun med ServiceInstanceConfiguration
         hc.deploy(IMG, App.DRIVER);
-        hc.deploy(IMG, App.DRIVER);
-        hc.deploy(IMG, App.DRIVER);
-        // link(new TestBundle());
+        hc.deploy(IMG2, App.DRIVER);
+        hc.deploy(IMG2, App.DRIVER, Wirelet.name("XXXX"));
     }
 
     public static void main(String[] args) {
         App.start(new FooBar()).stream().forEach(e -> System.out.println(e.path()));
-    }
-
-    static class TestBundle extends BaseBundle {
-
-        /** {@inheritDoc} */
-        @Override
-        protected void configure() {
-            setName("SSS");
-            installInstance("HejHej").setName("123");
-        }
     }
 
     static class TestBundl2e extends BaseBundle {
@@ -59,7 +48,17 @@ public class FooBar extends BaseBundle {
         /** {@inheritDoc} */
         @Override
         protected void configure() {
-            setName("SSS");
+            setName("SSS1");
+            installInstance("HejHej").setName("123");
+        }
+    }
+
+    static class TestBundle extends BaseBundle {
+
+        /** {@inheritDoc} */
+        @Override
+        protected void configure() {
+            setName("SSS2");
             installInstance("HejHej").setName("123");
         }
     }

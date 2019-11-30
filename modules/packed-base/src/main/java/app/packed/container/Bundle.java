@@ -22,8 +22,9 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import app.packed.component.SingletonConfiguration;
+import app.packed.artifact.HostConfiguration;
 import app.packed.component.ComponentPath;
+import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.lang.Nullable;
@@ -198,6 +199,10 @@ public abstract class Bundle implements ContainerSource {
     // Men okay. Maaske skal man wrappe det saa. Det er jo let nok at simulere med useParent
     protected final <T> SingletonConfiguration<T> install(Class<T> implementation) {
         return configuration().install(implementation);
+    }
+
+    protected final <T extends HostConfiguration> T addHost(Class<T> type) {
+        return configuration().addHost(type);
     }
 
     /**

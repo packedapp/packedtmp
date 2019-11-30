@@ -24,14 +24,14 @@ import packed.internal.component.AbstractComponent;
  */
 public final class ContainerFuture extends AbstractComponent {
 
-    private final ContainerFutureConfiguration configuration;
+    private final FutureComponentConfiguration configuration;
 
     /**
      * @param parent
      * @param configuration
      * @param ic
      */
-    protected ContainerFuture(AbstractComponent parent, ContainerFutureConfiguration configuration, PackedArtifactInstantiationContext ic) {
+    protected ContainerFuture(AbstractComponent parent, FutureComponentConfiguration configuration, PackedArtifactInstantiationContext ic) {
         super(parent, configuration, ic);
         this.configuration = configuration;
     }

@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactImage;
-import app.packed.artifact.HostConfiguration;
+import app.packed.artifact.HostConfigurationContext;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
@@ -32,7 +32,7 @@ import packed.internal.moduleaccess.ModuleAccess;
 /**
  *
  */
-public class PackedHostConfiguration extends AbstractComponentConfiguration implements HostConfiguration {
+public final class PackedHostConfiguration extends AbstractComponentConfiguration implements HostConfigurationContext {
 
     /**
      * @param configSite
@@ -47,15 +47,15 @@ public class PackedHostConfiguration extends AbstractComponentConfiguration impl
     public void deploy(ContainerSource source, ArtifactDriver<?> driver, Wirelet... wirelets) {
         requireNonNull(source, "source is null");
         requireNonNull(driver, "driver is null");
-        ArtifactImage img = (ArtifactImage) source;
+        ArtifactImage img = ArtifactImage.build(source, wirelets);
         PackedContainerConfiguration pcc = ModuleAccess.artifact().getConfiguration(img);
-        addChild(new ContainerFutureConfiguration(this, pcc, img));
+        addChild(new FutureComponentConfiguration(this, pcc, img));
     }
 
     /** {@inheritDoc} */
     @Override
     protected String initializeNameDefaultName() {
-        return "Host";
+        return "Host"; // Host for now, But if we have host driver...
     }
 
     /** {@inheritDoc} */

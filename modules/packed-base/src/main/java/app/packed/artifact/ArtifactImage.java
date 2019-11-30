@@ -112,7 +112,7 @@ public final class ArtifactImage implements ContainerSource {
     }
 
     /**
-     * Creates a bundle descriptor from the specified image.
+     * Returns a bundle descriptor for this image.
      * 
      * @return the bundle descriptor
      * 
@@ -171,6 +171,7 @@ public final class ArtifactImage implements ContainerSource {
     }
 
     /**
+     * Creates a component stream of all will be components in this image.
      * 
      * @param options
      *            options

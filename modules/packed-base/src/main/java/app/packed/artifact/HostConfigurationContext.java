@@ -17,19 +17,26 @@ package app.packed.artifact;
 
 import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.ComponentType;
+import app.packed.container.ContainerSource;
+import app.packed.container.Wirelet;
 
 /**
  *
  */
-public interface HostConfiguration extends BaseComponentConfiguration {
+// Behoever altsaa ikke vaere et interfaace...
+// Det er
+public interface HostConfigurationContext extends BaseComponentConfiguration {
+
+    void deploy(ContainerSource source, ArtifactDriver<?> driver, Wirelet... wirelets);
+    // deploy permanently...
 
     /** {@inheritDoc} */
     @Override
-    HostConfiguration setDescription(String description);
+    HostConfigurationContext setDescription(String description);
 
     /** {@inheritDoc} */
     @Override
-    HostConfiguration setName(String name);
+    HostConfigurationContext setName(String name);
 
     /** {@inheritDoc} */
     @Override
