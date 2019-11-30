@@ -57,7 +57,6 @@ public final class PackedHostConfiguration extends AbstractComponentConfiguratio
         PackedGuestConfiguration pgc = new PackedGuestConfiguration(this, pcc, img);
         pgc.initializeName(State.LINK_INVOKED, null);
 
-        // System.out.println("PFFF " + pgc.name);
         addChild(pgc);
     }
 

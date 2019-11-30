@@ -19,6 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -35,7 +37,6 @@ import app.packed.component.feature.FeatureMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.Container;
 import app.packed.container.Extension;
-import app.packed.lang.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.host.PackedGuestConfiguration;
 import packed.internal.host.PackedHostConfiguration;
@@ -52,9 +53,9 @@ public abstract class ComponentConfigurationToComponentAdaptor implements Compon
     private final AbstractComponentConfiguration componentConfiguration;
 
     // Need to main any guest ancestor. As images must resolve in relation to it.
-    private final PackedGuestConfiguration pgc;
+    private final List<PackedGuestConfiguration> pgc;
 
-    private ComponentConfigurationToComponentAdaptor(AbstractComponentConfiguration componentConfiguration, @Nullable PackedGuestConfiguration pgc) {
+    private ComponentConfigurationToComponentAdaptor(AbstractComponentConfiguration componentConfiguration, List<PackedGuestConfiguration> pgc) {
         this.componentConfiguration = requireNonNull(componentConfiguration);
         this.pgc = pgc;
     }
@@ -81,14 +82,18 @@ public abstract class ComponentConfigurationToComponentAdaptor implements Compon
     /** {@inheritDoc} */
     @Override
     public final ConfigSite configSite() {
-        // For example, if image, should we
+        // We might need to rewrite this for image...
         return componentConfiguration.configSite();
     }
 
     /** {@inheritDoc} */
     @Override
     public final int depth() {
-        return componentConfiguration.depth();
+        int depth = componentConfiguration.depth();
+        for (PackedGuestConfiguration p : pgc) {
+            depth += p.depth();
+        }
+        return depth;
     }
 
     /** {@inheritDoc} */
@@ -119,10 +124,11 @@ public abstract class ComponentConfigurationToComponentAdaptor implements Compon
     /** {@inheritDoc} */
     @Override
     public final ComponentPath path() {
-        if (pgc != null) {
-            return pgc.path().add(componentConfiguration.path());
+        ComponentPath cp = componentConfiguration.path();
+        for (PackedGuestConfiguration p : pgc) {
+            cp = p.path().add(cp);
         }
-        return componentConfiguration.path();
+        return cp;
     }
 
     /** {@inheritDoc} */
@@ -153,10 +159,10 @@ public abstract class ComponentConfigurationToComponentAdaptor implements Compon
     }
 
     public static Container of(PackedContainerConfiguration pcc) {
-        return (Container) of0(pcc, null);
+        return (Container) of0(pcc, List.of());
     }
 
-    private static ComponentConfigurationToComponentAdaptor of0(ComponentConfiguration bcc, @Nullable PackedGuestConfiguration pgc) {
+    private static ComponentConfigurationToComponentAdaptor of0(ComponentConfiguration bcc, List<PackedGuestConfiguration> pgc) {
         if (bcc instanceof PackedContainerConfiguration) {
             return new ContainerAdaptor((PackedContainerConfiguration) bcc, pgc);
         } else if (bcc instanceof PackedStatelessComponentConfiguration) {
@@ -168,7 +174,9 @@ public abstract class ComponentConfigurationToComponentAdaptor implements Compon
         } else if (bcc instanceof PackedGuestConfiguration) {
             // Need to figure out hosts on hosts..
             PackedGuestConfiguration pgcc = (PackedGuestConfiguration) bcc;
-            return new ContainerAdaptor(pgcc.delegate, pgcc);
+            LinkedList<PackedGuestConfiguration> al = new LinkedList<>(pgc);
+            al.addFirst(pgcc);
+            return new ContainerAdaptor(pgcc.delegate, List.copyOf(al));
         } else {
             // TODO add host, when we get a configuration class
             throw new IllegalArgumentException("Unknown configuration type, type = " + bcc);
@@ -177,28 +185,28 @@ public abstract class ComponentConfigurationToComponentAdaptor implements Compon
 
     private final static class ContainerAdaptor extends ComponentConfigurationToComponentAdaptor implements Container {
 
-        public ContainerAdaptor(PackedContainerConfiguration pcc, @Nullable PackedGuestConfiguration pgc) {
+        public ContainerAdaptor(PackedContainerConfiguration pcc, List<PackedGuestConfiguration> pgc) {
             super(pcc, pgc);
         }
     }
 
     private final static class SingleAdaptor extends ComponentConfigurationToComponentAdaptor implements Singleton {
 
-        public SingleAdaptor(PackedSingletonConfiguration<?> conf, @Nullable PackedGuestConfiguration pgc) {
+        public SingleAdaptor(PackedSingletonConfiguration<?> conf, List<PackedGuestConfiguration> pgc) {
             super(conf, pgc);
         }
     }
 
     private final static class StatelessAdaptor extends ComponentConfigurationToComponentAdaptor implements Stateless {
 
-        public StatelessAdaptor(PackedStatelessComponentConfiguration conf, @Nullable PackedGuestConfiguration pgc) {
+        public StatelessAdaptor(PackedStatelessComponentConfiguration conf, List<PackedGuestConfiguration> pgc) {
             super(conf, pgc);
         }
     }
 
     private final static class HostAdaptor extends ComponentConfigurationToComponentAdaptor implements Host {
 
-        public HostAdaptor(PackedHostConfiguration conf, @Nullable PackedGuestConfiguration pgc) {
+        public HostAdaptor(PackedHostConfiguration conf, List<PackedGuestConfiguration> pgc) {
             super(conf, pgc);
         }
     }

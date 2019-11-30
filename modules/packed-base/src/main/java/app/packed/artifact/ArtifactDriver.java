@@ -47,6 +47,10 @@ public abstract class ArtifactDriver<T> {
     private static final TypeVariableExtractor ARTIFACT_DRIVER_TV_EXTRACTOR = TypeVariableExtractor.of(ArtifactDriver.class);
 
     /** The single instance. */
+    // Hmmmmm, this forces initalization of APP
+    // Maybe defaultDriverApp, or defaultDriver(App.class));
+    // People can define default drivers via service loader.....
+    // Must be in the same module...
     public static final ArtifactDriver<App> APP = new AppArtifactDriver();
 
     /** The type of artifact this driver produces. */

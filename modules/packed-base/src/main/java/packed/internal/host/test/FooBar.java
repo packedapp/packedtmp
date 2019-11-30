@@ -27,17 +27,27 @@ public class FooBar extends BaseBundle {
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-        MyHostConf hc = provideHost(MyHostConf.class);
+        MyHostConf hc = provideHost(MyHostConf.class).setName("HA");
         hc.deploy(new TestBundle(), ArtifactDriver.APP);
         hc.deploy(new TestBundle(), ArtifactDriver.APP);
         hc.deploy(new TestBundle(), ArtifactDriver.APP);
-        hc.deploy(new TestBundle(), ArtifactDriver.APP);
+        // hc.deploy(new TestBundle(), ArtifactDriver.APP);
     }
 
     public static void main(String[] args) {
         // App.start(new FooBar()).stream().sorted().forEach(e -> System.out.println(e.path() + " " + e.type()));
-        // System.out.println();
-        ComponentStream.of(new FooBar()).forEach(e -> System.out.println(e.path()));
+        System.out.println();
+        ComponentStream.of(new FooBar()).sorted().forEach(e -> System.out.println(e.path() + " " + e.depth()));
+    }
+
+    static class TestBundl3e extends BaseBundle {
+
+        /** {@inheritDoc} */
+        @Override
+        protected void configure() {
+            setName("Stuff?");
+            installInstance("HejHej").setName("123");
+        }
     }
 
     static class TestBundl2e extends BaseBundle {
@@ -47,6 +57,11 @@ public class FooBar extends BaseBundle {
         protected void configure() {
             setName("Ss1?");
             installInstance("HejHej").setName("123");
+
+            MyHostConf hc = provideHost(MyHostConf.class);
+            hc.deploy(new TestBundl3e(), ArtifactDriver.APP);
+            hc.deploy(new TestBundl3e(), ArtifactDriver.APP);
+
         }
     }
 
@@ -57,6 +72,11 @@ public class FooBar extends BaseBundle {
         protected void configure() {
             setName("Sss2?");
             installInstance("HejHej").setName("123");
+
+            MyHostConf hc = provideHost(MyHostConf.class);
+            hc.deploy(new TestBundl2e(), ArtifactDriver.APP);
+
+            // Problemet er
         }
     }
 }

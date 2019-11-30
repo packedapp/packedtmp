@@ -33,6 +33,12 @@ import app.packed.lang.Key;
 
 public class MyHostConf extends AbstractServiceableConfiguration<AppHost> {
 
+    @Override
+    public MyHostConf setName(String name) {
+        super.setName(name);
+        return this;
+    }
+
     /**
      * @param wrapper
      */
