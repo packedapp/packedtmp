@@ -15,7 +15,7 @@
  */
 package packed.internal.host.test;
 
-import app.packed.artifact.App;
+import app.packed.artifact.ArtifactDriver;
 import app.packed.component.ComponentStream;
 import app.packed.container.BaseBundle;
 
@@ -28,16 +28,15 @@ public class FooBar extends BaseBundle {
     @Override
     protected void configure() {
         MyHostConf hc = provideHost(MyHostConf.class);
-        hc.deploy(new TestBundle(), App.DRIVER);
-        hc.deploy(new TestBundle(), App.DRIVER);
-
-        // link(new TestBundle());
-        // link(new TestBundle());
+        hc.deploy(new TestBundle(), ArtifactDriver.APP);
+        hc.deploy(new TestBundle(), ArtifactDriver.APP);
+        hc.deploy(new TestBundle(), ArtifactDriver.APP);
+        hc.deploy(new TestBundle(), ArtifactDriver.APP);
     }
 
     public static void main(String[] args) {
-        App.start(new FooBar()).stream().sorted().forEach(e -> System.out.println(e.path() + " " + e.type()));
-        System.out.println();
+        // App.start(new FooBar()).stream().sorted().forEach(e -> System.out.println(e.path() + " " + e.type()));
+        // System.out.println();
         ComponentStream.of(new FooBar()).forEach(e -> System.out.println(e.path()));
     }
 

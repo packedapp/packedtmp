@@ -24,7 +24,7 @@ import app.packed.service.Factory;
  * <p>
  * It it also possible to install components at runtime via {@link Component}.
  */
-public interface SingletonConfiguration<T> extends BaseComponentConfiguration {
+public interface SingletonConfiguration<T> extends ComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override

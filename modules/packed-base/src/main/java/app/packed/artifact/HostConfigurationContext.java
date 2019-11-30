@@ -51,6 +51,8 @@ public interface HostConfigurationContext {
      */
     ConfigSite configSite();
 
+    // Do we need an ArtifactReference???
+
     void deploy(ContainerSource source, ArtifactDriver<?> driver, Wirelet... wirelets);
 
     /**

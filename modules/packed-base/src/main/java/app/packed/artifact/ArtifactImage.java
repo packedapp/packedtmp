@@ -216,6 +216,7 @@ public final class ArtifactImage implements ContainerSource {
         PackedContainerConfiguration pcc = new PackedContainerConfiguration(BuildOutput.image(), source, wirelets);
         return new ArtifactImage(pcc.doBuild(), pcc.wireletContext);
     }
+
 }
 
 // De kunne jo strength taget vaere metoder paa imaged og ikke wirelets.

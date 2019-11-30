@@ -29,11 +29,10 @@ import packed.internal.container.PackedContainerConfiguration;
  *
  */
 // Vi pakker altid containere ind i future configuration.
-// ISaeer pga images, hvor vi f.eks. har et permanent name i imaged
-// Men vi vil jo gerne aendre det.
-// Bl.a. fordi jo skal store wirelets et sted. Det kan ikke vaere i hosten.
-// Og vi kan heller ikke goere det i guesten, hvis den f.eks. er et image.
-// Saa vi store den midt imellem.
+// F.eks. kan vi jo tilfoeje et image 2 steder
+// Hvilke resultere i to forskellige paths.
+
+// Der er ikke nogen vej udenom
 public class PackedGuestConfiguration extends AbstractComponentConfiguration {
 
     public final PackedContainerConfiguration delegate;

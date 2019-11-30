@@ -18,7 +18,7 @@ package app.packed.component;
 /**
  *
  */
-public interface StatelessConfiguration extends BaseComponentConfiguration {
+public interface StatelessConfiguration extends ComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override

@@ -60,6 +60,8 @@ public interface ComponentPath extends Comparable<ComponentPath>, /* , Iterable<
     @Nullable
     ComponentPath parent();// Should probably be optional??? Or for performance reasons nullable... hmm
 
+    ComponentPath add(ComponentPath other);
+
     /**
      * Returns the string representation of this component path.
      * <p>

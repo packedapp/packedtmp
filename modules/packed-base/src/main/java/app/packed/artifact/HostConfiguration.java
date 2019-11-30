@@ -15,13 +15,13 @@
  */
 package app.packed.artifact;
 
-import app.packed.component.BaseComponentConfiguration;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentType;
 
 /**
  *
  */
-public interface HostConfiguration extends BaseComponentConfiguration {
+public interface HostConfiguration extends ComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override

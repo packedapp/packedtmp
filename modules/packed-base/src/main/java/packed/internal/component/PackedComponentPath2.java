@@ -134,4 +134,11 @@ public final class PackedComponentPath2 implements ComponentPath {
     public ComponentPath parent() {
         return parent;
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath add(ComponentPath other) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

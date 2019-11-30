@@ -46,8 +46,6 @@ import app.packed.service.ServiceExtension;
  */
 public interface App extends AutoCloseable {
 
-    static final ArtifactDriver<App> DRIVER = AppArtifactDriver.INSTANCE;
-
     /** Closes the app (synchronously). **/
     @Override
     void close();
@@ -158,7 +156,7 @@ public interface App extends AutoCloseable {
     Component useComponent(CharSequence path);
 
     static App initialize(ContainerSource source, Wirelet... wirelets) {
-        return AppArtifactDriver.INSTANCE.newArtifact(source, wirelets);
+        return ArtifactDriver.APP.newArtifact(source, wirelets);
     }
 
     /**
@@ -175,7 +173,7 @@ public interface App extends AutoCloseable {
      *             if the application did not execute properly
      */
     static void run(ContainerSource source, Wirelet... wirelets) {
-        PackedApp app = (PackedApp) AppArtifactDriver.INSTANCE.newArtifact(source, wirelets);
+        PackedApp app = (PackedApp) ArtifactDriver.APP.newArtifact(source, wirelets);
         app.context.run();
     }
 
@@ -194,31 +192,15 @@ public interface App extends AutoCloseable {
      */
     // Maybe open is a bit complicated when the lifecycle are named differently????
     static App start(ContainerSource source, Wirelet... wirelets) {
-        PackedApp app = (PackedApp) AppArtifactDriver.INSTANCE.newArtifact(source, wirelets);
+        PackedApp app = (PackedApp) ArtifactDriver.APP.newArtifact(source, wirelets);
         app.context.start();
         return app;
     }
 
     static CompletableFuture<App> startAsync(ContainerSource source, Wirelet... wirelets) {
         // Why return CompletableFuture???
-        PackedApp app = (PackedApp) AppArtifactDriver.INSTANCE.newArtifact(source, wirelets);
+        PackedApp app = (PackedApp) ArtifactDriver.APP.newArtifact(source, wirelets);
         return app.context.startAsync(app);
-    }
-}
-
-/** An artifact driver for creating {@link App} instances. */
-final class AppArtifactDriver extends ArtifactDriver<App> {
-
-    /** The single instance. */
-    static final AppArtifactDriver INSTANCE = new AppArtifactDriver();
-
-    /** Singleton */
-    private AppArtifactDriver() {}
-
-    /** {@inheritDoc} */
-    @Override
-    public App newArtifact(ArtifactContext container) {
-        return new PackedApp(container);
     }
 }
 

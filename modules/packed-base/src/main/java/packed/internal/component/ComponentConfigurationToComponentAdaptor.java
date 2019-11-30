@@ -25,8 +25,8 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.artifact.Host;
-import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.Component;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.component.Singleton;
@@ -35,6 +35,7 @@ import app.packed.component.feature.FeatureMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.Container;
 import app.packed.container.Extension;
+import app.packed.lang.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.host.PackedGuestConfiguration;
 import packed.internal.host.PackedHostConfiguration;
@@ -50,8 +51,12 @@ public abstract class ComponentConfigurationToComponentAdaptor implements Compon
     /** The component configuration to wrap. */
     private final AbstractComponentConfiguration componentConfiguration;
 
-    public ComponentConfigurationToComponentAdaptor(AbstractComponentConfiguration componentConfiguration) {
+    // Need to main any guest ancestor. As images must resolve in relation to it.
+    private final PackedGuestConfiguration pgc;
+
+    private ComponentConfigurationToComponentAdaptor(AbstractComponentConfiguration componentConfiguration, @Nullable PackedGuestConfiguration pgc) {
         this.componentConfiguration = requireNonNull(componentConfiguration);
+        this.pgc = pgc;
     }
 
     /** {@inheritDoc} */
@@ -65,7 +70,7 @@ public abstract class ComponentConfigurationToComponentAdaptor implements Compon
             } else {
                 LinkedHashMap<String, ComponentConfigurationToComponentAdaptor> m = new LinkedHashMap<>();
                 for (AbstractComponentConfiguration acc : componentConfiguration.children.values()) {
-                    m.put(acc.name, of0(acc));
+                    m.put(acc.name, of0(acc, pgc));
                 }
                 c = children = Map.copyOf(m);
             }
@@ -76,6 +81,7 @@ public abstract class ComponentConfigurationToComponentAdaptor implements Compon
     /** {@inheritDoc} */
     @Override
     public final ConfigSite configSite() {
+        // For example, if image, should we
         return componentConfiguration.configSite();
     }
 
@@ -113,6 +119,9 @@ public abstract class ComponentConfigurationToComponentAdaptor implements Compon
     /** {@inheritDoc} */
     @Override
     public final ComponentPath path() {
+        if (pgc != null) {
+            return pgc.path().add(componentConfiguration.path());
+        }
         return componentConfiguration.path();
     }
 
@@ -144,21 +153,22 @@ public abstract class ComponentConfigurationToComponentAdaptor implements Compon
     }
 
     public static Container of(PackedContainerConfiguration pcc) {
-        return (Container) of0(pcc);
+        return (Container) of0(pcc, null);
     }
 
-    private static ComponentConfigurationToComponentAdaptor of0(BaseComponentConfiguration bcc) {
+    private static ComponentConfigurationToComponentAdaptor of0(ComponentConfiguration bcc, @Nullable PackedGuestConfiguration pgc) {
         if (bcc instanceof PackedContainerConfiguration) {
-            return new ContainerAdaptor((PackedContainerConfiguration) bcc);
+            return new ContainerAdaptor((PackedContainerConfiguration) bcc, pgc);
         } else if (bcc instanceof PackedStatelessComponentConfiguration) {
-            return new StatelessAdaptor((PackedStatelessComponentConfiguration) bcc);
+            return new StatelessAdaptor((PackedStatelessComponentConfiguration) bcc, pgc);
         } else if (bcc instanceof PackedSingletonConfiguration) {
-            return new SingleAdaptor((PackedSingletonConfiguration<?>) bcc);
+            return new SingleAdaptor((PackedSingletonConfiguration<?>) bcc, pgc);
         } else if (bcc instanceof PackedHostConfiguration) {
-            return new HostAdaptor((PackedHostConfiguration) bcc);
+            return new HostAdaptor((PackedHostConfiguration) bcc, pgc);
         } else if (bcc instanceof PackedGuestConfiguration) {
-            PackedGuestConfiguration pgc = (PackedGuestConfiguration) bcc;
-            return new ContainerAdaptor(pgc.delegate);
+            // Need to figure out hosts on hosts..
+            PackedGuestConfiguration pgcc = (PackedGuestConfiguration) bcc;
+            return new ContainerAdaptor(pgcc.delegate, pgcc);
         } else {
             // TODO add host, when we get a configuration class
             throw new IllegalArgumentException("Unknown configuration type, type = " + bcc);
@@ -167,29 +177,29 @@ public abstract class ComponentConfigurationToComponentAdaptor implements Compon
 
     private final static class ContainerAdaptor extends ComponentConfigurationToComponentAdaptor implements Container {
 
-        public ContainerAdaptor(PackedContainerConfiguration pcc) {
-            super(pcc);
+        public ContainerAdaptor(PackedContainerConfiguration pcc, @Nullable PackedGuestConfiguration pgc) {
+            super(pcc, pgc);
         }
     }
 
     private final static class SingleAdaptor extends ComponentConfigurationToComponentAdaptor implements Singleton {
 
-        public SingleAdaptor(PackedSingletonConfiguration<?> conf) {
-            super(conf);
+        public SingleAdaptor(PackedSingletonConfiguration<?> conf, @Nullable PackedGuestConfiguration pgc) {
+            super(conf, pgc);
         }
     }
 
     private final static class StatelessAdaptor extends ComponentConfigurationToComponentAdaptor implements Stateless {
 
-        public StatelessAdaptor(PackedStatelessComponentConfiguration conf) {
-            super(conf);
+        public StatelessAdaptor(PackedStatelessComponentConfiguration conf, @Nullable PackedGuestConfiguration pgc) {
+            super(conf, pgc);
         }
     }
 
     private final static class HostAdaptor extends ComponentConfigurationToComponentAdaptor implements Host {
 
-        public HostAdaptor(PackedHostConfiguration conf) {
-            super(conf);
+        public HostAdaptor(PackedHostConfiguration conf, @Nullable PackedGuestConfiguration pgc) {
+            super(conf, pgc);
         }
     }
 

@@ -27,7 +27,7 @@ import app.packed.lang.Nullable;
 /**
  *
  */
-public interface BaseComponentConfiguration {
+public interface ComponentConfiguration {
 
     /**
      * Checks that the component is still configurable or throws an {@link IllegalStateException}.
@@ -85,7 +85,7 @@ public interface BaseComponentConfiguration {
      * @param action
      *            the action to be performed when the name of the component is finalized
      */
-    default void onNamed(Consumer<? super BaseComponentConfiguration> action) {
+    default void onNamed(Consumer<? super ComponentConfiguration> action) {
         throw new UnsupportedOperationException();
     }
 
@@ -114,7 +114,7 @@ public interface BaseComponentConfiguration {
      * @see #getDescription()
      * @see Component#description()
      */
-    BaseComponentConfiguration setDescription(String description);
+    ComponentConfiguration setDescription(String description);
 
     /**
      * Sets the {@link Component#name() name} of the component. The name must consists only of alphanumeric characters and
@@ -132,7 +132,7 @@ public interface BaseComponentConfiguration {
      * @see #getName()
      * @see Component#name()
      */
-    BaseComponentConfiguration setName(String name);
+    ComponentConfiguration setName(String name);
 
     /**
      * Returns the type of component this configuration creates.

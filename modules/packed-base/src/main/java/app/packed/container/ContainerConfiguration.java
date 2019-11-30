@@ -21,7 +21,7 @@ import java.lang.invoke.VarHandle;
 import java.util.Set;
 
 import app.packed.artifact.HostConfiguration;
-import app.packed.component.BaseComponentConfiguration;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentType;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
@@ -33,7 +33,7 @@ import app.packed.service.ServiceExtension;
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
  * extending {@link Bundle} or {@link BaseBundle}.
  */
-public interface ContainerConfiguration extends BaseComponentConfiguration {
+public interface ContainerConfiguration extends ComponentConfiguration {
 
     /**
      * Installs a host and returns the configuration of it.

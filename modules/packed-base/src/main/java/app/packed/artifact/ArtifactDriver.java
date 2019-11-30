@@ -46,6 +46,9 @@ public abstract class ArtifactDriver<T> {
 
     private static final TypeVariableExtractor ARTIFACT_DRIVER_TV_EXTRACTOR = TypeVariableExtractor.of(ArtifactDriver.class);
 
+    /** The single instance. */
+    public static final ArtifactDriver<App> APP = new AppArtifactDriver();
+
     /** The type of artifact this driver produces. */
     private final Class<T> artifactType;
 
@@ -139,5 +142,18 @@ public abstract class ArtifactDriver<T> {
         pcc.doBuild();
         ArtifactContext pac = pcc.instantiateArtifact(pcc.wireletContext).newArtifactContext();
         return newArtifact(pac);
+    }
+
+    /** An artifact driver for creating {@link App} instances. */
+    private static final class AppArtifactDriver extends ArtifactDriver<App> {
+
+        /** Singleton */
+        private AppArtifactDriver() {}
+
+        /** {@inheritDoc} */
+        @Override
+        public App newArtifact(ArtifactContext container) {
+            return new PackedApp(container);
+        }
     }
 }

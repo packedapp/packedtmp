@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Arrays;
 import java.util.StringJoiner;
+import java.util.stream.Stream;
 
 import app.packed.component.ComponentPath;
 import app.packed.lang.Nullable;
@@ -178,6 +179,13 @@ public final class PackedComponentPath implements ComponentPath {
             }
             return new PackedComponentPath(paths);
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath add(ComponentPath other) {
+        PackedComponentPath pcp = (PackedComponentPath) other;
+        return new PackedComponentPath(Stream.concat(Arrays.stream(elements), Arrays.stream(pcp.elements)).toArray(String[]::new));
     }
 }
 /// ** {@inheritDoc} */

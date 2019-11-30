@@ -26,7 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import app.packed.component.BaseComponentConfiguration;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.component.feature.FeatureMap;
 import app.packed.config.ConfigSite;
@@ -46,7 +46,7 @@ import packed.internal.hook.applicator.DelayedAccessor;
 import packed.internal.host.PackedHostConfiguration;
 
 /** A common superclass for all component configuration classes. */
-public abstract class AbstractComponentConfiguration implements ComponentHolder, BaseComponentConfiguration {
+public abstract class AbstractComponentConfiguration implements ComponentHolder, ComponentConfiguration {
 
     /** A stack walker used from {@link #captureStackFrame(String)}. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
@@ -143,7 +143,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
      *            the child to add
      */
     protected final void addChild(AbstractComponentConfiguration child) {
-        System.err.println("----> Adding " + child.name);
+        // System.err.println("----> Adding " + child.name);
         requireNonNull(child.name);
         LinkedHashMap<String, AbstractComponentConfiguration> c = children;
         if (c == null) {
@@ -390,7 +390,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
         /** */
         FINAL,
 
-        /** {@link BaseComponentConfiguration#getName()} has been invoked. */
+        /** {@link ComponentConfiguration#getName()} has been invoked. */
         GET_NAME_INVOKED,
 
         /** The initial state. */
