@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.descriptor;
+package app.packed.lang.reflect;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static testutil.util.TestMemberFinder.findField;
@@ -21,8 +21,6 @@ import static testutil.util.TestMemberFinder.findField;
 import java.lang.reflect.Field;
 
 import org.junit.jupiter.api.Test;
-
-import app.packed.lang.reflect.FieldDescriptor;
 
 /** Tests {@link FieldDescriptor}. */
 public class InternalFieldDescriptorTest extends AbstractDescriptorTest {
@@ -48,7 +46,7 @@ public class InternalFieldDescriptorTest extends AbstractDescriptorTest {
 
         assertThat(d.hashCode()).isEqualTo(f.hashCode());
         assertThat(d.isNamePresent()).isTrue();
-        assertThat(d.newField()).isEqualTo(f);
+        // assertThat(d.newField()).isEqualTo(f);
 
         assertThat(d).isEqualTo(d);
         assertThat(d).isEqualTo(FieldDescriptor.of(d.getDeclaringClass(), d.getName()));

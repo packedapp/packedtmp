@@ -13,21 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.descriptor;
+package app.packed.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import java.lang.reflect.Member;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
+@Documented
+@Retention(RUNTIME)
+@Target({ ElementType.PARAMETER, ElementType.FIELD })
 /**
  *
  */
-public abstract class AbstractDescriptorTest {
+// Maybe just Default
+@interface DefaultValue {
+    String value();
 
-    static void validateMember(Member expected, Member actual) {
-        assertThat(expected.getDeclaringClass()).isSameAs(actual.getDeclaringClass());
-        assertThat(expected.getModifiers()).isEqualTo(actual.getModifiers());
-        assertThat(expected.getName()).isEqualTo(actual.getName());
-        assertThat(expected.isSynthetic()).isEqualTo(actual.isSynthetic());
-    }
+    // Naah det her virker ikke
+    // String intValue() default 0;
 }

@@ -28,8 +28,6 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
-import packed.internal.reflect.PackedIllegalAccessException;
-
 /**
  * An executable descriptor.
  * <p>
@@ -62,37 +60,41 @@ public abstract class ExecutableDescriptor implements Member, AnnotatedElement {
         this.parameterTypes = executable.getParameterTypes();
     }
 
-    /**
-     * Applies this operator the specified static method.
-     * 
-     * @param caller
-     *            the caller
-     * @param operator
-     *            the method to apply the operator on
-     * @return the result of applying the operator
-     * @throws IllegalArgumentException
-     *             if the method is not static, or if the operator cannot be applied on the method. For example, if the
-     *             operator requires two parameter, but the method only takes one
-     */
-    public final <T> T applyOperator(Lookup caller, MethodOperator<T> operator) {
-        MethodHandle mh;
-        try {
-            mh = unreflect(caller);
-        } catch (IllegalAccessException e) {
-            throw new PackedIllegalAccessException(e);
-        }
-        return operator.apply(mh);
+    public Class<?>[] getParameterTypes() {
+        return executable.getParameterTypes();
     }
 
-    public final <T> T applyOperator(Lookup caller, MethodOperator<T> operator, Object instance) {
-        MethodHandle mh;
-        try {
-            mh = unreflect(caller);
-        } catch (IllegalAccessException e) {
-            throw new PackedIllegalAccessException(e);
-        }
-        return operator.apply(mh, instance);
-    }
+    // /**
+    // * Applies this operator the specified static method.
+    // *
+    // * @param caller
+    // * the caller
+    // * @param operator
+    // * the method to apply the operator on
+    // * @return the result of applying the operator
+    // * @throws IllegalArgumentException
+    // * if the method is not static, or if the operator cannot be applied on the method. For example, if the
+    // * operator requires two parameter, but the method only takes one
+    // */
+    // public final <T> T applyOperator(Lookup caller, MethodOperator<T> operator) {
+    // MethodHandle mh;
+    // try {
+    // mh = unreflect(caller);
+    // } catch (IllegalAccessException e) {
+    // throw new PackedIllegalAccessException(e);
+    // }
+    // return operator.apply(mh);
+    // }
+
+    // public final <T> T applyOperator(Lookup caller, MethodOperator<T> operator, Object instance) {
+    // MethodHandle mh;
+    // try {
+    // mh = unreflect(caller);
+    // } catch (IllegalAccessException e) {
+    // throw new PackedIllegalAccessException(e);
+    // }
+    // return operator.apply(mh, instance);
+    // }
 
     /**
      * Returns {@code "constructor"} for a {@link ConstructorDescriptor} or {@code "method"} for a {@link MethodDescriptor}.
@@ -159,6 +161,11 @@ public abstract class ExecutableDescriptor implements Member, AnnotatedElement {
         return parameters;
     }
 
+    public final ParameterDescriptor getParameter(int index) {
+        // TODO range check
+        return parameters[index];
+    }
+
     /** {@inheritDoc} */
     @Override
     public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
@@ -182,12 +189,12 @@ public abstract class ExecutableDescriptor implements Member, AnnotatedElement {
         return executable.isVarArgs();
     }
 
-    /**
-     * Creates a new Executable from this descriptor.
-     *
-     * @return a new Executable from this descriptor
-     */
-    public abstract Executable newExecutable();
+    // /**
+    // * Creates a new Executable from this descriptor.
+    // *
+    // * @return a new Executable from this descriptor
+    // */
+    // abstract Executable newExecutable();
 
     /**
      * Returns the number of formal parameters (whether explicitly declared or implicitly declared or neither) for the
@@ -214,6 +221,8 @@ public abstract class ExecutableDescriptor implements Member, AnnotatedElement {
      * @see Lookup#unreflect(Method)
      * @see Lookup#unreflectConstructor(Constructor)
      */
+    // If we have a non method based version....
+    // We can use Lookup.find(xxxxx)
     public abstract MethodHandle unreflect(MethodHandles.Lookup lookup) throws IllegalAccessException;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

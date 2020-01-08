@@ -25,18 +25,18 @@ import java.lang.reflect.Modifier;
 
 import app.packed.lang.InvalidDeclarationException;
 import app.packed.lang.Nullable;
+import app.packed.lang.UncheckedIllegalAccessException;
 import app.packed.lang.reflect.MethodDescriptor;
-import app.packed.lang.reflect.MethodOperator;
-import app.packed.lang.reflect.UncheckedIllegalAccessException;
 import packed.internal.hook.MemberUnreflector;
+import packed.internal.hook.applicator.MethodOperator;
 import packed.internal.hook.applicator.PackedMethodHookApplicator;
 import packed.internal.util.StringFormatter;
 
 /** A hook representing a method annotated with a specific type. */
-public final class AnnotatedMethodHook<T extends Annotation> implements Hook {
+public final class AnnotatedMethodHook<A extends Annotation> implements Hook {
 
     /** The annotation value. */
-    private final T annotation;
+    private final A annotation;
 
     /** A method descriptor, is lazily created via {@link #method()}. */
     @Nullable
@@ -58,7 +58,7 @@ public final class AnnotatedMethodHook<T extends Annotation> implements Hook {
      * @param annotation
      *            the annotation value
      */
-    AnnotatedMethodHook(MemberUnreflector controller, Method method, T annotation) {
+    AnnotatedMethodHook(MemberUnreflector controller, Method method, A annotation) {
         this.processor = requireNonNull(controller);
         this.method = requireNonNull(method);
         this.annotation = requireNonNull(annotation);
@@ -69,7 +69,7 @@ public final class AnnotatedMethodHook<T extends Annotation> implements Hook {
      *
      * @return the annotation value
      */
-    public T annotation() {
+    public A annotation() {
         return annotation;
     }
 
@@ -78,31 +78,26 @@ public final class AnnotatedMethodHook<T extends Annotation> implements Hook {
         return new PackedMethodHookApplicator<E>(this, operator, method);
     }
 
-    void fail(String msg) {
-        // Skal goere det let skrive fejlmeddellser
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Applies the specified operator to the underlying method.
-     * 
-     * @param <E>
-     *            the type of result from applying the operator
-     * @param operator
-     *            the operator to apply
-     * @return the result from applying the operator to the static method
-     * @throws UnsupportedOperationException
-     *             if the underlying method is not a static method
-     * @throws UncheckedIllegalAccessException
-     *             if access checking failed while applying the operator
-     */
-    public <E> E applyStatic(MethodOperator<E> operator) {
-        if (!Modifier.isStatic(method.getModifiers())) {
-            throw new IllegalArgumentException("Cannot invoke this method on a non-static method, method = " + method);
-        }
-        processor.checkOpen();
-        return operator.apply(methodHandle());
-    }
+    // /**
+    // * Applies the specified operator to the underlying method.
+    // *
+    // * @param <E>
+    // * the type of result from applying the operator
+    // * @param operator
+    // * the operator to apply
+    // * @return the result from applying the operator to the static method
+    // * @throws UnsupportedOperationException
+    // * if the underlying method is not a static method
+    // * @throws UncheckedIllegalAccessException
+    // * if access checking failed while applying the operator
+    // */
+    // public <E> E applyStatic(MethodOperator<E> operator) {
+    // if (!Modifier.isStatic(method.getModifiers())) {
+    // throw new IllegalArgumentException("Cannot invoke this method on a non-static method, method = " + method);
+    // }
+    // processor.checkOpen();
+    // return operator.apply(methodHandle());
+    // }
 
     /**
      * Checks that the underlying method is not static. Throwing an {@link InvalidDeclarationException} if the field is
@@ -114,8 +109,8 @@ public final class AnnotatedMethodHook<T extends Annotation> implements Hook {
      * 
      * @see Modifier#isStatic(int)
      */
-    public AnnotatedMethodHook<T> checkNotStatic() {
-        if (Modifier.isStatic(method.getModifiers())) {
+    public AnnotatedMethodHook<A> checkNotStatic() {
+        if (Modifier.isStatic(descriptor.getModifiers())) {
             processor.tf().fail(failedModifierCheck(true));
         }
         return this;
@@ -131,16 +126,21 @@ public final class AnnotatedMethodHook<T extends Annotation> implements Hook {
      * 
      * @see Modifier#isStatic(int)
      */
-    public AnnotatedMethodHook<T> checkStatic() {
-        if (!Modifier.isStatic(method.getModifiers())) {
+    public AnnotatedMethodHook<A> checkStatic() {
+        if (!Modifier.isStatic(descriptor.getModifiers())) {
             processor.tf().fail(failedModifierCheck(false));
         }
         return this;
     }
 
+    void fail(String msg) {
+        // Skal goere det let skrive fejlmeddellser
+        throw new UnsupportedOperationException();
+    }
+
     private String failedModifierCheck(boolean isNot) {
         String msg = (isNot ? "not be " : "be ") + "static";
-        return "Fields annotated with @" + annotation.annotationType().getSimpleName() + " must " + msg + ", field = " + StringFormatter.format(method);
+        return "Fields annotated with @" + annotation.annotationType().getSimpleName() + " must " + msg + ", field = " + StringFormatter.format(descriptor);
     }
 
     /**
@@ -168,5 +168,17 @@ public final class AnnotatedMethodHook<T extends Annotation> implements Hook {
      */
     public MethodHandle methodHandle() {
         return processor.unreflect(method);
+    }
+
+    // public <T extends InvocationTemplate> DelayedTempalte<T> newInvoker(Class<T> templateType) {
+    // throw new UnsupportedOperationException();
+    // }
+    //
+    // public <T extends InvocationTemplate> TemplateInvoker<T> newRawInvoker(Class<T> templateType) {
+    // throw new UnsupportedOperationException();
+    // }
+
+    public void bindToTwin() {
+        // Ideen er man kan faa det injected
     }
 }

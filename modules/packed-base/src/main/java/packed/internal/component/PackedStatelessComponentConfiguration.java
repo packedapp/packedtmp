@@ -62,4 +62,9 @@ public final class PackedStatelessComponentConfiguration extends AbstractCompone
         return this;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public Class<?> definition() {
+        return componentModel.type();
+    }
 }

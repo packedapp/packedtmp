@@ -40,8 +40,8 @@ public class FieldStaticTest {
     public void provide() {
         MixedFieldsInstantiable.test(c -> c.provideInstance(new MixedFieldsInstantiable()));
         MixedFieldsInstantiable.test(c -> c.provide(MixedFieldsInstantiable.class));
-        MixedFieldsInstantiable.test(c -> c.provide(Factory.findInjectable(MixedFieldsInstantiable.class)));
-        MixedFieldsInstantiable.test(c -> c.provide(Factory.findInjectable(new TypeLiteral<MixedFieldsInstantiable>() {})));
+        MixedFieldsInstantiable.test(c -> c.provide(Factory.find(MixedFieldsInstantiable.class)));
+        MixedFieldsInstantiable.test(c -> c.provide(Factory.find(new TypeLiteral<MixedFieldsInstantiable>() {})));
     }
 
     // /** Tests lazy {@link Provide#instantionMode()} on static fields. */
@@ -57,8 +57,8 @@ public class FieldStaticTest {
     @Test
     public void providePrototype() {
         MixedFieldsNoInstantiation.test(c -> c.provide(MixedFieldsNoInstantiation.class).prototype());
-        MixedFieldsNoInstantiation.test(c -> c.provide(Factory.findInjectable(MixedFieldsNoInstantiation.class)).prototype());
-        MixedFieldsNoInstantiation.test(c -> c.provide(Factory.findInjectable(new TypeLiteral<MixedFieldsNoInstantiation>() {})).prototype());
+        MixedFieldsNoInstantiation.test(c -> c.provide(Factory.find(MixedFieldsNoInstantiation.class)).prototype());
+        MixedFieldsNoInstantiation.test(c -> c.provide(Factory.find(new TypeLiteral<MixedFieldsNoInstantiation>() {})).prototype());
     }
 
     /** A helper class that can be instantiated. */

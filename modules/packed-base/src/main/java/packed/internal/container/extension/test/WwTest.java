@@ -25,13 +25,13 @@ import app.packed.artifact.App;
 import app.packed.component.SingletonConfiguration;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
-import app.packed.container.UseExtension;
 import app.packed.container.LazyExtensionUsage;
+import app.packed.container.UseExtension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
-import app.packed.lang.Qualifier;
+import app.packed.lang.Key;
 
 /**
  *
@@ -66,7 +66,7 @@ public class WwTest<A extends Annotation> extends BaseBundle {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @Qualifier
+    @Key.Qualifier
     @UseExtension(MyExtension.class)
     @Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
     public @interface Left {

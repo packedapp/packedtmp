@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.lang.Qualifier;
+import app.packed.lang.Key;
 import app.packed.service.Factory;
 
 /** Test of {@link Factory}. */
@@ -66,11 +66,11 @@ public class FactoryTest {
     public static class Stubs {
 
         @Retention(RUNTIME)
-        @Qualifier
+        @Key.Qualifier
         public @interface Qualified {}
 
         @Retention(RUNTIME)
-        @Qualifier
+        @Key.Qualifier
         public @interface QualifiedWithValue {
             String value() default "34";
         }

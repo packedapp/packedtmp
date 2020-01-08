@@ -70,16 +70,6 @@ import packed.internal.component.PackedComponentStreamOption;
 // Men der skal lige lidt mere guf paa Component sub interfaces...Foerend jeg gider lave det
 public interface ComponentStream extends Stream<Component> {
 
-    /** {@inheritDoc} */
-    @Override
-    default ComponentStream distinct() {
-        return this; // All components are distinct by default
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    ComponentStream dropWhile(Predicate<? super Component> predicate);
-
     /**
      * Returns a stream that only contains {@link Container containers}.
      * 
@@ -113,10 +103,6 @@ public interface ComponentStream extends Stream<Component> {
     // });
     // }
 
-    /** {@inheritDoc} */
-    @Override
-    ComponentStream filter(Predicate<? super Component> predicate);
-
     default ComponentStream filterOnType(ComponentType type) {
         requireNonNull(type, "type is null");
         return filter(e -> e.type() == type);
@@ -149,15 +135,45 @@ public interface ComponentStream extends Stream<Component> {
     // });
     // }
 
+    default ComponentStream onPath(String regexp) {
+        return this;
+    }
+
+    /**
+     * Returns a new list containing all of the components in this stream in the order they where encountered. Invoking this
+     * method is identical to invoking {@code stream.collect(Collectors.toList())}.
+     * <p>
+     * This is a <em>terminal operation</em>.
+     *
+     * @return a new list containing all of the components in this stream
+     */
+    default List<Component> toList() {
+        return collect(Collectors.toList());
+    }
+
+    default ComponentStream withFeatures(Class<?>... faetures) {
+        throw new UnsupportedOperationException();
+    }
+
     /********** Overridden to provide ComponentStream as a return value. **********/
 
     /** {@inheritDoc} */
     @Override
-    ComponentStream limit(long maxSize);
-
-    default ComponentStream onPath(String regexp) {
-        return this;
+    default ComponentStream distinct() {
+        return this; // All components are distinct by default
     }
+
+    /** {@inheritDoc} */
+    @Override
+    ComponentStream dropWhile(Predicate<? super Component> predicate);
+
+    /** {@inheritDoc} */
+    @Override
+    ComponentStream filter(Predicate<? super Component> predicate);
+
+    /** {@inheritDoc} */
+    @Override
+    ComponentStream limit(long maxSize);
 
     /** {@inheritDoc} */
     @Override
@@ -182,22 +198,6 @@ public interface ComponentStream extends Stream<Component> {
     ComponentStream takeWhile(Predicate<? super Component> predicate);
 
     /**
-     * Returns a new list containing all of the components in this stream in the order they where encountered. Invoking this
-     * method is identical to invoking {@code stream.collect(Collectors.toList())}.
-     * <p>
-     * This is a <em>terminal operation</em>.
-     *
-     * @return a new list containing all of the components in this stream
-     */
-    default List<Component> toList() {
-        return collect(Collectors.toList());
-    }
-
-    default ComponentStream withFeatures(Class<?>... faetures) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
      * 
      * <p>
      * This method consumes the specified bundle.
@@ -210,6 +210,7 @@ public interface ComponentStream extends Stream<Component> {
     static ComponentStream of(Bundle bundle, Option... options) {
         return ArtifactImage.build(bundle).stream(options);
     }
+
     /**
      * Skal kun indeholde ting vi ikke kan have i streamen.
      */
@@ -218,7 +219,7 @@ public interface ComponentStream extends Stream<Component> {
     // a.la. components.mapToVirtual....
 
     /**
-     * Various options that can be used when creating a component stream.
+     * Various options that can be used when creating component streams.
      * 
      * @see Component#stream(Option...)
      * @see App#stream(Option...)
@@ -232,35 +233,42 @@ public interface ComponentStream extends Stream<Component> {
     // The depth is always relative to the origin's depth
     public interface Option {
 
-        /**
-         * Excludes the component from where the stream originated in the output stream. But process any of its descendents
-         * normally.
-         * 
-         * @return an option that excludes the component from where the stream is originated
-         */
-        static ComponentStream.Option skipOrigin() {
-            return PackedComponentStreamOption.EXCLUDE_ORIGIN_OPTION;
+        default ComponentStream.Option andInSameArtifact() {
+            throw new UnsupportedOperationException();
         }
 
+        default ComponentStream.Option andInSameContainer() {
+            return PackedComponentStreamOption.IN_SAME_CONTAINER_OPTION;
+        }
+
+        default ComponentStream.Option andSkipOrigin() {
+            return PackedComponentStreamOption.IN_SAME_CONTAINER_OPTION;
+        }
+        // FollowUnitialized guests...
+
         /**
-         * Include components that are a part of an extension ({@link Component#extension()} is non-empty). Normally components
+         * Include components that belongs to an extension ({@link Component#extension()} is non-empty).
          * 
-         * @return an option that includes all components that is a part of an extension
+         * @return an option that includes all components that are part of an extension
          */
         public static ComponentStream.Option includeExtensions() {
             return PackedComponentStreamOption.INCLUDE_EXTENSION_OPTION;
         }
 
+        /**
+         * Include components that belongs to any of the specified extension types({@link Component#extension()} is non-empty
+         * and contained in the specified varargs).
+         * 
+         * @param extensionTypes
+         *            extension types that should be included in the stream
+         * @return an option that includes all components that belongs to any of the specified extension types
+         */
         @SafeVarargs
         public static ComponentStream.Option includeExtensions(Class<? extends Extension>... extensionTypes) {
             throw new UnsupportedOperationException();
         }
 
         public static ComponentStream.Option inSameArtifact() {
-            throw new UnsupportedOperationException();
-        }
-
-        default ComponentStream.Option andInSameArtifact() {
             throw new UnsupportedOperationException();
         }
 
@@ -273,7 +281,15 @@ public interface ComponentStream extends Stream<Component> {
             return PackedComponentStreamOption.IN_SAME_CONTAINER_OPTION;
         }
 
-        // FollowUnitialized guests...
+        /**
+         * Excludes the component from where the stream originated in the component stream. But process any of its descendants
+         * normally.
+         * 
+         * @return an option that excludes the component from where the stream is originated
+         */
+        static ComponentStream.Option skipOrigin() {
+            return PackedComponentStreamOption.EXCLUDE_ORIGIN_OPTION;
+        }
 
         // maxDepth, maxRelativeDepth
         // maxDepth, maxAbsoluteDepth <---- Taenker man oftest vil bruge relative, saa denne er nok bedst

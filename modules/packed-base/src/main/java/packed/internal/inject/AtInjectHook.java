@@ -62,6 +62,7 @@ public final class AtInjectHook implements Hook {
         }
 
         @OnHook
+        // @ForEachField(annotatedWith = Inject.class, modifierStatic = Stuff.Error)
         void onFieldInject(AnnotatedFieldHook<Inject> hook) {
             hook.checkNotFinal().checkNotStatic();
             FieldDescriptor field = hook.field();

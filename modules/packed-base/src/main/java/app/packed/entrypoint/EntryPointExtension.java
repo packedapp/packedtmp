@@ -29,10 +29,10 @@ import app.packed.hook.HookApplicator;
 import app.packed.hook.OnHook;
 import app.packed.lang.InvalidDeclarationException;
 import app.packed.lang.Key;
-import app.packed.lang.reflect.MethodOperator;
 import app.packed.lifecycle.OnStart;
 import app.packed.lifecycle.OnStop;
 import app.packed.service.ServiceExtension;
+import packed.internal.hook.applicator.MethodOperator;
 import packed.internal.util.StringFormatter;
 
 /**

@@ -15,8 +15,8 @@
  */
 package app.packed.container;
 
-import app.packed.component.SingletonConfiguration;
 import app.packed.component.ComponentPath;
+import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.service.Factory;
 
@@ -39,16 +39,16 @@ public interface ExtensionContext {
     void checkConfigurable();
 
     /**
-     * Returns the config site of the container the extension is a part of.
+     * Returns the config site of the container the extension is registered with.
      * 
-     * @return the config site of the container the extension is a part of
+     * @return the config site of the container the extension is registered with
      */
     ConfigSite containerConfigSite();
 
     /**
-     * Returns the path of the container the extension is a part of.
+     * Returns the path of the container the extension is registered with.
      * 
-     * @return the path of the container the extension is a part of
+     * @return the path of the container the extension is registered with
      */
     ComponentPath containerPath();
 
@@ -69,8 +69,8 @@ public interface ExtensionContext {
      * specified via.... Otherwise an {@link InternalExtensionException} is thrown.
      * <p>
      * This method works similar to {@link ContainerConfiguration#use(Class)}. However, this method checks that only
-     * extensions that have been declared as dependencies are. This is done in order to make sure that no extensions ever
-     * depend on each other.
+     * extensions that have been declared as dependencies via {@link ExtensionComposer#addDependencies(Class...)} are
+     * specified. This is done in order to make sure that no extensions ever depend on each other.
      * 
      * @param <E>
      *            the type of extension to return

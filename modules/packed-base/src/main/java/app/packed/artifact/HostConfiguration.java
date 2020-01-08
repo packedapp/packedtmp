@@ -19,8 +19,12 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentType;
 
 /**
- *
+ * The configuration of a host.
  */
+// Must have a single constructor taking HostConfigurationContext.
+
+// Syntes vi laver den tilbage til abstract klasse....
+// Saa maa vi loese provide problemet...
 public interface HostConfiguration extends ComponentConfiguration {
 
     /** {@inheritDoc} */

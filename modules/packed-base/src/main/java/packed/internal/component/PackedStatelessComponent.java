@@ -24,8 +24,17 @@ import packed.internal.artifact.PackedArtifactInstantiationContext;
  */
 final class PackedStatelessComponent extends AbstractComponent implements Stateless {
 
+    private final Class<?> type;
+
     PackedStatelessComponent(AbstractComponent parent, PackedStatelessComponentConfiguration configuration, PackedArtifactInstantiationContext ic) {
         super(parent, configuration, ic);
+        this.type = configuration.definition();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<?> definition() {
+        return type;
     }
 
     /** {@inheritDoc} */

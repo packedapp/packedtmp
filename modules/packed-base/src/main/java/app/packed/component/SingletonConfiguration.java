@@ -39,6 +39,12 @@ public interface SingletonConfiguration<T> extends ComponentConfiguration {
     default ComponentType type() {
         return ComponentType.COMPONENT_INSTANCE;
     }
+
+    // The component can be removed at runtime, separately from its container.
+    // But again its not supported now...
+    default SingletonConfiguration<T> removable() {
+        throw new UnsupportedOperationException();
+    }
 }
 
 interface XCC2<T> {

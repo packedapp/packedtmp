@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lang.reflect;
-
-import java.lang.invoke.MethodHandle;
+package app.packed.lang.invoke;
 
 /**
  *
  */
-public abstract class MethodOp<T> {
+// Parameter, Field....
 
-    public abstract T apply(MethodHandle handle);
+// Vi vil maaske gerne cache den Invoker vi laver....
+@interface InvokerStrategy {
+    boolean raw() default false;
 
-    public abstract T apply(MethodHandle handle, Object instance);
+    int retainLastNumberOfLayers() default Integer.MAX_VALUE;
 
+    // int skipFirstNumberOfLayers() default Integer.MAX_VALUE;
 }

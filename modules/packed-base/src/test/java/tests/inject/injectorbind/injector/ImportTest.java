@@ -23,7 +23,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import app.packed.container.BaseBundle;
-import app.packed.lang.Qualifier;
+import app.packed.lang.Key;
 import app.packed.service.Factory1;
 import app.packed.service.Injector;
 
@@ -77,7 +77,7 @@ public class ImportTest {
 
     @Target({ ElementType.TYPE_USE, ElementType.TYPE_PARAMETER, ElementType.TYPE })
     @Retention(RetentionPolicy.RUNTIME)
-    @Qualifier
+    @Key.Qualifier
     public @interface ZoneAnno {
         String value();
     }

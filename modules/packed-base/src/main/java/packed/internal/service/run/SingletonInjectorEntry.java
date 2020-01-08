@@ -22,13 +22,11 @@ import app.packed.lang.Key;
 import app.packed.lang.Nullable;
 import app.packed.service.InstantiationMode;
 import app.packed.service.PrototypeRequest;
-import packed.internal.inject.util.Provider;
 import packed.internal.service.build.BuildEntry;
 
-/**
- * An runtime service node holding {@link InstantiationMode#SINGLETON} instances.
- */
-public final class SingletonInjectorEntry<T> extends InjectorEntry<T> implements Provider<T> {
+/** An injector entry holding a {@link InstantiationMode#SINGLETON} instance. */
+// Can't implement both ServiceDescriptor and Provider...
+public final class SingletonInjectorEntry<T> extends InjectorEntry<T> {
 
     /** The singleton instance. */
     @Nullable
@@ -55,12 +53,6 @@ public final class SingletonInjectorEntry<T> extends InjectorEntry<T> implements
     public SingletonInjectorEntry(ConfigSite configSite, Key<T> key, @Nullable String description, @Nullable T instance) {
         super(configSite, key, description);
         this.instance = requireNonNull(instance);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public T get() {
-        return instance;
     }
 
     /** {@inheritDoc} */

@@ -17,6 +17,7 @@ package packed.internal.host;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import app.packed.api.ContractSet;
 import app.packed.artifact.App;
 import app.packed.artifact.Host;
 import app.packed.component.ComponentType;
@@ -46,5 +47,11 @@ public class PackedHost extends AbstractComponent implements Host {
     @Override
     public ComponentType type() {
         return ComponentType.HOST;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ContractSet contracts() {
+        return ContractSet.EMPTY;
     }
 }

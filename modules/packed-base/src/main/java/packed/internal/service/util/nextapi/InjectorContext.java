@@ -22,7 +22,6 @@ import java.lang.annotation.Target;
 
 import app.packed.container.BaseBundle;
 import app.packed.lang.Key;
-import app.packed.lang.Qualifier;
 import app.packed.service.Injector;
 
 /**
@@ -48,7 +47,7 @@ interface InjectorContext extends Injector {
 }
 
 @Retention(RetentionPolicy.RUNTIME)
-@Qualifier
+@Key.Qualifier
 @Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
 @interface Internal {}
 

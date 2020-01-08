@@ -54,6 +54,12 @@ import packed.internal.util.types.TypeUtil;
  * instance of {@link FieldDescriptor}. Dependencies can be optional in which case {@link #isOptional()} returns true.
  */
 // Declaring class for use with Type Variables???
+// Det her er ogsaa en Const..
+
+// Supporterer vi noget mht til AnnotatedProvider?????
+// Er det et nyt lag....
+// Det der er, er at vi jo faktisk kan overskriver provideren...
+// Dvs den er ikke statisk....
 public final class Dependency {
 
     /** A cache of service dependencies. */
@@ -172,6 +178,7 @@ public final class Dependency {
      * @see #variable()
      */
     public Optional<Member> member() {
+        // MemberDescriptor???
         if (variable instanceof FieldDescriptor) {
             return Optional.of(((FieldDescriptor) variable));
         } else if (variable instanceof ParameterDescriptor) {
@@ -213,7 +220,7 @@ public final class Dependency {
     }
 
     /**
-     * The variable (field or parameter) for which this dependency was created. Or an empty {@link Optional} if this
+     * The variable (field or parameter) from which this dependency originates. Or an empty {@link Optional} if this
      * dependency was not created from a variable.
      * <p>
      * If this dependency was created from a field this method will return a {@link FieldDescriptor}. If this dependency was

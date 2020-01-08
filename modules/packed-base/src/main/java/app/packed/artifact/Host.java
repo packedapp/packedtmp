@@ -15,17 +15,34 @@
  */
 package app.packed.artifact;
 
+import app.packed.api.ContractSet;
 import app.packed.component.Component;
 import app.packed.component.ComponentType;
 
 /**
- *
+ * The runtime representation of a host.
  */
 public interface Host extends Component {
+
+    /**
+     * All contracts
+     * 
+     * @return all contracts
+     */
+    ContractSet contracts();
 
     /** {@inheritDoc} */
     @Override
     default ComponentType type() {
         return ComponentType.HOST;
     }
+    // number of guest...
 }
+// Vi vil gerne af med GuestInstance
+// Skal guest vaere side-effect free?,
+// Saa man kan returnere den i en stream fra Host...
+/// GuestDescriptor (Nah den er live).
+// GuestInfo
+
+// Guest = ComponentType???
+//// Nope...

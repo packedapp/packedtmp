@@ -37,6 +37,64 @@ public abstract class ExtensionComposer<E extends Extension> {
     /** The context that all calls are delegated to, must only be accessed via {@link #context}. */
     private ExtensionModelLoadContext context;
 
+    /** Configures this composer. This method is invoked exactly once for a given implementation. */
+    protected abstract void configure();
+
+    /**
+     * Returns the context object that this composer wraps.
+     * 
+     * @return the context object that this composer wraps.
+     * @throws IllegalStateException
+     *             if called outside of {@link #configure()}
+     */
+    private ExtensionModelLoadContext context() {
+        ExtensionModelLoadContext c = context;
+        if (c == null) {
+            throw new IllegalStateException(
+                    "This method can only be called from within the #configure() method. Maybe you tried to call #configure() directly");
+        }
+        return c;
+    }
+
+    /**
+     * Invoked by the runtime to start the configuration process.
+     * 
+     * @param context
+     *            the context used for configuration
+     */
+    final void doConfigure(ExtensionModelLoadContext context) {
+        this.context = requireNonNull(context);
+        try {
+            configure();
+        } finally {
+            this.context = null;
+        }
+        // Im not sure we want to null it out...
+        // We should have some way to mark it failed????
+        // If configure() fails. The ContainerConfiguration still works...
+        /// Well we should probably catch the exception from where ever we call his method
+        // Checkout error model for extension loading
+    }
+
+    /**
+     * Registers a (callback) action that is invoked, by the runtime, immediately after an extension has been instantiated,
+     * but before the extension instance is returned to the user.
+     * <p>
+     * If more than one action is registered using this method. Each action will be performed in the order (FIFO) they where
+     * registered.
+     * 
+     * @param action
+     *            The action to be performed after the extension has been instantiated
+     * 
+     * @see ContainerConfiguration#use(Class)
+     */
+    @SuppressWarnings("unchecked")
+    protected final void onExtensionInstantiated(Consumer<? super E> action) {
+        context().onExtensionInstantiated((Consumer<? super Extension>) action);
+    }
+
+    /////////////////// Cleanup
+
     @SafeVarargs
     protected final void addDependencies(Class<? extends Extension>... dependencies) {
         context().addDependencies(dependencies);
@@ -61,44 +119,6 @@ public abstract class ExtensionComposer<E extends Extension> {
      */
     protected final void completeEach(Consumer<? super E> action) {
 
-    }
-
-    /** Configures the composer. This method is invoked exactly once for a given implementation. */
-    protected abstract void configure();
-
-    /**
-     * Returns the context object that this composer wraps.
-     * 
-     * @return the context object that this composer wraps.
-     * @throws IllegalStateException
-     *             if called outside {@link #configure()}
-     */
-    private ExtensionModelLoadContext context() {
-        ExtensionModelLoadContext c = context;
-        if (c == null) {
-            throw new IllegalStateException(
-                    "This method can only be called from within the #configure() method. Maybe you tried to call #configure() directly");
-        }
-        return c;
-    }
-
-    /**
-     * Invoked by the runtime to start the configuration process.
-     * 
-     * @param context
-     *            the context to wrap
-     */
-    final void doConfigure(ExtensionModelLoadContext context) {
-        this.context = context;
-        // Im not sure we want to null it out...
-        // We should have some way to mark it failed????
-        // If configure() fails. The ContainerConfiguration still works...
-        /// Well we should probably catch the exception from where ever we call his method
-        try {
-            configure();
-        } finally {
-            this.context = null;
-        }
     }
 
     /**
@@ -151,6 +171,9 @@ public abstract class ExtensionComposer<E extends Extension> {
      * after {@link Bundle#configure()} has returned.
      * <p>
      * The default implementation of this method does nothing.
+     * <p>
+     * If more than one action is registered using this method. Each action will be performed in the order (FIFO) they where
+     * registered.
      * 
      * @param action
      *            the action to perform
@@ -166,50 +189,37 @@ public abstract class ExtensionComposer<E extends Extension> {
     }
 
     /**
-     * Registers a (callback) action that is invoked, by the runtime, immediately after an extension has been instantiated,
-     * but before the extension is returned to the user. This is typically as the result of a user calling
-     * {@link ContainerConfiguration#use(Class)}.
-     * <p>
-     * If this method is invoked more than once, each action will be performed in the order (FIFO) they where registered.
-     * 
-     * @param action
-     *            The action to be performed after the extension has been instantiated
-     */
-    @SuppressWarnings("unchecked")
-    protected final void onExtensionInstantiated(Consumer<? super E> action) {
-        context().onExtensionInstantiated((Consumer<? super Extension>) action);
-    }
-
-    // /**
-    // * Invoked whenever the container is being instantiated. In case of a container image this means that method might be
-    // * invoked multiple times. Even by ___multiple threads___
-    // *
-    // * @param action
-    // * an instantiation context object
-    // */
-    // // Maa koeres efter trae ting??? Eller ogsaa skal det foregaa paa trae tingen...
-    // // Nope det skal ikke foregaa paa trae tingen. Fordi den skal kun bruges hvis man ikke
-    // // har extension communication
-    // @SuppressWarnings({ "unchecked", "rawtypes" })
-    // protected final void onInstantiation(BiConsumer<? super E, ? super ExtensionInstantiationContext> action) {
-    // requireNonNull(action, "action is null");
-    // BiConsumer<? super E, ? super ExtensionInstantiationContext> a = context().onInstantiation;
-    // context().onInstantiation = a == null ? (BiConsumer) action : a.andThen((BiConsumer) action);
-    // }
-
-    /**
      * Registers a (callback) action that is invoked, by the runtime, whenever this extension type has been registered in
      * both a parent and child container.
      * <p>
      * {@link #onExtensionInstantiated(Consumer)} is always invoked for the extension before this method.
      * <p>
-     * If this method is invoked more than once, each action will be performed in the order (FIFO) they where registered.
+     * If more than one action is registered using this method. Each action will be performed in the order (FIFO) they where
+     * registered.
      * 
      * @param action
      *            the action to perform
      */
     @SuppressWarnings("unchecked")
+    // Ved ikke hvor brugbar den er uden Wirelets....
     protected final void onLinkage(BiConsumer<? super E, ? super E> action) {
         context().onLinkage((BiConsumer<? super Extension, ? super Extension>) action);
     }
 }
+
+// /**
+// * Invoked whenever the container is being instantiated. In case of a container image this means that method might be
+// * invoked multiple times. Even by ___multiple threads___
+// *
+// * @param action
+// * an instantiation context object
+// */
+// // Maa koeres efter trae ting??? Eller ogsaa skal det foregaa paa trae tingen...
+// // Nope det skal ikke foregaa paa trae tingen. Fordi den skal kun bruges hvis man ikke
+// // har extension communication
+// @SuppressWarnings({ "unchecked", "rawtypes" })
+// protected final void onInstantiation(BiConsumer<? super E, ? super ExtensionInstantiationContext> action) {
+// requireNonNull(action, "action is null");
+// BiConsumer<? super E, ? super ExtensionInstantiationContext> a = context().onInstantiation;
+// context().onInstantiation = a == null ? (BiConsumer) action : a.andThen((BiConsumer) action);
+// }

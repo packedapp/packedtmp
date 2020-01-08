@@ -18,10 +18,10 @@ package app.packed.artifact;
 import java.util.Optional;
 
 import app.packed.component.Component;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.component.feature.FeatureMap;
 import app.packed.config.ConfigSite;
-import app.packed.container.Bundle;
 import app.packed.container.ContainerSource;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
@@ -29,18 +29,21 @@ import app.packed.lang.Nullable;
 
 /**
  *
+ * This class is normally never extended by users
  */
 // Behoever altsaa ikke vaere et interfaace...
-// Det er
+// Vi implementere ikke component configuration direkte her.
+// Mere fordi vi ikke gider have den dukker op
+
+// @ExtensiableApi -> API if you extends this class you are whacked
 public interface HostConfigurationContext {
 
     /**
-     * Checks that the component is still configurable or throws an {@link IllegalStateException}.
-     * <p>
-     * A component is typically only configurable inside of {@link Bundle#configure()}.
+     * Checks that the host is still configurable or throws an {@link IllegalStateException}.
      * 
      * @throws IllegalStateException
-     *             if the component is no long configurable.
+     *             if the host is no long configurable.
+     * @see ComponentConfiguration#checkConfigurable()
      */
     void checkConfigurable();
 
@@ -52,7 +55,7 @@ public interface HostConfigurationContext {
     ConfigSite configSite();
 
     // Do we need an ArtifactReference???
-
+    // Kunne ogsaa godt bruge noget fra Bundle.link
     void deploy(ContainerSource source, ArtifactDriver<?> driver, Wirelet... wirelets);
 
     /**

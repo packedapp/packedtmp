@@ -99,7 +99,7 @@ public final class ArtifactImage implements ContainerSource {
     }
 
     /**
-     * Returns any description that has been set for the image.
+     * Returns any description that have been set for the image.
      * <p>
      * The returned description is always identical to the description of the root container.
      * 
@@ -160,10 +160,10 @@ public final class ArtifactImage implements ContainerSource {
     /**
      * Returns the type of bundle that was used to create this image.
      * <p>
-     * If this image was created from an existing image, the new image image will retain the original image source bundle
-     * type.
+     * If this image was created from an existing image, the new image image will retain the source type of the existing
+     * image.
      * 
-     * @return the original source type of this image
+     * @return the type of bundle that was used to create this image
      */
     @SuppressWarnings("unchecked")
     public Class<? extends Bundle> sourceType() {

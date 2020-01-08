@@ -18,7 +18,7 @@ package app.packed.container;
 import app.packed.component.SingletonConfiguration;
 import app.packed.entrypoint.EntryPointExtension;
 import app.packed.lang.Key;
-import app.packed.lang.Qualifier;
+import app.packed.lang.Key.Qualifier;
 import app.packed.lifecycle.OnStart;
 import app.packed.service.Factory;
 import app.packed.service.Injector;
@@ -138,7 +138,7 @@ public abstract class BaseBundle extends Bundle {
     }
 
     /**
-     * Binds the specified implementation as a new service. The runtime will use {@link Factory#findInjectable(Class)} to
+     * Binds the specified implementation as a new service. The runtime will use {@link Factory#find(Class)} to
      * find a valid constructor or method to instantiate the service instance once the injector is created.
      * <p>
      * The default key for the service will be the specified {@code implementation}. If the {@code Class} is annotated with

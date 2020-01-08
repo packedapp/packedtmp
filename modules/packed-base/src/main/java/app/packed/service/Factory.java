@@ -31,11 +31,12 @@ import java.util.function.Supplier;
 
 import app.packed.lang.InvalidDeclarationException;
 import app.packed.lang.Key;
+import app.packed.lang.Nullable;
 import app.packed.lang.TypeLiteral;
+import app.packed.lang.UncheckedIllegalAccessException;
 import app.packed.lang.reflect.ConstructorDescriptor;
 import app.packed.lang.reflect.ExecutableDescriptor;
 import app.packed.lang.reflect.MethodDescriptor;
-import app.packed.lang.reflect.UncheckedIllegalAccessException;
 import app.packed.lifecycle.OnStart;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FactoryHandle;
@@ -76,6 +77,34 @@ import packed.internal.util.types.TypeUtil;
 // Skal bruges til Filtrering... Men hvis noeglerne er skjult kan vi vel bruge service....
 public class Factory<T> {
 
+    /** A cache of factories used by {@link #find(Class)}. */
+    private static final ClassValue<Factory<?>> FIND_INJECTABLE_CACHE = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        @Override
+        protected Factory<?> computeValue(Class<?> implementation) {
+            return new Factory(FactoryFindInjectableExecutable.find(implementation));
+        }
+    };
+
+    /**
+     * A cache of factories used by {@link #find(TypeLiteral)}. This cache is only used by subclasses of TypeLiteral, never
+     * literals that are manually constructed.
+     */
+    private static final ClassValue<Factory<?>> FIND_INJECTABLE_FROM_TYPE_LITERAL_CACHE = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        @Override
+        protected Factory<?> computeValue(Class<?> implementation) {
+            Type t = TYPE_LITERAL_TV_EXTRACTOR.extract(implementation);
+            return new Factory(FactoryFindInjectableExecutable.find(ModuleAccess.util().toTypeLiteral(t)));
+        }
+    };
+
+    private static final TypeVariableExtractor TYPE_LITERAL_TV_EXTRACTOR = TypeVariableExtractor.of(TypeLiteral.class);
+
     static {
         ModuleAccess.initialize(AppPackedServiceAccess.class, new AppPackedServiceAccess() {
 
@@ -91,34 +120,6 @@ public class Factory<T> {
             }
         });
     }
-
-    /** A cache of factories used by {@link #findInjectable(Class)}. */
-    private static final ClassValue<Factory<?>> FIND_INJECTABLE_CACHE = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        @Override
-        protected Factory<?> computeValue(Class<?> implementation) {
-            return new Factory(FactoryFindInjectableExecutable.find(implementation));
-        }
-    };
-
-    private static final TypeVariableExtractor TYPE_LITERAL_TV_EXTRACTOR = TypeVariableExtractor.of(TypeLiteral.class);
-
-    /**
-     * A cache of factories used by {@link #findInjectable(TypeLiteral)}. This cache is only used by subclasses of
-     * TypeLiteral, never literals that are manually constructed.
-     */
-    private static final ClassValue<Factory<?>> FIND_INJECTABLE_FROM_TYPE_LITERAL_CACHE = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        @Override
-        protected Factory<?> computeValue(Class<?> implementation) {
-            Type t = TYPE_LITERAL_TV_EXTRACTOR.extract(implementation);
-            return new Factory(FactoryFindInjectableExecutable.find(ModuleAccess.util().toTypeLiteral(t)));
-        }
-    };
 
     /** The internal factory that all calls delegate to. */
     final FactorySupport<T> factory;
@@ -167,17 +168,6 @@ public class Factory<T> {
     @SuppressWarnings("unchecked")
     Factory(Supplier<? extends T> supplier) {
         this.factory = (FactorySupport<T>) Factory0.create(getClass(), supplier);
-    }
-
-    /**
-     * Returns a new bindable factory.
-     * 
-     * @return a new bindable factory
-     */
-    // What if already bindable?
-    // Create new or return same????
-    public final BindableFactory<T> bindable() {
-        return new BindableFactory<>(this);
     }
 
     /**
@@ -271,7 +261,9 @@ public class Factory<T> {
         return factory.handle.returnType();
     }
 
-    public Factory<T> useExactType(Class<? extends T> type) {
+    public final Factory<T> useExactType(Class<? extends T> type) {
+        // TypeHint.. withExactType
+
         // scanAs() must be exact type. Show example with static method that returns a Foo, but should scan with FooImpl
         // Ideen er lidt tænkt at man kan specifiere det på static factory methods, der ikke giver den.
         // fulde info om implementation
@@ -280,6 +272,38 @@ public class Factory<T> {
         // istedet for
         // @Inject
         // SomeServiceImpl create();
+        throw new UnsupportedOperationException();
+    }
+
+    public final <S> Factory<T> withArgument(Class<S> key, @Nullable Object argument) {
+        // withArgumentSupplier
+        throw new UnsupportedOperationException();
+    }
+
+    public final Factory<T> withArgument(int index, @Nullable Object argument) {
+        throw new UnsupportedOperationException();
+    }
+
+    public final <S> Factory<T> withArgument(Key<S> key, @Nullable Object argument) {
+        throw new UnsupportedOperationException();
+    }
+
+    public final Factory<T> withArgument(Object argument) {
+        requireNonNull(argument, "argument is null");
+        // Will bind to any assignable parameter...
+        throw new UnsupportedOperationException();
+    }
+
+    public final <S> Factory<T> withArgumentSupplier(Class<S> key, Supplier<?> supplier) {
+        // withArgumentSupplier
+        throw new UnsupportedOperationException();
+    }
+
+    public final Factory<T> withArgumentSupplier(int index, Supplier<?> supplier) {
+        throw new UnsupportedOperationException();
+    }
+
+    public final <S> Factory<T> withArgumentSupplier(Key<S> key, Supplier<?> supplier) {
         throw new UnsupportedOperationException();
     }
 
@@ -296,6 +320,10 @@ public class Factory<T> {
      */
     public final Factory<T> withKey(Key<? super T> key) {
         throw new UnsupportedOperationException();
+    }
+
+    public final boolean needsLookup() {
+        return false;
     }
 
     /**
@@ -328,6 +356,7 @@ public class Factory<T> {
     //// Ideen er at man kan pakke en method handle ind...
     // Stacked lookups..
     // Vi skal have en hel section omkring method handlers.
+
     public final Factory<T> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
         return new Factory<>(new FactorySupport<T>(factory.handle.withLookup(lookup), factory.dependencies));
@@ -350,14 +379,13 @@ public class Factory<T> {
      * @return a factory for the specified implementation type
      */
     @SuppressWarnings("unchecked")
-    public static <T> Factory<T> findInjectable(Class<T> implementation) {
-        // Rename to find()
+    public static <T> Factory<T> find(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         return (Factory<T>) FIND_INJECTABLE_CACHE.get(implementation);
     }
 
     /**
-     * This method is equivalent to {@link #findInjectable(Class)} except that it takes a type literal.
+     * This method is equivalent to {@link #find(Class)} except that it takes a type literal.
      *
      * @param <T>
      *            the implementation type
@@ -366,7 +394,7 @@ public class Factory<T> {
      * @return a factory for the specified implementation type
      */
     @SuppressWarnings("unchecked")
-    public static <T> Factory<T> findInjectable(TypeLiteral<T> implementation) {
+    public static <T> Factory<T> find(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         if (!ModuleAccess.util().isCanonicalized(implementation)) {
             // We cache factories for all "new TypeLiteral<>(){}"
@@ -381,12 +409,12 @@ public class Factory<T> {
     }
 
     static <T> Factory<T> fromMethodHandle(MethodHandle mh) {
-        // Be aware that annotations and generic information is stripped from MethodHandles.
+        // We don't support this because annotations and generic information are stripped from MethodHandles.
         throw new UnsupportedOperationException();
     }
 
     /**
-     * Returns a factory that returns the specified instance every time a new instance is requested.
+     * Returns a factory that returns the specified instance every time the factory is used.
      * <p>
      * Instances passed to this method should not use field or method injection if the factory needs to be used multiple
      * times. As these fields and members will be injected every time, possible concurrently, an instance is requested from
@@ -399,6 +427,9 @@ public class Factory<T> {
      * @return the factory
      */
     public static <T> Factory<T> ofInstance(T instance) {
+        // TODO what to do about injection of the instance???
+        // I actually think we need 2 methods...
+        // ofInstanceInjectable()....
         return new Factory<>(new FactorySupport<>(InstanceFactoryHandle.of(instance), List.of()));
     }
 }
@@ -552,17 +583,17 @@ class XFac2 {
      *             if there was not exactly one static method annotated with {@link Inject} or if the return type of the
      *             method did not match the specified return type
      */
-    public static <T> Factory<T> findMethodStatic(Class<?> implementation, Class<T> returnType) {
-        return findMethodStatic(implementation, TypeLiteral.of(returnType));
+    public static <T> Factory<T> findMethod(Class<?> implementation, Class<T> returnType) {
+        return findMethod(implementation, TypeLiteral.of(returnType));
     }
 
-    public static <T> Factory<T> findMethodStatic(Class<?> implementation, TypeLiteral<T> returnType) {
+    public static <T> Factory<T> findMethod(Class<?> implementation, TypeLiteral<T> returnType) {
         // I think scan from exactly one 1 inject method
         throw new UnsupportedOperationException();
     }
 
-    public static <T> Factory<T> findMethodStatic(Class<T> type) {
-        return findMethodStatic(requireNonNull(type), TypeLiteral.of(type));
+    public static <T> Factory<T> findMethod(Class<T> type) {
+        return findMethod(requireNonNull(type), TypeLiteral.of(type));
     }
 
     /**
@@ -648,22 +679,28 @@ class XFac2 {
         throw new UnsupportedOperationException();
     }
 
-    public static <T> Factory<T> ofMethodStatic(Class<?> implementation, Class<T> returnType, String name, Class<?>... parameters) {
-        return ofMethodStatic(implementation, TypeLiteral.of(requireNonNull(returnType, "returnType is null")), name, parameters);
+    public static <T> Factory<T> ofMethod(Class<?> implementation, Class<T> returnType, String name, Class<?>... parameters) {
+        return ofMethod(implementation, TypeLiteral.of(requireNonNull(returnType, "returnType is null")), name, parameters);
     }
 
     // How we skal have
-    public static <T> Factory<T> ofMethodStatic(Class<?> implementation, TypeLiteral<T> returnType, String name, Class<?>... parameters) {
+    public static <T> Factory<T> ofMethod(Class<?> implementation, TypeLiteral<T> returnType, String name, Class<?>... parameters) {
         throw new UnsupportedOperationException();
     }
 
     // new Factory<String>(SomeMethod);
     // How we skal have
-    public static <T> Factory<T> ofMethodStatic(Method method, Class<T> returnType) {
-        return ofMethodStatic(method, TypeLiteral.of(requireNonNull(returnType, "returnType is null")));
+    public static <T> Factory<T> ofMethod(Method method, Class<T> returnType) {
+        return ofMethod(method, TypeLiteral.of(requireNonNull(returnType, "returnType is null")));
     }
 
-    public static <T> Factory<T> ofMethodStatic(Method method, TypeLiteral<T> returnType) {
+    public static <T> Factory<T> ofMethod(MethodDescriptor method, Class<T> returnType) {
+        // Syntes vi skal omnavngive den til
+        // ofMethod + ofMethodInstance
+        throw new UnsupportedOperationException();
+    }
+
+    public static <T> Factory<T> ofMethod(Method method, TypeLiteral<T> returnType) {
         requireNonNull(method, "method is null");
         requireNonNull(returnType, "returnType is null");
         // ClassMirror mirror = ClassMirror.fromImplementation(method.getDeclaringClass());

@@ -33,7 +33,7 @@ import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
 import packed.internal.hook.OnHookModelBuilder.Node;
-import packed.internal.reflect.ClassProcessor;
+import packed.internal.reflect.OpenClass;
 import packed.internal.util.TinyPair;
 import packed.internal.util.UncheckedThrowableFactory;
 
@@ -175,7 +175,7 @@ public final class OnHookModel {
      * @return the new model, or null if the no {@link OnHook} annotations was present
      */
     @Nullable
-    public static OnHookModel newModel(ClassProcessor cp, boolean instantiateRoot, UncheckedThrowableFactory<? extends RuntimeException> tf,
+    public static OnHookModel newModel(OpenClass cp, boolean instantiateRoot, UncheckedThrowableFactory<? extends RuntimeException> tf,
             Class<?>... additionalParameters) {
         return new OnHookModelBuilder(cp, instantiateRoot, tf, additionalParameters).build();
     }

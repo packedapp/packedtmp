@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook.h2;
+package app.packed.lang.reflect;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.lang.reflect.Member;
 
 /**
  *
  */
-public abstract class HookValidator {
+public abstract class AbstractDescriptorTest {
 
-    protected abstract void configure();
-
-    // Must be installed as singleton component (or maybe)
-
-    // Hvis man supportere den paa runtime...
-    protected final void addRuntimeController(Class<?> runtime) {
-
+    static void validateMember(Member expected, Member actual) {
+        assertThat(expected.getDeclaringClass()).isSameAs(actual.getDeclaringClass());
+        assertThat(expected.getModifiers()).isEqualTo(actual.getModifiers());
+        assertThat(expected.getName()).isEqualTo(actual.getName());
+        assertThat(expected.isSynthetic()).isEqualTo(actual.isSynthetic());
     }
 }

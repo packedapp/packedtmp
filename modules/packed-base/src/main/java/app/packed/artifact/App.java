@@ -46,6 +46,18 @@ import app.packed.service.ServiceExtension;
  */
 public interface App extends AutoCloseable {
 
+    /** The single instance. */
+    // Don't know if we want it here...
+    /** An artifact driver for creating {@link App} instances. */
+    public static final ArtifactDriver<App> DRIVER = new ArtifactDriver<App>() {
+
+        /** {@inheritDoc} */
+        @Override
+        public App newArtifact(ArtifactContext container) {
+            return new PackedApp(container);
+        }
+    };
+
     /** Closes the app (synchronously). **/
     @Override
     void close();
@@ -156,7 +168,7 @@ public interface App extends AutoCloseable {
     Component useComponent(CharSequence path);
 
     static App initialize(ContainerSource source, Wirelet... wirelets) {
-        return ArtifactDriver.APP.newArtifact(source, wirelets);
+        return App.DRIVER.create(source, wirelets);
     }
 
     /**
@@ -173,7 +185,7 @@ public interface App extends AutoCloseable {
      *             if the application did not execute properly
      */
     static void run(ContainerSource source, Wirelet... wirelets) {
-        PackedApp app = (PackedApp) ArtifactDriver.APP.newArtifact(source, wirelets);
+        PackedApp app = (PackedApp) App.DRIVER.create(source, wirelets);
         app.context.run();
     }
 
@@ -190,16 +202,13 @@ public interface App extends AutoCloseable {
      * @throws RuntimeException
      *             if the application could not be constructed or started properly
      */
-    // Maybe open is a bit complicated when the lifecycle are named differently????
     static App start(ContainerSource source, Wirelet... wirelets) {
-        PackedApp app = (PackedApp) ArtifactDriver.APP.newArtifact(source, wirelets);
-        app.context.start();
-        return app;
+        return App.DRIVER.createAndStart(source, wirelets);
     }
 
     static CompletableFuture<App> startAsync(ContainerSource source, Wirelet... wirelets) {
         // Why return CompletableFuture???
-        PackedApp app = (PackedApp) ArtifactDriver.APP.newArtifact(source, wirelets);
+        PackedApp app = (PackedApp) App.DRIVER.create(source, wirelets);
         return app.context.startAsync(app);
     }
 }
@@ -294,6 +303,18 @@ final class PackedApp implements App {
     }
 }
 
+/// ** An artifact driver for creating {@link App} instances. */
+// final class AppArtifactDriver extends ArtifactDriver<App> {
+//
+// /** Singleton */
+// AppArtifactDriver() {}
+//
+// /** {@inheritDoc} */
+// @Override
+// public App newArtifact(ArtifactContext container) {
+// return new PackedApp(container);
+// }
+// }
 // static void runThrowing(AnyBundle bundle, Wirelet... wirelets) throws Throwable
 // Basalt set har vi vel bare en Wiring property der angiver det
 // Basically we unwrap exceptions accordingly to some scheme in some way

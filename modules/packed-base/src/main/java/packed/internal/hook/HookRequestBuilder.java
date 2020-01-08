@@ -31,7 +31,7 @@ import app.packed.hook.Hook;
 import packed.internal.hook.HookRequest.BaseHookCallback;
 import packed.internal.hook.OnHookModel.Link;
 import packed.internal.moduleaccess.ModuleAccess;
-import packed.internal.reflect.ClassProcessor;
+import packed.internal.reflect.OpenClass;
 import packed.internal.util.Tiny;
 import packed.internal.util.TinyPair;
 
@@ -171,7 +171,7 @@ public final class HookRequestBuilder {
         }
     }
 
-    public static Object testContainer(OnHookModel model, MemberUnreflector hookProcessor, ClassProcessor cp, Object container) throws Throwable {
+    public static Object testContainer(OnHookModel model, MemberUnreflector hookProcessor, OpenClass cp, Object container) throws Throwable {
         HookRequestBuilder hb = new HookRequestBuilder(model, hookProcessor, container == null ? Mode.TEST_CLASS : Mode.TEST_INSTANCE);
         hb.array[0] = container; // we could have done if (container != null) ... instead, but this is easier
 

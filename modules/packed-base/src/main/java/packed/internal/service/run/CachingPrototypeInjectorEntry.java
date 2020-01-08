@@ -35,11 +35,6 @@ public class CachingPrototypeInjectorEntry<T> extends PrototypeInjectorEntry<T> 
     }
 
     @Override
-    public T get() {
-        return getInstance(null);
-    }
-
-    @Override
     public T getInstance(PrototypeRequest site) {
         T i = instance;
         if (i == null) {

@@ -24,7 +24,7 @@ import app.packed.lang.Nullable;
 import packed.internal.hook.HookRequestBuilder;
 import packed.internal.hook.MemberUnreflector;
 import packed.internal.hook.OnHookModel;
-import packed.internal.reflect.ClassProcessor;
+import packed.internal.reflect.OpenClass;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.UncheckedThrowableFactory.AssertionErrorRuntimeException;
 
@@ -44,6 +44,7 @@ import packed.internal.util.UncheckedThrowableFactory.AssertionErrorRuntimeExcep
 
 // Relations to AOP???
 // Rename to Trigger? Ej.
+// TypeHook?
 public interface Hook {
 
     /** A builder for custom hooks, see {@link Hook} for details about how to implement this interface. */
@@ -80,7 +81,7 @@ public interface Hook {
         static <T extends Hook> T test(Lookup caller, Class<T> hookType, Class<?> target) {
             requireNonNull(caller, "caller is null");
             requireNonNull(hookType, "hookType is null");
-            ClassProcessor cpHook = new ClassProcessor(caller, hookType, false);
+            OpenClass cpHook = new OpenClass(caller, hookType, false);
             return (T) test(caller, cpHook, null, target);
         }
 
@@ -88,14 +89,14 @@ public interface Hook {
         static <T> T test(Lookup caller, T container, Class<?> target) {
             requireNonNull(caller, "caller is null");
             requireNonNull(container, "container is null");
-            ClassProcessor cpHook = new ClassProcessor(caller, container.getClass(), false);
+            OpenClass cpHook = new OpenClass(caller, container.getClass(), false);
             test(caller, cpHook, container, target);
             return container;
         }
 
-        private static Object test(Lookup caller, ClassProcessor cpHook, Object container, Class<?> target) {
+        private static Object test(Lookup caller, OpenClass cpHook, Object container, Class<?> target) {
             requireNonNull(target, "target is null");
-            ClassProcessor cpTarget = new ClassProcessor(caller, target, false);
+            OpenClass cpTarget = new OpenClass(caller, target, false);
 
             try (MemberUnreflector hc = new MemberUnreflector(cpTarget, AssertionErrorRuntimeException.FACTORY)) {
                 OnHookModel model = OnHookModel.newModel(cpHook, container == null, AssertionErrorRuntimeException.FACTORY);

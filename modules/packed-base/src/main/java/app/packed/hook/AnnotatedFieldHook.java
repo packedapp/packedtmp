@@ -27,11 +27,9 @@ import java.lang.reflect.Modifier;
 
 import app.packed.lang.InvalidDeclarationException;
 import app.packed.lang.Nullable;
+import app.packed.lang.UncheckedIllegalAccessException;
 import app.packed.lang.reflect.FieldDescriptor;
-import app.packed.lang.reflect.UncheckedIllegalAccessException;
-import app.packed.lang.reflect.VarOperator;
 import packed.internal.hook.MemberUnreflector;
-import packed.internal.hook.applicator.PackedFieldHookApplicator;
 import packed.internal.moduleaccess.AppPackedHookAccess;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.util.StringFormatter;
@@ -116,34 +114,34 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
         return annotation;
     }
 
-    public <E> HookApplicator<E> applicator(VarOperator<E> operator) {
-        unreflector.checkOpen(); // we do not want people to invoke this method, after the aggregate has been built
-        return new PackedFieldHookApplicator<E>(this, operator, field);
-    }
-
-    /**
-     * Applies the specified operator to the underlying field.
-     * 
-     * @param <E>
-     *            the type of result from applying the operator
-     * @param operator
-     *            the operator to apply
-     * @return the result from applying the operator to the static field
-     * @throws UnsupportedOperationException
-     *             if the underlying field is not a static field. Or if the underlying field is final, and the operator
-     *             needs write access
-     * @throws UncheckedIllegalAccessException
-     *             if access checking failed when accessing the field
-     */
-    public <E> E applyStatic(VarOperator<E> operator) {
-        requireNonNull(operator, "operator is null");
-        if (!Modifier.isStatic(field.getModifiers())) {
-            throw new UnsupportedOperationException("Cannot invoke this method on a non-static field " + field);
-        }
-        unreflector.checkOpen(); // we do not want people to invoke this method, after the aggregate has been built
-        // Should it be per hook group instead of container model?
-        return operator.applyStaticHook(this);
-    }
+    // public <E> HookApplicator<E> applicator(VarOperator<E> operator) {
+    // unreflector.checkOpen(); // we do not want people to invoke this method, after the aggregate has been built
+    // return new PackedFieldHookApplicator<E>(this, operator, field);
+    // }
+    //
+    // /**
+    // * Applies the specified operator to the underlying field.
+    // *
+    // * @param <E>
+    // * the type of result from applying the operator
+    // * @param operator
+    // * the operator to apply
+    // * @return the result from applying the operator to the static field
+    // * @throws UnsupportedOperationException
+    // * if the underlying field is not a static field. Or if the underlying field is final, and the operator
+    // * needs write access
+    // * @throws UncheckedIllegalAccessException
+    // * if access checking failed when accessing the field
+    // */
+    // public <E> E applyStatic(VarOperator<E> operator) {
+    // requireNonNull(operator, "operator is null");
+    // if (!Modifier.isStatic(field.getModifiers())) {
+    // throw new UnsupportedOperationException("Cannot invoke this method on a non-static field " + field);
+    // }
+    // unreflector.checkOpen(); // we do not want people to invoke this method, after the aggregate has been built
+    // // Should it be per hook group instead of container model?
+    // return operator.applyStaticHook(this);
+    // }
 
     /**
      * Checks that the type of the field is assignable to the specified type. Otherwise throws a context dependent unchecked

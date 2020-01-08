@@ -20,7 +20,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.Optional;
 
 import app.packed.container.UseExtension;
 import app.packed.lang.Key;
@@ -84,15 +83,19 @@ import app.packed.lang.Key;
 // Okay shutdown/cleanup ikke supportered paa many som er eksporteret som services...
 // Maaske hvis man eksplicit, siger its managed....
 @UseExtension(ServiceExtension.class /* extensionHook = AtProvidesGroup.Builder.class */)
+
+// Maaske @Provide og @ProvidePrototype... @ProvideTemplate
+// Det ville ogsaa hjaelpe paa sidecars maaske?? Eller de ignore den vel bare...
 public @interface Provide {
 
-    boolean prototype() default false;
+    // rename to template
+    boolean prototype() default false; // singleton default true instead
 
-    /**
-     * So ServiceConfiguration.as overrides or adds.... hmmm
-     * 
-     * @return stuff
-     */
+    // /**
+    // * So ServiceConfiguration.as overrides or adds.... hmmm
+    // *
+    // * @return stuff
+    // */
     // Use case en klasse, der implementere 2 interfaces....
     // provide(BigClass).as(AManager.class).as(BManager.class)
 
@@ -104,7 +107,7 @@ public @interface Provide {
     // alias(doo).as
     // eller en private @Provide X foo() {return this;} paa klassen
     // Vi har ikke brug for alias!
-    Class<?> as() default Optional.class; // Defaults.class
+    // Class<?> as() default Optional.class; // Defaults.class
 
     /**
      * Returns a description of the service provided by the providing method, field or type.

@@ -83,7 +83,7 @@ public final class AtProvidesHook implements Hook {
 
             // Generation of Key, I think we might want to do something that produces a good error message.
             // Maybe just hard code it in key.
-            tryAdd0(fieldHook.getter(), field, Key.fromField(field.unsafeField()), fieldHook.annotation(), List.of());
+            tryAdd0(fieldHook.getter(), field, Key.fromField(field), fieldHook.annotation(), List.of());
         }
 
         /**
@@ -96,8 +96,7 @@ public final class AtProvidesHook implements Hook {
         void onMethodProvide(AnnotatedMethodHook<Provide> methodHook) {
             MethodDescriptor method = methodHook.method();
 
-            tryAdd0(methodHook.methodHandle(), method, Key.fromMethodReturnType(method.newMethod()), methodHook.annotation(),
-                    Dependency.fromExecutable(method));
+            tryAdd0(methodHook.methodHandle(), method, Key.fromMethodReturnType(method), methodHook.annotation(), Dependency.fromExecutable(method));
         }
 
         private AtProvides tryAdd0(MethodHandle mh, Member descriptor, Key<?> key, Provide provides, List<Dependency> dependencies) {

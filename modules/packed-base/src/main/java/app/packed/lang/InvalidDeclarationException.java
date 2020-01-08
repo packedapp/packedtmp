@@ -22,6 +22,9 @@ package app.packed.lang;
 // ComponentDeclarationException.
 // Skal vel kende forskel paa runtime og build time...
 // Skal vel ogsaa flyttes til component packen.
+
+// ClassDefinitionException...
+// ConstCreateException.. <- Det er en exception der bliver lavet naar man bruger const api'en...
 public class InvalidDeclarationException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */

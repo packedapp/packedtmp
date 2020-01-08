@@ -22,7 +22,6 @@ import static packed.internal.util.StringFormatter.formatSimple;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Executable;
 
 import app.packed.lang.TypeLiteral;
 import packed.internal.util.InternalErrorException;
@@ -82,7 +81,7 @@ public final class ConstructorDescriptor<T> extends ExecutableDescriptor {
      * @return a new constructor
      */
     @SuppressWarnings("unchecked")
-    public Constructor<T> newConstructor() {
+    Constructor<T> newConstructor() {
         Class<?> declaringClass = constructor.getDeclaringClass();
         try {
             return (Constructor<T>) declaringClass.getConstructor(parameterTypes);
@@ -90,12 +89,12 @@ public final class ConstructorDescriptor<T> extends ExecutableDescriptor {
             throw new InternalErrorException("constructor", constructor, e);// We should never get to here
         }
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public final Executable newExecutable() {
-        return newConstructor();
-    }
+    //
+    // /** {@inheritDoc} */
+    // @Override
+    // final Executable newExecutable() {
+    // return newConstructor();
+    // }
 
     /** {@inheritDoc} */
     @Override

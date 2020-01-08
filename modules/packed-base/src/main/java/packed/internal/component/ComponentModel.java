@@ -35,7 +35,7 @@ import packed.internal.container.LazyExtensionActivationMap;
 import packed.internal.hook.HookRequest;
 import packed.internal.hook.HookRequestBuilder;
 import packed.internal.hook.MemberUnreflector;
-import packed.internal.reflect.ClassProcessor;
+import packed.internal.reflect.OpenClass;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.UncheckedThrowableFactory;
 
@@ -105,6 +105,10 @@ public final class ComponentModel {
         return s;
     }
 
+    public Class<?> type() {
+        return componentType;
+    }
+
     <T> AbstractComponentConfiguration invokeOnHookOnInstall(ContainerSource cs, AbstractComponentConfiguration acc) {
         try {
             // First invoke any OnHook methods on the container source (bundle)
@@ -136,14 +140,14 @@ public final class ComponentModel {
      *            a class processor usable by hooks
      * @return a model of the component
      */
-    public static ComponentModel newInstance(ContainerSourceModel csm, ClassProcessor cp) {
+    public static ComponentModel newInstance(ContainerSourceModel csm, OpenClass cp) {
         return new Builder(csm, cp).build();
     }
 
     /** A builder object for a component model. */
     private static final class Builder {
 
-        private final ClassProcessor cp;
+        private final OpenClass cp;
 
         HookRequestBuilder csb;
 
@@ -159,7 +163,7 @@ public final class ComponentModel {
          *            a class processor usable by hooks
          * 
          */
-        private Builder(ContainerSourceModel csm, ClassProcessor cp) {
+        private Builder(ContainerSourceModel csm, OpenClass cp) {
             this.csm = requireNonNull(csm);
             this.cp = requireNonNull(cp);
         }

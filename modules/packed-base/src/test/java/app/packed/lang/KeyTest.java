@@ -112,7 +112,7 @@ public class KeyTest {
             int primitiveQualified;
         }
 
-        npe(() -> Key.fromField(null), "field");
+        npe(() -> Key.fromField((Field) null), "field");
 
         Field f = findField(Tmpx.class, "ok");
         assertThat(Key.fromField(f).typeLiteral()).isEqualTo(TL_LIST_WILDCARD);

@@ -29,6 +29,7 @@ import app.packed.service.Dependency;
  * A shared superclass for the common functionality of class variables (static {@link Field fields}), instance variables
  * (non-static {@link Field fields}) and {@link Parameter parameter} variables.
  */
+// Rename to Variable
 public abstract class VarDescriptor implements AnnotatedElement {
 
     /**

@@ -20,14 +20,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.lang.Qualifier;
+import app.packed.lang.Key;
 
 /**
  * An annotation with a single string value, used for testing.
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Qualifier
+@Key.Qualifier
 @Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
 public @interface StringQualifier {
     String value() default "";

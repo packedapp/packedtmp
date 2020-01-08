@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.Test;
 
 import packed.internal.hook.MemberUnreflector;
-import packed.internal.reflect.ClassProcessor;
+import packed.internal.reflect.OpenClass;
 import packed.internal.util.UncheckedThrowableFactory;
 import testutil.stubs.annotation.AnnotationInstances;
 import testutil.stubs.annotation.Left;
@@ -44,7 +44,7 @@ public class AnnotatedTypeHookTest {
     }
 
     private static MemberUnreflector newHookController() {
-        ClassProcessor cp = new ClassProcessor(MethodHandles.lookup(), AnnotatedTypeHookTest.class, false);
+        OpenClass cp = new OpenClass(MethodHandles.lookup(), AnnotatedTypeHookTest.class, false);
         return new MemberUnreflector(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
     }
 }

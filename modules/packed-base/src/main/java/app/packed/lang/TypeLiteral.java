@@ -28,6 +28,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Optional;
 
+import app.packed.lang.reflect.FieldDescriptor;
+import app.packed.lang.reflect.MethodDescriptor;
 import app.packed.lang.reflect.ParameterDescriptor;
 import packed.internal.moduleaccess.AppPackedUtilAccess;
 import packed.internal.moduleaccess.ModuleAccess;
@@ -201,7 +203,7 @@ public abstract class TypeLiteral<T> {
      * @return a key with the specified qualifier and the same type as this instance
      * @throws InvalidDeclarationException
      *             if the type literal could not be converted to a key, for example, if it is an {@link Optional}. Or if the
-     *             qualifier type is not annotated with {@link Qualifier}.
+     *             qualifier type is not annotated with {@link Key.Qualifier}.
      */
     public final Key<T> toKey(Annotation qualifier) {
         return Key.fromTypeLiteral(this, qualifier);
@@ -236,6 +238,11 @@ public abstract class TypeLiteral<T> {
         return new CanonicalizedTypeLiteral<>(field.getGenericType());
     }
 
+    public static TypeLiteral<?> fromField(FieldDescriptor field) {
+        requireNonNull(field, "field is null");
+        return new CanonicalizedTypeLiteral<>(field.getParameterizedType());
+    }
+
     /**
      * Returns the type of the specified method's return type as a type literal.
      * 
@@ -245,6 +252,19 @@ public abstract class TypeLiteral<T> {
      * @see Method#getGenericReturnType()
      */
     public static TypeLiteral<?> fromMethodReturnType(Method method) {
+        requireNonNull(method, "method is null");
+        return new CanonicalizedTypeLiteral<>(method.getGenericReturnType());
+    }
+
+    /**
+     * Returns the type of the specified method descriptor's return type as a type literal.
+     * 
+     * @param method
+     *            the method descriptor whose return type to return a type literal for
+     * @return the type literal for the return type of the specified method descriptor
+     * @see MethodDescriptor#getGenericReturnType()
+     */
+    public static TypeLiteral<?> fromMethodReturnType(MethodDescriptor method) {
         requireNonNull(method, "method is null");
         return new CanonicalizedTypeLiteral<>(method.getGenericReturnType());
     }

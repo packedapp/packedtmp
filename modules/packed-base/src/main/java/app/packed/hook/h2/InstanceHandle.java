@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.host.test;
+package app.packed.hook.h2;
 
 /**
  *
  */
-public interface AppHost {
+public interface InstanceHandle<T> {
 
 }

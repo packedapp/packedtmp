@@ -33,7 +33,7 @@ import packed.internal.component.ComponentModel;
 import packed.internal.hook.OnHookModel;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FactoryHandle;
-import packed.internal.reflect.ClassProcessor;
+import packed.internal.reflect.OpenClass;
 import packed.internal.util.LookupValue;
 import packed.internal.util.UncheckedThrowableFactory;
 
@@ -97,7 +97,7 @@ public final class ContainerSourceModel extends ComponentLookup {
         }
         this.sourceType = requireNonNull(sourceType);
 
-        this.onHookModel = OnHookModel.newModel(new ClassProcessor(MethodHandles.lookup(), sourceType, true), false,
+        this.onHookModel = OnHookModel.newModel(new OpenClass(MethodHandles.lookup(), sourceType, true), false,
                 UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
         this.activatorMap = LazyExtensionActivationMap.of(sourceType);
         this.dependenciesTotalOrder = ExtensionUseModel2.totalOrder(sourceType);
@@ -122,8 +122,8 @@ public final class ContainerSourceModel extends ComponentLookup {
 
     /** {@inheritDoc} */
     @Override
-    ClassProcessor newClassProcessor(Class<?> clazz, boolean registerNatives) {
-        return new ClassProcessor(MethodHandles.lookup(), clazz, registerNatives);
+    OpenClass newClassProcessor(Class<?> clazz, boolean registerNatives) {
+        return new OpenClass(MethodHandles.lookup(), clazz, registerNatives);
     }
 
     @Override
@@ -201,8 +201,8 @@ public final class ContainerSourceModel extends ComponentLookup {
 
         /** {@inheritDoc} */
         @Override
-        ClassProcessor newClassProcessor(Class<?> clazz, boolean registerNatives) {
-            return new ClassProcessor(lookup, clazz, registerNatives);
+        OpenClass newClassProcessor(Class<?> clazz, boolean registerNatives) {
+            return new OpenClass(lookup, clazz, registerNatives);
         }
 
         @Override

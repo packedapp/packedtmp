@@ -25,7 +25,7 @@ import app.packed.service.Injector;
 // Hvis vi skal have noget some helst kontrol...
 // Boer vi ikke extende component, da vi risikiere
 // At returnere en instand i ComponentStream.
-public interface ComponentContext extends Component {
+public interface SingletonContext extends Component {
     // PrototypeContext
 
     // install(); <- installs child

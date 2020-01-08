@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lang.reflect;
+package app.packed.lang;
 
 /** A runtime exception used in places where we cannot throw the checked {@link IllegalAccessException}. */
 

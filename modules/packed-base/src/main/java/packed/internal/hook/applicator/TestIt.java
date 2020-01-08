@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hook.assignableTo;
+package packed.internal.hook.applicator;
 
 import app.packed.artifact.App;
 import app.packed.component.SingletonConfiguration;
@@ -22,7 +22,7 @@ import app.packed.container.Extension;
 import app.packed.container.UseExtension;
 import app.packed.hook.AssignableToHook;
 import app.packed.hook.OnHook;
-import packed.internal.hook.assignableTo.TestIt.FooExtension;
+import packed.internal.hook.applicator.TestIt.FooExtension;
 
 /**
  *

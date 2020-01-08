@@ -23,24 +23,24 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import packed.internal.reflect.ClassProcessor;
+import packed.internal.reflect.OpenClass;
 import packed.internal.util.UncheckedThrowableFactory;
 
 /**
  * A single one of these is created by class that is analyzed. Is used to make sure that no instance
  * {@link MethodHandle} and {@link VarHandle}. Is created after the component has analyzed. This is done in order to
- * avoid someone trying to create instances of them, outside of stuff because of grall..
+ * avoid someone trying to create instances of them, outside of stuff because of Graal..
  */
 public final class MemberUnreflector implements AutoCloseable {
 
-    final ClassProcessor cp;
+    final OpenClass cp;
 
     /** Whether or not the processor is closed. In which we cannot unreflect any members anymore. */
     private boolean isClosed;
 
     private final UncheckedThrowableFactory<?> tf;
 
-    public MemberUnreflector(ClassProcessor cp, UncheckedThrowableFactory<?> tf) {
+    public MemberUnreflector(OpenClass cp, UncheckedThrowableFactory<?> tf) {
         this.cp = requireNonNull(cp);
         // A hack to allow us to throw AssertionError, as we have no way to indicate
         // Error || RuntimeException

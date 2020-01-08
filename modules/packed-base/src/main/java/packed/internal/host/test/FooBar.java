@@ -15,7 +15,7 @@
  */
 package packed.internal.host.test;
 
-import app.packed.artifact.ArtifactDriver;
+import app.packed.artifact.App;
 import app.packed.component.ComponentStream;
 import app.packed.container.BaseBundle;
 
@@ -28,9 +28,9 @@ public class FooBar extends BaseBundle {
     @Override
     protected void configure() {
         MyHostConf hc = provideHost(MyHostConf.class).setName("HA");
-        hc.deploy(new TestBundle(), ArtifactDriver.APP);
-        hc.deploy(new TestBundle(), ArtifactDriver.APP);
-        hc.deploy(new TestBundle(), ArtifactDriver.APP);
+        hc.deploy(new TestBundle(), App.DRIVER);
+        hc.deploy(new TestBundle(), App.DRIVER);
+        hc.deploy(new TestBundle(), App.DRIVER);
         // hc.deploy(new TestBundle(), ArtifactDriver.APP);
     }
 
@@ -59,8 +59,8 @@ public class FooBar extends BaseBundle {
             installInstance("HejHej").setName("123");
 
             MyHostConf hc = provideHost(MyHostConf.class);
-            hc.deploy(new TestBundl3e(), ArtifactDriver.APP);
-            hc.deploy(new TestBundl3e(), ArtifactDriver.APP);
+            hc.deploy(new TestBundl3e(), App.DRIVER);
+            hc.deploy(new TestBundl3e(), App.DRIVER);
 
         }
     }
@@ -74,7 +74,7 @@ public class FooBar extends BaseBundle {
             installInstance("HejHej").setName("123");
 
             MyHostConf hc = provideHost(MyHostConf.class);
-            hc.deploy(new TestBundl2e(), ArtifactDriver.APP);
+            hc.deploy(new TestBundl2e(), App.DRIVER);
 
             // Problemet er
         }

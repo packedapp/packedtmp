@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import app.packed.api.ContractSet;
 import app.packed.artifact.Host;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
@@ -190,6 +191,19 @@ public abstract class ComponentConfigurationToComponentAdaptor implements Compon
         }
     }
 
+    private final static class HostAdaptor extends ComponentConfigurationToComponentAdaptor implements Host {
+
+        public HostAdaptor(PackedHostConfiguration conf, List<PackedGuestConfiguration> pgc) {
+            super(conf, pgc);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ContractSet contracts() {
+            return ContractSet.EMPTY;
+        }
+    }
+
     private final static class SingleAdaptor extends ComponentConfigurationToComponentAdaptor implements Singleton {
 
         public SingleAdaptor(PackedSingletonConfiguration<?> conf, List<PackedGuestConfiguration> pgc) {
@@ -202,12 +216,11 @@ public abstract class ComponentConfigurationToComponentAdaptor implements Compon
         public StatelessAdaptor(PackedStatelessComponentConfiguration conf, List<PackedGuestConfiguration> pgc) {
             super(conf, pgc);
         }
-    }
 
-    private final static class HostAdaptor extends ComponentConfigurationToComponentAdaptor implements Host {
-
-        public HostAdaptor(PackedHostConfiguration conf, List<PackedGuestConfiguration> pgc) {
-            super(conf, pgc);
+        /** {@inheritDoc} */
+        @Override
+        public Class<?> definition() {
+            return ((PackedStatelessComponentConfiguration) super.componentConfiguration).definition();
         }
     }
 

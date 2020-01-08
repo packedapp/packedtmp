@@ -109,7 +109,7 @@ public final class LazyInjectorEntry<T> extends InjectorEntry<T> implements Prov
                         ThrowableUtil.rethrowErrorOrRuntimeException(failure);
                     }
                     try {
-                        T newInstance = factory.get();
+                        T newInstance = factory.newInstance();
                         if (newInstance == null) {
                             // We need to check null and type.... Maybe common method on RuntimeEntry
                             // TODO throw Provision Exception instead

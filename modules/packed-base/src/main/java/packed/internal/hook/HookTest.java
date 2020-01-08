@@ -25,7 +25,7 @@ import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
-import app.packed.lang.Qualifier;
+import app.packed.lang.Key;
 import packed.internal.container.extension.test.WwTest.Left;
 
 /**
@@ -78,7 +78,7 @@ public class HookTest {
         }
     }
 
-    @Qualifier
+    @Key.Qualifier
     @Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
     public @interface Sxx {
 

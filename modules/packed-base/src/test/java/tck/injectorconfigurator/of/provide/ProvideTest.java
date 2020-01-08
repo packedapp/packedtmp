@@ -45,12 +45,12 @@ public class ProvideTest {
         Injector inj = Injector.configure(conf -> {
             conf.lookup(MethodHandles.lookup());// The module where letter classes are in are not exported
             ServiceComponentConfiguration<A> a = conf.provide(A.class);
-            ServiceComponentConfiguration<B> b = conf.provide(Factory.findInjectable(B.class));
+            ServiceComponentConfiguration<B> b = conf.provide(Factory.find(B.class));
             ServiceComponentConfiguration<C> c = conf.provideInstance(C0);
             // ServiceComponentConfiguration<E> e = conf.provide(E.class).lazy();
             // ServiceComponentConfiguration<F> f = conf.provide(Factory.findInjectable(F.class)).lazy();
             ServiceComponentConfiguration<H> h = conf.provide(H.class).prototype();
-            ServiceComponentConfiguration<I> i = conf.provide(Factory.findInjectable(I.class)).prototype();
+            ServiceComponentConfiguration<I> i = conf.provide(Factory.find(I.class)).prototype();
         });
     }
 

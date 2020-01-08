@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
+package app.packed.hook.h2;
 
 /**
  *
@@ -22,7 +22,7 @@ package app.packed.hook;
 // Bliver brugt paa runtime Services
 // onFoo(Runnable, Component c, ComponentConfiguration cc)
 // First parameter must be a result of the a MethodOperator
-public @interface OnHookReady {
+@interface OnHookReady {
 
     // Den skal kun bruges hvis man har hooks deres producere den samme vaerdi for den samme extension (eller uden
     // extensions)

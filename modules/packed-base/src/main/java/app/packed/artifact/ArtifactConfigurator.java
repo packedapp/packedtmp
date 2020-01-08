@@ -21,11 +21,7 @@ import app.packed.container.ContainerSource;
  *
  */
 // Ideen er egentlig at de her configurators ogsaa er sources....
-//
-// Saa kan vi nemlig have <? extends ContainerSource>
-
 // Eneste lidt irriterende er at Vi har en Configurator der tager en configutaro?
-
 @FunctionalInterface
 public interface ArtifactConfigurator<T> extends ContainerSource {
 

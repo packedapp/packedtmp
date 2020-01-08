@@ -18,13 +18,27 @@ package app.packed.service;
 /**
  * A mutable factory where you can bind dependencies. For example,
  */
-// FactoryBuilder...
+// FactoryBuilder... istedet for... Men altsaa det eneste vi spare
+// er jo at lave nogle extra factories...
+
 //// kan man lave noget smart med MethodHandle????
 
 // Alternativ er at den ikke extender Factory....
 // Men at man koere
 // Factory.of(Class).bindable(). build()
-public final class BindableFactory<T> extends Factory<T> {
+final class BindableFactory<T> extends Factory<T> {
+
+    // From factory
+    // /**
+    // * Returns a new bindable factory.
+    // *
+    // * @return a new bindable factory
+    // */
+    // final BindableFactory<T> bindable() {
+    // // What if already bindable?
+    // // Create new or return same????
+    // return new BindableFactory<>(this);
+    // }
 
     /**
      * @param factory

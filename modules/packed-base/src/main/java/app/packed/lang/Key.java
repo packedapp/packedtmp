@@ -16,11 +16,16 @@
 
 package app.packed.lang;
 
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
 import static packed.internal.util.StringFormatter.formatSimple;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -292,6 +297,12 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
         return fromTypeLiteralNullableAnnotation(field, tl, annotation);
     }
 
+    public static Key<?> fromField(FieldDescriptor field) {
+        TypeLiteral<?> tl = TypeLiteral.fromField(field).box(); // checks null
+        Annotation annotation = QualifierHelper.findQualifier(field, field.getAnnotations());
+        return fromTypeLiteralNullableAnnotation(field, tl, annotation);
+    }
+
     /**
      * Returns a key matching the return type of the specified method and any qualifier that may be present on the method.
      * 
@@ -316,10 +327,7 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
 
     public static Key<?> fromMethodReturnType(MethodDescriptor method) {
         requireNonNull(method, "method is null");
-        if (method instanceof MethodDescriptor) {
-            return method.fromMethodReturnType();
-        }
-        return fromMethodReturnType(method.newMethod());
+        return method.fromMethodReturnType();
     }
 
     public static Key<?> fromParameter(Parameter parameter) {
@@ -423,4 +431,28 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
             super(typeLiteral, qualifier);
         }
     }
+
+    /**
+     * Qualifiers are used to distinguish different objects of the same type.
+     * <p>
+     * In regards to injection, the semantics of this annotation is identical to that of javax.inject.Qualifier. And both of
+     * them can be used interchangeable.
+     */
+    @Target(ANNOTATION_TYPE)
+    @Retention(RUNTIME)
+    @Documented
+    // TODO rename to KeyQualifier????
+    //
+    public @interface Qualifier {}
+
+    // dependency resolver, qualifier resolver,
+    // Default is Qualifier which indicates that no special resolver is resolver is used
+    // Only support static @Provides methods.... Then we avoid needing to think about how many instances we create...
+    // Class<?> resolver() default Injector.class;
+
+    // or provider
+    // QualifiedProvider
+
+    // Allow multiple Qualifiers?
+    // Allow ignoring attributes? String[] ignoreAttributes() default {};
 }

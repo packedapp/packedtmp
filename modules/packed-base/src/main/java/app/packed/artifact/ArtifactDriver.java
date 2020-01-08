@@ -26,32 +26,27 @@ import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 
 /**
+ * Artifact drivers are responsible for creating new artifacts by wrapping instances of {@link ArtifactContext}.
+ * <p>
  * This class can be extended to create custom artifact types if the built-in artifact types such as {@link App} and
- * {@link Injector} are not sufficient. In fact both {@link App} and {@link Injector} are just a thin facade that
- * delegates all calls to {@link ArtifactContext}.
- * 
- * An artifact driver is used to create artifact instances such as {@link App} and {@link Injector}. Taking care of
- * initializing internal classes and handling artifact images.
+ * {@link Injector} are not sufficient. In fact, the default implementations of both {@link App} and {@link Injector}
+ * are just thin facade that delegates all calls to {@link ArtifactContext}.
  * 
  * <p>
  * Normally, you should never instantiate more then a single instance of a particular implementation of this class.
+ * <p>
  * Subclasses of this class should be thread safe.
  * 
  * @param <T>
  *            The type of artifact this driver creates.
+ * @see App#DRIVER
  */
 // Support of injection of the artifact into the Container...
 // We do not generally support this, as people are free to any artifact they may like.
 public abstract class ArtifactDriver<T> {
 
+    /** A type variable extractor for the type of artifact this driver creates. */
     private static final TypeVariableExtractor ARTIFACT_DRIVER_TV_EXTRACTOR = TypeVariableExtractor.of(ArtifactDriver.class);
-
-    /** The single instance. */
-    // Hmmmmm, this forces initalization of APP
-    // Maybe defaultDriverApp, or defaultDriver(App.class));
-    // People can define default drivers via service loader.....
-    // Must be in the same module...
-    public static final ArtifactDriver<App> APP = new AppArtifactDriver();
 
     /** The type of artifact this driver produces. */
     private final Class<T> artifactType;
@@ -65,6 +60,10 @@ public abstract class ArtifactDriver<T> {
         configure();
         // convert tmp to perm
         // create() should check that perm is non-null
+    }
+
+    public static ArtifactDriver<App> defaultApp() {
+        return App.DRIVER;
     }
 
     /**
@@ -129,13 +128,24 @@ public abstract class ArtifactDriver<T> {
      * @throws RuntimeException
      *             if the artifact could not be created
      */
-    public final T newArtifact(ContainerSource source, Wirelet... wirelets) {
+    public final T create(ContainerSource source, Wirelet... wirelets) {
         if (source instanceof ArtifactImage) {
             return ((ArtifactImage) source).newArtifact(this, wirelets);
         }
         PackedContainerConfiguration pcc = new PackedContainerConfiguration(BuildOutput.artifact(this), source, wirelets);
         pcc.doBuild();
         ArtifactContext pac = pcc.instantiateArtifact(pcc.wireletContext).newArtifactContext();
+        return newArtifact(pac);
+    }
+
+    public final T createAndStart(ContainerSource source, Wirelet... wirelets) {
+        if (source instanceof ArtifactImage) {
+            return ((ArtifactImage) source).newArtifact(this, wirelets);
+        }
+        PackedContainerConfiguration pcc = new PackedContainerConfiguration(BuildOutput.artifact(this), source, wirelets);
+        pcc.doBuild();
+        ArtifactContext pac = pcc.instantiateArtifact(pcc.wireletContext).newArtifactContext();
+        pac.start();
         return newArtifact(pac);
     }
 
@@ -148,16 +158,4 @@ public abstract class ArtifactDriver<T> {
         return newArtifact(pac);
     }
 
-    /** An artifact driver for creating {@link App} instances. */
-    private static final class AppArtifactDriver extends ArtifactDriver<App> {
-
-        /** Singleton */
-        private AppArtifactDriver() {}
-
-        /** {@inheritDoc} */
-        @Override
-        public App newArtifact(ArtifactContext container) {
-            return new PackedApp(container);
-        }
-    }
 }

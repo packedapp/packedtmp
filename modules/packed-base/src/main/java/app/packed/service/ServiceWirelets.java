@@ -103,6 +103,7 @@ public final class ServiceWirelets {
      *            the action to perform for each service descriptor
      * @return a peeking stage
      */
+    // peekFrom
     public static Wirelet peekUpstream(Consumer<? super ServiceDescriptor> action) {
         return new PackedUpstreamInjectionWirelet.PeekUpstream(action);
     }
@@ -111,6 +112,7 @@ public final class ServiceWirelets {
         return new PackedDownstreamInjectionWirelet.PeekDownstreamWirelet(action);
     }
 
+    // provideTo? to be consistant...
     public static <T> Wirelet provide(Class<T> key, T service) {
         return provide(Key.of(key), service);
     }

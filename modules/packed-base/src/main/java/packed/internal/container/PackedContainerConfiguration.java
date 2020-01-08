@@ -63,7 +63,7 @@ import packed.internal.host.PackedHostConfiguration;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.moduleaccess.ModuleAccess;
-import packed.internal.reflect.ClassProcessor;
+import packed.internal.reflect.OpenClass;
 import packed.internal.reflect.ConstructorFinder;
 import packed.internal.service.run.DefaultInjector;
 import packed.internal.util.UncheckedThrowableFactory;
@@ -284,7 +284,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     // Flyt til AbstractComponentConfiguration????? Saa det er interfacet der styrer?
     public <T> SingletonConfiguration<T> install(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        return install(Factory.findInjectable(implementation));
+        return install(Factory.find(implementation));
     }
 
     /** {@inheritDoc} */
@@ -517,7 +517,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** {@inheritDoc} */
     @Override
     public <T extends HostConfiguration> T addHost(Class<T> hostType) {
-        ClassProcessor cp = new ClassProcessor(MethodHandles.lookup(), hostType, true);
+        OpenClass cp = new OpenClass(MethodHandles.lookup(), hostType, true);
         MethodHandle mh = ConstructorFinder.find(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, HostConfigurationContext.class);
         try {
             return (T) mh.invoke(addHost());

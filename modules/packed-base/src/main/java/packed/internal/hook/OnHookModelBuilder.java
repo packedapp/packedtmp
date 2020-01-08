@@ -37,7 +37,7 @@ import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
 import packed.internal.reflect.ClassFinder;
-import packed.internal.reflect.ClassProcessor;
+import packed.internal.reflect.OpenClass;
 import packed.internal.reflect.ConstructorFinder;
 import packed.internal.thirdparty.guice.GTypeLiteral;
 import packed.internal.util.AnnotationUtil;
@@ -75,7 +75,7 @@ final class OnHookModelBuilder {
 
     private final UncheckedThrowableFactory<? extends RuntimeException> tf;
 
-    OnHookModelBuilder(ClassProcessor cp, boolean instantiateRoot, UncheckedThrowableFactory<? extends RuntimeException> tf, Class<?>... additionalParameters) {
+    OnHookModelBuilder(OpenClass cp, boolean instantiateRoot, UncheckedThrowableFactory<? extends RuntimeException> tf, Class<?>... additionalParameters) {
         this.root = instantiateRoot ? new HookBuilderNode(cp, tf, cp.clazz()) : new Node(cp);
         this.tf = requireNonNull(tf);
     }
@@ -278,7 +278,7 @@ final class OnHookModelBuilder {
         @Nullable
         Tiny<HookBuilderNode> dependencies;
 
-        private HookBuilderNode(ClassProcessor cps, UncheckedThrowableFactory<? extends RuntimeException> tf, Class<?> type) {
+        private HookBuilderNode(OpenClass cps, UncheckedThrowableFactory<? extends RuntimeException> tf, Class<?> type) {
             super(cps, tf, type);
         }
     }
@@ -291,7 +291,7 @@ final class OnHookModelBuilder {
         final MethodHandle builderConstructor;
 
         /** The class processor for the entity that contains the methods annotated with {@link OnHook}. */
-        private final ClassProcessor cp;
+        private final OpenClass cp;
 
         /** The type of hook for non-root nodes. */
         @Nullable
@@ -307,13 +307,13 @@ final class OnHookModelBuilder {
          * @param cp
          *            the class processor for the node
          */
-        private Node(ClassProcessor cp) {
+        private Node(OpenClass cp) {
             this.cp = requireNonNull(cp);
             this.hookType = null;
             this.builderConstructor = null;
         }
 
-        private Node(ClassProcessor cps, UncheckedThrowableFactory<? extends RuntimeException> tf, Class<?> type) {
+        private Node(OpenClass cps, UncheckedThrowableFactory<? extends RuntimeException> tf, Class<?> type) {
             this.hookType = requireNonNull(type);
             Class<?> builderClass = ClassFinder.findDeclaredClass(type, "Builder", Hook.Builder.class);
             this.cp = cps.spawn(builderClass);

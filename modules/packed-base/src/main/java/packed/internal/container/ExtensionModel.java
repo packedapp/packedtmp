@@ -38,7 +38,7 @@ import app.packed.lang.Nullable;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
 import packed.internal.moduleaccess.ModuleAccess;
-import packed.internal.reflect.ClassProcessor;
+import packed.internal.reflect.OpenClass;
 import packed.internal.reflect.ConstructorFinder;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
@@ -217,7 +217,7 @@ public final class ExtensionModel<E extends Extension> {
             // HashSet<>(ExtensionUseModel2.directDependenciesOf(extensionType)));
             this.dependenciesTotalOrder = ExtensionUseModel2.totalOrder(extensionType);
 
-            ClassProcessor cp = new ClassProcessor(MethodHandles.lookup(), extensionType, true);
+            OpenClass cp = new OpenClass(MethodHandles.lookup(), extensionType, true);
             this.constructor = ConstructorFinder.find(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
             this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
 

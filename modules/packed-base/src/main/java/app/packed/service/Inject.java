@@ -46,5 +46,9 @@ import app.packed.container.UseExtension;
 
 // It is valid to use @Inject on a method with no parameters, in which it just indicates that the method should be
 // invoked during the injection phase
+
+// Hav en generisk Create annotation....Som folk kan benytte...
+
+// Hvor Inject er specifict til Inject af fields og methods....
 @UseExtension(ServiceExtension.class)
 public @interface Inject {}

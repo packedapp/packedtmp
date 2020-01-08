@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
@@ -212,20 +211,6 @@ public final class ParameterDescriptor extends VarDescriptor {
         return parameter.isVarArgs();
     }
 
-    /**
-     * Creates a new {@link Parameter} corresponding to this descriptor.
-     * <p>
-     * This method always creates a new parameter to avoid giving access to the underlying mutable {@link Executable
-     * Parameter#getDeclaringExecutable()}.
-     *
-     * @return a new parameter
-     */
-    public Parameter newParameter() {
-        // Parameter is immutable, but it contains a reference to its declaring executable exposed via
-        // Parameter#getDeclaringExecutable. So we need to create a new copy
-        return declaringExecutable.newExecutable().getParameters()[index];
-    }
-
     /** {@inheritDoc} */
     @Override
     public String toString() {
@@ -262,3 +247,17 @@ public final class ParameterDescriptor extends VarDescriptor {
         throw new InternalErrorException("parameter", parameter);// We should never get to here
     }
 }
+//
+/// **
+// * Creates a new {@link Parameter} corresponding to this descriptor.
+// * <p>
+// * This method always creates a new parameter to avoid giving access to the underlying mutable {@link Executable
+// * Parameter#getDeclaringExecutable()}.
+// *
+// * @return a new parameter
+// */
+// Parameter newParameter() {
+// // Parameter is immutable, but it contains a reference to its declaring executable exposed via
+// // Parameter#getDeclaringExecutable. So we need to create a new copy
+// return declaringExecutable.newExecutable().getParameters()[index];
+// }

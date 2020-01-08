@@ -20,6 +20,13 @@ package app.packed.component;
  */
 public interface StatelessConfiguration extends ComponentConfiguration {
 
+    /**
+     * Yup
+     * 
+     * @return yup
+     */
+    Class<?> definition();
+
     /** {@inheritDoc} */
     @Override
     StatelessConfiguration setDescription(String description);

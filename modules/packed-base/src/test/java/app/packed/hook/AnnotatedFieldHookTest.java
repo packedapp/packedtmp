@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.container.InternalExtensionException;
 import app.packed.lang.reflect.FieldDescriptor;
 import packed.internal.hook.MemberUnreflector;
-import packed.internal.reflect.ClassProcessor;
+import packed.internal.reflect.OpenClass;
 import packed.internal.util.UncheckedThrowableFactory;
 import testutil.stubs.annotation.AnnotationInstances;
 import testutil.stubs.annotation.Left;
@@ -54,7 +54,7 @@ public class AnnotatedFieldHookTest {
      */
     @Test
     public void basics() {
-        MemberUnreflector hc = new MemberUnreflector(new ClassProcessor(MethodHandles.lookup(), AnnotatedFieldHookTest.class, false),
+        MemberUnreflector hc = new MemberUnreflector(new OpenClass(MethodHandles.lookup(), AnnotatedFieldHookTest.class, false),
                 UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
         AnnotatedFieldHook<Left> h = new AnnotatedFieldHook<>(hc, findField("field"), AnnotationInstances.LEFT);
         hc.close(); // We close it here, because these checks should work, even if it is closed
@@ -98,7 +98,7 @@ public class AnnotatedFieldHookTest {
             String FIELD = "";
         }
 
-        MemberUnreflector unreflector = new MemberUnreflector(new ClassProcessor(MethodHandles.lookup(), AnnotatedFieldHookTest.class, false),
+        MemberUnreflector unreflector = new MemberUnreflector(new OpenClass(MethodHandles.lookup(), AnnotatedFieldHookTest.class, false),
                 UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
         AnnotatedFieldHook<Left> sff = new AnnotatedFieldHook<>(unreflector, findField(Tester.class, "SF_FIELD"), AnnotationInstances.LEFT);
         AnnotatedFieldHook<Left> f = new AnnotatedFieldHook<>(unreflector, findField(Tester.class, "FIELD"), AnnotationInstances.LEFT);
@@ -140,7 +140,7 @@ public class AnnotatedFieldHookTest {
      */
     @Test
     public void handles() throws Throwable {
-        MemberUnreflector unflector = new MemberUnreflector(new ClassProcessor(MethodHandles.lookup(), AnnotatedFieldHookTest.class, false),
+        MemberUnreflector unflector = new MemberUnreflector(new OpenClass(MethodHandles.lookup(), AnnotatedFieldHookTest.class, false),
                 UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
         AnnotatedFieldHook<Left> h = new AnnotatedFieldHook<>(unflector, FIELD, AnnotationInstances.LEFT);
         AnnotatedFieldHookTest t = new AnnotatedFieldHookTest();

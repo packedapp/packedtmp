@@ -13,20 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lang;
+package app.packed.lang.reflect;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static testutil.assertj.Assertions.npe;
 
-import java.lang.reflect.Parameter;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
 import app.packed.lang.Nullable;
-import app.packed.lang.reflect.ParameterDescriptor;
-import packed.internal.util.descriptor.InternalParameterDescriptorTest;
 
 /** Tests {@link ParameterDescriptor}, most of the test are in {@link InternalParameterDescriptorTest}. */
 public class ParameterDescriptorTest {
@@ -35,8 +31,8 @@ public class ParameterDescriptorTest {
 
     @Test
     public void of() throws Exception {
-        Parameter p = ParameterDescriptorTest.class.getMethod("someMethod", Map.class).getParameters()[0];
+        // Parameter p = ParameterDescriptorTest.class.getMethod("someMethod", Map.class).getParameters()[0];
         npe(() -> ParameterDescriptor.of(null), "parameter");
-        assertThat(ParameterDescriptor.of(p).newParameter()).isEqualTo(p);
+        // assertThat(ParameterDescriptor.of(p).newParameter()).isEqualTo(p);
     }
 }

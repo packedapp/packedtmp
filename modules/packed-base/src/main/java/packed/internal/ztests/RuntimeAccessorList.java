@@ -15,20 +15,14 @@
  */
 package packed.internal.ztests;
 
-import java.util.function.BiConsumer;
-
-import app.packed.component.SingletonConfiguration;
-import app.packed.hook.AnnotatedFieldHook;
-import app.packed.lang.reflect.VarOperator;
-
 /**
  *
  */
 public class RuntimeAccessorList<T> {
 
-    public <S> void readyAll(SingletonConfiguration<?> cc, Class<S> sidecarType, BiConsumer<S, T> consumer) {}
-
-    public RuntimeAccessorList<T> add(AnnotatedFieldHook<?> hook, VarOperator<T> operator) {
-        return this;
-    }
+    // public <S> void readyAll(SingletonConfiguration<?> cc, Class<S> sidecarType, BiConsumer<S, T> consumer) {}
+    //
+    // public RuntimeAccessorList<T> add(AnnotatedFieldHook<?> hook, VarOperator<T> operator) {
+    // return this;
+    // }
 }

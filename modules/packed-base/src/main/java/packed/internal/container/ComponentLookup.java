@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 
 import packed.internal.component.ComponentModel;
 import packed.internal.inject.factoryhandle.FactoryHandle;
-import packed.internal.reflect.ClassProcessor;
+import packed.internal.reflect.OpenClass;
 
 /**
  * This class exists because we have two ways to access the members of a component instance. One with a {@link Lookup}
@@ -29,7 +29,7 @@ abstract class ComponentLookup {
 
     abstract ComponentModel componentModelOf(Class<?> componentType);
 
-    abstract ClassProcessor newClassProcessor(Class<?> clazz, boolean registerNatives);
+    abstract OpenClass newClassProcessor(Class<?> clazz, boolean registerNatives);
 
     // Just return MethodHandle directly???
     abstract <T> FactoryHandle<T> readable(FactoryHandle<T> factory);

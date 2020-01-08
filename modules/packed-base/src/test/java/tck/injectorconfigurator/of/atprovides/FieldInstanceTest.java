@@ -41,8 +41,8 @@ public class FieldInstanceTest {
     public void provide() {
         MixedFields.test(c -> c.provideInstance(new MixedFields()));
         MixedFields.test(c -> c.provide(MixedFields.class));
-        MixedFields.test(c -> c.provide(Factory.findInjectable(MixedFields.class)));
-        MixedFields.test(c -> c.provide(Factory.findInjectable(new TypeLiteral<MixedFields>() {})));
+        MixedFields.test(c -> c.provide(Factory.find(MixedFields.class)));
+        MixedFields.test(c -> c.provide(Factory.find(new TypeLiteral<MixedFields>() {})));
     }
 
     // /** Tests lazy {@link Provide#instantionMode()} on instance fields. */

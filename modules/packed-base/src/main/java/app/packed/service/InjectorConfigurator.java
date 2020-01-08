@@ -25,8 +25,8 @@ import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
+import app.packed.lang.Key.Qualifier;
 import app.packed.lang.Nullable;
-import app.packed.lang.Qualifier;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via
@@ -122,7 +122,7 @@ public final class InjectorConfigurator {
 
     /**
      * Provides the specified implementation as a new singleton service. An instance of the implementation will be created
-     * together with the injector. The runtime will use {@link Factory#findInjectable(Class)} to find the constructor or
+     * together with the injector. The runtime will use {@link Factory#find(Class)} to find the constructor or
      * method used for instantiation.
      * <p>
      * The default key for the service will be the specified {@code implementation}. If the

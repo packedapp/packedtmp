@@ -28,20 +28,20 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import app.packed.lang.NativeImage;
-import app.packed.lang.reflect.UncheckedIllegalAccessException;
+import app.packed.lang.UncheckedIllegalAccessException;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.UncheckedThrowableFactory;
 import packed.internal.util.function.ThrowableConsumer;
 
 /**
- *
+ * An open class is a thin wrapper for a single class and a {@link Lookup} object.
+ * <p>
+ * This class is not safe to use with multiple threads.
  */
-// Make sure the constructor is registered if we are generating a native image
-// NativeImage.registerConstructor(constructor);
-public class ClassProcessor {
+public final class OpenClass {
 
     /** The app.packed.base module. */
-    private static final Module THIS_MODULE = ClassProcessor.class.getModule();
+    private static final Module APP_PACKED_BASE_MODULE = OpenClass.class.getModule();
 
     /** The class that can be processed. */
     private final Class<?> clazz;
@@ -49,28 +49,26 @@ public class ClassProcessor {
     /** A lookup object that can be used to access {@link #clazz}. */
     private final MethodHandles.Lookup lookup;
 
-    private boolean lookupInitialized;
-
+    /** A lookup that can be used on non-public members. */
     private MethodHandles.Lookup privateLookup;
+
+    /** Whether or not the private lookup has been initialized. */
+    private boolean privateLookupInitialized;
 
     /** Whether or not every unreflected action results in the member being registered for native image generation. */
     private final boolean registerForNative;
 
-    public ClassProcessor(MethodHandles.Lookup lookup, Class<?> clazz, boolean registerForNative) {
+    public OpenClass(MethodHandles.Lookup lookup, Class<?> clazz, boolean registerForNative) {
         this.lookup = requireNonNull(lookup);
         this.clazz = requireNonNull(clazz);
         this.registerForNative = registerForNative;
     }
 
-    public ClassProcessor copy() {
-        return new ClassProcessor(lookup, clazz, registerForNative);
-    }
-
     private <T extends RuntimeException> void checkPackageOpen(UncheckedThrowableFactory<T> tf) throws T {
         String pckName = clazz.getPackageName();
-        if (!clazz.getModule().isOpen(pckName, THIS_MODULE)) {
+        if (!clazz.getModule().isOpen(pckName, APP_PACKED_BASE_MODULE)) {
             String otherModule = clazz.getModule().getName();
-            String m = THIS_MODULE.getName();
+            String m = APP_PACKED_BASE_MODULE.getName();
             throw tf.newThrowable("In order to access '" + StringFormatter.format(clazz) + "', the module '" + otherModule + "' must be open to '" + m
                     + "'. This can be done, for example, by adding 'opens " + pckName + " to " + m + ";' to the module-info.java file of " + otherModule);
         }
@@ -83,6 +81,10 @@ public class ClassProcessor {
      */
     public Class<?> clazz() {
         return clazz;
+    }
+
+    public OpenClass copy() {
+        return new OpenClass(lookup, clazz, registerForNative);
     }
 
     public <T extends Throwable> void findMethods(ThrowableConsumer<? super Method, T> methodConsumer) throws T {
@@ -104,13 +106,13 @@ public class ClassProcessor {
             throw new IllegalArgumentException("Was " + member.getDeclaringClass() + " expecting " + clazz);
         }
 
-        if (!lookupInitialized) {
+        if (!privateLookupInitialized) {
             checkPackageOpen(tf);
             // Should we use lookup.getdeclaringClass???
-            if (!THIS_MODULE.canRead(clazz.getModule())) {
-                THIS_MODULE.addReads(clazz.getModule());
+            if (!APP_PACKED_BASE_MODULE.canRead(clazz.getModule())) {
+                APP_PACKED_BASE_MODULE.addReads(clazz.getModule());
             }
-            lookupInitialized = true;
+            privateLookupInitialized = true;
         }
 
         // If we already have made a private lookup object, lets just use it. Even if we might need less access
@@ -132,12 +134,15 @@ public class ClassProcessor {
         }
     }
 
-    public ClassProcessor spawn(Class<?> clazz) {
-        //
+    public OpenClass spawn(Class<?> clazz) {
+        // Used for classes in the same nest
+        // So maybe check that they are nest mates
+        // We need it because private lookup is attached to one particular class.
+        // So need a private lookup object for every class in the same nest.
         if (clazz.getModule() != this.clazz.getModule()) {
             throw new IllegalArgumentException();
         }
-        return new ClassProcessor(lookup, clazz, registerForNative);
+        return new OpenClass(lookup, clazz, registerForNative);
     }
 
     /**

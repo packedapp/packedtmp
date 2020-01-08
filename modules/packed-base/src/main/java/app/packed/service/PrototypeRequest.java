@@ -22,7 +22,7 @@ import java.util.Optional;
 
 import app.packed.artifact.App;
 import app.packed.component.Component;
-import app.packed.component.ComponentContext;
+import app.packed.component.SingletonContext;
 import app.packed.lang.Key;
 import app.packed.lang.reflect.ConstructorDescriptor;
 import app.packed.lang.reflect.FieldDescriptor;
@@ -141,6 +141,8 @@ import app.packed.lang.reflect.VarDescriptor;
 // Interface vs Class..
 // Interface because we might want an implementation with meta data internally...
 // PackedPrototypeRequest that every entry will read, and log stuff.
+
+// ServiceUsageSite, ProtetypeUsageSite
 public interface PrototypeRequest {
 
     // Vi tager alle annotations med...@SystemProperty(fff) @Foo String xxx
@@ -243,7 +245,7 @@ public interface PrototypeRequest {
      * Returns a new injection site for the specified injector, key and component.
      * <p>
      * This method is used to create injection site for methods such as {@link Injector#use(Key)} on
-     * {@link ComponentContext#injector() component injectors}.
+     * {@link SingletonContext#injector() component injectors}.
      * 
      * @param key
      *            the for which injection is requested

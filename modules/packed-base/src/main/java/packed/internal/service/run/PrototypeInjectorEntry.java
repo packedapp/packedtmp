@@ -30,7 +30,7 @@ import packed.internal.util.ThrowableUtil;
 // No params
 // No InjectionSite parameters
 // InjectionSite parameters
-public class PrototypeInjectorEntry<T> extends InjectorEntry<T> implements Provider<T> {
+public class PrototypeInjectorEntry<T> extends InjectorEntry<T> {
 
     /** An empty object array. */
     private final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
@@ -60,12 +60,6 @@ public class PrototypeInjectorEntry<T> extends InjectorEntry<T> implements Provi
         if (providers.length != mh.type().parameterCount()) {
             throw new Error(providers.length + "   " + mh.type().parameterCount());
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public T get() {
-        return newInstance();
     }
 
     /** {@inheritDoc} */

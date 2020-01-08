@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lang.reflect;
+package packed.internal.hook.applicator;
 
 import static java.util.Objects.requireNonNull;
 
@@ -29,6 +29,8 @@ import packed.internal.util.ThrowableUtil;
 // Styring af exceptions???? Version 2
 /// Men ja, mener helt at det er noget man goer i operatoren...
 /// Alt hvad der ikke skal tilpasses en runtime...
+
+// Den fungerede bare aldrig rigtig. Erstattet af InvocationTemplate
 
 public abstract class MethodOperator<T> {
 

@@ -109,6 +109,9 @@ public interface Component {
     /**
      * Returns a component stream consisting of this component and all of its descendants in any order.
      *
+     * @param options
+     *            specifying which components will be included in the stream
+     * 
      * @return a component stream consisting of this component and all of its descendants in any order
      */
     ComponentStream stream(ComponentStream.Option... options);

@@ -33,57 +33,66 @@ import app.packed.lang.Nullable;
  */
 public abstract class AbstractHostConfiguration implements HostConfiguration {
 
-    protected final HostConfigurationContext wrapper;
+    /** The configuration context. */
+    final HostConfigurationContext context;
 
-    protected AbstractHostConfiguration(HostConfigurationContext wrapper) {
-        this.wrapper = requireNonNull(wrapper);
+    /** The type of host this configuration creates. */
+    // final Class<?> hostType;
+
+    /**
+     * @param context
+     *            the host configuration context
+     */
+    protected AbstractHostConfiguration(HostConfigurationContext context) {
+        this.context = requireNonNull(context, "context is null");
+        // this.hostType = requireNonNull(hostType, "hostType is null");
     }
 
     @Override
     public final void checkConfigurable() {
-        wrapper.checkConfigurable();
+        context.checkConfigurable();
     }
 
     @Override
     public final ConfigSite configSite() {
-        return wrapper.configSite();
+        return context.configSite();
     }
 
     @Override
     public final Optional<Class<? extends Extension>> extension() {
-        return wrapper.extension();
+        return context.extension();
     }
 
     @Override
     public final FeatureMap features() {
-        return wrapper.features();
+        return context.features();
     }
 
     @Override
     @Nullable
     public final String getDescription() {
-        return wrapper.getDescription();
+        return context.getDescription();
     }
 
     @Override
     public final String getName() {
-        return wrapper.getName();
+        return context.getName();
     }
 
     @Override
     public final ComponentPath path() {
-        return wrapper.path();
+        return context.path();
     }
 
     @Override
     public AbstractHostConfiguration setDescription(String description) {
-        wrapper.setDescription(description);
+        context.setDescription(description);
         return this;
     }
 
     @Override
     public AbstractHostConfiguration setName(String name) {
-        wrapper.setName(name);
+        context.setName(name);
         return this;
     }
 

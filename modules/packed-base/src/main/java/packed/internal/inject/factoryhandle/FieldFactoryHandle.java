@@ -25,8 +25,8 @@ import java.lang.reflect.Modifier;
 
 import app.packed.lang.Nullable;
 import app.packed.lang.TypeLiteral;
+import app.packed.lang.UncheckedIllegalAccessException;
 import app.packed.lang.reflect.FieldDescriptor;
-import app.packed.lang.reflect.UncheckedIllegalAccessException;
 
 /** An invoker that can read and write fields. */
 public final class FieldFactoryHandle<T> extends FactoryHandle<T> {

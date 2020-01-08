@@ -18,21 +18,21 @@ package app.packed.artifact;
 import java.util.concurrent.CompletableFuture;
 
 import app.packed.component.Component;
-import app.packed.component.ComponentContext;
+import app.packed.component.SingletonContext;
 import app.packed.lang.Key;
 import app.packed.lifecycle.StopOption;
 import app.packed.service.Injector;
 
 /**
  * An artifact runtime context provides precise control over a single (top level) container. Instances of this interface
- * is normally not used by end users. Instead it is wrapped in thin facade objects, such as {@link App} or
- * {@link Injector}. Which will delegate all call to this context.
+ * are normally never exposed to end users. Instead it is wrapped in thin facade objects, such as {@link App} or
+ * {@link Injector}. Which delegates all calls to the context.
  * <p>
  * An instance of this interface is normally acquired via {@link ArtifactDriver#newArtifact(ArtifactContext)}.
  */
 
 // Det er jo i virkeligheden ContainerText, men den kan bare ikke lukkes ned....
-public interface ArtifactContext extends ComponentContext {
+public interface ArtifactContext extends SingletonContext {
 
     /**
      * 

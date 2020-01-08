@@ -15,6 +15,7 @@
  */
 package packed.internal.host.test;
 
+import app.packed.artifact.AppHost;
 import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.HostConfigurationContext;
 import app.packed.container.ContainerSource;
@@ -59,11 +60,11 @@ public class MyHostConf extends AbstractServiceableConfiguration<AppHost> {
     }
 
     public void deploy(ContainerSource source, ArtifactDriver<?> driver, Wirelet... wirelets) {
-        wrapper.deploy(source, driver, wirelets);
+        context.deploy(source, driver, wirelets);
     }
 
     public void lazyDeploy(ContainerSource source, ArtifactDriver<?> driver, Wirelet... wirelets) {
-        wrapper.deploy(source, driver, wirelets);
+        context.deploy(source, driver, wirelets);
     }
 
     //// Nej det betyder jo at alle kan tilfoeje det....

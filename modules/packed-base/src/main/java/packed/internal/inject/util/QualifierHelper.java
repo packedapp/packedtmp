@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import app.packed.lang.InvalidDeclarationException;
+import app.packed.lang.Key;
 import app.packed.lang.Nullable;
-import app.packed.lang.Qualifier;
 import packed.internal.util.AnnotationUtil;
 
 /** Limited support for javax.inject classes. */
@@ -33,7 +33,7 @@ public final class QualifierHelper {
     public static void checkQualifierAnnotationPresent(Annotation e) {
         Class<?> annotationType = e.annotationType();
         // TODO check also withQualifier
-        if (annotationType.isAnnotationPresent(Qualifier.class)) {
+        if (annotationType.isAnnotationPresent(Key.Qualifier.class)) {
             return;
         }
         // Har maaske nogle steder jeg hellere vil have IllegalArgumentException...
@@ -45,11 +45,11 @@ public final class QualifierHelper {
         Annotation qualifier = null;
         for (Annotation a : annotations) {
             Class<? extends Annotation> annotationType = a.annotationType();
-            if (annotationType.isAnnotationPresent(Qualifier.class)) {
+            if (annotationType.isAnnotationPresent(Key.Qualifier.class)) {
                 AnnotationUtil.validateRuntimeRetentionPolicy(a.annotationType());// Well we found it???
                 if (qualifier != null) {
                     List<Class<? extends Annotation>> all = List.of(annotations).stream().map(Annotation::annotationType)
-                            .filter(e -> e.isAnnotationPresent(Qualifier.class)).collect(Collectors.toList());
+                            .filter(e -> e.isAnnotationPresent(Key.Qualifier.class)).collect(Collectors.toList());
                     throw new InvalidDeclarationException("Multiple qualifiers found on element '" + element + "', qualifiers = " + all);
                 }
                 qualifier = a;

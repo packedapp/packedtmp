@@ -15,12 +15,6 @@
  */
 package app.packed.service;
 
-import java.util.function.Predicate;
-
-import app.packed.lang.Key;
-import app.packed.lang.reflect.MethodOperator;
-import app.packed.lang.reflect.VarOperator;
-
 /**
  * 
  */
@@ -40,17 +34,17 @@ import app.packed.lang.reflect.VarOperator;
  */
 class ExtensionToServiceExtensionSupport {
 
-    public static final VarOperator<?> INJECT_FIELD = null;
+    // public static final VarOperator<?> INJECT_FIELD = null;
 
-    public static final MethodOperator<Runnable> INJECT_METHOD = null;
+    // public static final MethodOperator<Runnable> INJECT_METHOD = null;
 
-    public static final MethodOperator<?> injectMethod(Predicate<? super Key<?>> key) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static final MethodOperator<?> injectMethod(Injector injector) {
-        throw new UnsupportedOperationException();
-    }
+    // public static final MethodOperator<?> injectMethod(Predicate<? super Key<?>> key) {
+    // throw new UnsupportedOperationException();
+    // }
+    //
+    // public static final MethodOperator<?> injectMethod(Injector injector) {
+    // throw new UnsupportedOperationException();
+    // }
 
     // @InjectStatic
     //// InjectStaticExtension

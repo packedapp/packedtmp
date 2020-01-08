@@ -20,6 +20,4 @@ package app.packed.hook.h2;
  */
 public enum InstanceModel {
     ZERO, ONE, MANY;
-
-    public static void main(String[] args) {}
 }

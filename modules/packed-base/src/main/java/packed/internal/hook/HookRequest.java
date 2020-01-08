@@ -28,7 +28,7 @@ import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import app.packed.lang.Nullable;
 import packed.internal.moduleaccess.ModuleAccess;
-import packed.internal.reflect.ClassProcessor;
+import packed.internal.reflect.OpenClass;
 import packed.internal.util.Tiny;
 import packed.internal.util.TinyPair;
 import packed.internal.util.UncheckedThrowableFactory;
@@ -45,7 +45,7 @@ public final class HookRequest {
     private final TinyPair<Hook, MethodHandle> customHooksCallback;
 
     /** Used for creating {@link MethodHandle} and {@link VarHandle} for base hook callbacks. */
-    private final ClassProcessor delayedProcessor;
+    private final OpenClass delayedProcessor;
 
     HookRequest(HookRequestBuilder builder) throws Throwable {
         this.customHooksCallback = builder.compute();

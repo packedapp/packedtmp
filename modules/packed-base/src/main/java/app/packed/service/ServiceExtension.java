@@ -28,7 +28,7 @@ import app.packed.container.Wirelet;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
 import app.packed.lang.Key;
-import app.packed.lang.Qualifier;
+import app.packed.lang.Key.Qualifier;
 import app.packed.lifecycle.OnStart;
 import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.container.FixedWireletList;
@@ -65,6 +65,9 @@ import packed.internal.service.run.AbstractInjector;
 // Maybe have an Bundle.onExtensionActivation(Extension e) <- man kan overskrive....
 // Eller @BundleStuff(onActivation = FooActivator.class) -> ForActivator extends BundleController
 
+// Taenker den kun bliver aktiveret hvis vi har en factory med mindste 1 unresolved dependency....
+// D.v.s. install(Class c) -> aktivere denne extension, hvis der er unresolved dependencies...
+// Ellers selvfoelgelig hvis man bruger provide/@Provides
 public final class ServiceExtension extends Extension {
 
     /** The extension node that does most of the work. */
@@ -148,6 +151,16 @@ public final class ServiceExtension extends Extension {
      *             if the specified configuration object was created by another injection extension instance .
      */
     // TODO provide(Foo.class).export instead????
+
+    <T> ServiceConfiguration<T> export(SingletonConfiguration<T> configuration) {
+        // Ideen er at man kan ogsaa eksportere en service der overhoved ikke er
+        // tilgaengelig internt, men kun externt...
+
+        // export(installInstance("ffffo"));
+        throw new UnsupportedOperationException();
+    }
+
+    // Hvis man skal eksportere noget under 2 nogler, maa man kalde export 2 gange...
     public <T> ServiceConfiguration<T> export(ServiceComponentConfiguration<T> configuration) {
         requireNonNull(configuration, "configuration is null");
         checkConfigurable();
@@ -234,7 +247,7 @@ public final class ServiceExtension extends Extension {
      * @return a configuration of the service
      */
     public <T> ServiceComponentConfiguration<T> provide(Class<T> implementation) {
-        return provide(Factory.findInjectable(implementation));
+        return provide(Factory.find(implementation));
     }
 
     /**
@@ -252,9 +265,13 @@ public final class ServiceExtension extends Extension {
         return node.provider().provideFactory((PackedSingletonConfiguration<T>) install(factory));
     }
 
-    // Will install a stateless component...
+    // Will install a ServiceStatelessConfiguration...
     <T> ServiceConfiguration<T> provideProtoype(Factory<T> factory) {
         // Hvordan FFF fungere det her???? Vi skal jo vaere knyttet til en component.
+        throw new UnsupportedOperationException();
+    }
+
+    public <T> ServiceComponentConfiguration<T> provide(Providable<T> c) {
         throw new UnsupportedOperationException();
     }
 

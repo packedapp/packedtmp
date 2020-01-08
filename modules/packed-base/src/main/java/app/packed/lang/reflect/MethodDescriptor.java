@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
@@ -28,7 +27,6 @@ import java.util.Arrays;
 import app.packed.lang.Key;
 import app.packed.lang.Nullable;
 import app.packed.lang.TypeLiteral;
-import packed.internal.util.InternalErrorException;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -37,6 +35,10 @@ import packed.internal.util.StringFormatter;
  */
 // Refac using
 // https://docs.oracle.com/en/java/javase/11/docs/api/java.compiler/javax/lang/model/element/ExecutableElement.html
+
+// Hmm kan vi lave nogle build steps, hvor vi f.eks. bruger ASM istedet for Java reflection.
+// Saaledes at vi undgaar at lave annotations proxies....
+// DVS vi har ikke en metode i maven...
 public final class MethodDescriptor extends ExecutableDescriptor {
 
     /** The method that is being mirrored (private to avoid exposing). */
@@ -102,26 +104,6 @@ public final class MethodDescriptor extends ExecutableDescriptor {
      */
     public boolean isStatic() {
         return Modifier.isStatic(getModifiers());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Executable newExecutable() {
-        return newMethod();
-    }
-
-    /**
-     * Returns a new method from this descriptor.
-     *
-     * @return a new method from this descriptor
-     */
-    public Method newMethod() {
-        Class<?> declaringClass = method.getDeclaringClass();
-        try {
-            return declaringClass.getDeclaredMethod(method.getName(), parameterTypes);
-        } catch (NoSuchMethodException e) {
-            throw new InternalErrorException("method", method, e);// We should never get to here
-        }
     }
 
     public boolean overrides(MethodDescriptor supeer) {
@@ -207,3 +189,25 @@ public final class MethodDescriptor extends ExecutableDescriptor {
         return new MethodDescriptor(method);
     }
 }
+//
+// /** {@inheritDoc} */
+// @Override
+// // TODO hide it
+// Executable newExecutable() {
+// return newMethod();
+// }
+
+/// **
+// * Returns a new method from this descriptor.
+// *
+// * @return a new method from this descriptor
+// */
+//// TODO hide it
+// public Method newMethod() {
+// Class<?> declaringClass = method.getDeclaringClass();
+// try {
+// return declaringClass.getDeclaredMethod(method.getName(), parameterTypes);
+// } catch (NoSuchMethodException e) {
+// throw new InternalErrorException("method", method, e);// We should never get to here
+// }
+// }

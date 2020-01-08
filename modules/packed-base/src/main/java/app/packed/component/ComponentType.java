@@ -31,8 +31,18 @@ package app.packed.component;
 /**
  * The various types of components that are available in Packed.
  */
+// Like ElementType
 public enum ComponentType {
-    STATELESS, CONTAINER, COMPONENT_INSTANCE, HOST;
+
+    COMPONENT_INSTANCE,
+
+    /** A container holds other components and provide strong boundaries containers in-between. */
+    CONTAINER,
+
+    /** A host allows for relationship between artifacts. */
+    HOST,
+
+    STATELESS;
 }
 
 // configuration tyoe

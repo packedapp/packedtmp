@@ -33,7 +33,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import app.packed.lang.Key;
-import app.packed.lang.Qualifier;
 import app.packed.lang.TypeLiteral;
 import app.packed.service.Dependency;
 
@@ -89,7 +88,7 @@ public class DependencyTest {
     }
 
     @Retention(RUNTIME)
-    @Qualifier
+    @Key.Qualifier
     @Target({ ANNOTATION_TYPE, ElementType.TYPE_PARAMETER, ElementType.TYPE_USE })
     public @interface Q {
         String value() default "";

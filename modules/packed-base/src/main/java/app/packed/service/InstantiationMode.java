@@ -45,12 +45,13 @@ public enum InstantiationMode {
     /** A new instance of the service is created every time the service is requested. */
     PROTOTYPE;
 
-    // /**
-    // * Returns true if the instantiation mode is either {@link #SINGLETON} or {@link #LAZY}, otherwise false.
-    // *
-    // * @return true if the instantiation mode is either {@link #SINGLETON} or {@link #LAZY}, otherwise false
-    // */
-    // public boolean isSingleton() {
-    // return this != PROTOTYPE;
-    // }
 }
+
+// /**
+// * Returns true if the instantiation mode is either {@link #SINGLETON} or {@link #LAZY}, otherwise false.
+// *
+// * @return true if the instantiation mode is either {@link #SINGLETON} or {@link #LAZY}, otherwise false
+// */
+// public boolean isSingleton() {
+// return this != PROTOTYPE;
+// }

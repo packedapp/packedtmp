@@ -30,7 +30,6 @@ import java.lang.reflect.Type;
 
 import app.packed.lang.Nullable;
 import app.packed.lang.TypeLiteral;
-import packed.internal.util.InternalErrorException;
 
 /**
  * A field descriptor.
@@ -54,10 +53,10 @@ public final class FieldDescriptor extends VarDescriptor implements Member, Anno
         this.field = requireNonNull(field, "field is null");
     }
 
-    public <T> T apply(Lookup caller, VarOperator<T> operator, Object instance) {
-        requireNonNull(operator, "operator is null");
-        return operator.apply(caller, field, instance);
-    }
+    // public <T> T apply(Lookup caller, VarOperator<T> operator, Object instance) {
+    // requireNonNull(operator, "operator is null");
+    // return operator.apply(caller, field, instance);
+    // }
 
     /** {@inheritDoc} */
     @Override
@@ -200,20 +199,21 @@ public final class FieldDescriptor extends VarDescriptor implements Member, Anno
     public boolean isVolatile() {
         return Modifier.isVolatile(field.getModifiers());
     }
-
-    /**
-     * Creates a new {@link Field} corresponding to this descriptor.
-     *
-     * @return a new field
-     */
-    public Field newField() {
-        Class<?> declaringClass = field.getDeclaringClass();
-        try {
-            return declaringClass.getDeclaredField(field.getName());
-        } catch (NoSuchFieldException e) {
-            throw new InternalErrorException("field", field, e);// We should never get to here
-        }
-    }
+    //
+    // /**
+    // * Creates a new {@link Field} corresponding to this descriptor.
+    // *
+    // * @return a new field
+    // */
+    // // Hide/Remove
+    // public Field newField() {
+    // Class<?> declaringClass = field.getDeclaringClass();
+    // try {
+    // return declaringClass.getDeclaredField(field.getName());
+    // } catch (NoSuchFieldException e) {
+    // throw new InternalErrorException("field", field, e);// We should never get to here
+    // }
+    // }
 
     /** {@inheritDoc} */
     @Override
@@ -242,15 +242,6 @@ public final class FieldDescriptor extends VarDescriptor implements Member, Anno
     public VarHandle unreflectVarHandle(Lookup lookup) throws IllegalAccessException {
         requireNonNull(lookup, "lookup is null");
         return lookup.unreflectVarHandle(field);
-    }
-
-    /**
-     * Returns the field that this descriptor wraps.
-     * 
-     * @return the field that this descriptor wraps
-     */
-    public Field unsafeField() {
-        return field;
     }
 
     /**

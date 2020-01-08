@@ -15,9 +15,34 @@
  */
 package app.packed.artifact;
 
+import java.util.stream.Stream;
+
+import app.packed.api.ContractSet;
+
 /**
  *
  */
+// Runtime HostContext....
+// Arbejder kun med guests her... Aldrig andet...
+// Maaske har en guest ikke en artifact type??? Jooo, den taenker jeg ligger fast
+// Men ikke noedvendigvis dens bundle type....
 public interface HostContext {
 
+    /**
+     * All contracts
+     * 
+     * @return all contracts
+     */
+    //// Contract of the host... is static
+    ContractSet contracts();
+
+    /**
+     * Returns a stream of all the guests deployed on this host.
+     * 
+     * @return a stream of all the guests deployed on this host
+     */
+    Stream<Guest<?>> guests();
+
+    // If you now for certain that only guest of a particular type has been added
+    // Just cast guests();
 }
