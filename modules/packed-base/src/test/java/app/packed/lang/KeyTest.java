@@ -267,6 +267,7 @@ public class KeyTest {
     public void toString$() {
         assertThat(KEY_INT_OF.toString()).isEqualTo(TL_INTEGER.toString());
         assertThat(KEY_INTEGER.toString()).isEqualTo(TL_INTEGER.toString());
+
         assertThat(KEY_INTEGER_X.toString()).isEqualTo("@" + CharQualifier.class.getName() + "(value='X') " + TL_INTEGER.toString());
         assertThat(KEY_LIST_WILDCARD.toString()).isEqualTo(TL_LIST_WILDCARD.toString());
         assertThat(KEY_LIST_WILDCARD_X.toString()).isEqualTo("@" + CharQualifier.class.getName() + "(value='X') " + TL_LIST_WILDCARD.toString());
@@ -276,6 +277,9 @@ public class KeyTest {
     public void toStringSimple() {
         assertThat(KEY_INT_OF.toStringSimple()).isEqualTo(TL_INTEGER.toStringSimple());
         assertThat(KEY_INTEGER.toStringSimple()).isEqualTo(TL_INTEGER.toStringSimple());
+        // Does not work in Java 14-EA uncomment if they keep the new behaviour
+        // Java 13 -> @testutil.stubs.annotation.CharQualifier(value='X') java.lang.Integer
+        // Java 14 -> @testutil.stubs.annotation.CharQualifier('X') java.lang.Integer
         assertThat(KEY_INTEGER_X.toStringSimple()).isEqualTo("@" + CharQualifier.class.getSimpleName() + "(value='X') " + TL_INTEGER.toStringSimple());
         assertThat(KEY_LIST_WILDCARD.toStringSimple()).isEqualTo(TL_LIST_WILDCARD.toStringSimple());
         assertThat(KEY_LIST_WILDCARD_X.toStringSimple())
