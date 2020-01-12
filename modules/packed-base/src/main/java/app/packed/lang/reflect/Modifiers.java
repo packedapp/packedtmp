@@ -13,25 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.lang.reflect;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.lang.reflect.Modifier;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-@Documented
-@Retention(RUNTIME)
-@Target({ ElementType.PARAMETER, ElementType.FIELD })
 /**
  *
  */
-// Maybe just Default
-@interface DefaultValue {
-    String value();
+final class Modifiers {
 
-    // Naah det her virker ikke
-    // String intValue() default 0;
+    private final int modifier;
+
+    private Modifiers(int modifier) {
+        this.modifier = modifier;
+    }
+
+    public boolean isStatic() {
+        return Modifier.isStatic(modifier);
+    }
+
+    public int modifier() {
+        return modifier;
+    }
+
+    public static Modifiers of(int modifier) {
+        return new Modifiers(modifier);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(ClassDescriptor.class.getModifiers());
+    }
 }
+// field.modifiers.isStatic()

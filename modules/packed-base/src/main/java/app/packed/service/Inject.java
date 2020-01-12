@@ -15,6 +15,9 @@
  */
 package app.packed.service;
 
+import static app.packed.lang.AccessType.INVOKE;
+import static app.packed.lang.AccessType.SET_FIELD;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -22,6 +25,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.container.UseExtension;
+import app.packed.lang.OpensFor;
 
 /**
  * Unlike many other popular dependency injection frameworks. There are usually no requirements in Packed to use
@@ -37,18 +41,23 @@ import app.packed.container.UseExtension;
  * <p>
  * The annotation can also be applied to
  */
-// Field injection first
-// Maybe run @Inject noArgConstruct() last
-@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.ANNOTATION_TYPE })
+@Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-// Used on annotation types, to avoid having to use @Inject @QA("sdsd") to
+@UseExtension(ServiceExtension.class) // Replace with UseSidecar(InjectSidecar.class) [maske defineret i denne klasse]
+@OpensFor({ INVOKE, SET_FIELD })
 
+// Maaske skal vi endda at hvis man ikke har en sidecar, og kun @OnLifecycle... Saa koerer man setField/invokeMethod
+// naar
+// man naar det den givne lifecycle... Ja det taenker jeg man goer. Saa slipper man ogsaa for at lave baade en
+// InjectFieldSidecar + InjectMethodSidecar
+//
+public @interface Inject {}
+
+// Field injection first
+// Maybe run @Inject noArgConstruct() last
+// Used on annotation types, to avoid having to use @Inject @QA("sdsd") to
 // It is valid to use @Inject on a method with no parameters, in which it just indicates that the method should be
 // invoked during the injection phase
 
-// Hav en generisk Create annotation....Som folk kan benytte...
-
-// Hvor Inject er specifict til Inject af fields og methods....
-@UseExtension(ServiceExtension.class)
-public @interface Inject {}
+// TODO taenker vi bare bruger en sidecar... Hvis der ikke er nogle services, bruger invoker

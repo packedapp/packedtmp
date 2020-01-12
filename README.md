@@ -7,6 +7,11 @@ Packed
 [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/packedapp/packedtmp.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/packedapp/packedtmp/context:java)
 [![JDK compatibility: 11+](https://img.shields.io/badge/JDK_compatibility-11+-blue.svg)](#)
 
+
+Notice
+---------------
+This is Work In Progress. It is not an actually product you can use yet.
+
 Building Packed
 ---------------
 

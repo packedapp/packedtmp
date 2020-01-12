@@ -15,6 +15,9 @@
  */
 package app.packed.service;
 
+import static app.packed.lang.AccessType.GET_FIELD;
+import static app.packed.lang.AccessType.INVOKE;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -23,6 +26,7 @@ import java.lang.annotation.Target;
 
 import app.packed.container.UseExtension;
 import app.packed.lang.Key;
+import app.packed.lang.OpensFor;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a service of some kind. A field
@@ -69,9 +73,6 @@ import app.packed.lang.Key;
  * Proving a null value, for example, via a null field or by returning null from a method is illegal unless the
  * dependency is optional.
  */
-@Target({ ElementType.TYPE, ElementType.FIELD, ElementType.METHOD })
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
 // @Provides(description = "Current time) final Provider<LocalDate> p = ....
 // @Provides final Factory<Long> p = ....
 
@@ -82,10 +83,14 @@ import app.packed.lang.Key;
 
 // Okay shutdown/cleanup ikke supportered paa many som er eksporteret som services...
 // Maaske hvis man eksplicit, siger its managed....
-@UseExtension(ServiceExtension.class /* extensionHook = AtProvidesGroup.Builder.class */)
-
 // Maaske @Provide og @ProvidePrototype... @ProvideTemplate
 // Det ville ogsaa hjaelpe paa sidecars maaske?? Eller de ignore den vel bare...
+
+@UseExtension(ServiceExtension.class)
+@OpensFor({ INVOKE, GET_FIELD })
+@Target({ ElementType.TYPE, ElementType.FIELD, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
 public @interface Provide {
 
     // rename to template
@@ -177,6 +182,7 @@ public @interface Provide {
 // InjectionExtension.setDefaultAnnotationProcessor..
 
 // Ideen er @Provides(configurator = MyProvideAnnotationOption.class)
+// Spoergsmaalet er om vi vil have det her foerend
 abstract class ProvideAnnotationOption {
 
     // final MethodMirror annotatedField();

@@ -13,11 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook.h2;
+package app.packed.hook;
 
 /**
  *
  */
-public interface InstanceHandle<T> {
+// Static - Instance - Pool
 
+// Maybe drop static..
+
+// Provide Class -> Laver ikke en component??? Og saa bliver de istedet for knyttet til container???
+// Men ahhh, der er sgu bare heller ikke en fed model...
+/// Kun @Provide kan lave prototyper....:( heller ikke fed...
+
+// Naar man lister navnet kommer der en * efter Many typer. Ingen efter one, og IDK efter 0
+enum InstanceModel {
+    ZERO, ONE, MANY;
 }

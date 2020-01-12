@@ -177,8 +177,4 @@ public final class AnnotatedMethodHook<A extends Annotation> implements Hook {
     // public <T extends InvocationTemplate> TemplateInvoker<T> newRawInvoker(Class<T> templateType) {
     // throw new UnsupportedOperationException();
     // }
-
-    public void bindToTwin() {
-        // Ideen er man kan faa det injected
-    }
 }

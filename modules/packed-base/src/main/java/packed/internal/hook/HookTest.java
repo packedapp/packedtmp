@@ -80,8 +80,5 @@ public class HookTest {
 
     @Key.Qualifier
     @Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
-    public @interface Sxx {
-
-    }
-
+    public @interface Sxx {}
 }

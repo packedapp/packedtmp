@@ -13,16 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.lang;
 
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+@Documented
+@Retention(RUNTIME)
+@Target({ ElementType.PARAMETER, ElementType.FIELD })
 /**
  *
  */
-// Issues...
-// How does this work with Packlets?
-// for example map(e->e) vs rebind..
-// I think the safe bet is jut not supporting it.
-enum PrototypeCachingMode {
-    SINGLETON, PER_ARTIFACT, PER_CONTAINER, PER_COMPONENT;
+// Maybe just Default
+// Maybe in converter package???
+@interface DefaultValue {
+    String value();
+
+    // Naah det her virker ikke
+    // String intValue() default 0;
 }
-// Maybe a custom mode? But how would it work???

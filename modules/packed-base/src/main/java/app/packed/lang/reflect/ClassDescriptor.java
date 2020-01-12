@@ -13,11 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook.h2;
+package app.packed.lang.reflect;
+
+import java.lang.invoke.MethodHandles.Lookup;
 
 /**
  *
  */
-public enum InstanceModel {
-    ZERO, ONE, MANY;
+// http://cr.openjdk.java.net/~mcimadamore/reflection-manifesto.html
+// http://cr.openjdk.java.net/~mcimadamore/x-reflection/index.html?valhalla/reflect/runtime/RuntimeMirror.Kind.html
+public interface ClassDescriptor<T> extends MetaAnnotatedElement {
+    Class<?> reflect();
+
+    // Den gamle hook..
+    // Naah lav den som statisk function taenker jeg...
+    T analyze(Lookup caller, Class<?> target);
 }

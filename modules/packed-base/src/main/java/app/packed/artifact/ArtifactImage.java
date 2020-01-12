@@ -217,6 +217,25 @@ public final class ArtifactImage implements ContainerSource {
         return new ArtifactImage(pcc.doBuild(), pcc.wireletContext);
     }
 
+    // repeatable/singleshot
+    // lazy/non-lazy
+
+    // Creates an image that will be initialized the first time it is executed...
+    // F.eks. name will initialize it...
+    // I think we will apply wirelets lazily as well.
+
+    //// GraalVM <- Calculere alle lazy images??? Det taenker jeg...
+    // Vi skal double down med det lazy paa runtime, og validation paa test time
+    // Evt. et build plugin der validere det????
+
+    /**
+     * @return lazy
+     */
+    static ArtifactImage lazy() {
+        throw new UnsupportedOperationException();
+    }
+
+    enum Mode {}
 }
 
 // De kunne jo strength taget vaere metoder paa imaged og ikke wirelets.

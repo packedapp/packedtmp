@@ -64,6 +64,7 @@ public final class MethodDescriptor extends ExecutableDescriptor {
     /** {@inheritDoc} */
     @Override
     public boolean equals(@Nullable Object obj) {
+        // return obj == this || (obj instanceof MethodDescriptor d && d.method.equals(method));
         if (obj == this) {
             return true;
         } else if (obj instanceof MethodDescriptor) {
@@ -85,6 +86,7 @@ public final class MethodDescriptor extends ExecutableDescriptor {
         return method.getGenericReturnType();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getName() {
         return method.getName();

@@ -52,6 +52,7 @@ public abstract class ExecutableDescriptor implements Member, AnnotatedElement {
      */
     ExecutableDescriptor(Executable executable) {
         this.executable = executable;
+        // Create these lazily...
         Parameter[] parameters = executable.getParameters();
         this.parameters = new ParameterDescriptor[parameters.length];
         for (int i = 0; i < parameters.length; i++) {

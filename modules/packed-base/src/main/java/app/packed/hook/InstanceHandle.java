@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
-
-import app.packed.component.ComponentStream.Option;
+package app.packed.hook;
 
 /**
  *
  */
-public class Ffff {
+// Vi bruger kun den pga af <T> som
+// Taenker vi definere som klasse og saa inline senere....
+public interface InstanceHandle<T> {
 
-    public static void main(Component c) {
-        c.stream(Option.includeExtensions().andSkipOrigin());
-    }
 }

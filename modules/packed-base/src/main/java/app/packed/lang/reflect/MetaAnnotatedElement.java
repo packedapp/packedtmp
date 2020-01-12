@@ -15,13 +15,16 @@
  */
 package app.packed.lang.reflect;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.List;
 import java.util.function.Function;
 
 /**
- *
+ * A meta annotated element extends . That is annotations on other annotations
+ * 
  */
 // Ideen er at man kan forspoerge disse metoder istedet for.
 // Vil automatisk udpakke meta annotateringer...
@@ -40,7 +43,26 @@ interface MetaAnnotatedElement extends AnnotatedElement {
 
     // Problemet er den kan vaere 0, 1 eller flere....
     // Taenker bare vi siger ja for > 0, og saa vi fejle naar vi proever at hente den ud
-    boolean isMetaAnnotationPresent(Class<? extends Annotation> annotationClass);
+    default boolean isMetaAnnotationPresent(Class<? extends Annotation> annotationClass) {
+        return getMetaAnnotation(annotationClass) != null;
+    }
+
+    <T extends Annotation> T getMetaAnnotation(Class<T> annotationClass);
+
+    Annotation[] getMetaAnnotations();
+
+    Annotation[] getDeclaredMetaAnnotations();
+
+    default <T extends Annotation> T getDeclaredMetaAnnotation(Class<T> annotationClass) {
+        requireNonNull(annotationClass, "annotationClass is null");
+        for (Annotation annotation : getDeclaredMetaAnnotations()) {
+            if (annotationClass == annotation.annotationType()) {
+                return annotationClass.cast(annotation);
+            }
+        }
+        return null;
+    }
+
     // forEachAnnotation
     // cv.get(OnStart.class).contains(ClassOnLifecycle.class)
 }
