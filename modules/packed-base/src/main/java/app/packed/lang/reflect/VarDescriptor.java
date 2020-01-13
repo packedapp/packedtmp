@@ -22,6 +22,7 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 
+import app.packed.lang.Nullable;
 import app.packed.lang.TypeLiteral;
 import app.packed.service.Dependency;
 
@@ -32,9 +33,7 @@ import app.packed.service.Dependency;
 // Rename to Variable
 public abstract class VarDescriptor implements AnnotatedElement {
 
-    /**
-     * Creates a new descriptor.
-     */
+    /** Creates a new descriptor. */
     VarDescriptor() {}
 
     /**
@@ -126,4 +125,13 @@ public abstract class VarDescriptor implements AnnotatedElement {
      * @see Field#getName()
      */
     public abstract boolean isNamePresent();
+
+    /**
+     * Returns whether or not a {@link Nullable} annotation is present.
+     * 
+     * @return true if it is present, otherwise false
+     */
+    public final boolean isNullable() {
+        return isAnnotationPresent(Nullable.class);
+    }
 }

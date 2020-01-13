@@ -33,7 +33,7 @@ import app.packed.lang.InvalidDeclarationException;
 import app.packed.lang.Key;
 import app.packed.lang.Nullable;
 import app.packed.lang.TypeLiteral;
-import app.packed.lang.UncheckedIllegalAccessException;
+import app.packed.lang.invoke.UncheckedIllegalAccessException;
 import app.packed.lang.reflect.ConstructorDescriptor;
 import app.packed.lang.reflect.ExecutableDescriptor;
 import app.packed.lang.reflect.MethodDescriptor;
@@ -226,6 +226,7 @@ public class Factory<T> {
      *            the mapper used to map the result
      * @return a new mapped factory
      */
+    // How do we handle key??? Think we might need a version that also takes a key.
     public final <R> Factory<R> mapTo(TypeLiteral<R> type, Function<? super T, ? extends R> mapper) {
         MappingFactoryHandle<T, R> f = new MappingFactoryHandle<>(type, factory.handle, mapper);
         return new Factory<>(new FactorySupport<>(f, factory.dependencies));

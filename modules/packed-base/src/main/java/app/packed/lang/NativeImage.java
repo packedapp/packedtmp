@@ -48,11 +48,11 @@ public final class NativeImage {
     }
 
     public static void registerField(Field field) {
-        RegNative2.register(field);
+        NativeImage0.register(field);
     }
 
     public static void register(Executable m) {
-        RegNative2.register(m);
+        NativeImage0.register(m);
     }
 
     // Problemet er lidt. Hvordan kan vi lave de statements

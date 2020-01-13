@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lang;
+package app.packed.lang.invoke;
 
 /**
  *
@@ -37,6 +37,9 @@ public enum AccessType {
     /** Access to instances of the target. Needed, for example, for VarHandle.compareAndSet(xxxxx) */
     // Ideen er lidt at man kan faa alle instanser af X
     INSTANCE;
+
+    // INVOKE_PARAMETERS <= Full access to all parameters... To set them. I think thats okay...
+    // Trouble I think is you want to change the parameters
 }
 
 // To get a VarHandle you need both Field_get + Field Set

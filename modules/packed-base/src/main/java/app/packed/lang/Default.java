@@ -28,11 +28,8 @@ import java.lang.annotation.Target;
 /**
  *
  */
-// Maybe just Default
+// If we want we could get DefaultInt(), DefaultLong(), ...
 // Maybe in converter package???
-@interface DefaultValue {
+@interface Default {
     String value();
-
-    // Naah det her virker ikke
-    // String intValue() default 0;
 }

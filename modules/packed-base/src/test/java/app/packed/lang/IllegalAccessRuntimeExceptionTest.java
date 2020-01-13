@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.lang.invoke.UncheckedIllegalAccessException;
 import app.packed.service.InjectionException;
 import testutil.stubs.Throwables.Exception1;
 

@@ -190,6 +190,10 @@ public final class MethodDescriptor extends ExecutableDescriptor {
     public static MethodDescriptor of(Method method) {
         return new MethodDescriptor(method);
     }
+
+    public final boolean isNullableReturnType() {
+        return isAnnotationPresent(Nullable.class);
+    }
 }
 //
 // /** {@inheritDoc} */

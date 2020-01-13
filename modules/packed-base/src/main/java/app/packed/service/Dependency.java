@@ -60,6 +60,17 @@ import packed.internal.util.types.TypeUtil;
 // Er det et nyt lag....
 // Det der er, er at vi jo faktisk kan overskriver provideren...
 // Dvs den er ikke statisk....
+
+// int = Integer
+// OptionalInt = Optional<Integer> = @Nullable Integer
+// @Nullable int (Forbidden)
+
+// Saa faar ogsaa lige pludselig.... Vi behoever vist en ny historie her......
+
+// DefaultValue... (We need some default values converters...... Unless we have default converters...)
+// Prime annotation (Den ødelægger jo lidt Key/Lazy/OSV, hvad hvis den nu vil noget andet...)
+// Provider
+// Lazy (Hvordan supportere vi denne???)
 public final class Dependency {
 
     /** A cache of service dependencies. */
@@ -128,6 +139,7 @@ public final class Dependency {
         return optionality.empty(this);
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -140,6 +152,7 @@ public final class Dependency {
         return Objects.equals(key, other.key) && optionality == other.optionality && Objects.equals(variable, other.variable);
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         int result = 31 + key.hashCode();

@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lang;
+package app.packed.lang.invoke;
 
-/** A runtime exception used in places where we cannot throw the checked {@link IllegalAccessException}. */
+import app.packed.service.InjectionException;
 
-// UncheckedIllegalAccessException...
-// AccessRestrictedException <- General one, could sound really securish, maybe have a name
-// which makes it clear it is relevant to reflection/method handlers
-public class UncheckedIllegalAccessException extends RuntimeException {
+/**
+ * A make exception is thrown if a valid constructor or method could not be found according to the rules laid out in
+ * {@link Make}. If valid arguments for the executable could not be found, an {@link InjectionException} is typically
+ * thrown instead.
+ */
+public class MakeException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 7955236738807124333L;
 
     /**
      * Creates a new exception with the specified detailed message. The cause is not initialized, and may subsequently be
@@ -33,9 +35,8 @@ public class UncheckedIllegalAccessException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public UncheckedIllegalAccessException(String message) {
+    public MakeException(String message) {
         super(message);
-
     }
 
     /**
@@ -48,7 +49,7 @@ public class UncheckedIllegalAccessException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public UncheckedIllegalAccessException(String message, Throwable cause) {
+    public MakeException(String message, Throwable cause) {
         super(message, cause);
     }
 }

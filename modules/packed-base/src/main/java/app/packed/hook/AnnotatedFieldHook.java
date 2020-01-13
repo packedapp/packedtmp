@@ -27,7 +27,7 @@ import java.lang.reflect.Modifier;
 
 import app.packed.lang.InvalidDeclarationException;
 import app.packed.lang.Nullable;
-import app.packed.lang.UncheckedIllegalAccessException;
+import app.packed.lang.invoke.UncheckedIllegalAccessException;
 import app.packed.lang.reflect.FieldDescriptor;
 import packed.internal.hook.MemberUnreflector;
 import packed.internal.moduleaccess.AppPackedHookAccess;

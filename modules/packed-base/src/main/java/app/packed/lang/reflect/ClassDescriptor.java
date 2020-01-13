@@ -22,6 +22,9 @@ import java.lang.invoke.MethodHandles.Lookup;
  */
 // http://cr.openjdk.java.net/~mcimadamore/reflection-manifesto.html
 // http://cr.openjdk.java.net/~mcimadamore/x-reflection/index.html?valhalla/reflect/runtime/RuntimeMirror.Kind.html
+
+// Vi bliver noedt til at have en ClassDescriptor hvis vi vil have meta annotationer...
+
 public interface ClassDescriptor<T> extends MetaAnnotatedElement {
     Class<?> reflect();
 

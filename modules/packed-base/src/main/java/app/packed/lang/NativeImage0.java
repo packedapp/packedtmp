@@ -24,7 +24,7 @@ import java.lang.reflect.Field;
 /**
  *
  */
-class RegNative2 {
+class NativeImage0 {
 
     private static final MethodHandle MH_REGISTER_EXECUTABLES;
     private static final MethodHandle MH_REGISTER_FIELDS;

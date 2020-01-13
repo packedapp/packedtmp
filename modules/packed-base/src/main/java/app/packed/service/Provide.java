@@ -15,8 +15,8 @@
  */
 package app.packed.service;
 
-import static app.packed.lang.AccessType.GET_FIELD;
-import static app.packed.lang.AccessType.INVOKE;
+import static app.packed.lang.invoke.AccessType.GET_FIELD;
+import static app.packed.lang.invoke.AccessType.INVOKE;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 
 import app.packed.container.UseExtension;
 import app.packed.lang.Key;
-import app.packed.lang.OpensFor;
+import app.packed.lang.invoke.OpensFor;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a service of some kind. A field
@@ -86,11 +86,11 @@ import app.packed.lang.OpensFor;
 // Maaske @Provide og @ProvidePrototype... @ProvideTemplate
 // Det ville ogsaa hjaelpe paa sidecars maaske?? Eller de ignore den vel bare...
 
-@UseExtension(ServiceExtension.class)
-@OpensFor({ INVOKE, GET_FIELD })
 @Target({ ElementType.TYPE, ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@UseExtension(ServiceExtension.class)
+@OpensFor({ INVOKE, GET_FIELD })
 public @interface Provide {
 
     // rename to template

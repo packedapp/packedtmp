@@ -241,6 +241,14 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
         return qualifier == null ? this : new CanonicalizedKey<>(typeLiteral, null);
     }
 
+    public final <S> Key<S> withType(Class<S> type) {
+        return of(type).withQualifier(qualifier);
+    }
+
+    public final <S> Key<S> withType(TypeLiteral<S> typeLiteral) {
+        return fromTypeLiteral(typeLiteral, qualifier);
+    }
+
     /**
      * Returns a new key retaining its original type but with the specified qualifier.
      * 
@@ -442,7 +450,6 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
     @Retention(RUNTIME)
     @Documented
     // TODO rename to KeyQualifier????
-    //
     public @interface Qualifier {}
 
     // dependency resolver, qualifier resolver,

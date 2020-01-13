@@ -15,8 +15,8 @@
  */
 package app.packed.service;
 
-import static app.packed.lang.AccessType.INVOKE;
-import static app.packed.lang.AccessType.SET_FIELD;
+import static app.packed.lang.invoke.AccessType.INVOKE;
+import static app.packed.lang.invoke.AccessType.SET_FIELD;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -25,7 +25,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.container.UseExtension;
-import app.packed.lang.OpensFor;
+import app.packed.lang.invoke.OpensFor;
 
 /**
  * Unlike many other popular dependency injection frameworks. There are usually no requirements in Packed to use

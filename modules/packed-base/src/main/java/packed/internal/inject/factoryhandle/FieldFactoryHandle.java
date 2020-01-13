@@ -25,7 +25,7 @@ import java.lang.reflect.Modifier;
 
 import app.packed.lang.Nullable;
 import app.packed.lang.TypeLiteral;
-import app.packed.lang.UncheckedIllegalAccessException;
+import app.packed.lang.invoke.UncheckedIllegalAccessException;
 import app.packed.lang.reflect.FieldDescriptor;
 
 /** An invoker that can read and write fields. */
