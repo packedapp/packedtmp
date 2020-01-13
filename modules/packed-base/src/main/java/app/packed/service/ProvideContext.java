@@ -23,16 +23,20 @@ import java.util.Optional;
 import app.packed.artifact.App;
 import app.packed.component.Component;
 import app.packed.component.SingletonContext;
+import app.packed.lang.InvalidDeclarationException;
 import app.packed.lang.Key;
 import app.packed.lang.reflect.ConstructorDescriptor;
 import app.packed.lang.reflect.FieldDescriptor;
 import app.packed.lang.reflect.MethodDescriptor;
 import app.packed.lang.reflect.ParameterDescriptor;
-import app.packed.lang.reflect.VarDescriptor;
+import app.packed.lang.reflect.VariableDescriptor;
 
 /**
- * An instance of this class is available for any component method annotated with {@link Provide} with
- * {@link InstantiationMode#PROTOTYPE prototype instantiation mode}.
+ * An instance of this interface can be injected into methods annotated with {@link Provide}.
+ * 
+ * <p>
+ * ProvideContext cannot be used together with the Singleton annotation, as singletons should be independent of the
+ * requesting client. Instead an {@link InvalidDeclarationException} is thrown.
  * 
  * Whenever a A service requestions has two important parts. What exactly are being requested, is it optional is the
  * service being requested.
@@ -143,7 +147,13 @@ import app.packed.lang.reflect.VarDescriptor;
 // PackedPrototypeRequest that every entry will read, and log stuff.
 
 // ServiceUsageSite, ProtetypeUsageSite
-public interface PrototypeRequest {
+
+// ProvideContext <- Used together with Provide.....
+// But not if Singleton.....
+
+// Maaske er Component bare en separate injection???
+// Men saa skal vi have ComponentContext.component()
+public interface ProvideContext {
 
     // Vi tager alle annotations med...@SystemProperty(fff) @Foo String xxx
     // Includes any qualifier...
@@ -175,6 +185,7 @@ public interface PrototypeRequest {
      *         member.
      * @see #variable()
      */
+    // Vi skal MemberDescriptor istedet for...
     Optional<Member> member();
 
     /**
@@ -183,20 +194,20 @@ public interface PrototypeRequest {
      * 
      * @return the optional parameter index of the dependency
      */
-    int parameterIndex();
+    int parameterIndex(); // Hvad skal vi bruge den til???? Til at finde parameteren i???
 
     /**
      * The variable (field or parameter) for which this dependency was created. Or an empty {@link Optional} if this
      * dependency was not created from a variable.
      * <p>
-     * If this dependency was created from a field this method will return a {@link FieldDescriptor}. If this dependency was
-     * created from a parameter this method will return a {@link ParameterDescriptor}.
+     * If this dependency was created from a field the returned optional will contain a {@link FieldDescriptor}. If this
+     * dependency was created from a parameter the returned optional will contain a {@link ParameterDescriptor}.
      * 
      * @return the variable that is being injected, or an empty {@link Optional} if this dependency was not created from a
      *         variable.
      * @see #member()
      */
-    Optional<VarDescriptor> variable();
+    Optional<VariableDescriptor> variable();// Should match Var...-> VarDescriptor-> VariableDescriptor
 
     /**
      * If this helper class is created as the result of needing dependency injection. This method returns an empty optional
@@ -220,12 +231,12 @@ public interface PrototypeRequest {
 
     Optional<Component> component();
 
-    static PrototypeRequest of(Dependency dependency) {
-        return new PrototypeRequestImpl(dependency, null);
+    static ProvideContext of(Dependency dependency) {
+        return new ProvideContextImpl(dependency, null);
     }
 
-    static PrototypeRequest of(Dependency dependency, Component componenent) {
-        return new PrototypeRequestImpl(dependency, requireNonNull(componenent, "component is null"));
+    static ProvideContext of(Dependency dependency, Component componenent) {
+        return new ProvideContextImpl(dependency, requireNonNull(componenent, "component is null"));
     }
 
     /**
@@ -237,8 +248,8 @@ public interface PrototypeRequest {
      *            the for which injection is requested
      * @return an injection site for the specified injector and key.
      */
-    static PrototypeRequest of(Key<?> key) {
-        return new PrototypeRequestImpl(Dependency.of(key), null);
+    static ProvideContext of(Key<?> key) {
+        return new ProvideContextImpl(Dependency.of(key), null);
     }
 
     /**
@@ -254,9 +265,12 @@ public interface PrototypeRequest {
      * @return an injection site for the specified injector and key and component.
      * @see #of(Dependency)
      */
-    static PrototypeRequest of(Key<?> key, Component component) {
-        return new PrototypeRequestImpl(Dependency.of(key), requireNonNull(component, "component is null"));
+    static ProvideContext of(Key<?> key, Component component) {
+        return new ProvideContextImpl(Dependency.of(key), requireNonNull(component, "component is null"));
     }
+
+    // Optional<Class> viaComposite() <--- kan angive hvilken composite der gjorde det
+    // Tror bare vi ignore Composite....
 
     // static {AopReady r = AOPSupport.compile(FooClass.class)}, at runtime r.newInstance(r))// Arghh grimt
 }

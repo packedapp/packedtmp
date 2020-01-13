@@ -16,7 +16,7 @@
 package packed.internal.service.run;
 
 import app.packed.service.InstantiationMode;
-import app.packed.service.PrototypeRequest;
+import app.packed.service.ProvideContext;
 import packed.internal.service.build.ServiceExtensionInstantiationContext;
 import packed.internal.service.build.service.ComponentFactoryBuildEntry;
 
@@ -35,7 +35,7 @@ public class CachingPrototypeInjectorEntry<T> extends PrototypeInjectorEntry<T> 
     }
 
     @Override
-    public T getInstance(PrototypeRequest site) {
+    public T getInstance(ProvideContext site) {
         T i = instance;
         if (i == null) {
             i = instance = super.newInstance();

@@ -24,7 +24,7 @@ import app.packed.lang.Key;
 import app.packed.lang.Nullable;
 import app.packed.service.Dependency;
 import app.packed.service.InstantiationMode;
-import app.packed.service.PrototypeRequest;
+import app.packed.service.ProvideContext;
 import app.packed.service.Provide;
 import app.packed.service.ServiceConfiguration;
 import app.packed.service.ServiceDescriptor;
@@ -57,7 +57,7 @@ public abstract class BuildEntry<T> {
     /** A flag used to detect cycles in the dependency graph. */
     public boolean detectCycleVisited;
 
-    /** Whether or this node contains a dependency on {@link PrototypeRequest}. */
+    /** Whether or this node contains a dependency on {@link ProvideContext}. */
     protected final boolean hasDependencyOnInjectionSite;
 
     /**

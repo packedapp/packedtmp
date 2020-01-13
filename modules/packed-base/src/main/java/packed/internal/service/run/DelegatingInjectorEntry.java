@@ -18,7 +18,7 @@ package packed.internal.service.run;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.service.InstantiationMode;
-import app.packed.service.PrototypeRequest;
+import app.packed.service.ProvideContext;
 import packed.internal.service.build.BuildEntry;
 
 /**
@@ -50,7 +50,7 @@ public final class DelegatingInjectorEntry<T> extends InjectorEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(PrototypeRequest site) {
+    public T getInstance(ProvideContext site) {
         return delegate.getInstance(site);
     }
 

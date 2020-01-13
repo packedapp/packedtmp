@@ -32,6 +32,9 @@ import packed.internal.util.StringFormatter;
 /**
  * Provides information about a method, such as its name, parameters, annotations. Unlike {@link Method} this class is
  * immutable, and can be be freely shared.
+ * 
+ * @apiNote In the future, if the Java language permits, {@link MethodDescriptor} may become a {@code sealed} interface,
+ *          which would prohibit subclassing except by explicitly permitted types.
  */
 // Refac using
 // https://docs.oracle.com/en/java/javase/11/docs/api/java.compiler/javax/lang/model/element/ExecutableElement.html

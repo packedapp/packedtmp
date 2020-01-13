@@ -29,12 +29,14 @@ import app.packed.service.Dependency;
 /**
  * A shared superclass for the common functionality of class variables (static {@link Field fields}), instance variables
  * (non-static {@link Field fields}) and {@link Parameter parameter} variables.
+ * 
+ * @apiNote In the future, if the Java language permits, {@link VariableDescriptor} may become a {@code sealed}
+ *          interface, which would prohibit subclassing except by explicitly permitted types.
  */
-// Rename to Variable
-public abstract class VarDescriptor implements AnnotatedElement {
+public abstract class VariableDescriptor implements AnnotatedElement {
 
     /** Creates a new descriptor. */
-    VarDescriptor() {}
+    VariableDescriptor() {}
 
     /**
      * Returns the type of element, is typically used for error messages.

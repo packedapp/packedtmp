@@ -40,7 +40,7 @@ import app.packed.lang.reflect.ExecutableDescriptor;
 import app.packed.lang.reflect.FieldDescriptor;
 import app.packed.lang.reflect.MethodDescriptor;
 import app.packed.lang.reflect.ParameterDescriptor;
-import app.packed.lang.reflect.VarDescriptor;
+import app.packed.lang.reflect.VariableDescriptor;
 import packed.internal.inject.util.QualifierHelper;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
@@ -100,7 +100,7 @@ public final class Dependency {
 
     /** The variable of this dependency. */
     @Nullable
-    private final VarDescriptor variable;
+    private final VariableDescriptor variable;
 
     /**
      * Creates a new service dependency.
@@ -112,7 +112,7 @@ public final class Dependency {
      * @param variable
      *            an optional field or parameter
      */
-    private Dependency(Key<?> key, Optionality optionality, @Nullable VarDescriptor variable) {
+    private Dependency(Key<?> key, Optionality optionality, @Nullable VariableDescriptor variable) {
         this.key = requireNonNull(key, "key is null");
         this.optionality = requireNonNull(optionality);
         this.variable = variable;
@@ -243,7 +243,7 @@ public final class Dependency {
      *         variable.
      * @see #member()
      */
-    public Optional<VarDescriptor> variable() {
+    public Optional<VariableDescriptor> variable() {
         return Optional.ofNullable(variable);
     }
 
@@ -341,7 +341,7 @@ public final class Dependency {
         return List.copyOf(result);
     }
 
-    public static <T> Dependency fromVariable(VarDescriptor desc) {
+    public static <T> Dependency fromVariable(VariableDescriptor desc) {
         requireNonNull(desc, "variable is null");
         TypeLiteral<?> tl = desc.getTypeLiteral();
 

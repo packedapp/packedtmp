@@ -21,7 +21,7 @@ import app.packed.config.ConfigSite;
 import app.packed.lang.Key;
 import app.packed.lang.Nullable;
 import app.packed.service.InstantiationMode;
-import app.packed.service.PrototypeRequest;
+import app.packed.service.ProvideContext;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.run.InjectorEntry;
 import packed.internal.util.KeyBuilder;
@@ -60,13 +60,13 @@ public interface ServiceEntry<T> {
     Key<?> key();
 
     /**
-     * Returns whether or not this node needs a {@link PrototypeRequest} instance to be able to deliver a service.
+     * Returns whether or not this node needs a {@link ProvideContext} instance to be able to deliver a service.
      * <p>
      * It is unfortunately that we need this method, however, otherwise we would need to create an instance of
-     * {@link PrototypeRequest} every time we requested a service. Including for something as innocent as get(service).
+     * {@link ProvideContext} every time we requested a service. Including for something as innocent as get(service).
      * Something people would assume was garbage free.
      *
-     * @return whether or not this node needs a {@link PrototypeRequest} instance to be able to deliver a service
+     * @return whether or not this node needs a {@link ProvideContext} instance to be able to deliver a service
      */
     // Technically we don't need this any more, after we have settled on a Component, Dependency, Key<?> format
     // However we keep it for now, because it might make sense to have a backtrack to the defining entity at some point.

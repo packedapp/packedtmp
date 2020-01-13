@@ -23,7 +23,7 @@ import app.packed.config.ConfigSite;
 import app.packed.lang.Key;
 import app.packed.lang.Nullable;
 import app.packed.service.InstantiationMode;
-import app.packed.service.PrototypeRequest;
+import app.packed.service.ProvideContext;
 import app.packed.service.ServiceDescriptor;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.util.KeyBuilder;
@@ -69,7 +69,7 @@ public abstract class InjectorEntry<T> implements ServiceDescriptor {
      *            a request if needed by {@link #requiresPrototypeRequest()}
      * @return the instance
      */
-    public abstract T getInstance(@Nullable PrototypeRequest request);
+    public abstract T getInstance(@Nullable ProvideContext request);
 
     @Override
     public final Optional<String> description() {

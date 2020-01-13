@@ -28,6 +28,7 @@ public class Stiff extends BaseBundle {
     @Override
     protected void configure() {
         provide(XXX.class);
+        // installHelper(Stiff.class); // <--
     }
 
     public static void main(String[] args) {

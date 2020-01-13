@@ -21,7 +21,7 @@ import app.packed.config.ConfigSite;
 import app.packed.lang.Key;
 import app.packed.lang.Nullable;
 import app.packed.service.InstantiationMode;
-import app.packed.service.PrototypeRequest;
+import app.packed.service.ProvideContext;
 import packed.internal.service.build.BuildEntry;
 
 /** An injector entry holding a {@link InstantiationMode#SINGLETON} instance. */
@@ -57,7 +57,7 @@ public final class SingletonInjectorEntry<T> extends InjectorEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(PrototypeRequest ignore) {
+    public T getInstance(ProvideContext ignore) {
         return instance;
     }
 

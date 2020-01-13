@@ -29,6 +29,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import app.packed.inject.Inject;
 import app.packed.lang.InvalidDeclarationException;
 import app.packed.lang.Key;
 import app.packed.lang.Nullable;
@@ -75,6 +76,8 @@ import packed.internal.util.types.TypeUtil;
 // ServiceDescriptor
 // Refereres fra InjectorDescriptor....
 // Skal bruges til Filtrering... Men hvis noeglerne er skjult kan vi vel bruge service....
+
+// Factory høre måske med til Make. Syntes ihvertfald
 public class Factory<T> {
 
     /** A cache of factories used by {@link #find(Class)}. */

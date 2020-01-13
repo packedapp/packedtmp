@@ -24,7 +24,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
-import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
@@ -32,8 +31,11 @@ import java.lang.reflect.Parameter;
  * An executable descriptor.
  * <p>
  * Unlike the {@link Executable} class, this interface contains no mutable operations, so it can be freely shared.
+ * 
+ * @apiNote In the future, if the Java language permits, {@link ExecutableDescriptor} may become a {@code sealed}
+ *          interface, which would prohibit subclassing except by explicitly permitted types.
  */
-public abstract class ExecutableDescriptor implements Member, AnnotatedElement {
+public abstract class ExecutableDescriptor implements MemberDescriptor, AnnotatedElement {
 
     /** The executable */
     final Executable executable;

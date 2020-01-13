@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Function;
 
 import app.packed.service.InstantiationMode;
-import app.packed.service.PrototypeRequest;
+import app.packed.service.ProvideContext;
 import packed.internal.service.build.BuildEntry;
 
 /** A runtime service entry that takes uses a {@link Function} to map an existing service. */
@@ -46,7 +46,7 @@ public final class MappingInjectorEntry<F, T> extends InjectorEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(PrototypeRequest site) {
+    public T getInstance(ProvideContext site) {
         F f = delegate.getInstance(site);
         T t = function.apply(f);
         // TODO Check Type, and not null

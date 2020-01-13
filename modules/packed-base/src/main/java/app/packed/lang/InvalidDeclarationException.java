@@ -17,7 +17,7 @@ package app.packed.lang;
 
 /**
  * A runtime exception that is typically thrown when the runtime encounters a structural problems on some object. For
- * example, a final field annotated with {@link app.packed.service.Inject}.
+ * example, a final field annotated with {@link app.packed.inject.Inject}.
  */
 // ComponentDeclarationException.
 // Skal vel kende forskel paa runtime og build time...

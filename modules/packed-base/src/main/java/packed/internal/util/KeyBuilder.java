@@ -16,10 +16,10 @@
 package packed.internal.util;
 
 import app.packed.component.Component;
+import app.packed.inject.Inject;
 import app.packed.lang.Key;
-import app.packed.service.Inject;
 import app.packed.service.Injector;
-import app.packed.service.PrototypeRequest;
+import app.packed.service.ProvideContext;
 
 /** A builder of keys, mainly useful for creating proper error messages. */
 public final class KeyBuilder {
@@ -30,8 +30,8 @@ public final class KeyBuilder {
     /// ** The {@link Container} class as a key. */
     // public static final Key<?> CONTAINER_KEY = Key.of(Container.class);
 
-    /** The {@link PrototypeRequest} class as a key. */
-    public static final Key<?> INJECTION_SITE_KEY = Key.of(PrototypeRequest.class);
+    /** The {@link ProvideContext} class as a key. */
+    public static final Key<?> INJECTION_SITE_KEY = Key.of(ProvideContext.class);
 
     /** The {@link Injector} class as a key. */
     public static final Key<?> INJECTOR_KEY = Key.of(Injector.class);

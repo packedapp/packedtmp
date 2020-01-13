@@ -22,7 +22,7 @@ import static testutil.util.TestMemberFinder.findField;
 
 import java.lang.reflect.Field;
 
-import app.packed.service.Inject;
+import app.packed.inject.Inject;
 import testutil.stubs.Letters.A;
 
 /**

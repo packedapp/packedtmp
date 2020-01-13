@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.service.InjectionException;
 import app.packed.service.InstantiationMode;
-import app.packed.service.PrototypeRequest;
+import app.packed.service.ProvideContext;
 import packed.internal.inject.util.Provider;
 import packed.internal.service.build.ServiceExtensionInstantiationContext;
 import packed.internal.service.build.service.ComponentFactoryBuildEntry;
@@ -49,7 +49,7 @@ public class PrototypeInjectorEntry<T> extends InjectorEntry<T> {
         providers = new Provider[size];
         for (int i = 0; i < node.resolvedDependencies.length; i++) {
             InjectorEntry<?> forReal = node.resolvedDependencies[i].toRuntimeEntry(context);
-            PrototypeRequest is = null;
+            ProvideContext is = null;
             if (node.offset >= i) {
                 // System.out.println(node.offset + " " + node.dependencies.size());
                 // PrototypeRequest.of(node.dependencies.get(node.offset + i));
@@ -70,7 +70,7 @@ public class PrototypeInjectorEntry<T> extends InjectorEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(PrototypeRequest site) {
+    public T getInstance(ProvideContext site) {
         return newInstance();
     }
 

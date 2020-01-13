@@ -80,6 +80,8 @@ public abstract class FactoryHandle<T> extends Object {
 
     protected T checkLowerbound(T instance) {
         if (!type.isInstance(instance)) {
+            // TODO I think this should probably be a Make Exception....
+            // IDeen er at de har "løjet" om hvad de returnere.
             throw new InjectionException("Expected factory to produce an instance of " + format(type) + " but was " + instance.getClass());
         }
         return instance;

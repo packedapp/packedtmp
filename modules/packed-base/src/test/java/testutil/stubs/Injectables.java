@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Optional;
 
-import app.packed.service.Inject;
+import app.packed.inject.Inject;
 import testutil.stubs.Letters.A;
 
 /**

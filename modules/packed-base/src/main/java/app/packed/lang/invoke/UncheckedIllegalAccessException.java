@@ -20,6 +20,7 @@ package app.packed.lang.invoke;
 // UncheckedIllegalAccessException...
 // AccessRestrictedException <- General one, could sound really securish, maybe have a name
 // which makes it clear it is relevant to reflection/method handlers
+// NotOpenedException
 public class UncheckedIllegalAccessException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */

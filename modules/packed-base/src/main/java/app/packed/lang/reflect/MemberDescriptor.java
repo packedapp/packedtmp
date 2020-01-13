@@ -13,26 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.factoryhandle;
+package app.packed.lang.reflect;
 
-import java.lang.invoke.MethodHandle;
-
-import app.packed.lang.TypeLiteral;
+import java.lang.reflect.Member;
 
 /**
  *
  */
-public class BindableFactoryHandle<T> extends FactoryHandle<T> {
-
-    FactoryHandle<T> wrapping;
-
-    public BindableFactoryHandle(TypeLiteral<T> typeLiteral) {
-        super(typeLiteral);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle toMethodHandle() {
-        throw new UnsupportedOperationException();
-    }
-}
+public interface MemberDescriptor extends Member {}

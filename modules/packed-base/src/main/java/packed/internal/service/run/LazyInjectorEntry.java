@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.concurrent.Semaphore;
 
 import app.packed.service.InstantiationMode;
-import app.packed.service.PrototypeRequest;
+import app.packed.service.ProvideContext;
 import packed.internal.inject.util.Provider;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionInstantiationContext;
@@ -60,7 +60,7 @@ public final class LazyInjectorEntry<T> extends InjectorEntry<T> implements Prov
     /** {@inheritDoc} */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public T getInstance(PrototypeRequest site) {
+    public T getInstance(ProvideContext site) {
         for (;;) {
             Object i = instance;
             if (!(i instanceof LazyInjectorEntry.Sync)) {

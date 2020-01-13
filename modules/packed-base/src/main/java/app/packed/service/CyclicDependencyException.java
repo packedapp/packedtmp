@@ -18,5 +18,8 @@ package app.packed.service;
 /**
  *
  */
-// Marker interface, used internally (for what??)
-public interface Providable<T> {}
+// Taenker om den er mere generics??? Den giver jo ogsaa mening for extensions...
+// Og composites....
+class CyclicDependencyException {
+
+}

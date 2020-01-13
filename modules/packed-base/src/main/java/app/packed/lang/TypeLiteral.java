@@ -85,7 +85,7 @@ public abstract class TypeLiteral<T> {
     }
 
     /**
-     * We cache the hash code of the type, as most Type implementations calculates it every time. See, for example,
+     * We cache the hash code of the type, as most Type implementations calculate it every time. See, for example,
      * https://github.com/frohoff/jdk8u-jdk/blob/master/src/share/classes/sun/reflect/generics/reflectiveObjects/ParameterizedTypeImpl.java
      */
     private int hash;

@@ -23,13 +23,13 @@ import java.util.Optional;
 import app.packed.component.Component;
 import app.packed.lang.Key;
 import app.packed.lang.Nullable;
-import app.packed.lang.reflect.VarDescriptor;
+import app.packed.lang.reflect.VariableDescriptor;
 
 /**
  * An implementation of injection site used, when requesting a service directly through an injector, for example, via
  * {@link Injector#use(Class)}.
  */
-final class PrototypeRequestImpl implements PrototypeRequest {
+final class ProvideContextImpl implements ProvideContext {
 
     /** An optional component, in case the request is via a component's private injector. */
     @Nullable
@@ -38,7 +38,7 @@ final class PrototypeRequestImpl implements PrototypeRequest {
     /** The key of the service that was requested */
     private final Dependency dependency;
 
-    PrototypeRequestImpl(Dependency dependency, @Nullable Component component) {
+    ProvideContextImpl(Dependency dependency, @Nullable Component component) {
         this.dependency = requireNonNull(dependency, "dependency is null");
         this.component = component;
     }
@@ -69,7 +69,7 @@ final class PrototypeRequestImpl implements PrototypeRequest {
 
     /** {@inheritDoc} */
     @Override
-    public Optional<VarDescriptor> variable() {
+    public Optional<VariableDescriptor> variable() {
         return dependency.variable();
     }
 

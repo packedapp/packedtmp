@@ -30,6 +30,9 @@ import packed.internal.util.InternalErrorException;
  * A constructor descriptor.
  * <p>
  * Unlike the {@link Constructor} class, this interface contains no mutable operations, so it can be freely shared.
+ * 
+ * @apiNote In the future, if the Java language permits, {@link ConstructorDescriptor} may become a {@code sealed}
+ *          interface, which would prohibit subclassing except by explicitly permitted types.
  */
 public final class ConstructorDescriptor<T> extends ExecutableDescriptor {
 

@@ -256,6 +256,7 @@ public final class DependencyManager {
                     }
                     // b.root.requiredServicesMandatory.add(e.get)
                     // System.err.println(b.root.privateNodeMap.stream().map(e -> e.key()).collect(Collectors.toList()));
+                    // UnresolvedVariableException
                     throw new InjectionException(sb.toString());
                 }
             }

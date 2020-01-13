@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.inject;
 
 import static app.packed.lang.invoke.AccessType.INVOKE;
 import static app.packed.lang.invoke.AccessType.SET_FIELD;
@@ -26,6 +26,8 @@ import java.lang.annotation.Target;
 
 import app.packed.container.UseExtension;
 import app.packed.lang.invoke.OpensFor;
+import app.packed.service.InjectionException;
+import app.packed.service.ServiceExtension;
 
 /**
  * Unlike many other popular dependency injection frameworks. There are usually no requirements in Packed to use

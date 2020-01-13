@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 import app.packed.lang.Key;
 import app.packed.lang.Nullable;
 import app.packed.service.Injector;
-import app.packed.service.PrototypeRequest;
+import app.packed.service.ProvideContext;
 
 /** An abstract implementation of an injector. */
 public abstract class AbstractInjector implements Injector {
@@ -79,7 +79,7 @@ public abstract class AbstractInjector implements Injector {
         if (n == null) {
             return null;
         }
-        return n.getInstance(PrototypeRequest.of(key));
+        return n.getInstance(ProvideContext.of(key));
     }
 
     // protected final void injectMembers(OldAtInjectGroup descriptor, Object instance, @Nullable Component component) {
