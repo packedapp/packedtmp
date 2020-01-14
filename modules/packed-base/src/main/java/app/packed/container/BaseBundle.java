@@ -16,7 +16,6 @@
 package app.packed.container;
 
 import app.packed.component.SingletonConfiguration;
-import app.packed.entrypoint.EntryPointExtension;
 import app.packed.lang.Key;
 import app.packed.lang.Key.Qualifier;
 import app.packed.lifecycle.OnStart;
@@ -128,18 +127,18 @@ public abstract class BaseBundle extends Bundle {
         service().exportAll();
     }
 
-    /**
-     * Returns a lifecycle extension instance, installing it if it has not already been installed.
-     * 
-     * @return a lifecycle extension instance
-     */
-    protected final EntryPointExtension lifecycle() {
-        return use(EntryPointExtension.class);
-    }
+//    /**
+//     * Returns a lifecycle extension instance, installing it if it has not already been installed.
+//     * 
+//     * @return a lifecycle extension instance
+//     */
+//    protected final EntryPointExtension lifecycle() {
+//        return use(EntryPointExtension.class);
+//    }
 
     /**
-     * Binds the specified implementation as a new service. The runtime will use {@link Factory#find(Class)} to
-     * find a valid constructor or method to instantiate the service instance once the injector is created.
+     * Binds the specified implementation as a new service. The runtime will use {@link Factory#find(Class)} to find a valid
+     * constructor or method to instantiate the service instance once the injector is created.
      * <p>
      * The default key for the service will be the specified {@code implementation}. If the {@code Class} is annotated with
      * a {@link Qualifier qualifier annotation}, the default key will have the qualifier annotation added.

@@ -17,7 +17,6 @@ package packed.internal.service.util.nextapi;
 
 import app.packed.artifact.App;
 import app.packed.container.BaseBundle;
-import app.packed.entrypoint.Main;
 
 /**
  *
@@ -46,7 +45,6 @@ public class MainTest2 extends BaseBundle {
             System.out.println(installInstance(334).path());
         }
 
-        @Main
         public static void say() {
             System.out.println("HelloWorld!!");
         }

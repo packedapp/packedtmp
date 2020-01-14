@@ -20,7 +20,7 @@ import java.util.Optional;
 import app.packed.component.ComponentPath;
 
 /**
- *
+ * A guest in an artifact that is hosted in a host
  */
 // Bliver noedt
 
@@ -36,19 +36,27 @@ import app.packed.component.ComponentPath;
 public interface Guest<A> {
 
     /**
-     * Returns the type of artifact that this guest object wraps.
+     * The artifact this guest
      * 
-     * @return the type of artifact that this guest object wraps
+     * @return the artifact
+     */
+    Optional<GuestInstance<A>> artifact();
+
+    /**
+     * Returns this guest's artifact type.
+     * 
+     * @return this guest's artifact type
      */
     Class<?> artifactType();
-
-    Optional<GuestInstance<A>> latest();
 
     ComponentPath path();
 
     GuestState state();
 
     class GuestState {
+
+        // Altsaa en GuestState er vel ikke anderledes end en almindelige containers state????
+
         // Suspended
         // Resuming | Starting
         // Terminated, but lingering

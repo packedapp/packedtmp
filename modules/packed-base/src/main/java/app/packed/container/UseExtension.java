@@ -17,6 +17,7 @@ package app.packed.container;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -35,57 +36,30 @@ import java.lang.annotation.Target;
  * On Annotation, Instances
  * 
  * ComponentType??? Ja det er jo saadan hvad InstanceOf
- * 
- * Inherited???? Hmmm, Actor
  */
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Inherited
 public @interface UseExtension {
 
     /**
-     * Optional extension types that will only be installed if they are available at runtime.
+     * Optional extension types that will only be used if they can be resolved at runtime using
+     * {@link Class#forName(String, boolean, ClassLoader)} or a similar mechanism.
      * <p>
-     * Checking whether or not optional dependencies are available will be done only one per annotated type. Caching the
-     * result
+     * Checking whether or not an optional dependency is available is done exactly once per usage site. Caching the result
+     * for future usage.
      * 
-     * @return optional extensions
+     * @return any optional extensions that should be used
+     * @see Class#forName(String)
      */
     String[] optional() default {};
 
     /**
-     * Returns any extension the annotated type uses.
+     * Returns the extensions that the annotated type uses.
      * 
-     * @return any extension the annotated type uses
+     * @return the extensions that the annotated type uses
      */
-    Class<? extends Extension>[] value() default {};
+    Class<? extends Extension>[] value();
 }
-// @UseExtensionIfHooked(ServiceExtension.class)
-//// Uses the service extension, if any of the hooks that needs activation is encountered, otherwise not.
-// Vi havde en module some target, men det er bare accident waiting to happen
-// En der faar annoteret et modul og glemmer alt om det....
-
-// FeatureAnnotation
-
-// Unfprtunantely, you cannot register random annotations for use. As this would break encapsulation.
-// ActivateExtension
-
-// Vi har vel i virkeligheden 3 interesante ting...
-// Extension
-// Hook
-// Bundle (ContainerSource??)
-// Components???? HMMMMM. HMMMM
-
-// Can be used on
-// Hook Annotations
-// Other Extensions... Or just use Extension#use
-// Hook Class/Interface, for example, @ActivateExtension(LoggingExtension.class) Logger
-
 // RequireExtension, UseExtension, ActivateExtension
-// final void uses(String... extensionTypes) {
-// // The names will be resolved when composer is created
-//
-// // Det ideeele ville vaere hvis man kunne specificere en eller callback/klasse der skulle koeres.
-// // Hvis den givne extension var der.
-// // Maaske noget a.la. dependOn(String, String instantiateThisClassAndInvokXX)
-// }

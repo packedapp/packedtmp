@@ -16,7 +16,6 @@
 package app.packed.entrypoint;
 
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import app.packed.component.SingletonConfiguration;
@@ -148,6 +147,6 @@ class X extends BaseBundle {
 
     @Override
     public void configure() {
-        lifecycle().main(ConcurrentHashMap.class, c -> System.out.println("size = " + c.size()));
+        // lifecycle().main(ConcurrentHashMap.class, c -> System.out.println("size = " + c.size()));
     }
 }

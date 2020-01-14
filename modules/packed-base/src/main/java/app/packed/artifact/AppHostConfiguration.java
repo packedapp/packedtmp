@@ -35,6 +35,7 @@ public class AppHostConfiguration {
     void link(ContainerSource bundle, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
+    //
 
 }
 

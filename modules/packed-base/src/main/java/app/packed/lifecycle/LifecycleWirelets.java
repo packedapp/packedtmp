@@ -23,8 +23,6 @@ import app.packed.artifact.App;
 import app.packed.container.ContainerSource;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
-import app.packed.entrypoint.StringArgs;
-import app.packed.service.ServiceWirelets;
 
 /**
  * Wirelets that can be used when creating an {@link App} instance. For example, via
@@ -40,19 +38,6 @@ public final class LifecycleWirelets {
 
     /** No instantiation. */
     private LifecycleWirelets() {}
-
-    /**
-     * Creates a {@link StringArgs} from the specified arguments and returns a wirelet that provides it, via
-     * {@link ServiceWirelets#provide(Object)}, to the wired container.
-     * 
-     * @param args
-     *            the arguments to inject
-     * @return a wirelet that provides the specified arguments to the linked container
-     */
-    static Wirelet args(String... args) {
-        // Skal vi lave et hack, saa man bare ignorere den hvis
-        return ServiceWirelets.provide(StringArgs.of(args));
-    }
 
     /**
      * Sets a maximum time for the container to run. When the deadline podpodf the app is shutdown.

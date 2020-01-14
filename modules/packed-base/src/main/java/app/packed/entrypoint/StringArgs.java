@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import app.packed.container.Wirelet;
+import app.packed.service.ServiceWirelets;
+
 /**
  * A simple wrapper around an array of strings. Is typically used to wrap the string array argument to a
  * public-static-main method.
@@ -91,4 +94,19 @@ public final class StringArgs implements Iterable<String> /* WiringOperation */ 
     /// Main ArgsBuidler
 
     // onOption(xxxx).helpWith();
+
+    /**
+     * Creates a {@link StringArgs} from the specified arguments and returns a wirelet that provides it, via
+     * {@link ServiceWirelets#provide(Object)}, to the wired container.
+     * 
+     * @param args
+     *            the arguments to inject
+     * @return a wirelet that provides the specified arguments to the linked container
+     */
+    // Behoever alle wirelets tingene at vaere i en *Wirelet klasse
+    public static Wirelet args(String... args) {
+        // Skal vi lave et hack, saa man bare ignorere den hvis
+        return ServiceWirelets.provide(StringArgs.of(args));
+    }
+
 }

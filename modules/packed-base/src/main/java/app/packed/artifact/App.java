@@ -167,8 +167,20 @@ public interface App extends AutoCloseable {
     // TODO throw UnknownPathException();;
     Component useComponent(CharSequence path);
 
+    /**
+     * Create and initialize an application from the specified source. The state of the returned application is
+     * {@link RunState#INITIALIZED}.
+     *
+     * @param source
+     *            the source of the application
+     * @param wirelets
+     *            any wirelets to use in the construction of the application
+     * @return the new application
+     * @throws RuntimeException
+     *             if the application could not be constructed or started properly
+     */
     static App initialize(ContainerSource source, Wirelet... wirelets) {
-        return App.DRIVER.create(source, wirelets);
+        return App.DRIVER.createAndInitialize(source, wirelets);
     }
 
     /**
@@ -185,20 +197,19 @@ public interface App extends AutoCloseable {
      *             if the application did not execute properly
      */
     static void run(ContainerSource source, Wirelet... wirelets) {
-        PackedApp app = (PackedApp) App.DRIVER.create(source, wirelets);
+        PackedApp app = (PackedApp) App.DRIVER.createAndInitialize(source, wirelets);
         app.context.run();
     }
 
     /**
-     * Create and starts an application from the specified source. Returning it in a running state.
-     * 
-     * The state of the returned application is {@link RunState#INITIALIZED}.
+     * Create and start an application from the specified source. The state of the returned application is
+     * {@link RunState#RUNNING}.
      *
      * @param source
      *            the source of the application
      * @param wirelets
      *            any wirelets to use in the construction of the application
-     * @return the new running application
+     * @return the new application
      * @throws RuntimeException
      *             if the application could not be constructed or started properly
      */
@@ -208,7 +219,7 @@ public interface App extends AutoCloseable {
 
     static CompletableFuture<App> startAsync(ContainerSource source, Wirelet... wirelets) {
         // Why return CompletableFuture???
-        PackedApp app = (PackedApp) App.DRIVER.create(source, wirelets);
+        PackedApp app = (PackedApp) App.DRIVER.createAndInitialize(source, wirelets);
         return app.context.startAsync(app);
     }
 }

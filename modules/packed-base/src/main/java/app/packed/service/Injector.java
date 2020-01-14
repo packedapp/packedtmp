@@ -327,7 +327,7 @@ public interface Injector {
      *             that requires a lifecycle
      */
     static Injector of(ContainerSource source, Wirelet... wirelets) {
-        return InjectorArtifactDriver.INSTANCE.create(source, wirelets);
+        return InjectorArtifactDriver.INSTANCE.createAndInitialize(source, wirelets);
     }
 }
 

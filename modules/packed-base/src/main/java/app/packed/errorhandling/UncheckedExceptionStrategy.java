@@ -18,6 +18,6 @@ package app.packed.errorhandling;
 /**
  *
  */
-public class UncheckedExceptionStrategy {
+class UncheckedExceptionStrategy {
 
 }

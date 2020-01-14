@@ -22,17 +22,18 @@ import app.packed.component.SingletonContext;
 import app.packed.lang.Key;
 import app.packed.lifecycle.StopOption;
 import app.packed.service.Injector;
+import app.packed.service.ServiceExtension;
 
 /**
- * An artifact runtime context provides precise control over a single (top level) container. Instances of this interface
- * are normally never exposed to end users. Instead it is wrapped in thin facade objects, such as {@link App} or
- * {@link Injector}. Which delegates all calls to the context.
+ * An artifact context provides control over a single (top level) container. Instances of this interface are normally
+ * never exposed to end users. Instead it is wrapped in thin facade objects, such as {@link App} or {@link Injector}.
+ * This facede object than delegates all calls to the context.
  * <p>
  * An instance of this interface is normally acquired via {@link ArtifactDriver#newArtifact(ArtifactContext)}.
  */
-
-// Det er jo i virkeligheden ContainerText, men den kan bare ikke lukkes ned....
 public interface ArtifactContext extends SingletonContext {
+
+    // Det er jo i virkeligheden ContainerText, men den kan bare ikke lukkes ned....
 
     /**
      * 
@@ -74,6 +75,17 @@ public interface ArtifactContext extends SingletonContext {
 
     <T> CompletableFuture<T> stopAsync(T result, StopOption... options);
 
+    /**
+     * Use a service of the specified tpye
+     * 
+     * @param <T>
+     *            the type of service to use
+     * @param key
+     * @return a service of the specified type
+     * 
+     * @throws UnsupportedOperationException
+     *             if a service with the specified key exist. Or if the application does not use {@link ServiceExtension}.
+     */
     <T> T use(Key<T> key);
 
     Component useComponent(CharSequence path);

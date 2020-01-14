@@ -128,7 +128,7 @@ public abstract class ArtifactDriver<T> {
      * @throws RuntimeException
      *             if the artifact could not be created
      */
-    public final T create(ContainerSource source, Wirelet... wirelets) {
+    public final T createAndInitialize(ContainerSource source, Wirelet... wirelets) {
         if (source instanceof ArtifactImage) {
             return ((ArtifactImage) source).newArtifact(this, wirelets);
         }

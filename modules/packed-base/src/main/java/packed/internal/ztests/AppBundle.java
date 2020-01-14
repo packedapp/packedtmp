@@ -20,8 +20,6 @@ import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
-import app.packed.entrypoint.StringArgs;
-import app.packed.service.ServiceWirelets;
 
 /**
  * A specialized version of {@link BaseBundle} that provide various utility methods for instantiating {@link App apps}
@@ -45,7 +43,7 @@ abstract class AppBundle extends BaseBundle {
 
         // CTRL-C ?? Obvious a wirelet, but default on or default off.
         // Paa Bundle syntes jeg den er paa, ikke paa App which is clean
-        run(source, ServiceWirelets.provide(StringArgs.of(args)).andThen(wirelets)); // + CTRL-C
+        // run(source, ServiceWirelets.provide(StringArgs.of(args)).andThen(wirelets)); // + CTRL-C
     }
 
     static protected void run(ContainerSource source, Wirelet... wirelets) {
