@@ -107,7 +107,7 @@ public interface Hook {
             } catch (AssertionErrorRuntimeException ee) {
                 throw ee.convert();
             } catch (Throwable t) {
-                ThrowableUtil.rethrowErrorOrRuntimeException(t);
+                ThrowableUtil.throwIfUnchecked(t);
                 throw new UndeclaredThrowableException(t);
             }
         }

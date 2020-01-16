@@ -27,13 +27,13 @@ import java.util.StringJoiner;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionWirelet;
+import app.packed.inject.UnresolvedDependencyException;
 import app.packed.lang.Key;
 import app.packed.lang.Nullable;
 import app.packed.lang.reflect.ExecutableDescriptor;
 import app.packed.lang.reflect.MethodDescriptor;
 import app.packed.lang.reflect.ParameterDescriptor;
 import app.packed.service.Dependency;
-import app.packed.service.InjectionException;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import packed.internal.container.PackedExtensionContext;
@@ -257,7 +257,7 @@ public final class DependencyManager {
                     // b.root.requiredServicesMandatory.add(e.get)
                     // System.err.println(b.root.privateNodeMap.stream().map(e -> e.key()).collect(Collectors.toList()));
                     // UnresolvedVariableException
-                    throw new InjectionException(sb.toString());
+                    throw new UnresolvedDependencyException(sb.toString());
                 }
             }
         }

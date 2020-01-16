@@ -88,7 +88,7 @@ public abstract class VarOperator<T> {
             try {
                 return (T) mh.invoke();
             } catch (Throwable e) {
-                ThrowableUtil.rethrowErrorOrRuntimeException(e);
+                ThrowableUtil.throwIfUnchecked(e);
                 throw new UndeclaredThrowableException(e);
             }
         }
@@ -124,7 +124,7 @@ public abstract class VarOperator<T> {
             try {
                 return (T) mh.invoke();
             } catch (Throwable e) {
-                ThrowableUtil.rethrowErrorOrRuntimeException(e);
+                ThrowableUtil.throwIfUnchecked(e);
                 throw new UndeclaredThrowableException(e);
             }
         }

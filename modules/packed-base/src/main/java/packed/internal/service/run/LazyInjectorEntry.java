@@ -106,7 +106,7 @@ public final class LazyInjectorEntry<T> extends InjectorEntry<T> implements Prov
                 if (instance == this) {
                     if (failure != null) {
                         // We should not Rethrow it, We need to wrap it in some ProvisionException
-                        ThrowableUtil.rethrowErrorOrRuntimeException(failure);
+                        ThrowableUtil.throwIfUnchecked(failure);
                     }
                     try {
                         T newInstance = factory.newInstance();

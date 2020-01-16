@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.reflect.Member;
 import java.util.Optional;
 
-import app.packed.artifact.App;
 import app.packed.component.Component;
 import app.packed.component.SingletonContext;
 import app.packed.lang.InvalidDeclarationException;
@@ -155,6 +154,11 @@ import app.packed.lang.reflect.VariableDescriptor;
 
 // Maaske er Component bare en separate injection???
 // Men saa skal vi have ComponentContext.component()
+
+// Kan den bruges paa sidecars??? SidecarProvide maaske....
+// ProvideLocal? Føler lidt at grunden til vi ikke kan bruge annoteringer
+// Som vi vil paa sidecars er pga Provide...
+// F.eks. Schedule boer jo fungere praecis som var den paa componenten...
 public interface ProvideContext {
 
     // Vi tager alle annotations med...@SystemProperty(fff) @Foo String xxx
@@ -169,11 +173,21 @@ public interface ProvideContext {
     boolean isOptional();
 
     /**
-     * Returns the key of this dependency.
+     * Returns the key of the service that needs to be provided.
      *
-     * @return the key of this dependency
+     * @return the key of the service that needs to be provided
      */
     Key<?> key();
+
+    default Optional<Class<?>> origin() {
+        // RequestingClass
+        // RequestingMember
+        // RequestingVariable
+
+        // Requester, if used for dependency injection....
+        // Her er det taenkt som den oprindelig klasse... sans mappers...sans composites
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * The member (field, method or constructor) for which this dependency was created. Or an empty {@link Optional} if this
@@ -185,18 +199,10 @@ public interface ProvideContext {
      * 
      * @return the member that is being injected, or an empty {@link Optional} if this dependency was not created from a
      *         member.
-     * @see #variable()
+     * @see #originVariable()
      */
     // Vi skal MemberDescriptor istedet for...
-    Optional<Member> member();
-
-    /**
-     * If this dependency represents a parameter to a constructor or method. This method will return an optional holding the
-     * index of the parameter. Otherwise, this method returns an empty optional.
-     * 
-     * @return the optional parameter index of the dependency
-     */
-    int parameterIndex(); // Hvad skal vi bruge den til???? Til at finde parameteren i???
+    Optional<Member> originMember();
 
     /**
      * The variable (field or parameter) for which this dependency was created. Or an empty {@link Optional} if this
@@ -207,19 +213,9 @@ public interface ProvideContext {
      * 
      * @return the variable that is being injected, or an empty {@link Optional} if this dependency was not created from a
      *         variable.
-     * @see #member()
+     * @see #originMember()
      */
-    Optional<VariableDescriptor> variable();// Should match Var...-> VarDescriptor-> VariableDescriptor
-
-    /**
-     * If this helper class is created as the result of needing dependency injection. This method returns an empty optional
-     * if used from methods such as {@link App#use(Class)}.
-     * 
-     * @return any dependency this class might have
-     */
-    default Optional<Dependency> dependency() {
-        throw new UnsupportedOperationException();
-    }
+    Optional<VariableDescriptor> originVariable();// Should match Var...-> VarDescriptor-> VariableDescriptor
 
     /**
      * Return the component that is requesting a service. Or an empty optional otherwise, for example, when used via
@@ -270,9 +266,16 @@ public interface ProvideContext {
     static ProvideContext of(Key<?> key, Component component) {
         return new ProvideContextImpl(Dependency.of(key), requireNonNull(component, "component is null"));
     }
-
-    // Optional<Class> viaComposite() <--- kan angive hvilken composite der gjorde det
-    // Tror bare vi ignore Composite....
-
     // static {AopReady r = AOPSupport.compile(FooClass.class)}, at runtime r.newInstance(r))// Arghh grimt
 }
+
+//
+///**
+//* If this helper class is created as the result of needing dependency injection. This method returns an empty optional
+//* if used from methods such as {@link App#use(Class)}.
+//* 
+//* @return any dependency this class might have
+//*/
+//default Optional<Dependency> dependency() {
+// throw new UnsupportedOperationException();
+//}

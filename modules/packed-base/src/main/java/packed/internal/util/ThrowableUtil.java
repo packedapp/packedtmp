@@ -77,7 +77,7 @@ public final class ThrowableUtil {
      *            the throwable
      * @return the specified throwable if it not an Error or a RuntimeException
      */
-    public static <T extends Throwable> T rethrowErrorOrRuntimeException(T throwable) {
+    public static <T extends Throwable> T throwIfUnchecked(T throwable) {
         if (throwable instanceof Error) {
             throw (Error) throwable;
         } else if (throwable instanceof RuntimeException) {

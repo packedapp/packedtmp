@@ -30,6 +30,7 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Target({ METHOD, CONSTRUCTOR })
 // @Create, @Supply
+//// Factory er jo saa bedre et navn...
 public @interface Make {
     // Look for exactly 1 Static Method @Make. If found use this.
     // Look for exactly 1 Constructor Method @Make. If found use this.

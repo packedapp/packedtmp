@@ -65,7 +65,7 @@ public abstract class MethodOperator<T> {
             try {
                 return (T) mh.invoke();
             } catch (Throwable e) {
-                ThrowableUtil.rethrowErrorOrRuntimeException(e);
+                ThrowableUtil.throwIfUnchecked(e);
                 throw new UndeclaredThrowableException(e);
             }
         }
@@ -96,7 +96,7 @@ public abstract class MethodOperator<T> {
             try {
                 mh.invoke();
             } catch (Throwable e) {
-                ThrowableUtil.rethrowErrorOrRuntimeException(e);
+                ThrowableUtil.throwIfUnchecked(e);
                 throw new UndeclaredThrowableException(e);
             }
         }

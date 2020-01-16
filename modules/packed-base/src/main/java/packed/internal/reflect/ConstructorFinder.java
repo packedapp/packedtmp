@@ -90,7 +90,7 @@ public final class ConstructorFinder {
         try {
             return (T) mh.invoke();
         } catch (Throwable e) {
-            ThrowableUtil.rethrowErrorOrRuntimeException(e);
+            ThrowableUtil.throwIfUnchecked(e);
             throw new UndeclaredThrowableException(e);
         }
     }

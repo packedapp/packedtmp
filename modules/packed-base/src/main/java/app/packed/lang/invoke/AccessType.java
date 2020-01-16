@@ -36,8 +36,10 @@ public enum AccessType {
 
     /** Access to instances of the target. Needed, for example, for VarHandle.compareAndSet(xxxxx) */
     // Ideen er lidt at man kan faa alle instanser af X
-    INSTANCE;
+    INSTANCE,
 
+    /** Ja ja ja ja, det kunne måske virke. */
+    COMPONENT_CONTEXT;
     // INVOKE_PARAMETERS <= Full access to all parameters... To set them. I think thats okay...
     // Trouble I think is you want to change the parameters
 }

@@ -285,6 +285,9 @@ public class Factory<T> {
     }
 
     public final Factory<T> withArgument(int index, @Nullable Object argument) {
+        // Fjern denne? Hvordan binder vi f.eks. noget til en composite...
+        // Det kan vi kun goere via Key....
+        // @Prime
         throw new UnsupportedOperationException();
     }
 
@@ -299,6 +302,10 @@ public class Factory<T> {
     }
 
     public final <S> Factory<T> withArgumentSupplier(Class<S> key, Supplier<?> supplier) {
+        // Altsaa vi kan vel bruge et andet factory????
+        // En mulig usecase f.eks. for Factory1 er at kunne mappe dependencies...
+        // f.eks. fra Foo(CardReader) -> new Factory0<
+        // new Factory0<>(e->e);
         // withArgumentSupplier
         throw new UnsupportedOperationException();
     }

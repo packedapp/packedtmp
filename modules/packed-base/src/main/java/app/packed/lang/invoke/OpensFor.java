@@ -69,3 +69,6 @@ public @interface OpensFor {
      */
     AccessType[] value();
 }
+
+//Hmmm Opensfor for extension...Vi giver jo egentlig alle adgang til at lave en...
+//Strengt tager skulle vi jo have en OpensForAll annotering paa den....

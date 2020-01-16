@@ -26,7 +26,6 @@ import app.packed.component.Component;
 import app.packed.component.SingletonConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
-import app.packed.service.InjectionException;
 
 /**
  * An extension that provides basic functionality for installing components in a container.
@@ -140,7 +139,7 @@ class ComponentRule {
  * situations an annotation can be used for providing greater control over how dependencies are being injected.
  * <p>
  * One such example is if a dependency should only be injected if it is available. Injecting {@code null} instead of
- * throwing an {@link InjectionException}.
+ * throwing an injection exception.
  */
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)

@@ -24,8 +24,12 @@ import java.lang.annotation.Target;
 
 /**
  * Nice annotation
+ * <p>
+ * Composite is not inherited..
  */
 @Documented
 @Retention(RUNTIME)
 @Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.TYPE })
 public @interface Composite {}
+// Can have 0 dependencies - V
+// Can use prime annotation...

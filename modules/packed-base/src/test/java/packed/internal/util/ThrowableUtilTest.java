@@ -49,7 +49,7 @@ public class ThrowableUtilTest {
         assertThat(ThrowableUtil.fromCompletionFuture(cf)).isInstanceOf(CancellationException.class);
     }
 
-    /** Tests {@link ThrowableUtil#rethrowErrorOrRuntimeException(Throwable)}. */
+    /** Tests {@link ThrowableUtil#throwIfUnchecked(Throwable)}. */
     @Test
     public void rethrowErrorOrException() throws Exception {
         assertThatThrownBy(() -> ThrowableUtil.rethrowErrorOrException(Error1.INSTANCE)).isSameAs(Error1.INSTANCE);
@@ -58,12 +58,12 @@ public class ThrowableUtilTest {
         assertThat(ThrowableUtil.rethrowErrorOrException(Throwable1.INSTANCE)).isSameAs(Throwable1.INSTANCE);
     }
 
-    /** Tests {@link ThrowableUtil#rethrowErrorOrRuntimeException(Throwable)}. */
+    /** Tests {@link ThrowableUtil#throwIfUnchecked(Throwable)}. */
     @Test
     public void rethrowErrorOrRuntimeException() {
-        assertThatThrownBy(() -> ThrowableUtil.rethrowErrorOrRuntimeException(Error1.INSTANCE)).isSameAs(Error1.INSTANCE);
-        assertThatThrownBy(() -> ThrowableUtil.rethrowErrorOrRuntimeException(RuntimeException1.INSTANCE)).isSameAs(RuntimeException1.INSTANCE);
-        assertThat(ThrowableUtil.rethrowErrorOrRuntimeException(Exception1.INSTANCE)).isSameAs(Exception1.INSTANCE);
+        assertThatThrownBy(() -> ThrowableUtil.throwIfUnchecked(Error1.INSTANCE)).isSameAs(Error1.INSTANCE);
+        assertThatThrownBy(() -> ThrowableUtil.throwIfUnchecked(RuntimeException1.INSTANCE)).isSameAs(RuntimeException1.INSTANCE);
+        assertThat(ThrowableUtil.throwIfUnchecked(Exception1.INSTANCE)).isSameAs(Exception1.INSTANCE);
     }
 
     /** Tests {@link ThrowableUtil#throwAny(Throwable)}. */

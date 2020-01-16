@@ -33,7 +33,7 @@ import packed.internal.inject.util.Provider;
 @Target({ ElementType.TYPE, ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Export {
+@interface Export {
     Class<?>[] as() default {};// empty the key it is registered under..Tae
 
     // String description() default "${service.description}"; Hvordan siger vi keep existing

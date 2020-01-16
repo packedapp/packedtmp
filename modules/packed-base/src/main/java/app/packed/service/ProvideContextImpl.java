@@ -51,25 +51,19 @@ final class ProvideContextImpl implements ProvideContext {
 
     /** {@inheritDoc} */
     @Override
-    public int parameterIndex() {
-        return dependency.parameterIndex();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public Key<?> key() {
         return dependency.key();
     }
 
     /** {@inheritDoc} */
     @Override
-    public Optional<Member> member() {
+    public Optional<Member> originMember() {
         return dependency.member();
     }
 
     /** {@inheritDoc} */
     @Override
-    public Optional<VariableDescriptor> variable() {
+    public Optional<VariableDescriptor> originVariable() {
         return dependency.variable();
     }
 

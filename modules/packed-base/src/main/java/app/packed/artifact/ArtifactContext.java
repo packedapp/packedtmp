@@ -15,10 +15,12 @@
  */
 package app.packed.artifact;
 
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import app.packed.component.Component;
 import app.packed.component.SingletonContext;
+import app.packed.container.Extension;
 import app.packed.lang.Key;
 import app.packed.lifecycle.StopOption;
 import app.packed.service.Injector;
@@ -34,6 +36,15 @@ import app.packed.service.ServiceExtension;
 public interface ArtifactContext extends SingletonContext {
 
     // Det er jo i virkeligheden ContainerText, men den kan bare ikke lukkes ned....
+
+    default Set<Class<? extends Extension>> extensionTypes() {
+        throw new UnsupportedOperationException();
+    }
+
+    default boolean isExtensionPresent(Class<? extends Extension> extensionType) {
+        // Hmmmm.. if (isExtensionPresent(ServiceExtension.class) ( use(Stuff.class))
+        return false;
+    }
 
     /**
      * 

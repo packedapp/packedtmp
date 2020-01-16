@@ -144,7 +144,7 @@ public final class ExtensionModel<E extends Extension> {
                 return (E) constructor.invoke();
             }
         } catch (Throwable e) {
-            ThrowableUtil.rethrowErrorOrRuntimeException(e);
+            ThrowableUtil.throwIfUnchecked(e);
             throw new UndeclaredThrowableException(e);
         }
     }

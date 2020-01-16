@@ -17,7 +17,7 @@ package packed.internal.service.run;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.service.InjectionException;
+import app.packed.inject.MakeException;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ProvideContext;
 import packed.internal.inject.util.Provider;
@@ -97,8 +97,8 @@ public class PrototypeInjectorEntry<T> extends InjectorEntry<T> {
         try {
             return (T) mh.invokeWithArguments(params);
         } catch (Throwable e) {
-            ThrowableUtil.rethrowErrorOrRuntimeException(e);
-            throw new InjectionException("Failed to inject ", e);
+            ThrowableUtil.throwIfUnchecked(e);
+            throw new MakeException("Failed to inject ", e);
         }
     }
 }

@@ -70,7 +70,7 @@ public final class ComponentModel {
         try {
             this.sourceHook = builder.csb == null ? null : builder.csb.build();
         } catch (Throwable ee) {
-            ThrowableUtil.rethrowErrorOrRuntimeException(ee);
+            ThrowableUtil.throwIfUnchecked(ee);
             throw new UndeclaredThrowableException(ee);
         }
 
@@ -85,7 +85,7 @@ public final class ComponentModel {
             try {
                 r = e.getValue().build();
             } catch (Throwable ee) {
-                ThrowableUtil.rethrowErrorOrRuntimeException(ee);
+                ThrowableUtil.throwIfUnchecked(ee);
                 throw new UndeclaredThrowableException(ee);
             }
             return new ExtensionRequestPair(e.getKey(), r);
@@ -125,7 +125,7 @@ public final class ComponentModel {
                 he.request.invoke(extension, acc);
             }
         } catch (Throwable t) {
-            ThrowableUtil.rethrowErrorOrRuntimeException(t);
+            ThrowableUtil.throwIfUnchecked(t);
             throw new UndeclaredThrowableException(t);
         }
         return acc;
@@ -185,7 +185,7 @@ public final class ComponentModel {
                 // Inherited annotations???
                 cp.findMethodsAndFields(method -> findAnnotatedMethods(htp, activatorMap, method), field -> findAnnotatedFields(htp, activatorMap, field));
             } catch (Throwable e) {
-                ThrowableUtil.rethrowErrorOrRuntimeException(e);
+                ThrowableUtil.throwIfUnchecked(e);
                 throw new UndeclaredThrowableException(e);
             }
             return new ComponentModel(this);
