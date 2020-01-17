@@ -13,21 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lang.reflect;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.lang.reflect.Member;
+package app.packed.inject;
 
 /**
  *
  */
-public abstract class AbstractDescriptorTest {
+@FunctionalInterface
+public interface Provider<T> {
 
-    static void validateMember(Member expected, MemberDescriptor actual) {
-        assertThat(expected.getDeclaringClass()).isSameAs(actual.getDeclaringClass());
-        assertThat(expected.getModifiers()).isEqualTo(actual.getModifiers());
-        assertThat(expected.getName()).isEqualTo(actual.getName());
-        assertThat(expected.isSynthetic()).isEqualTo(actual.isSynthetic());
-    }
+    /**
+     * Provides an instance of type {@code T}.
+     *
+     * @return the provided value
+     * @throws RuntimeException
+     *             if an exception is encountered while providing an instance
+     */
+    T provide();
 }

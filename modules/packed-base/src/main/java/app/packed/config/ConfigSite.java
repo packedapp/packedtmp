@@ -19,13 +19,13 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.StackWalker.StackFrame;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Member;
 import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.container.Wirelet;
 import app.packed.lang.Nullable;
 import app.packed.lang.reflect.FieldDescriptor;
+import app.packed.lang.reflect.MemberDescriptor;
 import app.packed.lang.reflect.MethodDescriptor;
 import packed.internal.config.ConfigSiteJoiner;
 import packed.internal.config.ConfigSiteSupport;
@@ -120,7 +120,7 @@ public interface ConfigSite {
         return new ConfigSiteSupport.AnnotatedFieldConfigSite(this, operation, field, annotation);
     }
 
-    default ConfigSite thenAnnotatedMember(String cst, Annotation annotation, Member member) {
+    default ConfigSite thenAnnotatedMember(String cst, Annotation annotation, MemberDescriptor member) {
         if (member instanceof MethodDescriptor) {
             return thenAnnotatedMethod(cst, annotation, (MethodDescriptor) member);
         } else {

@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.Field;
-import java.lang.reflect.Member;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -38,6 +37,7 @@ import app.packed.lang.TypeLiteral;
 import app.packed.lang.reflect.ConstructorDescriptor;
 import app.packed.lang.reflect.ExecutableDescriptor;
 import app.packed.lang.reflect.FieldDescriptor;
+import app.packed.lang.reflect.MemberDescriptor;
 import app.packed.lang.reflect.MethodDescriptor;
 import app.packed.lang.reflect.ParameterDescriptor;
 import app.packed.lang.reflect.VariableDescriptor;
@@ -207,7 +207,7 @@ public final class Dependency {
      *         member.
      * @see #variable()
      */
-    public Optional<Member> member() {
+    public Optional<MemberDescriptor> member() {
         // MemberDescriptor???
         if (variable instanceof FieldDescriptor) {
             return Optional.of(((FieldDescriptor) variable));
@@ -216,19 +216,6 @@ public final class Dependency {
         } else {
             return Optional.empty();
         }
-    }
-
-    /**
-     * If this dependency represents a parameter to a constructor or method. This method will return the index of the
-     * parameter, otherwise {@code -1}.
-     * 
-     * @apiNote While it would be natural for this method to return OptionalInt. We have found that in most use cases it has
-     *          already been established whether a parameter is present via the optional return by {@link #variable()}.
-     * 
-     * @return the optional parameter index of the dependency
-     */
-    public int parameterIndex() {
-        return variable instanceof ParameterDescriptor ? variable.index() : -1;
     }
 
     /** {@inheritDoc} */
@@ -558,3 +545,15 @@ public final class Dependency {
 // default AnnotatedElement annotations() {
 
 // }
+///**
+//* If this dependency represents a parameter to a constructor or method. This method will return the index of the
+//* parameter, otherwise {@code -1}.
+//* 
+//* @apiNote While it would be natural for this method to return OptionalInt. We have found that in most use cases it has
+//*          already been established whether a parameter is present via the optional return by {@link #variable()}.
+//* 
+//* @return the optional parameter index of the dependency
+//*/
+//public int parameterIndex() {
+// return variable instanceof ParameterDescriptor ? variable.index() : -1;
+//}

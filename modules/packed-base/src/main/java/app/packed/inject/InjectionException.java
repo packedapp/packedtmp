@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.inject;
 
 /**
  * Thrown when failing to inject dependencies into a constructor, method or field. For example, because of a missing

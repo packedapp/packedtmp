@@ -22,8 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.List;
 
+import app.packed.inject.Provider;
 import app.packed.lang.Key;
-import packed.internal.inject.util.Provider;
 
 /**
  * Must be accompanied by a {@link Provide} annotation
@@ -44,7 +44,7 @@ class ListOfStrings implements Provider<Key<?>> {
 
     /** {@inheritDoc} */
     @Override
-    public Key<?> get() {
+    public Key<?> provide() {
         return new Key<List<String>>() {};
     }
 }

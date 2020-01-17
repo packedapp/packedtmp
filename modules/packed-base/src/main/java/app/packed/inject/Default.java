@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lang;
+package app.packed.inject;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -21,6 +21,8 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.util.List;
+import java.util.Set;
 
 @Documented
 @Retention(RUNTIME)
@@ -30,6 +32,35 @@ import java.lang.annotation.Target;
  */
 // If we want we could get DefaultInt(), DefaultLong(), ...
 // Maybe in converter package???
+
+// Default -> Optional....
 @interface Default {
-    String value();
+
+    double[] doubleValue() default {};
+
+    float[] floatValue() default {};
+
+    long[] longValue() default {};
+
+    int[] intValue() default {};
+
+    String[] value() default {};
 }
+
+class Doo {
+
+    Doo(@Default Set<String> s) {
+        // List, Set should just work with empty
+    }
+
+    Doo(@Default("asdsd") String s) {
+
+    }
+
+    Doo(@Default(intValue = { 1, 2, 3, 4 }) List<Integer> s) {
+
+    }
+}
+
+//Do we want String[] value()???? Saa kan vi let
+//supportere f.eks. List<String>

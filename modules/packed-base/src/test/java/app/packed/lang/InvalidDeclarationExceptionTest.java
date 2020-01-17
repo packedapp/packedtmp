@@ -19,8 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.inject.InjectionException;
 import app.packed.lang.InvalidDeclarationException;
-import app.packed.service.InjectionException;
 import testutil.stubs.Throwables.Exception1;
 
 /** Tests {@link InjectionException}. */

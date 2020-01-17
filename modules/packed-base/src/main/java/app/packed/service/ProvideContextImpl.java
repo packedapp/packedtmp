@@ -17,12 +17,12 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.reflect.Member;
 import java.util.Optional;
 
 import app.packed.component.Component;
 import app.packed.lang.Key;
 import app.packed.lang.Nullable;
+import app.packed.lang.reflect.MemberDescriptor;
 import app.packed.lang.reflect.VariableDescriptor;
 
 /**
@@ -57,7 +57,7 @@ final class ProvideContextImpl implements ProvideContext {
 
     /** {@inheritDoc} */
     @Override
-    public Optional<Member> originMember() {
+    public Optional<MemberDescriptor> originMember() {
         return dependency.member();
     }
 

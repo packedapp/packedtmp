@@ -24,7 +24,6 @@ import java.lang.reflect.Type;
 
 import app.packed.lang.Nullable;
 import app.packed.lang.TypeLiteral;
-import app.packed.service.Dependency;
 
 /**
  * A shared superclass for the common functionality of class variables (static {@link Field fields}), instance variables
@@ -108,15 +107,6 @@ public abstract class VariableDescriptor implements AnnotatedElement {
     public abstract TypeLiteral<?> getTypeLiteral();
 
     /**
-     * The index of the variable, used when creating {@link Dependency} instances.
-     * <p>
-     * If this variable is a field, this method returns {@code 0}.
-     *
-     * @return index of the variable.
-     */
-    public abstract int index();
-
-    /**
      * Returns true if the variable has a name.
      * <p>
      * This is always true for field variables. For parameter variables it depends on {@link Parameter#isNamePresent()}.
@@ -137,3 +127,12 @@ public abstract class VariableDescriptor implements AnnotatedElement {
         return isAnnotationPresent(Nullable.class);
     }
 }
+
+///**
+// * The index of the variable, used when creating {@link Dependency} instances.
+// * <p>
+// * If this variable is a field, this method returns {@code 0}.
+// *
+// * @return index of the variable.
+// */
+//// public abstract int index();

@@ -60,6 +60,9 @@ import app.packed.lang.Key;
 // InjectorContract.of(new Bundle());
 
 // ServiceContract
+
+// Dependencies needed and services provided
+
 public final class ServiceContract extends Contract {
 
     /** A contract with no requirements and providing no services. */

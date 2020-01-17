@@ -18,9 +18,6 @@ package app.packed.inject;
 /**
  *
  */
-// Taenkt istedet for InjectionException
-
-// UnresolvedDependencyException...
 public class UnresolvedDependencyException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */

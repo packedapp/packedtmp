@@ -16,7 +16,6 @@
 package packed.internal.service.build.service;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Member;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,6 +26,7 @@ import app.packed.hook.OnHook;
 import app.packed.lang.InvalidDeclarationException;
 import app.packed.lang.Key;
 import app.packed.lang.reflect.FieldDescriptor;
+import app.packed.lang.reflect.MemberDescriptor;
 import app.packed.lang.reflect.MethodDescriptor;
 import app.packed.service.Dependency;
 import app.packed.service.Provide;
@@ -99,7 +99,7 @@ public final class AtProvidesHook implements Hook {
             tryAdd0(methodHook.methodHandle(), method, Key.fromMethodReturnType(method), methodHook.annotation(), Dependency.fromExecutable(method));
         }
 
-        private AtProvides tryAdd0(MethodHandle mh, Member descriptor, Key<?> key, Provide provides, List<Dependency> dependencies) {
+        private AtProvides tryAdd0(MethodHandle mh, MemberDescriptor descriptor, Key<?> key, Provide provides, List<Dependency> dependencies) {
             AtProvides ap = new AtProvides(mh, descriptor, key, provides, dependencies);
             hasInstanceMembers |= !ap.isStaticMember;
             // Check this

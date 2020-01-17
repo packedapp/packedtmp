@@ -17,7 +17,6 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.reflect.Member;
 import java.util.Optional;
 
 import app.packed.component.Component;
@@ -26,6 +25,7 @@ import app.packed.lang.InvalidDeclarationException;
 import app.packed.lang.Key;
 import app.packed.lang.reflect.ConstructorDescriptor;
 import app.packed.lang.reflect.FieldDescriptor;
+import app.packed.lang.reflect.MemberDescriptor;
 import app.packed.lang.reflect.MethodDescriptor;
 import app.packed.lang.reflect.ParameterDescriptor;
 import app.packed.lang.reflect.VariableDescriptor;
@@ -177,9 +177,16 @@ public interface ProvideContext {
      *
      * @return the key of the service that needs to be provided
      */
+    // Maaske den bare skal vaere separat.... Hvis vi gerne vil bruge ProvideContext for prime.
+    // Saa er det jo noedvendig ikke noget der hedder key...
     Key<?> key();
 
-    default Optional<Class<?>> origin() {
+    /**
+     * The class that is requesting
+     * 
+     * @return stuff
+     */
+    default Optional<Class<?>> requestingClass() {
         // RequestingClass
         // RequestingMember
         // RequestingVariable
@@ -201,8 +208,7 @@ public interface ProvideContext {
      *         member.
      * @see #originVariable()
      */
-    // Vi skal MemberDescriptor istedet for...
-    Optional<Member> originMember();
+    Optional<MemberDescriptor> originMember();
 
     /**
      * The variable (field or parameter) for which this dependency was created. Or an empty {@link Optional} if this

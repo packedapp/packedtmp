@@ -152,7 +152,6 @@ public final class ParameterDescriptor extends VariableDescriptor {
      *
      * @return the index of the parameter
      */
-    @Override
     public int index() {
         return index;
     }

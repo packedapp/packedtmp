@@ -18,17 +18,17 @@ package packed.internal.service.build.service;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
 import app.packed.lang.Key;
 import app.packed.lang.Nullable;
 import app.packed.lang.reflect.FieldDescriptor;
+import app.packed.lang.reflect.MemberDescriptor;
 import app.packed.lang.reflect.MethodDescriptor;
+import app.packed.service.Dependency;
 import app.packed.service.InstantiationMode;
 import app.packed.service.Provide;
-import app.packed.service.Dependency;
 
 /** A descriptor for a field or method (member) annotated with {@link Provide}. */
 final class AtProvides {
@@ -47,7 +47,7 @@ final class AtProvides {
     final Key<?> key;
 
     /** The annotated member, either an {@link FieldDescriptor} or an {@link MethodDescriptor}. */
-    final Member member;
+    final MemberDescriptor member;
 
     /** The annotated value, is used for creating config sites. */
     final Provide provides;
@@ -58,7 +58,7 @@ final class AtProvides {
     /** An unbound method handle to the underlying field or method. */
     final MethodHandle methodHandle;
 
-    AtProvides(MethodHandle mh, Member member, Key<?> key, Provide provides, List<Dependency> dependencies) {
+    AtProvides(MethodHandle mh, MemberDescriptor member, Key<?> key, Provide provides, List<Dependency> dependencies) {
         this.methodHandle = requireNonNull(mh);
         this.dependencies = requireNonNull(dependencies);
         this.provides = requireNonNull(provides);

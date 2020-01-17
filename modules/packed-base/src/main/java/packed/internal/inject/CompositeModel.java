@@ -1,4 +1,4 @@
-package app.packed.inject;
+package packed.internal.inject;
 
 //Composite kan have composites i sig.
 //De kan ogsaa bruge prime annoteringer paa lige maade som alle andre

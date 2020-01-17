@@ -157,12 +157,6 @@ public final class FieldDescriptor extends VariableDescriptor implements MemberD
 
     /** {@inheritDoc} */
     @Override
-    public int index() {
-        return 0;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
         return field.isAnnotationPresent(annotationClass);
     }

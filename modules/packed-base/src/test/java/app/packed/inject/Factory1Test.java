@@ -20,10 +20,10 @@ import static testutil.assertj.Assertions.checkThat;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.service.Factory;
-import app.packed.service.Factory1;
 import app.packed.lang.Key;
 import app.packed.service.Dependency;
+import app.packed.service.Factory;
+import app.packed.service.Factory1;
 
 /** Tests {@link Factory1}. */
 public class Factory1Test {
@@ -41,7 +41,6 @@ public class Factory1Test {
         // These would only be non-empty if we had made the factory from Factory.ofMethod(Integer.class, "valueOf",
         // String.class)
         assertThat(d.member()).isEmpty();
-        assertThat(d.parameterIndex()).isEqualTo(-1);
         assertThat(d.variable()).isEmpty();
     }
 

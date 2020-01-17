@@ -18,7 +18,6 @@ package app.packed.service;
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -183,6 +182,11 @@ public class Factory<T> {
      * 
      * @return a list of all of the dependencies of this factory
      */
+    // Required/Optional - Key - Variable?
+    // Requirement
+
+    // FactoryDescriptor.of(Factory f) <--- in devtools???
+
     public final List<Dependency> dependencies() {
         return factory.dependencies;
     }
@@ -214,6 +218,10 @@ public class Factory<T> {
      *            the mapper used to map the result
      * @return a new mapped factory
      */
+    // Men keys er vel ikke laengere compatible saa... f.eks. hvis vi har Factory<String> f
+    // f.map(UUID.class, e->new UUID(e)); -> Factory<UUID> ff, ff.key=String.class();
+
+    // Hvem skal vi scanne???? Den vi laver oprindelig?? Eller den vi har mappet til?
     public final <R> Factory<R> mapTo(Class<R> key, Function<? super T, ? extends R> mapper) {
         return mapTo(TypeLiteral.of(key), mapper);
     }
@@ -246,7 +254,7 @@ public class Factory<T> {
 
     /**
      * Returns the injectable type of this factory. This is the type that will be used for scanning for scanning for
-     * annotations. This might differ from the.
+     * annotations. This might differ from the actual type, for example, if {@link #mapTo(Class, Function)} is used
      *
      * @return stuff
      */
@@ -262,6 +270,7 @@ public class Factory<T> {
      * @return the type of those objects that this factory creates
      */
     public final TypeLiteral<T> typeLiteral() {
+        // Passer ikke hvis vi bruger map()...
         return factory.handle.returnType();
     }
 
@@ -280,14 +289,13 @@ public class Factory<T> {
     }
 
     public final <S> Factory<T> withArgument(Class<S> key, @Nullable Object argument) {
-        // withArgumentSupplier
-        throw new UnsupportedOperationException();
-    }
 
-    public final Factory<T> withArgument(int index, @Nullable Object argument) {
-        // Fjern denne? Hvordan binder vi f.eks. noget til en composite...
-        // Det kan vi kun goere via Key....
-        // @Prime
+        // bindTo? Det er jo ikke et argument hvis det f.eks. er et field...
+
+        // resolveDependency()...
+        // Its not really an argument its a dependency that we resolve...
+
+        // withArgumentSupplier
         throw new UnsupportedOperationException();
     }
 
@@ -297,6 +305,13 @@ public class Factory<T> {
 
     public final Factory<T> withArgument(Object argument) {
         requireNonNull(argument, "argument is null");
+
+        // someExtension()
+        // install(Factory.of(Foo.class).withArgument(this))).
+
+        // There is going to be some automatic support for injecting extensions into
+        // services installed by them. We are just not quite there yet.
+
         // Will bind to any assignable parameter...
         throw new UnsupportedOperationException();
     }
@@ -310,9 +325,9 @@ public class Factory<T> {
         throw new UnsupportedOperationException();
     }
 
-    public final Factory<T> withArgumentSupplier(int index, Supplier<?> supplier) {
-        throw new UnsupportedOperationException();
-    }
+//    public final Factory<T> withArgumentSupplier(int index, Supplier<?> supplier) {
+//        throw new UnsupportedOperationException();
+//    }
 
     public final <S> Factory<T> withArgumentSupplier(Key<S> key, Supplier<?> supplier) {
         throw new UnsupportedOperationException();
@@ -329,7 +344,8 @@ public class Factory<T> {
      *             if the type of the key does not match the type of instances this factory provides
      * @see #key()
      */
-    public final Factory<T> withKey(Key<? super T> key) {
+    public final Factory<T> withKey(Key<?> key) {
+        // Must be compatible with key in some way
         throw new UnsupportedOperationException();
     }
 
@@ -390,6 +406,7 @@ public class Factory<T> {
      * @return a factory for the specified implementation type
      */
     @SuppressWarnings("unchecked")
+    // Todo rename to make (or just of....)
     public static <T> Factory<T> find(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         return (Factory<T>) FIND_INJECTABLE_CACHE.get(implementation);
@@ -417,11 +434,6 @@ public class Factory<T> {
         } else {
             return new Factory<>(FactoryFindInjectableExecutable.find(implementation));
         }
-    }
-
-    static <T> Factory<T> fromMethodHandle(MethodHandle mh) {
-        // We don't support this because annotations and generic information are stripped from MethodHandles.
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -557,6 +569,17 @@ final class FactorySupport<T> {
         return handle.returnTypeRaw();
     }
 }
+
+//static <T> Factory<T> fromMethodHandle(MethodHandle mh) {
+//    // We don't support this because annotations and generic information are stripped from MethodHandles.
+//    throw new UnsupportedOperationException();
+//}
+// Virker kun med noget der
+//final MethodHandle toMethodHandle() {
+//// How does this method handle prime annotations????
+//// It does not, so maybe just jinx it...
+//throw new UnsupportedOperationException();
+//}
 
 //
 // /**

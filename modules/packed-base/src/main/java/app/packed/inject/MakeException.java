@@ -15,8 +15,6 @@
  */
 package app.packed.inject;
 
-import app.packed.service.InjectionException;
-
 /**
  * A make exception is thrown if a valid constructor or method could not be found according to the rules laid out in
  * {@link Make}. If valid arguments for the executable could not be found, an {@link InjectionException} is typically

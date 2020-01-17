@@ -18,9 +18,9 @@ package packed.internal.service.run;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.inject.MakeException;
+import app.packed.inject.Provider;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ProvideContext;
-import packed.internal.inject.util.Provider;
 import packed.internal.service.build.ServiceExtensionInstantiationContext;
 import packed.internal.service.build.service.ComponentFactoryBuildEntry;
 import packed.internal.util.ThrowableUtil;
@@ -91,7 +91,7 @@ public class PrototypeInjectorEntry<T> extends InjectorEntry<T> {
         if (providers.length > 0) {
             params = new Object[providers.length];
             for (int i = 0; i < providers.length; i++) {
-                params[i] = providers[i].get();
+                params[i] = providers[i].provide();
             }
         }
         try {

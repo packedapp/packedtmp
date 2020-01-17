@@ -33,6 +33,7 @@ import app.packed.lang.Nullable;
 import app.packed.lang.reflect.ExecutableDescriptor;
 import app.packed.lang.reflect.MethodDescriptor;
 import app.packed.lang.reflect.ParameterDescriptor;
+import app.packed.lang.reflect.VariableDescriptor;
 import app.packed.service.Dependency;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
@@ -240,7 +241,9 @@ public final class DependencyManager {
                         if (dependencies.size() > 1) {
                             StringJoiner sj = new StringJoiner(", ");
                             for (int j = 0; j < dependencies.size(); j++) {
-                                if (j == dependency.parameterIndex()) {
+                                VariableDescriptor vd = dependency.variable().orElse(null);
+                                int pindex = vd instanceof ParameterDescriptor ? ((ParameterDescriptor) vd).index() : -1;
+                                if (j == pindex) {
                                     sj.add("-> " + dependency.key().toString() + " <-");
                                 } else {
                                     sj.add(dependencies.get(j).key().typeLiteral().rawType().getSimpleName());

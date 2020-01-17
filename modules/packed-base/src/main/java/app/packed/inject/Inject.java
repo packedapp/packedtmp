@@ -26,7 +26,6 @@ import java.lang.annotation.Target;
 
 import app.packed.container.UseExtension;
 import app.packed.lang.invoke.OpensFor;
-import app.packed.service.InjectionException;
 import app.packed.service.ServiceExtension;
 
 /**
@@ -54,6 +53,7 @@ import app.packed.service.ServiceExtension;
 // man naar det den givne lifecycle... Ja det taenker jeg man goer. Saa slipper man ogsaa for at lave baade en
 // InjectFieldSidecar + InjectMethodSidecar
 //
+
 public @interface Inject {}
 
 // Field injection first

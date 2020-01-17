@@ -71,11 +71,12 @@ import packed.internal.util.types.TypeUtil;
  * <li><b>Have 0 or 1 qualifier.</b> A valid key cannot have more than 1 annotations whose type is annotated with
  * {@link Qualifier}</li>
  * </ul>
- * Furthermore, keys do <b>not</b> differentiate between primitive types (long, double, etc.) and their corresponding
- * wrapper types (Long, Double, etc.). Primitive types will be replaced with their wrapper types when keys are created.
- * This means that, for example, {@code Key.of(int.class) is equivalent to Key.of(Integer.class)}.
+ * <p>
+ * Keys do <b>not</b> differentiate between primitive types (long, double, etc.) and their corresponding wrapper types
+ * (Long, Double, etc.). Primitive types will be replaced with their wrapper types when keys are created. This means
+ * that, for example, {@code Key.of(int.class) is equivalent to Key.of(Integer.class)}.
  */
-public abstract class Key<T> /* implements Comparable<Key<?>> */ {
+public abstract class Key<T> {
 
     /** A cache of factories used by {@link #of(Class)}. */
     private static final ClassValue<Key<?>> CLASS_CACHE = new ClassValue<>() {

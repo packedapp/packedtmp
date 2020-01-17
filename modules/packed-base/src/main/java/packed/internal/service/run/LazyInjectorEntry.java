@@ -19,9 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.concurrent.Semaphore;
 
+import app.packed.inject.Provider;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ProvideContext;
-import packed.internal.inject.util.Provider;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionInstantiationContext;
 import packed.internal.service.build.service.ComponentFactoryBuildEntry;
@@ -131,7 +131,7 @@ public final class LazyInjectorEntry<T> extends InjectorEntry<T> implements Prov
 
     /** {@inheritDoc} */
     @Override
-    public T get() {
+    public T provide() {
         return getInstance(null);
     }
 }
