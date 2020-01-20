@@ -42,23 +42,22 @@ public class ServicePackletCandidates {
 
     // provideInstanceTo
 
-    // mapTo -> removes original
-    // mapFrom -> removes original
-
     // filterTo (Keys.., Classes
     // filterFrom
 
     // retainTo()
     // retainFrom();
 
-    public static Wirelet filterTo(Class<?>... keys) {
+    public static Wirelet removeTo(Class<?>... keys) {
         throw new UnsupportedOperationException();
     }
 
-    public static Wirelet filterTo(Key<?>... keys) {
+    public static Wirelet removeTo(Key<?>... keys) {
         throw new UnsupportedOperationException();
     }
 
+    // Maaske remove istedet for???
+    // Altsaa stream() siger hvad man skal include....
     public static Wirelet filterTo(Predicate<? extends ServiceDescriptor> filter) {
         throw new UnsupportedOperationException();
     }

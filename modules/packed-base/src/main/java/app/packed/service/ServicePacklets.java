@@ -27,7 +27,8 @@ import packed.internal.service.build.wirelets.PackedUpstreamInjectionWirelet;
 /**
  *
  */
-
+// mapTo -> removes original
+// mapFrom -> removes original
 public class ServicePacklets {
 
     public static Wirelet mapFrom(Class<?> originalKey, Class<?> newKey) {
@@ -35,7 +36,7 @@ public class ServicePacklets {
     }
 
     public static Wirelet mapFrom(Factory<?> mapper) {
-        // What if we have zero dependencies???? Fail or allow
+        // What if we have zero dependencies???? Fail or allow.. Why not allow...
         throw new UnsupportedOperationException();
     }
 

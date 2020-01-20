@@ -17,8 +17,6 @@ package packed.internal.inject;
 
 import java.util.List;
 
-import app.packed.service.Dependency;
-
 /**
  *
  */

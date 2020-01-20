@@ -28,8 +28,8 @@ import app.packed.lang.Key;
 import app.packed.lang.reflect.FieldDescriptor;
 import app.packed.lang.reflect.MemberDescriptor;
 import app.packed.lang.reflect.MethodDescriptor;
-import app.packed.service.Dependency;
 import app.packed.service.Provide;
+import packed.internal.inject.Dependency;
 import packed.internal.util.ErrorMessageBuilder;
 
 /** Information about fields and methods annotated with {@link Provide}. */

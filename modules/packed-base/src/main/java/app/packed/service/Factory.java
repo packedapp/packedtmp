@@ -37,9 +37,9 @@ import app.packed.lang.invoke.UncheckedIllegalAccessException;
 import app.packed.lang.reflect.ConstructorDescriptor;
 import app.packed.lang.reflect.ExecutableDescriptor;
 import app.packed.lang.reflect.MethodDescriptor;
-import app.packed.lifecycle.OnStart;
+import packed.internal.inject.Dependency;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
-import packed.internal.inject.factoryhandle.FactoryHandle;
+import packed.internal.inject.factoryhandle.FactorySupport;
 import packed.internal.inject.factoryhandle.InstanceFactoryHandle;
 import packed.internal.inject.factoryhandle.MappingFactoryHandle;
 import packed.internal.moduleaccess.AppPackedServiceAccess;
@@ -50,12 +50,15 @@ import packed.internal.util.BaseSupport;
 import packed.internal.util.types.TypeUtil;
 
 /**
+ * A factory is an immutable that creates this
+ * 
  * Factories are used for creating new instances of a particular type.
  * <p>
- * This class does not currently expose any methods that actually create new instances. This is all hidden in the
- * internals of Packed. This might change in the future, but for now factories are created by the user and only the
- * internals of Packed can use them to create new object instances.
+ * This class does not expose any methods that actually create new instances. This is all hidden in the internals of
+ * Packed. This might change in the future, but for now factories are created by the user and only the internals of
+ * Packed can use them to create new object instances.
  */
+
 // TODO Qualifiers on Methods, Types together with findInjectable????
 // Yes need to pick those up!!!!
 // probably rename defaultKey to key.
@@ -70,7 +73,6 @@ import packed.internal.util.types.TypeUtil;
 // + Injector
 // Then we can disable it on a case to case basis
 // You can actually use factories without injection
-//
 // -------------------------
 // ServiceDescriptor
 // Refereres fra InjectorDescriptor....
@@ -80,7 +82,7 @@ import packed.internal.util.types.TypeUtil;
 public class Factory<T> {
 
     /** A cache of factories used by {@link #find(Class)}. */
-    private static final ClassValue<Factory<?>> FIND_INJECTABLE_CACHE = new ClassValue<>() {
+    private static final ClassValue<Factory<?>> CLASS_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -94,7 +96,7 @@ public class Factory<T> {
      * A cache of factories used by {@link #find(TypeLiteral)}. This cache is only used by subclasses of TypeLiteral, never
      * literals that are manually constructed.
      */
-    private static final ClassValue<Factory<?>> FIND_INJECTABLE_FROM_TYPE_LITERAL_CACHE = new ClassValue<>() {
+    private static final ClassValue<Factory<?>> TYPE_LITERAL_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -105,30 +107,30 @@ public class Factory<T> {
         }
     };
 
+    /** A type variable extractor. */
     private static final TypeVariableExtractor TYPE_LITERAL_TV_EXTRACTOR = TypeVariableExtractor.of(TypeLiteral.class);
 
     static {
         ModuleAccess.initialize(AppPackedServiceAccess.class, new AppPackedServiceAccess() {
 
-            /** {@inheritDoc} */
-            @Override
-            public <T> FactoryHandle<T> toHandle(Factory<T> factory) {
-                return factory.factory.handle;
-            }
-
             @Override
             public ServiceExtensionNode toNode(ServiceExtension e) {
                 return e.node;
+            }
+
+            @Override
+            public <T> FactorySupport<T> toSupport(Factory<T> factory) {
+                return factory.factory;
             }
         });
     }
 
     /** The internal factory that all calls delegate to. */
-    final FactorySupport<T> factory;
+    private final FactorySupport<T> factory;
 
     /**
-     * Used by {@link Factory2#Factory2(BiFunction)} because we cannot call {@link Object#getClass()} before calling a
-     * constructor in this class (super).
+     * Used by {@link Factory2#Factory2(BiFunction)} because we cannot refer to an instance method {@link Object#getClass()}
+     * before calling this constructor.
      *
      * @param function
      *            the function used to create new instances
@@ -187,10 +189,6 @@ public class Factory<T> {
 
     // FactoryDescriptor.of(Factory f) <--- in devtools???
 
-    public final List<Dependency> dependencies() {
-        return factory.dependencies;
-    }
-
     /**
      * The key under which If this factory is registered as a service with an {@link Injector}. This method returns the
      * (default) key that will be used, for example, when regist Returns the (default) key to which this factory will bound
@@ -222,6 +220,7 @@ public class Factory<T> {
     // f.map(UUID.class, e->new UUID(e)); -> Factory<UUID> ff, ff.key=String.class();
 
     // Hvem skal vi scanne???? Den vi laver oprindelig?? Eller den vi har mappet til?
+    // Haelder nok til den vi har mappet til?????
     public final <R> Factory<R> mapTo(Class<R> key, Function<? super T, ? extends R> mapper) {
         return mapTo(TypeLiteral.of(key), mapper);
     }
@@ -241,6 +240,10 @@ public class Factory<T> {
     public final <R> Factory<R> mapTo(TypeLiteral<R> type, Function<? super T, ? extends R> mapper) {
         MappingFactoryHandle<T, R> f = new MappingFactoryHandle<>(type, factory.handle, mapper);
         return new Factory<>(new FactorySupport<>(f, factory.dependencies));
+    }
+
+    public final boolean needsLookup() {
+        return false;
     }
 
     /**
@@ -316,6 +319,10 @@ public class Factory<T> {
         throw new UnsupportedOperationException();
     }
 
+//    public final Factory<T> withArgumentSupplier(int index, Supplier<?> supplier) {
+//        throw new UnsupportedOperationException();
+//    }
+
     public final <S> Factory<T> withArgumentSupplier(Class<S> key, Supplier<?> supplier) {
         // Altsaa vi kan vel bruge et andet factory????
         // En mulig usecase f.eks. for Factory1 er at kunne mappe dependencies...
@@ -324,10 +331,6 @@ public class Factory<T> {
         // withArgumentSupplier
         throw new UnsupportedOperationException();
     }
-
-//    public final Factory<T> withArgumentSupplier(int index, Supplier<?> supplier) {
-//        throw new UnsupportedOperationException();
-//    }
 
     public final <S> Factory<T> withArgumentSupplier(Key<S> key, Supplier<?> supplier) {
         throw new UnsupportedOperationException();
@@ -347,10 +350,6 @@ public class Factory<T> {
     public final Factory<T> withKey(Key<?> key) {
         // Must be compatible with key in some way
         throw new UnsupportedOperationException();
-    }
-
-    public final boolean needsLookup() {
-        return false;
     }
 
     /**
@@ -409,7 +408,7 @@ public class Factory<T> {
     // Todo rename to make (or just of....)
     public static <T> Factory<T> find(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        return (Factory<T>) FIND_INJECTABLE_CACHE.get(implementation);
+        return (Factory<T>) CLASS_CACHE.get(implementation);
     }
 
     /**
@@ -426,11 +425,11 @@ public class Factory<T> {
         requireNonNull(implementation, "implementation is null");
         if (!ModuleAccess.util().isCanonicalized(implementation)) {
             // We cache factories for all "new TypeLiteral<>(){}"
-            return (Factory<T>) FIND_INJECTABLE_FROM_TYPE_LITERAL_CACHE.get(implementation.getClass());
+            return (Factory<T>) TYPE_LITERAL_CACHE.get(implementation.getClass());
         }
         Type t = implementation.type();
         if (t instanceof Class) {
-            return (Factory<T>) FIND_INJECTABLE_CACHE.get((Class<?>) t);
+            return (Factory<T>) CLASS_CACHE.get((Class<?>) t);
         } else {
             return new Factory<>(FactoryFindInjectableExecutable.find(implementation));
         }
@@ -439,8 +438,8 @@ public class Factory<T> {
     /**
      * Returns a factory that returns the specified instance every time the factory is used.
      * <p>
-     * Instances passed to this method should not use field or method injection if the factory needs to be used multiple
-     * times. As these fields and members will be injected every time, possible concurrently, an instance is requested from
+     * If the specified instance makes use of field or method injection the returned factory should not be used more than
+     * once. As these fields and members will be injected every time, possible concurrently, an instance is requested from
      * the factory.
      * 
      * @param <T>
@@ -450,9 +449,6 @@ public class Factory<T> {
      * @return the factory
      */
     public static <T> Factory<T> ofInstance(T instance) {
-        // TODO what to do about injection of the instance???
-        // I actually think we need 2 methods...
-        // ofInstanceInjectable()....
         return new Factory<>(new FactorySupport<>(InstanceFactoryHandle.of(instance), List.of()));
     }
 }
@@ -537,36 +533,6 @@ final class FactoryFindInjectableExecutable {
             }
         }
         return ConstructorDescriptor.of(constructor);
-    }
-}
-
-/** An factory support class. */
-// Inline target
-final class FactorySupport<T> {
-
-    /** The key that this factory will be registered under by default with an injector. */
-    final Key<T> defaultKey;
-
-    /** A list of all of this factory's dependencies. */
-    final List<Dependency> dependencies;
-
-    /** The function used to create a new instance. */
-    final FactoryHandle<T> handle;
-
-    FactorySupport(FactoryHandle<T> function, List<Dependency> dependencies) {
-        this.dependencies = requireNonNull(dependencies, "dependencies is null");
-        this.handle = requireNonNull(function);
-        this.defaultKey = function.typeLiteral.toKey();
-    }
-
-    /**
-     * Returns the scannable type of this factory. This is the type that will be used for scanning for annotations such as
-     * {@link OnStart} and {@link Provide}.
-     *
-     * @return the scannable type of this factory
-     */
-    Class<? super T> getScannableType() {
-        return handle.returnTypeRaw();
     }
 }
 
@@ -693,6 +659,36 @@ class XFac2 {
         throw new UnsupportedOperationException();
     }
 
+    public static <T> Factory<T> ofMethod(Class<?> implementation, Class<T> returnType, String name, Class<?>... parameters) {
+        return ofMethod(implementation, TypeLiteral.of(requireNonNull(returnType, "returnType is null")), name, parameters);
+    }
+
+    // How we skal have
+    public static <T> Factory<T> ofMethod(Class<?> implementation, TypeLiteral<T> returnType, String name, Class<?>... parameters) {
+        throw new UnsupportedOperationException();
+    }
+
+    // new Factory<String>(SomeMethod);
+    // How we skal have
+    public static <T> Factory<T> ofMethod(Method method, Class<T> returnType) {
+        return ofMethod(method, TypeLiteral.of(requireNonNull(returnType, "returnType is null")));
+    }
+
+    public static <T> Factory<T> ofMethod(Method method, TypeLiteral<T> returnType) {
+        requireNonNull(method, "method is null");
+        requireNonNull(returnType, "returnType is null");
+        // ClassMirror mirror = ClassMirror.fromImplementation(method.getDeclaringClass());
+        // return new Factory<T>(new InternalFactory.fromExecutable<T>((Key<T>) mirror.getKey().ofType(returnType), mirror,
+        // Map.of(), new MethodMirror(method)));
+        throw new UnsupportedOperationException();
+    }
+
+    public static <T> Factory<T> ofMethod(MethodDescriptor method, Class<T> returnType) {
+        // Syntes vi skal omnavngive den til
+        // ofMethod + ofMethodInstance
+        throw new UnsupportedOperationException();
+    }
+
     // How we skal have
     public static <T> Factory<T> ofMethodInstance(Object onInstance, Method method, Class<T> returnType) {
         requireNonNull(returnType, "returnType is null");
@@ -710,36 +706,6 @@ class XFac2 {
 
     // How we skal have
     public static <T> Factory<T> ofMethodInstance(Object onInstance, TypeLiteral<T> returnType, String name, Class<?>... parameterTypes) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static <T> Factory<T> ofMethod(Class<?> implementation, Class<T> returnType, String name, Class<?>... parameters) {
-        return ofMethod(implementation, TypeLiteral.of(requireNonNull(returnType, "returnType is null")), name, parameters);
-    }
-
-    // How we skal have
-    public static <T> Factory<T> ofMethod(Class<?> implementation, TypeLiteral<T> returnType, String name, Class<?>... parameters) {
-        throw new UnsupportedOperationException();
-    }
-
-    // new Factory<String>(SomeMethod);
-    // How we skal have
-    public static <T> Factory<T> ofMethod(Method method, Class<T> returnType) {
-        return ofMethod(method, TypeLiteral.of(requireNonNull(returnType, "returnType is null")));
-    }
-
-    public static <T> Factory<T> ofMethod(MethodDescriptor method, Class<T> returnType) {
-        // Syntes vi skal omnavngive den til
-        // ofMethod + ofMethodInstance
-        throw new UnsupportedOperationException();
-    }
-
-    public static <T> Factory<T> ofMethod(Method method, TypeLiteral<T> returnType) {
-        requireNonNull(method, "method is null");
-        requireNonNull(returnType, "returnType is null");
-        // ClassMirror mirror = ClassMirror.fromImplementation(method.getDeclaringClass());
-        // return new Factory<T>(new InternalFactory.fromExecutable<T>((Key<T>) mirror.getKey().ofType(returnType), mirror,
-        // Map.of(), new MethodMirror(method)));
         throw new UnsupportedOperationException();
     }
 }

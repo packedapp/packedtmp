@@ -32,6 +32,7 @@ import app.packed.lang.Key.Qualifier;
 import app.packed.lifecycle.OnStart;
 import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.container.FixedWireletList;
+import packed.internal.inject.Dependency;
 import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.build.ServiceWireletPipeline;
@@ -271,9 +272,9 @@ public final class ServiceExtension extends Extension {
         throw new UnsupportedOperationException();
     }
 
-    public <T> ServiceComponentConfiguration<T> provide(Providable<T> c) {
-        throw new UnsupportedOperationException();
-    }
+//    public <T> ServiceComponentConfiguration<T> provide(Providable<T> c) {
+//        throw new UnsupportedOperationException();
+//    }
 
     <T> ServiceComponentConfiguration<T> provide(SingletonConfiguration<T> c) {
         // return node.provider().provideFactory(install(factory), factory, factory.factory.function);

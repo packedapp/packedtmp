@@ -22,7 +22,7 @@ import java.util.List;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.lang.Nullable;
-import app.packed.service.Dependency;
+import packed.internal.inject.Dependency;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
 

@@ -34,7 +34,7 @@ import java.util.Set;
 // Maybe in converter package???
 
 // Default -> Optional....
-@interface Default {
+public @interface Default {
 
     double[] doubleValue() default {};
 
@@ -45,7 +45,12 @@ import java.util.Set;
     int[] intValue() default {};
 
     String[] value() default {};
+
+    // Whether or not the default value is computed at initialization time...
+    // See https://docs.oracle.com/javaee/7/api/javax/ws/rs/ext/ParamConverter.html
+    boolean lazy() default true;
 }
+// Converter, deterministic by default I think... Yes, 
 
 class Doo {
 

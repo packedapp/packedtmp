@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.service.dep2;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -24,6 +24,8 @@ import java.util.List;
 
 import app.packed.inject.Provider;
 import app.packed.lang.Key;
+import app.packed.service.Provide;
+import app.packed.service.ServiceExtension;
 
 /**
  * Must be accompanied by a {@link Provide} annotation

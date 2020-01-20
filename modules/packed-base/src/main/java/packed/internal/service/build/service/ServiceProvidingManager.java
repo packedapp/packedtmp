@@ -38,7 +38,9 @@ import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceExtension;
 import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.container.FixedWireletList;
+import packed.internal.inject.Dependency;
 import packed.internal.inject.util.InjectConfigSiteOperations;
+import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ErrorMessages;
 import packed.internal.service.build.ServiceExtensionNode;
@@ -98,7 +100,8 @@ public final class ServiceProvidingManager {
             parentNode = new ComponentInstanceBuildEntry<>(node, cc.configSite(), cc, psc.instance);
         } else {
             Factory<?> factory = psc.factory;
-            parentNode = new ComponentFactoryBuildEntry<>(node, cc, InstantiationMode.SINGLETON, psc.fromFactory(), (List) factory.dependencies());
+            List<Dependency> dependencies = ModuleAccess.service().toSupport(factory).dependencies;
+            parentNode = new ComponentFactoryBuildEntry<>(node, cc, InstantiationMode.SINGLETON, psc.fromFactory(), dependencies);
         }
 
         // If any of the @Provide methods are instance members the parent node needs special treatment.
@@ -132,7 +135,8 @@ public final class ServiceProvidingManager {
     public <T> ServiceComponentConfiguration<T> provideFactory(PackedSingletonConfiguration<T> cc) {
         BuildEntry<?> c = componentConfigurationCache.get(cc);// remove??
         if (c == null) {
-            c = new ComponentFactoryBuildEntry<>(node, cc, InstantiationMode.SINGLETON, cc.fromFactory(), (List) cc.factory.dependencies());
+            List<Dependency> dependencies = ModuleAccess.service().toSupport(cc.factory).dependencies;
+            c = new ComponentFactoryBuildEntry<>(node, cc, InstantiationMode.SINGLETON, cc.fromFactory(), (List) dependencies);
         }
         c.as((Key) cc.factory.key());
         providingEntries.add(c);

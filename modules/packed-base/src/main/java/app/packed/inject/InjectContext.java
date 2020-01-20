@@ -15,6 +15,12 @@ import app.packed.lang.Key;
  */
 public interface InjectContext {
 
+    // Something about layers....
+    // If you have 100 services.... And a Method hook adds 3 services...
+    // There can be really difficult to find...
+    // So some kind of layering... Maybe it can be feed back to service layer thingy.
+    // Because it is kind of layer which can only be used from the particular service.
+
     /**
      * An immutable set of keys that are available for injection at the use site (typically a method or a constructor).
      * <p>

@@ -17,7 +17,7 @@ package packed.internal.artifact;
 
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
-import app.packed.errorhandling.ErrorMessage;
+import packed.internal.errorhandling.ErrorMessage;
 
 /**
  * An artifact build context is created every time an build context is create .

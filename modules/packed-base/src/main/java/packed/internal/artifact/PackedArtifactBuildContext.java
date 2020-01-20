@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
-import app.packed.errorhandling.ErrorMessage;
 import packed.internal.container.PackedExtensionContext;
+import packed.internal.errorhandling.ErrorMessage;
 
 /** The default implementation of {@link ArtifactBuildContext} */
 public final class PackedArtifactBuildContext implements ArtifactBuildContext {

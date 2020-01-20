@@ -1,4 +1,4 @@
-package app.packed.artifact;
+package packed.internal.host;
 
 final class GuestWirelets {
 

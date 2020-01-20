@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package packed.internal.inject;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,12 +24,14 @@ import app.packed.lang.Key;
 import app.packed.lang.Nullable;
 import app.packed.lang.reflect.MemberDescriptor;
 import app.packed.lang.reflect.VariableDescriptor;
+import app.packed.service.Injector;
+import app.packed.service.ProvideContext;
 
 /**
  * An implementation of injection site used, when requesting a service directly through an injector, for example, via
  * {@link Injector#use(Class)}.
  */
-final class ProvideContextImpl implements ProvideContext {
+public final class ProvideContextImpl implements ProvideContext {
 
     /** An optional component, in case the request is via a component's private injector. */
     @Nullable
@@ -38,7 +40,7 @@ final class ProvideContextImpl implements ProvideContext {
     /** The key of the service that was requested */
     private final Dependency dependency;
 
-    ProvideContextImpl(Dependency dependency, @Nullable Component component) {
+    public ProvideContextImpl(Dependency dependency, @Nullable Component component) {
         this.dependency = requireNonNull(dependency, "dependency is null");
         this.component = component;
     }
@@ -87,4 +89,13 @@ final class ProvideContextImpl implements ProvideContext {
     // return Logger.getAnonymousLogger();
     // }
     // }
+
+    static ProvideContext of(Dependency dependency) {
+        return new ProvideContextImpl(dependency, null);
+    }
+
+    static ProvideContext of(Dependency dependency, Component componenent) {
+        return new ProvideContextImpl(dependency, requireNonNull(componenent, "component is null"));
+    }
+
 }

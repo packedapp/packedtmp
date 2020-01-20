@@ -31,8 +31,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import app.packed.api.Contract;
-import app.packed.artifact.HostConfiguration;
-import app.packed.artifact.HostConfigurationContext;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
@@ -59,6 +57,8 @@ import packed.internal.config.ConfigSiteUtil;
 import packed.internal.hook.applicator.DelayedAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarFieldDelayerAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarMethodDelayerAccessor;
+import packed.internal.host.HostConfiguration;
+import packed.internal.host.HostConfigurationContext;
 import packed.internal.host.PackedHostConfiguration;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.util.InjectConfigSiteOperations;

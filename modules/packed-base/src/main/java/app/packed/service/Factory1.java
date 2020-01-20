@@ -23,7 +23,9 @@ import java.util.function.Supplier;
 
 import app.packed.lang.InvalidDeclarationException;
 import app.packed.lang.TypeLiteral;
+import packed.internal.inject.Dependency;
 import packed.internal.inject.factoryhandle.Factory1FactoryHandle;
+import packed.internal.inject.factoryhandle.FactorySupport;
 
 /**
  * A special {@link Factory} type that takes a single dependency as input and uses a {@link Function} to dynamically provide new instances. The input

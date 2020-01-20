@@ -23,7 +23,6 @@ import app.packed.component.Component;
 import app.packed.lang.reflect.ConstructorDescriptor;
 import app.packed.lang.reflect.FieldDescriptor;
 import app.packed.lang.reflect.MethodDescriptor;
-import app.packed.service.Dependency;
 import app.packed.service.ServiceDescriptor;
 
 // RuntimeEnviroment != BuildEnvironment
@@ -82,6 +81,7 @@ interface ComponentDependencyDescriptor {
     // Method -> *Dependency
 }
 
+interface Dependency {}
 // Start all Fully
 // Start all Lazy
 // Start These Fully, and these lazy

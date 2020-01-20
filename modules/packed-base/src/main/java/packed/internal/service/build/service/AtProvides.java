@@ -26,9 +26,9 @@ import app.packed.lang.Nullable;
 import app.packed.lang.reflect.FieldDescriptor;
 import app.packed.lang.reflect.MemberDescriptor;
 import app.packed.lang.reflect.MethodDescriptor;
-import app.packed.service.Dependency;
 import app.packed.service.InstantiationMode;
 import app.packed.service.Provide;
+import packed.internal.inject.Dependency;
 
 /** A descriptor for a field or method (member) annotated with {@link Provide}. */
 final class AtProvides {

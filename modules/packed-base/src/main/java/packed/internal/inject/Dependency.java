@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package packed.internal.inject;
 
 import static java.util.Objects.requireNonNull;
 
@@ -88,6 +88,10 @@ import packed.internal.util.types.TypeUtil;
 // Som ikke er synlige...
 
 //Dependency Chain.... 
+
+//Dependency er flyttet til en intern klasse. Fordi den er begyndt at blive lidt for kompleks.
+// Naar vi tilfoere composites. Hvor der ikke rigtig laengere er en parameter til en service mapning.
+
 public final class Dependency {
 
     /** A cache of service dependencies. */
@@ -319,6 +323,7 @@ public final class Dependency {
             // TODO check that we do not have optional of OptionalX, also ServiceRequest can never be optionally
             // Also Provider cannot be optionally...
             // TODO include annotation
+            // Cannot have Nullable + Optional....
             optionalType = Optionality.OPTIONAL;
         } else if (type == OptionalInt.class) {
             optionalType = Optionality.OPTIONAL_INT;

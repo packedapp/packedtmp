@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package packed.internal.host;
 
 import java.util.Optional;
 
+import app.packed.artifact.ArtifactDriver;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;

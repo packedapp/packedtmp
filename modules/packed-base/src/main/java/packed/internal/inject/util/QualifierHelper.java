@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 import app.packed.lang.InvalidDeclarationException;
 import app.packed.lang.Key;
 import app.packed.lang.Nullable;
-import packed.internal.util.AnnotationUtil;
 
 /** Limited support for javax.inject classes. */
 public final class QualifierHelper {
@@ -46,7 +45,6 @@ public final class QualifierHelper {
         for (Annotation a : annotations) {
             Class<? extends Annotation> annotationType = a.annotationType();
             if (annotationType.isAnnotationPresent(Key.Qualifier.class)) {
-                AnnotationUtil.validateRuntimeRetentionPolicy(a.annotationType());// Well we found it???
                 if (qualifier != null) {
                     List<Class<? extends Annotation>> all = List.of(annotations).stream().map(Annotation::annotationType)
                             .filter(e -> e.isAnnotationPresent(Key.Qualifier.class)).collect(Collectors.toList());

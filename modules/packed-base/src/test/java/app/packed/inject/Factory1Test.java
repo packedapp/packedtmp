@@ -18,12 +18,15 @@ package app.packed.inject;
 import static org.assertj.core.api.Assertions.assertThat;
 import static testutil.assertj.Assertions.checkThat;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import app.packed.lang.Key;
-import app.packed.service.Dependency;
 import app.packed.service.Factory;
 import app.packed.service.Factory1;
+import packed.internal.inject.Dependency;
+import packed.internal.moduleaccess.ModuleAccess;
 
 /** Tests {@link Factory1}. */
 public class Factory1Test {
@@ -33,8 +36,9 @@ public class Factory1Test {
     public void IntegerFactory0() {
         Factory<Integer> f = new Factory1<String, Integer>(Integer::valueOf) {};
         checkThat(f).is(Integer.class);
-        assertThat(f.dependencies()).hasSize(1);
-        Dependency d = f.dependencies().get(0);
+        List<Dependency> dependencies = ModuleAccess.service().toSupport(f).dependencies;
+        assertThat(dependencies).hasSize(1);
+        Dependency d = dependencies.get(0);
 
         assertThat(d.isOptional()).isFalse();
         assertThat(d.key()).isEqualTo(Key.of(String.class));

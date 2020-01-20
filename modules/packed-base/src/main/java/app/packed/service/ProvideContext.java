@@ -29,6 +29,8 @@ import app.packed.lang.reflect.MemberDescriptor;
 import app.packed.lang.reflect.MethodDescriptor;
 import app.packed.lang.reflect.ParameterDescriptor;
 import app.packed.lang.reflect.VariableDescriptor;
+import packed.internal.inject.Dependency;
+import packed.internal.inject.ProvideContextImpl;
 
 /**
  * An instance of this interface can be injected into methods annotated with {@link Provide}.
@@ -235,13 +237,13 @@ public interface ProvideContext {
 
     Optional<Component> component();
 
-    static ProvideContext of(Dependency dependency) {
-        return new ProvideContextImpl(dependency, null);
-    }
-
-    static ProvideContext of(Dependency dependency, Component componenent) {
-        return new ProvideContextImpl(dependency, requireNonNull(componenent, "component is null"));
-    }
+//    static ProvideContext of(Dependency dependency) {
+//        return new ProvideContextImpl(dependency, null);
+//    }
+//
+//    static ProvideContext of(Dependency dependency, Component componenent) {
+//        return new ProvideContextImpl(dependency, requireNonNull(componenent, "component is null"));
+//    }
 
     /**
      * Returns a new injection site for the specified injector and key.
@@ -267,7 +269,6 @@ public interface ProvideContext {
      * @param component
      *            the component to which the injector belongs
      * @return an injection site for the specified injector and key and component.
-     * @see #of(Dependency)
      */
     static ProvideContext of(Key<?> key, Component component) {
         return new ProvideContextImpl(Dependency.of(key), requireNonNull(component, "component is null"));

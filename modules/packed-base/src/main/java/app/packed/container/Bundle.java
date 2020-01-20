@@ -22,7 +22,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import app.packed.artifact.HostConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
@@ -30,6 +29,7 @@ import app.packed.config.ConfigSite;
 import app.packed.lang.Nullable;
 import app.packed.service.Factory;
 import app.packed.service.ServiceExtension;
+import packed.internal.host.HostConfiguration;
 import packed.internal.moduleaccess.AppPackedContainerAccess;
 import packed.internal.moduleaccess.ModuleAccess;
 

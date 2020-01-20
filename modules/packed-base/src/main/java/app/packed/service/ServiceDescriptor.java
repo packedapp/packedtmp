@@ -7,7 +7,7 @@ import app.packed.lang.Key;
 
 /** An immutable description of a service provided by an injector or similar entity. */
 // Skal omnavngives til service hvis vi får en context...
-public interface ServiceDescriptor /* extends Taggable */ {
+public interface ServiceDescriptor {
 
     /**
      * Returns the configuration site of this service.

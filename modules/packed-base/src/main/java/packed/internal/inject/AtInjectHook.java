@@ -25,7 +25,6 @@ import app.packed.hook.OnHook;
 import app.packed.inject.Inject;
 import app.packed.lang.reflect.FieldDescriptor;
 import app.packed.lang.reflect.MethodDescriptor;
-import app.packed.service.Dependency;
 
 /**
  *

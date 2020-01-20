@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactImage;
-import app.packed.artifact.HostConfigurationContext;
 import app.packed.component.ComponentType;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;

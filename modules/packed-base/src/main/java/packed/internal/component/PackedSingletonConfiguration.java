@@ -53,7 +53,7 @@ public final class PackedSingletonConfiguration<T> extends AbstractComponentConf
     }
 
     public MethodHandle fromFactory() {
-        FactoryHandle<?> handle = ModuleAccess.service().toHandle(factory);
+        FactoryHandle<?> handle = ModuleAccess.service().toSupport(factory).handle;
         return container().fromFactoryHandle(handle);
     }
 

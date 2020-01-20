@@ -27,7 +27,6 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.api.ContractSet;
-import app.packed.artifact.Host;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
@@ -39,6 +38,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Container;
 import app.packed.container.Extension;
 import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.host.Host;
 import packed.internal.host.PackedGuestConfiguration;
 import packed.internal.host.PackedHostConfiguration;
 

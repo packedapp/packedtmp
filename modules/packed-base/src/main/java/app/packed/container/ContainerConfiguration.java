@@ -20,7 +20,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.util.Set;
 
-import app.packed.artifact.HostConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentType;
 import app.packed.component.SingletonConfiguration;
@@ -28,6 +27,7 @@ import app.packed.component.StatelessConfiguration;
 import app.packed.lang.Nullable;
 import app.packed.service.Factory;
 import app.packed.service.ServiceExtension;
+import packed.internal.host.HostConfiguration;
 
 /**
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by

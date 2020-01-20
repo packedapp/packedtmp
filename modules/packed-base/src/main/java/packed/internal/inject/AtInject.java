@@ -23,7 +23,6 @@ import java.util.List;
 import app.packed.lang.reflect.FieldDescriptor;
 import app.packed.lang.reflect.MemberDescriptor;
 import app.packed.lang.reflect.MethodDescriptor;
-import app.packed.service.Dependency;
 import app.packed.service.Provide;
 
 /** A descriptor for a member annotated with {@link Provide}. */

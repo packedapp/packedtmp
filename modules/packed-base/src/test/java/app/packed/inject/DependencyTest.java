@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.lang.Key;
 import app.packed.lang.TypeLiteral;
-import app.packed.service.Dependency;
+import packed.internal.inject.Dependency;
 
 /**
  *
