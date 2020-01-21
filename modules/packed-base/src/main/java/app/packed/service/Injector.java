@@ -21,14 +21,15 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import app.packed.artifact.App;
-import app.packed.artifact.ArtifactConfigurator;
+import app.packed.artifact.ArtifactComposer;
 import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.ArtifactDriver;
+import app.packed.base.Key;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
-import app.packed.lang.Key;
+import packed.internal.container.PackedContainer.ArtifactContextWrapper;
 
 /**
  * An injector is an immutable holder of services that can be dependency injected or looked up by their type at runtime.
@@ -310,7 +311,7 @@ public interface Injector {
     // or maybe Injector.configure() instead
     // interface ArtifactConfigurator() {}
     // configure()
-    static Injector configure(ArtifactConfigurator<? super InjectorConfigurator> configurator, Wirelet... wirelets) {
+    static Injector configure(ArtifactComposer<? super InjectorConfigurator> configurator, Wirelet... wirelets) {
         return InjectorArtifactDriver.INSTANCE.newArtifact(c -> new InjectorConfigurator(c), configurator, wirelets);
     }
 
@@ -349,6 +350,6 @@ final class InjectorArtifactDriver extends ArtifactDriver<Injector> {
     /** {@inheritDoc} */
     @Override
     public Injector newArtifact(ArtifactContext container) {
-        return container.injector();
+        return ((ArtifactContextWrapper) container).injector();
     }
 }

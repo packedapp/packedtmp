@@ -26,8 +26,8 @@ import java.util.Map.Entry;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import app.packed.base.TypeLiteral;
 import app.packed.config.ConfigSite;
-import app.packed.lang.TypeLiteral;
 import app.packed.service.Factory;
 import app.packed.service.Injector;
 import app.packed.service.ServiceComponentConfiguration;

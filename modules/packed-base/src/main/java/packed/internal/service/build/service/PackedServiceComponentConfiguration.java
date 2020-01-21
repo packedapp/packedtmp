@@ -20,12 +20,12 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 
 import app.packed.component.SingletonConfiguration;
+import app.packed.base.Key;
+import app.packed.base.Nullable;
 import app.packed.component.ComponentPath;
-import app.packed.component.feature.FeatureMap;
+import app.packed.component.FeatureMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
-import app.packed.lang.Key;
-import app.packed.lang.Nullable;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceComponentConfiguration;
 import packed.internal.service.build.BuildEntry;

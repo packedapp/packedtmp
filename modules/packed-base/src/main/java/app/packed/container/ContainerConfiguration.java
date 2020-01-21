@@ -20,11 +20,11 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.util.Set;
 
+import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentType;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
-import app.packed.lang.Nullable;
 import app.packed.service.Factory;
 import app.packed.service.ServiceExtension;
 import packed.internal.host.HostConfiguration;
@@ -142,17 +142,6 @@ public interface ContainerConfiguration extends ComponentConfiguration {
     // So child modules do not have the power of the lookup object.
     void lookup(@Nullable Lookup lookup);
 
-    /**
-     * Creates a new layer.
-     * 
-     * @param name
-     *            the name of layer
-     * @param dependencies
-     *            dependencies on other layers
-     * @return the new layer
-     */
-    ContainerLayer newLayer(String name, ContainerLayer... dependencies);
-
     /** {@inheritDoc} */
     @Override
     ContainerConfiguration setDescription(String description);
@@ -191,6 +180,16 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      */
     <T extends Extension> T use(Class<T> extensionType);
 }
+///**
+//* Creates a new layer.
+//* 
+//* @param name
+//*            the name of layer
+//* @param dependencies
+//*            dependencies on other layers
+//* @return the new layer
+//*/
+//ContainerLayer newLayer(String name, ContainerLayer... dependencies);
 
 /**
  * Returns the build context. A single build context object is shared among all containers for the same artifact.

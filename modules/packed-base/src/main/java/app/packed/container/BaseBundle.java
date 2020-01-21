@@ -15,9 +15,9 @@
  */
 package app.packed.container;
 
+import app.packed.base.Key;
+import app.packed.base.Key.Qualifier;
 import app.packed.component.SingletonConfiguration;
-import app.packed.lang.Key;
-import app.packed.lang.Key.Qualifier;
 import app.packed.lifecycle.OnStart;
 import app.packed.service.Factory;
 import app.packed.service.Injector;
@@ -55,8 +55,8 @@ import app.packed.service.ServiceExtension;
  * </ul>
  * 
  * 
- * @apiNote We never return, for example, Bundle or BaseBundle to allow for method chaining. As this would make
- *          extending the class difficult unless we defined the methods as non-final.
+ * @apiNote We never return, for example, Bundle or BaseBundle. As this would make extending the class difficult unless
+ *          we defined the methods as non-final.
  */
 public abstract class BaseBundle extends Bundle {
 

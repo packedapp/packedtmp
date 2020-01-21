@@ -21,11 +21,11 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
-import app.packed.lang.Key;
-import app.packed.lang.Nullable;
-import app.packed.lang.reflect.FieldDescriptor;
-import app.packed.lang.reflect.MemberDescriptor;
-import app.packed.lang.reflect.MethodDescriptor;
+import app.packed.base.Key;
+import app.packed.base.Nullable;
+import app.packed.base.reflect.FieldDescriptor;
+import app.packed.base.reflect.MemberDescriptor;
+import app.packed.base.reflect.MethodDescriptor;
 import app.packed.service.InstantiationMode;
 import app.packed.service.Provide;
 import packed.internal.inject.Dependency;

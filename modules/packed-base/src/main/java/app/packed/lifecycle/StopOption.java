@@ -19,6 +19,7 @@ package app.packed.lifecycle;
  *
  */
 public class StopOption {
+
     StopOption erroneous(Throwable cause) {
         throw new UnsupportedOperationException();
     }

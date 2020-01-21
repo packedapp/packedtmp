@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import app.packed.lang.InvalidDeclarationException;
-import app.packed.lang.TypeLiteral;
+import app.packed.base.InvalidDeclarationException;
+import app.packed.base.TypeLiteral;
 import packed.internal.inject.factoryhandle.Factory0FactoryHandle;
 import packed.internal.inject.factoryhandle.FactorySupport;
 

@@ -15,35 +15,43 @@
  */
 package app.packed.component;
 
-// Sealed type....
+import app.packed.container.Bundle;
+import app.packed.container.Wirelet;
 
-// SingleLetter
-// H <- Host
-// S <- ActorSystem
-// A <- Actor
-// I <- Instance
-// M <- Many
-// C <- Container
-// V <- VirtualContainer
-
-// Task --> ComponentContext.addTask(Class).
-// Task --> ComponentContext.addTask(Class, Composer<? super TaskConfiguration>)).
 /**
- * The various types of components that are available in Packed.
+ * The different types of components that are supported in Packed.
  */
-// Like ElementType
 public enum ComponentType {
 
     COMPONENT_INSTANCE,
 
-    /** A container holds other components and provide strong boundaries containers in-between. */
+    /** A container holds other components and provide strong boundaries between different containers. */
     CONTAINER,
 
-    /** A host allows for relationship between artifacts. */
+    /**
+     * A host allows for dynamic wiring between a host and a guest container. Unlike the static wiring available via, for
+     * example, via {@link Bundle#link(Bundle, Wirelet...)}.
+     */
     HOST,
 
     STATELESS;
 }
+
+//Sealed type....
+
+//SingleLetter
+//H <- Host
+//S <- ActorSystem
+//A <- Actor
+//I <- Instance
+//M <- Many
+//C <- Container
+//V <- VirtualContainer
+
+//Task --> ComponentContext.addTask(Class).
+//Task --> ComponentContext.addTask(Class, Composer<? super TaskConfiguration>)).
+
+//Like ElementType
 
 // configuration tyoe
 // runtime tyoe

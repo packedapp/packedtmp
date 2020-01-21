@@ -29,11 +29,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.api.Contract;
-import app.packed.api.ContractSet;
 import app.packed.artifact.ArtifactImage;
-import app.packed.lang.Key;
-import app.packed.lang.Nullable;
+import app.packed.base.Contract;
+import app.packed.base.ContractSet;
+import app.packed.base.Key;
+import app.packed.base.Nullable;
 import app.packed.service.ServiceDescriptor;
 import packed.internal.artifact.BuildOutput;
 import packed.internal.container.PackedContainerConfiguration;

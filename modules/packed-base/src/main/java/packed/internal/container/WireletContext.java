@@ -22,10 +22,10 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Optional;
 
+import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionWirelet;
 import app.packed.container.Wirelet;
-import app.packed.lang.Nullable;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.util.StringFormatter;

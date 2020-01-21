@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.lang.Key;
+import app.packed.base.Key;
 import app.packed.service.ServiceDescriptor;
 import app.packed.service.ServiceWirelets;
 import packed.internal.service.build.BuildEntry;

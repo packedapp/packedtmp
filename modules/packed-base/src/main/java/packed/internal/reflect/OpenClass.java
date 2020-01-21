@@ -27,8 +27,8 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import app.packed.lang.NativeImage;
-import app.packed.lang.invoke.UncheckedIllegalAccessException;
+import app.packed.base.NativeImage;
+import app.packed.base.invoke.UncheckedIllegalAccessException;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.UncheckedThrowableFactory;
 import packed.internal.util.function.ThrowableConsumer;

@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.lang.Key;
+import app.packed.base.Key;
 import app.packed.service.Factory;
 
 /** Test of {@link Factory}. */

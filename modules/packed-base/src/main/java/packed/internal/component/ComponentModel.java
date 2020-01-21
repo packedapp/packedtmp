@@ -25,10 +25,10 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Set;
 
+import app.packed.base.Nullable;
 import app.packed.container.ContainerSource;
 import app.packed.container.Extension;
 import app.packed.hook.OnHook;
-import app.packed.lang.Nullable;
 import packed.internal.container.ContainerSourceModel;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.LazyExtensionActivationMap;

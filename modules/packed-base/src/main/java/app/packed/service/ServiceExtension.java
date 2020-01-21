@@ -19,6 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.BiConsumer;
 
+import app.packed.base.Key;
+import app.packed.base.Key.Qualifier;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
@@ -27,8 +29,6 @@ import app.packed.container.ExtensionContext;
 import app.packed.container.Wirelet;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
-import app.packed.lang.Key;
-import app.packed.lang.Key.Qualifier;
 import app.packed.lifecycle.OnStart;
 import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.container.FixedWireletList;

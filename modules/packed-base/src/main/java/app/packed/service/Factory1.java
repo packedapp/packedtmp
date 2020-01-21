@@ -21,8 +21,8 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.lang.InvalidDeclarationException;
-import app.packed.lang.TypeLiteral;
+import app.packed.base.InvalidDeclarationException;
+import app.packed.base.TypeLiteral;
 import packed.internal.inject.Dependency;
 import packed.internal.inject.factoryhandle.Factory1FactoryHandle;
 import packed.internal.inject.factoryhandle.FactorySupport;

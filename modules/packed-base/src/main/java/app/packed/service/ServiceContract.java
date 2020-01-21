@@ -25,11 +25,11 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import app.packed.api.Contract;
 import app.packed.artifact.ArtifactImage;
+import app.packed.base.Contract;
+import app.packed.base.Key;
 import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
-import app.packed.lang.Key;
 
 /**
  * A service contract consists of two parts. A part detailing which services are required in order for owning entity to

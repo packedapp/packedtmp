@@ -22,8 +22,8 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.api.Contract;
-import app.packed.lang.Nullable;
+import app.packed.base.Contract;
+import app.packed.base.Nullable;
 import packed.internal.container.ExtensionModelLoadContext;
 
 /**

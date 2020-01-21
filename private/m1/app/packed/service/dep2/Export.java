@@ -22,8 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.List;
 
+import app.packed.base.Key;
 import app.packed.inject.Provider;
-import app.packed.lang.Key;
 import app.packed.service.Provide;
 import app.packed.service.ServiceExtension;
 

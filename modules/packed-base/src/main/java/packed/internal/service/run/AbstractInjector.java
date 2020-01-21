@@ -18,10 +18,10 @@ package packed.internal.service.run;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import app.packed.lang.Key;
-import app.packed.lang.Nullable;
+import app.packed.base.Key;
+import app.packed.base.Nullable;
 import app.packed.service.Injector;
-import app.packed.service.ProvideContext;
+import packed.internal.inject.ProvideContextImpl;
 
 /** An abstract implementation of an injector. */
 public abstract class AbstractInjector implements Injector {
@@ -79,7 +79,7 @@ public abstract class AbstractInjector implements Injector {
         if (n == null) {
             return null;
         }
-        return n.getInstance(ProvideContext.of(key));
+        return n.getInstance(ProvideContextImpl.of(key));
     }
 
     // protected final void injectMembers(OldAtInjectGroup descriptor, Object instance, @Nullable Component component) {

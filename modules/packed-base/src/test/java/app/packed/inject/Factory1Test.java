@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.lang.Key;
+import app.packed.base.Key;
 import app.packed.service.Factory;
 import app.packed.service.Factory1;
 import packed.internal.inject.Dependency;

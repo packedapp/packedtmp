@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.function.Supplier;
 
-import app.packed.lang.TypeLiteral;
+import app.packed.base.TypeLiteral;
 import app.packed.service.Factory0;
 import packed.internal.util.MethodHandleUtil;
 

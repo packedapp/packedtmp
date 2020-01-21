@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.IdentityHashMap;
 
+import app.packed.base.Nullable;
 import app.packed.container.ContainerConfiguration;
-import app.packed.lang.Nullable;
 import packed.internal.container.WireletContext;
 
 /**

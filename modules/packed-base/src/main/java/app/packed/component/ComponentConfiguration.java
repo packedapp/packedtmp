@@ -18,11 +18,10 @@ package app.packed.component;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import app.packed.component.feature.FeatureMap;
+import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.Extension;
-import app.packed.lang.Nullable;
 
 /**
  *

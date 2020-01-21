@@ -17,8 +17,8 @@ package packed.internal.host;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import app.packed.api.ContractSet;
 import app.packed.artifact.App;
+import app.packed.base.ContractSet;
 import app.packed.component.ComponentType;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.component.AbstractComponent;

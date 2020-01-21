@@ -24,12 +24,12 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.api.Contract;
+import app.packed.base.Contract;
+import app.packed.base.Nullable;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
 import app.packed.container.ExtensionWirelet;
-import app.packed.lang.Nullable;
 
 /** A context object used for all registration for an {@link ExtensionComposer}. */
 public abstract class ExtensionModelLoadContext {

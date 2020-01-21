@@ -23,10 +23,10 @@ import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import app.packed.base.Nullable;
 import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
-import app.packed.lang.Nullable;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.OpenClass;
 import packed.internal.util.Tiny;

@@ -16,7 +16,7 @@
 package app.packed.component;
 
 /**
- *
+ * A type of component with a single instance
  */
 public interface Singleton extends Component {
 

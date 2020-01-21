@@ -25,13 +25,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
+import app.packed.base.Nullable;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
-import app.packed.lang.Nullable;
 import packed.internal.hook.OnHookModelBuilder.Node;
 import packed.internal.reflect.OpenClass;
 import packed.internal.util.TinyPair;

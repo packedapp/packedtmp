@@ -22,9 +22,9 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import app.packed.base.Nullable;
 import app.packed.component.ComponentStream;
 import app.packed.container.Extension;
-import app.packed.lang.Nullable;
 
 /**
  *

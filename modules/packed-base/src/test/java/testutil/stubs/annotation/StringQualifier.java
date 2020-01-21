@@ -20,7 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.lang.Key;
+import app.packed.base.Key;
 
 /**
  * An annotation with a single string value, used for testing.

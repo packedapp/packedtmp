@@ -24,7 +24,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import app.packed.lang.Nullable;
+import app.packed.base.Nullable;
 
 /**
  * A concurrent weak intern set.

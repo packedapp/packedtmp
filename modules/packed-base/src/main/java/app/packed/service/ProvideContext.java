@@ -15,22 +15,17 @@
  */
 package app.packed.service;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.Optional;
 
+import app.packed.base.InvalidDeclarationException;
+import app.packed.base.Key;
+import app.packed.base.reflect.ConstructorDescriptor;
+import app.packed.base.reflect.FieldDescriptor;
+import app.packed.base.reflect.MemberDescriptor;
+import app.packed.base.reflect.MethodDescriptor;
+import app.packed.base.reflect.ParameterDescriptor;
+import app.packed.base.reflect.VariableDescriptor;
 import app.packed.component.Component;
-import app.packed.component.SingletonContext;
-import app.packed.lang.InvalidDeclarationException;
-import app.packed.lang.Key;
-import app.packed.lang.reflect.ConstructorDescriptor;
-import app.packed.lang.reflect.FieldDescriptor;
-import app.packed.lang.reflect.MemberDescriptor;
-import app.packed.lang.reflect.MethodDescriptor;
-import app.packed.lang.reflect.ParameterDescriptor;
-import app.packed.lang.reflect.VariableDescriptor;
-import packed.internal.inject.Dependency;
-import packed.internal.inject.ProvideContextImpl;
 
 /**
  * An instance of this interface can be injected into methods annotated with {@link Provide}.
@@ -237,44 +232,15 @@ public interface ProvideContext {
 
     Optional<Component> component();
 
-//    static ProvideContext of(Dependency dependency) {
-//        return new ProvideContextImpl(dependency, null);
-//    }
-//
-//    static ProvideContext of(Dependency dependency, Component componenent) {
-//        return new ProvideContextImpl(dependency, requireNonNull(componenent, "component is null"));
-//    }
-
-    /**
-     * Returns a new injection site for the specified injector and key.
-     * <p>
-     * This method is used to create injection site for methods such as {@link Injector#use(Key)}.
-     * 
-     * @param key
-     *            the for which injection is requested
-     * @return an injection site for the specified injector and key.
-     */
-    static ProvideContext of(Key<?> key) {
-        return new ProvideContextImpl(Dependency.of(key), null);
-    }
-
-    /**
-     * Returns a new injection site for the specified injector, key and component.
-     * <p>
-     * This method is used to create injection site for methods such as {@link Injector#use(Key)} on
-     * {@link SingletonContext#injector() component injectors}.
-     * 
-     * @param key
-     *            the for which injection is requested
-     * @param component
-     *            the component to which the injector belongs
-     * @return an injection site for the specified injector and key and component.
-     */
-    static ProvideContext of(Key<?> key, Component component) {
-        return new ProvideContextImpl(Dependency.of(key), requireNonNull(component, "component is null"));
-    }
-    // static {AopReady r = AOPSupport.compile(FooClass.class)}, at runtime r.newInstance(r))// Arghh grimt
 }
+
+//static ProvideContext of(Dependency dependency) {
+//  return new ProvideContextImpl(dependency, null);
+//}
+//
+//static ProvideContext of(Dependency dependency, Component componenent) {
+//  return new ProvideContextImpl(dependency, requireNonNull(componenent, "component is null"));
+//}
 
 //
 ///**

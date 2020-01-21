@@ -17,9 +17,9 @@ package app.packed.service;
 
 import java.util.function.Predicate;
 
-import app.packed.artifact.ArtifactConfigurator;
+import app.packed.artifact.ArtifactComposer;
+import app.packed.base.Key;
 import app.packed.container.Wirelet;
-import app.packed.lang.Key;
 
 /**
  *
@@ -62,7 +62,7 @@ public class ServicePackletCandidates {
         throw new UnsupportedOperationException();
     }
 
-    public static Wirelet provideAllTo(ArtifactConfigurator<? super InjectorConfigurator> configurator, Wirelet... wirelets) {
+    public static Wirelet provideAllTo(ArtifactComposer<? super InjectorConfigurator> configurator, Wirelet... wirelets) {
 
         // Den her kan man styre prototyper o.s.v. hvis man har behov for det....
 

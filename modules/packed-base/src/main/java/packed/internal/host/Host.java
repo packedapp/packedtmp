@@ -15,7 +15,7 @@
  */
 package packed.internal.host;
 
-import app.packed.api.ContractSet;
+import app.packed.base.ContractSet;
 import app.packed.component.Component;
 import app.packed.component.ComponentType;
 

@@ -21,8 +21,8 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import app.packed.base.Key;
 import app.packed.config.ConfigSite;
-import app.packed.lang.Key;
 import app.packed.service.ServiceDescriptor;
 import app.packed.service.ServiceWirelets;
 import packed.internal.service.build.ServiceWireletPipeline;

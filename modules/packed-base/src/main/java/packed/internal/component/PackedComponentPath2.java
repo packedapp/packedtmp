@@ -17,8 +17,8 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.base.Nullable;
 import app.packed.component.ComponentPath;
-import app.packed.lang.Nullable;
 
 /**
  *

@@ -24,8 +24,8 @@ import java.util.function.Consumer;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
-import app.packed.lang.InvalidDeclarationException;
-import app.packed.lang.Key;
+import app.packed.base.InvalidDeclarationException;
+import app.packed.base.Key;
 import app.packed.service.Injector;
 import app.packed.service.InjectorConfigurator;
 import app.packed.service.InstantiationMode;

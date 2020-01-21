@@ -17,8 +17,8 @@ package packed.internal.inject;
 
 import java.lang.module.ModuleDescriptor.Provides;
 
-import app.packed.lang.Key;
-import app.packed.lang.Nullable;
+import app.packed.base.Key;
+import app.packed.base.Nullable;
 import packed.internal.component.PackedSingletonConfiguration;
 
 /**

@@ -21,8 +21,8 @@ import static packed.internal.util.StringFormatter.format;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 
+import app.packed.base.TypeLiteral;
 import app.packed.inject.MakeException;
-import app.packed.lang.TypeLiteral;
 import app.packed.service.Factory;
 
 /**

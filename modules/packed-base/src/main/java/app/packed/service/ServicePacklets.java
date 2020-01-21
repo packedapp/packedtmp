@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
+import app.packed.base.Key;
 import app.packed.container.Wirelet;
-import app.packed.lang.Key;
 import packed.internal.service.build.wirelets.PackedDownstreamInjectionWirelet;
 import packed.internal.service.build.wirelets.PackedUpstreamInjectionWirelet;
 

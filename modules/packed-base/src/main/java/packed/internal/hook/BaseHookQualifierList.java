@@ -18,7 +18,7 @@ package packed.internal.hook;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
-import app.packed.lang.Nullable;
+import app.packed.base.Nullable;
 
 /**
  *

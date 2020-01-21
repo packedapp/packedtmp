@@ -22,17 +22,17 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 import app.packed.artifact.ArtifactContext;
+import app.packed.base.Key;
+import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.component.ComponentStream.Option;
 import app.packed.component.ComponentType;
-import app.packed.component.feature.FeatureMap;
+import app.packed.component.FeatureMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.Container;
 import app.packed.container.Extension;
-import app.packed.lang.Key;
-import app.packed.lang.Nullable;
 import app.packed.lifecycle.StopOption;
 import app.packed.service.Injector;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
@@ -69,7 +69,7 @@ public final class PackedContainer extends AbstractComponent implements Containe
     }
 
     /** Used to expose a container as an ArtifactContext. */
-    private class ArtifactContextWrapper implements ArtifactContext {
+    public class ArtifactContextWrapper implements ArtifactContext {
 
         /** {@inheritDoc} */
         @Override

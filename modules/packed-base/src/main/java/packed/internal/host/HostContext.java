@@ -17,7 +17,7 @@ package packed.internal.host;
 
 import java.util.stream.Stream;
 
-import app.packed.api.ContractSet;
+import app.packed.base.ContractSet;
 
 /**
  *

@@ -19,10 +19,10 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Modifier;
 
-import app.packed.lang.TypeLiteral;
-import app.packed.lang.invoke.UncheckedIllegalAccessException;
-import app.packed.lang.reflect.ExecutableDescriptor;
-import app.packed.lang.reflect.MethodDescriptor;
+import app.packed.base.TypeLiteral;
+import app.packed.base.invoke.UncheckedIllegalAccessException;
+import app.packed.base.reflect.ExecutableDescriptor;
+import app.packed.base.reflect.MethodDescriptor;
 import app.packed.service.Factory;
 
 /** The backing class of {@link Factory}. */

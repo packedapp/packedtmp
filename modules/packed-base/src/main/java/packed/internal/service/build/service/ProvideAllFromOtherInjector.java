@@ -19,9 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.LinkedHashMap;
 
+import app.packed.base.Key;
 import app.packed.config.ConfigSite;
 import app.packed.container.Wirelet;
-import app.packed.lang.Key;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
 import packed.internal.container.FixedWireletList;

@@ -30,7 +30,8 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import app.packed.api.Contract;
+import app.packed.base.Contract;
+import app.packed.base.Nullable;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
@@ -38,12 +39,10 @@ import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerLayer;
 import app.packed.container.ContainerSource;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
-import app.packed.lang.Nullable;
 import app.packed.service.Factory;
 import app.packed.service.ServiceExtension;
 import packed.internal.artifact.BuildOutput;
@@ -63,8 +62,8 @@ import packed.internal.host.PackedHostConfiguration;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.moduleaccess.ModuleAccess;
-import packed.internal.reflect.OpenClass;
 import packed.internal.reflect.ConstructorFinder;
+import packed.internal.reflect.OpenClass;
 import packed.internal.service.run.DefaultInjector;
 import packed.internal.util.UncheckedThrowableFactory;
 
@@ -432,8 +431,15 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /**
+     * Creates a new layer.
+     * 
+     * @param name
+     *            the name of layer
+     * @param dependencies
+     *            dependencies on other layers
+     * @return the new layer
+     */
     public ContainerLayer newLayer(String name, ContainerLayer... dependencies) {
         HashMap<String, DefaultContainerLayer> l = layers;
         if (l == null) {

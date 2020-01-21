@@ -19,8 +19,6 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import app.packed.component.feature.AFeature;
-import app.packed.component.feature.FeatureMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 
@@ -152,9 +150,9 @@ public interface Component {
     //// Hmm, hvis vi nu skal bruge container side car'en... eller artifact side'caren.
     /// Maaske det med at soege op i attribute map traet. Indtil man finder en venlig
     /// instance
-    default <T> T use(AFeature<T, ?> feature) {
-        throw new UnsupportedOperationException();
-    }
+//    default <T> T use(AFeature<T, ?> feature) {
+//        throw new UnsupportedOperationException();
+//    }
 }
 
 // {

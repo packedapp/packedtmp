@@ -21,14 +21,14 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.List;
 
+import app.packed.base.InvalidDeclarationException;
+import app.packed.base.Nullable;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
 import app.packed.container.Extension;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
-import app.packed.lang.InvalidDeclarationException;
-import app.packed.lang.Nullable;
 import packed.internal.component.ComponentModel;
 import packed.internal.hook.OnHookModel;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;

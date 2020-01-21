@@ -18,24 +18,22 @@ package app.packed.artifact;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+import app.packed.base.Key;
 import app.packed.component.Component;
 import app.packed.component.SingletonContext;
 import app.packed.container.Extension;
-import app.packed.lang.Key;
 import app.packed.lifecycle.StopOption;
-import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
 
 /**
  * An artifact context provides control over a single (top level) container. Instances of this interface are normally
- * never exposed to end users. Instead it is wrapped in thin facade objects, such as {@link App} or {@link Injector}.
- * This facede object than delegates all calls to the context.
+ * never exposed to end users. Instead it is wrapped in thin facade objects, such as {@link App}. This facade object
+ * than delegates all calls to an instance of this context.
  * <p>
  * An instance of this interface is normally acquired via {@link ArtifactDriver#newArtifact(ArtifactContext)}.
  */
 public interface ArtifactContext extends SingletonContext {
-
-    // Det er jo i virkeligheden ContainerText, men den kan bare ikke lukkes ned....
+    // Det er jo i virkeligheden ContainerContext, men en ContainerContext kan bare ikke lukkes ned...
 
     default Set<Class<? extends Extension>> extensionTypes() {
         throw new UnsupportedOperationException();
@@ -50,9 +48,6 @@ public interface ArtifactContext extends SingletonContext {
      * 
      */
     default void run() {}
-
-    @Override
-    Injector injector();
 
     default Class<?> resultType() {
 
@@ -87,13 +82,16 @@ public interface ArtifactContext extends SingletonContext {
     <T> CompletableFuture<T> stopAsync(T result, StopOption... options);
 
     /**
-     * Use a service of the specified tpye
+     * Returns a service with the specified key, if it exists. Otherwise, fails by throwing
+     * {@link UnsupportedOperationException}.
+     * <p>
+     * If the application is not already running
      * 
      * @param <T>
-     *            the type of service to use
+     *            the type of service to return
      * @param key
+     *            the key of the service to return
      * @return a service of the specified type
-     * 
      * @throws UnsupportedOperationException
      *             if a service with the specified key exist. Or if the application does not use {@link ServiceExtension}.
      */

@@ -15,8 +15,8 @@
  */
 package app.packed.service;
 
-import static app.packed.lang.invoke.AccessType.GET_FIELD;
-import static app.packed.lang.invoke.AccessType.INVOKE;
+import static app.packed.base.invoke.AccessType.GET_FIELD;
+import static app.packed.base.invoke.AccessType.INVOKE;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -24,8 +24,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.base.invoke.OpensFor;
 import app.packed.container.UseExtension;
-import app.packed.lang.invoke.OpensFor;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a service of some kind. A field

@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
-import app.packed.lang.Nullable;
+import app.packed.base.Nullable;
 
 /**
  *

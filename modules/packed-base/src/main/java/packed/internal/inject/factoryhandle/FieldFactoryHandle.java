@@ -23,10 +23,10 @@ import java.lang.invoke.VarHandle;
 import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Modifier;
 
-import app.packed.lang.Nullable;
-import app.packed.lang.TypeLiteral;
-import app.packed.lang.invoke.UncheckedIllegalAccessException;
-import app.packed.lang.reflect.FieldDescriptor;
+import app.packed.base.Nullable;
+import app.packed.base.TypeLiteral;
+import app.packed.base.invoke.UncheckedIllegalAccessException;
+import app.packed.base.reflect.FieldDescriptor;
 
 /** An invoker that can read and write fields. */
 public final class FieldFactoryHandle<T> extends FactoryHandle<T> {

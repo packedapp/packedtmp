@@ -18,15 +18,15 @@ package packed.internal.host;
 import java.util.Optional;
 
 import app.packed.artifact.ArtifactDriver;
+import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
-import app.packed.component.feature.FeatureMap;
+import app.packed.component.FeatureMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
-import app.packed.lang.Nullable;
 
 /**
  *

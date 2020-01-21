@@ -18,10 +18,10 @@ package packed.internal.moduleaccess;
 import java.util.concurrent.ConcurrentHashMap;
 
 import app.packed.artifact.ArtifactImage;
+import app.packed.base.TypeLiteral;
 import app.packed.container.Bundle;
 import app.packed.container.Extension;
 import app.packed.hook.AnnotatedFieldHook;
-import app.packed.lang.TypeLiteral;
 import app.packed.lifecycle.RunState;
 import app.packed.service.Factory;
 

@@ -20,10 +20,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.UseExtension;
 import app.packed.container.LazyExtensionUsage;
-import app.packed.lang.Nullable;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
 import packed.internal.util.Tiny;

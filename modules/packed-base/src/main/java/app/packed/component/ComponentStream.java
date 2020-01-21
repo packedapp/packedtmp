@@ -27,7 +27,6 @@ import java.util.stream.Stream;
 
 import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
-import app.packed.component.feature.AFeature;
 import app.packed.container.Bundle;
 import app.packed.container.Container;
 import app.packed.container.Extension;
@@ -35,7 +34,7 @@ import packed.internal.component.PackedComponentStreamOption;
 
 /**
  * A specialization of the {@link Stream} interface that deals with streams of {@link Component components}. An instance
- * of this class is normally acquired by invoking containerComponents or componentStream.
+ * of this class is normally acquired by {@link App#stream(Option...)} or {@link ArtifactImage#stream(Option...)}.
  *
  * <pre>
  * App app  = ...
@@ -82,10 +81,10 @@ public interface ComponentStream extends Stream<Component> {
     default <A> Stream<A> feature(Class<A> faetures) {
         throw new UnsupportedOperationException();
     }
-
-    default <T extends AFeature<?, ?>> Stream<T> feature(T feature) {
-        throw new UnsupportedOperationException();
-    }
+//
+//    default <T extends AFeature<?, ?>> Stream<T> feature(T feature) {
+//        throw new UnsupportedOperationException();
+//    }
 
     // @SuppressWarnings("unchecked")
     // default <A> void forEachFeature(FeatureKey<A> feature, BiConsumer<Component, ? super A> action) {

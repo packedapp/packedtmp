@@ -24,8 +24,8 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import app.packed.base.TypeLiteral;
 import app.packed.hook.AnnotatedFieldHook;
-import app.packed.lang.TypeLiteral;
 import packed.internal.reflect.PackedIllegalAccessException;
 import packed.internal.util.ThrowableUtil;
 

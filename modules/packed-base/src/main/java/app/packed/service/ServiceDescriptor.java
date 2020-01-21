@@ -2,8 +2,8 @@ package app.packed.service;
 
 import java.util.Optional;
 
+import app.packed.base.Key;
 import app.packed.config.ConfigSite;
-import app.packed.lang.Key;
 
 /** An immutable description of a service provided by an injector or similar entity. */
 // Skal omnavngives til service hvis vi får en context...

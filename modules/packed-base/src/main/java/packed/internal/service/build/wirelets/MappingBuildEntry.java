@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 import java.util.function.Function;
 
+import app.packed.base.Key;
 import app.packed.config.ConfigSite;
-import app.packed.lang.Key;
 import app.packed.service.InstantiationMode;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionInstantiationContext;

@@ -22,8 +22,8 @@ import java.lang.annotation.Target;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import app.packed.base.Key;
 import app.packed.container.BaseBundle;
-import app.packed.lang.Key;
 import app.packed.service.Factory1;
 import app.packed.service.Injector;
 

@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.Set;
 
 import app.packed.container.Bundle;
-import app.packed.container.ContainerLayer;
 import app.packed.container.Wirelet;
 
 /** The default implementation of Layer. */

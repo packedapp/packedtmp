@@ -2,7 +2,7 @@ package app.packed.inject;
 
 import java.util.Set;
 
-import app.packed.lang.Key;
+import app.packed.base.Key;
 
 /**
  * A context object that be injected into a method or constructor to query about what other dependencies are available

@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.function.BiFunction;
 
-import app.packed.lang.InvalidDeclarationException;
-import app.packed.lang.TypeLiteral;
+import app.packed.base.InvalidDeclarationException;
+import app.packed.base.TypeLiteral;
 import packed.internal.inject.Dependency;
 import packed.internal.inject.factoryhandle.Factory2FactoryHandle;
 import packed.internal.inject.factoryhandle.FactorySupport;

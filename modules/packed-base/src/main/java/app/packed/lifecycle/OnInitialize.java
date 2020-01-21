@@ -21,7 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.inject.Inject;
-import app.packed.service.Injector;
+import app.packed.inject.InjectContext;
 
 /**
  * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the
@@ -46,18 +46,17 @@ import app.packed.service.Injector;
  * </pre>
  * <p>
  * To find out exactly what kind of services that can be injected into an annotated method, an instance of an
- * {@link Injector} can be used:
+ * {@link InjectContext} can be used:
  *
  * <pre>{@code  @OnInitialize
- * public void onInit(Injector injector) {
+ * public void onInit(InjectContext injector) {
  *   System.out.println("The following services can be injected into this method");
  *   injector.services().forEach(e -> System.out.println(e.getKey()));
  * }}
  * </pre>
  * <p>
  * If a method annotated with {@code @OnInitialize} throws an exception. The initialization of the entity will normally
- * fail, and the state of the entity change from {@link RunState#INITIALIZING} to
- * {@link RunState#TERMINATED}.
+ * fail, and the state of the entity change from {@link RunState#INITIALIZING} to {@link RunState#TERMINATED}.
  * <p>
  * You should never use the {@link Inject} annotation together with the {@link OnInitialize}, as this would mean the
  * method would be invoked twice, once in the entity's <b>injection</b> phase and once in the entity's

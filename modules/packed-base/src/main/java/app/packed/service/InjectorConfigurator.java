@@ -20,17 +20,17 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
-import app.packed.artifact.ArtifactConfigurator;
+import app.packed.artifact.ArtifactComposer;
+import app.packed.base.Nullable;
+import app.packed.base.Key.Qualifier;
 import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
-import app.packed.lang.Key.Qualifier;
-import app.packed.lang.Nullable;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via
- * {@link Injector#configure(ArtifactConfigurator, Wirelet...)}. This is thought of a alternative to using a
+ * {@link Injector#configure(ArtifactComposer, Wirelet...)}. This is thought of a alternative to using a
  * {@link BaseBundle}. Unlike bundles all services are automatically exported once defined. For example useful in tests.
  * 
  * <p>

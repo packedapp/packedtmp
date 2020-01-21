@@ -18,7 +18,7 @@ package testutil.stubs.annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import app.packed.lang.Key;
+import app.packed.base.Key;
 
 /**
  * An annotation with with no values for testing.

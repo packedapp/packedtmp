@@ -18,13 +18,13 @@ package packed.internal.inject;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.packed.base.reflect.FieldDescriptor;
+import app.packed.base.reflect.MethodDescriptor;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import app.packed.inject.Inject;
-import app.packed.lang.reflect.FieldDescriptor;
-import app.packed.lang.reflect.MethodDescriptor;
 
 /**
  *

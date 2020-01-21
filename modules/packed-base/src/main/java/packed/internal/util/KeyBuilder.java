@@ -15,9 +15,9 @@
  */
 package packed.internal.util;
 
+import app.packed.base.Key;
 import app.packed.component.Component;
 import app.packed.inject.Inject;
-import app.packed.lang.Key;
 import app.packed.service.Injector;
 import app.packed.service.ProvideContext;
 

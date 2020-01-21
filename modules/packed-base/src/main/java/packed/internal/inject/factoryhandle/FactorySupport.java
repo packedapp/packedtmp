@@ -4,7 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.lang.Key;
+import app.packed.base.Key;
 import app.packed.lifecycle.OnStart;
 import app.packed.service.Provide;
 import packed.internal.inject.Dependency;

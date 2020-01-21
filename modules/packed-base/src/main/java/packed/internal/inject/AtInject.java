@@ -20,9 +20,9 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.util.List;
 
-import app.packed.lang.reflect.FieldDescriptor;
-import app.packed.lang.reflect.MemberDescriptor;
-import app.packed.lang.reflect.MethodDescriptor;
+import app.packed.base.reflect.FieldDescriptor;
+import app.packed.base.reflect.MemberDescriptor;
+import app.packed.base.reflect.MethodDescriptor;
 import app.packed.service.Provide;
 
 /** A descriptor for a member annotated with {@link Provide}. */

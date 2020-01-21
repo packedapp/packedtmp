@@ -22,8 +22,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
-import app.packed.lang.Nullable;
 
 /** An immutable list of wirelets. */
 public final class FixedWireletList extends Wirelet {

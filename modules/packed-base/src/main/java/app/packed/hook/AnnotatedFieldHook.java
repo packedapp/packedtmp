@@ -25,10 +25,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import app.packed.lang.InvalidDeclarationException;
-import app.packed.lang.Nullable;
-import app.packed.lang.invoke.UncheckedIllegalAccessException;
-import app.packed.lang.reflect.FieldDescriptor;
+import app.packed.base.InvalidDeclarationException;
+import app.packed.base.Nullable;
+import app.packed.base.invoke.UncheckedIllegalAccessException;
+import app.packed.base.reflect.FieldDescriptor;
 import packed.internal.hook.MemberUnreflector;
 import packed.internal.moduleaccess.AppPackedHookAccess;
 import packed.internal.moduleaccess.ModuleAccess;

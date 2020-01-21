@@ -24,8 +24,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import app.packed.base.Key;
 import app.packed.container.Wirelet;
-import app.packed.lang.Key;
 import packed.internal.service.build.wirelets.PackedDownstreamInjectionWirelet;
 import packed.internal.service.build.wirelets.PackedUpstreamInjectionWirelet;
 

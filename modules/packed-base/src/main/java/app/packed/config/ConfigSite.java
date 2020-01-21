@@ -22,11 +22,11 @@ import java.lang.annotation.Annotation;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import app.packed.base.Nullable;
+import app.packed.base.reflect.FieldDescriptor;
+import app.packed.base.reflect.MemberDescriptor;
+import app.packed.base.reflect.MethodDescriptor;
 import app.packed.container.Wirelet;
-import app.packed.lang.Nullable;
-import app.packed.lang.reflect.FieldDescriptor;
-import app.packed.lang.reflect.MemberDescriptor;
-import app.packed.lang.reflect.MethodDescriptor;
 import packed.internal.config.ConfigSiteJoiner;
 import packed.internal.config.ConfigSiteSupport;
 

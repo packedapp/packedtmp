@@ -20,11 +20,11 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 
 import app.packed.component.SingletonConfiguration;
+import app.packed.base.Nullable;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
-import app.packed.lang.Nullable;
 import app.packed.service.Factory;
 import packed.internal.moduleaccess.ModuleAccess;
 

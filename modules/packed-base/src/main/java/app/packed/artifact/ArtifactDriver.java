@@ -39,7 +39,7 @@ import packed.internal.reflect.typevariable.TypeVariableExtractor;
  * 
  * @param <T>
  *            The type of artifact this driver creates.
- * @see App#DRIVER
+ * @see App#driver()
  */
 // Support of injection of the artifact into the Container...
 // We do not generally support this, as people are free to any artifact they may like.
@@ -62,14 +62,10 @@ public abstract class ArtifactDriver<T> {
         // create() should check that perm is non-null
     }
 
-    public static ArtifactDriver<App> defaultApp() {
-        return App.DRIVER;
-    }
-
     /**
-     * Returns the type of artifacts this driver produce.
+     * Returns the type of artifact this driver produce.
      * 
-     * @return the type of artifacts this driver produce
+     * @return the type of artifact this driver produce
      */
     public final Class<T> artifactType() {
         return artifactType;
@@ -106,11 +102,11 @@ public abstract class ArtifactDriver<T> {
     }
 
     /**
-     * Instantiates a new artifact. This method is normally implemented by the user, and invoked by the runtime to create a
-     * new artifact.
+     * Create a new artifact. This method is normally implemented by the user, and invoked by the runtime in order to create
+     * a new artifact.
      * 
      * @param context
-     *            the runtime context to wrap
+     *            the artifact context to wrap
      * @return the new artifact
      */
     protected abstract T newArtifact(ArtifactContext context);
@@ -149,13 +145,12 @@ public abstract class ArtifactDriver<T> {
         return newArtifact(pac);
     }
 
-    public final <C> T newArtifact(Function<ContainerConfiguration, C> factory, ArtifactConfigurator<C> configurator, Wirelet... wirelets) {
-        PackedContainerConfiguration pcc = new PackedContainerConfiguration(BuildOutput.artifact(this), configurator, wirelets);
+    public final <C> T newArtifact(Function<ContainerConfiguration, C> factory, ArtifactComposer<C> composer, Wirelet... wirelets) {
+        PackedContainerConfiguration pcc = new PackedContainerConfiguration(BuildOutput.artifact(this), composer, wirelets);
         C c = factory.apply(pcc);
-        configurator.configure(c);
+        composer.compose(c);
         pcc.doBuild();
         ArtifactContext pac = pcc.instantiateArtifact(pcc.wireletContext).newArtifactContext();
         return newArtifact(pac);
     }
-
 }

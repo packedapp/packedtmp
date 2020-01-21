@@ -17,7 +17,7 @@ package packed.internal.util;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.lang.Nullable;
+import app.packed.base.Nullable;
 
 /**
  *

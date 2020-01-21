@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
@@ -28,7 +29,6 @@ import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
-import app.packed.lang.Nullable;
 import packed.internal.artifact.BuildOutput;
 import packed.internal.component.ComponentConfigurationToComponentAdaptor;
 import packed.internal.container.PackedContainerConfiguration;
@@ -39,7 +39,7 @@ import packed.internal.moduleaccess.ModuleAccess;
 /**
  * Artifact images are immutable ahead-of-time configured artifacts. By configuring an artifact ahead of time, the
  * actual time to instantiation an artifact can be severely decreased often down to a couple of microseconds. In
- * addition to this, artifact images are reusable, so you can create multiple artifacts from a single image.
+ * addition to this, artifact images can be reusable, so you can create multiple artifacts from a single image.
  * 
  * Creating artifacts in Packed is already really fast, and you can easily create one 10 or hundres of microseconds. But
  * by using artifact images you can into hundres or thousounds of nanoseconds.
@@ -53,8 +53,8 @@ import packed.internal.moduleaccess.ModuleAccess;
  * No structural changes... Only whole artifacts
  * 
  * <p>
- * An image can be used to create new instances of {@link app.packed.artifact.App}, {@link app.packed.service.Injector},
- * {@link BundleDescriptor} or other artifact images. It can not be used with {@link Bundle#link(Bundle, Wirelet...)}.
+ * An image can be used to create new instances of {@link app.packed.artifact.App}, {@link BundleDescriptor} or other
+ * artifact images. It can not be used with {@link Bundle#link(Bundle, Wirelet...)}.
  */
 public final class ArtifactImage implements ContainerSource {
 
@@ -160,7 +160,7 @@ public final class ArtifactImage implements ContainerSource {
     /**
      * Returns the type of bundle that was used to create this image.
      * <p>
-     * If this image was created from an existing image, the new image image will retain the source type of the existing
+     * If this image was created from another artifact image, the new image image will retain the source type of the other
      * image.
      * 
      * @return the type of bundle that was used to create this image
@@ -171,10 +171,10 @@ public final class ArtifactImage implements ContainerSource {
     }
 
     /**
-     * Creates a component stream of all will be components in this image.
+     * Returns a component stream consisting of all the components in this image.
      * 
      * @param options
-     *            options
+     *            stream options
      * @return the component stream
      * @see Component#stream(app.packed.component.ComponentStream.Option...)
      */
@@ -217,7 +217,11 @@ public final class ArtifactImage implements ContainerSource {
         return new ArtifactImage(pcc.doBuild(), pcc.wireletContext);
     }
 
-    // repeatable/singleshot
+    // repeatable/singleUse
+
+    // Lifecycle... Men det afhaender jo ogsaa af repeatable/single use....
+    // Man kan jo ikke initializisere en repeatable....
+
     // lazy/non-lazy
 
     // Creates an image that will be initialized the first time it is executed...

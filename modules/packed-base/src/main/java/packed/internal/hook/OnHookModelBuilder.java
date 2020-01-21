@@ -27,6 +27,7 @@ import java.util.ArrayDeque;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 
+import app.packed.base.Nullable;
 import app.packed.container.Bundle;
 import app.packed.container.Extension;
 import app.packed.hook.AnnotatedFieldHook;
@@ -35,7 +36,6 @@ import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
-import app.packed.lang.Nullable;
 import packed.internal.reflect.ClassFinder;
 import packed.internal.reflect.OpenClass;
 import packed.internal.reflect.ConstructorFinder;

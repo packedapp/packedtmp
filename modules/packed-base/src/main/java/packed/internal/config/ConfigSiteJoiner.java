@@ -23,8 +23,8 @@ import java.util.StringJoiner;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 
+import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
-import app.packed.lang.Nullable;
 
 /**
  * This class can be used to output formatted strings from one or more {@link ConfigSite config sites}. Config site

@@ -18,8 +18,8 @@ package packed.internal.moduleaccess;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import app.packed.lang.Key;
-import app.packed.lang.TypeLiteral;
+import app.packed.base.Key;
+import app.packed.base.TypeLiteral;
 
 /** A support class for calling package private methods in the app.packed.util package. */
 public interface AppPackedUtilAccess extends SecretAccess {

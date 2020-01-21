@@ -2,8 +2,8 @@ package packed.internal.service.build.service;
 
 import java.util.List;
 
+import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
-import app.packed.lang.Nullable;
 import app.packed.service.InstantiationMode;
 import packed.internal.inject.Dependency;
 import packed.internal.service.build.BuildEntry;

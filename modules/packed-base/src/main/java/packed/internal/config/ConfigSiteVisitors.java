@@ -21,9 +21,9 @@ import java.lang.StackWalker.StackFrame;
 import java.lang.annotation.Annotation;
 import java.util.Optional;
 
+import app.packed.base.reflect.MethodDescriptor;
 import app.packed.config.ConfigSite;
 import app.packed.config.ConfigSiteVisitor;
-import app.packed.lang.reflect.MethodDescriptor;
 import packed.internal.util.StringFormatter;
 
 /**

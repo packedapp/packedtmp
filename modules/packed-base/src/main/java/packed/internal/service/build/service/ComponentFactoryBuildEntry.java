@@ -20,9 +20,9 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.util.List;
 
+import app.packed.base.InvalidDeclarationException;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.lang.InvalidDeclarationException;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceComponentConfiguration;
 import packed.internal.inject.Dependency;

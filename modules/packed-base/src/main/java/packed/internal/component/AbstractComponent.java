@@ -27,14 +27,14 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
-import app.packed.component.feature.FeatureMap;
+import app.packed.component.FeatureMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.Container;
 import app.packed.container.Extension;
-import app.packed.lang.Nullable;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
 

@@ -22,11 +22,11 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import app.packed.base.Nullable;
 import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.lang.Nullable;
 import app.packed.service.Factory;
 import app.packed.service.ServiceExtension;
 import packed.internal.host.HostConfiguration;
@@ -35,7 +35,8 @@ import packed.internal.moduleaccess.ModuleAccess;
 
 /**
  * Bundles are the main source of configuration for containers and artifacts. Basically a bundle is just a thin wrapper
- * around {@link ContainerConfiguration}. Delegating all calls to container configurations.
+ * around {@link ContainerConfiguration}. Delegating every invokation in the class to an instance of
+ * {@link ContainerConfiguration} available via {@link #configuration()}.
  * <p>
  * Once consumed a bundle cannot be used...
  * 
@@ -128,7 +129,7 @@ public abstract class Bundle implements ContainerSource {
         if (s == 1) {
             throw new IllegalStateException("This bundle is being used elsewhere.");
         } else if (s == 2) {
-            throw new IllegalStateException("This bundle cannot be reused.");
+            throw new IllegalStateException("This bundle cannot be used more than once.");
         }
 
         this.configuration = configuration;
@@ -160,6 +161,13 @@ public abstract class Bundle implements ContainerSource {
         return configuration().extensions();
     }
 
+    /**
+     * Returns any description that has been set.
+     * 
+     * @return any description that has been set
+     * @see #setDescription(String)
+     * @see ContainerConfiguration#getDescription()
+     */
     @Nullable
     protected final String getDescription() {
         return configuration().getDescription();
@@ -174,7 +182,7 @@ public abstract class Bundle implements ContainerSource {
      * 
      * @return the name of the container
      * @see #setName(String)
-     * @see SingletonConfiguration#setName(String)
+     * @see ContainerConfiguration#setName(String)
      */
     protected final String getName() {
         return configuration().getName();
@@ -258,7 +266,7 @@ public abstract class Bundle implements ContainerSource {
     }
 
     /**
-     * Links the specified bundle to this bundle.
+     * Links the specified bundle as a child to this bundle.
      * 
      * @param bundle
      *            the bundle to link
@@ -294,10 +302,6 @@ public abstract class Bundle implements ContainerSource {
         // Packed will access a constructor
     }
 
-    protected final ContainerLayer newLayer(String name, ContainerLayer... dependencies) {
-        return configuration().newLayer(name, dependencies);
-    }
-
     /**
      * Returns the full path of the container that this bundle creates.
      * 
@@ -314,6 +318,7 @@ public abstract class Bundle implements ContainerSource {
      * @param description
      *            the description to set
      * @see ContainerConfiguration#setDescription(String)
+     * @see #getDescription()
      */
     protected final void setDescription(String description) {
         configuration().setDescription(description);
@@ -336,7 +341,7 @@ public abstract class Bundle implements ContainerSource {
      *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
      *             characters and '_', '-' or '.'
      * @throws IllegalStateException
-     *             if calling this method after
+     *             if called from outside {@link #configure()}
      */
     protected final void setName(String name) {
         configuration().setName(name);

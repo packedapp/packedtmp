@@ -26,14 +26,14 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import app.packed.api.ContractSet;
+import app.packed.base.ContractSet;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
+import app.packed.component.FeatureMap;
 import app.packed.component.Singleton;
 import app.packed.component.Stateless;
-import app.packed.component.feature.FeatureMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.Container;
 import app.packed.container.Extension;

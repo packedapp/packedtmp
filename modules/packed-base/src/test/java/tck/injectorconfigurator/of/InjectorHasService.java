@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.lang.Key;
+import app.packed.base.Key;
 import app.packed.service.Injector;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
