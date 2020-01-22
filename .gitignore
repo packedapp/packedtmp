@@ -1,5 +1,4 @@
-/bin
-/bin-test/
+/bin*
 /.clover/
 documentation
 cleanup

@@ -27,7 +27,7 @@ import app.packed.service.ProvideContext;
 import app.packed.service.Provide;
 import app.packed.service.ServiceConfiguration;
 import app.packed.service.ServiceDescriptor;
-import packed.internal.inject.Dependency;
+import packed.internal.inject.ServiceDependency;
 import packed.internal.service.build.service.AbstractComponentBuildEntry;
 import packed.internal.service.run.InjectorEntry;
 import packed.internal.util.KeyBuilder;
@@ -50,7 +50,7 @@ public abstract class BuildEntry<T> {
     private final ConfigSite configSite;
 
     /** The dependencies of this node. */
-    public final List<Dependency> dependencies;
+    public final List<ServiceDependency> dependencies;
 
     public String description;
 
@@ -77,12 +77,12 @@ public abstract class BuildEntry<T> {
 
     public final int offset;
 
-    public BuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite, List<Dependency> dependencies) {
+    public BuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite, List<ServiceDependency> dependencies) {
         this(serviceExtension, null, configSite, dependencies);
     }
 
     public BuildEntry(@Nullable ServiceExtensionNode serviceExtension, AbstractComponentBuildEntry<?> declaringEntry, ConfigSite configSite,
-            List<Dependency> dependencies) {
+            List<ServiceDependency> dependencies) {
         this.serviceExtension = serviceExtension;
         this.offset = declaringEntry == null ? 0 : 1;
         this.configSite = requireNonNull(configSite);
@@ -94,7 +94,7 @@ public abstract class BuildEntry<T> {
             resolvedDependencies[0] = declaringEntry;
         }
         if (!dependencies.isEmpty()) {
-            for (Dependency e : dependencies) {
+            for (ServiceDependency e : dependencies) {
                 if (e.key().equals(KeyBuilder.INJECTION_SITE_KEY)) {
                     hasDependencyOnInjectionSite = true;
                     break;

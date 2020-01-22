@@ -39,7 +39,7 @@ import app.packed.base.reflect.MethodDescriptor;
 import app.packed.service.Injector;
 import app.packed.service.InjectorConfigurator;
 import app.packed.service.ServiceComponentConfiguration;
-import packed.internal.inject.Dependency;
+import packed.internal.inject.ServiceDependency;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FactorySupport;
 import packed.internal.inject.factoryhandle.InstanceFactoryHandle;
@@ -454,13 +454,14 @@ final class FactoryFindInjectableExecutable {
 
     static <T> FactorySupport<T> find(Class<T> implementation) {
         ExecutableDescriptor executable = findExecutable(implementation);
-        return new FactorySupport<>(new ExecutableFactoryHandle<>(TypeLiteral.of(implementation), executable, null), Dependency.fromExecutable(executable));
+        return new FactorySupport<>(new ExecutableFactoryHandle<>(TypeLiteral.of(implementation), executable, null),
+                ServiceDependency.fromExecutable(executable));
     }
 
     static <T> FactorySupport<T> find(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         ExecutableDescriptor executable = findExecutable(implementation.rawType());
-        return new FactorySupport<>(new ExecutableFactoryHandle<>(implementation, executable, null), Dependency.fromExecutable(executable));
+        return new FactorySupport<>(new ExecutableFactoryHandle<>(implementation, executable, null), ServiceDependency.fromExecutable(executable));
     }
 
     private static ExecutableDescriptor findExecutable(Class<?> type) {
@@ -518,17 +519,60 @@ final class FactoryFindInjectableExecutable {
             return ConstructorDescriptor.of(constructor);
         }
 
-        // Try and find one constructor with maximum number of parameters.
         for (Constructor<?> c : constructors) {
-            if (c.getParameterCount() == maxParameters) {
+            if (Modifier.isPublic(c.getModifiers())) {
                 if (constructor != null) {
-                    throw new IllegalArgumentException("No constructor annotated with @" + Inject.class.getSimpleName()
-                            + ". And multiple constructors having the maximum number of parameters (" + maxParameters + ") on class " + format(type));
+                    throw new IllegalArgumentException(
+                            "No constructor annotated with @" + Inject.class.getSimpleName() + ". And multiple public constructors on class " + format(type));
                 }
                 constructor = c;
             }
         }
-        return ConstructorDescriptor.of(constructor);
+        if (constructor != null) {
+            return ConstructorDescriptor.of(constructor);
+        }
+
+        for (Constructor<?> c : constructors) {
+            if (Modifier.isProtected(c.getModifiers())) {
+                if (constructor != null) {
+                    throw new IllegalArgumentException("No constructor annotated with @" + Inject.class.getSimpleName()
+                            + ". And multiple protected constructors on class " + format(type));
+                }
+                constructor = c;
+            }
+        }
+        if (constructor != null) {
+            return ConstructorDescriptor.of(constructor);
+        }
+
+        // Remaining constructors are private or package private
+        for (Constructor<?> c : constructors) {
+            if (!Modifier.isPrivate(c.getModifiers())) {
+                if (constructor != null) {
+                    throw new IllegalArgumentException("No constructor annotated with @" + Inject.class.getSimpleName()
+                            + ". And multiple package-private constructors on class " + format(type));
+                }
+                constructor = c;
+            }
+        }
+        if (constructor != null) {
+            return ConstructorDescriptor.of(constructor);
+        }
+
+        throw new IllegalArgumentException(
+                "No constructor annotated with @" + Inject.class.getSimpleName() + ". And multiple private constructors on class " + format(type));
+
+//        // Try and find one constructor with maximum number of parameters.
+//        for (Constructor<?> c : constructors) {
+//            if (c.getParameterCount() == maxParameters) {
+//                if (constructor != null) {
+//                    throw new IllegalArgumentException("No constructor annotated with @" + Inject.class.getSimpleName()
+//                            + ". And multiple constructors having the maximum number of parameters (" + maxParameters + ") on class " + format(type));
+//                }
+//                constructor = c;
+//            }
+//        }
+//        return ConstructorDescriptor.of(constructor);
     }
 }
 
@@ -590,6 +634,12 @@ class XFac2 {
 
     public static <T> Factory<T> findMethod(Class<T> type) {
         return findMethod(requireNonNull(type), TypeLiteral.of(type));
+    }
+
+    // Ideen er lidt at der kun maa vaere en metode med det navn...
+    // Ellers fejler vi
+    public static <T> Factory<T> findNamed(Class<T> key, String name) {
+        return findMethod(requireNonNull(key), TypeLiteral.of(key));
     }
 
     /**

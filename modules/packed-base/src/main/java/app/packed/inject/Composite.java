@@ -30,6 +30,9 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RUNTIME)
 @Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.TYPE })
+
+//aggregate???
+//Google composite vs aggregate
 public @interface Composite {}
 // Can have 0 dependencies - V
 // Can use prime annotation...

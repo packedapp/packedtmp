@@ -23,7 +23,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
-import packed.internal.inject.Dependency;
+import packed.internal.inject.ServiceDependency;
 import packed.internal.moduleaccess.ModuleAccess;
 
 /** Tests {@link Factory1}. */
@@ -34,9 +34,9 @@ public class Factory1Test {
     public void IntegerFactory0() {
         Factory<Integer> f = new Factory1<String, Integer>(Integer::valueOf) {};
         checkThat(f).is(Integer.class);
-        List<Dependency> dependencies = ModuleAccess.inject().toSupport(f).dependencies;
+        List<ServiceDependency> dependencies = ModuleAccess.inject().toSupport(f).dependencies;
         assertThat(dependencies).hasSize(1);
-        Dependency d = dependencies.get(0);
+        ServiceDependency d = dependencies.get(0);
 
         assertThat(d.isOptional()).isFalse();
         assertThat(d.key()).isEqualTo(Key.of(String.class));

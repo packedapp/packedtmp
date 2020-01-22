@@ -31,6 +31,7 @@ import java.lang.annotation.Target;
 @Target({ METHOD, CONSTRUCTOR })
 // @Create, @Supply
 //// Factory er jo saa bedre et navn...
+
 public @interface Make {
     // Look for exactly 1 Static Method @Make. If found use this.
     // Look for exactly 1 Constructor Method @Make. If found use this.
@@ -49,6 +50,17 @@ public @interface Make {
     // Use @AllowAccess(modules = "*", value = AccessType.Invocation)
     //
     // --> @EveryoneInvoke (meta annotation)
-
 }
 // Kunne altsaa ogsaa have en @Make field... 
+
+//Maaske bruge @Inject alligevel. 
+// Som regel vil method injection returnere void...
+// Men det kan vi jo ikke bruge, eftersom den skal lave noget...
+// Saa vi kan smide en exception der.
+// Eller hvis hvis der er >1 statiske metoder.
+
+// Saa det er i virkeligheden kun hvis vi har en statisk non-void metode.
+// At vi risikere problemer....
+
+//////// Static inject is not supported out of the box.... If you need it, you can do it yourself...
+//@Inject meta annotations...

@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import packed.internal.inject.AtInject;
-import packed.internal.inject.Dependency;
+import packed.internal.inject.ServiceDependency;
 import packed.internal.service.build.BuildEntry;
 
 /**
@@ -30,7 +30,7 @@ class DependencyRequirement {
 
     final ConfigSite configSite;
 
-    final Dependency dependency;
+    final ServiceDependency dependency;
 
     @Nullable
     final BuildEntry<?> entry;
@@ -38,19 +38,19 @@ class DependencyRequirement {
     AtInject atInject;
     // Contract <- If requirement added via a contract
 
-    DependencyRequirement(Dependency dependency, ConfigSite configSite) {
+    DependencyRequirement(ServiceDependency dependency, ConfigSite configSite) {
         this.dependency = requireNonNull(dependency, "dependency is null");
         this.configSite = requireNonNull(configSite);
         this.entry = null;
     }
 
-    DependencyRequirement(Dependency dependency, BuildEntry<?> entry) {
+    DependencyRequirement(ServiceDependency dependency, BuildEntry<?> entry) {
         this.dependency = requireNonNull(dependency, "dependency is null");
         this.configSite = entry.configSite();
         this.entry = entry;
     }
 
-    DependencyRequirement(Dependency dependency, BuildEntry<?> entry, AtInject atInject) {
+    DependencyRequirement(ServiceDependency dependency, BuildEntry<?> entry, AtInject atInject) {
         this.dependency = requireNonNull(dependency, "dependency is null");
         this.configSite = entry.configSite();
         this.entry = entry;

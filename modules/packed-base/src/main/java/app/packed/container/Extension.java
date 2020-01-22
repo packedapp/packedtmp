@@ -123,6 +123,9 @@ public abstract class Extension {
         // API-NOTE This method is not available on ExtensionContext to encourage capturing of stack frames to be limited
         // to the extension class in order to simplify the filtering mechanism.
 
+        // TODO!!!! I virkeligheden skal man vel bare fange den sidste brug i et bundle....
+        // Kan ogsaa sammenligne med configure navnet...
+
         if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
             return ConfigSite.UNKNOWN;
         }

@@ -25,7 +25,7 @@ import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceComponentConfiguration;
-import packed.internal.inject.Dependency;
+import packed.internal.inject.ServiceDependency;
 import packed.internal.service.build.ServiceExtensionInstantiationContext;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.run.CachingPrototypeInjectorEntry;
@@ -54,7 +54,7 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
     }
 
     public ComponentFactoryBuildEntry(ServiceExtensionNode injectorBuilder, SingletonConfiguration<T> cc, InstantiationMode instantionMode, MethodHandle mh,
-            List<Dependency> dependencies) {
+            List<ServiceDependency> dependencies) {
         super(injectorBuilder, cc.configSite(), dependencies, null, cc);
         this.instantionMode = requireNonNull(instantionMode);
         this.mha = requireNonNull(mh);

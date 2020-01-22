@@ -33,7 +33,7 @@ import app.packed.inject.Factory;
 import app.packed.lifecycle.OnStart;
 import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.container.FixedWireletList;
-import packed.internal.inject.Dependency;
+import packed.internal.inject.ServiceDependency;
 import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.build.ServiceWireletPipeline;
@@ -330,7 +330,7 @@ public final class ServiceExtension extends Extension {
         checkConfigurable();
         ConfigSite cs = captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE);
         for (Class<?> key : keys) {
-            node.dependencies().require(Dependency.of(key), cs);
+            node.dependencies().require(ServiceDependency.of(key), cs);
         }
     }
 
@@ -355,7 +355,7 @@ public final class ServiceExtension extends Extension {
         checkConfigurable();
         ConfigSite cs = captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE);
         for (Key<?> key : keys) {
-            node.dependencies().require(Dependency.of(key), cs);
+            node.dependencies().require(ServiceDependency.of(key), cs);
         }
     }
 
@@ -373,7 +373,7 @@ public final class ServiceExtension extends Extension {
         checkConfigurable();
         ConfigSite cs = captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE_OPTIONAL);
         for (Key<?> key : keys) {
-            node.dependencies().require(Dependency.ofOptional(key), cs);
+            node.dependencies().require(ServiceDependency.ofOptional(key), cs);
         }
     }
 

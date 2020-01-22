@@ -30,10 +30,6 @@ import java.util.Set;
 /**
  *
  */
-// If we want we could get DefaultInt(), DefaultLong(), ...
-// Maybe in converter package???
-
-// Default -> Optional....
 public @interface Default {
 
     double[] doubleValue() default {};
@@ -52,6 +48,10 @@ public @interface Default {
 }
 // Converter, deterministic by default I think... Yes, 
 
+//If we want we could get DefaultInt(), DefaultLong(), ...
+//Maybe in converter package???
+
+//Default -> Optional....
 class Doo {
 
     Doo(@Default Set<String> s) {

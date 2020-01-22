@@ -38,9 +38,9 @@ public final class ProvideContextImpl implements ProvideContext {
     private final Component component;
 
     /** The key of the service that was requested */
-    private final Dependency dependency;
+    private final ServiceDependency dependency;
 
-    public ProvideContextImpl(Dependency dependency, @Nullable Component component) {
+    public ProvideContextImpl(ServiceDependency dependency, @Nullable Component component) {
         this.dependency = requireNonNull(dependency, "dependency is null");
         this.component = component;
     }
@@ -90,11 +90,11 @@ public final class ProvideContextImpl implements ProvideContext {
     // }
     // }
 
-    static ProvideContext of(Dependency dependency) {
+    static ProvideContext of(ServiceDependency dependency) {
         return new ProvideContextImpl(dependency, null);
     }
 
-    static ProvideContext of(Dependency dependency, Component componenent) {
+    static ProvideContext of(ServiceDependency dependency, Component componenent) {
         return new ProvideContextImpl(dependency, requireNonNull(componenent, "component is null"));
     }
 
@@ -108,7 +108,7 @@ public final class ProvideContextImpl implements ProvideContext {
      * @return an injection site for the specified injector and key.
      */
     public static ProvideContext of(Key<?> key) {
-        return new ProvideContextImpl(Dependency.of(key), null);
+        return new ProvideContextImpl(ServiceDependency.of(key), null);
     }
 
     /**
@@ -121,7 +121,7 @@ public final class ProvideContextImpl implements ProvideContext {
      * @return an injection site for the specified injector and key and component.
      */
     static ProvideContext of(Key<?> key, Component component) {
-        return new ProvideContextImpl(Dependency.of(key), requireNonNull(component, "component is null"));
+        return new ProvideContextImpl(ServiceDependency.of(key), requireNonNull(component, "component is null"));
     }
     // static {AopReady r = AOPSupport.compile(FooClass.class)}, at runtime r.newInstance(r))// Arghh grimt
 }

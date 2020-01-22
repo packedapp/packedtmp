@@ -21,5 +21,5 @@ import java.util.List;
  *
  */
 public interface WithDependencies {
-    List<Dependency> dependencies();
+    List<ServiceDependency> dependencies();
 }

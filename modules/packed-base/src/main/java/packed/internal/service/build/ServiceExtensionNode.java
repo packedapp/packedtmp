@@ -33,7 +33,7 @@ import app.packed.service.ServiceContract;
 import packed.internal.container.WireletContext;
 import packed.internal.inject.AtInject;
 import packed.internal.inject.AtInjectHook;
-import packed.internal.inject.Dependency;
+import packed.internal.inject.ServiceDependency;
 import packed.internal.service.build.dependencies.DependencyManager;
 import packed.internal.service.build.export.ExportManager;
 import packed.internal.service.build.export.ExportedBuildEntry;
@@ -71,7 +71,7 @@ public final class ServiceExtensionNode {
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, BuildEntry<?>> resolvedEntries = new LinkedHashMap<>();
 
-    public final LinkedHashMap<Dependency, BuildEntry<?>> specials = new LinkedHashMap<>();
+    public final LinkedHashMap<ServiceDependency, BuildEntry<?>> specials = new LinkedHashMap<>();
 
     /**
      * Creates a new builder.

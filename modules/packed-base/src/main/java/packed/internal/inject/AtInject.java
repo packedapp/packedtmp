@@ -32,12 +32,12 @@ public final class AtInject {
     public final MemberDescriptor member;
 
     /** The dependencies (parameters) of the member. */
-    public final List<Dependency> dependencies;
+    public final List<ServiceDependency> dependencies;
 
     /** A unbound method handle to the underlying field or method. */
     public final MethodHandle methodHandle;
 
-    public AtInject(MethodHandle mh, MemberDescriptor member, List<Dependency> dependencies) {
+    public AtInject(MethodHandle mh, MemberDescriptor member, List<ServiceDependency> dependencies) {
         this.methodHandle = requireNonNull(mh);
         this.dependencies = requireNonNull(dependencies);
         this.member = requireNonNull(member);
