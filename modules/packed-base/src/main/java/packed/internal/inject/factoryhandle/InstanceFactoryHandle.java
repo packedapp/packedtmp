@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.base.TypeLiteral;
-import app.packed.service.Factory;
+import app.packed.inject.Factory;
 
 /** A function handle that takes no arguments and returns the same instance every time. */
 public final class InstanceFactoryHandle<T> extends FactoryHandle<T> {

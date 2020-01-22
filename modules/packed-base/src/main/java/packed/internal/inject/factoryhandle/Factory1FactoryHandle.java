@@ -23,7 +23,7 @@ import java.lang.invoke.MethodType;
 import java.util.function.Function;
 
 import app.packed.base.TypeLiteral;
-import app.packed.service.Factory1;
+import app.packed.inject.Factory1;
 import packed.internal.util.MethodHandleUtil;
 
 /** An internal factory for {@link Factory1}. */

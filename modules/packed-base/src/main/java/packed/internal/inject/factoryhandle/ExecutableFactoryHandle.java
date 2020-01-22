@@ -23,7 +23,7 @@ import app.packed.base.TypeLiteral;
 import app.packed.base.invoke.UncheckedIllegalAccessException;
 import app.packed.base.reflect.ExecutableDescriptor;
 import app.packed.base.reflect.MethodDescriptor;
-import app.packed.service.Factory;
+import app.packed.inject.Factory;
 
 /** The backing class of {@link Factory}. */
 public final class ExecutableFactoryHandle<T> extends FactoryHandle<T> {

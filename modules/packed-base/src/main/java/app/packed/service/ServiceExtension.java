@@ -29,6 +29,7 @@ import app.packed.container.ExtensionContext;
 import app.packed.container.Wirelet;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
+import app.packed.inject.Factory;
 import app.packed.lifecycle.OnStart;
 import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.container.FixedWireletList;

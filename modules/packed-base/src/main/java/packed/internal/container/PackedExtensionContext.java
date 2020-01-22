@@ -25,7 +25,7 @@ import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
-import app.packed.service.Factory;
+import app.packed.inject.Factory;
 import packed.internal.moduleaccess.ModuleAccess;
 
 /** The default implementation of {@link ExtensionContext} with addition methods only available inside this module. */

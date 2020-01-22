@@ -15,6 +15,10 @@
  */
 package app.packed.service;
 
+import packed.internal.moduleaccess.AppPackedServiceAccess;
+import packed.internal.moduleaccess.ModuleAccess;
+import packed.internal.service.build.ServiceExtensionNode;
+
 /**
  * The instantiation mode of a service.
  */
@@ -45,6 +49,15 @@ public enum InstantiationMode {
     /** A new instance of the service is created every time the service is requested. */
     PROTOTYPE;
 
+    static {
+        ModuleAccess.initialize(AppPackedServiceAccess.class, new AppPackedServiceAccess() {
+
+            @Override
+            public ServiceExtensionNode toNode(ServiceExtension e) {
+                return e.node;
+            }
+        });
+    }
 }
 
 // /**

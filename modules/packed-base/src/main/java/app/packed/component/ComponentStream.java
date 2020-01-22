@@ -150,7 +150,11 @@ public interface ComponentStream extends Stream<Component> {
         return collect(Collectors.toList());
     }
 
-    default ComponentStream withFeatures(Class<?>... faetures) {
+    // Er det components med sidecars der provider mindst en feature instans???
+    // Forstaaet paa den maade at vi bliver noedt til at kalde en metode paa sidecaren..
+    // Og se om der faktisk er nogen elementer i den liste der kommer tilbage...
+    // Men ja igen... Det er jo ikke performance orienteret.
+    default ComponentStream withFeatures(@SuppressWarnings("unchecked") Class<? extends Feature>... featureTypes) {
         throw new UnsupportedOperationException();
     }
 
@@ -230,6 +234,8 @@ public interface ComponentStream extends Stream<Component> {
 
     // depth, depthContainers, depthArtifacts.
     // The depth is always relative to the origin's depth
+
+    // Vil vel ogsaa gerne bruge den paa component.traversel
     public interface Option {
 
         default ComponentStream.Option andInSameArtifact() {

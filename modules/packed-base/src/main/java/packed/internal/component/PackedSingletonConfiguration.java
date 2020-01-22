@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandle;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
-import app.packed.service.Factory;
+import app.packed.inject.Factory;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.moduleaccess.ModuleAccess;
@@ -53,7 +53,7 @@ public final class PackedSingletonConfiguration<T> extends AbstractComponentConf
     }
 
     public MethodHandle fromFactory() {
-        FactoryHandle<?> handle = ModuleAccess.service().toSupport(factory).handle;
+        FactoryHandle<?> handle = ModuleAccess.inject().toSupport(factory).handle;
         return container().fromFactoryHandle(handle);
     }
 

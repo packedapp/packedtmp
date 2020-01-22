@@ -13,7 +13,7 @@
  * See the License from the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
@@ -36,16 +36,17 @@ import app.packed.base.invoke.UncheckedIllegalAccessException;
 import app.packed.base.reflect.ConstructorDescriptor;
 import app.packed.base.reflect.ExecutableDescriptor;
 import app.packed.base.reflect.MethodDescriptor;
-import app.packed.inject.Inject;
+import app.packed.service.Injector;
+import app.packed.service.InjectorConfigurator;
+import app.packed.service.ServiceComponentConfiguration;
 import packed.internal.inject.Dependency;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FactorySupport;
 import packed.internal.inject.factoryhandle.InstanceFactoryHandle;
 import packed.internal.inject.factoryhandle.MappingFactoryHandle;
-import packed.internal.moduleaccess.AppPackedServiceAccess;
+import packed.internal.moduleaccess.AppPackedInjectAccess;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
-import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.util.BaseSupport;
 import packed.internal.util.types.TypeUtil;
 
@@ -111,12 +112,7 @@ public class Factory<T> {
     private static final TypeVariableExtractor TYPE_LITERAL_TV_EXTRACTOR = TypeVariableExtractor.of(TypeLiteral.class);
 
     static {
-        ModuleAccess.initialize(AppPackedServiceAccess.class, new AppPackedServiceAccess() {
-
-            @Override
-            public ServiceExtensionNode toNode(ServiceExtension e) {
-                return e.node;
-            }
+        ModuleAccess.initialize(AppPackedInjectAccess.class, new AppPackedInjectAccess() {
 
             @Override
             public <T> FactorySupport<T> toSupport(Factory<T> factory) {

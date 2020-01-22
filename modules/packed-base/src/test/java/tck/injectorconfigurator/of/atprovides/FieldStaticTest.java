@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.TypeLiteral;
-import app.packed.service.Factory;
+import app.packed.inject.Factory;
 import app.packed.service.Injector;
 import app.packed.service.InjectorConfigurator;
 import app.packed.service.InstantiationMode;

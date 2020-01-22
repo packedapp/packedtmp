@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.inject;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.List;

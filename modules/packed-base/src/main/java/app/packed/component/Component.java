@@ -146,15 +146,14 @@ public interface Component {
      * @return the type of component
      */
     ComponentType type();
-
-    //// Hmm, hvis vi nu skal bruge container side car'en... eller artifact side'caren.
-    /// Maaske det med at soege op i attribute map traet. Indtil man finder en venlig
-    /// instance
-//    default <T> T use(AFeature<T, ?> feature) {
-//        throw new UnsupportedOperationException();
-//    }
 }
 
+//// Hmm, hvis vi nu skal bruge container side car'en... eller artifact side'caren.
+/// Maaske det med at soege op i attribute map traet. Indtil man finder en venlig
+/// instance
+//default <T> T use(AFeature<T, ?> feature) {
+//    throw new UnsupportedOperationException();
+//}
 // {
 // Problemet med features er at vi har nogle vi gerne vil list som vaere der. Og andre ikke.
 // F.eks. All dependencies for a component... Is this really a feature??

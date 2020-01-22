@@ -20,6 +20,7 @@ import java.util.function.Predicate;
 import app.packed.artifact.ArtifactComposer;
 import app.packed.base.Key;
 import app.packed.container.Wirelet;
+import app.packed.inject.Factory;
 
 /**
  *

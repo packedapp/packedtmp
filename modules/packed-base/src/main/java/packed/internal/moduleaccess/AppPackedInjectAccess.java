@@ -15,11 +15,20 @@
  */
 package packed.internal.moduleaccess;
 
-import app.packed.service.ServiceExtension;
-import packed.internal.service.build.ServiceExtensionNode;
+import app.packed.inject.Factory;
+import packed.internal.inject.factoryhandle.FactorySupport;
 
 /** A support class for calling package private methods in the app.packed.service package. */
-public interface AppPackedServiceAccess extends SecretAccess {
+public interface AppPackedInjectAccess extends SecretAccess {
 
-    ServiceExtensionNode toNode(ServiceExtension e);
+    /**
+     * Extracts a handle from the specified factory
+     * 
+     * @param <T>
+     *            the type of elements the factory produces
+     * @param factory
+     *            the factory to extract from
+     * @return the handle
+     */
+    <T> FactorySupport<T> toSupport(Factory<T> factory);
 }

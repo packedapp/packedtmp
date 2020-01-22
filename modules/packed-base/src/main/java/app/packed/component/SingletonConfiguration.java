@@ -16,7 +16,7 @@
 package app.packed.component;
 
 import app.packed.container.BaseBundle;
-import app.packed.service.Factory;
+import app.packed.inject.Factory;
 
 /**
  * This class represents the configuration of a component. Actual instances of this interface is usually obtained by

@@ -45,5 +45,4 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE_USE, ElementType.FIELD, ElementType.PARAMETER })
 @Documented
-// app.packed.lang
 public @interface Nullable {}

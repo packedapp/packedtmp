@@ -24,7 +24,7 @@ import java.time.ZonedDateTime;
 
 import app.packed.base.Key;
 import app.packed.container.BaseBundle;
-import app.packed.service.Factory1;
+import app.packed.inject.Factory1;
 import app.packed.service.Injector;
 
 /**

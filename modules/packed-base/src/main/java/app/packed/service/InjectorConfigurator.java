@@ -27,6 +27,7 @@ import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
+import app.packed.inject.Factory;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via

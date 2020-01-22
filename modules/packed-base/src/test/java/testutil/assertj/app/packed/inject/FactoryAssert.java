@@ -19,7 +19,7 @@ import org.assertj.core.api.AbstractAssert;
 
 import app.packed.base.Key;
 import app.packed.base.TypeLiteral;
-import app.packed.service.Factory;
+import app.packed.inject.Factory;
 
 /**
  *

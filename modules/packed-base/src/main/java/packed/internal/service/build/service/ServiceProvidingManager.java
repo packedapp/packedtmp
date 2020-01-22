@@ -30,7 +30,7 @@ import app.packed.base.Nullable;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Wirelet;
-import app.packed.service.Factory;
+import app.packed.inject.Factory;
 import app.packed.service.Injector;
 import app.packed.service.InstantiationMode;
 import app.packed.service.Provide;
@@ -100,7 +100,7 @@ public final class ServiceProvidingManager {
             parentNode = new ComponentInstanceBuildEntry<>(node, cc.configSite(), cc, psc.instance);
         } else {
             Factory<?> factory = psc.factory;
-            List<Dependency> dependencies = ModuleAccess.service().toSupport(factory).dependencies;
+            List<Dependency> dependencies = ModuleAccess.inject().toSupport(factory).dependencies;
             parentNode = new ComponentFactoryBuildEntry<>(node, cc, InstantiationMode.SINGLETON, psc.fromFactory(), dependencies);
         }
 
@@ -135,7 +135,7 @@ public final class ServiceProvidingManager {
     public <T> ServiceComponentConfiguration<T> provideFactory(PackedSingletonConfiguration<T> cc) {
         BuildEntry<?> c = componentConfigurationCache.get(cc);// remove??
         if (c == null) {
-            List<Dependency> dependencies = ModuleAccess.service().toSupport(cc.factory).dependencies;
+            List<Dependency> dependencies = ModuleAccess.inject().toSupport(cc.factory).dependencies;
             c = new ComponentFactoryBuildEntry<>(node, cc, InstantiationMode.SINGLETON, cc.fromFactory(), (List) dependencies);
         }
         c.as((Key) cc.factory.key());

@@ -24,7 +24,7 @@ import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
-import app.packed.service.Factory;
+import app.packed.inject.Factory;
 import app.packed.service.Injector;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceComponentConfiguration;

@@ -24,7 +24,6 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
-import app.packed.service.Factory;
 
 /** Test of {@link Factory}. */
 public class FactoryTest {

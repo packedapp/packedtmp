@@ -20,6 +20,7 @@ package app.packed.inject;
  */
 // Taenker om den er mere generics??? Den giver jo ogsaa mening for extensions.... Nah skal de ikke have deres egen..
 // Eller bare extension 
+// Maaske skal den til app.packed.base
 public class CyclicDependencyException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */

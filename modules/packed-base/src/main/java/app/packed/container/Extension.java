@@ -24,7 +24,7 @@ import java.util.Optional;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.ExtensionWirelet.Pipeline;
-import app.packed.service.Factory;
+import app.packed.inject.Factory;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ExtensionModelLoadContext;
 import packed.internal.moduleaccess.AppPackedExtensionAccess;

@@ -27,7 +27,7 @@ import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.service.Factory;
+import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
 import packed.internal.host.HostConfiguration;
 import packed.internal.moduleaccess.AppPackedContainerAccess;

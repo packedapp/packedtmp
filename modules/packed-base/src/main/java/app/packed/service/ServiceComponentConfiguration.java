@@ -21,6 +21,7 @@ import app.packed.component.Component;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.BaseBundle;
+import app.packed.inject.Factory;
 
 /**
  * This configuration represents an entity that is both a {@link ServiceConfiguration configuration of as service} and a
