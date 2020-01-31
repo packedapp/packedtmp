@@ -51,13 +51,12 @@ import packed.internal.util.BaseSupport;
 import packed.internal.util.types.TypeUtil;
 
 /**
- * A factory is an immutable that creates this
+ * An object that creates other objects. factory is an immutable that creates this
  * 
  * Factories are used for creating new instances of a particular type.
  * <p>
  * This class does not expose any methods that actually create new instances. This is all hidden in the internals of
- * Packed. This might change in the future, but for now factories are created by the user and only the internals of
- * Packed can use them to create new object instances.
+ * Packed. This might change in the future, but for now users can only create factories, and not consume their output.
  */
 
 // TODO Qualifiers on Methods, Types together with findInjectable????
@@ -121,7 +120,7 @@ public class Factory<T> {
         });
     }
 
-    /** The internal factory that all calls delegate to. */
+    /** The internal instance that all calls delegate to. */
     private final FactorySupport<T> factory;
 
     /**
@@ -287,7 +286,41 @@ public class Factory<T> {
         throw new UnsupportedOperationException();
     }
 
-    public final <S> Factory<T> withArgument(Class<S> key, @Nullable Object argument) {
+    public final Factory<T> bindParameter(int index, @Nullable Object argument) {
+
+        // IllegalArgument... if invalid index....
+
+        // UnsupportedOperationException... if was not created from a member
+
+        // Har vi en optional MemberDescriptor?????
+
+        // Hvis man nu vil injecte en composite....
+
+        throw new UnsupportedOperationException();
+    }
+
+    public final <S> Factory<T> withArgument(Class<S> key, @Nullable S argument) {
+
+        // Tror vi skal have to forskellige
+
+        // bindParameter(int index).... retains index....
+        // Throws
+
+        // bindWithKey();
+
+        // bindRaw(); <---- Only takes a class, ignores nullable.....
+
+        // Hvordan klarer vi Foo(String firstName, String lastName)...
+        // Eller
+
+        // Hvordan klarer vi Foo(String firstName, SomeComposite sc)...
+
+        // Det eneste der er forskel er parameter index'et...
+        // Maaske bliver man bare noedt til at lave en statisk metoder....
+
+        // Skal vi have en speciel MemberFactory?????
+
+        //
 
         // bindTo? Det er jo ikke et argument hvis det f.eks. er et field...
 
@@ -303,6 +336,8 @@ public class Factory<T> {
     }
 
     public final Factory<T> withArgument(Object argument) {
+        // Overskriver
+
         requireNonNull(argument, "argument is null");
 
         // someExtension()
@@ -314,10 +349,6 @@ public class Factory<T> {
         // Will bind to any assignable parameter...
         throw new UnsupportedOperationException();
     }
-
-//    public final Factory<T> withArgumentSupplier(int index, Supplier<?> supplier) {
-//        throw new UnsupportedOperationException();
-//    }
 
     public final <S> Factory<T> withArgumentSupplier(Class<S> key, Supplier<?> supplier) {
         // Altsaa vi kan vel bruge et andet factory????
@@ -385,30 +416,41 @@ public class Factory<T> {
     }
 
     /**
-     * Tries to find a single injectable constructor or static method on the specified class using the following rules:
-     * 
-     * Finds a Creates a new factory from the specified class using the following rules:
-     *
-     * //A single static method annotated with @Inject return the same type as the specified class //Look for a single
-     * constructor on the class, return it //If multiple constructor, look for one annotated with Inject (if more than 1
-     * annotated with Inject to fail) //if one constructor has more parameters than any other constructor return that. //
-     * Else fail with Illegal Argument Exception
+     * Tries to find a single injectable static method or constructor on the specified class using the following rules:
+     * <p>
+     * <ul>
+     * <li>If a single static method (non-static methods are ignored) annotated with {@link Inject} is present a factory
+     * wrapping the method will be returned. If there are multiple static methods annotated with Inject this method will
+     * fail with {@link IllegalStateException}.</li>
+     * <li>If a single constructor annotated with {@link Inject} is present a factory wrapping the constructor will be
+     * returned. If there are multiple constructors annotated with Inject this method will fail with
+     * {@link IllegalStateException}.</li>
+     * <li>If there is exactly one public constructor, a factory wrapping the constructor will be returned. If there are
+     * multiple public constructors this method will fail with {@link IllegalStateException}.</li>
+     * <li>If there is exactly one protected constructor, a factory wrapping the constructor will be returned. If there are
+     * multiple protected constructors this method will fail with {@link IllegalStateException}.</li>
+     * <li>If there is exactly one package-private constructor, a factory wrapping the constructor will be returned. If
+     * there are multiple package-private constructors this method will fail with {@link IllegalStateException}.</li>
+     * <li>If there is exactly one private constructor, a factory wrapping the constructor will be returned. Otherwise an
+     * {@link IllegalStateException} is thrown.</li>
+     * </ul>
+     * <p>
      * 
      * @param <T>
      *            the implementation type
      * @param implementation
      *            the implementation type
-     * @return a factory for the specified implementation type
+     * @return a factory for the specified type
      */
     @SuppressWarnings("unchecked")
-    // Todo rename to make (or just of....)
+    // Todo rename to make (or just of....) Nej, syntes maaske den er find med find()...
     public static <T> Factory<T> find(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         return (Factory<T>) CLASS_CACHE.get(implementation);
     }
 
     /**
-     * This method is equivalent to {@link #find(Class)} except that it takes a type literal.
+     * This method is equivalent to {@link #find(Class)} except taking a type literal.
      *
      * @param <T>
      *            the implementation type
@@ -425,7 +467,7 @@ public class Factory<T> {
         }
         Type t = implementation.type();
         if (t instanceof Class) {
-            return (Factory<T>) CLASS_CACHE.get((Class<?>) t);
+            return (Factory<T>) find((Class<?>) t);
         } else {
             return new Factory<>(FactoryFindInjectableExecutable.find(implementation));
         }
@@ -435,8 +477,8 @@ public class Factory<T> {
      * Returns a factory that returns the specified instance every time the factory is used.
      * <p>
      * If the specified instance makes use of field or method injection the returned factory should not be used more than
-     * once. As these fields and members will be injected every time, possible concurrently, an instance is requested from
-     * the factory.
+     * once. As these fields and members will be injected every time, possible concurrently, an instance is provided by the
+     * factory.
      * 
      * @param <T>
      *            the type of instances created by the factory
@@ -576,39 +618,9 @@ final class FactoryFindInjectableExecutable {
     }
 }
 
-//static <T> Factory<T> fromMethodHandle(MethodHandle mh) {
-//    // We don't support this because annotations and generic information are stripped from MethodHandles.
-//    throw new UnsupportedOperationException();
-//}
-// Virker kun med noget der
-//final MethodHandle toMethodHandle() {
-//// How does this method handle prime annotations????
-//// It does not, so maybe just jinx it...
-//throw new UnsupportedOperationException();
-//}
-
-//
-// /**
-// * Returns a new bindable factory.
-// *
-// * @return a new bindable factory
-// */
-// public BindableFactory<T> bindable() {
-// // bindable, newBindable, toBindable()
-// return new BindableFactory<>(factory);
-// }
-
-// Finde metoder paa statisk vs instance....
-// Hvis vi kun tillader @Inject paa de statiske, bliver algoritmerne lidt for forskellige..
 class XFac2 {
-    // either one annotated with inject, or just one method, for example lambda..
-    static <T> Factory<T> findInstanceMethod(Object onInstance, Class<T> returnType) {
-        throw new UnsupportedOperationException();
-    }
 
-    static <T> Factory<T> findInstanceMethod(Object onInstance, Class<T> returnType, String name) {
-        throw new UnsupportedOperationException();
-    }
+    // either one annotated with inject, or just one method, for example lambda..
 
     /**
      * This method will attempt to find exactly one static method annotated with inject. Either because there is only one
@@ -735,7 +747,49 @@ class XFac2 {
         throw new UnsupportedOperationException();
     }
 
-    // How we skal have
+}
+
+//static <T> Factory<T> fromMethodHandle(MethodHandle mh) {
+//  // We don't support this because annotations and generic information are stripped from MethodHandles.
+//  throw new UnsupportedOperationException();
+//}
+//Virker kun med noget der
+//final MethodHandle toMethodHandle() {
+////How does this method handle prime annotations????
+////It does not, so maybe just jinx it...
+//throw new UnsupportedOperationException();
+//}
+
+//
+///**
+//* Returns a new bindable factory.
+//*
+//* @return a new bindable factory
+//*/
+//public BindableFactory<T> bindable() {
+//// bindable, newBindable, toBindable()
+//return new BindableFactory<>(factory);
+//}
+
+//Finde metoder paa statisk vs instance....
+//Hvis vi kun tillader @Inject paa de statiske, bliver algoritmerne lidt for forskellige..
+
+//Ideen er vi dropper disse. Fordi all metoder virker...
+//Men instanse metoder skal man binde...
+//Factory.findMethod(Doo.class, "dooo").withArgument(new Doo());
+class DeprecatedMethodInstances {
+
+    static <T> Factory<T> findInstanceMethod(Object onInstance, Class<T> returnType) {
+        throw new UnsupportedOperationException();
+    }
+
+    static <T> Factory<T> findInstanceMethod(Object onInstance, Class<T> returnType, String name) {
+        throw new UnsupportedOperationException();
+    }
+
+    // Man kunne ogsaa bare sige man tog instance metoder...
+    // Man saa skal man binde receiveren.....
+    //// Dvs for instans metoder, saa bliver selve instancen en dependency...
     public static <T> Factory<T> ofMethodInstance(Object onInstance, Method method, Class<T> returnType) {
         requireNonNull(returnType, "returnType is null");
         return ofMethodInstance(onInstance, method, TypeLiteral.of(returnType));

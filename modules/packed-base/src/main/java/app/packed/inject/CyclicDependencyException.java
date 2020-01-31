@@ -15,12 +15,7 @@
  */
 package app.packed.inject;
 
-/**
- * An extension that is typically thrown when an object cannot be injected due to a cyclic dependency.
- */
-// Taenker om den er mere generics??? Den giver jo ogsaa mening for extensions.... Nah skal de ikke have deres egen..
-// Eller bare extension 
-// Maaske skal den til app.packed.base
+/** This exception is typically thrown when there are cycles in the dependency graph. */
 public class CyclicDependencyException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */

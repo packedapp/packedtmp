@@ -16,10 +16,10 @@
 package app.packed.inject;
 
 /**
- * Thrown when failing to inject dependencies into a constructor, method or field. For example, because of a missing
- * dependency or ambiguous resolution of dependencies, or if there was a cycle among dependencies.
+ * This exception is typically thrown when a factory could not be created. For example, because a valid constructor or
+ * method could not be found.
  */
-public class InjectionException extends RuntimeException {
+public class FactoryDefinitionException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
@@ -32,7 +32,7 @@ public class InjectionException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public InjectionException(String message) {
+    public FactoryDefinitionException(String message) {
         super(message);
     }
 
@@ -46,7 +46,7 @@ public class InjectionException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public InjectionException(String message, Throwable cause) {
+    public FactoryDefinitionException(String message, Throwable cause) {
         super(message, cause);
     }
 }

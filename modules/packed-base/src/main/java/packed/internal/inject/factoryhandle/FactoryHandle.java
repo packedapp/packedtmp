@@ -23,7 +23,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
-import app.packed.inject.MakeException;
+import app.packed.inject.ProvisionException;
 
 /**
  * The internal version of the {@link Factory} class.
@@ -82,7 +82,7 @@ public abstract class FactoryHandle<T> extends Object {
         if (!type.isInstance(instance)) {
             // TODO I think this should probably be a Make Exception....
             // IDeen er at de har "løjet" om hvad de returnere.
-            throw new MakeException("Expected factory to produce an instance of " + format(type) + " but was " + instance.getClass());
+            throw new ProvisionException("Expected factory to produce an instance of " + format(type) + " but was " + instance.getClass());
         }
         return instance;
     }

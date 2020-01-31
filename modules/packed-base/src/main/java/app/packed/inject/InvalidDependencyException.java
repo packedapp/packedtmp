@@ -13,16 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.base.invoke;
+package app.packed.inject;
 
-/** A runtime exception used in places where we cannot throw the checked {@link IllegalAccessException}. */
-
-// UncheckedIllegalAccessException...
-// AccessRestrictedException <- General one, could sound really securish, maybe have a name
-// which makes it clear it is relevant to reflection/method handlers
-// NotOpenedException
-// UndeclaredAccessException
-public class UncheckedIllegalAccessException extends RuntimeException {
+/** This exception is typically thrown when there are cycles in the dependency graph. */
+public class InvalidDependencyException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
@@ -35,9 +29,8 @@ public class UncheckedIllegalAccessException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public UncheckedIllegalAccessException(String message) {
+    public InvalidDependencyException(String message) {
         super(message);
-
     }
 
     /**
@@ -50,7 +43,7 @@ public class UncheckedIllegalAccessException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public UncheckedIllegalAccessException(String message, Throwable cause) {
+    public InvalidDependencyException(String message, Throwable cause) {
         super(message, cause);
     }
 }

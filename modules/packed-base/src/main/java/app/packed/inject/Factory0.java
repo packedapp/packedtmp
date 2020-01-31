@@ -15,21 +15,20 @@
  */
 package app.packed.inject;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import app.packed.base.InvalidDeclarationException;
 import app.packed.base.TypeLiteral;
 import packed.internal.inject.factoryhandle.Factory0FactoryHandle;
 import packed.internal.inject.factoryhandle.FactorySupport;
 
 /**
- * A special {@link Factory} type that uses the supplied value from a {@link Supplier} to dynamically provide new
- * instances.
- * 
+ * A special {@link Factory} type that uses a {@link Supplier} to dynamically provide new objects.
  * <p>
- * Is typically used like this:
+ * This class is typically used like this:
  *
  * <pre> {@code
  * Factory<Long> f = new Factory0<>(System::currentTimeMillis) {};}</pre>
@@ -37,6 +36,12 @@ import packed.internal.inject.factoryhandle.FactorySupport;
  * In this example we create a new class inheriting from Factory0 is order to capture information about the suppliers
  * type variable (in this case {@code Long}). Thereby circumventing the limitations of Java's type system for retaining
  * type information at runtime.
+ * <p>
+ * Qualifier annotations can be used when defining a new factory if they have {@link ElementType#TYPE_USE} in their
+ * {@link Target}:
+ * 
+ * <pre> {@code
+ * Factory<Long> f = new Factory0<@SomeQualifier Long>(() -> 1L) {};}</pre>
  * 
  * @param <R>
  *            the type of objects this factory constructs
@@ -57,12 +62,12 @@ public abstract class Factory0<R> extends Factory<R> {
     };
 
     /**
-     * Creates a new factory, that uses the specified supplier to create new instances.
+     * Creates a new factory, that uses the specified supplier to create new objects.
      *
      * @param supplier
      *            the supplier to use for creating new instances. The supplier should never return null, but should instead
      *            throw an exception if unable to provide a value
-     * @throws InvalidDeclarationException
+     * @throws FactoryDefinitionException
      *             if the type variable R could not be determined. Or if R does not represent a valid key, for example,
      *             {@link Optional}
      */

@@ -17,10 +17,10 @@ package app.packed.inject;
 
 /**
  * A make exception is thrown if a valid constructor or method could not be found according to the rules laid out in
- * {@link Make}. If valid arguments for the executable could not be found, an {@link InjectionException} is typically
- * thrown instead.
+ * {@link Make}. If valid arguments for the executable could not be found, an {@link FactoryDefinitionException} is
+ * typically thrown instead.
  */
-public class MakeException extends RuntimeException {
+public class ProvisionException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 7955236738807124333L;
@@ -33,7 +33,7 @@ public class MakeException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public MakeException(String message) {
+    public ProvisionException(String message) {
         super(message);
     }
 
@@ -47,7 +47,7 @@ public class MakeException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public MakeException(String message, Throwable cause) {
+    public ProvisionException(String message, Throwable cause) {
         super(message, cause);
     }
 }

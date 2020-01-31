@@ -13,25 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.base;
+package app.packed.inject;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.base.InvalidDeclarationException;
-import app.packed.inject.FactoryDefinitionException;
 import testutil.stubs.Throwables.Exception1;
 
-/** Tests {@link FactoryDefinitionException}. */
-public class InvalidDeclarationExceptionTest {
+/** Tests {@link CyclicDependencyException}. */
+public class CyclicDependencyExceptionTest {
 
     /** Tests the various constructors. */
     @Test
     public void test() {
-        assertThat(new InvalidDeclarationException("foo")).hasNoCause();
-        assertThat(new InvalidDeclarationException("foo")).hasMessage("foo");
-        assertThat(new InvalidDeclarationException("foobar", Exception1.INSTANCE)).hasCause(Exception1.INSTANCE);
-        assertThat(new InvalidDeclarationException("foobar", Exception1.INSTANCE)).hasMessage("foobar");
+        assertThat(new CyclicDependencyException("foo")).hasNoCause();
+        assertThat(new CyclicDependencyException("foo")).hasMessage("foo");
+        assertThat(new CyclicDependencyException("foobar", Exception1.INSTANCE)).hasCause(Exception1.INSTANCE);
+        assertThat(new CyclicDependencyException("foobar", Exception1.INSTANCE)).hasMessage("foobar");
     }
 }

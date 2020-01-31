@@ -20,10 +20,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.invoke.UncheckedIllegalAccessException;
-import app.packed.inject.InjectionException;
+import app.packed.inject.FactoryDefinitionException;
 import testutil.stubs.Throwables.Exception1;
 
-/** Tests {@link InjectionException}. */
+/** Tests {@link FactoryDefinitionException}. */
 public class IllegalAccessRuntimeExceptionTest {
 
     /** Tests the various constructors. */

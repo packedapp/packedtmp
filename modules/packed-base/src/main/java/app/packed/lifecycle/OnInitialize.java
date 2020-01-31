@@ -21,7 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.inject.Inject;
-import app.packed.inject.InjectContext;
+import app.packed.inject.InjectionContext;
 
 /**
  * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the
@@ -46,7 +46,7 @@ import app.packed.inject.InjectContext;
  * </pre>
  * <p>
  * To find out exactly what kind of services that can be injected into an annotated method, an instance of an
- * {@link InjectContext} can be used:
+ * {@link InjectionContext} can be used:
  *
  * <pre>{@code  @OnInitialize
  * public void onInit(InjectContext injector) {

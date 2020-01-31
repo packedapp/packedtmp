@@ -5,41 +5,50 @@ import java.util.Set;
 import app.packed.base.Key;
 
 /**
- * A context object that be injected into a method or constructor to query about what other dependencies are available
- * for injection at the particular use site.
+ * An injection context object can be injected into any injection site (typically a method or constructor) to query
+ * about what dependencies are available for injection at the particular injection site.
+ * <p>
+ * Example
  * <p>
  * May change from type to type even when registered in the same container.
  * <p>
  * we both need to check the type and the qualifier which must be readable by #visibility
- * <p>
+ * 
  */
-public interface InjectContext {
-
-    // Something about layers....
-    // If you have 100 services.... And a Method hook adds 3 services...
-    // There can be really difficult to find...
-    // So some kind of layering... Maybe it can be feed back to service layer thingy.
-    // Because it is kind of layer which can only be used from the particular service.
+public interface InjectionContext {
 
     /**
-     * An immutable set of keys that are available for injection at the use site (typically a method or a constructor).
+     * An immutable set of keys for which dependencies are available for injection at the injection site (typically the
+     * method or constructor annotated with {@link Inject}).
      * <p>
-     * The set of keys that are available for injection will never change during the lifetime of an object.
+     * The set of keys returned by this method does not take into consideration that depending on them will lead to cycles
+     * in the dependency graph.
      * 
-     * 
-     * @return set of keys that are available for injection at the use site
+     * @return an immutable set of keys that are available for injection at the injection site
      */
     Set<Key<?>> keys();
 
     /**
-     * Returns the class that determines the visibility. For example, a runtime might provide 10 services to an inject
-     * target. However, because it is placed in another module (or its package private). Only 5 of those services will be
-     * available for injection.
+     * Returns the class whose reacthat determines the visibility.
+     * 
+     * For example, a service that is registered with a package private {@link Key}. Will only be in the set of keys
+     * returned by {@link #keys()} if the class returned by this method is in the same package.
+     * <p>
+     * Normally the declaring class of the constructor or method to who this context is injected into is returned. However,
+     * if interface is used from a composite class. The class that depends on the composite will be returned.
      * 
      * @return the class for which we calculate visibility
      */
+    // target()
     Class<?> visibility(); // Det er jo bare .getClass(); Med mindre det er en Composite...
 }
+
+// Something about layers....
+// If you have 100 services.... And a Method hook adds 3 services...
+// There can be really difficult to find...
+// So some kind of layering... Maybe it can be feed back to service layer thingy.
+// Because it is kind of layer which can only be used from the particular service.
+
 // Set<Class<? extends Annotation>> Factory.primers()
 //// Primers can be resolved in relationship to a container
 //// Primers can use normal optional/nullable/composite stuff... or they can ignore it... The contract is really

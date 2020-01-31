@@ -15,11 +15,7 @@
  */
 package app.packed.inject;
 
-/**
- *
- */
-// Er det kun services??? Eller bliver den ogsaa f.eks. brugt.
-// Ved f.eks. en extension der vil have noget den ikke kan faa.
+/** This exception is typically thrown when a dependency could not be resolved. */
 public class UnresolvedDependencyException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */

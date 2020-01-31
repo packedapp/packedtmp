@@ -17,8 +17,8 @@ package packed.internal.service.run;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.inject.MakeException;
 import app.packed.inject.Provider;
+import app.packed.inject.ProvisionException;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ProvideContext;
 import packed.internal.service.build.ServiceExtensionInstantiationContext;
@@ -33,7 +33,7 @@ import packed.internal.util.ThrowableUtil;
 public class PrototypeInjectorEntry<T> extends InjectorEntry<T> {
 
     /** An empty object array. */
-    private final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
+    private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
     private final Provider<?>[] providers;
 
@@ -98,7 +98,7 @@ public class PrototypeInjectorEntry<T> extends InjectorEntry<T> {
             return (T) mh.invokeWithArguments(params);
         } catch (Throwable e) {
             ThrowableUtil.throwIfUnchecked(e);
-            throw new MakeException("Failed to inject ", e);
+            throw new ProvisionException("Failed to inject ", e);
         }
     }
 }
