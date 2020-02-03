@@ -13,24 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.base.reflect;
+package packed.internal.base.reflectM1;
 
-import java.lang.invoke.MethodHandles.Lookup;
-
-import app.packed.base.Nullable;
+import java.lang.reflect.Modifier;
 
 /**
  *
  */
+final class Modifiers {
 
-// Problemet er lidt caching taenker jeg...
-interface ClazzAnalyzer<T> {
+    private final int modifier;
 
-    T analyze(Lookup lookup, Class<?> clazz);
+    private Modifiers(int modifier) {
+        this.modifier = modifier;
+    }
 
-    T analyzeWithCaching(@Nullable Lookup lookup, Class<?> clazz);
+    public boolean isStatic() {
+        return Modifier.isStatic(modifier);
+    }
 
-    static <T> ClazzAnalyzer<T> of(Lookup lookup, Class<T> builderType) {
-        throw new UnsupportedOperationException();
+    public int modifier() {
+        return modifier;
+    }
+
+    public static Modifiers of(int modifier) {
+        return new Modifiers(modifier);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(ClassDescriptor.class.getModifiers());
     }
 }
+// field.modifiers.isStatic()

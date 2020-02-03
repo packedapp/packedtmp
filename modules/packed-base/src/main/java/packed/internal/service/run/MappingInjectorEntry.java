@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Function;
 
-import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceMode;
 import app.packed.service.ProvideContext;
 import packed.internal.service.build.BuildEntry;
 
@@ -58,7 +58,7 @@ public final class MappingInjectorEntry<F, T> extends InjectorEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public InstantiationMode instantiationMode() {
+    public ServiceMode instantiationMode() {
         return delegate.instantiationMode();
     }
 

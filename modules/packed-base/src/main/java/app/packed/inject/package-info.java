@@ -13,13 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject;
-
-import java.util.List;
 
 /**
- *
+ * Provides the dependency injection model that is used throughout the framework.
  */
-public interface WithDependencies {
-    List<ServiceDependency> dependencies();
-}
+package app.packed.inject;

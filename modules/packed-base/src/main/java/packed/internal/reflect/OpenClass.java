@@ -87,6 +87,10 @@ public final class OpenClass {
         return new OpenClass(lookup, clazz, registerForNative);
     }
 
+    public <T extends Throwable> OpenClassCreator findCreator(UncheckedThrowableFactory<?> tf, Class<?>... availableDependencies) throws T {
+        throw new UnsupportedOperationException();
+    }
+
     public <T extends Throwable> void findMethods(ThrowableConsumer<? super Method, T> methodConsumer) throws T {
         MemberFinder.findMethods(Object.class, clazz, methodConsumer);
     }

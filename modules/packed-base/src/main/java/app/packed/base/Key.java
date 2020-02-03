@@ -67,8 +67,8 @@ import packed.internal.util.types.TypeUtil;
  * <ul>
  * <li><b>Not be an optional type.</b> The key cannot be of type {@link Optional}, {@link OptionalInt},
  * {@link OptionalLong} or {@link OptionalDouble} as they are a reserved type.</li>
- * <li><b>Have 0 or 1 qualifier.</b> A valid key cannot have more than 1 annotations whose type is annotated with
- * {@link Qualifier}</li>
+ * <li><b>Have none or a single qualifier.</b> A valid key cannot have more than 1 annotations whose type is annotated
+ * with {@link Qualifier}</li>
  * </ul>
  * <p>
  * Keys do <b>not</b> differentiate between primitive types (long, double, etc.) and their corresponding wrapper types
@@ -83,7 +83,7 @@ public abstract class Key<T> {
         /** {@inheritDoc} */
         @Override
         protected Key<?> computeValue(Class<?> implementation) {
-            return TypeLiteral.of(implementation).box().toKey();
+            return Key.fromTypeLiteral(TypeLiteral.of(implementation).box());
         }
     };
 
@@ -345,7 +345,15 @@ public abstract class Key<T> {
         return fromTypeLiteralNullableAnnotation(parameter, tl, annotation);
     }
 
-    static <T> Key<T> fromTypeLiteral(TypeLiteral<T> typeLiteral) {
+    /**
+     * Returns a key with no qualifier and the same type as this instance.
+     * 
+     * @return a key with no qualifier and the same type as this instance
+     * @throws InvalidDeclarationException
+     *             if the type literal could not be converted to a key, for example, if it is an {@link Optional}. Or if the
+     *             specified type literal it not free from type parameters
+     */
+    public static <T> Key<T> fromTypeLiteral(TypeLiteral<T> typeLiteral) {
         return fromTypeLiteralNullableAnnotation(typeLiteral, typeLiteral, null);
     }
 
@@ -361,7 +369,7 @@ public abstract class Key<T> {
      *             if the type literal could not be converted to a key, for example, if it is an {@link Optional}. Or if the
      *             qualifier type is not annotated with {@link Qualifier}.
      */
-    static <T> Key<T> fromTypeLiteral(TypeLiteral<T> typeLiteral, Annotation qualifier) {
+    public static <T> Key<T> fromTypeLiteral(TypeLiteral<T> typeLiteral, Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
         QualifierHelper.checkQualifierAnnotationPresent(qualifier);
         return fromTypeLiteralNullableAnnotation(typeLiteral, typeLiteral, qualifier);
@@ -421,7 +429,7 @@ public abstract class Key<T> {
      * @return a key of the specified type with the specified qualifier
      */
     public static <T> Key<T> of(Class<T> type, Annotation qualifier) {
-        return TypeLiteral.of(type).box().toKey(qualifier);
+        return Key.fromTypeLiteral(TypeLiteral.of(type).box(), qualifier);
     }
 
     /** See {@link CanonicalizedTypeLiteral}. */

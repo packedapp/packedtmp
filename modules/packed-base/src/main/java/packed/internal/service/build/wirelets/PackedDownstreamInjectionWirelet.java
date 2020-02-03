@@ -54,7 +54,7 @@ public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
         }
     }
 
-    /** A wirelet for {@link ServiceWirelets#peekUpstream(Consumer)}. */
+    /** A wirelet for {@link ServiceWirelets#peekFrom(Consumer)}. */
     public static class PeekDownstreamWirelet extends PackedDownstreamInjectionWirelet {
 
         /** The peek action to execute. */

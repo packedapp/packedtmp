@@ -32,7 +32,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.service.Injector;
-import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceMode;
 import app.packed.service.Provide;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceExtension;
@@ -101,7 +101,7 @@ public final class ServiceProvidingManager {
         } else {
             Factory<?> factory = psc.factory;
             List<ServiceDependency> dependencies = ModuleAccess.inject().toSupport(factory).dependencies;
-            parentNode = new ComponentFactoryBuildEntry<>(node, cc, InstantiationMode.SINGLETON, psc.fromFactory(), dependencies);
+            parentNode = new ComponentFactoryBuildEntry<>(node, cc, ServiceMode.SINGLETON, psc.fromFactory(), dependencies);
         }
 
         // If any of the @Provide methods are instance members the parent node needs special treatment.
@@ -136,7 +136,7 @@ public final class ServiceProvidingManager {
         BuildEntry<?> c = componentConfigurationCache.get(cc);// remove??
         if (c == null) {
             List<ServiceDependency> dependencies = ModuleAccess.inject().toSupport(cc.factory).dependencies;
-            c = new ComponentFactoryBuildEntry<>(node, cc, InstantiationMode.SINGLETON, cc.fromFactory(), (List) dependencies);
+            c = new ComponentFactoryBuildEntry<>(node, cc, ServiceMode.SINGLETON, cc.fromFactory(), (List) dependencies);
         }
         c.as((Key) cc.factory.key());
         providingEntries.add(c);

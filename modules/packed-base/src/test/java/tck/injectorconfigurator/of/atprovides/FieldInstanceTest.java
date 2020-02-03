@@ -30,7 +30,7 @@ import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
 import app.packed.service.Injector;
 import app.packed.service.InjectorConfigurator;
-import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceMode;
 import app.packed.service.Provide;
 
 /** Tests {@link Provide#instantionMode()} on fields. */
@@ -145,10 +145,10 @@ public class FieldInstanceTest {
         // @Provide(instantionMode = InstantiationMode.LAZY)
         // Long l = 1L;
 
-        @Provide(instantionMode = InstantiationMode.PROTOTYPE)
+        @Provide(instantionMode = ServiceMode.PROTOTYPE)
         Integer p = 1;
 
-        @Provide(instantionMode = InstantiationMode.SINGLETON)
+        @Provide(instantionMode = ServiceMode.SINGLETON)
         Short s = 1;
 
         static void test(Consumer<? super InjectorConfigurator> configurator) {
@@ -172,7 +172,7 @@ public class FieldInstanceTest {
 
     static class PrototypeField {
 
-        @Provide(instantionMode = InstantiationMode.PROTOTYPE)
+        @Provide(instantionMode = ServiceMode.PROTOTYPE)
         Short s = 1;
 
         PrototypeField(AtomicBoolean b) {
@@ -182,7 +182,7 @@ public class FieldInstanceTest {
 
     static class SingletonField {
 
-        @Provide(instantionMode = InstantiationMode.SINGLETON)
+        @Provide(instantionMode = ServiceMode.SINGLETON)
         Short s = 1;
 
         SingletonField(AtomicBoolean b) {

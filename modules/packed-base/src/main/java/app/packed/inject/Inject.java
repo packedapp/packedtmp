@@ -31,7 +31,7 @@ import app.packed.service.ServiceExtension;
 /**
  * Unlike many other popular dependency injection frameworks. There are usually no requirements in Packed to use
  * <code>@Inject</code> annotations on the constructor or method that must have dependencies injected. However, in some
- * situations an annotation can be used for providing greater control over how dependencies are bseing injected.
+ * situations an annotation can be used for providing greater control over how dependencies are being injected.
  * <p>
  * One such example is if a dependency should only be injected if it is available. Injecting {@code null} instead of
  * throwing an {@link FactoryDefinitionException}.
@@ -41,20 +41,23 @@ import app.packed.service.ServiceExtension;
  * 
  * <p>
  * The annotation can also be applied to
+ * 
+ * <p>
+ * There is no general support for injecting into static fields or methods. If you absolutely need it, it is fairly easy
+ * to support using sidecars... TODO example
  */
-@Target({ ElementType.FIELD, ElementType.METHOD })
+@Target({ ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @UseExtension(ServiceExtension.class) // Replace with UseSidecar(InjectSidecar.class) [maske defineret i denne klasse]
 @OpensFor({ INVOKE, SET_FIELD })
-
-// Maaske skal vi endda at hvis man ikke har en sidecar, og kun @OnLifecycle... Saa koerer man setField/invokeMethod
-// naar
-// man naar det den givne lifecycle... Ja det taenker jeg man goer. Saa slipper man ogsaa for at lave baade en
-// InjectFieldSidecar + InjectMethodSidecar
-//
-
 public @interface Inject {}
+
+//Maaske skal vi endda at hvis man ikke har en sidecar, og kun @OnLifecycle... Saa koerer man setField/invokeMethod
+//naar
+//man naar det den givne lifecycle... Ja det taenker jeg man goer. Saa slipper man ogsaa for at lave baade en
+//InjectFieldSidecar + InjectMethodSidecar
+//
 
 // Field injection first
 // Maybe run @Inject noArgConstruct() last

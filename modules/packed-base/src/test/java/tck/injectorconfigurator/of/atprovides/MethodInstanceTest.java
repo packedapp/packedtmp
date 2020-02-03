@@ -30,7 +30,7 @@ import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
 import app.packed.service.Injector;
 import app.packed.service.InjectorConfigurator;
-import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceMode;
 import app.packed.service.Provide;
 
 /** Tests {@link Provide#instantionMode()}. */
@@ -110,12 +110,12 @@ public class MethodInstanceTest {
         // return l;
         // }
 
-        @Provide(instantionMode = InstantiationMode.PROTOTYPE)
+        @Provide(instantionMode = ServiceMode.PROTOTYPE)
         Integer p() {
             return p;
         }
 
-        @Provide(instantionMode = InstantiationMode.SINGLETON)
+        @Provide(instantionMode = ServiceMode.SINGLETON)
         Short s() {
             return s;
         }
@@ -150,7 +150,7 @@ public class MethodInstanceTest {
             b.set(true);
         }
 
-        @Provide(instantionMode = InstantiationMode.PROTOTYPE)
+        @Provide(instantionMode = ServiceMode.PROTOTYPE)
         public Short s() {
             return s;
         }
@@ -164,7 +164,7 @@ public class MethodInstanceTest {
             b.set(true);
         }
 
-        @Provide(instantionMode = InstantiationMode.SINGLETON)
+        @Provide(instantionMode = ServiceMode.SINGLETON)
         public Short s() {
             return s;
         }

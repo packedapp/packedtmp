@@ -22,7 +22,7 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.config.ConfigSite;
-import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceMode;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionInstantiationContext;
 import packed.internal.service.build.ServiceExtensionNode;
@@ -55,7 +55,7 @@ final class MappingBuildEntry<F, T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public InstantiationMode instantiationMode() {
+    public ServiceMode instantiationMode() {
         return entryToMap.instantiationMode();
     }
 

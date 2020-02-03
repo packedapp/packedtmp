@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.concurrent.Semaphore;
 
 import app.packed.inject.Provider;
-import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceMode;
 import app.packed.service.ProvideContext;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionInstantiationContext;
@@ -53,7 +53,7 @@ public final class LazyInjectorEntry<T> extends InjectorEntry<T> implements Prov
 
     /** {@inheritDoc} */
     @Override
-    public InstantiationMode instantiationMode() {
+    public ServiceMode instantiationMode() {
         throw new UnsupportedOperationException();
     }
 

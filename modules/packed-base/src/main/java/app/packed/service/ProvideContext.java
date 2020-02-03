@@ -18,7 +18,6 @@ package app.packed.service;
 import java.util.Optional;
 
 import app.packed.base.InvalidDeclarationException;
-import app.packed.base.Key;
 import app.packed.base.reflect.ConstructorDescriptor;
 import app.packed.base.reflect.FieldDescriptor;
 import app.packed.base.reflect.MemberDescriptor;
@@ -156,6 +155,9 @@ import app.packed.component.Component;
 // ProvideLocal? Føler lidt at grunden til vi ikke kan bruge annoteringer
 // Som vi vil paa sidecars er pga Provide...
 // F.eks. Schedule boer jo fungere praecis som var den paa componenten...
+
+//ProvisionContext (If we have InjectionContext)
+//ProvisionPrototypeContext
 public interface ProvideContext {
 
     // Vi tager alle annotations med...@SystemProperty(fff) @Foo String xxx
@@ -176,7 +178,9 @@ public interface ProvideContext {
      */
     // Maaske den bare skal vaere separat.... Hvis vi gerne vil bruge ProvideContext for prime.
     // Saa er det jo noedvendig ikke noget der hedder key...
-    Key<?> key();
+
+    // Og vi ved vel aerlig talt hvilken noegle vi er.....
+    // Key<?> key();
 
     /**
      * The class that is requesting
@@ -228,7 +232,8 @@ public interface ProvideContext {
      */
     // What to do at configuration time.... We probably don't have a component at that point...
 
-    // ComponentPath???, syntes ikke man skal kunne iterere...
+    // ComponentPath???, syntes ikke man skal kunne iterere over dens boern...
+    // Det er bare f.eks. til at debugge...
 
     Optional<Component> component();
 

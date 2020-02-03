@@ -14,6 +14,8 @@ import app.packed.base.Key;
  * <p>
  * we both need to check the type and the qualifier which must be readable by #visibility
  * 
+ * @apiNote In the future, if the Java language permits, {@link InjectionContext} may become a {@code sealed} interface,
+ *          which would prohibit subclassing except by explicitly permitted types.
  */
 public interface InjectionContext {
 
@@ -39,7 +41,7 @@ public interface InjectionContext {
      * 
      * @return the class for which we calculate visibility
      */
-    // target()
+    // contextTarget target()
     Class<?> visibility(); // Det er jo bare .getClass(); Med mindre det er en Composite...
 }
 
@@ -81,7 +83,6 @@ public interface InjectionContext {
 // Not first priority though...
 //// Det ville ikke fungere super godt hvis vi bruger en sidecar...
 
-/////
 // Altsaa der er jo nogen gange hvor ting ikke er tilgaengelig for en constructor. Men kun en metode??
 
 //@Stuff Set<Key<?>> thisIsThing

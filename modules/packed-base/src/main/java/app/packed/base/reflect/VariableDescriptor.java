@@ -32,17 +32,14 @@ import app.packed.base.TypeLiteral;
  * @apiNote In the future, if the Java language permits, {@link VariableDescriptor} may become a {@code sealed}
  *          interface, which would prohibit subclassing except by explicitly permitted types.
  */
-public abstract class VariableDescriptor implements AnnotatedElement {
-
-    /** Creates a new descriptor. */
-    VariableDescriptor() {}
+public interface VariableDescriptor extends AnnotatedElement {
 
     /**
      * Returns the type of element, is typically used for error messages.
      *
      * @return the type of element
      */
-    public abstract String descriptorTypeName();
+    String descriptorTypeName();
 
     /**
      * Returns the {@code Class} object representing the class or interface that declares the variable.
@@ -54,7 +51,7 @@ public abstract class VariableDescriptor implements AnnotatedElement {
      * @apiNote this method is called getDeclaringClass instead of declaringClass to be compatible with
      *          {@link Member#getDeclaringClass()}
      */
-    public abstract Class<?> getDeclaringClass();
+    Class<?> getDeclaringClass();
 
     /**
      * Get the modifier flags for this the variable, as an integer. The {@code Modifier} class can be used to decode the
@@ -65,7 +62,7 @@ public abstract class VariableDescriptor implements AnnotatedElement {
      * @see Field#getModifiers()
      * @apiNote this method is called getModifiers instead of modifiers to be compatible with {@link Member#getModifiers()}
      */
-    public abstract int getModifiers();
+    int getModifiers();
 
     /**
      * Returns the name of the variable.
@@ -75,7 +72,7 @@ public abstract class VariableDescriptor implements AnnotatedElement {
      * @see Parameter#getName()
      * @apiNote this method is called getName instead of name to be compatible with {@link Member#getName()}
      */
-    public abstract String getName();
+    String getName();
 
     /**
      * Returns the parameterizedType of the variable
@@ -84,7 +81,7 @@ public abstract class VariableDescriptor implements AnnotatedElement {
      * @see Field#getGenericType()
      * @see Parameter#getParameterizedType()
      */
-    public abstract Type getParameterizedType();
+    Type getParameterizedType();
 
     /**
      * Returns a class that identifies the type of the variable.
@@ -94,7 +91,7 @@ public abstract class VariableDescriptor implements AnnotatedElement {
      * @see Field#getType()
      */
     // TODO rename to type
-    public abstract Class<?> getType();
+    Class<?> getType();
 
     /**
      * Returns a type literal that identifies the generic type of the variable.
@@ -104,7 +101,7 @@ public abstract class VariableDescriptor implements AnnotatedElement {
      * @see Field#getGenericType()
      */
     // TODO rename typeLiteral
-    public abstract TypeLiteral<?> getTypeLiteral();
+    TypeLiteral<?> getTypeLiteral();
 
     /**
      * Returns true if the variable has a name.
@@ -116,14 +113,14 @@ public abstract class VariableDescriptor implements AnnotatedElement {
      * @see Parameter#getName()
      * @see Field#getName()
      */
-    public abstract boolean isNamePresent();
+    boolean isNamePresent();
 
     /**
      * Returns whether or not a {@link Nullable} annotation is present.
      * 
      * @return true if it is present, otherwise false
      */
-    public final boolean isNullable() {
+    default boolean isNullable() {
         return isAnnotationPresent(Nullable.class);
     }
 }
@@ -135,4 +132,4 @@ public abstract class VariableDescriptor implements AnnotatedElement {
 // *
 // * @return index of the variable.
 // */
-//// public abstract int index();
+//// int index();

@@ -60,7 +60,7 @@ public class AnnotatedFieldHookTest {
         hc.close(); // We close it here, because these checks should work, even if it is closed
 
         assertThat(h.annotation()).isSameAs(AnnotationInstances.LEFT);
-        assertThat(h.field()).isEqualTo(FieldDescriptor.of(findField("field")));
+        assertThat(h.field()).isEqualTo(FieldDescriptor.from(findField("field")));
         assertThat(h.field()).isSameAs(h.field()); // we should cache it
     }
 

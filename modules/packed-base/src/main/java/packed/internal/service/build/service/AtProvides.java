@@ -26,7 +26,7 @@ import app.packed.base.Nullable;
 import app.packed.base.reflect.FieldDescriptor;
 import app.packed.base.reflect.MemberDescriptor;
 import app.packed.base.reflect.MethodDescriptor;
-import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceMode;
 import app.packed.service.Provide;
 import packed.internal.inject.ServiceDependency;
 
@@ -38,7 +38,7 @@ final class AtProvides {
     final String description;
 
     /** The instantiation mode from {@link Provide#instantionMode()}. */
-    final InstantiationMode instantionMode;
+    final ServiceMode instantionMode;
 
     /** Whether or not the member on which the annotation is present is a static member. */
     final boolean isStaticMember;

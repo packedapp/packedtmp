@@ -20,11 +20,11 @@ import static java.util.Objects.requireNonNull;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
-import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceMode;
 import app.packed.service.ProvideContext;
 import packed.internal.service.build.BuildEntry;
 
-/** An injector entry holding a {@link InstantiationMode#SINGLETON} instance. */
+/** An injector entry holding a {@link ServiceMode#SINGLETON} instance. */
 // Can't implement both ServiceDescriptor and Provider...
 public final class SingletonInjectorEntry<T> extends InjectorEntry<T> {
 
@@ -63,8 +63,8 @@ public final class SingletonInjectorEntry<T> extends InjectorEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public InstantiationMode instantiationMode() {
-        return InstantiationMode.SINGLETON;
+    public ServiceMode instantiationMode() {
+        return ServiceMode.SINGLETON;
     }
 
     /** {@inheritDoc} */

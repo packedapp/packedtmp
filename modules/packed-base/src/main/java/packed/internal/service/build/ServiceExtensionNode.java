@@ -28,7 +28,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.ExtensionContext;
 import app.packed.inject.Inject;
-import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceMode;
 import app.packed.service.ServiceContract;
 import packed.internal.container.WireletContext;
 import packed.internal.inject.AtInject;
@@ -220,7 +220,7 @@ public final class ServiceExtensionNode {
         for (BuildEntry<?> node : resolvedEntries.values()) {
             if (node instanceof ComponentFactoryBuildEntry) {
                 ComponentFactoryBuildEntry<?> s = (ComponentFactoryBuildEntry<?>) node;
-                if (s.instantiationMode() == InstantiationMode.SINGLETON) {
+                if (s.instantiationMode() == ServiceMode.SINGLETON) {
                     s.toRuntimeEntry(con).getInstance(null);
                 }
             }

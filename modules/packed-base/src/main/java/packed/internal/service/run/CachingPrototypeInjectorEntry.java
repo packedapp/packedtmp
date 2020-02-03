@@ -15,7 +15,7 @@
  */
 package packed.internal.service.run;
 
-import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceMode;
 import app.packed.service.ProvideContext;
 import packed.internal.service.build.ServiceExtensionInstantiationContext;
 import packed.internal.service.build.service.ComponentFactoryBuildEntry;
@@ -44,7 +44,7 @@ public class CachingPrototypeInjectorEntry<T> extends PrototypeInjectorEntry<T> 
     }
 
     @Override
-    public InstantiationMode instantiationMode() {
+    public ServiceMode instantiationMode() {
         // TODO Auto-generated method stub
         return super.instantiationMode();
     }

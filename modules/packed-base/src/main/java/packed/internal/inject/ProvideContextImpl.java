@@ -51,8 +51,6 @@ public final class ProvideContextImpl implements ProvideContext {
         return Optional.ofNullable(component);
     }
 
-    /** {@inheritDoc} */
-    @Override
     public Key<?> key() {
         return dependency.key();
     }

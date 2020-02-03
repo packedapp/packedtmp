@@ -22,8 +22,8 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import app.packed.base.TypeLiteral;
-import packed.internal.inject.factoryhandle.Factory0FactoryHandle;
-import packed.internal.inject.factoryhandle.FactorySupport;
+import packed.internal.inject.factory.Factory0FactoryHandle;
+import packed.internal.inject.factory.FactorySupport;
 
 /**
  * A special {@link Factory} type that uses a {@link Supplier} to dynamically provide new objects.

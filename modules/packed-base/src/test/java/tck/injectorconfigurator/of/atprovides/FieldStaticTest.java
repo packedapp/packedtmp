@@ -26,7 +26,7 @@ import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
 import app.packed.service.Injector;
 import app.packed.service.InjectorConfigurator;
-import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceMode;
 import app.packed.service.Provide;
 
 /**
@@ -67,10 +67,10 @@ public class FieldStaticTest {
         // @Provide(instantionMode = InstantiationMode.LAZY)
         // private static Long L;
 
-        @Provide(instantionMode = InstantiationMode.PROTOTYPE)
+        @Provide(instantionMode = ServiceMode.PROTOTYPE)
         private static Integer P;
 
-        @Provide(instantionMode = InstantiationMode.SINGLETON)
+        @Provide(instantionMode = ServiceMode.SINGLETON)
         private static Short S;
 
         MixedFieldsInstantiable() {
@@ -113,10 +113,10 @@ public class FieldStaticTest {
         // @Provide(instantionMode = InstantiationMode.LAZY)
         // private static Long L;
 
-        @Provide(instantionMode = InstantiationMode.PROTOTYPE)
+        @Provide(instantionMode = ServiceMode.PROTOTYPE)
         private static Integer P;
 
-        @Provide(instantionMode = InstantiationMode.SINGLETON)
+        @Provide(instantionMode = ServiceMode.SINGLETON)
         private static Short S;
 
         public MixedFieldsNoInstantiation() {

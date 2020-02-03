@@ -90,7 +90,7 @@ public class ServicePacklets {
      * @return a peeking stage
      */
     public static Wirelet peekFrom(Consumer<? super ServiceDescriptor> action) {
-        return new PackedUpstreamInjectionWirelet.PeekUpstream(action);
+        return new PackedUpstreamInjectionWirelet.PeekFrom(action);
     }
 
     /**

@@ -36,7 +36,7 @@ public class TetIt {
         for (int i = 0; i < 1_000_0000; i++) {
             Injector inj = Injector.configure(c -> {
                 c.lookup(MethodHandles.lookup());
-                c.provide(Factory.ofInstance("foo"));
+                c.provide(Factory.fromInstance("foo"));
                 c.provide(NeedsString.class);
             });
             requireNonNull(inj.use(NeedsString.class));
@@ -54,9 +54,9 @@ public class TetIt {
         @Override
         protected void configure() {
             ServiceExtension e = use(ServiceExtension.class);
-            e.provide(Factory.ofInstance("Root"));
-            e.provide(Factory.ofInstance("Child1"));
-            e.provide(Factory.ofInstance("Child2"));
+            e.provide(Factory.fromInstance("Root"));
+            e.provide(Factory.fromInstance("Child1"));
+            e.provide(Factory.fromInstance("Child2"));
         }
     }
 }

@@ -30,7 +30,6 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
-import app.packed.base.reflect.ParameterDescriptor;
 import app.packed.service.Injector;
 
 /** Tests {@link ParameterDescriptor}. */
@@ -42,15 +41,15 @@ public class InternalParameterDescriptorTest {
 
     @Test
     public void ofParameter() throws Exception {
-        npe(() -> ParameterDescriptor.of((Parameter) null), "parameter");
+        npe(() -> ParameterDescriptor.from((Parameter) null), "parameter");
 
-        ParameterDescriptor ipd = ParameterDescriptor.of(P1);
+        ParameterDescriptor ipd = ParameterDescriptor.from(P1);
 
         assertThat(ipd.descriptorTypeName()).isEqualTo("parameter");
 
         assertThat(ipd).isEqualTo(ipd);
-        assertThat(ipd).isEqualTo(ParameterDescriptor.of(P1));
-        assertThat(ipd).isNotEqualTo(ParameterDescriptor.of(P2));
+        assertThat(ipd).isEqualTo(ParameterDescriptor.from(P1));
+        assertThat(ipd).isNotEqualTo(ParameterDescriptor.from(P2));
 
         assertThat(ipd).isNotEqualTo("");
 

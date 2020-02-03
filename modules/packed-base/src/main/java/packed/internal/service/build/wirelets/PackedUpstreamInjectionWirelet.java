@@ -104,8 +104,8 @@ public abstract class PackedUpstreamInjectionWirelet extends ServiceWirelet {
         }
     }
 
-    /** A wirelet for {@link ServiceWirelets#peekUpstream(Consumer)}. */
-    public static class PeekUpstream extends PackedUpstreamInjectionWirelet {
+    /** A wirelet for {@link ServiceWirelets#peekFrom(Consumer)}. */
+    public static class PeekFrom extends PackedUpstreamInjectionWirelet {
 
         /** The peek action to execute. */
         private final Consumer<? super ServiceDescriptor> action;
@@ -116,7 +116,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ServiceWirelet {
          * @param action
          *            the peek action to execute
          */
-        public PeekUpstream(Consumer<? super ServiceDescriptor> action) {
+        public PeekFrom(Consumer<? super ServiceDescriptor> action) {
             this.action = requireNonNull(action, "action is null");
         }
 

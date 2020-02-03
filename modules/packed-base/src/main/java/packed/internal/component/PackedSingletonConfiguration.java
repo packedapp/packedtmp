@@ -24,7 +24,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
 import app.packed.inject.Factory;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
-import packed.internal.inject.factoryhandle.FactoryHandle;
+import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.moduleaccess.ModuleAccess;
 
 /**

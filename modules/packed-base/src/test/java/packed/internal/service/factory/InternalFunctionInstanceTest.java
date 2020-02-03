@@ -20,8 +20,8 @@ import static testutil.assertj.Assertions.checkThat;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
-import packed.internal.inject.factoryhandle.FactoryHandle;
-import packed.internal.inject.factoryhandle.InstanceFactoryHandle;
+import packed.internal.inject.factory.FactoryHandle;
+import packed.internal.inject.factory.InstanceFactoryHandle;
 
 /** Tests {@link InstanceFactoryHandle} */
 public class InternalFunctionInstanceTest {

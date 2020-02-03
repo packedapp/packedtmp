@@ -16,39 +16,31 @@
 package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
-import static packed.internal.util.StringFormatter.format;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
 import app.packed.base.invoke.UncheckedIllegalAccessException;
 import app.packed.base.reflect.ConstructorDescriptor;
-import app.packed.base.reflect.ExecutableDescriptor;
 import app.packed.base.reflect.MethodDescriptor;
-import app.packed.service.Injector;
-import app.packed.service.InjectorConfigurator;
-import app.packed.service.ServiceComponentConfiguration;
-import packed.internal.inject.ServiceDependency;
-import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
-import packed.internal.inject.factoryhandle.FactorySupport;
-import packed.internal.inject.factoryhandle.InstanceFactoryHandle;
-import packed.internal.inject.factoryhandle.MappingFactoryHandle;
+import app.packed.base.reflect.VariableDescriptor;
+import packed.internal.inject.factory.FactoryFindInjectableExecutable;
+import packed.internal.inject.factory.FactorySupport;
+import packed.internal.inject.factory.InstanceFactoryHandle;
+import packed.internal.inject.factory.MappingFactoryHandle;
 import packed.internal.moduleaccess.AppPackedInjectAccess;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.BaseSupport;
-import packed.internal.util.types.TypeUtil;
 
 /**
  * An object that creates other objects. factory is an immutable that creates this
@@ -78,7 +70,8 @@ import packed.internal.util.types.TypeUtil;
 // Refereres fra InjectorDescriptor....
 // Skal bruges til Filtrering... Men hvis noeglerne er skjult kan vi vel bruge service....
 
-// Factory høre måske med til Make. Syntes ihvertfald
+//Does this belong in app.packed.service????
+//No because components also uses it...
 public class Factory<T> {
 
     /** A cache of factories used by {@link #find(Class)}. */
@@ -184,20 +177,99 @@ public class Factory<T> {
 
     // FactoryDescriptor.of(Factory f) <--- in devtools???
 
+    public final <S> Factory<T> bind(Class<S> key, @Nullable S instance) {
+
+        // Do we allow binding non-matching keys???
+        // Could be useful from Prime annotations...
+
+        // Tror vi skal have to forskellige
+
+        // bindParameter(int index).... retains index....
+        // Throws
+
+        // bindWithKey();
+
+        // bindRaw(); <---- Only takes a class, ignores nullable.....
+
+        // Hvordan klarer vi Foo(String firstName, String lastName)...
+        // Eller
+
+        // Hvordan klarer vi Foo(String firstName, SomeComposite sc)...
+
+        // Det eneste der er forskel er parameter index'et...
+        // Maaske bliver man bare noedt til at lave en statisk metoder....
+
+        // Skal vi have en speciel MemberFactory?????
+
+        //
+
+        // bindTo? Det er jo ikke et argument hvis det f.eks. er et field...
+
+        // resolveDependency()...
+        // Its not really an argument its a dependency that we resolve...
+
+        // withArgumentSupplier
+        throw new UnsupportedOperationException();
+    }
+
+    public final <S> Factory<T> bind(Key<S> key, @Nullable S instance) {
+        throw new UnsupportedOperationException();
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public final Factory<T> bind(Object instance) {
+        requireNonNull(instance, "instance is null");
+        return bind((Class) instance.getClass(), instance);
+
+        // someExtension()
+        // install(Factory.of(Foo.class).withArgument(this))).
+
+        // There is going to be some automatic support for injecting extensions into
+        // services installed by them. We are just not quite there yet.
+        // Will bind to any assignable parameter...
+    }
+
+    public final <S> Factory<T> bindSupplier(Class<S> key, Supplier<?> supplier) {
+        // Altsaa vi kan vel bruge et andet factory????
+        // En mulig usecase f.eks. for Factory1 er at kunne mappe dependencies...
+        // f.eks. fra Foo(CardReader) -> new Factory0<
+        // new Factory0<>(e->e);
+        // withArgumentSupplier
+        throw new UnsupportedOperationException();
+    }
+
+    public final <S> Factory<T> bindSupplier(Key<S> key, Supplier<?> supplier) {
+        throw new UnsupportedOperationException();
+    }
+
+    public final Factory<T> bindVariable(int index, @Nullable Object argument) {
+
+        // IndexOutOfBoundsException... if invalid index....
+
+        // UnsupportedOperationException... if was not created from a member
+        //
+
+        // Har vi en optional MemberDescriptor?????
+
+        // Hvis man nu vil injecte en composite....
+
+        throw new UnsupportedOperationException();
+    }
+
+    public final Factory<T> bindVariableSupplier(int index, Supplier<?> supplier) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
-     * The key under which If this factory is registered as a service with an {@link Injector}. This method returns the
-     * (default) key that will be used, for example, when regist Returns the (default) key to which this factory will bound
-     * to if using as If this factory is used to register a service, for example, via
-     * {@link InjectorConfigurator#provide(Factory)}. This method returns the key for which the factory
-     * 
-     * Returns the key for which this factory will be registered, this can be overridden, for example, by calling
-     * {@link ServiceComponentConfiguration#as(Key)}.
+     * The key under which If this factory is registered as a service. This method returns the (default) key that will be
+     * used, for example, when regist Returns the (default) key to which this factory will bound to if using as If this
+     * factory is used to register a service.
      *
      * @return the key under which this factory will be registered unless
      * @see #withKey(Key)
      */
     public final Key<T> key() {
-        return factory.defaultKey;
+        return factory.key;
     }
 
     /**
@@ -242,9 +314,9 @@ public class Factory<T> {
     }
 
     /**
-     * Returns the raw type of those objects that this factory creates.
+     * Returns the raw type of the objects this factory creates.
      *
-     * @return the raw type of those objects that this factory creates
+     * @return the raw type of the objects this factory creates
      */
     public final Class<? super T> rawType() {
         return typeLiteral().rawType();
@@ -263,9 +335,9 @@ public class Factory<T> {
     }
 
     /**
-     * Returns the type of those objects that this factory creates.
+     * Returns the type of objects this factory creates.
      *
-     * @return the type of those objects that this factory creates
+     * @return the type of objects this factory creates
      */
     public final TypeLiteral<T> typeLiteral() {
         // Passer ikke hvis vi bruger map()...
@@ -286,81 +358,33 @@ public class Factory<T> {
         throw new UnsupportedOperationException();
     }
 
-    public final Factory<T> bindParameter(int index, @Nullable Object argument) {
+    /**
+     * Returns an immutable list of any variables (typically fields or parameters) that was used to construct this factory.
+     * <p>
+     * If this factory was created using {@link #fromInstance(Object)} the returned list is empty.
+     * 
+     * @return any variables that was used to construct the factory
+     */
+    public final List<VariableDescriptor> variables() {
+        // this list is static...
 
-        // IllegalArgument... if invalid index....
-
-        // UnsupportedOperationException... if was not created from a member
-
-        // Har vi en optional MemberDescriptor?????
-
-        // Hvis man nu vil injecte en composite....
-
+        // Returns empty list for type variables for now...
         throw new UnsupportedOperationException();
+
+        // If we have a List<VariableDescriptor> unboundVariables()...
+        // How would composite + primed be treated...
     }
 
-    public final <S> Factory<T> withArgument(Class<S> key, @Nullable S argument) {
+    public List<?> dependencies() {
+        // What if have Factory f = Factory.of(Foo(String x, String y));
+        // f.bindVariable(0, "FooBar");
+        // Now the first parameter (with Key String) is bound.
+        // But not the second parameter (also with Key String)
+        // What if we bind String now??? Only too second parameter?
 
-        // Tror vi skal have to forskellige
-
-        // bindParameter(int index).... retains index....
-        // Throws
-
-        // bindWithKey();
-
-        // bindRaw(); <---- Only takes a class, ignores nullable.....
-
-        // Hvordan klarer vi Foo(String firstName, String lastName)...
-        // Eller
-
-        // Hvordan klarer vi Foo(String firstName, SomeComposite sc)...
-
-        // Det eneste der er forskel er parameter index'et...
-        // Maaske bliver man bare noedt til at lave en statisk metoder....
-
-        // Skal vi have en speciel MemberFactory?????
-
-        //
-
-        // bindTo? Det er jo ikke et argument hvis det f.eks. er et field...
-
-        // resolveDependency()...
-        // Its not really an argument its a dependency that we resolve...
-
-        // withArgumentSupplier
         throw new UnsupportedOperationException();
-    }
 
-    public final <S> Factory<T> withArgument(Key<S> key, @Nullable Object argument) {
-        throw new UnsupportedOperationException();
-    }
-
-    public final Factory<T> withArgument(Object argument) {
-        // Overskriver
-
-        requireNonNull(argument, "argument is null");
-
-        // someExtension()
-        // install(Factory.of(Foo.class).withArgument(this))).
-
-        // There is going to be some automatic support for injecting extensions into
-        // services installed by them. We are just not quite there yet.
-
-        // Will bind to any assignable parameter...
-        throw new UnsupportedOperationException();
-    }
-
-    public final <S> Factory<T> withArgumentSupplier(Class<S> key, Supplier<?> supplier) {
-        // Altsaa vi kan vel bruge et andet factory????
-        // En mulig usecase f.eks. for Factory1 er at kunne mappe dependencies...
-        // f.eks. fra Foo(CardReader) -> new Factory0<
-        // new Factory0<>(e->e);
-        // withArgumentSupplier
-        throw new UnsupportedOperationException();
-    }
-
-    public final <S> Factory<T> withArgumentSupplier(Key<S> key, Supplier<?> supplier) {
-        throw new UnsupportedOperationException();
+        // Factory<T> narrow() <- removes bound dependencies/parameters()...
     }
 
     /**
@@ -486,253 +510,33 @@ public class Factory<T> {
      *            the instance to return every time a new instance is requested
      * @return the factory
      */
-    public static <T> Factory<T> ofInstance(T instance) {
+    public static <T> Factory<T> fromInstance(T instance) {
         return new Factory<>(new FactorySupport<>(InstanceFactoryHandle.of(instance), List.of()));
     }
 }
 
-/** This class is responsible for finding an injectable executable. */
-final class FactoryFindInjectableExecutable {
+//Ideen er vi dropper disse. Fordi all metoder virker...
+//Men instanse metoder skal man binde...
+//Factory.findMethod(Doo.class, "dooo").bind(new Doo());
+class XDeprecatedMethodInstances {
 
-    static <T> FactorySupport<T> find(Class<T> implementation) {
-        ExecutableDescriptor executable = findExecutable(implementation);
-        return new FactorySupport<>(new ExecutableFactoryHandle<>(TypeLiteral.of(implementation), executable, null),
-                ServiceDependency.fromExecutable(executable));
-    }
-
-    static <T> FactorySupport<T> find(TypeLiteral<T> implementation) {
-        requireNonNull(implementation, "implementation is null");
-        ExecutableDescriptor executable = findExecutable(implementation.rawType());
-        return new FactorySupport<>(new ExecutableFactoryHandle<>(implementation, executable, null), ServiceDependency.fromExecutable(executable));
-    }
-
-    private static ExecutableDescriptor findExecutable(Class<?> type) {
-        if (type.isArray()) {
-            throw new IllegalArgumentException("The specified type (" + format(type) + ") is an array");
-        } else if (type.isAnnotation()) {
-            throw new IllegalArgumentException("The specified type (" + format(type) + ") is an annotation");
-        }
-
-        // Try to find a single static method annotated with @Inject
-        Method method = null;
-        for (Method m : type.getDeclaredMethods()) {
-            if (Modifier.isStatic(m.getModifiers()) && m.isAnnotationPresent(Inject.class)) {
-                if (method != null) {
-                    throw new IllegalArgumentException("There are multiple static methods annotated with @Inject on " + format(type));
-                }
-                method = m;
-            }
-        }
-
-        // If a single method has been found, use it
-        if (method != null) {
-            // Det er jo i virkeligheden en Key vi laver her, burde havde det samme checkout..
-            if (method.getReturnType() == void.class /* || returnType == Void.class */) {
-                throw new IllegalArgumentException("Static method " + method + " annotated with @Inject cannot have a void return type."
-                        + " (@Inject on static methods are used to indicate that the method is a factory for a specific type, not for injecting values");
-            } else if (TypeUtil.isOptionalType(method.getReturnType())) {
-                throw new IllegalArgumentException("Static method " + method + " annotated with @Inject cannot have an optional return type ("
-                        + method.getReturnType().getSimpleName() + "). A valid instance needs to be provided by the method");
-            }
-            return MethodDescriptor.of(method);
-        }
-
-        Constructor<?>[] constructors = type.getDeclaredConstructors();
-
-        // If we only have 1 constructor, return it.
-        if (constructors.length == 1) {
-            return ConstructorDescriptor.of(constructors[0]);
-        }
-
-        // See if we have a single constructor annotated with @Inject
-        Constructor<?> constructor = null;
-        int maxParameters = 0;
-        for (Constructor<?> c : constructors) {
-            maxParameters = Math.max(maxParameters, c.getParameterCount());
-            if (c.isAnnotationPresent(Inject.class)) {
-                if (constructor != null) {
-                    throw new InvalidDeclarationException(
-                            "Multiple constructors annotated with @" + Inject.class.getSimpleName() + " on class " + format(type));
-                }
-                constructor = c;
-            }
-        }
-        if (constructor != null) {
-            return ConstructorDescriptor.of(constructor);
-        }
-
-        for (Constructor<?> c : constructors) {
-            if (Modifier.isPublic(c.getModifiers())) {
-                if (constructor != null) {
-                    throw new IllegalArgumentException(
-                            "No constructor annotated with @" + Inject.class.getSimpleName() + ". And multiple public constructors on class " + format(type));
-                }
-                constructor = c;
-            }
-        }
-        if (constructor != null) {
-            return ConstructorDescriptor.of(constructor);
-        }
-
-        for (Constructor<?> c : constructors) {
-            if (Modifier.isProtected(c.getModifiers())) {
-                if (constructor != null) {
-                    throw new IllegalArgumentException("No constructor annotated with @" + Inject.class.getSimpleName()
-                            + ". And multiple protected constructors on class " + format(type));
-                }
-                constructor = c;
-            }
-        }
-        if (constructor != null) {
-            return ConstructorDescriptor.of(constructor);
-        }
-
-        // Remaining constructors are private or package private
-        for (Constructor<?> c : constructors) {
-            if (!Modifier.isPrivate(c.getModifiers())) {
-                if (constructor != null) {
-                    throw new IllegalArgumentException("No constructor annotated with @" + Inject.class.getSimpleName()
-                            + ". And multiple package-private constructors on class " + format(type));
-                }
-                constructor = c;
-            }
-        }
-        if (constructor != null) {
-            return ConstructorDescriptor.of(constructor);
-        }
-
-        throw new IllegalArgumentException(
-                "No constructor annotated with @" + Inject.class.getSimpleName() + ". And multiple private constructors on class " + format(type));
-
-//        // Try and find one constructor with maximum number of parameters.
-//        for (Constructor<?> c : constructors) {
-//            if (c.getParameterCount() == maxParameters) {
-//                if (constructor != null) {
-//                    throw new IllegalArgumentException("No constructor annotated with @" + Inject.class.getSimpleName()
-//                            + ". And multiple constructors having the maximum number of parameters (" + maxParameters + ") on class " + format(type));
-//                }
-//                constructor = c;
-//            }
-//        }
-//        return ConstructorDescriptor.of(constructor);
-    }
-}
-
-class XFac2 {
-
-    // either one annotated with inject, or just one method, for example lambda..
-
-    /**
-     * This method will attempt to find exactly one static method annotated with inject. Either because there is only one
-     * method that returns returnType or because there is one annotated with {@link Inject}
-     *
-     * @param implementation
-     *            the implementation
-     * @param returnType
-     *            the
-     * @return a factory wrapping the st
-     * @throws IllegalArgumentException
-     *             if there was not exactly one static method annotated with {@link Inject} or if the return type of the
-     *             method did not match the specified return type
-     */
-    public static <T> Factory<T> findMethod(Class<?> implementation, Class<T> returnType) {
-        return findMethod(implementation, TypeLiteral.of(returnType));
-    }
-
-    public static <T> Factory<T> findMethod(Class<?> implementation, TypeLiteral<T> returnType) {
-        // I think scan from exactly one 1 inject method
+    static <T> Factory<T> findInstanceMethod(Object onInstance, Class<T> returnType) {
         throw new UnsupportedOperationException();
     }
 
-    public static <T> Factory<T> findMethod(Class<T> type) {
-        return findMethod(requireNonNull(type), TypeLiteral.of(type));
-    }
-
-    // Ideen er lidt at der kun maa vaere en metode med det navn...
-    // Ellers fejler vi
-    public static <T> Factory<T> findNamed(Class<T> key, String name) {
-        return findMethod(requireNonNull(key), TypeLiteral.of(key));
-    }
-
-    /**
-     * Creates a new factory that uses the specified constructor to create new instances.
-     *
-     * @param constructor
-     *            the constructor used for creating new instances
-     * @return the new factory
-     */
-    public static <T> Factory<T> ofConstructor(Constructor<? extends T> constructor) {
-        throw new UnsupportedOperationException();
-        // MirrorOfClass<T> mirror = (MirrorOfClass<T>) MirrorOfClass.fromImplementation(requireNonNull(constructor,
-        // "constructor is null").getDeclaringClass());
-        // return InternalExecutableFactory.from(mirror, mirror.constructors().match(constructor.getParameterTypes()));
-    }
-
-    /**
-     * Creates a new factory that uses the specified constructor to create new instances. Compared to the simpler
-     * {@link #ofConstructor(Constructor)} method this method takes a type literal that can be used to create factories with
-     * a generic signature:
-     *
-     * <pre>
-     * Factory<List<String>> f = Factory.fromConstructor(ArrayList.class.getConstructor(), new TypeLiteral<List<String>>() {
-     * });
-     * </pre>
-     *
-     * @param constructor
-     *            the constructor used from creating an instance
-     * @param type
-     *            a type literal
-     * @return the new factory
-     * @see #ofConstructor(Constructor)
-     */
-    public static <T> Factory<T> ofConstructor(Constructor<? extends T> constructor, TypeLiteral<? extends T> type) {
-        return ofConstructor(constructor);
-    }
-
-    public static <T> Factory<T> ofConstructor(Constructor<?> constructor, Class<T> type) {
+    static <T> Factory<T> findInstanceMethod(Object onInstance, Class<T> returnType, String name) {
         throw new UnsupportedOperationException();
     }
 
-    public static <T> Factory<T> ofConstructor(ConstructorDescriptor<T> constructor) {
-        throw new UnsupportedOperationException();
+    // Man kunne ogsaa bare sige man tog instance metoder...
+    // Man saa skal man binde receiveren.....
+    //// Dvs for instans metoder, saa bliver selve instancen en dependency...
+    public static <T> Factory<T> fromMethodInstance(Object onInstance, Method method, Class<T> returnType) {
+        requireNonNull(returnType, "returnType is null");
+        return fromMethodInstance(onInstance, method, TypeLiteral.of(returnType));
     }
 
-    /**
-     * Creates a factory by looking at the specified type for a constructor with the specified parameter types. For example,
-     * the following example will return a factory that uses {@link String#String(StringBuilder)} to create new instances:
-     *
-     * <pre>
-     * Factory<String> factory = fromConstructor(String.class, StringBuilder.class);
-     * </pre>
-     *
-     * @param constructor
-     *            the constructor
-     * @param key
-     *            the keft to register under
-     * @return the new factory
-     * @throws IllegalArgumentException
-     *             if a constructor with the specified parameter types does not exist on the specified type
-     */
-    public static <T> Factory<T> ofConstructor(ConstructorDescriptor<T> constructor, Key<T> key) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static <T> Factory<T> ofMethod(Class<?> implementation, Class<T> returnType, String name, Class<?>... parameters) {
-        return ofMethod(implementation, TypeLiteral.of(requireNonNull(returnType, "returnType is null")), name, parameters);
-    }
-
-    // How we skal have
-    public static <T> Factory<T> ofMethod(Class<?> implementation, TypeLiteral<T> returnType, String name, Class<?>... parameters) {
-        throw new UnsupportedOperationException();
-    }
-
-    // new Factory<String>(SomeMethod);
-    // How we skal have
-    public static <T> Factory<T> ofMethod(Method method, Class<T> returnType) {
-        return ofMethod(method, TypeLiteral.of(requireNonNull(returnType, "returnType is null")));
-    }
-
-    public static <T> Factory<T> ofMethod(Method method, TypeLiteral<T> returnType) {
+    public static <T> Factory<T> fromMethodInstance(Object onInstance, Method method, TypeLiteral<T> returnType) {
         requireNonNull(method, "method is null");
         requireNonNull(returnType, "returnType is null");
         // ClassMirror mirror = ClassMirror.fromImplementation(method.getDeclaringClass());
@@ -741,12 +545,10 @@ class XFac2 {
         throw new UnsupportedOperationException();
     }
 
-    public static <T> Factory<T> ofMethod(MethodDescriptor method, Class<T> returnType) {
-        // Syntes vi skal omnavngive den til
-        // ofMethod + ofMethodInstance
+    // How we skal have
+    public static <T> Factory<T> fromMethodInstance(Object onInstance, TypeLiteral<T> returnType, String name, Class<?>... parameterTypes) {
         throw new UnsupportedOperationException();
     }
-
 }
 
 //static <T> Factory<T> fromMethodHandle(MethodHandle mh) {
@@ -774,28 +576,123 @@ class XFac2 {
 //Finde metoder paa statisk vs instance....
 //Hvis vi kun tillader @Inject paa de statiske, bliver algoritmerne lidt for forskellige..
 
-//Ideen er vi dropper disse. Fordi all metoder virker...
-//Men instanse metoder skal man binde...
-//Factory.findMethod(Doo.class, "dooo").withArgument(new Doo());
-class DeprecatedMethodInstances {
+class XFac2 {
 
-    static <T> Factory<T> findInstanceMethod(Object onInstance, Class<T> returnType) {
+    // either one annotated with inject, or just one method, for example lambda..
+
+    /**
+     * This method will attempt to find exactly one static method annotated with inject. Either because there is only one
+     * method that returns returnType or because there is one annotated with {@link Inject}
+     *
+     * @param implementation
+     *            the implementation
+     * @param returnType
+     *            the
+     * @return a factory wrapping the st
+     * @throws IllegalArgumentException
+     *             if there was not exactly one static method annotated with {@link Inject} or if the return type of the
+     *             method did not match the specified return type
+     */
+    public static <T> Factory<T> findMethod(Class<?> implementation, Class<T> returnType) {
+        return findMethod(implementation, TypeLiteral.of(returnType));
+    }
+
+    public static <T> Factory<T> findMethod(Class<?> implementation, TypeLiteral<T> returnType) {
+        // I think scan from exactly one 1 inject method
         throw new UnsupportedOperationException();
     }
 
-    static <T> Factory<T> findInstanceMethod(Object onInstance, Class<T> returnType, String name) {
+    // Will look for a single static method annotated with Inject...
+    public static <T> Factory<T> findMethod(Class<T> type) {
+        return findMethod(requireNonNull(type), TypeLiteral.of(type));
+    }
+
+    // Ideen er lidt at der kun maa vaere en metode med det navn...
+    // Ellers fejler vi
+    public static <T> Factory<T> findNamed(Class<T> key, String name) {
+        return findMethod(requireNonNull(key), TypeLiteral.of(key));
+    }
+
+    /**
+     * Creates a new factory that uses the specified constructor to create new instances.
+     *
+     * @param constructor
+     *            the constructor used for creating new instances
+     * @return the new factory
+     */
+    public static <T> Factory<T> fromConstructor(Constructor<? extends T> constructor) {
+        throw new UnsupportedOperationException();
+        // MirrorOfClass<T> mirror = (MirrorOfClass<T>) MirrorOfClass.fromImplementation(requireNonNull(constructor,
+        // "constructor is null").getDeclaringClass());
+        // return InternalExecutableFactory.from(mirror, mirror.constructors().match(constructor.getParameterTypes()));
+    }
+
+    /**
+     * Creates a new factory that uses the specified constructor to create new instances. Compared to the simpler
+     * {@link #fromConstructor(Constructor)} method this method takes a type literal that can be used to create factories
+     * with a generic signature:
+     *
+     * <pre>
+     * Factory<List<String>> f = Factory.fromConstructor(ArrayList.class.getConstructor(), new TypeLiteral<List<String>>() {
+     * });
+     * </pre>
+     *
+     * @param constructor
+     *            the constructor used from creating an instance
+     * @param type
+     *            a type literal
+     * @return the new factory
+     * @see #fromConstructor(Constructor)
+     */
+    public static <T> Factory<T> fromConstructor(Constructor<? extends T> constructor, TypeLiteral<? extends T> type) {
+        return fromConstructor(constructor);
+    }
+
+    public static <T> Factory<T> fromConstructor(Constructor<?> constructor, Class<T> type) {
         throw new UnsupportedOperationException();
     }
 
-    // Man kunne ogsaa bare sige man tog instance metoder...
-    // Man saa skal man binde receiveren.....
-    //// Dvs for instans metoder, saa bliver selve instancen en dependency...
-    public static <T> Factory<T> ofMethodInstance(Object onInstance, Method method, Class<T> returnType) {
-        requireNonNull(returnType, "returnType is null");
-        return ofMethodInstance(onInstance, method, TypeLiteral.of(returnType));
+    public static <T> Factory<T> fromConstructor(ConstructorDescriptor<T> constructor) {
+        throw new UnsupportedOperationException();
     }
 
-    public static <T> Factory<T> ofMethodInstance(Object onInstance, Method method, TypeLiteral<T> returnType) {
+    /**
+     * Creates a factory by looking at the specified type for a constructor with the specified parameter types. For example,
+     * the following example will return a factory that uses {@link String#String(StringBuilder)} to create new instances:
+     *
+     * <pre>
+     * Factory<String> factory = fromConstructor(String.class, StringBuilder.class);
+     * </pre>
+     *
+     * @param constructor
+     *            the constructor
+     * @param key
+     *            the keft to register under
+     * @return the new factory
+     * @throws IllegalArgumentException
+     *             if a constructor with the specified parameter types does not exist on the specified type
+     */
+    public static <T> Factory<T> fromConstructor(ConstructorDescriptor<T> constructor, Key<T> key) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static <T> Factory<T> fromMethod(Class<?> implementation, Class<T> returnType, String name, Class<?>... parameters) {
+        return fromMethod(implementation, TypeLiteral.of(requireNonNull(returnType, "returnType is null")), name, parameters);
+    }
+
+    // How we skal have
+    public static <T> Factory<T> fromMethod(Class<?> implementation, TypeLiteral<T> returnType, String name, Class<?>... parameters) {
+        throw new UnsupportedOperationException();
+    }
+
+    // new Factory<String>(SomeMethod);
+    // How we skal have
+    public static <T> Factory<T> fromMethod(Method method, Class<T> returnType) {
+        return fromMethod(method, TypeLiteral.of(requireNonNull(returnType, "returnType is null")));
+    }
+
+    // Den her sletter evt. Qualifier paa metoden...
+    public static <T> Factory<T> fromMethod(Method method, TypeLiteral<T> returnType) {
         requireNonNull(method, "method is null");
         requireNonNull(returnType, "returnType is null");
         // ClassMirror mirror = ClassMirror.fromImplementation(method.getDeclaringClass());
@@ -804,8 +701,10 @@ class DeprecatedMethodInstances {
         throw new UnsupportedOperationException();
     }
 
-    // How we skal have
-    public static <T> Factory<T> ofMethodInstance(Object onInstance, TypeLiteral<T> returnType, String name, Class<?>... parameterTypes) {
+    public static <T> Factory<T> fromMethod(MethodDescriptor method, Class<T> returnType) {
+        // Syntes vi skal omnavngive den til
+        // fromMethod + fromMethodInstance
         throw new UnsupportedOperationException();
     }
+
 }

@@ -22,7 +22,7 @@ import java.util.List;
 import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
 import app.packed.service.Injector;
-import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceMode;
 import app.packed.service.ServiceExtension;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionInstantiationContext;
@@ -61,7 +61,7 @@ final class FromOtherInjectorBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public InstantiationMode instantiationMode() {
+    public ServiceMode instantiationMode() {
         return entry.instantiationMode();
     }
 

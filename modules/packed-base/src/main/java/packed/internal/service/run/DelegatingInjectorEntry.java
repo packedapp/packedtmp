@@ -17,7 +17,7 @@ package packed.internal.service.run;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceMode;
 import app.packed.service.ProvideContext;
 import packed.internal.service.build.BuildEntry;
 
@@ -44,7 +44,7 @@ public final class DelegatingInjectorEntry<T> extends InjectorEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public InstantiationMode instantiationMode() {
+    public ServiceMode instantiationMode() {
         return delegate.instantiationMode();
     }
 

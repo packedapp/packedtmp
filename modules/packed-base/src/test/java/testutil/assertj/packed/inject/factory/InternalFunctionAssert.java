@@ -19,7 +19,7 @@ import org.assertj.core.api.AbstractAssert;
 
 import app.packed.base.Key;
 import app.packed.base.TypeLiteral;
-import packed.internal.inject.factoryhandle.FactoryHandle;
+import packed.internal.inject.factory.FactoryHandle;
 
 /**
  *
@@ -52,7 +52,7 @@ public class InternalFunctionAssert<T> extends AbstractAssert<InternalFunctionAs
     // }
 
     public InternalFunctionAssert<T> is(TypeLiteral<?> type) {
-        return is(type.toKey());
+        return is(Key.fromTypeLiteral(type));
     }
 
     public InternalFunctionAssert<T> is(Key<?> type) {

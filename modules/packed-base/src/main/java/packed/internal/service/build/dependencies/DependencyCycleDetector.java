@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 
-import app.packed.inject.CyclicDependencyException;
+import app.packed.inject.CyclicDependencyGraphException;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.service.ComponentFactoryBuildEntry;
 
@@ -37,13 +37,13 @@ final class DependencyCycleDetector {
     /**
      * Tries to find a dependency cycle.
      *
-     * @throws CyclicDependencyException
+     * @throws CyclicDependencyGraphException
      *             if a dependency cycle was detected
      */
     static void dependencyCyclesDetect(ArrayList<BuildEntry<?>> detectCyclesFor) {
         DependencyCycle c = dependencyCyclesFind(detectCyclesFor);
         if (c != null) {
-            throw new CyclicDependencyException("Dependency cycle detected: " + c);
+            throw new CyclicDependencyGraphException("Dependency cycle detected: " + c);
         }
     }
 
@@ -74,7 +74,7 @@ final class DependencyCycleDetector {
      * @param node
      *            the node to visit
      * @return stuff
-     * @throws CyclicDependencyException
+     * @throws CyclicDependencyGraphException
      *             if there is a cycle in the graph
      */
     private static DependencyCycle detectCycle(BuildEntry<?> node, ArrayDeque<BuildEntry<?>> stack, ArrayDeque<BuildEntry<?>> dependencies) {

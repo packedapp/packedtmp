@@ -23,7 +23,7 @@ import java.util.List;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceMode;
 import app.packed.service.ServiceComponentConfiguration;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.build.ServiceExtensionInstantiationContext;
@@ -41,7 +41,7 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
     boolean hasInstanceMembers;
 
     /** The instantiation mode of this node. */
-    private InstantiationMode instantionMode;
+    private ServiceMode instantionMode;
 
     /** Is null for instance components. */
     public final MethodHandle mha;
@@ -53,7 +53,7 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         this.mha = requireNonNull(mh);
     }
 
-    public ComponentFactoryBuildEntry(ServiceExtensionNode injectorBuilder, SingletonConfiguration<T> cc, InstantiationMode instantionMode, MethodHandle mh,
+    public ComponentFactoryBuildEntry(ServiceExtensionNode injectorBuilder, SingletonConfiguration<T> cc, ServiceMode instantionMode, MethodHandle mh,
             List<ServiceDependency> dependencies) {
         super(injectorBuilder, cc.configSite(), dependencies, null, cc);
         this.instantionMode = requireNonNull(instantionMode);
@@ -66,7 +66,7 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         return !dependencies.isEmpty();
     }
 
-    public ComponentFactoryBuildEntry<T> instantiateAs(InstantiationMode mode) {
+    public ComponentFactoryBuildEntry<T> instantiateAs(ServiceMode mode) {
         requireNonNull(mode, "mode is null");
         this.instantionMode = mode;
         return this;
@@ -74,7 +74,7 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
 
     /** {@inheritDoc} */
     @Override
-    public InstantiationMode instantiationMode() {
+    public ServiceMode instantiationMode() {
         return instantionMode;
     }
 
@@ -100,7 +100,7 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         if (hasInstanceMembers) {
             throw new InvalidDeclarationException("Cannot @Provides instance members form on services that are registered as prototypes");
         }
-        instantiateAs(InstantiationMode.PROTOTYPE);
+        instantiateAs(ServiceMode.PROTOTYPE);
     }
 
     /** {@inheritDoc} */

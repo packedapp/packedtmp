@@ -15,7 +15,7 @@
  */
 package packed.internal.service.factory;
 
-import packed.internal.inject.factoryhandle.Factory0FactoryHandle;
+import packed.internal.inject.factory.Factory0FactoryHandle;
 
 /** Tests {@link Factory0FactoryHandle}. */
 public class InternalFactory0Test {

@@ -32,12 +32,16 @@ import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
 
 /**
+ * A service contract details of a contractee.
+ * 
+ * services are needed (represented by a Key)
+ * 
+ * 
  * A service contract consists of two parts. A part detailing which services are required in order for owning entity to
  * be successfully constructed. And another part that the details what kind of services the owning entity provides after
  * having being constructed.
  * 
  * Both the consuming side and the providing part
- * 
  * <p>
  * The required part is split into parts
  * 
@@ -63,9 +67,11 @@ import app.packed.container.BundleDescriptor;
 
 // Dependencies needed and services provided
 
+// This class is typically used at container level.
+
 public final class ServiceContract extends Contract {
 
-    /** A contract with no requirements and providing no services. */
+    /** A contract with no requirements and no services provided. */
     public static final ServiceContract EMPTY = new ServiceContract(new Builder(), new HashSet<>());
 
     /** An immutable set of optional service keys. */

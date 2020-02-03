@@ -21,7 +21,7 @@ import java.util.List;
 
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceMode;
 import packed.internal.service.build.ServiceExtensionInstantiationContext;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.run.InjectorEntry;
@@ -58,8 +58,8 @@ public final class ComponentInstanceBuildEntry<T> extends AbstractComponentBuild
 
     /** {@inheritDoc} */
     @Override
-    public InstantiationMode instantiationMode() {
-        return InstantiationMode.SINGLETON;
+    public ServiceMode instantiationMode() {
+        return ServiceMode.SINGLETON;
     }
 
     /** {@inheritDoc} */

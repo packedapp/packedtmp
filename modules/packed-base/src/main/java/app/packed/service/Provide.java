@@ -107,9 +107,9 @@ public @interface Provide {
     String description() default "";
 
     /**
-     * The instantiation mode of the providing method or field, the default is {@link InstantiationMode#SINGLETON}.
+     * The instantiation mode of the providing method or field, the default is {@link ServiceMode#SINGLETON}.
      * 
      * @return the binding mode
      */
-    InstantiationMode instantionMode() default InstantiationMode.SINGLETON;
+    ServiceMode instantionMode() default ServiceMode.SINGLETON;
 }

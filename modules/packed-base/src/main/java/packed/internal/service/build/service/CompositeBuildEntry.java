@@ -4,7 +4,7 @@ import java.util.List;
 
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
-import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceMode;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionInstantiationContext;
@@ -23,8 +23,8 @@ public class CompositeBuildEntry<T> extends BuildEntry<T> {
     }
 
     @Override
-    public InstantiationMode instantiationMode() {
-        return InstantiationMode.PROTOTYPE;
+    public ServiceMode instantiationMode() {
+        return ServiceMode.PROTOTYPE;
     }
 
     @Override

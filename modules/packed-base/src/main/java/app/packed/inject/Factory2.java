@@ -23,8 +23,8 @@ import java.util.function.BiFunction;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.TypeLiteral;
 import packed.internal.inject.ServiceDependency;
-import packed.internal.inject.factoryhandle.Factory2FactoryHandle;
-import packed.internal.inject.factoryhandle.FactorySupport;
+import packed.internal.inject.factory.Factory2FactoryHandle;
+import packed.internal.inject.factory.FactorySupport;
 
 /**
  * A {@link Factory} type that takes two dependencies and uses a {@link BiFunction} to create new instances. The input

@@ -26,7 +26,7 @@ import app.packed.component.ComponentPath;
 import app.packed.component.FeatureMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
-import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceMode;
 import app.packed.service.ServiceComponentConfiguration;
 import packed.internal.service.build.BuildEntry;
 
@@ -101,7 +101,7 @@ public final class PackedServiceComponentConfiguration<T> implements ServiceComp
 
     /** {@inheritDoc} */
     @Override
-    public InstantiationMode instantiationMode() {
+    public ServiceMode instantiationMode() {
         return buildEntry.instantiationMode();
     }
 

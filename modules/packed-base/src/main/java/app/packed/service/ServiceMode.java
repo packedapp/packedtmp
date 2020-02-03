@@ -31,7 +31,10 @@ import packed.internal.service.build.ServiceExtensionNode;
 // None -> must be from component
 
 // We keep this around for a bit.
-public enum InstantiationMode {
+
+// ServiceMode
+
+public enum ServiceMode {
 
     /**
      * A single instance of the service is created when the injector or container where the entity is registered is created.

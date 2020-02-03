@@ -17,7 +17,6 @@ package app.packed.base;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.fail;
 import static testutil.assertj.Assertions.npe;
 import static testutil.stubs.TypeStubs.LIST_STRING;
 import static testutil.stubs.TypeStubs.LIST_WILDCARD;
@@ -31,16 +30,9 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.base.InvalidDeclarationException;
-import app.packed.base.Key;
-import app.packed.base.TypeLiteral;
 import app.packed.base.TypeLiteral.CanonicalizedTypeLiteral;
 import testutil.stubs.annotation.AnnotationInstances;
 
@@ -397,48 +389,15 @@ public class TypeLiteralTest {
     }
 
     @Test
-    public <S> void toKey() {
-        TypeLiteral<Integer> tl1 = TypeLiteral.of(Integer.class);
-
-        Key<Integer> k1 = tl1.toKey();
-        Key<Integer> k2 = TL_INTEGER.toKey();
-
-        assertThat(k1.typeLiteral()).isSameAs(tl1);
-        assertThat(k2.typeLiteral()).isEqualTo(TL_INTEGER);
-        assertThat(k2.typeLiteral()).isNotSameAs(TL_INTEGER);
-
-        assertThat(k1.hasQualifier()).isFalse();
-        assertThat(k2.hasQualifier()).isFalse();
-
-        // Optional
-        assertThatThrownBy(() -> new TypeLiteral<Optional<Integer>>() {}.toKey()).isExactlyInstanceOf(InvalidDeclarationException.class)
-                .hasMessage("Cannot convert an optional type (Optional<Integer>) to a Key, as keys cannot be optional");
-        assertThatThrownBy(() -> new TypeLiteral<OptionalInt>() {}.toKey()).isExactlyInstanceOf(InvalidDeclarationException.class)
-                .hasMessage("Cannot convert an optional type (OptionalInt) to a Key, as keys cannot be optional");
-        assertThatThrownBy(() -> new TypeLiteral<OptionalLong>() {}.toKey()).isExactlyInstanceOf(InvalidDeclarationException.class)
-                .hasMessage("Cannot convert an optional type (OptionalLong) to a Key, as keys cannot be optional");
-        assertThatThrownBy(() -> new TypeLiteral<OptionalDouble>() {}.toKey()).isExactlyInstanceOf(InvalidDeclarationException.class)
-                .hasMessage("Cannot convert an optional type (OptionalDouble) to a Key, as keys cannot be optional");
-
-        // We need to use this old fashion way because of
-        try {
-            new TypeLiteral<List<S>>() {}.toKey();
-            fail("should have failed");
-        } catch (InvalidDeclarationException e) {
-            assertThat(e).hasMessage("Can only convert type literals that are free from type variables to a Key, however TypeVariable<List<S>> defined: [S]");
-        }
-    }
-
-    @Test
     public <S> void toKeyAnnotation() {
-        npe(() -> TL_INTEGER.toKey(null), "qualifier");
+        npe(() -> Key.fromTypeLiteral(TL_INTEGER, null), "qualifier");
 
         Annotation nonQualified = Arrays.stream(TypeLiteralTest.class.getDeclaredMethods()).filter(m -> m.getName().equals("toKeyAnnotation")).findFirst().get()
                 .getAnnotations()[0];
-        assertThatThrownBy(() -> TL_INTEGER.toKey(nonQualified)).isExactlyInstanceOf(InvalidDeclarationException.class)
+        assertThatThrownBy(() -> Key.fromTypeLiteral(TL_INTEGER, nonQualified)).isExactlyInstanceOf(InvalidDeclarationException.class)
                 .hasMessage("@org.junit.jupiter.api.Test is not a valid qualifier. The annotation must be annotated with @Qualifier");
 
-        Key<Integer> key = TL_INTEGER.toKey(AnnotationInstances.NO_VALUE_QUALIFIER);
+        Key<Integer> key = Key.fromTypeLiteral(TL_INTEGER, AnnotationInstances.NO_VALUE_QUALIFIER);
         assertThat(key.typeLiteral()).isEqualTo(TL_INTEGER);
         assertThat(key.qualifier()).hasValue(AnnotationInstances.NO_VALUE_QUALIFIER);
     }

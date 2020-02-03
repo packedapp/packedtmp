@@ -21,15 +21,15 @@ import org.junit.jupiter.api.Test;
 
 import testutil.stubs.Throwables.Exception1;
 
-/** Tests {@link CyclicDependencyException}. */
-public class CyclicDependencyExceptionTest {
+/** Tests {@link CyclicDependencyGraphException}. */
+public class CyclicDependencyGraphExceptionTest {
 
     /** Tests the various constructors. */
     @Test
     public void test() {
-        assertThat(new CyclicDependencyException("foo")).hasNoCause();
-        assertThat(new CyclicDependencyException("foo")).hasMessage("foo");
-        assertThat(new CyclicDependencyException("foobar", Exception1.INSTANCE)).hasCause(Exception1.INSTANCE);
-        assertThat(new CyclicDependencyException("foobar", Exception1.INSTANCE)).hasMessage("foobar");
+        assertThat(new CyclicDependencyGraphException("foo")).hasNoCause();
+        assertThat(new CyclicDependencyGraphException("foo")).hasMessage("foo");
+        assertThat(new CyclicDependencyGraphException("foobar", Exception1.INSTANCE)).hasCause(Exception1.INSTANCE);
+        assertThat(new CyclicDependencyGraphException("foobar", Exception1.INSTANCE)).hasMessage("foobar");
     }
 }

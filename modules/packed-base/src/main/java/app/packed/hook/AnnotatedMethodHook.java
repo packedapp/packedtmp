@@ -151,7 +151,7 @@ public final class AnnotatedMethodHook<A extends Annotation> implements Hook {
     public MethodDescriptor method() {
         MethodDescriptor d = descriptor;
         if (d == null) {
-            descriptor = d = MethodDescriptor.of(method);
+            descriptor = d = MethodDescriptor.from(method);
         }
         return d;
     }

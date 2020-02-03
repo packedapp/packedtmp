@@ -19,6 +19,7 @@ import static app.packed.base.TypeLiteralTest.TL_INTEGER;
 import static app.packed.base.TypeLiteralTest.TL_LIST_WILDCARD;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.fail;
 import static testutil.assertj.Assertions.npe;
 import static testutil.util.TestMemberFinder.findField;
 
@@ -28,12 +29,13 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
-import app.packed.base.InvalidDeclarationException;
-import app.packed.base.Key;
 import app.packed.base.reflect.MethodDescriptor;
 import testutil.stubs.annotation.AnnotationInstances;
 import testutil.stubs.annotation.CharQualifier;
@@ -253,6 +255,39 @@ public class KeyTest {
     public void hasQualifier() {
         assertThat(KEY_INTEGER.hasQualifier()).isFalse();
         assertThat(KEY_INTEGER_X.hasQualifier()).isTrue();
+    }
+
+    @Test
+    public <S> void toKey() {
+        TypeLiteral<Integer> tl1 = TypeLiteral.of(Integer.class);
+
+        Key<Integer> k1 = Key.fromTypeLiteral(tl1);
+        Key<Integer> k2 = Key.fromTypeLiteral(TL_INTEGER);
+
+        assertThat(k1.typeLiteral()).isSameAs(tl1);
+        assertThat(k2.typeLiteral()).isEqualTo(TL_INTEGER);
+        assertThat(k2.typeLiteral()).isNotSameAs(TL_INTEGER);
+
+        assertThat(k1.hasQualifier()).isFalse();
+        assertThat(k2.hasQualifier()).isFalse();
+
+        // Optional
+        assertThatThrownBy(() -> Key.fromTypeLiteral(new TypeLiteral<Optional<Integer>>() {})).isExactlyInstanceOf(InvalidDeclarationException.class)
+                .hasMessage("Cannot convert an optional type (Optional<Integer>) to a Key, as keys cannot be optional");
+        assertThatThrownBy(() -> Key.fromTypeLiteral(new TypeLiteral<OptionalInt>() {})).isExactlyInstanceOf(InvalidDeclarationException.class)
+                .hasMessage("Cannot convert an optional type (OptionalInt) to a Key, as keys cannot be optional");
+        assertThatThrownBy(() -> Key.fromTypeLiteral(new TypeLiteral<OptionalLong>() {})).isExactlyInstanceOf(InvalidDeclarationException.class)
+                .hasMessage("Cannot convert an optional type (OptionalLong) to a Key, as keys cannot be optional");
+        assertThatThrownBy(() -> Key.fromTypeLiteral(new TypeLiteral<OptionalDouble>() {})).isExactlyInstanceOf(InvalidDeclarationException.class)
+                .hasMessage("Cannot convert an optional type (OptionalDouble) to a Key, as keys cannot be optional");
+
+        // We need to use this old fashion way because of
+        try {
+            Key.fromTypeLiteral(new TypeLiteral<List<S>>() {});
+            fail("should have failed");
+        } catch (InvalidDeclarationException e) {
+            assertThat(e).hasMessage("Can only convert type literals that are free from type variables to a Key, however TypeVariable<List<S>> defined: [S]");
+        }
     }
 
     /** Tests {@link Key#isQualifiedWith(Class)}. */

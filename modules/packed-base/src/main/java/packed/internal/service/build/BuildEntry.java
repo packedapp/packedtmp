@@ -22,7 +22,7 @@ import java.util.List;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
-import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceMode;
 import app.packed.service.ProvideContext;
 import app.packed.service.Provide;
 import app.packed.service.ServiceConfiguration;
@@ -153,7 +153,7 @@ public abstract class BuildEntry<T> {
      */
     public abstract boolean hasUnresolvedDependencies();
 
-    public abstract InstantiationMode instantiationMode();
+    public abstract ServiceMode instantiationMode();
 
     public boolean isPrivate() {
         return key().equals(KeyBuilder.INJECTOR_KEY);// || key().equals(KeyBuilder.CONTAINER_KEY);

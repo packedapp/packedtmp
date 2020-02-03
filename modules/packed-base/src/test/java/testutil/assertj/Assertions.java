@@ -21,7 +21,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.inject.Factory;
-import packed.internal.inject.factoryhandle.FactoryHandle;
+import packed.internal.inject.factory.FactoryHandle;
 import testutil.assertj.app.packed.inject.FactoryAssert;
 import testutil.assertj.packed.inject.factory.InternalFunctionAssert;
 

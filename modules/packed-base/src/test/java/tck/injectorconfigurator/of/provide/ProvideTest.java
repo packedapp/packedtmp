@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.base.Key;
 import app.packed.inject.Factory;
 import app.packed.service.Injector;
-import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceMode;
 import app.packed.service.ServiceComponentConfiguration;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
@@ -58,7 +58,7 @@ public class ProvideTest {
     public void bindInstance() {
         Injector i = Injector.configure(e -> {
             ServiceComponentConfiguration<A> sc = e.provideInstance(A0);
-            testConfiguration(sc, InstantiationMode.SINGLETON, Key.of(A.class));
+            testConfiguration(sc, ServiceMode.SINGLETON, Key.of(A.class));
         });
         testSingleton(i, Key.of(A.class), A0);
 
@@ -75,9 +75,9 @@ public class ProvideTest {
         }
     }
 
-    static void testConfiguration(ServiceComponentConfiguration<?> sc, InstantiationMode instantionMode, Key<?> key) {
+    static void testConfiguration(ServiceComponentConfiguration<?> sc, ServiceMode instantionMode, Key<?> key) {
 
-        assertThat(sc.instantiationMode()).isSameAs(InstantiationMode.SINGLETON);
+        assertThat(sc.instantiationMode()).isSameAs(ServiceMode.SINGLETON);
         // configSite;
         assertThat(sc.getDescription()).isNull();
         assertThat(sc.getKey()).isEqualTo(Key.of(A.class));

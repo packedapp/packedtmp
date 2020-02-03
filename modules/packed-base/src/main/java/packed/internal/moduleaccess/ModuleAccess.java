@@ -24,7 +24,7 @@ import app.packed.container.Extension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.inject.Factory;
 import app.packed.lifecycle.RunState;
-import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceMode;
 
 /** A mechanism for calling package private methods in public packages without using reflection. */
 // Rename to ModuleAccess.
@@ -183,7 +183,7 @@ public final class ModuleAccess {
     private static class InjectSingletonHolder {
 
         /** The singleton instance. */
-        private static final AppPackedInjectAccess INSTANCE = singleton(AppPackedInjectAccess.class, InstantiationMode.class);
+        private static final AppPackedInjectAccess INSTANCE = singleton(AppPackedInjectAccess.class, ServiceMode.class);
     }
 
     /** Holder of the {@link AppPackedUtilAccess} singleton. */

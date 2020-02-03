@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.factoryhandle;
+package packed.internal.inject.factory;
 
 import static java.util.Objects.requireNonNull;
 
@@ -48,7 +48,7 @@ public final class InstanceFactoryHandle<T> extends FactoryHandle<T> {
      * @param instance
      *            the instance
      * @return a new instance function handle
-     * @see Factory#ofInstance(Object)
+     * @see Factory#fromInstance(Object)
      */
     @SuppressWarnings("unchecked")
     public static <T> FactoryHandle<T> of(T instance) {

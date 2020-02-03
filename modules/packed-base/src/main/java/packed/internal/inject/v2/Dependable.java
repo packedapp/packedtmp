@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject;
+package packed.internal.inject.v2;
 
 import java.lang.module.ModuleDescriptor.Provides;
 

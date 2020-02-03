@@ -15,8 +15,9 @@
  */
 package app.packed.inject;
 
-/** This exception is typically thrown when there are cycles in the dependency graph. */
-public class CyclicDependencyException extends RuntimeException {
+/** This exception is typically thrown when a dependency graph contain cycles (not a DAG). */
+// in app.packed.service.* CyclicServiceDependencyException
+public class CyclicDependencyGraphException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
@@ -29,7 +30,7 @@ public class CyclicDependencyException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public CyclicDependencyException(String message) {
+    public CyclicDependencyGraphException(String message) {
         super(message);
     }
 
@@ -43,7 +44,7 @@ public class CyclicDependencyException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public CyclicDependencyException(String message, Throwable cause) {
+    public CyclicDependencyGraphException(String message, Throwable cause) {
         super(message, cause);
     }
 }

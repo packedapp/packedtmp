@@ -22,7 +22,7 @@ import java.util.Optional;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
-import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceMode;
 import app.packed.service.ProvideContext;
 import app.packed.service.ServiceDescriptor;
 import packed.internal.service.build.BuildEntry;
@@ -76,7 +76,7 @@ public abstract class InjectorEntry<T> implements ServiceDescriptor {
         return Optional.ofNullable(description);
     }
 
-    public abstract InstantiationMode instantiationMode();
+    public abstract ServiceMode instantiationMode();
 
     /** {@inheritDoc} */
     @Override

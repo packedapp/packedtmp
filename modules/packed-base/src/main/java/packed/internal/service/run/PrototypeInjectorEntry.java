@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.inject.Provider;
 import app.packed.inject.ProvisionException;
-import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceMode;
 import app.packed.service.ProvideContext;
 import packed.internal.service.build.ServiceExtensionInstantiationContext;
 import packed.internal.service.build.service.ComponentFactoryBuildEntry;
@@ -64,8 +64,8 @@ public class PrototypeInjectorEntry<T> extends InjectorEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public InstantiationMode instantiationMode() {
-        return InstantiationMode.PROTOTYPE;
+    public ServiceMode instantiationMode() {
+        return ServiceMode.PROTOTYPE;
     }
 
     /** {@inheritDoc} */

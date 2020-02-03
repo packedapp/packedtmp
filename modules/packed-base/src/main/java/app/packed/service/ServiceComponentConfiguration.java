@@ -100,7 +100,7 @@ public interface ServiceComponentConfiguration<T> extends ServiceConfiguration<T
      * @return the instantiation mode of the service
      */
     @Override
-    InstantiationMode instantiationMode();
+    ServiceMode instantiationMode();
 
     ServiceComponentConfiguration<T> prototype();
 

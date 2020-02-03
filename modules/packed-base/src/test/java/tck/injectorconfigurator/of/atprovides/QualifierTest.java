@@ -28,7 +28,7 @@ import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Key;
 import app.packed.service.Injector;
 import app.packed.service.InjectorConfigurator;
-import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceMode;
 import app.packed.service.Provide;
 import testutil.stubs.annotation.StringQualifier;
 
@@ -134,11 +134,11 @@ public class QualifierTest {
         // @StringQualifier("A")
         // private static Long A;
 
-        @Provide(instantionMode = InstantiationMode.PROTOTYPE)
+        @Provide(instantionMode = ServiceMode.PROTOTYPE)
         @StringQualifier("B")
         private static Long B;
 
-        @Provide(instantionMode = InstantiationMode.SINGLETON)
+        @Provide(instantionMode = ServiceMode.SINGLETON)
         @StringQualifier("C")
         private static Long C;
 

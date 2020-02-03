@@ -104,14 +104,13 @@ public final class ServiceWirelets {
      * 
      * @param action
      *            the action to perform for each service descriptor
-     * @return a peeking stage
+     * @return a peeking wirelet
      */
-    // peekFrom
-    public static Wirelet peekUpstream(Consumer<? super ServiceDescriptor> action) {
-        return new PackedUpstreamInjectionWirelet.PeekUpstream(action);
+    public static Wirelet peekFrom(Consumer<? super ServiceDescriptor> action) {
+        return new PackedUpstreamInjectionWirelet.PeekFrom(action);
     }
 
-    public static Wirelet peekDownstream(Consumer<? super ServiceDescriptor> action) {
+    public static Wirelet peekTo(Consumer<? super ServiceDescriptor> action) {
         return new PackedDownstreamInjectionWirelet.PeekDownstreamWirelet(action);
     }
 

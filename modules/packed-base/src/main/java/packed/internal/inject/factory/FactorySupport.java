@@ -1,4 +1,4 @@
-package packed.internal.inject.factoryhandle;
+package packed.internal.inject.factory;
 
 import static java.util.Objects.requireNonNull;
 
@@ -13,7 +13,7 @@ import packed.internal.inject.ServiceDependency;
 public final class FactorySupport<T> {
 
     /** The key that this factory will be registered under by default with an injector. */
-    public final Key<T> defaultKey;
+    public final Key<T> key;
 
     /** A list of all of this factory's dependencies. */
     public final List<ServiceDependency> dependencies;
@@ -24,7 +24,7 @@ public final class FactorySupport<T> {
     public FactorySupport(FactoryHandle<T> function, List<ServiceDependency> dependencies) {
         this.dependencies = requireNonNull(dependencies, "dependencies is null");
         this.handle = requireNonNull(function);
-        this.defaultKey = function.typeLiteral.toKey();
+        this.key = Key.fromTypeLiteral(function.typeLiteral);
     }
 
     /**

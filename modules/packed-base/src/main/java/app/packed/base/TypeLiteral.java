@@ -25,7 +25,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Optional;
 
 import app.packed.base.reflect.FieldDescriptor;
 import app.packed.base.reflect.MethodDescriptor;
@@ -129,6 +128,7 @@ public abstract class TypeLiteral<T> {
      */
     @SuppressWarnings("unchecked")
     public final TypeLiteral<T> box() {
+        // TODO fix for Valhalla? reference type, inline type...
         if (rawType().isPrimitive()) {
             return (TypeLiteral<T>) of(TypeUtil.boxClass(rawType()));
         }
@@ -180,32 +180,6 @@ public abstract class TypeLiteral<T> {
             return h;
         }
         return hash = type.hashCode();
-    }
-
-    /**
-     * Returns a key with no qualifier and the same type as this instance.
-     * 
-     * @return a key with no qualifier and the same type as this instance
-     * @throws InvalidDeclarationException
-     *             if the type literal could not be converted to a key, for example, if it is an {@link Optional}. Or if
-     *             this type literal it not free from type parameters
-     */
-    public final Key<T> toKey() {
-        return Key.fromTypeLiteral(this);
-    }
-
-    /**
-     * Returns a key with the specified qualifier and the same type as this instance.
-     * 
-     * @param qualifier
-     *            the qualifier of the new
-     * @return a key with the specified qualifier and the same type as this instance
-     * @throws InvalidDeclarationException
-     *             if the type literal could not be converted to a key, for example, if it is an {@link Optional}. Or if the
-     *             qualifier type is not annotated with {@link Key.Qualifier}.
-     */
-    public final Key<T> toKey(Annotation qualifier) {
-        return Key.fromTypeLiteral(this, qualifier);
     }
 
     /** {@inheritDoc} */
@@ -278,7 +252,7 @@ public abstract class TypeLiteral<T> {
      */
     public static TypeLiteral<?> fromParameter(Parameter parameter) {
         requireNonNull(parameter, "parameter is null");
-        return new CanonicalizedTypeLiteral<>(ParameterDescriptor.of(parameter).getParameterizedType());
+        return new CanonicalizedTypeLiteral<>(ParameterDescriptor.from(parameter).getParameterizedType());
     }
 
     /**

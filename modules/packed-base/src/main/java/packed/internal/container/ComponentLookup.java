@@ -18,7 +18,7 @@ package packed.internal.container;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import packed.internal.component.ComponentModel;
-import packed.internal.inject.factoryhandle.FactoryHandle;
+import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.reflect.OpenClass;
 
 /**

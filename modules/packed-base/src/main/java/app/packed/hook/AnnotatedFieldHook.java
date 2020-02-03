@@ -282,7 +282,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     public FieldDescriptor field() {
         FieldDescriptor d = descriptor;
         if (d == null) {
-            descriptor = d = FieldDescriptor.of(field);
+            descriptor = d = FieldDescriptor.from(field);
         }
         return d;
     }

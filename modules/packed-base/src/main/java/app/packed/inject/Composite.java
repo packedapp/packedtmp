@@ -23,6 +23,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
+ * A annotation indicating that a given object indicates that
+ * 
  * Nice annotation
  * <p>
  * Composite is not inherited..
@@ -30,4 +32,6 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RUNTIME)
 @Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.TYPE })
-public @interface Composite {}
+@interface Composite {}
+
+// If this annotation is used on a field

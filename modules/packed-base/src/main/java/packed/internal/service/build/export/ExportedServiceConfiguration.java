@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
-import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceMode;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceConfiguration;
 import app.packed.service.ServiceExtension;
@@ -80,7 +80,7 @@ final class ExportedServiceConfiguration<T> implements ServiceConfiguration<T> {
 
     /** {@inheritDoc} */
     @Override
-    public InstantiationMode instantiationMode() {
+    public ServiceMode instantiationMode() {
         return entry.instantiationMode();
     }
 

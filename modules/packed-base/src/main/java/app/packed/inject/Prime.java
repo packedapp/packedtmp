@@ -10,21 +10,19 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 
-// Allow er nok et daarligt ord...
-//Allow services
-//Allow Nullables
-//Allow Provider...
-//Allow Default
-//Allow Optional
-//Allow Converters
-
-//Support verification...
-
-// Allow Composite <- Spoergmaalet er om vi skal checke det???
-// Det taenker jeg. Cannot use @HttpParam together with @Composite
-// Or on X type annotated with @Composite...
-public @interface Prime {}
+//Dom?
+//Dynamic Inject
+//@ProvideDynamically...
+@interface Prime {}
 
 @interface PrimeProvider {}
 
 // Produce instead of provide...
+
+// ProvideSingle
+// ProvidePrototype
+// ProvideViaPrime() <--- is protoype
+// -- Explicitly defined via a sidecar...
+// -- Overriden in the some internals
+
+/// ----

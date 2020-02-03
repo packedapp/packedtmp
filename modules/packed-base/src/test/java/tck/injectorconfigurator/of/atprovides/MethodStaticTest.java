@@ -26,7 +26,7 @@ import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
 import app.packed.service.Injector;
 import app.packed.service.InjectorConfigurator;
-import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceMode;
 import app.packed.service.Provide;
 
 /** Tests {@link Provide#instantionMode()} on static methods. */
@@ -78,12 +78,12 @@ public class MethodStaticTest {
         // return L;
         // }
 
-        @Provide(instantionMode = InstantiationMode.PROTOTYPE)
+        @Provide(instantionMode = ServiceMode.PROTOTYPE)
         static Integer p() {
             return P;
         }
 
-        @Provide(instantionMode = InstantiationMode.SINGLETON)
+        @Provide(instantionMode = ServiceMode.SINGLETON)
         static Short s() {
             return S;
         }
@@ -134,12 +134,12 @@ public class MethodStaticTest {
         // return L;
         // }
 
-        @Provide(instantionMode = InstantiationMode.PROTOTYPE)
+        @Provide(instantionMode = ServiceMode.PROTOTYPE)
         static Integer p() {
             return P;
         }
 
-        @Provide(instantionMode = InstantiationMode.SINGLETON)
+        @Provide(instantionMode = ServiceMode.SINGLETON)
         static Short s() {
             return S;
         }

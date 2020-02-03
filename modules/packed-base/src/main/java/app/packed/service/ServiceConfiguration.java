@@ -78,7 +78,7 @@ public interface ServiceConfiguration<T> /* extends Taggable */ {
      *
      * @return the instantiation mode of the service
      */
-    InstantiationMode instantiationMode();
+    ServiceMode instantiationMode();
 
     /**
      * Sets the description of this service.
