@@ -17,6 +17,9 @@ package app.packed.inject;
 
 /** This exception is typically thrown when a dependency graph contain cycles (not a DAG). */
 // in app.packed.service.* CyclicServiceDependencyException
+// CircularReferenceException
+
+// Hmm, men vi smider den jo ikke...
 public class CyclicDependencyGraphException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */

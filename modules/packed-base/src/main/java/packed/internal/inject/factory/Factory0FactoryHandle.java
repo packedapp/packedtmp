@@ -20,9 +20,11 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.util.List;
 import java.util.function.Supplier;
 
 import app.packed.base.TypeLiteral;
+import app.packed.inject.Factory;
 import app.packed.inject.Factory0;
 import packed.internal.util.MethodHandleUtil;
 
@@ -48,7 +50,7 @@ public final class Factory0FactoryHandle<T> extends FactoryHandle<T> {
      * @param supplier
      *            the supplier that creates the actual values
      */
-    public Factory0FactoryHandle(TypeLiteral<T> type, Supplier<? extends T> supplier) {
+    private Factory0FactoryHandle(TypeLiteral<T> type, Supplier<? extends T> supplier) {
         super(type);
         this.supplier = requireNonNull(supplier, "supplier is null");
     }
@@ -57,6 +59,32 @@ public final class Factory0FactoryHandle<T> extends FactoryHandle<T> {
     @Override
     public MethodHandle toMethodHandle() {
         return GET.bindTo(supplier);
+    }
+
+    /** A cache of extracted type variables from subclasses of this class. */
+    private static final ClassValue<TypeLiteral<?>> CACHE = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        @Override
+        protected TypeLiteral<?> computeValue(Class<?> type) {
+            return TypeLiteral.fromTypeVariable((Class) type, Factory.class, 0);
+        }
+    };
+
+    /**
+     * Creates a new factory support instance from an implementation of this class and a supplier.
+     * 
+     * @param implementation
+     *            the class extending this class
+     * @param supplier
+     *            the supplier used for creating new values
+     * @return a new factory support instance
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> FactorySupport<T> create(Class<?> implementation, Supplier<? extends T> supplier) {
+        TypeLiteral<T> tt = (TypeLiteral<T>) CACHE.get(implementation);
+        return new FactorySupport<>(new Factory0FactoryHandle<>(tt, supplier), List.of());
     }
 }
 

@@ -55,7 +55,7 @@ public class ExtensionActivation {
     public ArtifactImage empty() {
         Bundle b = new Bundle() {
             @Override
-            protected void configure() {}
+            protected void compose() {}
         };
         return ArtifactImage.build(b);
     }
@@ -64,7 +64,7 @@ public class ExtensionActivation {
     public ArtifactImage useExtension() {
         Bundle b = new Bundle() {
             @Override
-            public void configure() {
+            public void compose() {
                 use(MyExtension.class);
             }
         };
@@ -75,7 +75,7 @@ public class ExtensionActivation {
     public ArtifactImage install() {
         Bundle b = new Bundle() {
             @Override
-            public void configure() {
+            public void compose() {
                 installInstance("foo");
             }
         };
@@ -86,7 +86,7 @@ public class ExtensionActivation {
     public ArtifactImage newExtensionUseInstall() {
         Bundle b = new Bundle() {
             @Override
-            public void configure() {
+            public void compose() {
                 use(MyExtension.class);
                 installInstance("foo");
             }
@@ -98,7 +98,7 @@ public class ExtensionActivation {
     public ArtifactImage newExtensionAutoActivate() {
         Bundle b = new Bundle() {
             @Override
-            public void configure() {
+            public void compose() {
                 installInstance(new MyStuff());
             }
         };

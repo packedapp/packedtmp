@@ -39,6 +39,7 @@ import app.packed.base.TypeLiteral.CanonicalizedTypeLiteral;
 import app.packed.base.reflect.FieldDescriptor;
 import app.packed.base.reflect.MethodDescriptor;
 import app.packed.base.reflect.ParameterDescriptor;
+import packed.internal.base.reflect.PackedMethodDescriptor;
 import packed.internal.inject.util.QualifierHelper;
 import packed.internal.util.AnnotationUtil;
 import packed.internal.util.types.TypeUtil;
@@ -335,7 +336,7 @@ public abstract class Key<T> {
 
     public static Key<?> fromMethodReturnType(MethodDescriptor method) {
         requireNonNull(method, "method is null");
-        return method.fromMethodReturnType();
+        return PackedMethodDescriptor.cast(method).fromMethodReturnType();
     }
 
     public static Key<?> fromParameter(Parameter parameter) {

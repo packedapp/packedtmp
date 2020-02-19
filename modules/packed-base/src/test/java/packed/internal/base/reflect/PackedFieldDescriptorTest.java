@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.base.reflect;
+package packed.internal.base.reflect;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static testutil.util.TestMemberFinder.findField;
@@ -22,10 +22,12 @@ import java.lang.reflect.Field;
 
 import org.junit.jupiter.api.Test;
 
-/** Tests {@link FieldDescriptor}. */
-public class InternalFieldDescriptorTest extends AbstractDescriptorTest {
+import app.packed.base.reflect.FieldDescriptor;
 
-    static final Class<?> C = InternalFieldDescriptorTest.class;
+/** Tests {@link FieldDescriptor}. */
+public class PackedFieldDescriptorTest extends AbstractDescriptorTest {
+
+    static final Class<?> C = PackedFieldDescriptorTest.class;
 
     String never;
 
@@ -33,11 +35,12 @@ public class InternalFieldDescriptorTest extends AbstractDescriptorTest {
 
     @Test
     public void basics() throws Exception {
-        validateField(findField("string"), FieldDescriptor.of(C, "string"));
-        validateField(findField("C"), FieldDescriptor.of(C, "C"));
+        validateField(findField("string"), FieldDescriptor.find(C, "string"));
+        validateField(findField("C"), FieldDescriptor.find(C, "C"));
     }
 
     static void validateField(Field f, FieldDescriptor d) {
+        validateAnnotatedElement(f, d);
         validateMember(f, d);
         assertThat(d.descriptorTypeName()).isEqualTo("field");// always field
         assertThat(d.getParameterizedType()).isEqualTo(f.getGenericType());
@@ -45,11 +48,10 @@ public class InternalFieldDescriptorTest extends AbstractDescriptorTest {
 
         assertThat(d.hashCode()).isEqualTo(f.hashCode());
         assertThat(d.isNamePresent()).isTrue();
-        // assertThat(d.newField()).isEqualTo(f);
 
         assertThat(d).isEqualTo(d);
-        assertThat(d).isEqualTo(FieldDescriptor.of(d.getDeclaringClass(), d.getName()));
-        assertThat(d).isNotEqualTo(FieldDescriptor.of(C, "never"));
+        assertThat(d).isEqualTo(FieldDescriptor.find(d.getDeclaringClass(), d.getName()));
+        assertThat(d).isNotEqualTo(FieldDescriptor.find(C, "never"));
         assertThat(d).isNotEqualTo("me");
 
         String packageName = f.getDeclaringClass().getCanonicalName();

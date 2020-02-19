@@ -98,7 +98,7 @@ public abstract class Contract {
 
     // Should probably be abstract, or final, and then have a toString(ContractStringBuilder b);
     // @Override
-    // public String toString() {
+    // public String toString() {x
     // s
     // }
 

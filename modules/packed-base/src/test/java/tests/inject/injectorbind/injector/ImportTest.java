@@ -48,7 +48,7 @@ public class ImportTest {
 
         /** {@inheritDoc} */
         @Override
-        protected void configure() {
+        protected void compose() {
             export(provideInstance(ZoneId.systemDefault()).as(ZoneId.class));
             export(provide(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}).prototype());
         }
@@ -58,7 +58,7 @@ public class ImportTest {
 
         /** {@inheritDoc} */
         @Override
-        protected void configure() {
+        protected void compose() {
             provideInstance(ZoneId.of("Europe/London")).as(ZoneId.class);
             export(provide(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}).prototype());
         }
@@ -68,7 +68,7 @@ public class ImportTest {
 
         /** {@inheritDoc} */
         @Override
-        protected void configure() {
+        protected void compose() {
             provideInstance(ZoneId.of("Europe/Berlin")).as(ZoneId.class);
             export(provide(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}).prototype());
 

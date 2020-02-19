@@ -55,7 +55,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
 
             /** {@inheritDoc} */
             @Override
-            protected void configure() {
+            protected void compose() {
                 addDependencies(Ex2.class);
                 onExtensionInstantiated(e -> e.use(Ex2.class));
             }
@@ -68,7 +68,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
 
             /** {@inheritDoc} */
             @Override
-            protected void configure() {
+            protected void compose() {
                 addDependencies(Ex3.class);
                 onExtensionInstantiated(e -> e.use(Ex3.class));
             }
@@ -85,7 +85,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
 
             /** {@inheritDoc} */
             @Override
-            protected void configure() {
+            protected void compose() {
                 addDependencies(ExRecursive2.class);
                 onExtensionInstantiated(e -> e.use(ExRecursive2.class));
             }
@@ -97,7 +97,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
 
             /** {@inheritDoc} */
             @Override
-            protected void configure() {
+            protected void compose() {
                 onExtensionInstantiated(e -> e.use(ExRecursive1.class));
             }
         }

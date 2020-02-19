@@ -13,23 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.base.reflect;
+package app.packed.inject;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.lang.reflect.Member;
-
-import app.packed.base.reflect.MemberDescriptor;
+import app.packed.base.Nullable;
 
 /**
  *
  */
-public abstract class AbstractDescriptorTest {
-
-    static void validateMember(Member expected, MemberDescriptor actual) {
-        assertThat(expected.getDeclaringClass()).isSameAs(actual.getDeclaringClass());
-        assertThat(expected.getModifiers()).isEqualTo(actual.getModifiers());
-        assertThat(expected.getName()).isEqualTo(actual.getName());
-        assertThat(expected.isSynthetic()).isEqualTo(actual.isSynthetic());
-    }
+public interface IFactory<T> {
+    <S> IFactory<T> bind(Class<S> key, @Nullable S instance);
 }

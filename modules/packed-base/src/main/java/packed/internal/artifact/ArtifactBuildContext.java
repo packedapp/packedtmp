@@ -15,8 +15,8 @@
  */
 package packed.internal.artifact;
 
+import app.packed.artifact.ArtifactSource;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerSource;
 import packed.internal.errorhandling.ErrorMessage;
 
 /**
@@ -52,7 +52,7 @@ public interface ArtifactBuildContext {
      * 
      * @return the source of the top level container
      */
-    Class<? extends ContainerSource> sourceType();
+    Class<? extends ArtifactSource> sourceType();
 
     /**
      * The action is mainly used.

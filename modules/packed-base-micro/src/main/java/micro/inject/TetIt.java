@@ -52,7 +52,7 @@ public class TetIt {
 
         /** {@inheritDoc} */
         @Override
-        protected void configure() {
+        protected void compose() {
             ServiceExtension e = use(ServiceExtension.class);
             e.provide(Factory.fromInstance("Root"));
             e.provide(Factory.fromInstance("Child1"));

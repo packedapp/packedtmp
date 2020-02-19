@@ -25,14 +25,7 @@ import java.lang.reflect.Constructor;
 import app.packed.base.reflect.ConstructorDescriptor;
 import packed.internal.util.InternalErrorException;
 
-/**
- * A constructor descriptor.
- * <p>
- * Unlike the {@link Constructor} class, this interface contains no mutable operations, so it can be freely shared.
- * 
- * @apiNote In the future, if the Java language permits, {@link ConstructorDescriptor} may become a {@code sealed}
- *          interface, which would prohibit subclassing except by explicitly permitted types.
- */
+/** The default implementation of {@link ConstructorDescriptor}. */
 public final class PackedConstructorDescriptor<T> extends PackedExecutableDescriptor implements ConstructorDescriptor<T> {
 
     /** The constructor that is being mirrored. */

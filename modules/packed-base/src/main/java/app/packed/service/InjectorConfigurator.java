@@ -25,7 +25,7 @@ import app.packed.base.Nullable;
 import app.packed.base.Key.Qualifier;
 import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
-import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerComposer;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 
@@ -41,7 +41,7 @@ import app.packed.inject.Factory;
 public final class InjectorConfigurator {
 
     /** The configuration we delegate all calls to. */
-    private final ContainerConfiguration configuration;
+    private final ContainerComposer configuration;
 
     private boolean initialized;
 
@@ -51,7 +51,7 @@ public final class InjectorConfigurator {
      * @param configuration
      *            the configuration to wrap
      */
-    InjectorConfigurator(ContainerConfiguration configuration) {
+    InjectorConfigurator(ContainerComposer configuration) {
         this.configuration = requireNonNull(configuration, "configuration is null");
     }
 
@@ -60,7 +60,7 @@ public final class InjectorConfigurator {
      * 
      * @return the container configuration that was used to create this configurator
      */
-    private ContainerConfiguration configuration() {
+    private ContainerComposer configuration() {
         return configuration;
     }
 

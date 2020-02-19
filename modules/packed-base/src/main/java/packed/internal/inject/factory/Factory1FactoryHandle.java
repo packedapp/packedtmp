@@ -20,10 +20,15 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.function.Function;
 
 import app.packed.base.TypeLiteral;
+import app.packed.inject.Factory;
 import app.packed.inject.Factory1;
+import packed.internal.inject.ServiceDependency;
 import packed.internal.util.MethodHandleUtil;
 
 /** An internal factory for {@link Factory1}. */
@@ -36,7 +41,7 @@ public final class Factory1FactoryHandle<T, R> extends FactoryHandle<R> {
     /** The function that creates the actual objects. */
     private final Function<? super T, ? extends R> function;
 
-    public Factory1FactoryHandle(TypeLiteral<R> type, Function<? super T, ? extends R> function) {
+    private Factory1FactoryHandle(TypeLiteral<R> type, Function<? super T, ? extends R> function) {
         super(type);
         this.function = requireNonNull(function, "function is null");
     }
@@ -45,6 +50,33 @@ public final class Factory1FactoryHandle<T, R> extends FactoryHandle<R> {
     @Override
     public MethodHandle toMethodHandle() {
         return APPLY.bindTo(function);
+    }
+
+    /** A cache of extracted type variables and dependencies from subclasses of this class. */
+    private static final ClassValue<Entry<TypeLiteral<?>, List<ServiceDependency>>> CACHE = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        @Override
+        protected Entry<TypeLiteral<?>, List<ServiceDependency>> computeValue(Class<?> type) {
+            return new SimpleImmutableEntry<>(TypeLiteral.fromTypeVariable((Class) type, Factory.class, 0),
+                    ServiceDependency.fromTypeVariables((Class) type, Factory1.class, 0));
+        }
+    };
+
+    /**
+     * Creates a new factory support instance from an implementation of this class and a function.
+     * 
+     * @param implementation
+     *            the class extending this class
+     * @param function
+     *            the function used for creating new values
+     * @return a new factory support instance
+     */
+    @SuppressWarnings("unchecked")
+    public static <T, R> FactorySupport<R> create(Class<?> implementation, Function<?, ? extends T> function) {
+        Entry<TypeLiteral<?>, List<ServiceDependency>> fs = CACHE.get(implementation);
+        return new FactorySupport<>(new Factory1FactoryHandle<>((TypeLiteral<R>) fs.getKey(), (Function<? super T, ? extends R>) function), fs.getValue());
     }
 }
 //

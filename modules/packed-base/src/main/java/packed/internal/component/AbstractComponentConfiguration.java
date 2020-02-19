@@ -26,14 +26,14 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.component.FeatureMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
-import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerSource;
+import app.packed.container.ContainerComposer;
 import app.packed.container.Extension;
 import packed.internal.artifact.BuildOutput;
 import packed.internal.artifact.PackedArtifactBuildContext;
@@ -163,7 +163,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
 
     /**
      * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
-     * not located on any subclasses of {@link Extension} or any class that implements {@link ContainerSource}.
+     * not located on any subclasses of {@link Extension} or any class that implements {@link ArtifactSource}.
      * <p>
      * Invoking this method typically takes in the order of 1-2 microseconds.
      * <p>
@@ -205,7 +205,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
 
         // Dvs ourContainerSource
         return Extension.class.isAssignableFrom(c)
-                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && ContainerSource.class.isAssignableFrom(c));
+                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && ArtifactSource.class.isAssignableFrom(c));
     }
 
     /** {@inheritDoc} */
@@ -399,7 +399,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
         /** One of the install component methods has been invoked. */
         INSTALL_INVOKED,
 
-        /** {@link ContainerConfiguration#link(Bundle, app.packed.container.Wirelet...)} has been invoked. */
+        /** {@link ContainerComposer#link(Bundle, app.packed.container.Wirelet...)} has been invoked. */
         LINK_INVOKED,
 
         /** One of the install component methods has been invoked. */

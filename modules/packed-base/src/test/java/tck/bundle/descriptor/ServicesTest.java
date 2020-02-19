@@ -38,7 +38,7 @@ public class ServicesTest {
         BundleDescriptor d = BundleDescriptor.of(new BaseBundle() {
 
             @Override
-            protected void configure() {
+            protected void compose() {
                 lookup(MethodHandles.lookup());
                 provide(B.class);
                 provide(A.class);

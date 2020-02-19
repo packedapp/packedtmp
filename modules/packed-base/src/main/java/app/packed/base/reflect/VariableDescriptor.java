@@ -21,13 +21,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
 
 /**
  * A shared superclass for the common functionality of class variables (static {@link Field fields}), instance variables
- * (non-static {@link Field fields}) and {@link Parameter parameter} variables.
+ * (non-static {@link Field fields}), {@link TypeVariable type variables}, and {@link Parameter parameter} variables.
  * 
  * @apiNote In the future, if the Java language permits, {@link VariableDescriptor} may become a {@code sealed}
  *          interface, which would prohibit subclassing except by explicitly permitted types.

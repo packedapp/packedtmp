@@ -2,22 +2,24 @@ package app.packed.base.reflect;
 
 import java.lang.reflect.Parameter;
 
-import app.packed.base.Key;
 import packed.internal.base.reflect.PackedParameterDescriptor;
 
+/**
+ * A parameter descriptor.
+ * <p>
+ * Unlike the {@link Parameter} class, this interface contains no mutable operations, so it can be freely shared.
+ * 
+ * @apiNote In the future, if the Java language permits, {@link ParameterDescriptor} may become a {@code sealed}
+ *          interface, which would prohibit subclassing except by explicitly permitted types.
+ */
 public interface ParameterDescriptor extends VariableDescriptor {
 
-    Key<?> toKey();
-
-    ExecutableDescriptor getDeclaringExecutable();
-
     /**
-     * Return a descriptor of the executable declaring this parameter.
-     *
-     * @return a descriptor of the executable declaring this parameter
-     * @see Parameter#getDeclaringExecutable()
+     * Returns the executable that defines the parameter.
+     * 
+     * @return the executable that defines the parameter
      */
-    ExecutableDescriptor declaringExecutable();
+    ExecutableDescriptor getDeclaringExecutable();
 
     /**
      * Returns the index of the parameter.
@@ -35,11 +37,11 @@ public interface ParameterDescriptor extends VariableDescriptor {
     boolean isVarArgs();
 
     /**
-     * Creates a new parameter descriptor from the specified parameter.
+     * Returns a parameter descriptor representing the specified parameter.
      *
      * @param parameter
-     *            the parameter to create a descriptor for
-     * @return a new parameter descriptor
+     *            the parameter for which to return a descriptor for
+     * @return the descriptor
      */
     static ParameterDescriptor from(Parameter parameter) {
         return PackedParameterDescriptor.from(parameter);

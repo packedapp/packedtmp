@@ -17,8 +17,8 @@ package app.packed.artifact;
 
 import java.util.function.Function;
 
-import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerSource;
+import app.packed.container.ContainerComposer;
+import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.service.Injector;
 import packed.internal.artifact.BuildOutput;
@@ -30,10 +30,9 @@ import packed.internal.reflect.typevariable.TypeVariableExtractor;
  * <p>
  * This class can be extended to create custom artifact types if the built-in artifact types such as {@link App} and
  * {@link Injector} are not sufficient. In fact, the default implementations of both {@link App} and {@link Injector}
- * are just thin facade that delegates all calls to {@link ArtifactContext}.
- * 
+ * are just thin facade that delegates all calls to {@link ArtifactContext}. *
  * <p>
- * Normally, you should never instantiate more then a single instance of a particular implementation of this class.
+ * Normally, you should never instantiate more then a single instance of a subclass of this class.
  * <p>
  * Subclasses of this class should be thread safe.
  * 
@@ -53,7 +52,7 @@ public abstract class ArtifactDriver<T> {
 
     /** Creates a new driver. */
     @SuppressWarnings("unchecked")
-    protected ArtifactDriver() {
+    protected ArtifactDriver(boolean canRun) {
         this.artifactType = (Class<T>) ARTIFACT_DRIVER_TV_EXTRACTOR.extract(getClass());
 
         // Set tmp
@@ -67,11 +66,15 @@ public abstract class ArtifactDriver<T> {
      * 
      * @return the type of artifact this driver produce
      */
+    // RawType? Should we have a TypeLiteral???
+    // For example, I create BigMap<K, V>
     public final Class<T> artifactType() {
         return artifactType;
     }
 
     protected void configure() {
+        // Default Constraints....
+
         // Kan vi bruge noget af det samme som ComponentExtension...
         // De regler kan vel bruges paa baadde
         // extension nivuea, ArtifactNiveau, Bundle Niveau
@@ -124,7 +127,7 @@ public abstract class ArtifactDriver<T> {
      * @throws RuntimeException
      *             if the artifact could not be created
      */
-    public final T createAndInitialize(ContainerSource source, Wirelet... wirelets) {
+    public final T createAndInitialize(ArtifactSource source, Wirelet... wirelets) {
         if (source instanceof ArtifactImage) {
             return ((ArtifactImage) source).newArtifact(this, wirelets);
         }
@@ -134,7 +137,8 @@ public abstract class ArtifactDriver<T> {
         return newArtifact(pac);
     }
 
-    public final T createAndStart(ContainerSource source, Wirelet... wirelets) {
+    public final T createAndStart(ArtifactSource source, Wirelet... wirelets) {
+        // Should throw if not Runnable...
         if (source instanceof ArtifactImage) {
             return ((ArtifactImage) source).newArtifact(this, wirelets);
         }
@@ -145,12 +149,32 @@ public abstract class ArtifactDriver<T> {
         return newArtifact(pac);
     }
 
-    public final <C> T newArtifact(Function<ContainerConfiguration, C> factory, ArtifactComposer<C> composer, Wirelet... wirelets) {
+    public final <C> T newArtifact(Function<ContainerComposer, C> factory, ArtifactComposer<C> composer, Wirelet... wirelets) {
         PackedContainerConfiguration pcc = new PackedContainerConfiguration(BuildOutput.artifact(this), composer, wirelets);
         C c = factory.apply(pcc);
         composer.compose(c);
         pcc.doBuild();
         ArtifactContext pac = pcc.instantiateArtifact(pcc.wireletContext).newArtifactContext();
         return newArtifact(pac);
+    }
+
+    // Taget som en ArtifactDriver(Option... options)
+    static class Option {
+
+        static Option disableExtensions(Class<? extends Extension> extensions) {
+            throw new UnsupportedOperationException();
+        }
+
+    }
+
+    // Lav en constructor baade med og uden Alt
+    // ArtifactDriver(boolean isRunning)
+    // ArtifactDriver(boolean isRunning, Settings settings)
+    static abstract class Settings {
+        protected abstract void configure();
+
+        protected final void disableExtensions() {
+
+        }
     }
 }

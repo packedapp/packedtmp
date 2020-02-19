@@ -25,7 +25,6 @@ import app.packed.component.ComponentStream;
 import app.packed.component.ComponentStream.Option;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.RunState;
@@ -44,9 +43,13 @@ import packed.internal.artifact.PackedApp;
  */
 public interface App extends AutoCloseable {
 
-    /** Closes the app (synchronously). **/
+    /**
+     * Closes the app (synchronously). Equivalent to calling {@code app.stop()}, but here because of {@link AutoCloseable}.
+     **/
     @Override
-    void close();
+    default void close() {
+        stop();
+    }
 
     /**
      * Returns the configuration site of this application.
@@ -113,7 +116,7 @@ public interface App extends AutoCloseable {
      * Returns a component stream consisting of this applications underlying container and all of its descendants in any
      * order.
      * <p>
-     * Calling this method will never effect the lifecycle state of this application.
+     * Calling this method does <strong>not</strong> effect the lifecycle state of this application.
      * 
      * @return a component stream
      * @see #stream(Option...)
@@ -171,9 +174,9 @@ public interface App extends AutoCloseable {
     Component useComponent(CharSequence path);
 
     /**
-     * Returns an artifact driver for creating {@link App} instances.
+     * Returns an artifact driver for creating new {@link App} instances.
      * 
-     * @return an artifact driver
+     * @return an app artifact driver
      */
     static ArtifactDriver<App> driver() {
         return PackedApp.DRIVER; // The basic idea is that you can use it for hosts
@@ -189,9 +192,9 @@ public interface App extends AutoCloseable {
      *            any wirelets to use in the construction of the application
      * @return the new application
      * @throws RuntimeException
-     *             if the application could not be constructed or started properly
+     *             if the application could not be constructed or initialized properly
      */
-    static App initialize(ContainerSource source, Wirelet... wirelets) {
+    static App initialize(ArtifactSource source, Wirelet... wirelets) {
         return driver().createAndInitialize(source, wirelets);
     }
 
@@ -208,7 +211,10 @@ public interface App extends AutoCloseable {
      * @throws RuntimeException
      *             if the application did not execute properly
      */
-    static void run(ContainerSource source, Wirelet... wirelets) {
+    // Maybe this is not on App....
+
+    // AppRunner??? Only static methods....
+    static void run(ArtifactSource source, Wirelet... wirelets) {
         PackedApp app = (PackedApp) driver().createAndInitialize(source, wirelets);
         app.run();
     }
@@ -225,11 +231,11 @@ public interface App extends AutoCloseable {
      * @throws RuntimeException
      *             if the application could not be constructed or started properly
      */
-    static App start(ContainerSource source, Wirelet... wirelets) {
+    static App start(ArtifactSource source, Wirelet... wirelets) {
         return driver().createAndStart(source, wirelets);
     }
 
-    static CompletableFuture<App> startAsync(ContainerSource source, Wirelet... wirelets) {
+    static CompletableFuture<App> startAsync(ArtifactSource source, Wirelet... wirelets) {
         // Why return CompletableFuture???
         PackedApp app = (PackedApp) driver().createAndInitialize(source, wirelets);
         return app.startAsync(app);

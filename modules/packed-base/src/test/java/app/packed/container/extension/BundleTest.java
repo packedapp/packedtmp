@@ -32,7 +32,7 @@ public class BundleTest extends AbstractArtifactTest {
         Bundle empty = new Bundle() {
 
             @Override
-            protected void configure() {}
+            protected void compose() {}
         };
 
         BundleDescriptor.of(empty);
@@ -45,7 +45,7 @@ public class BundleTest extends AbstractArtifactTest {
         Bundle b = new Bundle() {
 
             @Override
-            protected void configure() {
+            protected void compose() {
                 link(this);
             }
         };

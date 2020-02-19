@@ -211,9 +211,17 @@ public abstract class TypeLiteral<T> {
         return new CanonicalizedTypeLiteral<>(field.getGenericType());
     }
 
-    public static TypeLiteral<?> fromField(FieldDescriptor field) {
-        requireNonNull(field, "field is null");
-        return new CanonicalizedTypeLiteral<>(field.getParameterizedType());
+    /**
+     * Returns the type of the specified field descriptor as a type literal.
+     * 
+     * @param descriptor
+     *            the field descriptor to return a type literal for
+     * @return the type literal for the field
+     * @see Field#getGenericType()
+     */
+    public static TypeLiteral<?> fromField(FieldDescriptor descriptor) {
+        requireNonNull(descriptor, "field is null");
+        return new CanonicalizedTypeLiteral<>(descriptor.getParameterizedType());
     }
 
     /**

@@ -29,19 +29,9 @@ import java.lang.reflect.Type;
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
 import app.packed.base.reflect.FieldDescriptor;
-import app.packed.base.reflect.VariableDescriptor;
 
-/**
- * A field descriptor.
- * <p>
- * Unlike the {@link Field} class, this interface contains no mutable operations, so it can be freely shared.
- * 
- * @apiNote In the future, if the Java language permits, {@link FieldDescriptor} may become a {@code sealed} interface,
- *          which would prohibit subclassing except by explicitly permitted types.
- */
-// Do we want to revert back to an interface???
-// Thinking about not storing fields... Taenker
-public final class PackedFieldDescriptor implements VariableDescriptor, FieldDescriptor {
+/** The default implementation of {@link FieldDescriptor}. */
+public final class PackedFieldDescriptor implements FieldDescriptor {
 
     /** The field that is being wrapped. */
     private final Field field;
@@ -55,11 +45,6 @@ public final class PackedFieldDescriptor implements VariableDescriptor, FieldDes
     private PackedFieldDescriptor(Field field) {
         this.field = requireNonNull(field, "field is null");
     }
-
-    // public <T> T apply(Lookup caller, VarOperator<T> operator, Object instance) {
-    // requireNonNull(operator, "operator is null");
-    // return operator.apply(caller, field, instance);
-    // }
 
     /** {@inheritDoc} */
     @Override
@@ -191,21 +176,6 @@ public final class PackedFieldDescriptor implements VariableDescriptor, FieldDes
     public boolean isVolatile() {
         return Modifier.isVolatile(field.getModifiers());
     }
-    //
-    // /**
-    // * Creates a new {@link Field} corresponding to this descriptor.
-    // *
-    // * @return a new field
-    // */
-    // // Hide/Remove
-    // public Field newField() {
-    // Class<?> declaringClass = field.getDeclaringClass();
-    // try {
-    // return declaringClass.getDeclaredField(field.getName());
-    // } catch (NoSuchFieldException e) {
-    // throw new InternalErrorException("field", field, e);// We should never get to here
-    // }
-    // }
 
     /** {@inheritDoc} */
     @Override
@@ -239,7 +209,21 @@ public final class PackedFieldDescriptor implements VariableDescriptor, FieldDes
      *            the field for which to return a descriptor for
      * @return the descriptor
      */
-    public static FieldDescriptor from(Field field) {
+    public static PackedFieldDescriptor from(Field field) {
         return new PackedFieldDescriptor(field);
+    }
+
+    /**
+     * Makes sure the specified descriptor is a packed field descriptor.
+     * 
+     * @param descriptor
+     *            the descriptor
+     * @return the internal descriptor
+     */
+    public static PackedFieldDescriptor from(FieldDescriptor descriptor) {
+        if (descriptor instanceof FieldDescriptor) {
+            throw new ClassCastException("Custom implementations of " + FieldDescriptor.class.getSimpleName() + " are not supported");
+        }
+        return (PackedFieldDescriptor) descriptor;
     }
 }

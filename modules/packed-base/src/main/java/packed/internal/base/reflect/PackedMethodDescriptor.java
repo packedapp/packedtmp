@@ -77,8 +77,6 @@ public final class PackedMethodDescriptor extends PackedExecutableDescriptor imp
         return false;
     }
 
-    /** {@inheritDoc} */
-    @Override
     public Key<?> fromMethodReturnType() {
         return Key.fromMethodReturnType(method);
     }
@@ -167,6 +165,10 @@ public final class PackedMethodDescriptor extends PackedExecutableDescriptor imp
     @Override
     public final boolean isNullableReturnType() {
         return isAnnotationPresent(Nullable.class);
+    }
+
+    public static PackedMethodDescriptor cast(MethodDescriptor md) {
+        return (PackedMethodDescriptor) md;
     }
 }
 //

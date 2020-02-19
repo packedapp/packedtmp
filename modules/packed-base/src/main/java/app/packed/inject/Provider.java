@@ -18,7 +18,7 @@ package app.packed.inject;
 /**
  * A provider of object instances.
  */
-//Is this is app.packed.service??? No its in the dependency model.
+//Is this in app.packed.service??? No its in the dependency model.
 @FunctionalInterface
 public interface Provider<T> {
 

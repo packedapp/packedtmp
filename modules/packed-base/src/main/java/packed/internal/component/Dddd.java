@@ -32,7 +32,7 @@ public class Dddd extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
-    protected void configure() {
+    protected void compose() {
         // System.out.println(Option.inSameContainer());
         installInstance("sdfsdf").setName("Hej");
         installInstance("sdfsdf");

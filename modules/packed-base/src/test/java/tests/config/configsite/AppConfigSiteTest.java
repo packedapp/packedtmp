@@ -40,7 +40,7 @@ public class AppConfigSiteTest {
         StackFrame f1 = ConfigSiteTestHelper.caller();
         App app = App.start(new BaseBundle() {
             @Override
-            protected void configure() {}
+            protected void compose() {}
         });
 
         assertThat(app.configSite()).isNotNull();
@@ -60,7 +60,7 @@ public class AppConfigSiteTest {
         StackFrame f1 = ConfigSiteTestHelper.caller();
         App app = App.start(new BaseBundle() {
             @Override
-            protected void configure() {
+            protected void compose() {
                 ar.set(ConfigSiteTestHelper.caller());
                 installInstance("foo").setName("foo");
                 installInstance("doo").setName("doo");
@@ -101,11 +101,11 @@ public class AppConfigSiteTest {
         StackFrame f1 = ConfigSiteTestHelper.caller();
         App app = App.start(new BaseBundle() {
             @Override
-            protected void configure() {
+            protected void compose() {
                 ar1.set(ConfigSiteTestHelper.caller());
                 link(new BaseBundle() {
                     @Override
-                    public void configure() {
+                    public void compose() {
                         setName("woo");
                         ar2.set(ConfigSiteTestHelper.caller());
                         installInstance("foo").setName("foo");

@@ -20,6 +20,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.util.Set;
 
+import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentType;
@@ -33,7 +34,7 @@ import packed.internal.host.HostConfiguration;
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
  * extending {@link Bundle} or {@link BaseBundle}.
  */
-public interface ContainerConfiguration extends ComponentConfiguration {
+public interface ContainerComposer extends ComponentConfiguration {
 
     /**
      * Installs a host and returns the configuration of it.
@@ -144,18 +145,18 @@ public interface ContainerConfiguration extends ComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    ContainerConfiguration setDescription(String description);
+    ContainerComposer setDescription(String description);
 
     /** {@inheritDoc} */
     @Override
-    ContainerConfiguration setName(String name);
+    ContainerComposer setName(String name);
 
     /**
      * Returns the class that defines the container.
      * 
      * @return the class that defines the container
      */
-    Class<? extends ContainerSource> sourceType();
+    Class<? extends ArtifactSource> sourceType();
 
     /** {@inheritDoc} */
     @Override

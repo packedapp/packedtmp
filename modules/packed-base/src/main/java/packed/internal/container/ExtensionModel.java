@@ -29,7 +29,7 @@ import java.util.function.Function;
 import app.packed.base.Contract;
 import app.packed.base.Nullable;
 import app.packed.component.Component;
-import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerComposer;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
 import app.packed.container.ExtensionWirelet;
@@ -219,7 +219,7 @@ public final class ExtensionModel<E extends Extension> {
 
             OpenClass cp = new OpenClass(MethodHandles.lookup(), extensionType, true);
             this.constructor = ConstructorFinder.find(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-            this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
+            this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerComposer.class);
 
             if (composerType != null) {
                 ExtensionComposer<?> composer = ConstructorFinder.invoke(cp.spawn(composerType));

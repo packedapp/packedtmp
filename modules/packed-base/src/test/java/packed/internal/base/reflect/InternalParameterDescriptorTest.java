@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.base.reflect;
+package packed.internal.base.reflect;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static testutil.assertj.Assertions.npe;
@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
+import app.packed.base.reflect.ParameterDescriptor;
 import app.packed.service.Injector;
 
 /** Tests {@link ParameterDescriptor}. */

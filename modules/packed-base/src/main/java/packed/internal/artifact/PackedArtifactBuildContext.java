@@ -17,9 +17,9 @@ package packed.internal.artifact;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.artifact.ArtifactSource;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerSource;
+import app.packed.container.ContainerComposer;
 import packed.internal.container.PackedExtensionContext;
 import packed.internal.errorhandling.ErrorMessage;
 
@@ -30,7 +30,7 @@ public final class PackedArtifactBuildContext implements ArtifactBuildContext {
     private final BuildOutput output;
 
     /** The configuration of the top container. */
-    private final ContainerConfiguration topContainerConfiguration;
+    private final ContainerComposer topContainerConfiguration;
 
     private final ExtensionList extensions = new ExtensionList();
 
@@ -42,7 +42,7 @@ public final class PackedArtifactBuildContext implements ArtifactBuildContext {
      * @param output
      *            the output of the build process
      */
-    public PackedArtifactBuildContext(ContainerConfiguration topContainerConfiguration, BuildOutput output) {
+    public PackedArtifactBuildContext(ContainerComposer topContainerConfiguration, BuildOutput output) {
         this.topContainerConfiguration = requireNonNull(topContainerConfiguration);
         this.output = requireNonNull(output);
     }
@@ -89,7 +89,7 @@ public final class PackedArtifactBuildContext implements ArtifactBuildContext {
 
     /** {@inheritDoc} */
     @Override
-    public Class<? extends ContainerSource> sourceType() {
+    public Class<? extends ArtifactSource> sourceType() {
         return topContainerConfiguration.sourceType();
     }
 }

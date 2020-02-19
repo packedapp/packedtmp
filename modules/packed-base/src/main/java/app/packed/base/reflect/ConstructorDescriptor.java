@@ -8,14 +8,22 @@ import java.lang.reflect.Constructor;
 import app.packed.base.TypeLiteral;
 import packed.internal.base.reflect.PackedConstructorDescriptor;
 
+/**
+ * An immutable constructor descriptor.
+ * <p>
+ * Unlike the {@link Constructor} class, this interface contains no mutable operations, so it can be freely shared.
+ * 
+ * @apiNote In the future, if the Java language permits, {@link ConstructorDescriptor} may become a {@code sealed}
+ *          interface, which would prohibit subclassing except by explicitly permitted types.
+ */
 public interface ConstructorDescriptor<T> extends ExecutableDescriptor {
 
     /**
-     * Creates a new descriptor from the specified constructor.
+     * Returns a constructor descriptor representing the specified constructor.
      *
      * @param constructor
-     *            the constructor to create a descriptor from
-     * @return a new constructor descriptor
+     *            the constructor for which to return a descriptor for
+     * @return the descriptor
      */
     static <T> ConstructorDescriptor<T> from(Constructor<T> constructor) {
         return new PackedConstructorDescriptor<T>(constructor);

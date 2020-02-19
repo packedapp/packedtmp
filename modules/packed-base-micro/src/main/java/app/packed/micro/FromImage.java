@@ -55,24 +55,24 @@ public class FromImage {
 
     static final ArtifactImage EMPTY = ArtifactImage.build(new Bundle() {
         @Override
-        protected void configure() {}
+        protected void compose() {}
     });
 
     static final ArtifactImage USE_EXTENSION = ArtifactImage.build(new Bundle() {
         @Override
-        public void configure() {
+        public void compose() {
             use(MyExtension.class);
         }
     });
     static final ArtifactImage INSTALL = ArtifactImage.build(new Bundle() {
         @Override
-        public void configure() {
+        public void compose() {
             installInstance("foo");
         }
     });
     static final ArtifactImage INSTALL_AUTO_ACTIVATE = ArtifactImage.build(new Bundle() {
         @Override
-        public void configure() {
+        public void compose() {
             installInstance(new MyStuff());
         }
     });
@@ -111,7 +111,7 @@ public class FromImage {
 
             /** {@inheritDoc} */
             @Override
-            protected void configure() {}
+            protected void compose() {}
         }
     }
 

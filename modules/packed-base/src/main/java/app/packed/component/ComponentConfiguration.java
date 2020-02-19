@@ -31,7 +31,7 @@ public interface ComponentConfiguration {
     /**
      * Checks that the component is still configurable or throws an {@link IllegalStateException}.
      * <p>
-     * A component is typically only configurable inside of {@link Bundle#configure()}.
+     * A component is typically only configurable inside of {@link Bundle#compose()}.
      * 
      * @throws IllegalStateException
      *             if the component is no long configurable.

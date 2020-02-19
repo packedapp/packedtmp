@@ -77,6 +77,13 @@ public interface ExecutableDescriptor extends AnnotatedElement, MemberDescriptor
     // We can use Lookup.find(xxxxx)
     MethodHandle unreflect(MethodHandles.Lookup lookup) throws IllegalAccessException;
 
+    /**
+     * Returns a executable descriptor representing the specified executable.
+     *
+     * @param executable
+     *            the executable for which to return a descriptor for
+     * @return the descriptor
+     */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     static ExecutableDescriptor from(Executable executable) {
         requireNonNull(executable, "executable is null");

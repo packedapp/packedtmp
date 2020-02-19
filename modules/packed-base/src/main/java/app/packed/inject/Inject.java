@@ -15,8 +15,8 @@
  */
 package app.packed.inject;
 
-import static app.packed.base.invoke.AccessType.INVOKE;
-import static app.packed.base.invoke.AccessType.SET_FIELD;
+import static app.packed.base.invoke.OpenMode.INVOKE;
+import static app.packed.base.invoke.OpenMode.SET_FIELD;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

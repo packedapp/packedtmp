@@ -231,7 +231,7 @@ public final class DependencyManager {
                     sb.append("parameter on ");
                     if (dependency.variable() != null) {
 
-                        ExecutableDescriptor ed = ((ParameterDescriptor) dependency.variable().get()).declaringExecutable();
+                        ExecutableDescriptor ed = ((ParameterDescriptor) dependency.variable().get()).getDeclaringExecutable();
                         sb.append(ed.descriptorTypeName()).append(": ");
                         sb.append(ed.getDeclaringClass().getCanonicalName());
                         if (ed instanceof MethodDescriptor) {

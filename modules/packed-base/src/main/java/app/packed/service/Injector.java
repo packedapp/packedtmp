@@ -24,10 +24,10 @@ import app.packed.artifact.App;
 import app.packed.artifact.ArtifactComposer;
 import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.ArtifactDriver;
+import app.packed.artifact.ArtifactSource;
 import app.packed.base.Key;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import packed.internal.container.PackedContainer.ArtifactContextWrapper;
 
@@ -327,7 +327,7 @@ public interface Injector {
      *             if the injector could not be created for some reason. For example, if the source defines any components
      *             that requires a lifecycle
      */
-    static Injector of(ContainerSource source, Wirelet... wirelets) {
+    static Injector of(ArtifactSource source, Wirelet... wirelets) {
         return InjectorArtifactDriver.INSTANCE.createAndInitialize(source, wirelets);
     }
 }
@@ -345,7 +345,9 @@ final class InjectorArtifactDriver extends ArtifactDriver<Injector> {
     static final InjectorArtifactDriver INSTANCE = new InjectorArtifactDriver();
 
     /** Singleton */
-    private InjectorArtifactDriver() {}
+    private InjectorArtifactDriver() {
+        super(false);
+    }
 
     /** {@inheritDoc} */
     @Override

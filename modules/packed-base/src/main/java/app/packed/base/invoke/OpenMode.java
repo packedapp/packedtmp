@@ -19,7 +19,12 @@ package app.packed.base.invoke;
  *
  */
 // AccessOperation.. Instance er vel mere en type end en operation
-public enum AccessType {
+public enum OpenMode {
+
+    CUSTOM, // Can specify a class...
+    // Eller ogsaa er det i addition til hvad man har specificeret her/
+    // dvs @OpensFor(value = INVOKE, gateKeeper = SomeOpenGatekeeper.class)
+    // boolean checker or void check throws Exception?
 
     /** Access rights for invocation of a method or constructor. */
     INVOKE,
@@ -32,10 +37,18 @@ public enum AccessType {
     SET_FIELD,
 
     // Needs a Type annotation.... (also on subclasses...) Must check Inherited status of the annotation...
+
+    // All_MEMBERS_FULL
+
+    // Subclasses must be annotated @OpenForSupertypes() (all or only annotations???)
+
+    // Kan jo ikke bare give adgang til at members i super klasser....
+
     FULL_CLASS, FULL_CLASSAND_SUBCLASSES,
 
     /** Access to instances of the target. Needed, for example, for VarHandle.compareAndSet(xxxxx) */
     // Ideen er lidt at man kan faa alle instanser af X
+    /// Jajaja, saa betyder det at ikke alle kan faa adgang....
     INSTANCE,
 
     /** Ja ja ja ja, det kunne måske virke. */

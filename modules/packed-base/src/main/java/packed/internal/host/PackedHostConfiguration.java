@@ -19,9 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactImage;
+import app.packed.artifact.ArtifactSource;
 import app.packed.component.ComponentType;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.component.AbstractComponent;
@@ -46,7 +46,7 @@ public final class PackedHostConfiguration extends AbstractComponentConfiguratio
 
     /** {@inheritDoc} */
     @Override
-    public void deploy(ContainerSource source, ArtifactDriver<?> driver, Wirelet... wirelets) {
+    public void deploy(ArtifactSource source, ArtifactDriver<?> driver, Wirelet... wirelets) {
         requireNonNull(source, "source is null");
         requireNonNull(driver, "driver is null");
         // For now we create an image...

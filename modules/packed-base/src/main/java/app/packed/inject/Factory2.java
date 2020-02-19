@@ -15,16 +15,9 @@
  */
 package app.packed.inject;
 
-import java.util.AbstractMap.SimpleImmutableEntry;
-import java.util.List;
-import java.util.Map.Entry;
 import java.util.function.BiFunction;
 
 import app.packed.base.InvalidDeclarationException;
-import app.packed.base.TypeLiteral;
-import packed.internal.inject.ServiceDependency;
-import packed.internal.inject.factory.Factory2FactoryHandle;
-import packed.internal.inject.factory.FactorySupport;
 
 /**
  * A {@link Factory} type that takes two dependencies and uses a {@link BiFunction} to create new instances. The input
@@ -34,18 +27,6 @@ import packed.internal.inject.factory.FactorySupport;
  * @see Factory1
  */
 public abstract class Factory2<T, U, R> extends Factory<R> {
-
-    /** A cache of extracted type variables and dependencies from subclasses of this class. */
-    private static final ClassValue<Entry<TypeLiteral<?>, List<ServiceDependency>>> CACHE = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        @Override
-        protected Entry<TypeLiteral<?>, List<ServiceDependency>> computeValue(Class<?> type) {
-            return new SimpleImmutableEntry<>(TypeLiteral.fromTypeVariable((Class) type, Factory.class, 0),
-                    ServiceDependency.fromTypeVariables((Class) type, Factory2.class, 0, 1));
-        }
-    };
 
     /**
      * Creates a new factory.
@@ -58,21 +39,5 @@ public abstract class Factory2<T, U, R> extends Factory<R> {
      */
     protected Factory2(BiFunction<? super T, ? super U, ? extends R> function) {
         super(function);
-    }
-
-    /**
-     * Creates a new factory support instance from an implementation of this class and a (bi) function.
-     * 
-     * @param implementation
-     *            the class extending this class
-     * @param function
-     *            the (bi) function used for creating new values
-     * @return a new factory support instance
-     */
-    @SuppressWarnings("unchecked")
-    static <T, U, R> FactorySupport<R> create(Class<?> implementation, BiFunction<?, ?, ? extends T> function) {
-        Entry<TypeLiteral<?>, List<ServiceDependency>> fs = CACHE.get(implementation);
-        return new FactorySupport<>(new Factory2FactoryHandle<>((TypeLiteral<R>) fs.getKey(), (BiFunction<? super T, ? super U, ? extends R>) function),
-                fs.getValue());
     }
 }

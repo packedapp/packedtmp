@@ -6,13 +6,17 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 
-import app.packed.base.Key;
 import app.packed.base.TypeLiteral;
 import packed.internal.base.reflect.PackedMethodDescriptor;
 
+/**
+ * Provides information about a method, such as its name, parameters, annotations. Unlike {@link Method} this class is
+ * immutable, and can be be freely shared.
+ * 
+ * @apiNote In the future, if the Java language permits, {@link MethodDescriptor} may become a {@code sealed} interface,
+ *          which would prohibit subclassing except by explicitly permitted types.
+ */
 public interface MethodDescriptor extends ExecutableDescriptor {
-
-    Key<?> fromMethodReturnType();
 
     /**
      * Returns the generic return type of the method.
@@ -65,14 +69,13 @@ public interface MethodDescriptor extends ExecutableDescriptor {
     boolean isNullableReturnType();
 
     /**
-     * Creates a new descriptor from the specified method.
+     * Returns a method descriptor representing the specified method.
      *
      * @param method
-     *            the method to create a descriptor from
-     * @return a new method descriptor
+     *            the method for which to return a descriptor for
+     * @return the descriptor
      */
     static MethodDescriptor from(Method method) {
         return new PackedMethodDescriptor(method);
     }
-
 }

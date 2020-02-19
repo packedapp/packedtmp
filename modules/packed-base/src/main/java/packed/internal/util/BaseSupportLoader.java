@@ -40,7 +40,7 @@ class DefaultBS extends BaseSupport {
         this.scanBundle(new Bundle() {
 
             @Override
-            protected void configure() {}
+            protected void compose() {}
         });
     }
 

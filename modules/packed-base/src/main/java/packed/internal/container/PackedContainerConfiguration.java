@@ -30,6 +30,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import app.packed.artifact.ArtifactSource;
 import app.packed.base.Contract;
 import app.packed.base.Nullable;
 import app.packed.component.SingletonConfiguration;
@@ -39,8 +40,7 @@ import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.BundleDescriptor.Builder;
 import app.packed.inject.Factory;
-import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerSource;
+import app.packed.container.ContainerComposer;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
@@ -67,8 +67,8 @@ import packed.internal.reflect.OpenClass;
 import packed.internal.service.run.DefaultInjector;
 import packed.internal.util.UncheckedThrowableFactory;
 
-/** The default implementation of {@link ContainerConfiguration}. */
-public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
+/** The default implementation of {@link ContainerComposer}. */
+public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerComposer {
 
     /** Any extension that is active. */
     @Nullable
@@ -94,7 +94,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     private final ContainerSourceModel model;
 
     /** The source of the container configuration. */
-    private final ContainerSource source;
+    private final ArtifactSource source;
 
     /** Any wirelets that was given by the user when creating this configuration. */
     public final WireletContext wireletContext;
@@ -109,7 +109,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * @param wirelets
      *            any wirelets specified by the user
      */
-    public PackedContainerConfiguration(BuildOutput output, ContainerSource source, Wirelet... wirelets) {
+    public PackedContainerConfiguration(BuildOutput output, ArtifactSource source, Wirelet... wirelets) {
         super(ConfigSiteUtil.captureStackFrame(InjectConfigSiteOperations.INJECTOR_OF), output);
         this.source = requireNonNull(source);
         this.lookup = this.model = ContainerSourceModel.of(source.getClass());
@@ -259,7 +259,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     public String initializeNameDefaultName() {
         // I think try and move some of this to ComponentNameWirelet
         @Nullable
-        Class<? extends ContainerSource> source = this.sourceType();
+        Class<? extends ArtifactSource> source = this.sourceType();
         if (Bundle.class.isAssignableFrom(source)) {
             String nnn = source.getSimpleName();
             if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
@@ -468,7 +468,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     /** {@inheritDoc} */
     @Override
-    public Class<? extends ContainerSource> sourceType() {
+    public Class<? extends ArtifactSource> sourceType() {
         return source.getClass();
     }
 

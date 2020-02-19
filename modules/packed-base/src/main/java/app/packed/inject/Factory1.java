@@ -15,17 +15,10 @@
  */
 package app.packed.inject;
 
-import java.util.AbstractMap.SimpleImmutableEntry;
-import java.util.List;
-import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.base.InvalidDeclarationException;
-import app.packed.base.TypeLiteral;
-import packed.internal.inject.ServiceDependency;
-import packed.internal.inject.factory.Factory1FactoryHandle;
-import packed.internal.inject.factory.FactorySupport;
 
 /**
  * A special {@link Factory} type that takes a single dependency as input and uses a {@link Function} to dynamically provide new instances. The input
@@ -77,19 +70,8 @@ import packed.internal.inject.factory.FactorySupport;
  * @see Factory0
  * @see Factory2
  */
+// We need these classes with type parameters to be able to read T
 public abstract class Factory1<T, R> extends Factory<R> {
-
-    /** A cache of extracted type variables and dependencies from subclasses of this class. */
-    private static final ClassValue<Entry<TypeLiteral<?>, List<ServiceDependency>>> CACHE = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        @Override
-        protected Entry<TypeLiteral<?>, List<ServiceDependency>> computeValue(Class<?> type) {
-            return new SimpleImmutableEntry<>(TypeLiteral.fromTypeVariable((Class) type, Factory.class, 0),
-                    ServiceDependency.fromTypeVariables((Class) type, Factory1.class, 0));
-        }
-    };
 
     /**
      * Creates a new factory.
@@ -102,20 +84,5 @@ public abstract class Factory1<T, R> extends Factory<R> {
      */
     protected Factory1(Function<? super T, ? extends R> function) {
         super(function);
-    }
-
-    /**
-     * Creates a new factory support instance from an implementation of this class and a function.
-     * 
-     * @param implementation
-     *            the class extending this class
-     * @param function
-     *            the function used for creating new values
-     * @return a new factory support instance
-     */
-    @SuppressWarnings("unchecked")
-    static <T, R> FactorySupport<R> create(Class<?> implementation, Function<?, ? extends T> function) {
-        Entry<TypeLiteral<?>, List<ServiceDependency>> fs = CACHE.get(implementation);
-        return new FactorySupport<>(new Factory1FactoryHandle<>((TypeLiteral<R>) fs.getKey(), (Function<? super T, ? extends R>) function), fs.getValue());
     }
 }

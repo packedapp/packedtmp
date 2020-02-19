@@ -31,7 +31,7 @@ public class VariousBundles {
     public static Bundle empty() {
         return new Bundle() {
             @Override
-            protected void configure() {}
+            protected void compose() {}
         };
     }
 
@@ -39,7 +39,7 @@ public class VariousBundles {
         return new Bundle() {
 
             @Override
-            public void configure() {
+            public void compose() {
                 installInstance("foo");
             }
         };
@@ -49,7 +49,7 @@ public class VariousBundles {
         return new Bundle() {
 
             @Override
-            public void configure() {
+            public void compose() {
                 installInstance("foo").setName("1");
                 installInstance("foo").setName("2");
                 installInstance("foo").setName("3");
@@ -63,10 +63,10 @@ public class VariousBundles {
         return new Bundle() {
 
             @Override
-            public void configure() {
+            public void compose() {
                 link(new Bundle() {
                     @Override
-                    protected void configure() {}
+                    protected void compose() {}
                 });
             }
         };

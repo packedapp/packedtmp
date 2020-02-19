@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.artifact.App;
 import app.packed.container.BaseBundle;
-import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerComposer;
 import packed.internal.artifact.PackedApp;
 
 /** Tests {@link App#start(app.packed.container.Bundle, app.packed.container.Wirelet...)} */
@@ -33,10 +33,10 @@ public class AppOfTest {
     /** Tests an empty app. */
     @Test
     public void emptyApp() {
-        AtomicReference<ContainerConfiguration> ar = new AtomicReference<>();
+        AtomicReference<ContainerComposer> ar = new AtomicReference<>();
         App app = App.start(new BaseBundle() {
             @Override
-            public void configure() {
+            public void compose() {
                 ar.set(configuration());
             }
         });
@@ -49,7 +49,7 @@ public class AppOfTest {
         assertThat(app.configSite()).isNotNull();
         assertThat(app.stream()).size().isEqualTo(1);
 
-        ContainerConfiguration cc = requireNonNull(ar.get());
+        ContainerComposer cc = requireNonNull(ar.get());
 
         // Checks that no extensions are installed by default
         assertThat(cc.extensions()).isEmpty();

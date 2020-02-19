@@ -16,7 +16,7 @@
 package packed.internal.moduleaccess;
 
 import app.packed.container.Bundle;
-import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerComposer;
 
 /** A support class for calling package private methods in the app.packed.container package. */
 public interface AppPackedContainerAccess extends SecretAccess {
@@ -29,5 +29,5 @@ public interface AppPackedContainerAccess extends SecretAccess {
      * @param configuration
      *            the configuration of the container
      */
-    void doConfigure(Bundle bundle, ContainerConfiguration configuration);
+    void doConfigure(Bundle bundle, ContainerComposer configuration);
 }

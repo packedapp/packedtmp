@@ -49,7 +49,7 @@ public class AppManyChildrenMicro {
     public App manyChildren() {
         return App.start(new Bundle() {
             @Override
-            protected void configure() {
+            protected void compose() {
                 for (int i = 0; i < size; i++) {
                     link(new TBundle(Integer.toString(i)));
                 }
@@ -66,7 +66,7 @@ public class AppManyChildrenMicro {
         }
 
         @Override
-        protected void configure() {
+        protected void compose() {
             setName(name);
         }
     }

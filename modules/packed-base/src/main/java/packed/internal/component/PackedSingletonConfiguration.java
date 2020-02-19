@@ -19,9 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 
+import app.packed.artifact.ArtifactSource;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerSource;
 import app.packed.inject.Factory;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.inject.factory.FactoryHandle;
@@ -69,7 +69,7 @@ public final class PackedSingletonConfiguration<T> extends AbstractComponentConf
         return new PackedSingleton(parent, this, paic);
     }
 
-    public PackedSingletonConfiguration<T> runHooks(ContainerSource source) {
+    public PackedSingletonConfiguration<T> runHooks(ArtifactSource source) {
         componentModel.invokeOnHookOnInstall(source, this);
         return this;
     }

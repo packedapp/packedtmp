@@ -24,7 +24,6 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 
-import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
 import app.packed.base.reflect.ConstructorDescriptor;
@@ -67,12 +66,6 @@ public final class PackedParameterDescriptor implements VariableDescriptor, Para
         this.declaringExecutable = declaringExecutable;
         this.parameter = parameter;
         this.index = index;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ExecutableDescriptor declaringExecutable() {
-        return declaringExecutable;
     }
 
     /** {@inheritDoc} */
@@ -204,12 +197,6 @@ public final class PackedParameterDescriptor implements VariableDescriptor, Para
     @Override
     public boolean isVarArgs() {
         return parameter.isVarArgs();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Key<?> toKey() {
-        return Key.fromParameter(parameter);
     }
 
     /** {@inheritDoc} */

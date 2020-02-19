@@ -216,7 +216,7 @@ public final class ServiceDependency {
         if (variable instanceof FieldDescriptor) {
             return Optional.of(((FieldDescriptor) variable));
         } else if (variable instanceof ParameterDescriptor) {
-            return Optional.of(((ParameterDescriptor) variable).declaringExecutable());
+            return Optional.of(((ParameterDescriptor) variable).getDeclaringExecutable());
         } else {
             return Optional.empty();
         }

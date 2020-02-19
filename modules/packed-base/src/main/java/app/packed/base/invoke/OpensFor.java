@@ -51,12 +51,16 @@ import java.lang.annotation.Target;
 // -- Men vi er jo stadig stuck i en situation hvor meta annoteringer ikke vil virke laengere
 // Hvis man f.eks. tilfojere FIELD_SET og folk bruger den transitive annotering... IDK
 
-// AllowAccess? Altså det eneste er om vi vil bruge det senere
+// AllowAccess? Altså det eneste er om vi vil bruge Access senere til sikkerhed... Det tror jeg gerne
+
+// GrantAccess
+
+// AccessType -> OpenMode or Opensfor.Mode
 public @interface OpensFor {
 
     /**
-     * Returns the module(s) that are given access. The default value is {@literal "."} which represents the module of the
-     * annotated target type.
+     * Returns the module(s) for which access is granted. The default value is {@literal "."} which represents the module of
+     * the annotated target type.
      * 
      * @return the module(s) that are given access
      */
@@ -67,7 +71,7 @@ public @interface OpensFor {
      * 
      * @return the type of access rights that are needed
      */
-    AccessType[] value();
+    OpenMode[] value();
 }
 
 //Hmmm Opensfor for extension...Vi giver jo egentlig alle adgang til at lave en...

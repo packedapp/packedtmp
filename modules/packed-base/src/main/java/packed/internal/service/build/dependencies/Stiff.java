@@ -26,7 +26,7 @@ public class Stiff extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
-    protected void configure() {
+    protected void compose() {
         provide(XXX.class);
         // installHelper(Stiff.class); // <--
     }

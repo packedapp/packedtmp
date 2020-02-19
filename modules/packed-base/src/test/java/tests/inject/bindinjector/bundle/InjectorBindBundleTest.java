@@ -38,7 +38,7 @@ public class InjectorBindBundleTest {
     public void nullArguments() {
         BaseBundle b = new BaseBundle() {
             @Override
-            protected void configure() {}
+            protected void compose() {}
         };
 
         npe(() -> Injector.configure(c -> c.link((BaseBundle) null)), "bundle");
@@ -50,7 +50,7 @@ public class InjectorBindBundleTest {
     public void cannotImportNonExposed() {
         BaseBundle b = new BaseBundle() {
             @Override
-            protected void configure() {
+            protected void compose() {
                 provideInstance("X");
             }
         };
@@ -67,7 +67,7 @@ public class InjectorBindBundleTest {
     public void OneImport() {
         BaseBundle b = new BaseBundle() {
             @Override
-            protected void configure() {
+            protected void compose() {
                 provideInstance("X");
                 export(String.class);
             }
@@ -86,7 +86,7 @@ public class InjectorBindBundleTest {
         AtomicLong al = new AtomicLong();
         BaseBundle b = new BaseBundle() {
             @Override
-            protected void configure() {
+            protected void compose() {
                 provide(new Factory0<>(al::incrementAndGet) {}).prototype();
                 export(Long.class);
             }

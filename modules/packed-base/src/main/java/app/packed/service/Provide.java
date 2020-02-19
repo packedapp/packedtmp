@@ -15,8 +15,8 @@
  */
 package app.packed.service;
 
-import static app.packed.base.invoke.AccessType.GET_FIELD;
-import static app.packed.base.invoke.AccessType.INVOKE;
+import static app.packed.base.invoke.OpenMode.GET_FIELD;
+import static app.packed.base.invoke.OpenMode.INVOKE;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

@@ -21,7 +21,7 @@ import app.packed.lifecycle.StopOption;
 public final class PackedApp implements App {
 
     /** An artifact driver for creating {@link App} instances. */
-    public static final ArtifactDriver<App> DRIVER = new ArtifactDriver<App>() {
+    public static final ArtifactDriver<App> DRIVER = new ArtifactDriver<>(true) {
 
         /** {@inheritDoc} */
         @Override

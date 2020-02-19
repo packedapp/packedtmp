@@ -21,11 +21,11 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.List;
 
+import app.packed.artifact.ArtifactSource;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Nullable;
 import app.packed.container.Bundle;
-import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerSource;
+import app.packed.container.ContainerComposer;
 import app.packed.container.Extension;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
@@ -47,7 +47,7 @@ public final class ContainerSourceModel extends ComponentLookup {
         @SuppressWarnings("unchecked")
         @Override
         protected ContainerSourceModel computeValue(Class<?> type) {
-            return new ContainerSourceModel((Class<? extends ContainerSource>) type);
+            return new ContainerSourceModel((Class<? extends ArtifactSource>) type);
         }
     };
 
@@ -83,7 +83,7 @@ public final class ContainerSourceModel extends ComponentLookup {
     private final OnHookModel onHookModel;
 
     /** The type of container source. Typically, a subclass of {@link Bundle}. */
-    private final Class<? extends ContainerSource> sourceType;
+    private final Class<? extends ArtifactSource> sourceType;
 
     /**
      * Creates a new container source model.
@@ -91,14 +91,14 @@ public final class ContainerSourceModel extends ComponentLookup {
      * @param sourceType
      *            the source type
      */
-    private ContainerSourceModel(Class<? extends ContainerSource> sourceType) {
+    private ContainerSourceModel(Class<? extends ArtifactSource> sourceType) {
         if (Hook.class.isAssignableFrom(sourceType)) {
             throw new InvalidDeclarationException(sourceType + " must not implement/extend " + Hook.class);
         }
         this.sourceType = requireNonNull(sourceType);
 
         this.onHookModel = OnHookModel.newModel(new OpenClass(MethodHandles.lookup(), sourceType, true), false,
-                UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
+                UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerComposer.class);
         this.activatorMap = LazyExtensionActivationMap.of(sourceType);
         this.dependenciesTotalOrder = ExtensionUseModel2.totalOrder(sourceType);
     }
@@ -139,7 +139,7 @@ public final class ContainerSourceModel extends ComponentLookup {
         return factory;
     }
 
-    public Class<? extends ContainerSource> sourceType() {
+    public Class<? extends ArtifactSource> sourceType() {
         return sourceType;
     }
 
@@ -167,7 +167,7 @@ public final class ContainerSourceModel extends ComponentLookup {
      *            the container source type
      * @return a container source model for the specified type
      */
-    public static ContainerSourceModel of(Class<? extends ContainerSource> sourceType) {
+    public static ContainerSourceModel of(Class<? extends ArtifactSource> sourceType) {
         return MODEL_CACHE.get(sourceType);
     }
 

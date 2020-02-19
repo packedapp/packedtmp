@@ -38,14 +38,14 @@ public abstract class ExtensionComposer<E extends Extension> {
     private ExtensionModelLoadContext context;
 
     /** Configures this composer. This method is invoked exactly once for a given implementation. */
-    protected abstract void configure();
+    protected abstract void compose();
 
     /**
      * Returns the context object that this composer wraps.
      * 
      * @return the context object that this composer wraps.
      * @throws IllegalStateException
-     *             if called outside of {@link #configure()}
+     *             if called outside of {@link #compose()}
      */
     private ExtensionModelLoadContext context() {
         ExtensionModelLoadContext c = context;
@@ -65,7 +65,7 @@ public abstract class ExtensionComposer<E extends Extension> {
     final void doConfigure(ExtensionModelLoadContext context) {
         this.context = requireNonNull(context);
         try {
-            configure();
+            compose();
         } finally {
             this.context = null;
         }
@@ -86,7 +86,7 @@ public abstract class ExtensionComposer<E extends Extension> {
      * @param action
      *            The action to be performed after the extension has been instantiated
      * 
-     * @see ContainerConfiguration#use(Class)
+     * @see ContainerComposer#use(Class)
      */
     @SuppressWarnings("unchecked")
     protected final void onExtensionInstantiated(Consumer<? super E> action) {
@@ -168,7 +168,7 @@ public abstract class ExtensionComposer<E extends Extension> {
 
     /**
      * A callback method that is invoked immediately after a container has been successfully configured. This is typically
-     * after {@link Bundle#configure()} has returned.
+     * after {@link Bundle#compose()} has returned.
      * <p>
      * The default implementation of this method does nothing.
      * <p>

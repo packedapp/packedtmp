@@ -32,7 +32,7 @@ public class TestIt extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
-    protected void configure() {
+    protected void compose() {
         install(XXX.class);
     }
 

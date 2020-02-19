@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.component.SingletonConfiguration;
-import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerComposer;
 import testutil.util.AbstractArtifactTest;
 import testutil.util.ContainerConfigurationTester;
 
@@ -90,8 +90,8 @@ public class NameFreezeTest extends AbstractArtifactTest {
     }
 
     /**
-     * Test that we cannot call {@link ContainerConfiguration#setName(String)} after having observed the name via
-     * {@link ContainerConfiguration#getName()}.
+     * Test that we cannot call {@link ContainerComposer#setName(String)} after having observed the name via
+     * {@link ContainerComposer#getName()}.
      */
     @Test
     public void container_setName_cannotBeCalledAfter_getName() {
@@ -99,7 +99,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
     }
 
     /**
-     * Test that we cannot call {@link ContainerConfiguration#setName(String)} after having installed a component in the
+     * Test that we cannot call {@link ContainerComposer#setName(String)} after having installed a component in the
      * container.
      * <p>
      * We could actually allow this as long as any new components does not observe their path in any way. However, for
@@ -117,8 +117,8 @@ public class NameFreezeTest extends AbstractArtifactTest {
     }
 
     /**
-     * Test that we cannot call {@link ContainerConfiguration#setName(String)} after having linked another container via
-     * {@link ContainerConfiguration#link(app.packed.container.Bundle, app.packed.container.Wirelet...)}.
+     * Test that we cannot call {@link ContainerComposer#setName(String)} after having linked another container via
+     * {@link ContainerComposer#link(app.packed.container.Bundle, app.packed.container.Wirelet...)}.
      * <p>
      * We could actually allow this as long as the bundle we link did not observe the path of its components in any way.
      * However, it would be very fragile, if the child component suddenly decided to do it at some point. So better to
@@ -130,15 +130,15 @@ public class NameFreezeTest extends AbstractArtifactTest {
     }
 
     /**
-     * Test that we cannot call {@link ContainerConfiguration#setName(String)} after having observed the name via
-     * {@link ContainerConfiguration#path()}.
+     * Test that we cannot call {@link ContainerComposer#setName(String)} after having observed the name via
+     * {@link ContainerComposer#path()}.
      */
     @Test
     public void container_setName_cannotBeCalledAfter_path() {
         checkThrowsISE(c -> c.pathIs("/").setName("Bar"), "Cannot call #setName(String) after name has been initialized via call to #path()");
     }
 
-    /** Test that we can only call {@link ContainerConfiguration#setName(String)} once. */
+    /** Test that we can only call {@link ContainerComposer#setName(String)} once. */
     @Test
     public void container_setName_cannotBeCalledAfter_setName() {
         // TODO should we drop this, I actually can't see any problems with this.

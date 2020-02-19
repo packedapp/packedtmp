@@ -17,8 +17,6 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.function.BiConsumer;
-
 import app.packed.base.Key;
 import app.packed.base.Key.Qualifier;
 import app.packed.component.SingletonConfiguration;
@@ -175,33 +173,6 @@ public final class ServiceExtension extends Extension {
     public void exportAll() {
         checkConfigurable();
         node.exports().exportAll(captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
-    }
-
-    public <T, C> void inject(Class<T> key, SingletonConfiguration<C> cc, BiConsumer<? super C, ? super T> action) {
-        inject(Key.of(key), cc, action);
-    }
-
-    /**
-     * Registers a
-     * 
-     * @param <T>
-     *            the type of service to inject
-     * @param <C>
-     *            the instance type of the component that should be injected
-     * @param key
-     *            the key of the service to inject
-     * @param cc
-     *            the configuration of the component that should be manually injected
-     * @param action
-     *            the manual injection action
-     * @throws UnsupportedOperationException
-     *             if the component configuration represents a static component
-     */
-    // I guess ComponentContext should also be available here..
-    // What about errors??? Well, it adds the key to the list of requirements...
-    // manualInject?
-    public <T, C> void inject(Key<T> key, SingletonConfiguration<C> cc, BiConsumer<? super C, ? super T> action) {
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -382,7 +353,7 @@ public final class ServiceExtension extends Extension {
 
         /** {@inheritDoc} */
         @Override
-        protected void configure() {
+        protected void compose() {
             onConfigured(e -> e.node.build());
             onLinkage((p, c) -> p.node.link(c.node));
 

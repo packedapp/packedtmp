@@ -19,9 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 
-import app.packed.component.SingletonConfiguration;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentPath;
+import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
@@ -105,6 +105,7 @@ public final class PackedExtensionContext implements ExtensionContext {
      * Initializes the extension.
      * 
      * @param pcc
+     *            the container container configuration where the extension is registered
      */
     private void initialize(PackedContainerConfiguration pcc) {
         // Sets Extension.context = this

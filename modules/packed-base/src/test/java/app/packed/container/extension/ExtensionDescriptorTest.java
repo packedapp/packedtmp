@@ -57,7 +57,7 @@ public class ExtensionDescriptorTest {
 
             /** {@inheritDoc} */
             @Override
-            protected void configure() {
+            protected void compose() {
                 addDependencies(EmptyExtension.class);
                 exposeContract(SomeContract.class, e -> new SomeContract());
             }
@@ -91,7 +91,7 @@ public class ExtensionDescriptorTest {
 
             /** {@inheritDoc} */
             @Override
-            protected void configure() {}
+            protected void compose() {}
         }
     }
 }

@@ -17,13 +17,8 @@ package app.packed.inject;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
-
-import app.packed.base.TypeLiteral;
-import packed.internal.inject.factory.Factory0FactoryHandle;
-import packed.internal.inject.factory.FactorySupport;
 
 /**
  * A special {@link Factory} type that uses a {@link Supplier} to dynamically provide new objects.
@@ -50,17 +45,6 @@ import packed.internal.inject.factory.FactorySupport;
  */
 public abstract class Factory0<R> extends Factory<R> {
 
-    /** A cache of extracted type variables from subclasses of this class. */
-    private static final ClassValue<TypeLiteral<?>> CACHE = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        @Override
-        protected TypeLiteral<?> computeValue(Class<?> type) {
-            return TypeLiteral.fromTypeVariable((Class) type, Factory.class, 0);
-        }
-    };
-
     /**
      * Creates a new factory, that uses the specified supplier to create new objects.
      *
@@ -73,20 +57,5 @@ public abstract class Factory0<R> extends Factory<R> {
      */
     protected Factory0(Supplier<? extends R> supplier) {
         super(supplier);
-    }
-
-    /**
-     * Creates a new factory support instance from an implementation of this class and a supplier.
-     * 
-     * @param implementation
-     *            the class extending this class
-     * @param supplier
-     *            the supplier used for creating new values
-     * @return a new factory support instance
-     */
-    @SuppressWarnings("unchecked")
-    static <T> FactorySupport<T> create(Class<?> implementation, Supplier<? extends T> supplier) {
-        TypeLiteral<T> tt = (TypeLiteral<T>) CACHE.get(implementation);
-        return new FactorySupport<>(new Factory0FactoryHandle<>(tt, supplier), List.of());
     }
 }

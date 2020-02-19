@@ -21,6 +21,7 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Optional;
 
+import app.packed.artifact.ArtifactSource;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.ExtensionWirelet.Pipeline;
@@ -43,7 +44,7 @@ import packed.internal.moduleaccess.ModuleAccess;
  * <p>
  * Every extension implementations must provide either an empty constructor, or a constructor taking a single parameter
  * of type {@link ExtensionContext}. The constructor should have package private accessibility to make sure users do not
- * try an manually instantiate it, but instead use {@link ContainerConfiguration#use(Class)}. It is also recommended
+ * try an manually instantiate it, but instead use {@link ContainerComposer#use(Class)}. It is also recommended
  * that the extension itself is declared final.
  */
 
@@ -106,7 +107,7 @@ public abstract class Extension {
 
     /**
      * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
-     * not located on any subclasses of {@link Extension} or any class that implements {@link ContainerSource}.
+     * not located on any subclasses of {@link Extension} or any class that implements {@link ArtifactSource}.
      * <p>
      * Invoking this method typically takes in the order of 1-2 microseconds.
      * <p>
@@ -151,7 +152,7 @@ public abstract class Extension {
 
         // Dvs ourContainerSource
         return Extension.class.isAssignableFrom(c)
-                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && ContainerSource.class.isAssignableFrom(c));
+                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && ArtifactSource.class.isAssignableFrom(c));
     }
 
     /**
@@ -193,7 +194,7 @@ public abstract class Extension {
      * @param instance
      *            the instance to install
      * @return the configuration of the component
-     * @see ContainerConfiguration#installInstance(Object)
+     * @see ContainerComposer#installInstance(Object)
      */
     protected final <T> SingletonConfiguration<T> installInstance(T instance) {
         return context().installInstance(instance);
@@ -207,7 +208,7 @@ public abstract class Extension {
      * <p>
      * In order for one extension to use another dependency
      * <p>
-     * Invoking this method is similar to calling {@link ContainerConfiguration#use(Class)}. However, this method also keeps
+     * Invoking this method is similar to calling {@link ContainerComposer#use(Class)}. However, this method also keeps
      * track of which extensions uses other extensions. And forming any kind of circle in the dependency graph will fail
      * with a runtime exception.
      * <p>

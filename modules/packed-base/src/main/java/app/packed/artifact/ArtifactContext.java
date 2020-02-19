@@ -82,10 +82,10 @@ public interface ArtifactContext extends SingletonContext {
     <T> CompletableFuture<T> stopAsync(T result, StopOption... options);
 
     /**
-     * Returns a service with the specified key, if it exists. Otherwise, fails by throwing
+     * Returns a service that is registered with the specified key, if it exists. Otherwise, fails by throwing
      * {@link UnsupportedOperationException}.
      * <p>
-     * If the application is not already running
+     * If the application is not already running.
      * 
      * @param <T>
      *            the type of service to return
@@ -93,7 +93,8 @@ public interface ArtifactContext extends SingletonContext {
      *            the key of the service to return
      * @return a service of the specified type
      * @throws UnsupportedOperationException
-     *             if a service with the specified key exist. Or if the application does not use {@link ServiceExtension}.
+     *             if a service with the specified key does not exist. Or if the application does not use
+     *             {@link ServiceExtension}.
      */
     <T> T use(Key<T> key);
 

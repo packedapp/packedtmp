@@ -26,8 +26,7 @@ import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
-import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerSource;
+import app.packed.container.ContainerComposer;
 import app.packed.container.Wirelet;
 import packed.internal.artifact.BuildOutput;
 import packed.internal.component.ComponentConfigurationToComponentAdaptor;
@@ -56,7 +55,7 @@ import packed.internal.moduleaccess.ModuleAccess;
  * An image can be used to create new instances of {@link app.packed.artifact.App}, {@link BundleDescriptor} or other
  * artifact images. It can not be used with {@link Bundle#link(Bundle, Wirelet...)}.
  */
-public final class ArtifactImage implements ContainerSource {
+public final class ArtifactImage implements ArtifactSource {
 
     static {
         ModuleAccess.initialize(AppPackedArtifactAccess.class, new AppPackedArtifactAccess() {
@@ -104,7 +103,7 @@ public final class ArtifactImage implements ContainerSource {
      * The returned description is always identical to the description of the root container.
      * 
      * @return any description that has been set for the image
-     * @see ContainerConfiguration#setDescription(String)
+     * @see ContainerComposer#setDescription(String)
      * @see Bundle#setDescription(String)
      */
     public Optional<String> description() {
@@ -135,6 +134,8 @@ public final class ArtifactImage implements ContainerSource {
      * 
      * @return the name
      */
+    // Only if a name has been explicitly set?
+    // Or can we include "FooBar?"
     public String name() {
         // Return Optional<String>????
         return wc == null ? pcc.getName() : wc.name();
@@ -160,8 +161,7 @@ public final class ArtifactImage implements ContainerSource {
     /**
      * Returns the type of bundle that was used to create this image.
      * <p>
-     * If this image was created from another artifact image, the new image image will retain the source type of the other
-     * image.
+     * Images created from an existing image, will retain the source type of the existing image.
      * 
      * @return the type of bundle that was used to create this image
      */
@@ -197,18 +197,18 @@ public final class ArtifactImage implements ContainerSource {
     }
 
     /**
-     * Builds a new artifact image from the specified source.
+     * Creates an artifact image using the specified source.
      *
      * @param source
      *            the source of the image
      * @param wirelets
      *            any wirelets to use when construction the image. The wirelets will also be available when instantiating an
      *            actual artifact
-     * @return the new image
+     * @return the image that was built
      * @throws RuntimeException
      *             if the image could not be constructed
      */
-    public static ArtifactImage build(ContainerSource source, Wirelet... wirelets) {
+    public static ArtifactImage build(ArtifactSource source, Wirelet... wirelets) {
         if (source instanceof ArtifactImage) {
             return ((ArtifactImage) source).with(wirelets);
         }
