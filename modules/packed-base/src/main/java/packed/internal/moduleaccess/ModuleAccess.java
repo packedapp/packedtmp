@@ -22,7 +22,6 @@ import app.packed.base.TypeLiteral;
 import app.packed.container.Bundle;
 import app.packed.container.Extension;
 import app.packed.hook.AnnotatedFieldHook;
-import app.packed.inject.Factory;
 import app.packed.lifecycle.RunState;
 import app.packed.service.ServiceMode;
 
@@ -109,9 +108,9 @@ public final class ModuleAccess {
         return ServiceSingletonHolder.INSTANCE;
     }
 
-    public static AppPackedInjectAccess inject() {
-        return InjectSingletonHolder.INSTANCE;
-    }
+//    public static AppPackedInjectAccess inject() {
+//        return InjectSingletonHolder.INSTANCE;
+//    }
 
     private static <T extends SecretAccess> T singleton(Class<T> accessType, Class<?> initalizeClass) {
         // Start by making sure the class is initialized
@@ -176,15 +175,15 @@ public final class ModuleAccess {
     private static class ServiceSingletonHolder {
 
         /** The singleton instance. */
-        private static final AppPackedServiceAccess INSTANCE = singleton(AppPackedServiceAccess.class, Factory.class);
+        private static final AppPackedServiceAccess INSTANCE = singleton(AppPackedServiceAccess.class, ServiceMode.class);
     }
 
-    /** Holder of the {@link AppPackedInjectAccess} singleton. */
-    private static class InjectSingletonHolder {
-
-        /** The singleton instance. */
-        private static final AppPackedInjectAccess INSTANCE = singleton(AppPackedInjectAccess.class, ServiceMode.class);
-    }
+//    /** Holder of the {@link AppPackedInjectAccess} singleton. */
+//    private static class InjectSingletonHolder {
+//
+//        /** The singleton instance. */
+//        private static final AppPackedInjectAccess INSTANCE = singleton(AppPackedInjectAccess.class, ServiceMode.class);
+//    }
 
     /** Holder of the {@link AppPackedUtilAccess} singleton. */
     private static class UtilSingletonHolder {

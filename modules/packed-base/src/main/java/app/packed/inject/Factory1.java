@@ -19,6 +19,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.base.InvalidDeclarationException;
+import packed.internal.inject.BaseFactory;
 
 /**
  * A special {@link Factory} type that takes a single dependency as input and uses a {@link Function} to dynamically provide new instances. The input
@@ -71,7 +72,7 @@ import app.packed.base.InvalidDeclarationException;
  * @see Factory2
  */
 // We need these classes with type parameters to be able to read T
-public abstract class Factory1<T, R> extends Factory<R> {
+public abstract class Factory1<T, R> extends BaseFactory<R> {
 
     /**
      * Creates a new factory.

@@ -20,6 +20,8 @@ import java.lang.annotation.Target;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import packed.internal.inject.BaseFactory;
+
 /**
  * A special {@link Factory} type that uses a {@link Supplier} to dynamically provide new objects.
  * <p>
@@ -43,7 +45,7 @@ import java.util.function.Supplier;
  * @see Factory1
  * @see Factory2
  */
-public abstract class Factory0<R> extends Factory<R> {
+public abstract class Factory0<R> extends BaseFactory<R> {
 
     /**
      * Creates a new factory, that uses the specified supplier to create new objects.

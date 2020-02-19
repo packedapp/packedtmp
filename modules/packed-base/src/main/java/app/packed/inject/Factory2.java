@@ -18,6 +18,7 @@ package app.packed.inject;
 import java.util.function.BiFunction;
 
 import app.packed.base.InvalidDeclarationException;
+import packed.internal.inject.BaseFactory;
 
 /**
  * A {@link Factory} type that takes two dependencies and uses a {@link BiFunction} to create new instances. The input
@@ -26,7 +27,7 @@ import app.packed.base.InvalidDeclarationException;
  * @see Factory0
  * @see Factory1
  */
-public abstract class Factory2<T, U, R> extends Factory<R> {
+public abstract class Factory2<T, U, R> extends BaseFactory<R> {
 
     /**
      * Creates a new factory.

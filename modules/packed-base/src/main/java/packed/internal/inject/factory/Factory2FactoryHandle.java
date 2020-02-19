@@ -26,8 +26,8 @@ import java.util.Map.Entry;
 import java.util.function.BiFunction;
 
 import app.packed.base.TypeLiteral;
-import app.packed.inject.Factory;
 import app.packed.inject.Factory2;
+import packed.internal.inject.BaseFactory;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.util.MethodHandleUtil;
 
@@ -59,7 +59,7 @@ public class Factory2FactoryHandle<T, U, R> extends FactoryHandle<R> {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         protected Entry<TypeLiteral<?>, List<ServiceDependency>> computeValue(Class<?> type) {
-            return new SimpleImmutableEntry<>(TypeLiteral.fromTypeVariable((Class) type, Factory.class, 0),
+            return new SimpleImmutableEntry<>(TypeLiteral.fromTypeVariable((Class) type, BaseFactory.class, 0),
                     ServiceDependency.fromTypeVariables((Class) type, Factory2.class, 0, 1));
         }
     };

@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import app.packed.base.TypeLiteral;
-import app.packed.inject.Factory;
 import app.packed.inject.Factory0;
+import packed.internal.inject.BaseFactory;
 import packed.internal.util.MethodHandleUtil;
 
 /**
@@ -68,7 +68,7 @@ public final class Factory0FactoryHandle<T> extends FactoryHandle<T> {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         protected TypeLiteral<?> computeValue(Class<?> type) {
-            return TypeLiteral.fromTypeVariable((Class) type, Factory.class, 0);
+            return TypeLiteral.fromTypeVariable((Class) type, BaseFactory.class, 0);
         }
     };
 

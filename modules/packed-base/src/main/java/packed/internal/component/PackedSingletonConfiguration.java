@@ -22,10 +22,9 @@ import java.lang.invoke.MethodHandle;
 import app.packed.artifact.ArtifactSource;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.inject.Factory;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
+import packed.internal.inject.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
-import packed.internal.moduleaccess.ModuleAccess;
 
 /**
  *
@@ -34,11 +33,11 @@ public final class PackedSingletonConfiguration<T> extends AbstractComponentConf
 
     public final ComponentModel componentModel;
 
-    public final Factory<T> factory;
+    public final BaseFactory<T> factory;
 
     public final T instance;
 
-    public PackedSingletonConfiguration(ConfigSite configSite, AbstractComponentConfiguration parent, ComponentModel componentModel, Factory<T> factory) {
+    public PackedSingletonConfiguration(ConfigSite configSite, AbstractComponentConfiguration parent, ComponentModel componentModel, BaseFactory<T> factory) {
         super(configSite, parent);
         this.componentModel = requireNonNull(componentModel);
         this.factory = requireNonNull(factory);
@@ -53,7 +52,7 @@ public final class PackedSingletonConfiguration<T> extends AbstractComponentConf
     }
 
     public MethodHandle fromFactory() {
-        FactoryHandle<?> handle = ModuleAccess.inject().toSupport(factory).handle;
+        FactoryHandle<?> handle = factory.factory.handle;
         return container().fromFactoryHandle(handle);
     }
 

@@ -16,7 +16,8 @@
 package packed.internal.base.reflect;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertArrayEquals;
+//import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -30,6 +31,7 @@ import app.packed.base.reflect.MemberDescriptor;
 abstract class AbstractDescriptorTest {
 
     static void validateAnnotatedElement(AnnotatedElement expected, AnnotatedElement actual) {
+
         assertArrayEquals(expected.getAnnotations(), actual.getAnnotations());
         assertArrayEquals(expected.getDeclaredAnnotations(), actual.getDeclaredAnnotations());
         for (Annotation a : expected.getAnnotations()) {
