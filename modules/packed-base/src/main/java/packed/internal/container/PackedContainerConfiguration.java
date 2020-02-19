@@ -59,7 +59,7 @@ import packed.internal.hook.applicator.DelayedAccessor.SidecarMethodDelayerAcces
 import packed.internal.host.HostConfiguration;
 import packed.internal.host.HostConfigurationContext;
 import packed.internal.host.PackedHostConfiguration;
-import packed.internal.inject.BaseFactory;
+import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.moduleaccess.ModuleAccess;

@@ -18,7 +18,7 @@ package app.packed.inject;
 import java.util.function.BiFunction;
 
 import app.packed.base.InvalidDeclarationException;
-import packed.internal.inject.BaseFactory;
+import packed.internal.inject.factory.BaseFactory;
 
 /**
  * A {@link Factory} type that takes two dependencies and uses a {@link BiFunction} to create new instances. The input

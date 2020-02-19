@@ -27,7 +27,6 @@ import java.util.function.BiFunction;
 
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory2;
-import packed.internal.inject.BaseFactory;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.util.MethodHandleUtil;
 

@@ -23,7 +23,7 @@ import app.packed.artifact.ArtifactSource;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
-import packed.internal.inject.BaseFactory;
+import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
 
 /**

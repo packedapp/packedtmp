@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject;
+package packed.internal.inject.factory;
 
 import static java.util.Objects.requireNonNull;
 
@@ -34,12 +34,6 @@ import app.packed.inject.Factory;
 import app.packed.inject.Factory0;
 import app.packed.inject.Factory1;
 import app.packed.inject.Factory2;
-import packed.internal.inject.factory.Factory0FactoryHandle;
-import packed.internal.inject.factory.Factory1FactoryHandle;
-import packed.internal.inject.factory.Factory2FactoryHandle;
-import packed.internal.inject.factory.FactoryFindInjectableExecutable;
-import packed.internal.inject.factory.FactorySupport;
-import packed.internal.inject.factory.InstanceFactoryHandle;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 
@@ -207,7 +201,7 @@ public class BaseFactory<T> implements Factory<T> {
 
     /** {@inheritDoc} */
     @Override
-    public final Factory<T> bindVariable(int index, @Nullable Object argument) {
+    public final Factory<T> withVariable(int index, @Nullable Object argument) {
         // Problemet med at fjerne ting fra #variables() er at saa bliver index'et lige pludselig aendret.
         // F.eks. for dooo(String x, String y)
         // Og det gider vi ikke....
@@ -226,7 +220,7 @@ public class BaseFactory<T> implements Factory<T> {
 
     /** {@inheritDoc} */
     @Override
-    public final Factory<T> bindVariableSupplier(int index, Supplier<?> supplier) {
+    public final Factory<T> withVariableSupplier(int index, Supplier<?> supplier) {
         throw new UnsupportedOperationException();
     }
 
@@ -333,9 +327,14 @@ public class BaseFactory<T> implements Factory<T> {
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public final boolean needsLookup() {
+    final boolean needsLookup() {
+        // Tror ikke rigtig den fungere...
+        // Det skal jo vaere relativt til en klasse...
+        // F.eks. hvis X en public klasse, med en public constructor.
+        // Og X er readable til A, men ikke B.
+        // Saa har A ikke brug for et Lookup Object, men B har.
+        // Ved ikke rigtig hvad denne skal bruges til....
+        // Maa betyde om man skal
         return false;
     }
 

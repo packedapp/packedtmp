@@ -25,7 +25,6 @@ import java.util.function.Supplier;
 
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory0;
-import packed.internal.inject.BaseFactory;
 import packed.internal.util.MethodHandleUtil;
 
 /**
@@ -35,6 +34,17 @@ import packed.internal.util.MethodHandleUtil;
  *            the type of elements the factory produces
  */
 public final class Factory0FactoryHandle<T> extends FactoryHandle<T> {
+
+    /** A cache of extracted type variables from subclasses of this class. */
+    private static final ClassValue<TypeLiteral<?>> CACHE = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        @Override
+        protected TypeLiteral<?> computeValue(Class<?> type) {
+            return TypeLiteral.fromTypeVariable((Class) type, BaseFactory.class, 0);
+        }
+    };
 
     /** A method handle for {@link Supplier#get()}. */
     private static final MethodHandle GET = MethodHandleUtil.findVirtual(MethodHandles.lookup(), Supplier.class, "get", MethodType.methodType(Object.class));
@@ -60,17 +70,6 @@ public final class Factory0FactoryHandle<T> extends FactoryHandle<T> {
     public MethodHandle toMethodHandle() {
         return GET.bindTo(supplier);
     }
-
-    /** A cache of extracted type variables from subclasses of this class. */
-    private static final ClassValue<TypeLiteral<?>> CACHE = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        @Override
-        protected TypeLiteral<?> computeValue(Class<?> type) {
-            return TypeLiteral.fromTypeVariable((Class) type, BaseFactory.class, 0);
-        }
-    };
 
     /**
      * Creates a new factory support instance from an implementation of this class and a supplier.

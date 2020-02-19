@@ -26,7 +26,7 @@ import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
 import app.packed.base.invoke.UncheckedIllegalAccessException;
 import app.packed.base.reflect.VariableDescriptor;
-import packed.internal.inject.BaseFactory;
+import packed.internal.inject.factory.BaseFactory;
 import packed.internal.util.BaseSupport;
 
 /**
@@ -78,45 +78,29 @@ public interface Factory<T> {
 
     <S> Factory<T> bind(Key<S> key, S instance);
 
+    /**
+     * @param instance
+     *            the instance to bind
+     * @return a new factory
+     */
     Factory<T> bind(Object instance);
 
     <S> Factory<T> bindSupplier(Class<S> key, Supplier<?> supplier);
 
     <S> Factory<T> bindSupplier(Key<S> key, Supplier<?> supplier);
 
-    /**
-     * Binds the specified argument to a variable with the specified index. This method is typically used to bind arguments
-     * to parameters on a method or constructors when key-based binding is not sufficient. A typical example is a
-     * constructor with two arguments..
-     * 
-     * @param index
-     *            the index of the variable to bind
-     * @param argument
-     *            the (nullable) argument to bind
-     * @return a new factory
-     * @throws IndexOutOfBoundsException
-     *             if the specified index does not represent a valid variable in {@link #variables()}
-     * @throws ClassCastException
-     *             if the specified argument is not compatible with the actual type of the variable
-     * @throws NullPointerException
-     *             if the specified argument is null and the variable does not represent a reference type
-     */
-    Factory<T> bindVariable(int index, Object argument);
-
-    Factory<T> bindVariableSupplier(int index, Supplier<?> supplier);
-
     List<?> dependencies();
 
+    <K> Factory<T> inject(Class<K> key, BiConsumer<? super T, ? super K> action);
+
     /**
-     * Returns a new factory that will perform the specified injection action after a factory has produced an object.
+     * Returns a new factory that will perform the specified action after the factory has produced an object.
      * 
      * @param action
      *            the injection action
      * @return the new factory
      */
-    Factory<T> inject(Consumer<? super T> action);
-
-    <K> Factory<T> inject(Class<K> key, BiConsumer<? super T, ? super K> action);
+    Factory<T> inject(Consumer<? super T> action); // pre post field/method injection???
 
     /**
      * Returns a new factory that will perform the specified injection action after a factory has produced an object.
@@ -141,8 +125,6 @@ public interface Factory<T> {
      */
     Key<T> key();
 
-    boolean needsLookup();
-
     /**
      * Returns the raw type of the objects this factory creates.
      *
@@ -161,6 +143,9 @@ public interface Factory<T> {
 
     /**
      * Returns an immutable list of variables (typically fields or parameters) that was used to construct this factory.
+     * <p>
+     * The list returned by this method is unaffected by any previous bindings to specific variables. For example, via
+     * {@link #withVariable(int, Object)}.
      * <p>
      * If this factory was created using {@link #fromInstance(Object)} the returned list is empty.
      * 
@@ -218,7 +203,28 @@ public interface Factory<T> {
     Factory<T> withLookup(MethodHandles.Lookup lookup);
 
     /**
-     * Tries to find a single injectable static method or constructor on the specified class using the following rules:
+     * Binds the specified argument to a variable with the specified index as returned by {@link #variables()}. This method
+     * is typically used to bind arguments to parameters on a method or constructors when key-based binding is not
+     * sufficient. A typical example is a constructor with two parameters of the same type.
+     * 
+     * @param index
+     *            the index of the variable to bind
+     * @param argument
+     *            the (nullable) argument to bind
+     * @return a new factory
+     * @throws IndexOutOfBoundsException
+     *             if the specified index does not represent a valid variable in {@link #variables()}
+     * @throws ClassCastException
+     *             if the specified argument is not compatible with the actual type of the variable
+     * @throws NullPointerException
+     *             if the specified argument is null and the variable does not represent a reference type
+     */
+    Factory<T> withVariable(int index, @Nullable Object argument);
+
+    Factory<T> withVariableSupplier(int index, Supplier<?> supplier);
+
+    /**
+     * Tries to find a single static method or constructor on the specified class using the following rules:
      * <p>
      * <ul>
      * <li>If a single static method (non-static methods are ignored) annotated with {@link Inject} is present a factory
@@ -246,7 +252,6 @@ public interface Factory<T> {
      */
     // Todo rename to make (or just of....) Nej, syntes maaske den er find med find()...
     // Rename of()... syntes det er fint den hedder of()... og saa er det en fejl situation
-    //
     public static <T> Factory<T> find(Class<T> implementation) {
         return BaseFactory.find(implementation);
     }
@@ -267,7 +272,7 @@ public interface Factory<T> {
     /**
      * Returns a factory that returns the specified instance every time the factory is used.
      * <p>
-     * If the specified instance makes use of field or method injection the returned factory should not be used more than
+     * If the specified instance makes use of field or method injection. The returned factory should not be used more than
      * once. As these fields and members will be injected every time, possible concurrently, an instance is provided by the
      * factory.
      * 
