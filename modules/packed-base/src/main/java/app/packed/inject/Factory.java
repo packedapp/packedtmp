@@ -76,7 +76,7 @@ public interface Factory<T> {
     // FactoryDescriptor.of(Factory f) <--- in devtools???
     <S> Factory<T> bind(Class<S> key, @Nullable S instance);
 
-    <S> Factory<T> bind(Key<S> key, S instance);
+    <S> Factory<T> bind(Key<S> key, @Nullable S instance);
 
     /**
      * @param instance
@@ -113,6 +113,7 @@ public interface Factory<T> {
      *            the manual injection action
      * @return the new factory to return
      */
+    // AddDependency.... OnX, looking for a better name...
     <K> Factory<T> inject(Key<K> key, BiConsumer<? super T, ? super K> action);
 
     /**
@@ -126,28 +127,32 @@ public interface Factory<T> {
     Key<T> key();
 
     /**
-     * Returns the raw type of the objects this factory creates.
+     * Returns the raw type of the type of objects this factory provide. This is also the type that is used for annotation
+     * scanning, for example, for finding fields annotated with {@link Inject}.
      *
-     * @return the raw type of the objects this factory creates
+     * @return the raw type of the type of objects this factory provide
+     * @see #typeLiteral()
      */
     Class<? super T> rawType();
 
     /**
-     * Returns the type of objects this factory creates.
+     * Returns the type of the type of objects this factory provide.
      *
-     * @return the type of objects this factory creates
+     * @return the type of the type of objects this factory provide
+     * @see #rawType()
      */
     TypeLiteral<T> typeLiteral();
 
-    Factory<T> useExactType(Class<? extends T> type);
+    Factory<T> useExactType(Class<? extends T> type);// overrideRawType
 
     /**
-     * Returns an immutable list of variables (typically fields or parameters) that was used to construct this factory.
+     * Returns an immutable list of all variables (typically fields or parameters) that needs to be successfully injected in
+     * order for the factory to provide a new value.
      * <p>
      * The list returned by this method is unaffected by any previous bindings to specific variables. For example, via
      * {@link #withVariable(int, Object)}.
      * <p>
-     * If this factory was created using {@link #fromInstance(Object)} the returned list is empty.
+     * Any factory created via {@link #fromInstance(Object)} will return an empty list.
      * 
      * @return any variables that was used to construct the factory
      */
@@ -168,7 +173,7 @@ public interface Factory<T> {
 
     /**
      * If this factory was created from a member (field, constructor or method), this method returns a new factory that uses
-     * the specified lookup object to access any mem underlying member whenever this framework needs to access.
+     * the specified lookup object to access any underlying member whenever this framework needs to access.
      * <p>
      * This method is useful, for example, to make a factory publically available for an class that does not have a public
      * constructor.
@@ -223,6 +228,16 @@ public interface Factory<T> {
 
     Factory<T> withVariableSupplier(int index, Supplier<?> supplier);
 
+    default Factory<T> withVariable(VariableDescriptor variable, @Nullable Object argument) {
+        // variable must be in variable()
+        // IAE the specified variable is not a valid variable
+        return this;
+    }
+
+    default Factory<T> withVariableSupplier(VariableDescriptor variable, Supplier<?> supplier) {
+        return this;
+    }
+
     /**
      * Tries to find a single static method or constructor on the specified class using the following rules:
      * <p>
@@ -270,16 +285,16 @@ public interface Factory<T> {
     }
 
     /**
-     * Returns a factory that returns the specified instance every time the factory is used.
+     * Returns a factory that provides the specified instance every time the factory is used.
      * <p>
      * If the specified instance makes use of field or method injection. The returned factory should not be used more than
      * once. As these fields and members will be injected every time, possible concurrently, an instance is provided by the
      * factory.
      * 
      * @param <T>
-     *            the type of instances created by the factory
+     *            the type of instances provided by the factory
      * @param instance
-     *            the instance to return every time a new instance is requested
+     *            the instance to return every time
      * @return the factory
      */
     public static <T> Factory<T> fromInstance(T instance) {

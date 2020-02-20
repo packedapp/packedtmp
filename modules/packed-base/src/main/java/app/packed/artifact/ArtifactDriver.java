@@ -22,6 +22,7 @@ import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.service.Injector;
 import packed.internal.artifact.BuildOutput;
+import packed.internal.artifact.PackedArtifactImage;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 
@@ -128,8 +129,8 @@ public abstract class ArtifactDriver<T> {
      *             if the artifact could not be created
      */
     public final T createAndInitialize(ArtifactSource source, Wirelet... wirelets) {
-        if (source instanceof ArtifactImage) {
-            return ((ArtifactImage) source).newArtifact(this, wirelets);
+        if (source instanceof PackedArtifactImage) {
+            return ((PackedArtifactImage) source).newArtifact(this, wirelets);
         }
         PackedContainerConfiguration pcc = new PackedContainerConfiguration(BuildOutput.artifact(this), source, wirelets);
         pcc.doBuild();
@@ -139,8 +140,8 @@ public abstract class ArtifactDriver<T> {
 
     public final T createAndStart(ArtifactSource source, Wirelet... wirelets) {
         // Should throw if not Runnable...
-        if (source instanceof ArtifactImage) {
-            return ((ArtifactImage) source).newArtifact(this, wirelets);
+        if (source instanceof PackedArtifactImage) {
+            return ((PackedArtifactImage) source).newArtifact(this, wirelets);
         }
         PackedContainerConfiguration pcc = new PackedContainerConfiguration(BuildOutput.artifact(this), source, wirelets);
         pcc.doBuild();
@@ -164,7 +165,6 @@ public abstract class ArtifactDriver<T> {
         static Option disableExtensions(Class<? extends Extension> extensions) {
             throw new UnsupportedOperationException();
         }
-
     }
 
     // Lav en constructor baade med og uden Alt

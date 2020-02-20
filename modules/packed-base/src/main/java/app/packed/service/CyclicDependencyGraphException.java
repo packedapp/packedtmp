@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.service;
 
 /** This exception is typically thrown when a dependency graph contain cycles (not a DAG). */
 // in app.packed.service.* CyclicServiceDependencyException

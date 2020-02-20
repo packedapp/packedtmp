@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 
-import app.packed.inject.CyclicDependencyGraphException;
+import app.packed.service.CyclicDependencyGraphException;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.service.ComponentFactoryBuildEntry;
 

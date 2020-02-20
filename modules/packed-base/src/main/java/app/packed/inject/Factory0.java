@@ -23,36 +23,33 @@ import java.util.function.Supplier;
 import packed.internal.inject.factory.BaseFactory;
 
 /**
- * A special {@link Factory} type that uses a {@link Supplier} to dynamically provide new objects.
+ * A {@link Factory} type that uses a {@link Supplier} to provide factory instances.
  * <p>
  * This class is typically used like this:
- *
- * <pre> {@code
- * Factory<Long> f = new Factory0<>(System::currentTimeMillis) {};}</pre>
- * <p>
- * In this example we create a new class inheriting from Factory0 is order to capture information about the suppliers
- * type variable (in this case {@code Long}). Thereby circumventing the limitations of Java's type system for retaining
- * type information at runtime.
- * <p>
- * Qualifier annotations can be used when defining a new factory if they have {@link ElementType#TYPE_USE} in their
- * {@link Target}:
  * 
- * <pre> {@code
- * Factory<Long> f = new Factory0<@SomeQualifier Long>(() -> 1L) {};}</pre>
+ * <pre> {@code Factory<Long> f = new Factory0<>(System::currentTimeMillis) {};}</pre>
+ * <p>
+ * In this example we create a new class that extends Factory0 is order to capture information about the suppliers type
+ * variable (in this case {@code Long}). Thereby circumventing the limitations of Java's type system for retaining type
+ * information at runtime.
+ * <p>
+ * Qualifier annotations can be used if they have {@link ElementType#TYPE_USE} in their {@link Target}:
+ * 
+ * <pre> {@code Factory<Long> f = new Factory0<@SomeQualifier Long>(() -> 1L) {};}</pre>
  * 
  * @param <R>
- *            the type of objects this factory constructs
+ *            the type of instances this factory provide
  * @see Factory1
  * @see Factory2
  */
 public abstract class Factory0<R> extends BaseFactory<R> {
 
     /**
-     * Creates a new factory, that uses the specified supplier to create new objects.
+     * Creates a new factory, that uses the specified supplier to create provide instances.
      *
      * @param supplier
-     *            the supplier to use for creating new instances. The supplier should never return null, but should instead
-     *            throw an exception if unable to provide a value
+     *            the supplier that provide instances. The supplier should never return null, but should instead throw an
+     *            exception if unable to provide a value
      * @throws FactoryDefinitionException
      *             if the type variable R could not be determined. Or if R does not represent a valid key, for example,
      *             {@link Optional}

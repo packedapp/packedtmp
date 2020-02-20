@@ -17,7 +17,7 @@ package packed.internal.moduleaccess;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import app.packed.artifact.ArtifactImage;
+import app.packed.artifact.BuildGoal;
 import app.packed.base.TypeLiteral;
 import app.packed.container.Bundle;
 import app.packed.container.Extension;
@@ -140,7 +140,7 @@ public final class ModuleAccess {
     private static class ArtifactSingletonHolder {
 
         /** The singleton instance. */
-        private static final AppPackedArtifactAccess INSTANCE = singleton(AppPackedArtifactAccess.class, ArtifactImage.class);
+        private static final AppPackedArtifactAccess INSTANCE = singleton(AppPackedArtifactAccess.class, BuildGoal.class);
     }
 
     /** Holder of the {@link AppPackedContainerAccess} singleton. */

@@ -18,16 +18,14 @@ package packed.internal.host;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.artifact.ArtifactDriver;
-import app.packed.artifact.ArtifactImage;
 import app.packed.artifact.ArtifactSource;
 import app.packed.component.ComponentType;
 import app.packed.config.ConfigSite;
 import app.packed.container.Wirelet;
+import packed.internal.artifact.PackedArtifactImage;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
 import packed.internal.component.AbstractComponent;
 import packed.internal.component.AbstractComponentConfiguration;
-import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.moduleaccess.ModuleAccess;
 
 /**
  * The defa
@@ -50,10 +48,9 @@ public final class PackedHostConfiguration extends AbstractComponentConfiguratio
         requireNonNull(source, "source is null");
         requireNonNull(driver, "driver is null");
         // For now we create an image...
-        ArtifactImage img = ArtifactImage.build(source, wirelets);
-        PackedContainerConfiguration pcc = ModuleAccess.artifact().getConfiguration(img);
+        PackedArtifactImage img = PackedArtifactImage.build(source, wirelets);
 
-        PackedGuestConfiguration pgc = new PackedGuestConfiguration(this, pcc, img);
+        PackedGuestConfiguration pgc = new PackedGuestConfiguration(this, img.configuration(), img);
         pgc.initializeName(State.LINK_INVOKED, null);
 
         addChild(pgc);
