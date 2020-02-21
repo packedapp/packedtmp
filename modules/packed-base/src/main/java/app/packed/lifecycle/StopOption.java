@@ -15,21 +15,33 @@
  */
 package app.packed.lifecycle;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  *
  */
-public class StopOption {
+public interface StopOption {
 
-    StopOption erroneous(Throwable cause) {
+    static StopOption erroneous(Throwable cause) {
         throw new UnsupportedOperationException();
     }
 
-    StopOption now() {
+    static StopOption now() {
         // Now == shutdownNow();
         throw new UnsupportedOperationException();
     }
 
-    StopOption now(Throwable cause) {
+    static StopOption now(Throwable cause) {
         throw new UnsupportedOperationException();
     }
+
+    static StopOption graceTime(long timeout, TimeUnit unit) {
+        throw new UnsupportedOperationException();
+    }
+}
+
+//Or is this a StopOption????
+//I Think so.... There is not much there anyway....
+class RestartOption {
+
 }

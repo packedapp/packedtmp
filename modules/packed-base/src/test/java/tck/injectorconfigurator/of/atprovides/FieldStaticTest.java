@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
 import app.packed.service.Injector;
-import app.packed.service.InjectorConfigurator;
+import app.packed.service.InjectorAssembler;
 import app.packed.service.ServiceMode;
 import app.packed.service.Provide;
 
@@ -79,7 +79,7 @@ public class FieldStaticTest {
             assertThat(S).isEqualByComparingTo((short) 1);
         }
 
-        static void test(Consumer<? super InjectorConfigurator> configurator) {
+        static void test(Consumer<? super InjectorAssembler> configurator) {
             // L = 1L;
             P = 1;
             S = 1;
@@ -123,7 +123,7 @@ public class FieldStaticTest {
             throw new AssertionError("Cannot instantiate");
         }
 
-        static void test(Consumer<? super InjectorConfigurator> configurator) {
+        static void test(Consumer<? super InjectorAssembler> configurator) {
             // L = 1L;
             P = 1;
             S = 1;

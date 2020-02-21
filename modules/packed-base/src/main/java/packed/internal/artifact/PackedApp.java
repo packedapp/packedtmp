@@ -73,8 +73,8 @@ public final class PackedApp implements App {
         return context.path();
     }
 
-    public void run() {
-        context.run();
+    public void execute() {
+        context.execute();
     }
 
     public <T> CompletableFuture<T> startAsync(T result) {

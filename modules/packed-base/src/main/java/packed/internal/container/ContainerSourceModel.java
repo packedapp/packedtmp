@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.List;
 
-import app.packed.artifact.ArtifactSource;
+import app.packed.artifact.Assembly;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Nullable;
 import app.packed.container.Bundle;
@@ -47,7 +47,7 @@ public final class ContainerSourceModel extends ComponentLookup {
         @SuppressWarnings("unchecked")
         @Override
         protected ContainerSourceModel computeValue(Class<?> type) {
-            return new ContainerSourceModel((Class<? extends ArtifactSource>) type);
+            return new ContainerSourceModel((Class<? extends Assembly>) type);
         }
     };
 
@@ -83,7 +83,7 @@ public final class ContainerSourceModel extends ComponentLookup {
     private final OnHookModel onHookModel;
 
     /** The type of container source. Typically, a subclass of {@link Bundle}. */
-    private final Class<? extends ArtifactSource> sourceType;
+    private final Class<? extends Assembly> sourceType;
 
     /**
      * Creates a new container source model.
@@ -91,7 +91,7 @@ public final class ContainerSourceModel extends ComponentLookup {
      * @param sourceType
      *            the source type
      */
-    private ContainerSourceModel(Class<? extends ArtifactSource> sourceType) {
+    private ContainerSourceModel(Class<? extends Assembly> sourceType) {
         if (Hook.class.isAssignableFrom(sourceType)) {
             throw new InvalidDeclarationException(sourceType + " must not implement/extend " + Hook.class);
         }
@@ -139,7 +139,7 @@ public final class ContainerSourceModel extends ComponentLookup {
         return factory;
     }
 
-    public Class<? extends ArtifactSource> sourceType() {
+    public Class<? extends Assembly> sourceType() {
         return sourceType;
     }
 
@@ -167,7 +167,7 @@ public final class ContainerSourceModel extends ComponentLookup {
      *            the container source type
      * @return a container source model for the specified type
      */
-    public static ContainerSourceModel of(Class<? extends ArtifactSource> sourceType) {
+    public static ContainerSourceModel of(Class<? extends Assembly> sourceType) {
         return MODEL_CACHE.get(sourceType);
     }
 

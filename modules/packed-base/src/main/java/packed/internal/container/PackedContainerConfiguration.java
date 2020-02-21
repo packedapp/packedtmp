@@ -30,7 +30,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import app.packed.artifact.ArtifactSource;
+import app.packed.artifact.Assembly;
 import app.packed.base.Contract;
 import app.packed.base.Nullable;
 import app.packed.component.SingletonConfiguration;
@@ -95,7 +95,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     private final ContainerSourceModel model;
 
     /** The source of the container configuration. */
-    private final ArtifactSource source;
+    private final Assembly source;
 
     /** Any wirelets that was given by the user when creating this configuration. */
     public final WireletContext wireletContext;
@@ -110,7 +110,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * @param wirelets
      *            any wirelets specified by the user
      */
-    public PackedContainerConfiguration(BuildOutput output, ArtifactSource source, Wirelet... wirelets) {
+    public PackedContainerConfiguration(BuildOutput output, Assembly source, Wirelet... wirelets) {
         super(ConfigSiteUtil.captureStackFrame(InjectConfigSiteOperations.INJECTOR_OF), output);
         this.source = requireNonNull(source);
         this.lookup = this.model = ContainerSourceModel.of(source.getClass());
@@ -260,7 +260,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     public String initializeNameDefaultName() {
         // I think try and move some of this to ComponentNameWirelet
         @Nullable
-        Class<? extends ArtifactSource> source = this.sourceType();
+        Class<? extends Assembly> source = this.sourceType();
         if (Bundle.class.isAssignableFrom(source)) {
             String nnn = source.getSimpleName();
             if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
@@ -469,7 +469,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     /** {@inheritDoc} */
     @Override
-    public Class<? extends ArtifactSource> sourceType() {
+    public Class<? extends Assembly> sourceType() {
         return source.getClass();
     }
 

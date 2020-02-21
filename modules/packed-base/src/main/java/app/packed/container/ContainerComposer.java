@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.util.Set;
 
-import app.packed.artifact.ArtifactSource;
+import app.packed.artifact.Assembly;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentType;
@@ -34,6 +34,7 @@ import packed.internal.host.HostConfiguration;
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
  * extending {@link Bundle} or {@link BaseBundle}.
  */
+// Why not Configuration?????
 public interface ContainerComposer extends ComponentConfiguration {
 
     /**
@@ -156,7 +157,7 @@ public interface ContainerComposer extends ComponentConfiguration {
      * 
      * @return the class that defines the container
      */
-    Class<? extends ArtifactSource> sourceType();
+    Class<? extends Assembly> sourceType();
 
     /** {@inheritDoc} */
     @Override

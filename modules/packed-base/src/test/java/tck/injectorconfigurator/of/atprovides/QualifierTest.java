@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Key;
 import app.packed.service.Injector;
-import app.packed.service.InjectorConfigurator;
+import app.packed.service.InjectorAssembler;
 import app.packed.service.ServiceMode;
 import app.packed.service.Provide;
 import testutil.stubs.annotation.StringQualifier;
@@ -82,7 +82,7 @@ public class QualifierTest {
         assertThat(i.use(new Key<Long>() {})).isEqualTo(1L);
     }
 
-    private static Injector create(Consumer<? super InjectorConfigurator> consumer) {
+    private static Injector create(Consumer<? super InjectorAssembler> consumer) {
         return Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
             consumer.accept(c);

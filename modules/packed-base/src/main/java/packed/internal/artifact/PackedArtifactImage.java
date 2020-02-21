@@ -23,7 +23,7 @@ import java.util.concurrent.CompletableFuture;
 import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactImage;
-import app.packed.artifact.ArtifactSource;
+import app.packed.artifact.Assembly;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
@@ -160,7 +160,7 @@ public final class PackedArtifactImage implements ArtifactImage {
      * @throws RuntimeException
      *             if the image could not be constructed
      */
-    public static PackedArtifactImage build(ArtifactSource source, Wirelet... wirelets) {
+    public static PackedArtifactImage build(Assembly source, Wirelet... wirelets) {
         if (source instanceof PackedArtifactImage) {
             return ((PackedArtifactImage) source).with(wirelets);
         }

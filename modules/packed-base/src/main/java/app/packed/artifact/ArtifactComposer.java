@@ -27,7 +27,7 @@ import app.packed.container.ContainerSource;
 //TODO remove ArtifactSource
 /// This is not an artifact source... but it creates one...
 @FunctionalInterface
-public interface ArtifactComposer<T> extends ArtifactSource, ContainerSource {
+public interface ArtifactComposer<T> extends Assembly, ContainerSource {
 
     /**
      * Configure the artifact.

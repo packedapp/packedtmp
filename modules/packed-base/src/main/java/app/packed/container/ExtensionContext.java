@@ -15,6 +15,7 @@
  */
 package app.packed.container;
 
+import app.packed.artifact.BuildTarget;
 import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
@@ -27,6 +28,13 @@ import app.packed.inject.Factory;
  * implementation or in the same package as the extension itself.
  */
 public interface ExtensionContext {
+
+    // What we are generating...
+    // This can be tricky, For example, if we create an image.
+    // This method will always return image,
+    default BuildTarget buildTarget() {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
@@ -68,9 +76,9 @@ public interface ExtensionContext {
      * Returns an extension of the specified type. The specified type must be among the extension's dependencies as
      * specified via.... Otherwise an {@link InternalExtensionException} is thrown.
      * <p>
-     * This method works similar to {@link ContainerComposer#use(Class)}. However, this method checks that only
-     * extensions that have been declared as dependencies via {@link ExtensionComposer#addDependencies(Class...)} are
-     * specified. This is done in order to make sure that no extensions ever depend on each other.
+     * This method works similar to {@link ContainerComposer#use(Class)}. However, this method checks that only extensions
+     * that have been declared as dependencies via {@link ExtensionComposer#addDependencies(Class...)} are specified. This
+     * is done in order to make sure that no extensions ever depend on each other.
      * 
      * @param <E>
      *            the type of extension to return
@@ -86,4 +94,5 @@ public interface ExtensionContext {
      * @see ContainerComposer#use(Class)
      */
     <E extends Extension> E use(Class<E> extensionType);
+
 }

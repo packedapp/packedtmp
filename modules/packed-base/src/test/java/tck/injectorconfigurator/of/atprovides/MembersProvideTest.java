@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
 import app.packed.service.Injector;
-import app.packed.service.InjectorConfigurator;
+import app.packed.service.InjectorAssembler;
 import app.packed.service.Provide;
 import testutil.stubs.annotation.StringQualifier;
 
@@ -41,7 +41,7 @@ public class MembersProvideTest {
         validate(of(c -> c.provide(VisibilityStatic.class).prototype()));
     }
 
-    private static Injector of(Consumer<? super InjectorConfigurator> consumer) {
+    private static Injector of(Consumer<? super InjectorAssembler> consumer) {
         return Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
             consumer.accept(c);

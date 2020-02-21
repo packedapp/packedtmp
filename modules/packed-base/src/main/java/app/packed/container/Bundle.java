@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import app.packed.artifact.ArtifactSource;
+import app.packed.artifact.Assembly;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
@@ -54,7 +54,7 @@ import packed.internal.moduleaccess.ModuleAccess;
 
 // Kunne godt have nogle lifecycle metoder man kunne overskrive.
 // F.eks. at man vil validere noget
-public abstract class Bundle implements ArtifactSource, ContainerSource {
+public abstract class Bundle implements Assembly, ContainerSource {
 
     static {
         ModuleAccess.initialize(AppPackedContainerAccess.class, new AppPackedContainerAccess() {

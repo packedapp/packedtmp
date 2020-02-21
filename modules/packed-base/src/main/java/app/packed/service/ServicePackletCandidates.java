@@ -63,7 +63,7 @@ public class ServicePackletCandidates {
         throw new UnsupportedOperationException();
     }
 
-    public static Wirelet provideAllTo(ArtifactComposer<? super InjectorConfigurator> configurator, Wirelet... wirelets) {
+    public static Wirelet provideAllTo(ArtifactComposer<? super InjectorAssembler> configurator, Wirelet... wirelets) {
 
         // Den her kan man styre prototyper o.s.v. hvis man har behov for det....
 

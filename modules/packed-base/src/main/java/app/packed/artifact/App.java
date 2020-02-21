@@ -44,7 +44,8 @@ import packed.internal.artifact.PackedApp;
 public interface App extends AutoCloseable {
 
     /**
-     * Closes the app (synchronously). Equivalent to calling {@code app.stop()}, but here because of {@link AutoCloseable}.
+     * Closes the app (synchronously). Calling this method is equivalent to calling {@code app.stop()}, but the method is
+     * here because of {@link AutoCloseable}.
      **/
     @Override
     default void close() {
@@ -62,11 +63,11 @@ public interface App extends AutoCloseable {
     ConfigSite configSite();
 
     /**
-     * Returns the description of this application. Or an empty optional if no description has been set
+     * Returns the description of this application. Or an empty optional if no description has been set.
      * <p>
      * The returned description is always identical to the description of the application's root container.
      *
-     * @return the description of this application. Or an empty optional if no description has been set
+     * @return the description of this application
      *
      * @see SingletonConfiguration#setDescription(String)
      */
@@ -77,7 +78,7 @@ public interface App extends AutoCloseable {
      * <p>
      * The returned name is always identical to the name of the application's top container.
      * <p>
-     * If no name is explicitly set when creating the application, the runtime will generate a name that guaranteed to be
+     * If no name is explicitly set when creating the application, the runtime will generate a name that is guaranteed to be
      * unique among any siblings the application might have.
      * 
      * @return the name of this application
@@ -174,28 +175,12 @@ public interface App extends AutoCloseable {
     Component useComponent(CharSequence path);
 
     /**
-     * Returns an artifact driver for creating new {@link App} instances.
+     * Returns an artifact driver that can create new {@link App} instances. This method is mainly used when defining hosts.
      * 
      * @return an app artifact driver
      */
     static ArtifactDriver<App> driver() {
         return PackedApp.DRIVER; // The basic idea is that you can use it for hosts
-    }
-
-    /**
-     * Create and initialize an application from the specified source. The state of the returned application is
-     * {@link RunState#INITIALIZED}.
-     *
-     * @param source
-     *            the source of the application
-     * @param wirelets
-     *            any wirelets to use in the construction of the application
-     * @return the new application
-     * @throws RuntimeException
-     *             if the application could not be constructed or initialized properly
-     */
-    static App initialize(ArtifactSource source, Wirelet... wirelets) {
-        return driver().createAndInitialize(source, wirelets);
     }
 
     /**
@@ -214,9 +199,26 @@ public interface App extends AutoCloseable {
     // Maybe this is not on App....
 
     // AppRunner??? Only static methods....
-    static void run(ArtifactSource source, Wirelet... wirelets) {
+    // Hvad hvis vi vil bruge nogle services...
+    static void execute(Assembly source, Wirelet... wirelets) {
         PackedApp app = (PackedApp) driver().createAndInitialize(source, wirelets);
-        app.run();
+        app.execute();
+    }
+
+    /**
+     * Create and initialize an application from the specified source. The state of the returned application is
+     * {@link RunState#INITIALIZED}.
+     *
+     * @param source
+     *            the source of the application
+     * @param wirelets
+     *            any wirelets to use in the construction of the application
+     * @return the new application
+     * @throws RuntimeException
+     *             if the application could not be initialized properly
+     */
+    static App initialize(Assembly source, Wirelet... wirelets) {
+        return driver().createAndInitialize(source, wirelets);
     }
 
     /**
@@ -229,13 +231,13 @@ public interface App extends AutoCloseable {
      *            any wirelets to use in the construction of the application
      * @return the new application
      * @throws RuntimeException
-     *             if the application could not be constructed or started properly
+     *             if the application could not be initialized or started properly
      */
-    static App start(ArtifactSource source, Wirelet... wirelets) {
+    static App start(Assembly source, Wirelet... wirelets) {
         return driver().createAndStart(source, wirelets);
     }
 
-    static CompletableFuture<App> startAsync(ArtifactSource source, Wirelet... wirelets) {
+    static CompletableFuture<App> startAsync(Assembly source, Wirelet... wirelets) {
         // Why return CompletableFuture???
         PackedApp app = (PackedApp) driver().createAndInitialize(source, wirelets);
         return app.startAsync(app);

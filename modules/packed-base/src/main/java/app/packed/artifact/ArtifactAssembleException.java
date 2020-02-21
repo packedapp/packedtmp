@@ -16,7 +16,7 @@
 package app.packed.artifact;
 
 /** An exception thrown when failing to create an artifact. */
-public class ArtifactCreationException extends RuntimeException {
+public class ArtifactAssembleException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
@@ -29,7 +29,7 @@ public class ArtifactCreationException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public ArtifactCreationException(String message) {
+    public ArtifactAssembleException(String message) {
         super(message);
     }
 
@@ -43,7 +43,7 @@ public class ArtifactCreationException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public ArtifactCreationException(String message, Throwable cause) {
+    public ArtifactAssembleException(String message, Throwable cause) {
         super(message, cause);
     }
 }

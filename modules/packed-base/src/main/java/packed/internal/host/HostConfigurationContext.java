@@ -18,7 +18,7 @@ package packed.internal.host;
 import java.util.Optional;
 
 import app.packed.artifact.ArtifactDriver;
-import app.packed.artifact.ArtifactSource;
+import app.packed.artifact.Assembly;
 import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
@@ -57,7 +57,7 @@ public interface HostConfigurationContext {
 
     // Do we need an ArtifactReference???
     // Kunne ogsaa godt bruge noget fra Bundle.link
-    void deploy(ArtifactSource source, ArtifactDriver<?> driver, Wirelet... wirelets);
+    void deploy(Assembly source, ArtifactDriver<?> driver, Wirelet... wirelets);
 
     /**
      * If this component has been installed from an extension, returns the extension. Otherwise returns empty.

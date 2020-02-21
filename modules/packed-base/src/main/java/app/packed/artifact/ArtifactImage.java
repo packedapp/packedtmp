@@ -27,9 +27,30 @@ import app.packed.container.Wirelet;
 import packed.internal.artifact.PackedArtifactImage;
 
 /**
- *
+ * Artifact images are immutable ahead-of-time configured artifacts. By configuring an artifact ahead of time, the
+ * actual time to instantiation an artifact can be severely decreased often down to a couple of microseconds. In
+ * addition to this, artifact images can be reusable, so you can create multiple artifacts from a single image.
+ * 
+ * Creating artifacts in Packed is already really fast, and you can easily create one 10 or hundres of microseconds. But
+ * by using artifact images you can into hundres or thousounds of nanoseconds.
+ * <p>
+ * Use cases: Extremely fast startup.. graal
+ * 
+ * Instantiate the same container many times
+ * <p>
+ * Limitations:
+ * 
+ * No structural changes... Only whole artifacts
+ * 
+ * <p>
+ * An image can be used to create new instances of {@link app.packed.artifact.App}, {@link BundleDescriptor} or other
+ * artifact images. It can not be used with {@link Bundle#link(Bundle, Wirelet...)}.
+ * 
+ * @apiNote In the future, if the Java language permits, {@link ArtifactImage} may become a {@code sealed} interface,
+ *          which would prohibit subclassing except by explicitly permitted types.
+ * 
  */
-public interface ArtifactImage extends ArtifactSource {
+public interface ArtifactImage extends Assembly {
 
     /**
      * Returns the configuration site of this image.
@@ -114,7 +135,7 @@ public interface ArtifactImage extends ArtifactSource {
      * @throws RuntimeException
      *             if the image could not be constructed
      */
-    static ArtifactImage build(ArtifactSource source, Wirelet... wirelets) {
+    static ArtifactImage build(Assembly source, Wirelet... wirelets) {
         return PackedArtifactImage.build(source, wirelets);
     }
 }

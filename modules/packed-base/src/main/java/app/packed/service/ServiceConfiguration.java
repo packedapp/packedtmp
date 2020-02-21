@@ -22,7 +22,7 @@ import app.packed.container.BaseBundle;
 
 /**
  * A configuration object for a service. An instance of this interface is usually obtained by calling the various
- * provide or export methods located on {@link ServiceExtension}, {@link InjectorConfigurator} or {@link BaseBundle}.
+ * provide or export methods located on {@link ServiceExtension}, {@link InjectorAssembler} or {@link BaseBundle}.
  */
 public interface ServiceConfiguration<T> /* extends Taggable */ {
 

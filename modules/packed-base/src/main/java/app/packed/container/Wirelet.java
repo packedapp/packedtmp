@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import app.packed.service.Injector;
-import app.packed.service.InjectorConfigurator;
+import app.packed.service.InjectorAssembler;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
 import packed.internal.container.FixedWireletList;
 
@@ -31,7 +31,7 @@ import packed.internal.container.FixedWireletList;
  * applications.
  * 
  * A wiring operation is a piece of glue code that wire bundles and/or runtimes together, through operations such as
- * {@link InjectorConfigurator#provideAll(Injector, Wirelet...)} or
+ * {@link InjectorAssembler#provideAll(Injector, Wirelet...)} or
  * <p>
  * As a rule of thumb wirelets are evaluated in order. For example, Wirelet.name("ffff"), Wirelet.name("sdsdsd"). Will
  * first the change the name to ffff, and then change it to sdsds. Maybe an example with.noStart + start_await it

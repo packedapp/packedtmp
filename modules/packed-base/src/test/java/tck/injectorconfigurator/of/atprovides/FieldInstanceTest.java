@@ -29,7 +29,7 @@ import app.packed.base.InvalidDeclarationException;
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
 import app.packed.service.Injector;
-import app.packed.service.InjectorConfigurator;
+import app.packed.service.InjectorAssembler;
 import app.packed.service.ServiceMode;
 import app.packed.service.Provide;
 
@@ -123,7 +123,7 @@ public class FieldInstanceTest {
         // TODO check message
     }
 
-    private static Injector create(Consumer<? super InjectorConfigurator> consumer) {
+    private static Injector create(Consumer<? super InjectorAssembler> consumer) {
         return Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
             consumer.accept(c);
@@ -151,7 +151,7 @@ public class FieldInstanceTest {
         @Provide(instantionMode = ServiceMode.SINGLETON)
         Short s = 1;
 
-        static void test(Consumer<? super InjectorConfigurator> configurator) {
+        static void test(Consumer<? super InjectorAssembler> configurator) {
             Injector i = create(c -> configurator.accept(c));
             MixedFields f = i.use(MixedFields.class);
             // f.l = 2L;

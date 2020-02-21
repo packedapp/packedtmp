@@ -26,7 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import app.packed.artifact.ArtifactSource;
+import app.packed.artifact.Assembly;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
@@ -163,7 +163,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
 
     /**
      * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
-     * not located on any subclasses of {@link Extension} or any class that implements {@link ArtifactSource}.
+     * not located on any subclasses of {@link Extension} or any class that implements {@link Assembly}.
      * <p>
      * Invoking this method typically takes in the order of 1-2 microseconds.
      * <p>
@@ -205,7 +205,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
 
         // Dvs ourContainerSource
         return Extension.class.isAssignableFrom(c)
-                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && ArtifactSource.class.isAssignableFrom(c));
+                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && Assembly.class.isAssignableFrom(c));
     }
 
     /** {@inheritDoc} */

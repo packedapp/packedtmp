@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.service.Injector;
-import app.packed.service.InjectorConfigurator;
+import app.packed.service.InjectorAssembler;
 import app.packed.service.Provide;
 
 /** Tests {@link Provide#description()}. */
@@ -47,7 +47,7 @@ public class DescriptionTest {
         assertThat(i.getDescriptor(Integer.class).get().description()).isEmpty();
     }
 
-    private static Injector of(Consumer<? super InjectorConfigurator> consumer) {
+    private static Injector of(Consumer<? super InjectorAssembler> consumer) {
         return Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
             consumer.accept(c);

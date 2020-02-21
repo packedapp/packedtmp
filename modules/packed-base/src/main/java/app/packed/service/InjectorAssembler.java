@@ -38,7 +38,7 @@ import app.packed.inject.Factory;
  * The main difference compared to bundles is that there is no concept of encapsulation. All services are exported by
  * default.
  */
-public final class InjectorConfigurator {
+public final class InjectorAssembler {
 
     /** The configuration we delegate all calls to. */
     private final ContainerComposer configuration;
@@ -51,7 +51,7 @@ public final class InjectorConfigurator {
      * @param configuration
      *            the configuration to wrap
      */
-    InjectorConfigurator(ContainerComposer configuration) {
+    InjectorAssembler(ContainerComposer configuration) {
         this.configuration = requireNonNull(configuration, "configuration is null");
     }
 
@@ -245,7 +245,7 @@ public final class InjectorConfigurator {
      * @see #getDescription()
      * @see Injector#description()
      */
-    public InjectorConfigurator setDescription(String description) {
+    public InjectorAssembler setDescription(String description) {
         configuration().setDescription(description);
         return this;
     }

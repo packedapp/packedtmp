@@ -53,7 +53,7 @@ public abstract class ArtifactDriver<T> {
 
     /** Creates a new driver. */
     @SuppressWarnings("unchecked")
-    protected ArtifactDriver(boolean canRun) {
+    protected ArtifactDriver(boolean isExecutable) {
         this.artifactType = (Class<T>) ARTIFACT_DRIVER_TV_EXTRACTOR.extract(getClass());
 
         // Set tmp
@@ -128,7 +128,7 @@ public abstract class ArtifactDriver<T> {
      * @throws RuntimeException
      *             if the artifact could not be created
      */
-    public final T createAndInitialize(ArtifactSource source, Wirelet... wirelets) {
+    public final T createAndInitialize(Assembly source, Wirelet... wirelets) {
         if (source instanceof PackedArtifactImage) {
             return ((PackedArtifactImage) source).newArtifact(this, wirelets);
         }
@@ -138,7 +138,7 @@ public abstract class ArtifactDriver<T> {
         return newArtifact(pac);
     }
 
-    public final T createAndStart(ArtifactSource source, Wirelet... wirelets) {
+    public final T createAndStart(Assembly source, Wirelet... wirelets) {
         // Should throw if not Runnable...
         if (source instanceof PackedArtifactImage) {
             return ((PackedArtifactImage) source).newArtifact(this, wirelets);

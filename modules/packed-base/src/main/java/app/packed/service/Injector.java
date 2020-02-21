@@ -24,7 +24,7 @@ import app.packed.artifact.App;
 import app.packed.artifact.ArtifactComposer;
 import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.ArtifactDriver;
-import app.packed.artifact.ArtifactSource;
+import app.packed.artifact.Assembly;
 import app.packed.base.Key;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
@@ -311,8 +311,8 @@ public interface Injector {
     // or maybe Injector.configure() instead
     // interface ArtifactConfigurator() {}
     // configure()
-    static Injector configure(ArtifactComposer<? super InjectorConfigurator> configurator, Wirelet... wirelets) {
-        return InjectorArtifactDriver.INSTANCE.newArtifact(c -> new InjectorConfigurator(c), configurator, wirelets);
+    static Injector configure(ArtifactComposer<? super InjectorAssembler> configurator, Wirelet... wirelets) {
+        return InjectorArtifactDriver.INSTANCE.newArtifact(c -> new InjectorAssembler(c), configurator, wirelets);
     }
 
     /**
@@ -327,7 +327,7 @@ public interface Injector {
      *             if the injector could not be created for some reason. For example, if the source defines any components
      *             that requires a lifecycle
      */
-    static Injector of(ArtifactSource source, Wirelet... wirelets) {
+    static Injector of(Assembly source, Wirelet... wirelets) {
         return InjectorArtifactDriver.INSTANCE.createAndInitialize(source, wirelets);
     }
 }

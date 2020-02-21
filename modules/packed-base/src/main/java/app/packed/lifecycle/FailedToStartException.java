@@ -18,8 +18,7 @@ package app.packed.lifecycle;
 /**
  *
  */
-// Or is this a StopOption????
-// I Think so.... There is not much there anyway....
-class RestartOption {
+//FailedToRuntException, ExecutionExceptionFailed
+public class FailedToStartException {
 
 }

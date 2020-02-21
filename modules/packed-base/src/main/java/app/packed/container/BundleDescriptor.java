@@ -118,15 +118,6 @@ public class BundleDescriptor {
         this.extensions = builder.extensions;
     }
 
-    /**
-     * Returns the type of the bundle.
-     *
-     * @return the type of the bundle
-     */
-    public final Class<? extends Bundle> bundleType() {
-        return bundleType;
-    }
-
     // De er vel named.... Saa Map<String, Descriptor...
     public List<BundleDescriptor> children() {
         // Saa skal vi vel ogsaa have navne...
@@ -134,16 +125,16 @@ public class BundleDescriptor {
         throw new UnsupportedOperationException();
     }
 
+    public ContractSet contracts() {
+        return contracts;
+
+    }
+
     // Kan ikke rigtig se hvordan det skulle fungere.... med mindre vi har
 
     // <T extends AnyBundleDescriptor> List<T> children(Class<T> descriptorType) {
     // Men hvem bestemmer hvilken descriptor type vi laver????
     // Hvis det er en tom skal, der tager en Builder???
-
-    public ContractSet contracts() {
-        return contracts;
-
-    }
 
     /**
      * Returns any description that has been set for the bundle via {@link Bundle#setDescription(String)}.
@@ -193,7 +184,21 @@ public class BundleDescriptor {
         System.out.println(toString());
     }
 
-    public String toJSON() {
+    /**
+     * Returns the type of the bundle.
+     *
+     * @return the type of the bundle
+     */
+    public final Class<? extends Bundle> sourceType() {
+        return bundleType;
+    }
+
+    // has start/stop
+    public boolean isExecutable() {
+        return false;
+    }
+
+    String toJSON() {
         // Kan maaske have noget funktionality til at lave diffs....
         // Er nok mere vigtig paa contracts...
         throw new UnsupportedOperationException();

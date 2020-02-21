@@ -33,7 +33,7 @@ import app.packed.service.ServiceExtension;
  * An instance of this interface is normally acquired via {@link ArtifactDriver#newArtifact(ArtifactContext)}.
  */
 public interface ArtifactContext extends SingletonContext {
-    // Det er jo i virkeligheden ContainerContext, men en ContainerContext kan bare ikke lukkes ned...
+    // Det er jo i virkeligheden ContainerContext uden lifecycle... + lidt ekstra
 
     default Set<Class<? extends Extension>> extensionTypes() {
         throw new UnsupportedOperationException();
@@ -45,12 +45,20 @@ public interface ArtifactContext extends SingletonContext {
     }
 
     /**
-     * 
+     * @throws UnsupportedOperationException
+     *             if the artifact is not executable
      */
-    default void run() {}
+    default void execute() {
+        // Spoergmaalet er hvor kommer den vaerdi fra????
+        // return null;
+    }
+
+    // has start/run/stop
+    default boolean isExecutable() {
+        return false;
+    }
 
     default Class<?> resultType() {
-
         // Ideen er her taenkt at vi kan bruge den samme med Job...
         //// En anden slags entry point annotering...
         return void.class;

@@ -29,7 +29,7 @@ import app.packed.base.InvalidDeclarationException;
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
 import app.packed.service.Injector;
-import app.packed.service.InjectorConfigurator;
+import app.packed.service.InjectorAssembler;
 import app.packed.service.ServiceMode;
 import app.packed.service.Provide;
 
@@ -120,7 +120,7 @@ public class MethodInstanceTest {
             return s;
         }
 
-        static void test(Consumer<? super InjectorConfigurator> configurator) {
+        static void test(Consumer<? super InjectorAssembler> configurator) {
             Injector i = Injector.configure(c -> {
                 c.lookup(MethodHandles.lookup());
                 configurator.accept(c);
