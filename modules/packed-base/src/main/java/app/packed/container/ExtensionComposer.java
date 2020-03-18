@@ -90,17 +90,12 @@ public abstract class ExtensionComposer<E extends Extension> {
      * @see ContainerComposer#use(Class)
      */
     @SuppressWarnings("unchecked")
+    @Deprecated
     protected final void onExtensionInstantiated(Consumer<? super E> action) {
         context().onExtensionInstantiated((Consumer<? super Extension>) action);
     }
 
     /////////////////// Cleanup
-
-    @SafeVarargs
-    @Deprecated
-    protected final void addDependencies(Class<? extends Extension>... dependencies) {
-        context().addDependencies(dependencies);
-    }
 
     protected final <P extends ExtensionWirelet.Pipeline<E, P, W>, W extends ExtensionWirelet<P>> void addPipeline(Class<P> pipelineType,
             Function<E, P> pipelineFactory) {
@@ -154,24 +149,31 @@ public abstract class ExtensionComposer<E extends Extension> {
 
     protected final void exposeFeature() {}
 
-    /**
-     * Registers a (callback) action that is invoked, by the runtime, whenever this extension type has been registered in
-     * both a parent and child container.
-     * <p>
-     * {@link #onExtensionInstantiated(Consumer)} is always invoked for the extension before this method.
-     * <p>
-     * If more than one action is registered using this method. Each action will be performed in the order (FIFO) they where
-     * registered.
-     * 
-     * @param action
-     *            the action to perform
-     */
-    @SuppressWarnings("unchecked")
-    // Ved ikke hvor brugbar den er uden Wirelets....
-    protected final void onLinkage(BiConsumer<? super E, ? super E> action) {
-        context().onLinkage((BiConsumer<? super Extension, ? super Extension>) action);
-    }
 }
+///**
+//* Registers a (callback) action that is invoked, by the runtime, whenever this extension type has been registered in
+//* both a parent and child container.
+//* <p>
+//* {@link #onExtensionInstantiated(Consumer)} is always invoked for the extension before this method.
+//* <p>
+//* If more than one action is registered using this method. Each action will be performed in the order (FIFO) they where
+//* registered.
+//* 
+//* @param action
+//*            the action to perform
+//*/
+//@SuppressWarnings("unchecked")
+//// Ved ikke hvor brugbar den er uden Wirelets....
+//protected final void onLinkage(BiConsumer<? super E, ? super E> action) {
+// context().onLinkage((BiConsumer<? super Extension, ? super Extension>) action);
+//}
+//
+//@SafeVarargs
+//@Deprecated
+//protected final void addDependencies(Class<? extends Extension>... dependencies) {
+//  context().addDependencies(dependencies);
+//}
+
 //
 //protected final void onAddPostProcessor(Consumer<? extends ExtensionTree<E>> consumer) {
 //

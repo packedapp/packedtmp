@@ -88,8 +88,8 @@ public interface ExtensionContext {
      * specified via.... Otherwise an {@link InternalExtensionException} is thrown.
      * <p>
      * This method works similar to {@link ContainerComposer#use(Class)}. However, this method checks that only extensions
-     * that have been declared as dependencies via {@link ExtensionComposer#addDependencies(Class...)} are specified. This
-     * is done in order to make sure that no extensions ever depend on each other.
+     * that have been declared as dependencies via {@link ExtensionMeta#dependencies()} are specified. This is done in order
+     * to make sure that no extensions ever depend on each other.
      * 
      * @param <E>
      *            the type of extension to return

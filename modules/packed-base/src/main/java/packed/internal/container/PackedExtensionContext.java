@@ -119,6 +119,16 @@ public final class PackedExtensionContext implements ExtensionContext {
         PackedExtensionContext existing = pcc.activeExtension;
         try {
             pcc.activeExtension = this;
+            for (var v : model.l) {
+                if (v.onMainFinished) {
+                    try {
+                        v.mh.invoke(extension);
+                    } catch (Throwable e) {
+                        throw new UndeclaredThrowableException(e);
+                    }
+                }
+            }
+
             if (model.onAdd != null) {
                 model.onAdd.accept(extension);
             }
@@ -186,10 +196,12 @@ public final class PackedExtensionContext implements ExtensionContext {
 //            model.onConfigured.accept(extension);
 //        }
         for (var v : model.l) {
-            try {
-                v.mh.invoke(extension);
-            } catch (Throwable e) {
-                throw new UndeclaredThrowableException(e);
+            if (v.onMainFinished) {
+                try {
+                    v.mh.invoke(extension);
+                } catch (Throwable e) {
+                    throw new UndeclaredThrowableException(e);
+                }
             }
         }
         isConfigured = true;

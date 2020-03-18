@@ -245,7 +245,7 @@ public final class ExtensionModel<E extends Extension> {
                         throw new InternalExtensionException("Methods annotated with " + ExtensionCallback.class + " cannot be static, method = " + e);
                     }
                     MethodHandle mh = cp.unreflect(e, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-                    l.add(new ECall(mh, ec.onPreembleDone()));
+                    l.add(new ECall(mh, ec.onInstantiation(), ec.onPreembleDone()));
                 }
             });
             if (composerType != null) {
@@ -260,10 +260,12 @@ public final class ExtensionModel<E extends Extension> {
 
     static class ECall {
         final MethodHandle mh;
+        final boolean onInstantiation;
         final boolean onMainFinished;
 
-        ECall(MethodHandle mh, boolean onMainFinished) {
+        ECall(MethodHandle mh, boolean onInstantiation, boolean onMainFinished) {
             this.mh = requireNonNull(mh);
+            this.onInstantiation = onInstantiation;
             this.onMainFinished = onMainFinished;
         }
     }
