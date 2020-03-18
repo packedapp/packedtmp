@@ -69,6 +69,20 @@ public abstract class Wirelet {
         return andThen(new Wirelet[] { after });
     }
 
+    // Det er vel mere om den kun bruges i forbindelse med linkage...
+    // D.v.s.
+    /**
+     * Returns whether or not the wirelet can be used with an image
+     * 
+     * @return stuff
+     */
+    // TODO do we want to differentiate between when we use dem for an image or not???
+    // Or just whether they can be used outside link()? is only for connecting containers
+    // within the same artifact.
+    protected boolean canApplyToImage() {
+        return true;
+    }
+
     public final Wirelet andThen(Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
         ArrayList<Wirelet> l = new ArrayList<>();

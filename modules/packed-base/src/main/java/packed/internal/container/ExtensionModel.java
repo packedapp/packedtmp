@@ -67,7 +67,7 @@ public final class ExtensionModel<E extends Extension> {
         }
     };
 
-    public final BiConsumer<? super Extension, ? super app.packed.container.BundleDescriptor.Builder> bundleBuilder;
+    public final BiConsumer<? super Extension, ? super app.packed.analysis.BundleDescriptor.Builder> bundleBuilder;
 
     /** The method handle used to create a new extension instance. */
     private final MethodHandle constructor;

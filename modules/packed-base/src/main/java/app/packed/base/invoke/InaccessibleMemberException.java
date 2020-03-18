@@ -22,7 +22,9 @@ package app.packed.base.invoke;
 // which makes it clear it is relevant to reflection/method handlers
 // NotOpenedException
 // UndeclaredAccessException
-public class UncheckedIllegalAccessException extends RuntimeException {
+// Was UncheckedIllegalAccessException
+
+public class InaccessibleMemberException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
@@ -35,7 +37,7 @@ public class UncheckedIllegalAccessException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public UncheckedIllegalAccessException(String message) {
+    public InaccessibleMemberException(String message) {
         super(message);
 
     }
@@ -50,7 +52,7 @@ public class UncheckedIllegalAccessException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public UncheckedIllegalAccessException(String message, Throwable cause) {
+    public InaccessibleMemberException(String message, Throwable cause) {
         super(message, cause);
     }
 }

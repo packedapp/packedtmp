@@ -1,13 +1,26 @@
-package app.packed.container;
+package app.packed.analysis;
 
 import java.util.List;
+
+import app.packed.container.Bundle;
 
 /**
  * This class can be used to verify that a bundle can be successfully. For example, doing testing.
  */
 
+// Static rules... Dynamic Rules
+// Static Rules -> No Cycles in the dependency graph
+// Dynamic Rules -> Don't use Deprecated components (Warn)
+
+// Static Rules are always errors....
+// Dynamic Rules can have severity, they are only checked if there are no static breaking rules...
+
+// Dynamic Rules -> Custom Rules?
 // Constraints.....
 // Does not use Beta APIS....
+
+// For example, if there 2 services exposed as Key<String> we do not check for circular references..
+// Because which of the dependencies should we check.....
 
 // For example, that there are circles in the graph is not a constraint. Its always an error.
 // Because we cannot create an artifact with a circle.
@@ -18,7 +31,15 @@ import java.util.List;
 //ValidatedBundle (sounds like it is always correct)
 //If we do allow wirelets, we might want to change it to ArtifactValidator
 //Because then we should probably allow images + wirelets
-interface BundleValidator {
+
+// Skal vi måske tage et Image også??? Hvis vi har dynamiske regler....
+
+// Ogsaa godt til tests..
+
+// Check at vi exportere disse 2 services....
+// BundleValidator.assertValid(Bundle, Service.Export.contains(String.class, Foo.class).asInfo);
+
+public interface BundleValidator {
     // Maaske er det en slags visitor???
     // Det og det og det er wrong...
 
@@ -64,7 +85,6 @@ interface BundleValidator {
     // Eller?
     interface Builder {
 
-        @SuppressWarnings("exports")
         // Stuff to check
 
         // failWith(MethodHandles.Lookup lookup, Class<? extends Exception>);

@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Set;
 
-import app.packed.artifact.Assembly;
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.hook.OnHook;
@@ -109,7 +108,7 @@ public final class ComponentModel {
         return componentType;
     }
 
-    <T> AbstractComponentConfiguration invokeOnHookOnInstall(Assembly cs, AbstractComponentConfiguration acc) {
+    <T> AbstractComponentConfiguration invokeOnHookOnInstall(Object cs, AbstractComponentConfiguration acc) {
         try {
             // First invoke any OnHook methods on the container source (bundle)
             if (sourceHook != null) {

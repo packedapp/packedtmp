@@ -15,8 +15,8 @@
  */
 package app.packed.inject;
 
-import static app.packed.base.invoke.OpenMode.INVOKE;
-import static app.packed.base.invoke.OpenMode.SET_FIELD;
+import static app.packed.base.invoke.OpenMode.METHOD_INVOKE;
+import static app.packed.base.invoke.OpenMode.FIELD_GET;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -24,7 +24,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.base.invoke.OpensFor;
+import app.packed.base.invoke.Opens;
 import app.packed.container.UseExtension;
 import app.packed.service.ServiceExtension;
 
@@ -50,7 +50,7 @@ import app.packed.service.ServiceExtension;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @UseExtension(ServiceExtension.class) // Replace with UseSidecar(InjectSidecar.class) [maske defineret i denne klasse]
-@OpensFor({ INVOKE, SET_FIELD })
+@Opens(to = { METHOD_INVOKE, FIELD_GET })
 public @interface Inject {}
 
 //Maaske skal vi endda at hvis man ikke har en sidecar, og kun @OnLifecycle... Saa koerer man setField/invokeMethod

@@ -16,6 +16,7 @@
 package app.packed.artifact;
 
 /** An exception thrown when failing to create an artifact. */
+// AssemblyFailedException
 public class ArtifactAssembleException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */

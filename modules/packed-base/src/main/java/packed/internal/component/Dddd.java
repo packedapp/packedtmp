@@ -15,6 +15,7 @@
  */
 package packed.internal.component;
 
+import app.packed.analysis.BundleValidator;
 import app.packed.artifact.ArtifactImage;
 import app.packed.container.BaseBundle;
 import app.packed.container.Wirelet;
@@ -48,6 +49,8 @@ public class Dddd extends BaseBundle {
 
     public static void main(String[] args) {
         ArtifactImage img = ArtifactImage.build(new Dddd(4));
+
+        BundleValidator.assertValid(new Dddd(4));
 
         img.stream().forEach(c -> System.out.println(c.path() + " " + c.type()));
 

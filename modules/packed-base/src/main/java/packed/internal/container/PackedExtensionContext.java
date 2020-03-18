@@ -18,6 +18,7 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import app.packed.base.Nullable;
 import app.packed.component.ComponentPath;
@@ -26,6 +27,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 import app.packed.inject.Factory;
+import packed.internal.component.AbstractComponentConfiguration;
 import packed.internal.moduleaccess.ModuleAccess;
 
 /** The default implementation of {@link ExtensionContext} with addition methods only available inside this module. */
@@ -236,5 +238,17 @@ public final class PackedExtensionContext implements ExtensionContext {
         PackedExtensionContext pec = new PackedExtensionContext(pcc, extensionType);
         pec.initialize(pcc);
         return pec;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<Extension> parent() {
+        @Nullable
+        PackedExtensionContext pe = null;
+        AbstractComponentConfiguration parent = pcc.parent;
+        if (parent instanceof PackedContainerConfiguration) {
+            pe = ((PackedContainerConfiguration) parent).getExtension(model.extensionType);
+        }
+        return pe == null ? Optional.empty() : Optional.of(pe.extension);
     }
 }

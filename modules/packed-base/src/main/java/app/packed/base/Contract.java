@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
+import app.packed.analysis.BundleDescriptor;
 import app.packed.container.Bundle;
-import app.packed.container.BundleDescriptor;
 import packed.internal.artifact.BuildOutput;
 import packed.internal.container.PackedContainerConfiguration;
 
@@ -37,6 +37,8 @@ import packed.internal.container.PackedContainerConfiguration;
 
 // Use an interface????
 
+// Taenker Contract er oplagt som et interface...
+// Kan man implementere det via en record...
 public abstract class Contract {
 
     /** {@inheritDoc} */

@@ -22,6 +22,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import app.packed.analysis.BundleDescriptor;
 import app.packed.base.Contract;
 import app.packed.base.Nullable;
 import packed.internal.container.ExtensionModelLoadContext;
@@ -111,15 +112,15 @@ public abstract class ExtensionComposer<E extends Extension> {
         context().pipelines.putIfAbsent(pipelineType, pipelineFactory);
     }
 
-    /**
-     * Will process each extension top down..
-     * 
-     * @param action
-     *            the action to perform
-     */
-    protected final void completeEach(Consumer<? super E> action) {
-
-    }
+//    /**
+//     * Will process each extension top down..
+//     * 
+//     * @param action
+//     *            the action to perform
+//     */
+//    protected final void completeEach(Consumer<? super E> action) {
+//
+//    }
 
     /**
      * Exposes a contract of the specified type.
@@ -161,10 +162,10 @@ public abstract class ExtensionComposer<E extends Extension> {
     }
 
     protected final void exposeFeature() {}
-
-    protected final void onAddPostProcessor(Consumer<? extends ExtensionTree<E>> consumer) {
-
-    }
+//
+//    protected final void onAddPostProcessor(Consumer<? extends ExtensionTree<E>> consumer) {
+//
+//    }
 
     /**
      * A callback method that is invoked immediately after a container has been successfully configured. This is typically

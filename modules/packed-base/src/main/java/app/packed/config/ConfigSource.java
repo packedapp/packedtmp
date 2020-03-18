@@ -13,27 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
-
-import app.packed.container.ContainerSource;
+package app.packed.config;
 
 /**
  *
  */
-//Ved ikke hvor glad jeg er for navnet
+public abstract class ConfigSource {
 
-// Syntes ikke det er fedt den extender
+    protected abstract void configure();
 
-//TODO remove ArtifactSource
-/// This is not an artifact source... but it creates one...
-@FunctionalInterface
-public interface ArtifactComposer<T> extends Assembly, ContainerSource {
+    protected final void addFile(String path) {
+        throw new UnsupportedOperationException();
+    }
 
-    /**
-     * Configure the artifact.
-     * 
-     * @param configurator
-     *            the configurator used to configure the artifact
-     */
-    void compose(T configurator);
+    // ToExtension
+
+    // secrets
+
+    // Stuff..
+
+    //// Push/pull....
+
 }

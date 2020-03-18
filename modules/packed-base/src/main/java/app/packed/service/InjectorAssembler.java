@@ -19,10 +19,10 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.util.function.Consumer;
 
-import app.packed.artifact.ArtifactComposer;
-import app.packed.base.Nullable;
 import app.packed.base.Key.Qualifier;
+import app.packed.base.Nullable;
 import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerComposer;
@@ -31,8 +31,8 @@ import app.packed.inject.Factory;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via
- * {@link Injector#configure(ArtifactComposer, Wirelet...)}. This is thought of a alternative to using a
- * {@link BaseBundle}. Unlike bundles all services are automatically exported once defined. For example useful in tests.
+ * {@link Injector#configure(Consumer, Wirelet...)}. This is thought of a alternative to using a {@link BaseBundle}.
+ * Unlike bundles all services are automatically exported once defined. For example useful in tests.
  * 
  * <p>
  * The main difference compared to bundles is that there is no concept of encapsulation. All services are exported by
@@ -123,8 +123,8 @@ public final class InjectorAssembler {
 
     /**
      * Provides the specified implementation as a new singleton service. An instance of the implementation will be created
-     * together with the injector. The runtime will use {@link Factory#find(Class)} to find the constructor or
-     * method used for instantiation.
+     * together with the injector. The runtime will use {@link Factory#find(Class)} to find the constructor or method used
+     * for instantiation.
      * <p>
      * The default key for the service will be the specified {@code implementation}. If the
      * {@code implementation.getClass()} is annotated with a {@link Qualifier qualifier annotation}, the default key will

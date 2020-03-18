@@ -15,6 +15,9 @@
  */
 package app.packed.container;
 
+import java.util.List;
+import java.util.Optional;
+
 import app.packed.artifact.BuildTarget;
 import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
@@ -26,6 +29,8 @@ import app.packed.inject.Factory;
  * extension. Since the extension itself defines most methods in this interface via protected final methods. This
  * interface is typically used to be able to provide these methods to code that is not located on the extension
  * implementation or in the same package as the extension itself.
+ * <p>
+ * Instances of this class should never be exposed to end-users.
  */
 public interface ExtensionContext {
 
@@ -45,6 +50,12 @@ public interface ExtensionContext {
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
     void checkConfigurable();
+
+    default void checkPreemble() {
+        // Ideen er at man kan checke at der ikke er blevet installeret boern...
+        // Men saa kan
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Returns the config site of the container the extension is registered with.
@@ -95,4 +106,21 @@ public interface ExtensionContext {
      */
     <E extends Extension> E use(Class<E> extensionType);
 
+    /**
+     * If the container in which this extension is register has a parent container within the same artifact, and the parent
+     * has this extension installed. Returns the extension otherwise empty.
+     * 
+     * @return the parent extension
+     */
+    Optional<Extension> parent();
+
+    /**
+     * @return child extensions
+     * 
+     * @throws IllegalStateException
+     *             if called before the runtime can guarantee that all children has been linked
+     */
+    default List<Extension> children() {
+        throw new UnsupportedOperationException();
+    }
 }

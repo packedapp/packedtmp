@@ -15,9 +15,9 @@
  */
 package app.packed.service;
 
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import app.packed.artifact.ArtifactComposer;
 import app.packed.base.Key;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
@@ -63,7 +63,7 @@ public class ServicePackletCandidates {
         throw new UnsupportedOperationException();
     }
 
-    public static Wirelet provideAllTo(ArtifactComposer<? super InjectorAssembler> configurator, Wirelet... wirelets) {
+    public static Wirelet provideAllTo(Consumer<? super InjectorAssembler> configurator, Wirelet... wirelets) {
 
         // Den her kan man styre prototyper o.s.v. hvis man har behov for det....
 

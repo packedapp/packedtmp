@@ -22,8 +22,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.StreamSupport;
 
+import app.packed.analysis.BundleDescriptor;
 import app.packed.container.Bundle;
-import app.packed.container.BundleDescriptor;
 
 /**
  * A set of contracts guaranteed to contain no more then a single contract of a particular type.

@@ -19,8 +19,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.analysis.BundleDescriptor;
 import app.packed.container.Bundle;
-import app.packed.container.BundleDescriptor;
 import testutil.util.AbstractArtifactTest;
 
 /** Various Bundle tests. */

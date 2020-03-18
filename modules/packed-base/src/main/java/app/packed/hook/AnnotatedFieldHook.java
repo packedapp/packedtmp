@@ -27,7 +27,7 @@ import java.lang.reflect.Modifier;
 
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Nullable;
-import app.packed.base.invoke.UncheckedIllegalAccessException;
+import app.packed.base.invoke.InaccessibleMemberException;
 import app.packed.base.reflect.FieldDescriptor;
 import packed.internal.hook.MemberUnreflector;
 import packed.internal.moduleaccess.AppPackedHookAccess;
@@ -293,7 +293,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      * The returned method handle is never bound to a receiver, even if the underlying field is an instance field.
      * 
      * @return a new method handle for the underlying field with read access
-     * @throws UncheckedIllegalAccessException
+     * @throws InaccessibleMemberException
      *             if access checking fails
      * @throws IllegalStateException
      *             if trying to invoke this method after the hook has been constructed
@@ -309,7 +309,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      * The returned method handle is never bound to a receiver, even if the underlying field is an instance field.
      * 
      * @return a new method handle for the underlying field with write access
-     * @throws UncheckedIllegalAccessException
+     * @throws InaccessibleMemberException
      *             if access checking fails
      * @throws UnsupportedOperationException
      *             if the field is final
@@ -328,7 +328,7 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
      * Returns a new {@link VarHandle} for the underlying field.
      * 
      * @return a new VarHandle for the underlying field
-     * @throws UncheckedIllegalAccessException
+     * @throws InaccessibleMemberException
      *             if access checking fails
      * @throws IllegalStateException
      *             if trying to invoke this method after the hook has been constructed

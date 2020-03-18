@@ -221,7 +221,7 @@ public final class PackedFieldDescriptor implements FieldDescriptor {
      * @return the internal descriptor
      */
     public static PackedFieldDescriptor from(FieldDescriptor descriptor) {
-        if (descriptor instanceof FieldDescriptor) {
+        if (!(descriptor instanceof PackedFieldDescriptor)) {
             throw new ClassCastException("Custom implementations of " + FieldDescriptor.class.getSimpleName() + " are not supported");
         }
         return (PackedFieldDescriptor) descriptor;

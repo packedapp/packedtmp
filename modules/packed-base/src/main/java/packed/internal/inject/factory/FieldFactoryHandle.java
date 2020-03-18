@@ -25,7 +25,7 @@ import java.lang.reflect.Modifier;
 
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
-import app.packed.base.invoke.UncheckedIllegalAccessException;
+import app.packed.base.invoke.InaccessibleMemberException;
 import app.packed.base.reflect.FieldDescriptor;
 
 /** An invoker that can read and write fields. */
@@ -113,7 +113,7 @@ public final class FieldFactoryHandle<T> extends FactoryHandle<T> {
             }
             handle = field.unreflectVarHandle(lookup);
         } catch (IllegalAccessException e) {
-            throw new UncheckedIllegalAccessException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
+            throw new InaccessibleMemberException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
         }
         return new FieldFactoryHandle<>(returnType(), field, handle);
     }

@@ -28,7 +28,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import app.packed.base.NativeImage;
-import app.packed.base.invoke.UncheckedIllegalAccessException;
+import app.packed.base.invoke.InaccessibleMemberException;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.UncheckedThrowableFactory;
 import packed.internal.util.function.ThrowableConsumer;
@@ -134,7 +134,7 @@ public final class OpenClass {
         try {
             return privateLookup = MethodHandles.privateLookupIn(clazz, lookup);
         } catch (IllegalAccessException e) {
-            throw new UncheckedIllegalAccessException("Could not create private lookup", e);
+            throw new InaccessibleMemberException("Could not create private lookup", e);
         }
     }
 
@@ -161,7 +161,7 @@ public final class OpenClass {
         try {
             mh = lookup.unreflect(method);
         } catch (IllegalAccessException e) {
-            throw new UncheckedIllegalAccessException("stuff", e);
+            throw new InaccessibleMemberException("stuff", e);
         }
 
         if (registerForNative) {
@@ -177,7 +177,7 @@ public final class OpenClass {
         try {
             mh = lookup.unreflectConstructor(constructor);
         } catch (IllegalAccessException e) {
-            throw new UncheckedIllegalAccessException("Could not create a MethodHandle", e);
+            throw new InaccessibleMemberException("Could not create a MethodHandle", e);
         }
 
         if (registerForNative) {
@@ -193,7 +193,7 @@ public final class OpenClass {
         try {
             mh = lookup.unreflectGetter(field);
         } catch (IllegalAccessException e) {
-            throw new UncheckedIllegalAccessException("Could not create a MethodHandle", e);
+            throw new InaccessibleMemberException("Could not create a MethodHandle", e);
         }
 
         if (registerForNative) {
@@ -209,7 +209,7 @@ public final class OpenClass {
         try {
             mh = lookup.unreflectSetter(field);
         } catch (IllegalAccessException e) {
-            throw new UncheckedIllegalAccessException("Could not create a MethodHandle", e);
+            throw new InaccessibleMemberException("Could not create a MethodHandle", e);
         }
 
         if (registerForNative) {
@@ -225,7 +225,7 @@ public final class OpenClass {
         try {
             vh = lookup.unreflectVarHandle(field);
         } catch (IllegalAccessException e) {
-            throw new UncheckedIllegalAccessException("Could not create a VarHandle", e);
+            throw new InaccessibleMemberException("Could not create a VarHandle", e);
         }
 
         if (registerForNative) {

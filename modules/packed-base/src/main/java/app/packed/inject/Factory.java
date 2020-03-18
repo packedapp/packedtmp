@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
-import app.packed.base.invoke.UncheckedIllegalAccessException;
+import app.packed.base.invoke.InaccessibleMemberException;
 import app.packed.base.reflect.VariableDescriptor;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.util.BaseSupport;
@@ -189,7 +189,7 @@ public interface Factory<T> {
      * @param lookup
      *            the lookup object
      * @return a new factory with uses the specified lookup object when accessing the underlying member
-     * @throws UncheckedIllegalAccessException
+     * @throws InaccessibleMemberException
      *             if the specified lookup object does not give access to the underlying member
      * @throws UnsupportedOperationException
      *             if this factory was not created from either a field, constructor or method.

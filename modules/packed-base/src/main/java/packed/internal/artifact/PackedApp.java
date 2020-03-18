@@ -21,17 +21,17 @@ import app.packed.lifecycle.StopOption;
 public final class PackedApp implements App {
 
     /** An artifact driver for creating {@link App} instances. */
-    public static final ArtifactDriver<App> DRIVER = new ArtifactDriver<>(true) {
+    public static final ArtifactDriver<App> DRIVER = new ArtifactDriver<>() {
 
         /** {@inheritDoc} */
         @Override
-        public App newArtifact(ArtifactContext container) {
-            return new PackedApp(container);
+        public App newArtifact(ArtifactContext context) {
+            return new PackedApp(context);
         }
     };
 
     /** The artifact context we are wrapping. */
-    final ArtifactContext context;
+    private final ArtifactContext context;
 
     /**
      * Creates a new app.
@@ -39,7 +39,7 @@ public final class PackedApp implements App {
      * @param context
      *            the artifact runtime context we are wrapping
      */
-    PackedApp(ArtifactContext context) {
+    private PackedApp(ArtifactContext context) {
         this.context = requireNonNull(context);
     }
 

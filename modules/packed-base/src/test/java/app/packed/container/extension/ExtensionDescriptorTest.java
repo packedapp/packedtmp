@@ -24,8 +24,9 @@ import app.packed.base.Contract;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
 import app.packed.container.ExtensionDescriptor;
+import packed.internal.container.PackedExtensionDescriptor;
 
-/** Tests {@link ExtensionDescriptor}. */
+/** Tests {@link PackedExtensionDescriptor}. */
 public class ExtensionDescriptorTest {
 
     @Test

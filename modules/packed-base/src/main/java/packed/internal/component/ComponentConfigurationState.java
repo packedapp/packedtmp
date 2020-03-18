@@ -13,23 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package packed.internal.component;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.CLASS;
+import packed.internal.component.AbstractComponentConfiguration.State;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-@Retention(CLASS)
-@Target(TYPE)
 /**
  *
  */
+public final class ComponentConfigurationState {
 
-// Ideen er at se om vi kan droppe composeren...
-// Og saa styre det udelukkende via annoteringer...
-// Hmm maaske svaert med de templates...
-@interface OnExtension {
-    // LifecycleCycle...
+    /** The state of this configuration. */
+    public State oldState = AbstractComponentConfiguration.State.INITIAL;
 }

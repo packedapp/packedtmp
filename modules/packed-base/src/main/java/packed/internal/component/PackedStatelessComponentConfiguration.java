@@ -17,7 +17,6 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.artifact.Assembly;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 import packed.internal.artifact.PackedArtifactInstantiationContext;
@@ -43,7 +42,7 @@ public final class PackedStatelessComponentConfiguration extends AbstractCompone
         return new PackedStatelessComponent(parent, this, paic);
     }
 
-    public PackedStatelessComponentConfiguration runHooks(Assembly source) {
+    public PackedStatelessComponentConfiguration runHooks(Object source) {
         componentModel.invokeOnHookOnInstall(source, this);
         return this;
     }

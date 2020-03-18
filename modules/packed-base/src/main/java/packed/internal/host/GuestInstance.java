@@ -47,6 +47,8 @@ import app.packed.container.Bundle;
 // Instance Twin???
 public interface GuestInstance<A> {
 
+    A artifact();
+
     long id();
 
     Guest<A> guest();

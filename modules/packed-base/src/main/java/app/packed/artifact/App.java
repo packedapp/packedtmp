@@ -197,9 +197,11 @@ public interface App extends AutoCloseable {
      *             if the application did not execute properly
      */
     // Maybe this is not on App....
-
     // AppRunner??? Only static methods....
     // Hvad hvis vi vil bruge nogle services...
+
+    // static void execute(Assembly source, Config configuration, Wirelet... wirelets){}
+
     static void execute(Assembly source, Wirelet... wirelets) {
         PackedApp app = (PackedApp) driver().createAndInitialize(source, wirelets);
         app.execute();

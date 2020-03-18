@@ -23,7 +23,6 @@ import java.util.Set;
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.UseExtension;
-import app.packed.container.LazyExtensionUsage;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
 import packed.internal.util.Tiny;

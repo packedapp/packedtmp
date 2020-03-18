@@ -363,10 +363,6 @@ public final class ServiceExtension extends Extension {
             exposeContract(ServiceContract.class, ServiceWireletPipeline.class, (e, c) -> e.node.newServiceContract(c));
             exposeDescriptor((e, b) -> e.node.buildDescriptor(b));
 
-            onAddPostProcessor(p -> {
-                // p.root().use(ServiceExtension.class).provideInstance("fooo");
-            });
-
             // Dies
 
             // Needing wirelet

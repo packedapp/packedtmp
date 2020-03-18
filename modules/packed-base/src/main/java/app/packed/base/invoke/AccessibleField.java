@@ -16,6 +16,7 @@
 package app.packed.base.invoke;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
@@ -72,6 +73,14 @@ public interface AccessibleField {
      * @see Lookup#unreflectVarHandle(java.lang.reflect.Field)
      */
     VarHandle newVarHandle();
+
+    static boolean isAccessibleForGetter(MethodHandles.Lookup lookup, Field field) {
+        throw new UnsupportedOperationException();
+    }
+
+    static boolean isAccessibleForGetter(MethodHandles.Lookup lookup, FieldDescriptor field) {
+        throw new UnsupportedOperationException();
+    }
 }
 // I think we only construct it if it is open...
 //* @throws UncheckedIllegalAccessException

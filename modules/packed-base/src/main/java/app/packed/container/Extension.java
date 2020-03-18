@@ -44,8 +44,8 @@ import packed.internal.moduleaccess.ModuleAccess;
  * <p>
  * Every extension implementations must provide either an empty constructor, or a constructor taking a single parameter
  * of type {@link ExtensionContext}. The constructor should have package private accessibility to make sure users do not
- * try an manually instantiate it, but instead use {@link ContainerComposer#use(Class)}. It is also recommended
- * that the extension itself is declared final.
+ * try an manually instantiate it, but instead use {@link ContainerComposer#use(Class)}. It is also recommended that the
+ * extension itself is declared final.
  */
 
 // Step1
@@ -203,10 +203,8 @@ public abstract class Extension {
     /**
      * Returns an extension of the specified type.
      * <p>
-     * Only extension types that have been explicitly registered via {@link ExtensionComposer#addDependencies(Class...)} can
-     * be specified.
-     * <p>
-     * In order for one extension to use another dependency
+     * Any extension type passed to this method must have explicitly been registered using an {@link ExtensionMeta} on the
+     * extension implementation.
      * <p>
      * Invoking this method is similar to calling {@link ContainerComposer#use(Class)}. However, this method also keeps
      * track of which extensions uses other extensions. And forming any kind of circle in the dependency graph will fail
@@ -223,8 +221,7 @@ public abstract class Extension {
      *             If invoked from the constructor of the extension. Or if the underlying container is no longer
      *             configurable and an extension of the specified type has not already been installed
      * @throws UnsupportedOperationException
-     *             if the specified extension type has not been specified via
-     *             {@link ExtensionComposer#addDependencies(Class...)} when configuring the extension
+     *             if the specified extension type has not been specified via {@link ExtensionMeta}
      */
     protected final <E extends Extension> E use(Class<E> extensionType) {
         return context().use(extensionType);

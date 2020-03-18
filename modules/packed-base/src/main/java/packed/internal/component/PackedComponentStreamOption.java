@@ -107,7 +107,9 @@ public final class PackedComponentStreamOption implements ComponentStream.Option
     public boolean processThisDeeper(AbstractComponent origin, AbstractComponent actual) {
         Class<? extends Extension> extensionType = actual.extension().orElse(null);
         // if (s==0) return;
-        if (extensionType != null && ((s & INCLUDE_EXTENSIONS) != 0 || (includeExtensions == null && !includeExtensions.contains(extensionType)))) {
+        // TODO just changed includeExtensions == null || !includeExtensions.contains(extensionType))) to &&, dobbel check
+        // Also in next method
+        if (extensionType != null && ((s & INCLUDE_EXTENSIONS) != 0 || (includeExtensions == null || !includeExtensions.contains(extensionType)))) {
             return false;
         }
         if ((s & IN_SAME_CONTAINER) != 0 && !origin.isInSameContainer(actual)) {
@@ -119,7 +121,7 @@ public final class PackedComponentStreamOption implements ComponentStream.Option
     public boolean processThisDeeper(AbstractComponentConfiguration origin, AbstractComponentConfiguration actual) {
         Class<? extends Extension> extensionType = actual.extension().orElse(null);
         // if (s==0) return;
-        if (extensionType != null && ((s & INCLUDE_EXTENSIONS) != 0 || (includeExtensions == null && !includeExtensions.contains(extensionType)))) {
+        if (extensionType != null && ((s & INCLUDE_EXTENSIONS) != 0 || (includeExtensions == null || !includeExtensions.contains(extensionType)))) {
             return false;
         }
         if ((s & IN_SAME_CONTAINER) != 0 && !origin.isInSameContainer(actual)) {

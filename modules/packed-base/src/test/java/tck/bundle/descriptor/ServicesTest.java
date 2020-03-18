@@ -21,8 +21,8 @@ import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.analysis.BundleDescriptor;
 import app.packed.container.BaseBundle;
-import app.packed.container.BundleDescriptor;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
 import testutil.stubs.Letters.C;

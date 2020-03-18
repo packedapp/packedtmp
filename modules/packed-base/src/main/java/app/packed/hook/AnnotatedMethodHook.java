@@ -25,7 +25,7 @@ import java.lang.reflect.Modifier;
 
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Nullable;
-import app.packed.base.invoke.UncheckedIllegalAccessException;
+import app.packed.base.invoke.InaccessibleMemberException;
 import app.packed.base.reflect.MethodDescriptor;
 import packed.internal.hook.MemberUnreflector;
 import packed.internal.hook.applicator.MethodOperator;
@@ -162,7 +162,7 @@ public final class AnnotatedMethodHook<A extends Annotation> implements Hook {
      * The returned method handle is never bound to a receiver, even if the underlying method is an instance method.
      * 
      * @return a MethodHandle to the underlying method
-     * @throws UncheckedIllegalAccessException
+     * @throws InaccessibleMemberException
      *             if access checking fails
      * @see Lookup#unreflect(java.lang.reflect.Method)
      */

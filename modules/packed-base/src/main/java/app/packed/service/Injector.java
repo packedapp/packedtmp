@@ -18,10 +18,10 @@ package app.packed.service;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.artifact.App;
-import app.packed.artifact.ArtifactComposer;
 import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.Assembly;
@@ -311,7 +311,7 @@ public interface Injector {
     // or maybe Injector.configure() instead
     // interface ArtifactConfigurator() {}
     // configure()
-    static Injector configure(ArtifactComposer<? super InjectorAssembler> configurator, Wirelet... wirelets) {
+    static Injector configure(Consumer<? super InjectorAssembler> configurator, Wirelet... wirelets) {
         return InjectorArtifactDriver.INSTANCE.newArtifact(c -> new InjectorAssembler(c), configurator, wirelets);
     }
 
@@ -345,9 +345,7 @@ final class InjectorArtifactDriver extends ArtifactDriver<Injector> {
     static final InjectorArtifactDriver INSTANCE = new InjectorArtifactDriver();
 
     /** Singleton */
-    private InjectorArtifactDriver() {
-        super(false);
-    }
+    private InjectorArtifactDriver() {}
 
     /** {@inheritDoc} */
     @Override

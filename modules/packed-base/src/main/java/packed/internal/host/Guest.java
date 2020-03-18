@@ -33,6 +33,13 @@ import app.packed.component.ComponentPath;
 /// latest() vil altid returnere non-null
 
 // Replace with twin....
+
+// Bliver en guest erstattet ved restart????
+// Nah det vil jeg ikke mene...
+// Kun selve artifacten??
+// En GuestInstans bliver erstattet....
+// Men selve Guest'en vil bare pege på en ny....
+
 public interface Guest<A> {
 
     /**
@@ -56,6 +63,7 @@ public interface Guest<A> {
     class GuestState {
 
         // Altsaa en GuestState er vel ikke anderledes end en almindelige containers state????
+        // Jo for den har f.eks. en Uninitialized state...
 
         // Suspended
         // Resuming | Starting

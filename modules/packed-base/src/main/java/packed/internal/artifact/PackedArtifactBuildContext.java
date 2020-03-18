@@ -17,7 +17,6 @@ package packed.internal.artifact;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.artifact.Assembly;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerComposer;
 import packed.internal.container.PackedExtensionContext;
@@ -89,7 +88,7 @@ public final class PackedArtifactBuildContext implements ArtifactBuildContext {
 
     /** {@inheritDoc} */
     @Override
-    public Class<? extends Assembly> sourceType() {
+    public Class<?> sourceType() {
         return topContainerConfiguration.sourceType();
     }
 }

@@ -15,8 +15,8 @@
  */
 package app.packed.service;
 
-import static app.packed.base.invoke.OpenMode.GET_FIELD;
-import static app.packed.base.invoke.OpenMode.INVOKE;
+import static app.packed.base.invoke.OpenMode.FIELD_SET;
+import static app.packed.base.invoke.OpenMode.METHOD_INVOKE;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -24,7 +24,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.base.invoke.OpensFor;
+import app.packed.base.invoke.Opens;
 import app.packed.container.UseExtension;
 
 /**
@@ -89,7 +89,7 @@ import app.packed.container.UseExtension;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @UseExtension(ServiceExtension.class)
-@OpensFor({ INVOKE, GET_FIELD })
+@Opens(to = { METHOD_INVOKE, FIELD_SET })
 public @interface Provide {
 
     /**

@@ -15,6 +15,7 @@
  */
 package app.packed.artifact;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.container.ContainerComposer;
@@ -51,11 +52,13 @@ public abstract class ArtifactDriver<T> {
     /** The type of artifact this driver produces. */
     private final Class<T> artifactType;
 
+    private final boolean isExecutable;
+
     /** Creates a new driver. */
     @SuppressWarnings("unchecked")
-    protected ArtifactDriver(boolean isExecutable) {
+    protected ArtifactDriver() {
         this.artifactType = (Class<T>) ARTIFACT_DRIVER_TV_EXTRACTOR.extract(getClass());
-
+        this.isExecutable = AutoCloseable.class.isAssignableFrom(artifactType);
         // Set tmp
         configure();
         // convert tmp to perm
@@ -100,21 +103,6 @@ public abstract class ArtifactDriver<T> {
         // Needs Lifecycle
     }
 
-    protected final void disableExtensions(Class<?>... extensions) {
-        // Alternativ skal vi bruge funktionalitet for at lave arkitektur...
-        // Det her med at man som et firma kan specificere ting som
-    }
-
-    /**
-     * Create a new artifact. This method is normally implemented by the user, and invoked by the runtime in order to create
-     * a new artifact.
-     * 
-     * @param context
-     *            the artifact context to wrap
-     * @return the new artifact
-     */
-    protected abstract T newArtifact(ArtifactContext context);
-
     /**
      * Creates a new artifact using the specified source.
      * <p>
@@ -138,6 +126,18 @@ public abstract class ArtifactDriver<T> {
         return newArtifact(pac);
     }
 
+    public final T create(Assembly source, Wirelet[] userWirelets, Wirelet... artifactWirelets) {
+        // Ideen er lidt at Artifact Implementering, kan kalde med dens egen wirelets...
+        // ala
+
+        // start(Assembly, Wirelet... wirelets) {
+        // create(Assembly, wirelets, ArtifactWirelets.startSynchronous());
+        // create(Assembly, wirelets, ArtifactWirelets.startAsynchronous());
+        // }
+        // What about execute....
+        throw new UnsupportedOperationException();
+    }
+
     public final T createAndStart(Assembly source, Wirelet... wirelets) {
         // Should throw if not Runnable...
         if (source instanceof PackedArtifactImage) {
@@ -150,10 +150,36 @@ public abstract class ArtifactDriver<T> {
         return newArtifact(pac);
     }
 
-    public final <C> T newArtifact(Function<ContainerComposer, C> factory, ArtifactComposer<C> composer, Wirelet... wirelets) {
-        PackedContainerConfiguration pcc = new PackedContainerConfiguration(BuildOutput.artifact(this), composer, wirelets);
+    final <E extends T> ArtifactDriver<T> decorate(Class<E> decoratingType, Function<T, E> decorator) {
+        // Ideen er egentlig at f.eks. kunne wrappe App, og tilfoeje en metode...
+        // Men altsaa, maaske er det bare at kalde metoderne direkte i context...
+        // PackedApp kalder jo bare direkte igennem
+        throw new UnsupportedOperationException();
+    }
+
+    protected final void disableExtensions(Class<?>... extensions) {
+        // Alternativ skal vi bruge funktionalitet for at lave arkitektur...
+        // Det her med at man som et firma kan specificere ting som
+    }
+
+    public boolean isExecutable() {
+        return isExecutable;
+    }
+
+    /**
+     * Create a new artifact. This method is normally implemented by the user, and invoked by the runtime in order to create
+     * a new artifact.
+     * 
+     * @param context
+     *            the artifact context to wrap
+     * @return the new artifact
+     */
+    protected abstract T newArtifact(ArtifactContext context);
+
+    public final <C> T newArtifact(Function<ContainerComposer, C> factory, Consumer<C> consumer, Wirelet... wirelets) {
+        PackedContainerConfiguration pcc = new PackedContainerConfiguration(BuildOutput.artifact(this), consumer, wirelets);
         C c = factory.apply(pcc);
-        composer.compose(c);
+        consumer.accept(c);
         pcc.doBuild();
         ArtifactContext pac = pcc.instantiateArtifact(pcc.wireletContext).newArtifactContext();
         return newArtifact(pac);

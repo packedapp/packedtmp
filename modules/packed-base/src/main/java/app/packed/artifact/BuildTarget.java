@@ -1,8 +1,8 @@
 package app.packed.artifact;
 
+import app.packed.analysis.BundleDescriptor;
 import app.packed.base.Contract;
 import app.packed.container.Bundle;
-import app.packed.container.BundleDescriptor;
 import packed.internal.moduleaccess.AppPackedArtifactAccess;
 import packed.internal.moduleaccess.ModuleAccess;
 
@@ -14,6 +14,7 @@ import packed.internal.moduleaccess.ModuleAccess;
 // Skal vi inteagere paa andre maader. // F.eks. onImage(), onArtifact(), onReport();
 
 //was BuildGoal
+// BuildOutput...
 public enum BuildTarget {
 
     /** Create a report of some kind, for example a {@link Contract} or a {@link BundleDescriptor}. */
@@ -28,6 +29,9 @@ public enum BuildTarget {
 
     /** Create a new artifact such as an instance of {@link App}. */
     ARTIFACT,
+
+    // Artifact_Initializing Artifact_Executing...
+    // Managed Artifact, Unmanaged Artifact....
 
     /** Create a new {@link ArtifactImage} from a {@link Bundle} (or an existing image). */
     IMAGE;

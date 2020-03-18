@@ -29,18 +29,24 @@ import java.lang.annotation.Target;
  * 
  * The annotation can currently be used in the following places:
  * 
- * On a {@link Bundle}.
- * 
  * On an {@link Extension}
  * 
  * On Annotation, Instances
  * 
  * ComponentType??? Ja det er jo saadan hvad InstanceOf
+ * 
+ * <p>
+ * This annotation cannot be used on subclasses of {@link Bundle} as we want to avoid situations where some extensions
+ * are added via class annotations and others via {@link Bundle#compose()}. Giving the false impression to users that
+ * only annotations added via this annotation is used
  */
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
+
+//Tror den ryger ud...
+//Paa componenter kan man altid bruge {packlet=componentType.class, extension = ExtensionToUse.class}
 public @interface UseExtension {
 
     /**
@@ -63,3 +69,6 @@ public @interface UseExtension {
     Class<? extends Extension>[] value();
 }
 // RequireExtension, UseExtension, ActivateExtension
+
+//Mit problem med at bruge UseExtension paa en bundle er saa bliver det blandet rundt...
+//Noget i #compose() or noget andet paa selve

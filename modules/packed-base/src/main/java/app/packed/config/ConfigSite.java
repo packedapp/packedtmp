@@ -68,6 +68,9 @@ public interface ConfigSite {
     ConfigSite UNKNOWN = ConfigSiteSupport.UnknownConfigSite.INSTANCE;
 
     Wirelet DISABLE_CAPTURE = null;
+
+    // Maybe we have ConfigWirelets...
+    // Override environment..
     Wirelet ENABLE_CAPTURE = null;
     // Wirelet.configSite() <- specifies the config site....
 

@@ -47,7 +47,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
             SingletonConfiguration<?> ci = c.installInstance(1);
             ci.getName();
             ci.setName("foo");
-        }, "Cannot call #setName(String) after name has been initialized via call to #getName()");
+        }, "Cannot call #setName(String) after the name has been initialized via calls to #getName()");
     }
 
     @Test
@@ -56,7 +56,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
             SingletonConfiguration<?> ci = c.installInstance(1);
             c.installInstance(1L);
             ci.setName("foo");
-        }, "Cannot call this method after having installed components");
+        }, "Cannot call this method after having installed components or used extensions");
 
         // TODO we should actually have, more or less all the different kind of installs we have in
         // ComponentExtension
@@ -77,7 +77,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
             SingletonConfiguration<?> ci = c.installInstance(1);
             ci.path();
             ci.setName("foo");
-        }, "Cannot call #setName(String) after name has been initialized via call to #path()");
+        }, "Cannot call #setName(String) after name has been initialized via calls to #path()");
     }
 
     @Test
@@ -95,7 +95,8 @@ public class NameFreezeTest extends AbstractArtifactTest {
      */
     @Test
     public void container_setName_cannotBeCalledAfter_getName() {
-        checkThrowsISE(c -> c.getNameIs("Container").setName("Bar"), "Cannot call #setName(String) after name has been initialized via call to #getName()");
+        checkThrowsISE(c -> c.getNameIs("Container").setName("Bar"),
+                "Cannot call #setName(String) after the name has been initialized via calls to #getName()");
     }
 
     /**
@@ -135,7 +136,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
      */
     @Test
     public void container_setName_cannotBeCalledAfter_path() {
-        checkThrowsISE(c -> c.pathIs("/").setName("Bar"), "Cannot call #setName(String) after name has been initialized via call to #path()");
+        checkThrowsISE(c -> c.pathIs("/").setName("Bar"), "Cannot call #setName(String) after name has been initialized via calls to #path()");
     }
 
     /** Test that we can only call {@link ContainerComposer#setName(String)} once. */

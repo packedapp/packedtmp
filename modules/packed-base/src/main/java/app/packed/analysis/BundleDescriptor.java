@@ -14,7 +14,7 @@ c
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.analysis;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
@@ -34,6 +34,8 @@ import app.packed.base.Contract;
 import app.packed.base.ContractSet;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.container.Bundle;
+import app.packed.container.Extension;
 import app.packed.service.ServiceDescriptor;
 import packed.internal.artifact.BuildOutput;
 import packed.internal.container.PackedContainerConfiguration;
@@ -228,7 +230,8 @@ public class BundleDescriptor {
      * @see ModuleDescriptor#version()
      */
     public final Optional<Version> version() {
-        // To keep things simple we do not currently allow people override the version.
+        // To keep things simple we do not currently allow people to override the version.
+        // Should we look in Jar, if on the classpath???
         ModuleDescriptor descriptor = module().getDescriptor();
         return descriptor == null ? Optional.empty() : descriptor.version();
     }

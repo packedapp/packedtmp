@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import app.packed.analysis.BundleDescriptor;
 import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactImage;
@@ -28,7 +29,6 @@ import app.packed.base.Nullable;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
-import app.packed.container.BundleDescriptor;
 import app.packed.container.Wirelet;
 import packed.internal.component.ComponentConfigurationToComponentAdaptor;
 import packed.internal.container.PackedContainerConfiguration;

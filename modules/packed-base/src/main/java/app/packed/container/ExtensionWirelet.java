@@ -21,6 +21,8 @@ import java.util.Optional;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
+import app.packed.artifact.App;
+
 /**
  * Extensions that define their own wirelets must extend this class.
  * 
@@ -33,8 +35,19 @@ import java.util.function.Consumer;
  */
 public abstract class ExtensionWirelet<T extends ExtensionWirelet.Pipeline<?, T, ?>> extends Wirelet {
 
+    /**
+     * Invoked by the runtime whenever the user specified an extension wirelet for which a matching extension has not been
+     * registered with the underlying container. For example, via {@link Bundle#link(Bundle, Wirelet...)} or
+     * {@link App#execute(app.packed.artifact.Assembly, Wirelet...)}.
+     * <p>
+     * The default implementation throws an {@link IllegalArgumentException}.
+     * 
+     * @param extensionType
+     *            the extension type that is missing
+     */
     protected void extensionNotAvailable(Class<? extends Extension> extensionType) {
-        // throw exception();
+        throw new IllegalArgumentException(
+                toString() + " can only be specified when the extension " + extensionType.getSimpleName() + " is used by the target container");
     }
 
     /**

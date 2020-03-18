@@ -20,7 +20,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.util.Set;
 
-import app.packed.artifact.Assembly;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentType;
@@ -35,6 +34,7 @@ import packed.internal.host.HostConfiguration;
  * extending {@link Bundle} or {@link BaseBundle}.
  */
 // Why not Configuration?????
+// BundleContext....
 public interface ContainerComposer extends ComponentConfiguration {
 
     /**
@@ -157,7 +157,7 @@ public interface ContainerComposer extends ComponentConfiguration {
      * 
      * @return the class that defines the container
      */
-    Class<? extends Assembly> sourceType();
+    Class<?> sourceType();
 
     /** {@inheritDoc} */
     @Override

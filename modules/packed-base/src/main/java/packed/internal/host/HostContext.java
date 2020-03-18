@@ -15,34 +15,56 @@
  */
 package packed.internal.host;
 
+import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import app.packed.artifact.ArtifactDriver;
+import app.packed.artifact.Assembly;
 import app.packed.base.ContractSet;
+import app.packed.container.Wirelet;
 
 /**
- *
+ * <p>
+ * This interface does not allow to
  */
-// Runtime HostContext....
-// Arbejder kun med guests her... Aldrig andet...
-// Maaske har en guest ikke en artifact type??? Jooo, den taenker jeg ligger fast
-// Men ikke noedvendigvis dens bundle type....
-public interface HostContext {
+public interface HostContext<T> {
+
+    /**
+     * Performs an action for each guest that are deployed on the host.
+     * 
+     * @param action
+     *            the action to perform
+     */
+    void forEach(Consumer<? extends Guest<T>> action); // Throwable Action???
+
+    Optional<Guest<T>> get(String name);
+
+    /**
+     * Returns a stream of all the guests that are currently deployed on the host.
+     * 
+     * @return a stream of all the guests that are currently deployed on the host
+     */
+    Stream<Guest<T>> guests();
+
+    /**
+     * Returns the number of guests that are currently deployed on the host.
+     * 
+     * @return the number of guests that are currently deployed on the host
+     */
+    long size();
 
     /**
      * All contracts
      * 
      * @return all contracts
      */
-    //// Contract of the host... is static
     ContractSet contracts();
 
-    /**
-     * Returns a stream of all the guests deployed on this host.
-     * 
-     * @return a stream of all the guests deployed on this host
-     */
-    Stream<Guest<?>> guests();
-
-    // If you now for certain that only guest of a particular type has been added
-    // Just cast guests();
+    Guest<T> add(ArtifactDriver<? extends T> driver, Assembly assembly, Wirelet[] userWirelets, Wirelet... hostWirelets);
 }
+//HostContext<T> <---?? Why not
+//Runtime HostContext....
+//Arbejder kun med guests her... Aldrig andet...
+//Maaske har en guest ikke en artifact type??? Jooo, den taenker jeg ligger fast
+//Men ikke noedvendigvis dens bundle type....

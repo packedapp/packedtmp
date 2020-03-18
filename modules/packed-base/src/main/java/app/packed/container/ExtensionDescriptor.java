@@ -21,6 +21,7 @@ import java.util.Set;
 
 import app.packed.base.Contract;
 import packed.internal.container.ExtensionModel;
+import packed.internal.container.PackedExtensionDescriptor;
 
 /**
  * An extension descriptor.
@@ -28,24 +29,14 @@ import packed.internal.container.ExtensionModel;
  * This class describes an extension and defines various methods to obtain information about the extension. An instance
  * of this class is normally acquired by calling {@link #of(Class)}.
  */
-public final class ExtensionDescriptor {
-
-    /** The extension model we wrap. */
-    private final ExtensionModel<?> model;
-
-    /** No public instantiation. */
-    private ExtensionDescriptor(ExtensionModel<?> model) {
-        this.model = requireNonNull(model);
-    }
+public interface ExtensionDescriptor {
 
     /**
      * Returns all the different types of contracts the extension exposes.
      * 
      * @return all the different types of contracts the extension exposes
      */
-    public Set<Class<? extends Contract>> contracts() {
-        return model.contracts.keySet();
-    }
+    Set<Class<? extends Contract>> contracts();
 
     /**
      * Returns an immutable set of any other extensions this extension depends on. The returned set does not include
@@ -55,9 +46,7 @@ public final class ExtensionDescriptor {
      * 
      * @return any other extensions this extension depends on
      */
-    public Set<Class<? extends Extension>> dependencies() {
-        return model.dependenciesDirect;
-    }
+    Set<Class<? extends Extension>> dependencies();
 
     /**
      * Returns the module that the extension belongs to.
@@ -65,21 +54,14 @@ public final class ExtensionDescriptor {
      * @return the module that the extension belongs to
      * @see Class#getModule()
      */
-    public Module module() {
-        return type().getModule();
-    }
+    Module module();
 
     /**
      * Returns the type of extension this descriptor describes.
      * 
      * @return the type of extension this descriptor describes
      */
-    public Class<? extends Extension> type() {
-        return model.extensionType;
-    }
-
-    // public Hook
-    // Map<Class<? extends Hook>, List<Object>>
+    Class<? extends Extension> type();
 
     /**
      * Returns a descriptor for the specified extension type.
@@ -88,22 +70,8 @@ public final class ExtensionDescriptor {
      *            the extension type to return a descriptor for
      * @return a descriptor for the specified extension type
      */
-    public static ExtensionDescriptor of(Class<? extends Extension> extensionType) {
+    static ExtensionDescriptor of(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
-        return new ExtensionDescriptor(ExtensionModel.of(extensionType)); // we could cache this
+        return new PackedExtensionDescriptor(ExtensionModel.of(extensionType)); // we could cache this
     }
 }
-// A method for transitive dependencies...
-
-// DirectedVertexGraph<T>
-// Or Just DependencyGraph<T>
-// DependencyGraph<Module>
-// DependencyGraph<ExtensionDescriptor>
-// DependencyGraph<ServiceDescriptor>...
-//// What about export... Change stuff
-
-//// Her vil vi maaske gerne have
-// Hook Annotations
-//// Field | Method | Activating (Although you can see that on the Annotation)
-//// Other Extension
-//// Sidecars

@@ -54,7 +54,7 @@ import packed.internal.moduleaccess.ModuleAccess;
 
 // Kunne godt have nogle lifecycle metoder man kunne overskrive.
 // F.eks. at man vil validere noget
-public abstract class Bundle implements Assembly, ContainerSource {
+public abstract class Bundle implements Assembly {
 
     static {
         ModuleAccess.initialize(AppPackedContainerAccess.class, new AppPackedContainerAccess() {

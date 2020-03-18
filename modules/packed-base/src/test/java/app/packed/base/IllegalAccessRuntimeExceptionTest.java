@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.base.invoke.UncheckedIllegalAccessException;
+import app.packed.base.invoke.InaccessibleMemberException;
 import app.packed.inject.FactoryDefinitionException;
 import testutil.stubs.Throwables.Exception1;
 
@@ -29,9 +29,9 @@ public class IllegalAccessRuntimeExceptionTest {
     /** Tests the various constructors. */
     @Test
     public void test() {
-        assertThat(new UncheckedIllegalAccessException("foo")).hasNoCause();
-        assertThat(new UncheckedIllegalAccessException("foo")).hasMessage("foo");
-        assertThat(new UncheckedIllegalAccessException("foobar", Exception1.INSTANCE)).hasCause(Exception1.INSTANCE);
-        assertThat(new UncheckedIllegalAccessException("foobar", Exception1.INSTANCE)).hasMessage("foobar");
+        assertThat(new InaccessibleMemberException("foo")).hasNoCause();
+        assertThat(new InaccessibleMemberException("foo")).hasMessage("foo");
+        assertThat(new InaccessibleMemberException("foobar", Exception1.INSTANCE)).hasCause(Exception1.INSTANCE);
+        assertThat(new InaccessibleMemberException("foobar", Exception1.INSTANCE)).hasMessage("foobar");
     }
 }

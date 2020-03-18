@@ -25,7 +25,7 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.util.function.Supplier;
 
-import app.packed.base.invoke.UncheckedIllegalAccessException;
+import app.packed.base.invoke.InaccessibleMemberException;
 import app.packed.container.Extension;
 import packed.internal.util.StringFormatter;
 
@@ -84,7 +84,7 @@ final class ExtensionModelWithCachedSupplier<T> {
             MethodHandle factory = site.getTarget();
             s = (Supplier<T>) factory.invoke();
         } catch (Throwable e) {
-            throw new UncheckedIllegalAccessException("In order to use the extension " + StringFormatter.format(type) + ", the module '"
+            throw new InaccessibleMemberException("In order to use the extension " + StringFormatter.format(type) + ", the module '"
                     + type.getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);
         }
 

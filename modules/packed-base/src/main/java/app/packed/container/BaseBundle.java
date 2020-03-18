@@ -15,6 +15,7 @@
  */
 package app.packed.container;
 
+import app.packed.analysis.BundleDescriptor;
 import app.packed.base.Key;
 import app.packed.base.Key.Qualifier;
 import app.packed.component.SingletonConfiguration;
@@ -202,6 +203,7 @@ public abstract class BaseBundle extends Bundle {
      * 
      * @return a service extension instance
      */
+    // rename to services?, lifecycles? Nah heller lifecycle()
     protected final ServiceExtension service() {
         return use(ServiceExtension.class);
     }

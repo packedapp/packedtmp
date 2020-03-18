@@ -91,7 +91,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
     public final AbstractComponentConfiguration parent;
 
     /** The state of this configuration. */
-    protected State state = State.INITIAL;
+    protected ComponentConfigurationState state = new ComponentConfigurationState();
 
     /**
      * Creates a new abstract component configuration
@@ -211,7 +211,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
     /** {@inheritDoc} */
     @Override
     public final void checkConfigurable() {
-        if (state == State.FINAL) {
+        if (state.oldState == State.FINAL) {
             throw new IllegalStateException("This component can no longer be configured");
         }
     }
@@ -331,7 +331,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
                 n = prefix + counter++;
             } while (parent.children.containsKey(n));
         }
-        this.state = state;
+        this.state.oldState = state;
         return this.name = n;
     }
 
@@ -358,21 +358,23 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
     /** {@inheritDoc} */
     @Override
     public AbstractComponentConfiguration setName(String name) {
+        // First lets check the name is valid
         ComponentNameWirelet.checkName(name);
-        switch (state) {
+
+        switch (state.oldState) {
         case INITIAL:
             initializeName(State.SET_NAME_INVOKED, name);
             return this;
         case FINAL:
             checkConfigurable();
         case GET_NAME_INVOKED:
-            throw new IllegalStateException("Cannot call #setName(String) after name has been initialized via call to #getName()");
+            throw new IllegalStateException("Cannot call #setName(String) after the name has been initialized via calls to #getName()");
         case EXTENSION_USED:
-            throw new IllegalStateException("Cannot call #setName(String) after any extensions has has been installed");
+            throw new IllegalStateException("Cannot call #setName(String) after any extensions has has been used");
         case PATH_INVOKED:
-            throw new IllegalStateException("Cannot call #setName(String) after name has been initialized via call to #path()");
+            throw new IllegalStateException("Cannot call #setName(String) after name has been initialized via calls to #path()");
         case INSTALL_INVOKED:
-            throw new IllegalStateException("Cannot call this method after having installed components");
+            throw new IllegalStateException("Cannot call this method after having installed components or used extensions");
         case LINK_INVOKED:
             throw new IllegalStateException("Cannot call this method after #link() has been invoked");
         case SET_NAME_INVOKED:
@@ -385,6 +387,9 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
     public enum State {
 
         /** The initial state. */
+        INITIAL,
+
+        /** The initial state. */
         EXTENSION_USED,
 
         /** */
@@ -392,9 +397,6 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
 
         /** {@link ComponentConfiguration#getName()} has been invoked. */
         GET_NAME_INVOKED,
-
-        /** The initial state. */
-        INITIAL,
 
         /** One of the install component methods has been invoked. */
         INSTALL_INVOKED,

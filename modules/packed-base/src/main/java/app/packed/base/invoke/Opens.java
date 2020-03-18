@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 /**
  * 
  * <p>
- * Opens usage sites of the annotated annotation for access by #{@link OpensFor#modules()}.
+ * Opens usage sites of the annotated annotation for access by #{@link Opens#toModules()}.
  * <p>
  * This annotation never applies transitively.
  * 
@@ -56,7 +56,11 @@ import java.lang.annotation.Target;
 // GrantAccess
 
 // AccessType -> OpenMode or Opensfor.Mode
-public @interface OpensFor {
+
+//AccessibleFor, AccessMode (Hmm not good with VarHandle.AccessMode)
+
+//AutoOpens
+public @interface Opens {
 
     /**
      * Returns the module(s) for which access is granted. The default value is {@literal "."} which represents the module of
@@ -64,14 +68,14 @@ public @interface OpensFor {
      * 
      * @return the module(s) that are given access
      */
-    String[] modules() default { "." };
+    String[] toModules() default { "." };
 
     /**
      * The type of access rights that are needed.
      * 
      * @return the type of access rights that are needed
      */
-    OpenMode[] value();
+    OpenMode[] to();
 }
 
 //Hmmm Opensfor for extension...Vi giver jo egentlig alle adgang til at lave en...

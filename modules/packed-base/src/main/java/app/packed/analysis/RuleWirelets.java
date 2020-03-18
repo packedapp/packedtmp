@@ -13,39 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.analysis;
+
+import java.util.function.Function;
+
+import app.packed.container.Wirelet;
 
 /**
  *
  */
-// foreach, will take each node in top->down manner
+class RuleWirelets {
 
-public interface ExtensionTree<E extends Extension> extends Iterable<E> {
+    // BundleValidate.assertThat(SomeBundle, error(DependencyGraphModel.class, DGM.size < 10);
+    // Her kan vi bruge validation.....
+    public static <T> Wirelet error(Class<T> modelType, Function<T, String> checker) {
+        throw new UnsupportedOperationException();
+    }
 
-    /**
-     * Returns the number of nodes in this tree.
-     * 
-     * @return the number of nodes in this tree
-     */
-    int size();
+    // Vi skal gerne have en error message
+    // Vi vil ogsaa gerne rendere et eller andet paa wireletten...
 
-    int degree();
+    // Maaske vi skal have noget toJSON()....
+    // Or To HierConf....
 
-    // Host...
 }
-
-// Tree Operations
-
-// get Root(s)
-// is Fully connected
-// size()
-
-// Node operations
-// boolean isRoot();
-// Tree connectedTree();
-// root
-// parent
-// children
-// sieblings
-// forEachChild
-// int index.... from [0 to size-1] In order of usage????

@@ -19,14 +19,12 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.util.List;
 
 import app.packed.artifact.Assembly;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Nullable;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerComposer;
-import app.packed.container.Extension;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import packed.internal.component.ComponentModel;
@@ -67,7 +65,7 @@ public final class ContainerSourceModel extends ComponentLookup {
     /** The default lookup object, when the user has specified no Lookup value */
     private ComponentLookup defaultLookup;
 
-    final List<Class<? extends Extension>> dependenciesTotalOrder;
+    // final List<Class<? extends Extension>> dependenciesTotalOrder;
 
     /** A cache of lookup values, in 99 % of all cases this will hold no more than 1 value. */
     private final LookupValue<PerLookup> lookups = new LookupValue<>() {
@@ -100,7 +98,7 @@ public final class ContainerSourceModel extends ComponentLookup {
         this.onHookModel = OnHookModel.newModel(new OpenClass(MethodHandles.lookup(), sourceType, true), false,
                 UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerComposer.class);
         this.activatorMap = LazyExtensionActivationMap.of(sourceType);
-        this.dependenciesTotalOrder = ExtensionUseModel2.totalOrder(sourceType);
+        // this.dependenciesTotalOrder = ExtensionUseModel2.totalOrder(sourceType);
     }
 
     /** {@inheritDoc} */
@@ -167,7 +165,7 @@ public final class ContainerSourceModel extends ComponentLookup {
      *            the container source type
      * @return a container source model for the specified type
      */
-    public static ContainerSourceModel of(Class<? extends Assembly> sourceType) {
+    public static ContainerSourceModel of(Class<?> sourceType) {
         return MODEL_CACHE.get(sourceType);
     }
 

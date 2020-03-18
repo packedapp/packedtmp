@@ -26,15 +26,18 @@ public enum OpenMode {
     // dvs @OpensFor(value = INVOKE, gateKeeper = SomeOpenGatekeeper.class)
     // boolean checker or void check throws Exception?
 
+    /** Access rights for instantiating a class. */
+    CONSTRUCTOR_INSTANTIATE,
+
     /** Access rights for invocation of a method or constructor. */
-    INVOKE,
+    METHOD_INVOKE,
 
     /** Access rights for reading a field. */
-    GET_FIELD,
+    FIELD_SET,
 
     /** Access rights for writing a field. */
     // Was Field_SET but sounded like Set<Field>
-    SET_FIELD,
+    FIELD_GET,
 
     // Needs a Type annotation.... (also on subclasses...) Must check Inherited status of the annotation...
 

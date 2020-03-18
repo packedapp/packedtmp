@@ -30,15 +30,14 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import app.packed.artifact.Assembly;
+import app.packed.analysis.BundleDescriptor;
+import app.packed.analysis.BundleDescriptor.Builder;
 import app.packed.base.Contract;
 import app.packed.base.Nullable;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
-import app.packed.container.BundleDescriptor;
-import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.ContainerComposer;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
@@ -95,7 +94,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     private final ContainerSourceModel model;
 
     /** The source of the container configuration. */
-    private final Assembly source;
+    private final Object source;
 
     /** Any wirelets that was given by the user when creating this configuration. */
     public final WireletContext wireletContext;
@@ -110,7 +109,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * @param wirelets
      *            any wirelets specified by the user
      */
-    public PackedContainerConfiguration(BuildOutput output, Assembly source, Wirelet... wirelets) {
+    public PackedContainerConfiguration(BuildOutput output, Object source, Wirelet... wirelets) {
         super(ConfigSiteUtil.captureStackFrame(InjectConfigSiteOperations.INJECTOR_OF), output);
         this.source = requireNonNull(source);
         this.lookup = this.model = ContainerSourceModel.of(source.getClass());
@@ -167,7 +166,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         }
         // Initializes the name of the container, and sets the state to State.FINAL
         initializeName(State.FINAL, null);
-        super.state = State.FINAL; // Thing is here, that initialize name returns early if name!=null
+        super.state.oldState = State.FINAL; // Thing is here, that initialize name returns early if name!=null
     }
 
     public PackedContainerConfiguration doBuild() {
@@ -260,7 +259,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     public String initializeNameDefaultName() {
         // I think try and move some of this to ComponentNameWirelet
         @Nullable
-        Class<? extends Assembly> source = this.sourceType();
+        Class<?> source = this.sourceType();
         if (Bundle.class.isAssignableFrom(source)) {
             String nnn = source.getSimpleName();
             if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
@@ -469,7 +468,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     /** {@inheritDoc} */
     @Override
-    public Class<? extends Assembly> sourceType() {
+    public Class<?> sourceType() {
         return source.getClass();
     }
 
