@@ -24,4 +24,32 @@ public final class ComponentConfigurationState {
 
     /** The state of this configuration. */
     public State oldState = AbstractComponentConfiguration.State.INITIAL;
+
+    void checkNameSet() {
+        switch (oldState) {
+        case INITIAL:
+            return;
+        case FINAL:
+            checkConfigurable();
+        case GET_NAME_INVOKED:
+            throw new IllegalStateException("Cannot call #setName(String) after the name has been initialized via calls to #getName()");
+        case EXTENSION_USED:
+            throw new IllegalStateException("Cannot call #setName(String) after any extensions has has been used");
+        case PATH_INVOKED:
+            throw new IllegalStateException("Cannot call #setName(String) after name has been initialized via calls to #path()");
+        case INSTALL_INVOKED:
+            throw new IllegalStateException("Cannot call this method after having installed components or used extensions");
+        case LINK_INVOKED:
+            throw new IllegalStateException("Cannot call this method after #link() has been invoked");
+        case SET_NAME_INVOKED:
+            throw new IllegalStateException("#setName(String) can only be called once");
+        }
+        throw new InternalError();
+    }
+
+    public final void checkConfigurable() {
+        if (oldState == State.FINAL) {
+            throw new IllegalStateException("This component can no longer be configured");
+        }
+    }
 }

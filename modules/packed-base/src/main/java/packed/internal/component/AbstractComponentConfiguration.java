@@ -299,7 +299,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
         return Map.copyOf(result);
     }
 
-    public final String initializeName(State state, String setName) {
+    public final String initializeName(State newState, String setName) {
         String n = name;
         if (n != null) {
             return n;
@@ -331,7 +331,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
                 n = prefix + counter++;
             } while (parent.children.containsKey(n));
         }
-        this.state.oldState = state;
+        this.state.oldState = newState;
         return this.name = n;
     }
 
@@ -360,7 +360,6 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
     public AbstractComponentConfiguration setName(String name) {
         // First lets check the name is valid
         ComponentNameWirelet.checkName(name);
-
         switch (state.oldState) {
         case INITIAL:
             initializeName(State.SET_NAME_INVOKED, name);

@@ -15,9 +15,13 @@
  */
 package packed.internal.container;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,15 +35,17 @@ import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.container.ContainerComposer;
 import app.packed.container.Extension;
+import app.packed.container.ExtensionCallback;
 import app.packed.container.ExtensionComposer;
+import app.packed.container.ExtensionMeta;
 import app.packed.container.ExtensionWirelet;
 import app.packed.container.InternalExtensionException;
 import app.packed.hook.OnHook;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
 import packed.internal.moduleaccess.ModuleAccess;
-import packed.internal.reflect.OpenClass;
 import packed.internal.reflect.ConstructorFinder;
+import packed.internal.reflect.OpenClass;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.UncheckedThrowableFactory;
@@ -92,7 +98,7 @@ public final class ExtensionModel<E extends Extension> {
 
     public final Consumer<? super Extension> onAdd;
 
-    public final Consumer<? super Extension> onConfigured;
+//    public final Consumer<? super Extension> onConfigured;
 
     // public final BiConsumer<? super Extension, ? super ExtensionInstantiationContext> onInstantiation;
 
@@ -102,6 +108,8 @@ public final class ExtensionModel<E extends Extension> {
     public final Optional<Class<? extends Extension>> optional;
 
     public final Map<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, Function<?, ?>> pipelines;
+
+    final List<ECall> l;
 
     /**
      * Creates a new extension model from the specified builder.
@@ -116,7 +124,7 @@ public final class ExtensionModel<E extends Extension> {
         this.bundleBuilder = builder.builder;
         this.contracts = Map.copyOf(builder.contracts);
         this.onAdd = builder.onExtensionInstantiatedAction;
-        this.onConfigured = builder.onConfiguredAction;
+        // this.onConfigured = builder.onConfiguredAction;
         // this.onInstantiation = builder.onInstantiation;
         this.onLinkage = builder.onLinkage;
         this.dependenciesDirect = Set.copyOf(builder.dependenciesDirect);
@@ -125,6 +133,7 @@ public final class ExtensionModel<E extends Extension> {
 
         this.onHookModel = builder.onHookModel;
         this.nonActivatingHooks = onHookModel == null ? null : LazyExtensionActivationMap.findNonExtending(onHookModel);
+        this.l = List.copyOf(builder.l);
     }
 
     /**
@@ -204,6 +213,14 @@ public final class ExtensionModel<E extends Extension> {
          */
         @SuppressWarnings("unchecked")
         ExtensionModel<?> build() {
+            ExtensionMeta em = extensionType.getAnnotation(ExtensionMeta.class);
+            if (em != null) {
+                for (Class<? extends Extension> ccc : em.dependencies()) {
+                    ExtensionModelLoader.load(ccc, runtime);
+                    dependenciesDirect.add(ccc);
+                }
+            }
+
             Class<? extends ExtensionComposer<?>> composerType = null;
             for (Class<?> c : extensionType.getDeclaredClasses()) {
                 if (c.getSimpleName().equals("Composer")) {
@@ -220,12 +237,35 @@ public final class ExtensionModel<E extends Extension> {
             OpenClass cp = new OpenClass(MethodHandles.lookup(), extensionType, true);
             this.constructor = ConstructorFinder.find(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
             this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerComposer.class);
+            cp.findMethods(e -> {
+                ExtensionCallback ec = e.getAnnotation(ExtensionCallback.class);
 
+                if (ec != null) {
+                    if (Modifier.isStatic(e.getModifiers())) {
+                        throw new InternalExtensionException("Methods annotated with " + ExtensionCallback.class + " cannot be static, method = " + e);
+                    }
+                    MethodHandle mh = cp.unreflect(e, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                    l.add(new ECall(mh, ec.onPreembleDone()));
+                }
+            });
             if (composerType != null) {
                 ExtensionComposer<?> composer = ConstructorFinder.invoke(cp.spawn(composerType));
                 ModuleAccess.extension().configureComposer(composer, this);
             }
             return new ExtensionModel<>(this);
         }
+
+        private final ArrayList<ECall> l = new ArrayList<>();
     }
+
+    static class ECall {
+        final MethodHandle mh;
+        final boolean onMainFinished;
+
+        ECall(MethodHandle mh, boolean onMainFinished) {
+            this.mh = requireNonNull(mh);
+            this.onMainFinished = onMainFinished;
+        }
+    }
+
 }

@@ -103,6 +103,8 @@ public abstract class Extension {
     }
 
     /** The extension context. This field should never be read directly, but only accessed via {@link #context()}. */
+    // I think we should have a value representing configured. In this way people can store the extension
+    // or keep it at runtime or whatever they want to do....
     private ExtensionContext context;
 
     /**

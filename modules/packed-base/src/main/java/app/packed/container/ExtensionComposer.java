@@ -97,6 +97,7 @@ public abstract class ExtensionComposer<E extends Extension> {
     /////////////////// Cleanup
 
     @SafeVarargs
+    @Deprecated
     protected final void addDependencies(Class<? extends Extension>... dependencies) {
         context().addDependencies(dependencies);
     }
@@ -111,16 +112,6 @@ public abstract class ExtensionComposer<E extends Extension> {
 
         context().pipelines.putIfAbsent(pipelineType, pipelineFactory);
     }
-
-//    /**
-//     * Will process each extension top down..
-//     * 
-//     * @param action
-//     *            the action to perform
-//     */
-//    protected final void completeEach(Consumer<? super E> action) {
-//
-//    }
 
     /**
      * Exposes a contract of the specified type.
@@ -162,32 +153,6 @@ public abstract class ExtensionComposer<E extends Extension> {
     }
 
     protected final void exposeFeature() {}
-//
-//    protected final void onAddPostProcessor(Consumer<? extends ExtensionTree<E>> consumer) {
-//
-//    }
-
-    /**
-     * A callback method that is invoked immediately after a container has been successfully configured. This is typically
-     * after {@link Bundle#compose()} has returned.
-     * <p>
-     * The default implementation of this method does nothing.
-     * <p>
-     * If more than one action is registered using this method. Each action will be performed in the order (FIFO) they where
-     * registered.
-     * 
-     * @param action
-     *            the action to perform
-     */
-    // If the container contains multiple extensions. They are invoked in reverse order. If E2 has a dependency on E1.
-    // E2.onConfigured() will be invoked before E1.onConfigure(). This is done in order to allow extensions to perform
-    // additional configuration on other extension after user code has been executed
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected final void onConfigured(Consumer<? super E> action) {
-        requireNonNull(action, "action is null");
-        Consumer<? super E> a = context().onConfiguredAction;
-        context().onConfiguredAction = a == null ? (Consumer) action : a.andThen((Consumer) action);
-    }
 
     /**
      * Registers a (callback) action that is invoked, by the runtime, whenever this extension type has been registered in
@@ -207,6 +172,42 @@ public abstract class ExtensionComposer<E extends Extension> {
         context().onLinkage((BiConsumer<? super Extension, ? super Extension>) action);
     }
 }
+//
+//protected final void onAddPostProcessor(Consumer<? extends ExtensionTree<E>> consumer) {
+//
+//}
+
+///**
+//* Will process each extension top down..
+//* 
+//* @param action
+//*            the action to perform
+//*/
+//protected final void completeEach(Consumer<? super E> action) {
+//
+//}
+
+///**
+//* A callback method that is invoked immediately after a container has been successfully configured. This is typically
+//* after {@link Bundle#compose()} has returned.
+//* <p>
+//* The default implementation of this method does nothing.
+//* <p>
+//* If more than one action is registered using this method. Each action will be performed in the order (FIFO) they where
+//* registered.
+//* 
+//* @param action
+//*            the action to perform
+//*/
+//// If the container contains multiple extensions. They are invoked in reverse order. If E2 has a dependency on E1.
+//// E2.onConfigured() will be invoked before E1.onConfigure(). This is done in order to allow extensions to perform
+//// additional configuration on other extension after user code has been executed
+//@SuppressWarnings({ "unchecked", "rawtypes" })
+//protected final void onConfigured(Consumer<? super E> action) {
+//  requireNonNull(action, "action is null");
+//  Consumer<? super E> a = context().onConfiguredAction;
+//  context().onConfiguredAction = a == null ? (Consumer) action : a.andThen((Consumer) action);
+//}
 
 // /**
 // * Invoked whenever the container is being instantiated. In case of a container image this means that method might be

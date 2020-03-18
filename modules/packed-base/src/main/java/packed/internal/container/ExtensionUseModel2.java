@@ -23,6 +23,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 import app.packed.container.Extension;
+import app.packed.container.ExtensionMeta;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.UseExtension;
 import packed.internal.util.StringFormatter;
@@ -30,6 +31,7 @@ import packed.internal.util.StringFormatter;
 /**
  *
  */
+//Also checkout ExtensionDependencyValidator
 public class ExtensionUseModel2 {
 
     @SuppressWarnings("unchecked")
@@ -71,6 +73,14 @@ public class ExtensionUseModel2 {
                 }
                 loadOptional(list, type, ue.optional());
             }
+            ExtensionMeta em = type.getAnnotation(ExtensionMeta.class);
+            if (em != null) {
+                for (Class<? extends Extension> c : em.dependencies()) {
+                    list.add(c);
+                }
+                loadOptional(list, type, em.optionalDependencies());
+            }
+
             if (Extension.class.isAssignableFrom(type)) {
                 // ExtensionProps ep = type.getAnnotation(ExtensionProps.class);
                 // if (ep != null) {

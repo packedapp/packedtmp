@@ -24,6 +24,7 @@ import app.packed.base.Contract;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
 import app.packed.container.ExtensionDescriptor;
+import app.packed.container.ExtensionMeta;
 import packed.internal.container.PackedExtensionDescriptor;
 
 /** Tests {@link PackedExtensionDescriptor}. */
@@ -53,13 +54,13 @@ public class ExtensionDescriptorTest {
         assertThatThrownBy(() -> ed.dependencies().clear()).isExactlyInstanceOf(UnsupportedOperationException.class);
     }
 
+    @ExtensionMeta(dependencies = EmptyExtension.class)
     static class VariousExtension extends Extension {
         static class Composer extends ExtensionComposer<VariousExtension> {
 
             /** {@inheritDoc} */
             @Override
             protected void compose() {
-                addDependencies(EmptyExtension.class);
                 exposeContract(SomeContract.class, e -> new SomeContract());
             }
         }

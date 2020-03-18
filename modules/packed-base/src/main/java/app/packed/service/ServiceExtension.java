@@ -22,6 +22,7 @@ import app.packed.base.Key.Qualifier;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
+import app.packed.container.ExtensionCallback;
 import app.packed.container.ExtensionComposer;
 import app.packed.container.ExtensionContext;
 import app.packed.container.Wirelet;
@@ -348,14 +349,18 @@ public final class ServiceExtension extends Extension {
         }
     }
 
+    @ExtensionCallback(onPreembleDone = true)
+    void onConfd() {
+        node.build();
+    }
+
     /** The composer for the service extension. */
     static final class Composer extends ExtensionComposer<ServiceExtension> {
 
         /** {@inheritDoc} */
         @Override
         protected void compose() {
-            onConfigured(e -> e.node.build());
-            onLinkage((p, c) -> p.node.link(c.node));
+            // onLinkage((p, c) -> p.node.link(c.node));
 
             // Descriptors and contracts
             // What about runtime????

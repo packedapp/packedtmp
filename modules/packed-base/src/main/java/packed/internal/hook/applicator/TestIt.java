@@ -27,6 +27,8 @@ import packed.internal.hook.applicator.TestIt.FooExtension;
 /**
  *
  */
+// Herbliverden brugt mht til hooks
+// Skal aendres til Sidecars...
 @UseExtension(FooExtension.class)
 public class TestIt extends BaseBundle {
 

@@ -17,6 +17,7 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -181,8 +182,15 @@ public final class PackedExtensionContext implements ExtensionContext {
 
     /** Invoked by the container configuration, whenever the extension is configured. */
     public void onConfigured() {
-        if (model.onConfigured != null) {
-            model.onConfigured.accept(extension);
+//        if (model.onConfigured != null) {
+//            model.onConfigured.accept(extension);
+//        }
+        for (var v : model.l) {
+            try {
+                v.mh.invoke(extension);
+            } catch (Throwable e) {
+                throw new UndeclaredThrowableException(e);
+            }
         }
         isConfigured = true;
     }
