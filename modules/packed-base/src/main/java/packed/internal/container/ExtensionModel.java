@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import app.packed.base.Contract;
 import app.packed.base.Nullable;
@@ -41,6 +40,7 @@ import app.packed.container.ExtensionMeta;
 import app.packed.container.ExtensionWirelet;
 import app.packed.container.ExtensionWirelet.Pipeline;
 import app.packed.container.InternalExtensionException;
+import app.packed.hook.Expose;
 import app.packed.hook.OnHook;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
@@ -76,6 +76,8 @@ public final class ExtensionModel<E extends Extension> {
 
     public final BiConsumer<? super Extension, ? super app.packed.analysis.BundleDescriptor.Builder> bundleBuilder;
 
+    public final MethodHandle bundleBuilderMethod;
+
     /** The method handle used to create a new extension instance. */
     private final MethodHandle constructor;
 
@@ -97,13 +99,13 @@ public final class ExtensionModel<E extends Extension> {
 
     final BaseHookQualifierList nonActivatingHooks;
 
-    public final Consumer<? super Extension> onAdd;
+    // public final Consumer<? super Extension> onAdd;
 
 //    public final Consumer<? super Extension> onConfigured;
 
     // public final BiConsumer<? super Extension, ? super ExtensionInstantiationContext> onInstantiation;
 
-    public final BiConsumer<? super Extension, ? super Extension> onLinkage;
+    // public final BiConsumer<? super Extension, ? super Extension> onLinkage;
 
     /** An optional containing the extension type. To avoid excessive creation of them for {@link Component#extension()}. */
     public final Optional<Class<? extends Extension>> optional;
@@ -124,11 +126,10 @@ public final class ExtensionModel<E extends Extension> {
         // this.pipelines = Map.copyOf(builder.pipelines);
         this.pipelines2 = builder.pipelines2;// Map.copyOf(builder.pipelines2);
         this.bundleBuilder = builder.builder;
+        this.bundleBuilderMethod = builder.builderMethod;
         this.contracts = Map.copyOf(builder.contracts);
-        this.onAdd = builder.onExtensionInstantiatedAction;
         // this.onConfigured = builder.onConfiguredAction;
         // this.onInstantiation = builder.onInstantiation;
-        this.onLinkage = builder.onLinkage;
         this.dependenciesDirect = Set.copyOf(builder.dependenciesDirect);
         this.dependenciesTotalOrder = builder.dependenciesTotalOrder;
         this.optional = Optional.of(extensionType); // No need to create an optional every time we need this
@@ -215,7 +216,7 @@ public final class ExtensionModel<E extends Extension> {
          * 
          * @return the extension model
          */
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({ "unchecked", "rawtypes" })
         ExtensionModel<?> build() {
             ExtensionMeta em = extensionType.getAnnotation(ExtensionMeta.class);
             if (em != null) {
@@ -254,6 +255,16 @@ public final class ExtensionModel<E extends Extension> {
                     }
                     MethodHandle mh = cp.unreflect(e, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
                     l.add(new ECall(mh, ec.onInstantiation(), ec.onPreembleDone()));
+                }
+
+                Expose ex = e.getAnnotation(Expose.class);
+                if (ex != null) {
+                    if (e.getReturnType() == void.class) {
+                        builderMethod = cp.unreflect(e, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                    } else {
+                        MethodHandle mh = cp.unreflect(e, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                        contracts.put((Class) e.getReturnType(), mh);
+                    }
                 }
             });
             if (composerType != null) {

@@ -18,7 +18,6 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.ArrayList;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
@@ -129,37 +128,37 @@ public final class PackedExtensionContext implements ExtensionContext {
                 }
             }
 
-            if (model.onAdd != null) {
-                model.onAdd.accept(extension);
-            }
+//            if (model.onAdd != null) {
+//                model.onAdd.accept(extension);
+//            }
 
             if (pcc.wireletContext != null) {
                 pcc.wireletContext.initialize(this);
             }
 
             // Call any link callbacks
-            if (model.onLinkage != null) {
-                // First link any children
-                ArrayList<PackedContainerConfiguration> containers = pcc.containers;
-                if (containers != null) {
-                    for (PackedContainerConfiguration child : containers) {
-                        PackedExtensionContext e = child.getExtension(model.extensionType);
-                        if (e != null) {
-                            model.onLinkage.accept(extension, e.extension);
-                        }
-                    }
-                }
-
-                // Second link any parent
-                if (pcc.parent instanceof PackedContainerConfiguration) {
-                    PackedContainerConfiguration p = (PackedContainerConfiguration) pcc.parent;
-                    PackedExtensionContext e = p.getExtension(model.extensionType);
-                    // set activate extension???
-                    if (e != null) {
-                        model.onLinkage.accept(e.extension, extension);
-                    }
-                }
-            }
+//            if (model.onLinkage != null) {
+//                // First link any children
+//                ArrayList<PackedContainerConfiguration> containers = pcc.containers;
+//                if (containers != null) {
+//                    for (PackedContainerConfiguration child : containers) {
+//                        PackedExtensionContext e = child.getExtension(model.extensionType);
+//                        if (e != null) {
+//                            model.onLinkage.accept(extension, e.extension);
+//                        }
+//                    }
+//                }
+//
+//                // Second link any parent
+//                if (pcc.parent instanceof PackedContainerConfiguration) {
+//                    PackedContainerConfiguration p = (PackedContainerConfiguration) pcc.parent;
+//                    PackedExtensionContext e = p.getExtension(model.extensionType);
+//                    // set activate extension???
+//                    if (e != null) {
+//                        // model.onLinkage.accept(e.extension, extension);
+//                    }
+//                }
+//            }
 
             // Registers this context with the artifact build context.
             // In order to compute a total order among dependencies within the artifact

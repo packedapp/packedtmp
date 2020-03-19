@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -140,15 +141,36 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         for (PackedExtensionContext e : extensions.values()) {
             BiConsumer<? super Extension, ? super Builder> c = e.model().bundleBuilder;
             if (c != null) {
-                c.accept(e.extension(), builder);
+                // c.accept(e.extension(), builder);
             }
+            MethodHandle mha = e.model().bundleBuilderMethod;
+            if (mha != null) {
+                try {
+                    mha.invoke(e.extension(), builder);
+                } catch (Throwable e1) {
+                    throw new UndeclaredThrowableException(e1);
+                }
+            }
+
             for (Object s : e.model().contracts.values()) {
                 // TODO need a context
                 Contract con;
                 if (s instanceof Function) {
                     con = (Contract) ((Function) s).apply(e.extension());
-                } else { // BiFcuntoin
+                } else if (s instanceof BiFunction) {
                     con = (Contract) ((BiFunction) s).apply(e.extension(), null);
+                } else {
+                    // MethodHandle...
+                    try {
+                        MethodHandle mh = (MethodHandle) s;
+                        if (mh.type().parameterCount() == 0) {
+                            con = (Contract) mh.invoke(e.extension());
+                        } else {
+                            con = (Contract) mh.invoke(e.extension(), null);
+                        }
+                    } catch (Throwable e1) {
+                        throw new UndeclaredThrowableException(e1);
+                    }
                 }
                 requireNonNull(con);
                 builder.addContract(con);

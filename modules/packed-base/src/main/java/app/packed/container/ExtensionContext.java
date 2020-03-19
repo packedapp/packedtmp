@@ -100,7 +100,7 @@ public interface ExtensionContext {
      *             If invoked from the constructor of the extension. Or if the underlying container is no longer
      *             configurable and an extension of the specified type has not already been installed
      * @throws UnsupportedOperationException
-     *             if the specified extension type is not specified via {@link UseExtension} on this extension.
+     *             if the specified extension type is not specified via {@link ExtensionMeta} on this extension.
      * 
      * @see ContainerComposer#use(Class)
      */

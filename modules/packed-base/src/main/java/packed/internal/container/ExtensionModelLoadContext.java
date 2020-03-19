@@ -17,24 +17,23 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 import app.packed.analysis.BundleDescriptor;
 import app.packed.base.Contract;
-import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionComposer;
-import app.packed.container.ExtensionWirelet;
 
 /** A context object used for all registration for an {@link ExtensionComposer}. */
 public abstract class ExtensionModelLoadContext {
 
     public BiConsumer<? super Extension, ? super BundleDescriptor.Builder> builder;
+
+    public MethodHandle builderMethod;
 
     // Need to check that a contract never belongs to two extension.
     // Also, I think we want to do this atomically, so that we do not have half an extension registered somewhere.
@@ -50,21 +49,22 @@ public abstract class ExtensionModelLoadContext {
 
     // public BiConsumer<? super Extension, ? super ExtensionInstantiationContext> onInstantiation;
 
-    /** An action that will be run immediately after all bundles have been configured. */
-    @Nullable
-    public Consumer<? super Extension> onCompleteEach;
+//    /** An action that will be run immediately after all bundles have been configured. */
+//    @Nullable
+//    public Consumer<? super Extension> onCompleteEach;
+//
+//    /** An action that will be run immediately after an extension has been configured. */
+//    @Nullable
+//    public Consumer<? super Extension> onConfiguredAction;
+//    /** An action that will be run immediately after an extension has been instantiated. */
+//    @Nullable
+//    Consumer<? super Extension> onExtensionInstantiatedAction;
 
-    /** An action that will be run immediately after an extension has been configured. */
-    @Nullable
-    public Consumer<? super Extension> onConfiguredAction;
-    /** An action that will be run immediately after an extension has been instantiated. */
-    @Nullable
-    Consumer<? super Extension> onExtensionInstantiatedAction;
+    // @Nullable
+    // public BiConsumer<? super Extension, ? super Extension> onLinkage;
 
-    @Nullable
-    public BiConsumer<? super Extension, ? super Extension> onLinkage;
-
-    public final IdentityHashMap<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, Function<?, ?>> pipelines = new IdentityHashMap<>();
+    // public final IdentityHashMap<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, Function<?, ?>> pipelines = new
+    // IdentityHashMap<>();
 
     final ExtensionModelLoader.Runtime runtime;
 

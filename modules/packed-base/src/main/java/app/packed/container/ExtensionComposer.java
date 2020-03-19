@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import app.packed.analysis.BundleDescriptor;
 import app.packed.base.Contract;
@@ -76,18 +75,18 @@ public abstract class ExtensionComposer<E extends Extension> {
         // Checkout error model for extension loading
     }
 
-    /////////////////// Cleanup
-
-    protected final <P extends ExtensionWirelet.Pipeline<E, P, W>, W extends ExtensionWirelet<P>> void addPipeline(Class<P> pipelineType,
-            Function<E, P> pipelineFactory) {
-        requireNonNull(pipelineType, "pipelineType is null");
-        requireNonNull(pipelineFactory, "pipelineFactory is null");
-        // Validation??? Pipeline model...
-
-        // Hmmm, har jo samme problem som dependencies her....
-
-        context().pipelines.putIfAbsent(pipelineType, pipelineFactory);
-    }
+//    /////////////////// Cleanup
+//
+//    protected final <P extends ExtensionWirelet.Pipeline<E, P, W>, W extends ExtensionWirelet<P>> void addPipeline(Class<P> pipelineType,
+//            Function<E, P> pipelineFactory) {
+//        requireNonNull(pipelineType, "pipelineType is null");
+//        requireNonNull(pipelineFactory, "pipelineFactory is null");
+//        // Validation??? Pipeline model...
+//
+//        // Hmmm, har jo samme problem som dependencies her....
+//
+//        context().pipelines.putIfAbsent(pipelineType, pipelineFactory);
+//    }
 
     /**
      * Exposes a contract of the specified type.
@@ -115,11 +114,11 @@ public abstract class ExtensionComposer<E extends Extension> {
         context().contracts.putIfAbsent(contractType, contractFactory);
     }
 
-    protected final <C extends Contract> void exposeContract(Class<C> contractType, Function<? super E, C> contractFactory) {
-        requireNonNull(contractType, "contractType is null");
-        requireNonNull(contractFactory, "contractFactory is null");
-        context().contracts.putIfAbsent(contractType, contractFactory);
-    }
+//    protected final <C extends Contract> void exposeContract(Class<C> contractType, Function<? super E, C> contractFactory) {
+//        requireNonNull(contractType, "contractType is null");
+//        requireNonNull(contractFactory, "contractFactory is null");
+//        context().contracts.putIfAbsent(contractType, contractFactory);
+//    }
 
     @SuppressWarnings("unchecked")
     // Den er ikke saerlig god den her....

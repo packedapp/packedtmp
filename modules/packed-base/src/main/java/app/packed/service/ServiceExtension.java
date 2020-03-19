@@ -17,17 +17,18 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.analysis.BundleDescriptor;
 import app.packed.base.Key;
 import app.packed.base.Key.Qualifier;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionCallback;
-import app.packed.container.ExtensionComposer;
 import app.packed.container.ExtensionContext;
 import app.packed.container.ExtensionMeta;
 import app.packed.container.Wirelet;
 import app.packed.hook.AnnotatedMethodHook;
+import app.packed.hook.Expose;
 import app.packed.hook.OnHook;
 import app.packed.inject.Factory;
 import app.packed.lifecycle.OnStart;
@@ -69,7 +70,8 @@ import packed.internal.service.run.AbstractInjector;
 
 // Taenker den kun bliver aktiveret hvis vi har en factory med mindste 1 unresolved dependency....
 // D.v.s. install(Class c) -> aktivere denne extension, hvis der er unresolved dependencies...
-// Ellers selvfoelgelig hvis man bruger provide/@Provides
+// Ellers selvfoelgelig hvis man bruger provide/@Provides\
+@ExtensionMeta(pipelines = ServiceWireletPipeline.class)
 public final class ServiceExtension extends Extension {
 
     /** The extension node that does most of the work. */
@@ -355,29 +357,13 @@ public final class ServiceExtension extends Extension {
         node.build();
     }
 
-    /** The composer for the service extension. */
-    @ExtensionMeta(pipelines = ServiceWireletPipeline.class)
-    static final class Composer extends ExtensionComposer<ServiceExtension> {
+    @Expose
+    ServiceContract con(ServiceWireletPipeline swp) {
+        return node.newServiceContract(swp);
+    }
 
-        /** {@inheritDoc} */
-        @Override
-        protected void compose() {
-            exposeContract(ServiceContract.class, ServiceWireletPipeline.class, (e, c) -> e.node.newServiceContract(c));
-            exposeDescriptor((e, b) -> e.node.buildDescriptor(b));
-
-            // Dies
-
-            // Needing wirelet
-            // contract, bundle, features?
-
-            // Runtime stuff
-
-            // Vi kan faktisk have flere graph modeller nu....
-            // Vi kan understoette build, instantiate, osv.
-            // ved at give den rigtige context med til hvert kald.
-            // f.eks. InstantionContext til instantiate
-            // WithPipelines to buildDescriptor()
-            // o.s.v.
-        }
+    @Expose
+    void con(BundleDescriptor.Builder builder) {
+        node.buildDescriptor(builder);
     }
 }
