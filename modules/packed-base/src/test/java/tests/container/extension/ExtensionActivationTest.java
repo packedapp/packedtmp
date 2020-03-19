@@ -28,7 +28,6 @@ import app.packed.artifact.App;
 import app.packed.component.SingletonConfiguration;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionComposer;
 import app.packed.container.UseExtension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
@@ -148,12 +147,6 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
         @OnHook
         protected void set(Foo s, SingletonConfiguration<?> a) {}
 
-        static class Composer extends ExtensionComposer<MyExtension> {
-
-            /** {@inheritDoc} */
-            @Override
-            protected void compose() {}
-        }
     }
 
     public static class WithFieldInstance {

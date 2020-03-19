@@ -36,7 +36,6 @@ import app.packed.artifact.ArtifactImage;
 import app.packed.component.SingletonConfiguration;
 import app.packed.container.Bundle;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionComposer;
 import app.packed.container.UseExtension;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
@@ -107,12 +106,6 @@ public class FromImage {
 
         public void foo(SingletonConfiguration<?> cc, Foo s) {}
 
-        static class Composer extends ExtensionComposer<MyExtension> {
-
-            /** {@inheritDoc} */
-            @Override
-            protected void compose() {}
-        }
     }
 
     @Retention(RetentionPolicy.RUNTIME)

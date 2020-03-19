@@ -89,11 +89,5 @@ public class ExtensionDescriptorTest {
 
     static class EmptyExtension extends Extension {
 
-        static class Composer extends ExtensionComposer<EmptyExtension> {
-
-            /** {@inheritDoc} */
-            @Override
-            protected void compose() {}
-        }
     }
 }

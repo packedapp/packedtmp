@@ -362,11 +362,6 @@ public final class ServiceExtension extends Extension {
         /** {@inheritDoc} */
         @Override
         protected void compose() {
-            // onLinkage((p, c) -> p.node.link(c.node));
-
-            // Descriptors and contracts
-            // What about runtime????
-            // addPipeline(ServiceWireletPipeline.class, e -> new ServiceWireletPipeline(e.node));
             exposeContract(ServiceContract.class, ServiceWireletPipeline.class, (e, c) -> e.node.newServiceContract(c));
             exposeDescriptor((e, b) -> e.node.buildDescriptor(b));
 
