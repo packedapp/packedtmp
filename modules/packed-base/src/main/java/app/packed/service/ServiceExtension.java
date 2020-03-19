@@ -25,6 +25,7 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionCallback;
 import app.packed.container.ExtensionComposer;
 import app.packed.container.ExtensionContext;
+import app.packed.container.ExtensionMeta;
 import app.packed.container.Wirelet;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
@@ -355,6 +356,7 @@ public final class ServiceExtension extends Extension {
     }
 
     /** The composer for the service extension. */
+    @ExtensionMeta(pipelines = ServiceWireletPipeline.class)
     static final class Composer extends ExtensionComposer<ServiceExtension> {
 
         /** {@inheritDoc} */
@@ -364,7 +366,7 @@ public final class ServiceExtension extends Extension {
 
             // Descriptors and contracts
             // What about runtime????
-            addPipeline(ServiceWireletPipeline.class, e -> new ServiceWireletPipeline(e.node));
+            // addPipeline(ServiceWireletPipeline.class, e -> new ServiceWireletPipeline(e.node));
             exposeContract(ServiceContract.class, ServiceWireletPipeline.class, (e, c) -> e.node.newServiceContract(c));
             exposeDescriptor((e, b) -> e.node.buildDescriptor(b));
 
