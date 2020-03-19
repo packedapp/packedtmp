@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.analysis.BundleDescriptor;
@@ -77,24 +76,6 @@ public abstract class ExtensionComposer<E extends Extension> {
         // Checkout error model for extension loading
     }
 
-    /**
-     * Registers a (callback) action that is invoked, by the runtime, immediately after an extension has been instantiated,
-     * but before the extension instance is returned to the user.
-     * <p>
-     * If more than one action is registered using this method. Each action will be performed in the order (FIFO) they where
-     * registered.
-     * 
-     * @param action
-     *            The action to be performed after the extension has been instantiated
-     * 
-     * @see ContainerComposer#use(Class)
-     */
-    @SuppressWarnings("unchecked")
-    @Deprecated
-    protected final void onExtensionInstantiated(Consumer<? super E> action) {
-        context().onExtensionInstantiated((Consumer<? super Extension>) action);
-    }
-
     /////////////////// Cleanup
 
     protected final <P extends ExtensionWirelet.Pipeline<E, P, W>, W extends ExtensionWirelet<P>> void addPipeline(Class<P> pipelineType,
@@ -146,10 +127,27 @@ public abstract class ExtensionComposer<E extends Extension> {
     protected final void exposeDescriptor(BiConsumer<? super E, ? super BundleDescriptor.Builder> builder) {
         context().builder = (BiConsumer<? super Extension, ? super BundleDescriptor.Builder>) requireNonNull(builder, "builder is null");
     }
-
-    protected final void exposeFeature() {}
-
 }
+
+//protected final void exposeFeature() {}
+
+///**
+//* Registers a (callback) action that is invoked, by the runtime, immediately after an extension has been instantiated,
+//* but before the extension instance is returned to the user.
+//* <p>
+//* If more than one action is registered using this method. Each action will be performed in the order (FIFO) they where
+//* registered.
+//* 
+//* @param action
+//*            The action to be performed after the extension has been instantiated
+//* 
+//* @see ContainerComposer#use(Class)
+//*/
+//@SuppressWarnings("unchecked")
+//@Deprecated
+//protected final void onExtensionInstantiated(Consumer<? super E> action) {
+// context().onExtensionInstantiated((Consumer<? super Extension>) action);
+//}
 ///**
 //* Registers a (callback) action that is invoked, by the runtime, whenever this extension type has been registered in
 //* both a parent and child container.

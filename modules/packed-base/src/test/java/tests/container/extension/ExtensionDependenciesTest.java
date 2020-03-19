@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.Extension;
-import app.packed.container.ExtensionComposer;
+import app.packed.container.ExtensionCallback;
 import app.packed.container.ExtensionMeta;
 import testutil.util.AbstractArtifactTest;
 
@@ -52,27 +52,18 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
 
     @ExtensionMeta(dependencies = Ex2.class)
     static final class Ex1 extends Extension {
-
-        static class Composer extends ExtensionComposer<Ex1> {
-
-            /** {@inheritDoc} */
-            @Override
-            protected void compose() {
-                onExtensionInstantiated(e -> e.use(Ex2.class));
-            }
+        @ExtensionCallback(onInstantiation = true)
+        void on() {
+            use(Ex2.class);
         }
     }
 
     @ExtensionMeta(dependencies = Ex3.class)
     static final class Ex2 extends Extension {
 
-        static class Composer extends ExtensionComposer<Ex2> {
-
-            /** {@inheritDoc} */
-            @Override
-            protected void compose() {
-                onExtensionInstantiated(e -> e.use(Ex3.class));
-            }
+        @ExtensionCallback(onInstantiation = true)
+        void on() {
+            use(Ex3.class);
         }
     }
 
@@ -83,24 +74,17 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
     @ExtensionMeta(dependencies = ExRecursive2.class)
     static final class ExRecursive1 extends Extension {
 
-        static class Composer extends ExtensionComposer<ExRecursive1> {
-
-            /** {@inheritDoc} */
-            @Override
-            protected void compose() {
-                onExtensionInstantiated(e -> e.use(ExRecursive2.class));
-            }
+        @ExtensionCallback(onInstantiation = true)
+        void on() {
+            use(ExRecursive2.class);
         }
     }
 
     static final class ExRecursive2 extends Extension {
-        static class Composer extends ExtensionComposer<ExRecursive2> {
 
-            /** {@inheritDoc} */
-            @Override
-            protected void compose() {
-                onExtensionInstantiated(e -> e.use(ExRecursive1.class));
-            }
+        @ExtensionCallback(onInstantiation = true)
+        void on() {
+            use(ExRecursive1.class);
         }
     }
 }

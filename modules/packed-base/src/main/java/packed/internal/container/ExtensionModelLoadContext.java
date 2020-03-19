@@ -74,38 +74,38 @@ public abstract class ExtensionModelLoadContext {
         this.runtime = runtime;
     }
 
-    @SafeVarargs
-    public final void addDependencies(Class<? extends Extension>... dependencies) {
-        requireNonNull(dependencies, "dependencies is null");
-        for (Class<? extends Extension> c : dependencies) {
-            ExtensionModelLoader.load(c, runtime);
-            dependenciesDirect.add(c);
-        }
-    }
+//    @SafeVarargs
+//    public final void addDependencies(Class<? extends Extension>... dependencies) {
+//        requireNonNull(dependencies, "dependencies is null");
+//        for (Class<? extends Extension> c : dependencies) {
+//            ExtensionModelLoader.load(c, runtime);
+//            dependenciesDirect.add(c);
+//        }
+//    }
+//
+//    /**
+//     * Registers an action that is invoked when the extension has first been instantiated
+//     * 
+//     * @param action
+//     *            the action to perform
+//     * 
+//     * @see ExtensionComposer#onExtensionInstantiated(Consumer)
+//     */
+//    @SuppressWarnings({ "unchecked", "rawtypes" })
+//    public final void onExtensionInstantiated(Consumer<? super Extension> action) {
+//        requireNonNull(action, "action is null");
+//        Consumer<? super Extension> a = onExtensionInstantiatedAction;
+//        onExtensionInstantiatedAction = a == null ? action : a.andThen((Consumer) action);
+//    }
 
-    /**
-     * Registers an action that is invoked when the extension has first been instantiated
-     * 
-     * @param action
-     *            the action to perform
-     * 
-     * @see ExtensionComposer#onExtensionInstantiated(Consumer)
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public final void onExtensionInstantiated(Consumer<? super Extension> action) {
-        requireNonNull(action, "action is null");
-        Consumer<? super Extension> a = onExtensionInstantiatedAction;
-        onExtensionInstantiatedAction = a == null ? action : a.andThen((Consumer) action);
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public final void onLinkage(BiConsumer<? super Extension, ? super Extension> action) {
-        // ?: Should have a link type?
-        // A: No, because extensions are only linked inside a single artifact. Otherwise they use HostAccessor
-
-        // This might be invoked after the c
-        requireNonNull(action, "action is null");
-        BiConsumer<? super Extension, ? super Extension> a = onLinkage;
-        onLinkage = a == null ? action : a.andThen((BiConsumer) action);
-    }
+//    @SuppressWarnings({ "unchecked", "rawtypes" })
+//    public final void onLinkage(BiConsumer<? super Extension, ? super Extension> action) {
+//        // ?: Should have a link type?
+//        // A: No, because extensions are only linked inside a single artifact. Otherwise they use HostAccessor
+//
+//        // This might be invoked after the c
+//        requireNonNull(action, "action is null");
+//        BiConsumer<? super Extension, ? super Extension> a = onLinkage;
+//        onLinkage = a == null ? action : a.andThen((BiConsumer) action);
+//    }
 }

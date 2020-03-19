@@ -17,12 +17,17 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.function.Function;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.UndeclaredThrowableException;
 
 import app.packed.container.Extension;
 import app.packed.container.ExtensionWirelet;
 import app.packed.container.ExtensionWirelet.Pipeline;
+import packed.internal.reflect.ConstructorFinder;
+import packed.internal.reflect.OpenClass;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
+import packed.internal.util.UncheckedThrowableFactory;
 
 /** A descriptor for an {@link Pipeline}. */
 public final class ExtensionWireletPipelineModel {
@@ -44,11 +49,13 @@ public final class ExtensionWireletPipelineModel {
     /** The extension model for this pipeline. */
     private final ExtensionModel<?> extension;
 
-    /** The factory used for creating new pipeline instances. */
-    private final Function<?, ?> factory;
+    /// ** The factory used for creating new pipeline instances. */
+    // private final Function<?, ?> factory;
 
     /** The type of pipeline. */
     private final Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>> type;
+
+    final MethodHandle constructor;
 
     /**
      * @param builder
@@ -58,7 +65,8 @@ public final class ExtensionWireletPipelineModel {
         this.type = builder.actualType;
         Class<? extends Extension> extensionType = (Class<? extends Extension>) EXTENSION_NODE_TV_EXTRACTOR.extract(builder.actualType);
         this.extension = ExtensionModel.of(extensionType);
-        this.factory = requireNonNull(extension.pipelines.get(type));
+        // this.factory = requireNonNull(extension.pipelines.get(type));
+        this.constructor = requireNonNull(builder.constructor);
     }
 
     /**
@@ -75,9 +83,16 @@ public final class ExtensionWireletPipelineModel {
      * 
      * @return a new pipeline instance
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public ExtensionWirelet.Pipeline<?, ?, ?> newPipeline(Extension extension) {
-        return (ExtensionWirelet.Pipeline<?, ?, ?>) ((Function) factory).apply(extension);
+        try {
+            if (constructor.type().parameterCount() == 0) {
+                return (Pipeline<?, ?, ?>) constructor.invoke();
+            } else {
+                return (Pipeline<?, ?, ?>) constructor.invoke(extension);
+            }
+        } catch (Throwable e) {
+            throw new UndeclaredThrowableException(e);
+        }
     }
 
     /**
@@ -115,11 +130,15 @@ public final class ExtensionWireletPipelineModel {
 
         private final Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>> actualType;
 
+        final MethodHandle constructor;
+
         /**
          * @param type
          */
         private Builder(Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>> type) {
             actualType = requireNonNull(type);
+            OpenClass cp = new OpenClass(MethodHandles.lookup(), type, true);
+            this.constructor = ConstructorFinder.find(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
         }
 
         ExtensionWireletPipelineModel build() {

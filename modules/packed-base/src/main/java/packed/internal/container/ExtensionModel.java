@@ -22,13 +22,13 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import app.packed.base.Contract;
 import app.packed.base.Nullable;
@@ -39,6 +39,7 @@ import app.packed.container.ExtensionCallback;
 import app.packed.container.ExtensionComposer;
 import app.packed.container.ExtensionMeta;
 import app.packed.container.ExtensionWirelet;
+import app.packed.container.ExtensionWirelet.Pipeline;
 import app.packed.container.InternalExtensionException;
 import app.packed.hook.OnHook;
 import packed.internal.hook.BaseHookQualifierList;
@@ -107,7 +108,7 @@ public final class ExtensionModel<E extends Extension> {
     /** An optional containing the extension type. To avoid excessive creation of them for {@link Component#extension()}. */
     public final Optional<Class<? extends Extension>> optional;
 
-    public final Map<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, Function<?, ?>> pipelines;
+    public final Map<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, ExtensionWireletPipelineModel> pipelines2;
 
     final List<ECall> l;
 
@@ -120,7 +121,8 @@ public final class ExtensionModel<E extends Extension> {
     private ExtensionModel(Builder builder) {
         this.constructor = builder.constructor;
         this.extensionType = builder.extensionType;
-        this.pipelines = Map.copyOf(builder.pipelines);
+        // this.pipelines = Map.copyOf(builder.pipelines);
+        this.pipelines2 = builder.pipelines2;// Map.copyOf(builder.pipelines2);
         this.bundleBuilder = builder.builder;
         this.contracts = Map.copyOf(builder.contracts);
         this.onAdd = builder.onExtensionInstantiatedAction;
@@ -196,6 +198,8 @@ public final class ExtensionModel<E extends Extension> {
         /** A builder for all methods annotated with {@link OnHook} on the extension. */
         private OnHookModel onHookModel;
 
+        public final HashMap<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, ExtensionWireletPipelineModel> pipelines2 = new HashMap<>();
+
         /**
          * Creates a new builder.
          * 
@@ -218,6 +222,10 @@ public final class ExtensionModel<E extends Extension> {
                 for (Class<? extends Extension> ccc : em.dependencies()) {
                     ExtensionModelLoader.load(ccc, runtime);
                     dependenciesDirect.add(ccc);
+                }
+                for (Class<? extends Pipeline<?, ?, ?>> c : em.pipelines()) {
+                    // ExtensionWireletPipelineModel pm = ExtensionWireletPipelineModel.of(c);
+                    pipelines2.put(c, null);
                 }
             }
 

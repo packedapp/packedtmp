@@ -120,7 +120,7 @@ public final class PackedExtensionContext implements ExtensionContext {
         try {
             pcc.activeExtension = this;
             for (var v : model.l) {
-                if (v.onMainFinished) {
+                if (v.onInstantiation) {
                     try {
                         v.mh.invoke(extension);
                     } catch (Throwable e) {
