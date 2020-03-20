@@ -15,17 +15,7 @@
  */
 package packed.internal.container;
 
-import static java.util.Objects.requireNonNull;
-
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-
-import app.packed.analysis.BundleDescriptor;
-import app.packed.base.Contract;
-import app.packed.base.Nullable;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionWirelet;
-import app.packed.container.InternalExtensionException;
 
 /**
  * An extension composer is used for specifying how an extension works.
@@ -35,99 +25,99 @@ import app.packed.container.InternalExtensionException;
 // Skal vi have en metode der styrer om install er paa extension eller generic
 public abstract class ExtensionComposer<E extends Extension> {
 
-    /** The context that all calls are delegated to, must only be accessed via {@link #context}. */
-    private ExtensionModelLoadContext context;
-
-    /** Configures this composer. This method is invoked exactly once for a given implementation. */
-    protected abstract void compose();
-
-    /**
-     * Returns the context object that this composer wraps.
-     * 
-     * @return the context object that this composer wraps.
-     * @throws IllegalStateException
-     *             if called outside of {@link #compose()}
-     */
-    private ExtensionModelLoadContext context() {
-        ExtensionModelLoadContext c = context;
-        if (c == null) {
-            throw new IllegalStateException(
-                    "This method can only be called from within the #configure() method. Maybe you tried to call #configure() directly");
-        }
-        return c;
-    }
-
-    /**
-     * Invoked by the runtime to start the configuration process.
-     * 
-     * @param context
-     *            the context used for configuration
-     */
-    final void doConfigure(ExtensionModelLoadContext context) {
-        this.context = requireNonNull(context);
-        try {
-            compose();
-        } finally {
-            this.context = null;
-        }
-        // Im not sure we want to null it out...
-        // We should have some way to mark it failed????
-        // If configure() fails. The ContainerConfiguration still works...
-        /// Well we should probably catch the exception from where ever we call his method
-        // Checkout error model for extension loading
-    }
-
-//    /////////////////// Cleanup
+//    /** The context that all calls are delegated to, must only be accessed via {@link #context}. */
+//    private ExtensionModelLoadContext context;
 //
-//    protected final <P extends ExtensionWirelet.Pipeline<E, P, W>, W extends ExtensionWirelet<P>> void addPipeline(Class<P> pipelineType,
-//            Function<E, P> pipelineFactory) {
-//        requireNonNull(pipelineType, "pipelineType is null");
-//        requireNonNull(pipelineFactory, "pipelineFactory is null");
-//        // Validation??? Pipeline model...
+//    /** Configures this composer. This method is invoked exactly once for a given implementation. */
+//    protected abstract void compose();
 //
-//        // Hmmm, har jo samme problem som dependencies her....
-//
-//        context().pipelines.putIfAbsent(pipelineType, pipelineFactory);
+//    /**
+//     * Returns the context object that this composer wraps.
+//     * 
+//     * @return the context object that this composer wraps.
+//     * @throws IllegalStateException
+//     *             if called outside of {@link #compose()}
+//     */
+//    private ExtensionModelLoadContext context() {
+//        ExtensionModelLoadContext c = context;
+//        if (c == null) {
+//            throw new IllegalStateException(
+//                    "This method can only be called from within the #configure() method. Maybe you tried to call #configure() directly");
+//        }
+//        return c;
 //    }
-
-    /**
-     * Exposes a contract of the specified type.
-     * <p>
-     * if no pipeline of the specified type is available then null is passed as the second argument to {@link BiFunction}.
-     * 
-     * <p>
-     * If the specified contract factory does not return a non-null object of the specified contract type when invoked, the
-     * runtime will will throw a {@link InternalExtensionException}.
-     * 
-     * @param <C>
-     *            the type of contract to expose
-     * @param contractType
-     *            the type of contract the factory creates
-     * @param contractFactory
-     *            a factory for creating the contract
-     * @throws InternalExtensionException
-     *             if trying to register a contract type that has already been registered with another extension
-     */
-    protected final <C extends Contract, T extends ExtensionWirelet.Pipeline<?, ?, ?>> void exposeContract(Class<C> contractType, Class<T> pipelineType,
-            BiFunction<? super E, @Nullable T, C> contractFactory) {
-        // check pipelinetype is registered
-        requireNonNull(contractType, "contractType is null");
-        requireNonNull(contractFactory, "contractFactory is null");
-        context().contracts.putIfAbsent(contractType, contractFactory);
-    }
+//
+//    /**
+//     * Invoked by the runtime to start the configuration process.
+//     * 
+//     * @param context
+//     *            the context used for configuration
+//     */
+//    final void doConfigure(ExtensionModelLoadContext context) {
+//        this.context = requireNonNull(context);
+//        try {
+//            compose();
+//        } finally {
+//            this.context = null;
+//        }
+//        // Im not sure we want to null it out...
+//        // We should have some way to mark it failed????
+//        // If configure() fails. The ContainerConfiguration still works...
+//        /// Well we should probably catch the exception from where ever we call his method
+//        // Checkout error model for extension loading
+//    }
+//
+////    /////////////////// Cleanup
+////
+////    protected final <P extends ExtensionWirelet.Pipeline<E, P, W>, W extends ExtensionWirelet<P>> void addPipeline(Class<P> pipelineType,
+////            Function<E, P> pipelineFactory) {
+////        requireNonNull(pipelineType, "pipelineType is null");
+////        requireNonNull(pipelineFactory, "pipelineFactory is null");
+////        // Validation??? Pipeline model...
+////
+////        // Hmmm, har jo samme problem som dependencies her....
+////
+////        context().pipelines.putIfAbsent(pipelineType, pipelineFactory);
+////    }
+//
+//    /**
+//     * Exposes a contract of the specified type.
+//     * <p>
+//     * if no pipeline of the specified type is available then null is passed as the second argument to {@link BiFunction}.
+//     * 
+//     * <p>
+//     * If the specified contract factory does not return a non-null object of the specified contract type when invoked, the
+//     * runtime will will throw a {@link InternalExtensionException}.
+//     * 
+//     * @param <C>
+//     *            the type of contract to expose
+//     * @param contractType
+//     *            the type of contract the factory creates
+//     * @param contractFactory
+//     *            a factory for creating the contract
+//     * @throws InternalExtensionException
+//     *             if trying to register a contract type that has already been registered with another extension
+//     */
+//    protected final <C extends Contract, T extends ExtensionWirelet.Pipeline<?, ?, ?>> void exposeContract(Class<C> contractType, Class<T> pipelineType,
+//            BiFunction<? super E, @Nullable T, C> contractFactory) {
+//        // check pipelinetype is registered
+//        requireNonNull(contractType, "contractType is null");
+//        requireNonNull(contractFactory, "contractFactory is null");
+//        context().contracts.putIfAbsent(contractType, contractFactory);
+//    }
 
 //    protected final <C extends Contract> void exposeContract(Class<C> contractType, Function<? super E, C> contractFactory) {
 //        requireNonNull(contractType, "contractType is null");
 //        requireNonNull(contractFactory, "contractFactory is null");
 //        context().contracts.putIfAbsent(contractType, contractFactory);
 //    }
-
-    @SuppressWarnings("unchecked")
-    // Den er ikke saerlig god den her....
-    //// Kan bedre lide exposeContract
-    protected final void exposeDescriptor(BiConsumer<? super E, ? super BundleDescriptor.Builder> builder) {
-        context().builder = (BiConsumer<? super Extension, ? super BundleDescriptor.Builder>) requireNonNull(builder, "builder is null");
-    }
+//
+//    @SuppressWarnings("unchecked")
+//    // Den er ikke saerlig god den her....
+//    //// Kan bedre lide exposeContract
+//    protected final void exposeDescriptor(BiConsumer<? super E, ? super BundleDescriptor.Builder> builder) {
+//        context().builder = (BiConsumer<? super Extension, ? super BundleDescriptor.Builder>) requireNonNull(builder, "builder is null");
+//    }
 }
 
 //protected final void exposeFeature() {}

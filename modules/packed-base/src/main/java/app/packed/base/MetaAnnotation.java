@@ -1,9 +1,9 @@
-package app.packed.base.reflect;
+package app.packed.base;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Repeatable;
 
-import app.packed.base.reflect.MetaAnnotation.Many;
+import app.packed.base.MetaAnnotation.Many;
 
 @Repeatable(Many.class)
 public @interface MetaAnnotation {

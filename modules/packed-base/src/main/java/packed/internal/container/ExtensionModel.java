@@ -23,11 +23,15 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
+import app.packed.analysis.BundleDescriptor;
 import app.packed.base.Contract;
 import app.packed.base.Nullable;
 import app.packed.component.Component;
@@ -66,7 +70,7 @@ public final class ExtensionModel<E extends Extension> {
                 throw new IllegalArgumentException(
                         "The specified type '" + StringFormatter.format(type) + "' does not extend '" + StringFormatter.format(Extension.class) + "'");
             }
-            return ExtensionModelLoader.load((Class<? extends Extension>) type, null);
+            return ExtensionModelLoader.load((Class<? extends Extension>) type);
 
         }
     };
@@ -183,7 +187,7 @@ public final class ExtensionModel<E extends Extension> {
     }
 
     /** A builder for {@link ExtensionModel}. */
-    static final class Builder extends ExtensionModelLoadContext {
+    static final class Builder {
 
         /** The constructor used to create a new extension instance. */
         private MethodHandle constructor;
@@ -195,14 +199,36 @@ public final class ExtensionModel<E extends Extension> {
 
         public final HashMap<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, ExtensionWireletPipelineModel> pipelines2 = new HashMap<>();
 
+//        Builder(Class<? extends Extension> extensionType, ExtensionModelLoader loader) {
+//            super(extensionType, loader);
+//        }
+        public BiConsumer<? super Extension, ? super BundleDescriptor.Builder> builder;
+
+        public MethodHandle builderMethod;
+
+        // Need to check that a contract never belongs to two extension.
+        // Also, I think we want to do this atomically, so that we do not have half an extension registered somewhere.
+        // This means we want to synchronize things.
+        // So add all shit, quick validation-> Sync->Validate final -> AddAll ->UnSync
+        public final IdentityHashMap<Class<? extends Contract>, Object> contracts = new IdentityHashMap<>();
+
+        /** A list of dependencies on other extensions. */
+        Set<Class<? extends Extension>> dependenciesDirect = new HashSet<>();
+
+        /** The type of extension we are building a model for. */
+        final Class<? extends Extension> extensionType;
+
+        final ExtensionModelLoader runtime;
+
         /**
          * Creates a new builder.
          * 
          * @param extensionType
          *            the type of extension we are building a model for
          */
-        Builder(Class<? extends Extension> extensionType, ExtensionModelLoader.Runtime runtime) {
-            super(extensionType, runtime);
+        Builder(Class<? extends Extension> extensionType, ExtensionModelLoader runtime) {
+            this.extensionType = requireNonNull(extensionType);
+            this.runtime = runtime;
         }
 
         /**

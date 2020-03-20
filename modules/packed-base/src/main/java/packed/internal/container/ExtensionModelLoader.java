@@ -27,56 +27,67 @@ import app.packed.container.InternalExtensionException;
  */
 final class ExtensionModelLoader {
 
-    private static final WeakHashMap<Class<? extends Extension>, ExtensionModel<?>> MODELS = new WeakHashMap<>();
-
     private static final WeakHashMap<Class<? extends Extension>, Throwable> ERRORS = new WeakHashMap<>();
 
-    private static final ReentrantLock lock = new ReentrantLock();
+    private static final ReentrantLock GLOBAL_LOCK = new ReentrantLock();
+
+    private static final WeakHashMap<Class<? extends Extension>, ExtensionModel<?>> MODELS = new WeakHashMap<>();
+
+    final ArrayDeque<Class<? extends Extension>> stack = new ArrayDeque<>();
+
+    private ExtensionModelLoader() {}
+
+    static <E extends Extension> ExtensionModel<E> load(Class<E> extensionType) {
+        return load0(extensionType, null);
+    }
+
+    static <E extends Extension> ExtensionModel<E> load(Class<E> extensionType, ExtensionModelLoader runtime) {
+        return load0(extensionType, runtime);
+    }
 
     @SuppressWarnings("unchecked")
-    static <E extends Extension> ExtensionModel<E> load(Class<E> extensionType, Runtime runtime) {
-        lock.lock();
+    static <E extends Extension> ExtensionModel<E> load0(Class<E> extensionType, ExtensionModelLoader runtime) {
+        GLOBAL_LOCK.lock();
         try {
+            // First lets see if we have created the model before
             ExtensionModel<?> m = MODELS.get(extensionType);
             if (m != null) {
                 return (ExtensionModel<E>) m;
             }
+
+            // Lets then see if we have tried to create the model before, but failed
             Throwable t = ERRORS.get(extensionType);
             if (t != null) {
                 throw new InternalExtensionException("Extension " + extensionType + " failed to be configured previously", t);
             }
 
+            //
             if (runtime == null) {
-                runtime = new Runtime();
+                runtime = new ExtensionModelLoader();
             }
-            return load0(extensionType, runtime);
+            return runtime.load1(extensionType);
         } finally {
-            lock.unlock();
+            GLOBAL_LOCK.unlock();
         }
     }
 
     @SuppressWarnings("unchecked")
-    private static <E extends Extension> ExtensionModel<E> load0(Class<E> extensionType, Runtime runtime) {
-        if (runtime.stack.contains(extensionType)) {
+    private <E extends Extension> ExtensionModel<E> load1(Class<E> extensionType) {
+        if (stack.contains(extensionType)) {
             throw new RuntimeException("Cyclic error");
         }
-        runtime.stack.push(extensionType);
+        stack.push(extensionType);
 
         ExtensionModel<E> m;
         try {
-            m = (ExtensionModel<E>) new ExtensionModel.Builder(extensionType, runtime).build();
+            m = (ExtensionModel<E>) new ExtensionModel.Builder(extensionType, this).build();
         } catch (Throwable t) {
             ERRORS.put(extensionType, t);
             throw t;
         } finally {
-            runtime.stack.pop();
+            stack.pop();
         }
         MODELS.put(extensionType, m);
         return m;
-    }
-
-    static class Runtime {
-        final ArrayDeque<Class<? extends Extension>> stack = new ArrayDeque<>();
-
     }
 }

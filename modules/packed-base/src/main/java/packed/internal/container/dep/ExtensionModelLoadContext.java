@@ -13,38 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.container.dep;
 
-import static java.util.Objects.requireNonNull;
-
-import java.lang.invoke.MethodHandle;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Set;
-import java.util.function.BiConsumer;
-
-import app.packed.analysis.BundleDescriptor;
-import app.packed.base.Contract;
-import app.packed.container.Extension;
+import packed.internal.container.ExtensionComposer;
 
 /** A context object used for all registration for an {@link ExtensionComposer}. */
 public abstract class ExtensionModelLoadContext {
-
-    public BiConsumer<? super Extension, ? super BundleDescriptor.Builder> builder;
-
-    public MethodHandle builderMethod;
-
-    // Need to check that a contract never belongs to two extension.
-    // Also, I think we want to do this atomically, so that we do not have half an extension registered somewhere.
-    // This means we want to synchronize things.
-    // So add all shit, quick validation-> Sync->Validate final -> AddAll ->UnSync
-    public final IdentityHashMap<Class<? extends Contract>, Object> contracts = new IdentityHashMap<>();
-
-    /** A list of dependencies on other extensions. */
-    Set<Class<? extends Extension>> dependenciesDirect = new HashSet<>();
-
-    /** The type of extension we are building a model for. */
-    final Class<? extends Extension> extensionType;
 
     // public BiConsumer<? super Extension, ? super ExtensionInstantiationContext> onInstantiation;
 
@@ -64,14 +38,30 @@ public abstract class ExtensionModelLoadContext {
 
     // public final IdentityHashMap<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, Function<?, ?>> pipelines = new
     // IdentityHashMap<>();
-
-    final ExtensionModelLoader.Runtime runtime;
-
-    /** This class can only be overridden by another class in this package. */
-    ExtensionModelLoadContext(Class<? extends Extension> extensionType, ExtensionModelLoader.Runtime runtime) {
-        this.extensionType = requireNonNull(extensionType);
-        this.runtime = runtime;
-    }
+//
+//    public BiConsumer<? super Extension, ? super BundleDescriptor.Builder> builder;
+//
+//    public MethodHandle builderMethod;
+//
+//    // Need to check that a contract never belongs to two extension.
+//    // Also, I think we want to do this atomically, so that we do not have half an extension registered somewhere.
+//    // This means we want to synchronize things.
+//    // So add all shit, quick validation-> Sync->Validate final -> AddAll ->UnSync
+//    public final IdentityHashMap<Class<? extends Contract>, Object> contracts = new IdentityHashMap<>();
+//
+//    /** A list of dependencies on other extensions. */
+//    Set<Class<? extends Extension>> dependenciesDirect = new HashSet<>();
+//
+//    /** The type of extension we are building a model for. */
+//    final Class<? extends Extension> extensionType;
+//
+//    final ExtensionModelLoader runtime;
+//
+//    /** This class can only be overridden by another class in this package. */
+//    ExtensionModelLoadContext(Class<? extends Extension> extensionType, ExtensionModelLoader runtime) {
+//        this.extensionType = requireNonNull(extensionType);
+//        this.runtime = runtime;
+//    }
 
 //    @SafeVarargs
 //    public final void addDependencies(Class<? extends Extension>... dependencies) {

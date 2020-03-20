@@ -31,6 +31,10 @@ import app.packed.inject.Factory;
  * implementation or in the same package as the extension itself.
  * <p>
  * Instances of this class should never be exposed to end-users.
+ * 
+ * @apiNote In the future, if the Java language permits, {@link ExtensionContext} may become a {@code sealed} interface,
+ *          which would prohibit subclassing except by explicitly permitted types.
+ * 
  */
 public interface ExtensionContext {
 
@@ -87,9 +91,9 @@ public interface ExtensionContext {
      * Returns an extension of the specified type. The specified type must be among the extension's dependencies as
      * specified via.... Otherwise an {@link InternalExtensionException} is thrown.
      * <p>
-     * This method works similar to {@link ContainerConfiguration#use(Class)}. However, this method checks that only extensions
-     * that have been declared as dependencies via {@link ExtensionMeta#dependencies()} are specified. This is done in order
-     * to make sure that no extensions ever depend on each other.
+     * This method works similar to {@link ContainerConfiguration#use(Class)}. However, this method checks that only
+     * extensions that have been declared as dependencies via {@link ExtensionMeta#dependencies()} are specified. This is
+     * done in order to make sure that no extensions ever depend on each other.
      * 
      * @param <E>
      *            the type of extension to return

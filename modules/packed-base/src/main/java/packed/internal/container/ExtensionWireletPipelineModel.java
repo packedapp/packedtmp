@@ -49,9 +49,6 @@ public final class ExtensionWireletPipelineModel {
     /** The extension model for this pipeline. */
     private final ExtensionModel<?> extension;
 
-    /// ** The factory used for creating new pipeline instances. */
-    // private final Function<?, ?> factory;
-
     /** The type of pipeline. */
     private final Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>> type;
 
@@ -65,7 +62,6 @@ public final class ExtensionWireletPipelineModel {
         this.type = builder.actualType;
         Class<? extends Extension> extensionType = (Class<? extends Extension>) EXTENSION_NODE_TV_EXTRACTOR.extract(builder.actualType);
         this.extension = ExtensionModel.of(extensionType);
-        // this.factory = requireNonNull(extension.pipelines.get(type));
         this.constructor = requireNonNull(builder.constructor);
     }
 
@@ -151,8 +147,7 @@ public final class ExtensionWireletPipelineModel {
      * wirelet. Which points to the pipeline it is a part of.
      */
     // Right now this is just a static class, because I'm unsure whether or not we will cache other information than the
-    // type parameter
-    // to ExtensionWirelet
+    // type parameter to ExtensionWirelet
     private static class ExtensionWireletModel {
 
         /** A cache of values. */
