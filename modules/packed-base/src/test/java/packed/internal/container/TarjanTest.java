@@ -19,8 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.component.Packlet;
 import app.packed.container.Extension;
-import app.packed.container.UseExtension;
 
 /**
  *
@@ -38,15 +38,15 @@ public class TarjanTest {
 
     private class TarjNoAnnotation extends Extension {}
 
-    @UseExtension({})
+    @Packlet({})
     private class Tarj extends Extension {}
 
-    @UseExtension(Tarj.class)
+    @Packlet(Tarj.class)
     private class Tarj1 extends Extension {}
 
-    @UseExtension(Tarj.class)
+    @Packlet(Tarj.class)
     private class Tarj2 extends Extension {}
 
-    @UseExtension({ Tarj1.class, Tarj2.class })
+    @Packlet({ Tarj1.class, Tarj2.class })
     private class Tarj12 extends Extension {}
 }

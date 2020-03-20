@@ -18,7 +18,7 @@ package app.packed.artifact;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.container.ContainerComposer;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.service.Injector;
@@ -176,7 +176,7 @@ public abstract class ArtifactDriver<T> {
      */
     protected abstract T newArtifact(ArtifactContext context);
 
-    public final <C> T newArtifact(Function<ContainerComposer, C> factory, Consumer<C> consumer, Wirelet... wirelets) {
+    public final <C> T newArtifact(Function<ContainerConfiguration, C> factory, Consumer<C> consumer, Wirelet... wirelets) {
         PackedContainerConfiguration pcc = new PackedContainerConfiguration(BuildOutput.artifact(this), consumer, wirelets);
         C c = factory.apply(pcc);
         consumer.accept(c);

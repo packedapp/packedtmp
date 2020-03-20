@@ -28,33 +28,28 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface ExtensionCallback {
-    boolean onInstantiation() default false;
-
-    boolean onPreembleDone() default false;
-}
-// Must be nonstatic and parameter less????
-
-//An extension cannot have more than one method for a given assembling event.
-//@AfterExtension(Instantiated)
-enum ExtensionState {
 
     /**
      * The extension has been successfully instantiated. But the extension instance has not yet been returned to the user.
+     * Used for invoking methods on {@link ExtensionContext}.
      */
-    INSTANTIATED,
+    boolean onInstantiation() default false;
 
     /** All components and extensions have been added and configured. */
-    PREEMBLED_DONE,
+    boolean onPreembleDone() default false;
 
     /**
      * Any child containers located in the same artifact will be has been defined. Typically using
      * {@link Bundle#link(Bundle, app.packed.container.Wirelet...)}.
      */
-    CHILDREN_ADDING_FINISHED,
+    boolean onChildrenAddingFinished() default false;
 
-    /** */
-    GUESTS_FINISHED;
+    boolean onGuestsFinished() default false;
 }
+// Must be nonstatic and parameter less????
+
+//An extension cannot have more than one method for a given assembling event.
+//@AfterExtension(Instantiated)
 
 //Container finished
 
@@ -69,3 +64,23 @@ enum ExtensionState {
 //Kan sagtens tage statiske metoder..
 
 //F.eks. en artifact finished....
+//enum ExtensionState {
+//
+//  /**
+//   * The extension has been successfully instantiated. But the extension instance has not yet been returned to the user.
+//   * Used for invoking methods on {@link ExtensionContext}.
+//   */
+//  INSTANTIATED,
+//
+//  /** All components and extensions have been added and configured. */
+//  PREEMBLED_DONE,
+//
+//  /**
+//   * Any child containers located in the same artifact will be has been defined. Typically using
+//   * {@link Bundle#link(Bundle, app.packed.container.Wirelet...)}.
+//   */
+//  CHILDREN_ADDING_FINISHED,
+//
+//  /** */
+//  GUESTS_FINISHED;
+//}

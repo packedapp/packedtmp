@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.IdentityHashMap;
 
 import app.packed.base.Nullable;
-import app.packed.container.ContainerComposer;
+import app.packed.container.ContainerConfiguration;
 import packed.internal.container.WireletContext;
 
 /**
@@ -47,7 +47,7 @@ import packed.internal.container.WireletContext;
 public final class PackedArtifactInstantiationContext {
 
     /** All context objects. */
-    private final IdentityHashMap<ContainerComposer, IdentityHashMap<Class<?>, Object>> map = new IdentityHashMap<>();
+    private final IdentityHashMap<ContainerConfiguration, IdentityHashMap<Class<?>, Object>> map = new IdentityHashMap<>();
 
     public final WireletContext wirelets;
 
@@ -66,14 +66,14 @@ public final class PackedArtifactInstantiationContext {
 
     @SuppressWarnings("unchecked")
     @Nullable
-    public <T> T get(ContainerComposer configuration, Class<T> type) {
+    public <T> T get(ContainerConfiguration configuration, Class<T> type) {
         requireNonNull(configuration, "configuration is null");
         requireNonNull(type, "type is null");
         var e = map.get(configuration);
         return e == null ? null : (T) e.get(type);
     }
 
-    public void put(ContainerComposer configuration, Object obj) {
+    public void put(ContainerConfiguration configuration, Object obj) {
         requireNonNull(configuration, "configuration is null");
         requireNonNull(obj, "obj is null");
         map.computeIfAbsent(configuration, e -> new IdentityHashMap<>()).put(obj.getClass(), obj);

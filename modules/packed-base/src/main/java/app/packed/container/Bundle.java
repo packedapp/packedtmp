@@ -36,8 +36,8 @@ import packed.internal.moduleaccess.ModuleAccess;
 
 /**
  * Bundles are the main source of configuration for containers and artifacts. Basically a bundle is just a thin wrapper
- * around {@link ContainerComposer}. Delegating every invokation in the class to an instance of
- * {@link ContainerComposer} available via {@link #configuration()}.
+ * around {@link ContainerConfiguration}. Delegating every invokation in the class to an instance of
+ * {@link ContainerConfiguration} available via {@link #configuration()}.
  * <p>
  * Once consumed a bundle cannot be used...
  * 
@@ -61,14 +61,14 @@ public abstract class Bundle implements Assembly {
 
             /** {@inheritDoc} */
             @Override
-            public void doConfigure(Bundle bundle, ContainerComposer configuration) {
+            public void doConfigure(Bundle bundle, ContainerConfiguration configuration) {
                 bundle.doCompose(configuration);
             }
         });
     }
 
     /** The configuration of the container. Should only be read via {@link #configuration}. */
-    private ContainerComposer configuration;
+    private ContainerConfiguration configuration;
 
     /** The state of the bundle. 0 not-initialized, 1 in-progress, 2 completed. */
     private final AtomicInteger state = new AtomicInteger();
@@ -79,7 +79,7 @@ public abstract class Bundle implements Assembly {
      * 
      * @throws IllegalStateException
      *             if {@link #compose()} has been invoked
-     * @see ContainerComposer#checkConfigurable()
+     * @see ContainerConfiguration#checkConfigurable()
      */
     protected final void checkConfigurable() {
         configuration().checkConfigurable();
@@ -89,7 +89,7 @@ public abstract class Bundle implements Assembly {
      * Returns the configuration site of this bundle.
      * 
      * @return the configuration site of this bundle
-     * @see ContainerComposer#configSite()
+     * @see ContainerConfiguration#configSite()
      */
     protected final ConfigSite configSite() {
         return configuration().configSite();
@@ -102,8 +102,8 @@ public abstract class Bundle implements Assembly {
      * @throws IllegalStateException
      *             if called from outside of {@link #compose()}
      */
-    protected final ContainerComposer configuration() {
-        ContainerComposer c = configuration;
+    protected final ContainerConfiguration configuration() {
+        ContainerConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
         }
@@ -125,7 +125,7 @@ public abstract class Bundle implements Assembly {
      * @throws IllegalStateException
      *             if the bundle is in use, or has previously been used
      */
-    private void doCompose(ContainerComposer configuration) {
+    private void doCompose(ContainerConfiguration configuration) {
         int s = state.compareAndExchange(0, 1);
         if (s == 1) {
             throw new IllegalStateException("This bundle is being used elsewhere.");
@@ -155,7 +155,7 @@ public abstract class Bundle implements Assembly {
      * Returns an unmodifiable view of the extensions that are currently being used.
      * 
      * @return an unmodifiable view of the extensions that are currently being used
-     * @see ContainerComposer#extensions()
+     * @see ContainerConfiguration#extensions()
      * @see #use(Class)
      */
     protected final Set<Class<? extends Extension>> extensions() {
@@ -167,7 +167,7 @@ public abstract class Bundle implements Assembly {
      * 
      * @return any description that has been set
      * @see #setDescription(String)
-     * @see ContainerComposer#getDescription()
+     * @see ContainerConfiguration#getDescription()
      */
     @Nullable
     protected final String getDescription() {
@@ -183,7 +183,7 @@ public abstract class Bundle implements Assembly {
      * 
      * @return the name of the container
      * @see #setName(String)
-     * @see ContainerComposer#setName(String)
+     * @see ContainerConfiguration#setName(String)
      */
     protected final String getName() {
         return configuration().getName();
@@ -260,7 +260,7 @@ public abstract class Bundle implements Assembly {
      * Returns whether or not this bundle will configure the top container in an artifact.
      * 
      * @return whether or not this bundle will configure the top container in an artifact
-     * @see ContainerComposer#isArtifactRoot()
+     * @see ContainerConfiguration#isArtifactRoot()
      */
     protected final boolean isTopContainer() {
         return configuration().isArtifactRoot();
@@ -273,7 +273,7 @@ public abstract class Bundle implements Assembly {
      *            the bundle to link
      * @param wirelets
      *            an optional array of wirelets
-     * @see ContainerComposer#link(Bundle, Wirelet...)
+     * @see ContainerConfiguration#link(Bundle, Wirelet...)
      */
     protected final void link(Bundle bundle, Wirelet... wirelets) {
         configuration().link(bundle, wirelets);
@@ -285,7 +285,7 @@ public abstract class Bundle implements Assembly {
      * 
      * @param lookup
      *            the lookup object
-     * @see ContainerComposer#lookup(Lookup)
+     * @see ContainerConfiguration#lookup(Lookup)
      */
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
@@ -307,7 +307,7 @@ public abstract class Bundle implements Assembly {
      * Returns the full path of the container that this bundle creates.
      * 
      * @return the full path of the container that this bundle creates
-     * @see ContainerComposer#path()
+     * @see ContainerConfiguration#path()
      */
     protected final ComponentPath path() {
         return configuration().path();
@@ -318,7 +318,7 @@ public abstract class Bundle implements Assembly {
      * 
      * @param description
      *            the description to set
-     * @see ContainerComposer#setDescription(String)
+     * @see ContainerConfiguration#setDescription(String)
      * @see #getDescription()
      */
     protected final void setDescription(String description) {
@@ -337,7 +337,7 @@ public abstract class Bundle implements Assembly {
      * @param name
      *            the name of the container
      * @see #getName()
-     * @see ContainerComposer#setName(String)
+     * @see ContainerConfiguration#setName(String)
      * @throws IllegalArgumentException
      *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
      *             characters and '_', '-' or '.'
@@ -359,7 +359,7 @@ public abstract class Bundle implements Assembly {
      * @return an extension of the specified type
      * @throws IllegalStateException
      *             if called from outside {@link #compose()}
-     * @see ContainerComposer#use(Class)
+     * @see ContainerConfiguration#use(Class)
      */
     protected final <T extends Extension> T use(Class<T> extensionType) {
         return configuration().use(extensionType);

@@ -25,7 +25,6 @@ import java.util.List;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMeta;
 import app.packed.container.InternalExtensionException;
-import app.packed.container.UseExtension;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -45,10 +44,10 @@ public class ExtensionUseModel2 {
                 } catch (ClassNotFoundException ignore) {}
                 if (c != null) {
                     if (Extension.class == c) {
-                        throw new InternalExtensionException("@" + UseExtension.class.getSimpleName() + " " + StringFormatter.format(declaringClass)
-                                + " cannot specify Extension as an optional dependency, for " + StringFormatter.format(c));
+                        throw new InternalExtensionException("@" + ExtensionMeta.class.getSimpleName() + " " + StringFormatter.format(declaringClass)
+                                + " cannot specify Extension.class as an optional dependency, for " + StringFormatter.format(c));
                     } else if (!Extension.class.isAssignableFrom(c)) {
-                        throw new InternalExtensionException("@" + UseExtension.class.getSimpleName() + " " + StringFormatter.format(declaringClass)
+                        throw new InternalExtensionException("@" + ExtensionMeta.class.getSimpleName() + " " + StringFormatter.format(declaringClass)
                                 + " specified an invalid extension " + StringFormatter.format(c));
                     }
 
@@ -66,13 +65,13 @@ public class ExtensionUseModel2 {
         protected List<Class<? extends Extension>> computeValue(Class<?> type) {
             LinkedHashSet<Class<? extends Extension>> list = new LinkedHashSet<>();
 
-            UseExtension ue = type.getAnnotation(UseExtension.class);
-            if (ue != null) {
-                for (Class<? extends Extension> c : ue.value()) {
-                    list.add(c);
-                }
-                loadOptional(list, type, ue.optional());
-            }
+//            UseExtension ue = type.getAnnotation(UseExtension.class);
+//            if (ue != null) {
+//                for (Class<? extends Extension> c : ue.value()) {
+//                    list.add(c);
+//                }
+//                loadOptional(list, type, ue.optional());
+//            }
             ExtensionMeta em = type.getAnnotation(ExtensionMeta.class);
             if (em != null) {
                 for (Class<? extends Extension> c : em.dependencies()) {

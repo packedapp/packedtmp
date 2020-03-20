@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.component;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -21,6 +21,9 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import app.packed.container.Bundle;
+import app.packed.container.Extension;
 
 /**
  * An annotation indicating that the runtime must install one or more extensions of annotated type requires
@@ -44,10 +47,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-
+//RequireExtension, UseExtension, ActivateExtension
 //Tror den ryger ud...
 //Paa componenter kan man altid bruge {packlet=componentType.class, extension = ExtensionToUse.class}
-public @interface UseExtension {
+public @interface Packlet {
 
     /**
      * Optional extension types that will only be used if they can be resolved at runtime using
@@ -59,6 +62,8 @@ public @interface UseExtension {
      * @return any optional extensions that should be used
      * @see Class#forName(String)
      */
+    // I'm not sure this is really useful for Packlets, as they would normally be available in the
+    // same module as the extension
     String[] optional() default {};
 
     /**
@@ -68,7 +73,3 @@ public @interface UseExtension {
      */
     Class<? extends Extension>[] value();
 }
-// RequireExtension, UseExtension, ActivateExtension
-
-//Mit problem med at bruge UseExtension paa en bundle er saa bliver det blandet rundt...
-//Noget i #compose() or noget andet paa selve

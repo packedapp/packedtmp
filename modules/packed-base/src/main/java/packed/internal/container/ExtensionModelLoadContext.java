@@ -26,7 +26,6 @@ import java.util.function.BiConsumer;
 import app.packed.analysis.BundleDescriptor;
 import app.packed.base.Contract;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionComposer;
 
 /** A context object used for all registration for an {@link ExtensionComposer}. */
 public abstract class ExtensionModelLoadContext {

@@ -33,7 +33,7 @@ import app.packed.component.ComponentPath;
 import app.packed.component.FeatureMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
-import app.packed.container.ContainerComposer;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import packed.internal.artifact.BuildOutput;
 import packed.internal.artifact.PackedArtifactBuildContext;
@@ -400,7 +400,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
         /** One of the install component methods has been invoked. */
         INSTALL_INVOKED,
 
-        /** {@link ContainerComposer#link(Bundle, app.packed.container.Wirelet...)} has been invoked. */
+        /** {@link ContainerConfiguration#link(Bundle, app.packed.container.Wirelet...)} has been invoked. */
         LINK_INVOKED,
 
         /** One of the install component methods has been invoked. */

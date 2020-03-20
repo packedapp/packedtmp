@@ -79,7 +79,7 @@ public interface ExtensionContext {
      * @param instance
      *            the instance to install
      * @return the configuration of the component
-     * @see ContainerComposer#installInstance(Object)
+     * @see ContainerConfiguration#installInstance(Object)
      */
     <T> SingletonConfiguration<T> installInstance(T instance);
 
@@ -87,7 +87,7 @@ public interface ExtensionContext {
      * Returns an extension of the specified type. The specified type must be among the extension's dependencies as
      * specified via.... Otherwise an {@link InternalExtensionException} is thrown.
      * <p>
-     * This method works similar to {@link ContainerComposer#use(Class)}. However, this method checks that only extensions
+     * This method works similar to {@link ContainerConfiguration#use(Class)}. However, this method checks that only extensions
      * that have been declared as dependencies via {@link ExtensionMeta#dependencies()} are specified. This is done in order
      * to make sure that no extensions ever depend on each other.
      * 
@@ -102,7 +102,7 @@ public interface ExtensionContext {
      * @throws UnsupportedOperationException
      *             if the specified extension type is not specified via {@link ExtensionMeta} on this extension.
      * 
-     * @see ContainerComposer#use(Class)
+     * @see ContainerConfiguration#use(Class)
      */
     <E extends Extension> E use(Class<E> extensionType);
 

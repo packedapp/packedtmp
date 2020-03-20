@@ -25,7 +25,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.base.invoke.Opens;
-import app.packed.container.UseExtension;
+import app.packed.component.Packlet;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a service of some kind. A field
@@ -88,7 +88,7 @@ import app.packed.container.UseExtension;
 @Target({ ElementType.TYPE, ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@UseExtension(ServiceExtension.class)
+@Packlet(ServiceExtension.class)
 @Opens(to = { METHOD_INVOKE, FIELD_SET })
 public @interface Provide {
 

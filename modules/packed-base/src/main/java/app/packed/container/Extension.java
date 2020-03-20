@@ -27,7 +27,6 @@ import app.packed.config.ConfigSite;
 import app.packed.container.ExtensionWirelet.Pipeline;
 import app.packed.inject.Factory;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.container.ExtensionModelLoadContext;
 import packed.internal.moduleaccess.AppPackedExtensionAccess;
 import packed.internal.moduleaccess.ModuleAccess;
 
@@ -44,7 +43,7 @@ import packed.internal.moduleaccess.ModuleAccess;
  * <p>
  * Every extension implementations must provide either an empty constructor, or a constructor taking a single parameter
  * of type {@link ExtensionContext}. The constructor should have package private accessibility to make sure users do not
- * try an manually instantiate it, but instead use {@link ContainerComposer#use(Class)}. It is also recommended that the
+ * try an manually instantiate it, but instead use {@link ContainerConfiguration#use(Class)}. It is also recommended that the
  * extension itself is declared final.
  */
 
@@ -78,12 +77,6 @@ public abstract class Extension {
 
     static {
         ModuleAccess.initialize(AppPackedExtensionAccess.class, new AppPackedExtensionAccess() {
-
-            /** {@inheritDoc} */
-            @Override
-            public void configureComposer(ExtensionComposer<?> composer, ExtensionModelLoadContext context) {
-                composer.doConfigure(context);
-            }
 
             /** {@inheritDoc} */
             @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -196,7 +189,7 @@ public abstract class Extension {
      * @param instance
      *            the instance to install
      * @return the configuration of the component
-     * @see ContainerComposer#installInstance(Object)
+     * @see ContainerConfiguration#installInstance(Object)
      */
     protected final <T> SingletonConfiguration<T> installInstance(T instance) {
         return context().installInstance(instance);
@@ -208,7 +201,7 @@ public abstract class Extension {
      * Any extension type passed to this method must have explicitly been registered using an {@link ExtensionMeta} on the
      * extension implementation.
      * <p>
-     * Invoking this method is similar to calling {@link ContainerComposer#use(Class)}. However, this method also keeps
+     * Invoking this method is similar to calling {@link ContainerConfiguration#use(Class)}. However, this method also keeps
      * track of which extensions uses other extensions. And forming any kind of circle in the dependency graph will fail
      * with a runtime exception.
      * <p>

@@ -25,10 +25,10 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.Test;
 
 import app.packed.artifact.App;
+import app.packed.component.Packlet;
 import app.packed.component.SingletonConfiguration;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
-import app.packed.container.UseExtension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
@@ -92,7 +92,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ ElementType.METHOD, ElementType.FIELD })
-    @UseExtension(MyExtension.class)
+    @Packlet(MyExtension.class)
     public @interface ActivateMyExtension {
         String value();
     }

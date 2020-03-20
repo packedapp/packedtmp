@@ -21,8 +21,8 @@ import java.util.Map;
 import java.util.Set;
 
 import app.packed.base.Nullable;
+import app.packed.component.Packlet;
 import app.packed.container.Extension;
-import app.packed.container.UseExtension;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
 import packed.internal.util.Tiny;
@@ -37,7 +37,7 @@ public final class LazyExtensionActivationMap {
 
         @Override
         protected Set<Class<? extends Extension>> computeValue(Class<?> type) {
-            UseExtension ae = type.getAnnotation(UseExtension.class);
+            Packlet ae = type.getAnnotation(Packlet.class);
             return ae == null ? null : Set.of(ae.value());
         }
     };
@@ -130,7 +130,7 @@ public final class LazyExtensionActivationMap {
         // we also need all OnHook on bundles which do not have activating annotations.
         // Problem is that if an Extension has an un-activated OnHook method.
         // We just ignore it. Because we just assume that are added via normal mechanisms...
-        UseExtension uela = cl.getAnnotation(UseExtension.class);
+        Packlet uela = cl.getAnnotation(Packlet.class);
         if (uela != null) {
             for (Class<? extends Extension> c : uela.value()) {
                 ExtensionModel<? extends Extension> em = ExtensionModel.of(c);

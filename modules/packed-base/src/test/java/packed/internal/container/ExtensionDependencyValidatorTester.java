@@ -15,8 +15,8 @@
  */
 package packed.internal.container;
 
+import app.packed.component.Packlet;
 import app.packed.container.Extension;
-import app.packed.container.UseExtension;
 
 /**
  *
@@ -29,16 +29,16 @@ public class ExtensionDependencyValidatorTester {
         // System.out.println(ExtensionDependencyValidator.dependenciesOf(MyExtension2.class));
     }
 
-    @UseExtension({ MyExtension2.class, MyExtension3.class })
+    @Packlet({ MyExtension2.class, MyExtension3.class })
     public class MyExtension extends Extension {}
 
-    @UseExtension(MyExtension3.class)
+    @Packlet(MyExtension3.class)
     public class MyExtension2 extends Extension {}
 
-    @UseExtension(MyExtension4.class)
+    @Packlet(MyExtension4.class)
     public class MyExtension3 extends Extension {}
 
-    @UseExtension(MyExtension.class)
+    @Packlet(MyExtension.class)
     public class MyExtension4 extends Extension {}
 
 }

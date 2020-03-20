@@ -22,7 +22,7 @@ import app.packed.component.Component;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
-import app.packed.container.ContainerComposer;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import packed.internal.artifact.PackedArtifactImage;
 
@@ -65,7 +65,7 @@ public interface ArtifactImage extends Assembly {
      * The returned description is always identical to the description of the root container.
      * 
      * @return any description that has been set for the image
-     * @see ContainerComposer#setDescription(String)
+     * @see ContainerConfiguration#setDescription(String)
      * @see Bundle#setDescription(String)
      */
     Optional<String> description();

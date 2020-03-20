@@ -25,7 +25,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.base.invoke.Opens;
-import app.packed.container.UseExtension;
+import app.packed.component.Packlet;
 import app.packed.service.ServiceExtension;
 
 /**
@@ -49,7 +49,7 @@ import app.packed.service.ServiceExtension;
 @Target({ ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@UseExtension(ServiceExtension.class) // Replace with UseSidecar(InjectSidecar.class) [maske defineret i denne klasse]
+@Packlet(ServiceExtension.class) // Replace with UseSidecar(InjectSidecar.class) [maske defineret i denne klasse]
 @Opens(to = { METHOD_INVOKE, FIELD_GET })
 public @interface Inject {}
 

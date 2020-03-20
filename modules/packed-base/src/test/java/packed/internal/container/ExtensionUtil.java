@@ -18,9 +18,9 @@ package packed.internal.container;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.packed.component.Packlet;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
-import app.packed.container.UseExtension;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -36,7 +36,7 @@ final class ExtensionUtil {
             List<Class<?>> list = USE_DEPENDENCIES_OPTIONAL.get(type);
             for (Class<?> c : list) {
                 if (!Extension.class.isAssignableFrom(c)) {
-                    throw new InternalExtensionException("@" + UseExtension.class.getSimpleName() + " " + StringFormatter.format(type)
+                    throw new InternalExtensionException("@" + Packlet.class.getSimpleName() + " " + StringFormatter.format(type)
                             + " specified an invalid extension " + StringFormatter.format(c));
                 }
             }
@@ -54,7 +54,7 @@ final class ExtensionUtil {
 
         @Override
         protected List<Class<?>> computeValue(Class<?> type) {
-            UseExtension ue = type.getAnnotation(UseExtension.class);
+            Packlet ue = type.getAnnotation(Packlet.class);
             if (ue == null) {
                 return List.of();
             }
@@ -79,15 +79,15 @@ final class ExtensionUtil {
     };
 
     /**
-     * Returns a list of extensions specified via {@link UseExtension}. This method will try to resolve any
-     * {@link UseExtension#optional()} specified extensions. This will be only be done on the first call to this method and
+     * Returns a list of extensions specified via {@link Packlet}. This method will try to resolve any
+     * {@link Packlet#optional()} specified extensions. This will be only be done on the first call to this method and
      * returned cached.
      * 
      * @param c
      *            the class to
      * @return a list of extensions
      * @throws InternalExtensionException
-     *             if some classes specified via {@link UseExtension#optional()} does not reference an extension type.
+     *             if some classes specified via {@link Packlet#optional()} does not reference an extension type.
      */
     static final List<Class<? extends Extension>> fromUseExtension(Class<?> c) {
         return USE_DEPENDENCIES.get(c);

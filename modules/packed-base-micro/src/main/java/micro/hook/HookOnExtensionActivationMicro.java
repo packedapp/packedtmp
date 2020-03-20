@@ -31,9 +31,9 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
+import app.packed.component.Packlet;
 import app.packed.component.SingletonConfiguration;
 import app.packed.container.Extension;
-import app.packed.container.UseExtension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 
@@ -119,7 +119,7 @@ public class HookOnExtensionActivationMicro {
     @Target({ ElementType.TYPE, ElementType.FIELD, ElementType.METHOD })
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
-    @UseExtension(HookActivateExtension.class)
+    @Packlet(HookActivateExtension.class)
     public @interface HookActivateAnnotation {}
 
     public static class HookActivateExtension extends Extension {

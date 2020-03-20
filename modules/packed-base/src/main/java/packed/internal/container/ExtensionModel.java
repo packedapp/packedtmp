@@ -27,15 +27,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiConsumer;
 
 import app.packed.base.Contract;
 import app.packed.base.Nullable;
 import app.packed.component.Component;
-import app.packed.container.ContainerComposer;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionCallback;
-import app.packed.container.ExtensionComposer;
 import app.packed.container.ExtensionMeta;
 import app.packed.container.ExtensionWirelet;
 import app.packed.container.ExtensionWirelet.Pipeline;
@@ -44,7 +42,6 @@ import app.packed.hook.Expose;
 import app.packed.hook.OnHook;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
-import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ConstructorFinder;
 import packed.internal.reflect.OpenClass;
 import packed.internal.util.StringFormatter;
@@ -73,8 +70,6 @@ public final class ExtensionModel<E extends Extension> {
 
         }
     };
-
-    public final BiConsumer<? super Extension, ? super app.packed.analysis.BundleDescriptor.Builder> bundleBuilder;
 
     public final MethodHandle bundleBuilderMethod;
 
@@ -125,7 +120,6 @@ public final class ExtensionModel<E extends Extension> {
         this.extensionType = builder.extensionType;
         // this.pipelines = Map.copyOf(builder.pipelines);
         this.pipelines2 = builder.pipelines2;// Map.copyOf(builder.pipelines2);
-        this.bundleBuilder = builder.builder;
         this.bundleBuilderMethod = builder.builderMethod;
         this.contracts = Map.copyOf(builder.contracts);
         // this.onConfigured = builder.onConfiguredAction;
@@ -230,22 +224,22 @@ public final class ExtensionModel<E extends Extension> {
                 }
             }
 
-            Class<? extends ExtensionComposer<?>> composerType = null;
-            for (Class<?> c : extensionType.getDeclaredClasses()) {
-                if (c.getSimpleName().equals("Composer")) {
-                    if (!ExtensionComposer.class.isAssignableFrom(c)) {
-                        throw new InternalExtensionException(c.getCanonicalName() + " must extend " + StringFormatter.format(ExtensionComposer.class));
-                    }
-                    composerType = (Class<? extends ExtensionComposer<?>>) c;
-                }
-            }
+//            Class<? extends ExtensionComposer<?>> composerType = null;
+//            for (Class<?> c : extensionType.getDeclaredClasses()) {
+//                if (c.getSimpleName().equals("Composer")) {
+//                    if (!ExtensionComposer.class.isAssignableFrom(c)) {
+//                        throw new InternalExtensionException(c.getCanonicalName() + " must extend " + StringFormatter.format(ExtensionComposer.class));
+//                    }
+//                    composerType = (Class<? extends ExtensionComposer<?>>) c;
+//                }
+//            }
             // this.dependenciesDirect = Collections.unmodifiableSet(new
             // HashSet<>(ExtensionUseModel2.directDependenciesOf(extensionType)));
             this.dependenciesTotalOrder = ExtensionUseModel2.totalOrder(extensionType);
 
             OpenClass cp = new OpenClass(MethodHandles.lookup(), extensionType, true);
             this.constructor = ConstructorFinder.find(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-            this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerComposer.class);
+            this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
             cp.findMethods(e -> {
                 ExtensionCallback ec = e.getAnnotation(ExtensionCallback.class);
 
@@ -267,10 +261,10 @@ public final class ExtensionModel<E extends Extension> {
                     }
                 }
             });
-            if (composerType != null) {
-                ExtensionComposer<?> composer = ConstructorFinder.invoke(cp.spawn(composerType));
-                ModuleAccess.extension().configureComposer(composer, this);
-            }
+//            if (composerType != null) {
+//                // ExtensionComposer<?> composer = ConstructorFinder.invoke(cp.spawn(composerType));
+//                // ModuleAccess.extension().configureComposer(composer, this);
+//            }
             return new ExtensionModel<>(this);
         }
 
@@ -288,5 +282,4 @@ public final class ExtensionModel<E extends Extension> {
             this.onMainFinished = onMainFinished;
         }
     }
-
 }

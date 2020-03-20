@@ -20,6 +20,9 @@ package app.packed.container;
  * contract of Packed's extension mechanism. As a user of the extension there is normally nothing you can do, but report
  * the error to the developer of the extension.
  */
+//ExtensionDefinitionException
+//PackletDefinitionException
+//SidecarDefinitionException
 public class InternalExtensionException extends RuntimeException {
 
     /** */

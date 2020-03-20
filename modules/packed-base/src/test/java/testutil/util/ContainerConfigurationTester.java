@@ -26,7 +26,7 @@ import app.packed.component.ComponentPath;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
-import app.packed.container.ContainerComposer;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 
@@ -35,9 +35,9 @@ import app.packed.container.Wirelet;
  */
 public class ContainerConfigurationTester {
 
-    private final ContainerComposer cc;
+    private final ContainerConfiguration cc;
 
-    public ContainerConfigurationTester(ContainerComposer cc) {
+    public ContainerConfigurationTester(ContainerConfiguration cc) {
         this.cc = requireNonNull(cc);
     }
 
@@ -48,7 +48,7 @@ public class ContainerConfigurationTester {
     /**
      * @return the cc
      */
-    public ContainerComposer configuration() {
+    public ContainerConfiguration configuration() {
         return cc;
     }
 

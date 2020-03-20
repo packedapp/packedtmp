@@ -32,14 +32,13 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import app.packed.analysis.BundleDescriptor;
-import app.packed.analysis.BundleDescriptor.Builder;
 import app.packed.base.Contract;
 import app.packed.base.Nullable;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
-import app.packed.container.ContainerComposer;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
@@ -68,8 +67,8 @@ import packed.internal.reflect.OpenClass;
 import packed.internal.service.run.DefaultInjector;
 import packed.internal.util.UncheckedThrowableFactory;
 
-/** The default implementation of {@link ContainerComposer}. */
-public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerComposer {
+/** The default implementation of {@link ContainerConfiguration}. */
+public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
 
     /** Any extension that is active. */
     @Nullable
@@ -139,10 +138,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         builder.setBundleDescription(getDescription());
         builder.setName(getName());
         for (PackedExtensionContext e : extensions.values()) {
-            BiConsumer<? super Extension, ? super Builder> c = e.model().bundleBuilder;
-            if (c != null) {
-                // c.accept(e.extension(), builder);
-            }
             MethodHandle mha = e.model().bundleBuilderMethod;
             if (mha != null) {
                 try {

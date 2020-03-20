@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,7 +23,9 @@ import java.util.function.BiFunction;
 import app.packed.analysis.BundleDescriptor;
 import app.packed.base.Contract;
 import app.packed.base.Nullable;
-import packed.internal.container.ExtensionModelLoadContext;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionWirelet;
+import app.packed.container.InternalExtensionException;
 
 /**
  * An extension composer is used for specifying how an extension works.

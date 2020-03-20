@@ -33,9 +33,9 @@ import packed.internal.host.HostConfiguration;
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
  * extending {@link Bundle} or {@link BaseBundle}.
  */
-// Why not Configuration?????
+// Was named Composer, idk why
 // BundleContext....
-public interface ContainerComposer extends ComponentConfiguration {
+public interface ContainerConfiguration extends ComponentConfiguration {
 
     /**
      * Installs a host and returns the configuration of it.
@@ -146,11 +146,11 @@ public interface ContainerComposer extends ComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    ContainerComposer setDescription(String description);
+    ContainerConfiguration setDescription(String description);
 
     /** {@inheritDoc} */
     @Override
-    ContainerComposer setName(String name);
+    ContainerConfiguration setName(String name);
 
     /**
      * Returns the class that defines the container.
