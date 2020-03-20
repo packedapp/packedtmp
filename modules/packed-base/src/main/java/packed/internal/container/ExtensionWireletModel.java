@@ -16,6 +16,7 @@
 package packed.internal.container;
 
 import app.packed.container.ExtensionWirelet;
+import app.packed.container.ExtensionWireletPipeline;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 
 /** A model for {@link ExtensionWirelet} types. */
@@ -47,7 +48,7 @@ final class ExtensionWireletModel {
      */
     @SuppressWarnings("unchecked")
     private ExtensionWireletModel(Class<? extends ExtensionWirelet<?>> type) {
-        Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>> pipelineType = (Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>) PIPELINE_TYPE_EXTRACTOR
+        Class<? extends ExtensionWireletPipeline<?, ?, ?>> pipelineType = (Class<? extends ExtensionWireletPipeline<?, ?, ?>>) PIPELINE_TYPE_EXTRACTOR
                 .extract(type);
         this.pipeline = ExtensionWireletPipelineModel.of(pipelineType);
         this.extension = ExtensionModel.of(pipeline.extensionType);

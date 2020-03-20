@@ -54,7 +54,7 @@ public @interface ExtensionMeta {
      * 
      * @return pipelines
      */
-    Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>[] pipelines() default {};
+    Class<? extends ExtensionWireletPipeline<?, ?, ?>>[] pipelines() default {};
 }
 // Pipelines will be made available if any wirelets using them are specified
 // Otherwise an empty Optional can be used...

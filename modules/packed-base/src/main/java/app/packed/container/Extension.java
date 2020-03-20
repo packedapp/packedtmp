@@ -24,7 +24,6 @@ import java.util.Optional;
 import app.packed.artifact.Assembly;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.container.ExtensionWirelet.Pipeline;
 import app.packed.inject.Factory;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.moduleaccess.AppPackedExtensionAccess;
@@ -43,8 +42,8 @@ import packed.internal.moduleaccess.ModuleAccess;
  * <p>
  * Every extension implementations must provide either an empty constructor, or a constructor taking a single parameter
  * of type {@link ExtensionContext}. The constructor should have package private accessibility to make sure users do not
- * try an manually instantiate it, but instead use {@link ContainerConfiguration#use(Class)}. It is also recommended that the
- * extension itself is declared final.
+ * try an manually instantiate it, but instead use {@link ContainerConfiguration#use(Class)}. It is also recommended
+ * that the extension itself is declared final.
  */
 
 // Step1
@@ -81,7 +80,7 @@ public abstract class Extension {
             /** {@inheritDoc} */
             @SuppressWarnings({ "rawtypes", "unchecked" })
             @Override
-            public void pipelineInitialize(Optional<Pipeline<?, ?, ?>> previous, List<?> wirelets, Pipeline<?, ?, ?> pipeline) {
+            public void pipelineInitialize(Optional<ExtensionWireletPipeline<?, ?, ?>> previous, List<?> wirelets, ExtensionWireletPipeline<?, ?, ?> pipeline) {
                 pipeline.previous = (Optional) previous;
                 pipeline.wirelets = (List) wirelets;
                 pipeline.onInitialize();

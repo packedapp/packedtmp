@@ -207,7 +207,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         // We could actually end of installing new extensions...
 
         // TODO we want to cache this at some point....
-        for (Class<? extends Extension> c : ExtensionUseModel2.totalOrderOfExtensionReversed(extensions.keySet())) {
+        for (Class<? extends Extension> c : OldExtensionUseModel2.totalOrderOfExtensionReversed(extensions.keySet())) {
             PackedExtensionContext e = extensions.get(c);
             if (e != null) {
                 activeExtension = e;

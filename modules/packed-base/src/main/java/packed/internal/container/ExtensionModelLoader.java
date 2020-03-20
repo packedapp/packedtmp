@@ -21,7 +21,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMeta;
-import app.packed.container.ExtensionWirelet;
+import app.packed.container.ExtensionWireletPipeline;
 import app.packed.container.InternalExtensionException;
 import packed.internal.util.StringFormatter;
 
@@ -37,7 +37,7 @@ final class ExtensionModelLoader {
 
     private static final WeakHashMap<Class<? extends Extension>, ExtensionModel<?>> EXTENSIONS = new WeakHashMap<>();
 
-    private static final WeakHashMap<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, ExtensionWireletPipelineModel> PIPELINES = new WeakHashMap<>();
+    private static final WeakHashMap<Class<? extends ExtensionWireletPipeline<?, ?, ?>>, ExtensionWireletPipelineModel> PIPELINES = new WeakHashMap<>();
 
     final ArrayDeque<Class<? extends Extension>> stack = new ArrayDeque<>();
 
@@ -47,7 +47,7 @@ final class ExtensionModelLoader {
         return load0(extensionType, null);
     }
 
-    static ExtensionWireletPipelineModel pipeline(Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>> pipelineType) {
+    static ExtensionWireletPipelineModel pipeline(Class<? extends ExtensionWireletPipeline<?, ?, ?>> pipelineType) {
         GLOBAL_LOCK.lock();
         try {
             ExtensionWireletPipelineModel m = PIPELINES.get(pipelineType);
@@ -104,8 +104,8 @@ final class ExtensionModelLoader {
         }
         stack.push(extensionType);
 
-        ExtensionModel.Builder builder = new ExtensionModel.Builder(extensionType, this);
         ExtensionModel<E> m;
+        ExtensionModel.Builder builder = new ExtensionModel.Builder(extensionType, this);
         try {
             m = (ExtensionModel<E>) builder.build();
         } catch (Throwable t) {

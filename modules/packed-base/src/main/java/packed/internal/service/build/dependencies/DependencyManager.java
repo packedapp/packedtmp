@@ -32,7 +32,7 @@ import app.packed.base.reflect.ParameterDescriptor;
 import app.packed.base.reflect.VariableDescriptor;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionWirelet;
+import app.packed.container.ExtensionWireletPipeline;
 import app.packed.inject.UnresolvedDependencyException;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
@@ -151,7 +151,7 @@ public final class DependencyManager {
                                 }
                             }
                         }
-                        if (!k.hasQualifier() && ExtensionWirelet.Pipeline.class.isAssignableFrom(k.typeLiteral().rawType())) {
+                        if (!k.hasQualifier() && ExtensionWireletPipeline.class.isAssignableFrom(k.typeLiteral().rawType())) {
                             if (entry instanceof ComponentFactoryBuildEntry) {
                                 Optional<Class<? extends Extension>> op = ((ComponentFactoryBuildEntry) entry).componentConfiguration.extension();
                                 if (op.isPresent()) {
