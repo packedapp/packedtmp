@@ -15,8 +15,6 @@
  */
 package packed.internal.container.dep;
 
-import packed.internal.container.ExtensionComposer;
-
 /** A context object used for all registration for an {@link ExtensionComposer}. */
 public abstract class ExtensionModelLoadContext {
 

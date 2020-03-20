@@ -20,7 +20,10 @@ import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 import app.packed.container.Extension;
+import app.packed.container.ExtensionMeta;
+import app.packed.container.ExtensionWirelet;
 import app.packed.container.InternalExtensionException;
+import packed.internal.util.StringFormatter;
 
 /**
  *
@@ -29,9 +32,12 @@ final class ExtensionModelLoader {
 
     private static final WeakHashMap<Class<? extends Extension>, Throwable> ERRORS = new WeakHashMap<>();
 
+    /** A lock used for making sure that we only load one extension tree at a time. */
     private static final ReentrantLock GLOBAL_LOCK = new ReentrantLock();
 
-    private static final WeakHashMap<Class<? extends Extension>, ExtensionModel<?>> MODELS = new WeakHashMap<>();
+    private static final WeakHashMap<Class<? extends Extension>, ExtensionModel<?>> EXTENSIONS = new WeakHashMap<>();
+
+    private static final WeakHashMap<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, ExtensionWireletPipelineModel> PIPELINES = new WeakHashMap<>();
 
     final ArrayDeque<Class<? extends Extension>> stack = new ArrayDeque<>();
 
@@ -41,16 +47,36 @@ final class ExtensionModelLoader {
         return load0(extensionType, null);
     }
 
+    static ExtensionWireletPipelineModel pipeline(Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>> pipelineType) {
+        GLOBAL_LOCK.lock();
+        try {
+            ExtensionWireletPipelineModel m = PIPELINES.get(pipelineType);
+            if (m != null) {
+                return m;
+            }
+            Class<? extends Extension> c = ExtensionWireletPipelineModel.extensionTypeOf(pipelineType);
+            load(c);
+            m = PIPELINES.get(pipelineType);
+            if (m != null) {
+                return m;
+            }
+            throw new InternalExtensionException("Extension " + StringFormatter.format(c) + " must include " + StringFormatter.format(pipelineType) + " in @"
+                    + ExtensionMeta.class.getSimpleName() + "#pipelines");
+        } finally {
+            GLOBAL_LOCK.unlock();
+        }
+    }
+
     static <E extends Extension> ExtensionModel<E> load(Class<E> extensionType, ExtensionModelLoader runtime) {
         return load0(extensionType, runtime);
     }
 
     @SuppressWarnings("unchecked")
-    static <E extends Extension> ExtensionModel<E> load0(Class<E> extensionType, ExtensionModelLoader runtime) {
+    static <E extends Extension> ExtensionModel<E> load0(Class<E> extensionType, ExtensionModelLoader loader) {
         GLOBAL_LOCK.lock();
         try {
             // First lets see if we have created the model before
-            ExtensionModel<?> m = MODELS.get(extensionType);
+            ExtensionModel<?> m = EXTENSIONS.get(extensionType);
             if (m != null) {
                 return (ExtensionModel<E>) m;
             }
@@ -61,11 +87,11 @@ final class ExtensionModelLoader {
                 throw new InternalExtensionException("Extension " + extensionType + " failed to be configured previously", t);
             }
 
-            //
-            if (runtime == null) {
-                runtime = new ExtensionModelLoader();
+            // Create a new loader if we are not already part of one
+            if (loader == null) {
+                loader = new ExtensionModelLoader();
             }
-            return runtime.load1(extensionType);
+            return loader.load1(extensionType);
         } finally {
             GLOBAL_LOCK.unlock();
         }
@@ -78,16 +104,24 @@ final class ExtensionModelLoader {
         }
         stack.push(extensionType);
 
+        ExtensionModel.Builder builder = new ExtensionModel.Builder(extensionType, this);
         ExtensionModel<E> m;
         try {
-            m = (ExtensionModel<E>) new ExtensionModel.Builder(extensionType, this).build();
+            m = (ExtensionModel<E>) builder.build();
         } catch (Throwable t) {
             ERRORS.put(extensionType, t);
             throw t;
         } finally {
             stack.pop();
         }
-        MODELS.put(extensionType, m);
+
+        // All dependencies have been successfully validated before we add the actual extension
+        // and any of its pipelines to permanent storage
+        EXTENSIONS.put(extensionType, m);
+        for (ExtensionWireletPipelineModel p : builder.pipelines2.values()) {
+            PIPELINES.put(p.type, p);
+        }
+
         return m;
     }
 }

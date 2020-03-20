@@ -29,9 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiConsumer;
 
-import app.packed.analysis.BundleDescriptor;
 import app.packed.base.Contract;
 import app.packed.base.Nullable;
 import app.packed.component.Component;
@@ -93,8 +91,7 @@ public final class ExtensionModel<E extends Extension> {
     /** The type of the extension this model describes. */
     public final Class<? extends Extension> extensionType;
 
-    @Nullable
-    private final OnHookModel onHookModel;
+    final List<ECall> l;
 
     final BaseHookQualifierList nonActivatingHooks;
 
@@ -106,12 +103,13 @@ public final class ExtensionModel<E extends Extension> {
 
     // public final BiConsumer<? super Extension, ? super Extension> onLinkage;
 
+    @Nullable
+    private final OnHookModel onHookModel;
+
     /** An optional containing the extension type. To avoid excessive creation of them for {@link Component#extension()}. */
     public final Optional<Class<? extends Extension>> optional;
 
     public final Map<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, ExtensionWireletPipelineModel> pipelines2;
-
-    final List<ECall> l;
 
     /**
      * Creates a new extension model from the specified builder.
@@ -189,36 +187,33 @@ public final class ExtensionModel<E extends Extension> {
     /** A builder for {@link ExtensionModel}. */
     static final class Builder {
 
+        MethodHandle builderMethod;
+
         /** The constructor used to create a new extension instance. */
         private MethodHandle constructor;
-
-        private List<Class<? extends Extension>> dependenciesTotalOrder;
-
-        /** A builder for all methods annotated with {@link OnHook} on the extension. */
-        private OnHookModel onHookModel;
-
-        public final HashMap<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, ExtensionWireletPipelineModel> pipelines2 = new HashMap<>();
-
-//        Builder(Class<? extends Extension> extensionType, ExtensionModelLoader loader) {
-//            super(extensionType, loader);
-//        }
-        public BiConsumer<? super Extension, ? super BundleDescriptor.Builder> builder;
-
-        public MethodHandle builderMethod;
 
         // Need to check that a contract never belongs to two extension.
         // Also, I think we want to do this atomically, so that we do not have half an extension registered somewhere.
         // This means we want to synchronize things.
         // So add all shit, quick validation-> Sync->Validate final -> AddAll ->UnSync
-        public final IdentityHashMap<Class<? extends Contract>, Object> contracts = new IdentityHashMap<>();
+        final IdentityHashMap<Class<? extends Contract>, Object> contracts = new IdentityHashMap<>();
 
         /** A list of dependencies on other extensions. */
         Set<Class<? extends Extension>> dependenciesDirect = new HashSet<>();
 
+        private List<Class<? extends Extension>> dependenciesTotalOrder;
+
         /** The type of extension we are building a model for. */
         final Class<? extends Extension> extensionType;
 
-        final ExtensionModelLoader runtime;
+        private final ArrayList<ECall> l = new ArrayList<>();
+
+        final ExtensionModelLoader loader;
+
+        /** A builder for all methods annotated with {@link OnHook} on the extension. */
+        private OnHookModel onHookModel;
+
+        final HashMap<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, ExtensionWireletPipelineModel> pipelines2 = new HashMap<>();
 
         /**
          * Creates a new builder.
@@ -226,9 +221,9 @@ public final class ExtensionModel<E extends Extension> {
          * @param extensionType
          *            the type of extension we are building a model for
          */
-        Builder(Class<? extends Extension> extensionType, ExtensionModelLoader runtime) {
+        Builder(Class<? extends Extension> extensionType, ExtensionModelLoader loader) {
             this.extensionType = requireNonNull(extensionType);
-            this.runtime = runtime;
+            this.loader = requireNonNull(loader);
         }
 
         /**
@@ -241,12 +236,12 @@ public final class ExtensionModel<E extends Extension> {
             ExtensionMeta em = extensionType.getAnnotation(ExtensionMeta.class);
             if (em != null) {
                 for (Class<? extends Extension> ccc : em.dependencies()) {
-                    ExtensionModelLoader.load(ccc, runtime);
+                    ExtensionModelLoader.load(ccc, loader);
                     dependenciesDirect.add(ccc);
                 }
                 for (Class<? extends Pipeline<?, ?, ?>> c : em.pipelines()) {
-                    // ExtensionWireletPipelineModel pm = ExtensionWireletPipelineModel.of(c);
-                    pipelines2.put(c, null);
+                    ExtensionWireletPipelineModel m = new ExtensionWireletPipelineModel.Builder(c).build();
+                    pipelines2.put(c, m);
                 }
             }
 
@@ -293,8 +288,6 @@ public final class ExtensionModel<E extends Extension> {
 //            }
             return new ExtensionModel<>(this);
         }
-
-        private final ArrayList<ECall> l = new ArrayList<>();
     }
 
     static class ECall {
