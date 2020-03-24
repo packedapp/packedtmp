@@ -91,6 +91,7 @@ public interface Factory<T> {
 
     List<?> dependencies();
 
+    // afterInstantiation
     <K> Factory<T> inject(Class<K> key, BiConsumer<? super T, ? super K> action);
 
     /**

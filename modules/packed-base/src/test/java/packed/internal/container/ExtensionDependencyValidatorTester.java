@@ -29,16 +29,16 @@ public class ExtensionDependencyValidatorTester {
         // System.out.println(ExtensionDependencyValidator.dependenciesOf(MyExtension2.class));
     }
 
-    @Packlet({ MyExtension2.class, MyExtension3.class })
+    @Packlet(extension = { MyExtension2.class, MyExtension3.class })
     public class MyExtension extends Extension {}
 
-    @Packlet(MyExtension3.class)
+    @Packlet(extension = MyExtension3.class)
     public class MyExtension2 extends Extension {}
 
-    @Packlet(MyExtension4.class)
+    @Packlet(extension = MyExtension4.class)
     public class MyExtension3 extends Extension {}
 
-    @Packlet(MyExtension.class)
+    @Packlet(extension = MyExtension.class)
     public class MyExtension4 extends Extension {}
 
 }

@@ -23,7 +23,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 import app.packed.container.Extension;
-import app.packed.container.ExtensionMeta;
+import app.packed.container.ExtensionSidecar;
 import app.packed.container.InternalExtensionException;
 import packed.internal.util.StringFormatter;
 
@@ -44,10 +44,10 @@ public class OldExtensionUseModel2 {
                 } catch (ClassNotFoundException ignore) {}
                 if (c != null) {
                     if (Extension.class == c) {
-                        throw new InternalExtensionException("@" + ExtensionMeta.class.getSimpleName() + " " + StringFormatter.format(declaringClass)
+                        throw new InternalExtensionException("@" + ExtensionSidecar.class.getSimpleName() + " " + StringFormatter.format(declaringClass)
                                 + " cannot specify Extension.class as an optional dependency, for " + StringFormatter.format(c));
                     } else if (!Extension.class.isAssignableFrom(c)) {
-                        throw new InternalExtensionException("@" + ExtensionMeta.class.getSimpleName() + " " + StringFormatter.format(declaringClass)
+                        throw new InternalExtensionException("@" + ExtensionSidecar.class.getSimpleName() + " " + StringFormatter.format(declaringClass)
                                 + " specified an invalid extension " + StringFormatter.format(c));
                     }
 
@@ -72,7 +72,7 @@ public class OldExtensionUseModel2 {
 //                }
 //                loadOptional(list, type, ue.optional());
 //            }
-            ExtensionMeta em = type.getAnnotation(ExtensionMeta.class);
+            ExtensionSidecar em = type.getAnnotation(ExtensionSidecar.class);
             if (em != null) {
                 for (Class<? extends Extension> c : em.dependencies()) {
                     list.add(c);

@@ -44,6 +44,9 @@ import packed.internal.reflect.typevariable.TypeVariableExtractor;
  */
 // Support of injection of the artifact into the Container...
 // We do not generally support this, as people are free to any artifact they may like.
+
+// ? Er der services man gerne kun vil have er available til f.eks. PackedApp.class. 
+// Men ikke til andre der kalder ind paa App.getServices();
 public abstract class ArtifactDriver<T> {
 
     /** A type variable extractor for the type of artifact this driver creates. */

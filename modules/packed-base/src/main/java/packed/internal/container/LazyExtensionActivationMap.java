@@ -38,7 +38,7 @@ public final class LazyExtensionActivationMap {
         @Override
         protected Set<Class<? extends Extension>> computeValue(Class<?> type) {
             Packlet ae = type.getAnnotation(Packlet.class);
-            return ae == null ? null : Set.of(ae.value());
+            return ae == null ? null : Set.of(ae.extension());
         }
     };
 
@@ -132,7 +132,7 @@ public final class LazyExtensionActivationMap {
         // We just ignore it. Because we just assume that are added via normal mechanisms...
         Packlet uela = cl.getAnnotation(Packlet.class);
         if (uela != null) {
-            for (Class<? extends Extension> c : uela.value()) {
+            for (Class<? extends Extension> c : uela.extension()) {
                 ExtensionModel<? extends Extension> em = ExtensionModel.of(c);
                 BaseHookQualifierList dhu = em.nonActivatingHooks;
                 if (dhu != null) {

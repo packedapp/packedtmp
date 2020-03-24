@@ -88,7 +88,7 @@ import app.packed.component.Packlet;
 @Target({ ElementType.TYPE, ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Packlet(ServiceExtension.class)
+@Packlet(extension = ServiceExtension.class)
 @Opens(to = { METHOD_INVOKE, FIELD_SET })
 public @interface Provide {
 

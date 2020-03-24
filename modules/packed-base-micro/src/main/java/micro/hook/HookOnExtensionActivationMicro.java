@@ -119,7 +119,7 @@ public class HookOnExtensionActivationMicro {
     @Target({ ElementType.TYPE, ElementType.FIELD, ElementType.METHOD })
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
-    @Packlet(HookActivateExtension.class)
+    @Packlet(extension = HookActivateExtension.class)
     public @interface HookActivateAnnotation {}
 
     public static class HookActivateExtension extends Extension {

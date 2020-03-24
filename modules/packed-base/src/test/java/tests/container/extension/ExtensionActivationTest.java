@@ -92,7 +92,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ ElementType.METHOD, ElementType.FIELD })
-    @Packlet(MyExtension.class)
+    @Packlet(extension = MyExtension.class)
     public @interface ActivateMyExtension {
         String value();
     }

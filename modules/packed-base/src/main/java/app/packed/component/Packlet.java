@@ -53,6 +53,13 @@ import app.packed.container.Extension;
 public @interface Packlet {
 
     /**
+     * Returns the extensions that the annotated type uses.
+     * 
+     * @return the extensions that the annotated type uses
+     */
+    Class<? extends Extension>[] extension();
+
+    /**
      * Optional extension types that will only be used if they can be resolved at runtime using
      * {@link Class#forName(String, boolean, ClassLoader)} or a similar mechanism.
      * <p>
@@ -64,12 +71,7 @@ public @interface Packlet {
      */
     // I'm not sure this is really useful for Packlets, as they would normally be available in the
     // same module as the extension
-    String[] optional() default {};
+    String[] optionalExtensions() default {};
 
-    /**
-     * Returns the extensions that the annotated type uses.
-     * 
-     * @return the extensions that the annotated type uses
-     */
-    Class<? extends Extension>[] value();
+    Class<?>[] sidecars() default {};
 }

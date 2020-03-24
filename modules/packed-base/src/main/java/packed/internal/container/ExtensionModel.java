@@ -36,7 +36,7 @@ import app.packed.component.Component;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionCallback;
-import app.packed.container.ExtensionMeta;
+import app.packed.container.ExtensionSidecar;
 import app.packed.container.ExtensionWireletPipeline;
 import app.packed.container.InternalExtensionException;
 import app.packed.hook.Expose;
@@ -81,7 +81,7 @@ public final class ExtensionModel<E extends Extension> {
     // Can 2 extensions define the same contract???? Don't think so
     // If not we could have a Contract.class->ContractFactory Map and a Contract.of(ContainerSource, Class<T extends
     // Contract>);
-    final Map<Class<? extends Contract>, Object> contracts;
+    final Map<Class<? extends Contract>, MethodHandle> contracts;
 
     final Set<Class<? extends Extension>> dependenciesDirect;
 
@@ -94,21 +94,13 @@ public final class ExtensionModel<E extends Extension> {
 
     final BaseHookQualifierList nonActivatingHooks;
 
-    // public final Consumer<? super Extension> onAdd;
-
-//    public final Consumer<? super Extension> onConfigured;
-
-    // public final BiConsumer<? super Extension, ? super ExtensionInstantiationContext> onInstantiation;
-
-    // public final BiConsumer<? super Extension, ? super Extension> onLinkage;
-
     @Nullable
     private final OnHookModel onHookModel;
 
     /** An optional containing the extension type. To avoid excessive creation of them for {@link Component#extension()}. */
     public final Optional<Class<? extends Extension>> optional;
 
-    public final Map<Class<? extends ExtensionWireletPipeline<?, ?, ?>>, ExtensionWireletPipelineModel> pipelines2;
+    final Map<Class<? extends ExtensionWireletPipeline<?, ?, ?>>, ExtensionWireletPipelineModel> pipelines;
 
     /**
      * Creates a new extension model from the specified builder.
@@ -119,7 +111,7 @@ public final class ExtensionModel<E extends Extension> {
     private ExtensionModel(Builder builder) {
         this.constructor = builder.constructor;
         this.extensionType = builder.extensionType;
-        this.pipelines2 = builder.pipelines2;// Map.copyOf(builder.pipelines2);
+        this.pipelines = Map.copyOf(builder.pipelines);
         this.bundleBuilderMethod = builder.builderMethod;
         this.contracts = Map.copyOf(builder.contracts);
         this.dependenciesDirect = Set.copyOf(builder.dependenciesDirect);
@@ -192,7 +184,7 @@ public final class ExtensionModel<E extends Extension> {
         // Also, I think we want to do this atomically, so that we do not have half an extension registered somewhere.
         // This means we want to synchronize things.
         // So add all shit, quick validation-> Sync->Validate final -> AddAll ->UnSync
-        final IdentityHashMap<Class<? extends Contract>, Object> contracts = new IdentityHashMap<>();
+        final IdentityHashMap<Class<? extends Contract>, MethodHandle> contracts = new IdentityHashMap<>();
 
         /** A list of dependencies on other extensions. */
         Set<Class<? extends Extension>> dependenciesDirect = new HashSet<>();
@@ -209,7 +201,7 @@ public final class ExtensionModel<E extends Extension> {
         /** A builder for all methods annotated with {@link OnHook} on the extension. */
         private OnHookModel onHookModel;
 
-        final HashMap<Class<? extends ExtensionWireletPipeline<?, ?, ?>>, ExtensionWireletPipelineModel> pipelines2 = new HashMap<>();
+        final HashMap<Class<? extends ExtensionWireletPipeline<?, ?, ?>>, ExtensionWireletPipelineModel> pipelines = new HashMap<>();
 
         /**
          * Creates a new builder.
@@ -229,7 +221,7 @@ public final class ExtensionModel<E extends Extension> {
          */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         ExtensionModel<?> build() {
-            ExtensionMeta em = extensionType.getAnnotation(ExtensionMeta.class);
+            ExtensionSidecar em = extensionType.getAnnotation(ExtensionSidecar.class);
             if (em != null) {
                 for (Class<? extends Extension> ccc : em.dependencies()) {
                     ExtensionModelLoader.load(ccc, loader);
@@ -237,7 +229,7 @@ public final class ExtensionModel<E extends Extension> {
                 }
                 for (Class<? extends ExtensionWireletPipeline<?, ?, ?>> c : em.pipelines()) {
                     ExtensionWireletPipelineModel m = new ExtensionWireletPipelineModel.Builder(c).build();
-                    pipelines2.put(c, m);
+                    pipelines.put(c, m);
                 }
             }
 

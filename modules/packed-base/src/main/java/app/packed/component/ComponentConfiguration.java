@@ -102,7 +102,8 @@ public interface ComponentConfiguration {
      * @return the path of this configuration.
      * @see #onNamed(Consumer)
      */
-    ComponentPath path();
+    // artifactPath()???
+    ComponentPath path(); // systemPath()<---
 
     /**
      * Sets the description of this component.

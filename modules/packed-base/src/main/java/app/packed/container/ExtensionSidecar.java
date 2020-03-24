@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ExtensionMeta {
+public @interface ExtensionSidecar {
 
     /**
      * Other extensions that an extension may use (but do not have to).

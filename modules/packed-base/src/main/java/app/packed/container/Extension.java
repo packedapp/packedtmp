@@ -197,7 +197,7 @@ public abstract class Extension {
     /**
      * Returns an extension of the specified type.
      * <p>
-     * Any extension type passed to this method must have explicitly been registered using an {@link ExtensionMeta} on the
+     * Any extension type passed to this method must have explicitly been registered using an {@link ExtensionSidecar} on the
      * extension implementation.
      * <p>
      * Invoking this method is similar to calling {@link ContainerConfiguration#use(Class)}. However, this method also keeps
@@ -215,7 +215,7 @@ public abstract class Extension {
      *             If invoked from the constructor of the extension. Or if the underlying container is no longer
      *             configurable and an extension of the specified type has not already been installed
      * @throws UnsupportedOperationException
-     *             if the specified extension type has not been specified via {@link ExtensionMeta}
+     *             if the specified extension type has not been specified via {@link ExtensionSidecar}
      */
     protected final <E extends Extension> E use(Class<E> extensionType) {
         return context().use(extensionType);

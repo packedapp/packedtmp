@@ -35,18 +35,18 @@ import app.packed.base.Key;
 public interface InjectionContext {
 
     /**
-     * An immutable set of keys for which dependencies are available for injection at the injection site (typically the
-     * method or constructor annotated with {@link Inject}).
+     * An immutable set of keys for which dependencies are available for injection at the injection site (typically a method
+     * or constructor annotated with {@link Inject}).
      * <p>
-     * The set of keys returned by this method does not take into consideration that depending on them will lead to cycles
-     * in the dependency graph.
+     * Note: Even though The set of keys returned by this method does not take into consideration that depending on them
+     * will lead to cycles in the dependency graph.
      * 
      * @return an immutable set of keys that are available for injection at the injection site
      */
     Set<Key<?>> keys();
 
     /**
-     * Returns the class whose reacthat determines the visibility.
+     * Returns the class that was used to determined which keys are available for injection.
      * 
      * For example, a service that is registered with a package private {@link Key}. Will only be in the set of keys
      * returned by {@link #keys()} if the class returned by this method is in the same package.
@@ -57,7 +57,11 @@ public interface InjectionContext {
      * @return the class for which we calculate visibility
      */
     // contextTarget target()
-    Class<?> visibility(); // Det er jo bare .getClass(); Med mindre det er en Composite...
+    // Eller kan man lave noget hullumhej her ved at lade publish nogle composite klasser, med package private
+    // constructors...
+    // Og som tager hemmelige "klasser".. Nej man skal ikke kunne instantiere en eller anden composite, som man ikke har
+    // adgang til... Men
+    Class<?> target(); // Det er jo bare .getClass(); Med mindre det er en Composite...
 }
 
 // Something about layers....

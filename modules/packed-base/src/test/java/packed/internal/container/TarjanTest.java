@@ -38,15 +38,15 @@ public class TarjanTest {
 
     private class TarjNoAnnotation extends Extension {}
 
-    @Packlet({})
+    @Packlet(extension = {})
     private class Tarj extends Extension {}
 
-    @Packlet(Tarj.class)
+    @Packlet(extension = Tarj.class)
     private class Tarj1 extends Extension {}
 
-    @Packlet(Tarj.class)
+    @Packlet(extension = Tarj.class)
     private class Tarj2 extends Extension {}
 
-    @Packlet({ Tarj1.class, Tarj2.class })
+    @Packlet(extension = { Tarj1.class, Tarj2.class })
     private class Tarj12 extends Extension {}
 }

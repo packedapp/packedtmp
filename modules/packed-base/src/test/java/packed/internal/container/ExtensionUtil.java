@@ -60,11 +60,11 @@ final class ExtensionUtil {
             }
             ArrayList<Class<?>> list = new ArrayList<>();
 
-            for (Class<?> c : ue.value()) {
+            for (Class<?> c : ue.extension()) {
                 list.add(c);
             }
 
-            String[] strings = ue.optional();
+            String[] strings = ue.optionalExtensions();
             if (strings.length > 0) {
                 ClassLoader cl = type.getClassLoader(); // PrividligeAction???
                 for (String s : strings) {
@@ -80,14 +80,14 @@ final class ExtensionUtil {
 
     /**
      * Returns a list of extensions specified via {@link Packlet}. This method will try to resolve any
-     * {@link Packlet#optional()} specified extensions. This will be only be done on the first call to this method and
-     * returned cached.
+     * {@link Packlet#optionalExtensions()} specified extensions. This will be only be done on the first call to this method
+     * and returned cached.
      * 
      * @param c
      *            the class to
      * @return a list of extensions
      * @throws InternalExtensionException
-     *             if some classes specified via {@link Packlet#optional()} does not reference an extension type.
+     *             if some classes specified via {@link Packlet#optionalExtensions()} does not reference an extension type.
      */
     static final List<Class<? extends Extension>> fromUseExtension(Class<?> c) {
         return USE_DEPENDENCIES.get(c);

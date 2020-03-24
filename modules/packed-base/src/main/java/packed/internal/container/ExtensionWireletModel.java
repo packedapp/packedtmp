@@ -36,11 +36,8 @@ final class ExtensionWireletModel {
     /** A type variable extractor to extract what kind of pipeline an extension wirelet belongs to. */
     private static final TypeVariableExtractor PIPELINE_TYPE_EXTRACTOR = TypeVariableExtractor.of(ExtensionWirelet.class);
 
-    /** The extension the wirelet belongs to. */
-    final ExtensionModel<?> extension;
-
     /** The extension pipeline the wirelet belongs to. */
-    final ExtensionWireletPipelineModel pipeline;
+    private final ExtensionWireletPipelineModel pipeline;
 
     /**
      * @param type
@@ -51,7 +48,6 @@ final class ExtensionWireletModel {
         Class<? extends ExtensionWireletPipeline<?, ?, ?>> pipelineType = (Class<? extends ExtensionWireletPipeline<?, ?, ?>>) PIPELINE_TYPE_EXTRACTOR
                 .extract(type);
         this.pipeline = ExtensionWireletPipelineModel.of(pipelineType);
-        this.extension = ExtensionModel.of(pipeline.extensionType);
     }
 
     /**

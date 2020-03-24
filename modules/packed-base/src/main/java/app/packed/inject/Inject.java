@@ -15,8 +15,8 @@
  */
 package app.packed.inject;
 
-import static app.packed.base.invoke.OpenMode.METHOD_INVOKE;
 import static app.packed.base.invoke.OpenMode.FIELD_GET;
+import static app.packed.base.invoke.OpenMode.METHOD_INVOKE;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -49,7 +49,7 @@ import app.packed.service.ServiceExtension;
 @Target({ ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Packlet(ServiceExtension.class) // Replace with UseSidecar(InjectSidecar.class) [maske defineret i denne klasse]
+@Packlet(extension = ServiceExtension.class) // Replace with UseSidecar(InjectSidecar.class) [maske defineret i denne klasse]
 @Opens(to = { METHOD_INVOKE, FIELD_GET })
 public @interface Inject {}
 

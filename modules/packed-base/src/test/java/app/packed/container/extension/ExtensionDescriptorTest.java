@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.base.Contract;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionDescriptor;
-import app.packed.container.ExtensionMeta;
+import app.packed.container.ExtensionSidecar;
 import app.packed.hook.Expose;
 import packed.internal.container.PackedExtensionDescriptor;
 
@@ -54,7 +54,7 @@ public class ExtensionDescriptorTest {
         assertThatThrownBy(() -> ed.dependencies().clear()).isExactlyInstanceOf(UnsupportedOperationException.class);
     }
 
-    @ExtensionMeta(dependencies = EmptyExtension.class)
+    @ExtensionSidecar(dependencies = EmptyExtension.class)
     static class VariousExtension extends Extension {
 
         @Expose

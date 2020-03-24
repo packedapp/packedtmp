@@ -31,7 +31,7 @@ public final class PackedExtensionDescriptor implements ExtensionDescriptor {
     private final ExtensionModel<?> model;
 
     /** No public instantiation. */
-    public PackedExtensionDescriptor(ExtensionModel<?> model) {
+    private PackedExtensionDescriptor(ExtensionModel<?> model) {
         this.model = requireNonNull(model);
     }
 
@@ -57,6 +57,18 @@ public final class PackedExtensionDescriptor implements ExtensionDescriptor {
     @Override
     public Class<? extends Extension> type() {
         return model.extensionType;
+    }
+
+    /**
+     * Returns a descriptor for the specified extension type.
+     * 
+     * @param extensionType
+     *            the extension type to return a descriptor for
+     * @return a descriptor for the specified extension type
+     */
+    public static ExtensionDescriptor of(Class<? extends Extension> extensionType) {
+        requireNonNull(extensionType, "extensionType is null");
+        return new PackedExtensionDescriptor(ExtensionModel.of(extensionType)); // we could cache this
     }
 }
 

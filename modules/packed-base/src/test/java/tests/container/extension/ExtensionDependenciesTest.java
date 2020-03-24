@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.container.Extension;
 import app.packed.container.ExtensionCallback;
-import app.packed.container.ExtensionMeta;
+import app.packed.container.ExtensionSidecar;
 import testutil.util.AbstractArtifactTest;
 
 /**
@@ -50,7 +50,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
         });
     }
 
-    @ExtensionMeta(dependencies = Ex2.class)
+    @ExtensionSidecar(dependencies = Ex2.class)
     static final class Ex1 extends Extension {
         @ExtensionCallback(onInstantiation = true)
         void on() {
@@ -58,7 +58,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
         }
     }
 
-    @ExtensionMeta(dependencies = Ex3.class)
+    @ExtensionSidecar(dependencies = Ex3.class)
     static final class Ex2 extends Extension {
 
         @ExtensionCallback(onInstantiation = true)
@@ -71,7 +71,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
 
     }
 
-    @ExtensionMeta(dependencies = ExRecursive2.class)
+    @ExtensionSidecar(dependencies = ExRecursive2.class)
     static final class ExRecursive1 extends Extension {
 
         @ExtensionCallback(onInstantiation = true)

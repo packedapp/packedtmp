@@ -15,12 +15,9 @@
  */
 package app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.Set;
 
 import app.packed.base.Contract;
-import packed.internal.container.ExtensionModel;
 import packed.internal.container.PackedExtensionDescriptor;
 
 /**
@@ -74,7 +71,6 @@ public interface ExtensionDescriptor {
      * @return a descriptor for the specified extension type
      */
     static ExtensionDescriptor of(Class<? extends Extension> extensionType) {
-        requireNonNull(extensionType, "extensionType is null");
-        return new PackedExtensionDescriptor(ExtensionModel.of(extensionType)); // we could cache this
+        return PackedExtensionDescriptor.of(extensionType);
     }
 }

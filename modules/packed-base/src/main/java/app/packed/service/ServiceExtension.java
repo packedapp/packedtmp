@@ -25,7 +25,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionCallback;
 import app.packed.container.ExtensionContext;
-import app.packed.container.ExtensionMeta;
+import app.packed.container.ExtensionSidecar;
 import app.packed.container.Wirelet;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Expose;
@@ -71,7 +71,7 @@ import packed.internal.service.run.AbstractInjector;
 // Taenker den kun bliver aktiveret hvis vi har en factory med mindste 1 unresolved dependency....
 // D.v.s. install(Class c) -> aktivere denne extension, hvis der er unresolved dependencies...
 // Ellers selvfoelgelig hvis man bruger provide/@Provides\
-@ExtensionMeta(pipelines = ServiceWireletPipeline.class)
+@ExtensionSidecar(pipelines = ServiceWireletPipeline.class)
 public final class ServiceExtension extends Extension {
 
     /** The extension node that does most of the work. */

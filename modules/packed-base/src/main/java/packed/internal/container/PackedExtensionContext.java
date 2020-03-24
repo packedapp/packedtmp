@@ -128,37 +128,9 @@ public final class PackedExtensionContext implements ExtensionContext {
                 }
             }
 
-//            if (model.onAdd != null) {
-//                model.onAdd.accept(extension);
-//            }
-
             if (pcc.wireletContext != null) {
                 pcc.wireletContext.initialize(this);
             }
-
-            // Call any link callbacks
-//            if (model.onLinkage != null) {
-//                // First link any children
-//                ArrayList<PackedContainerConfiguration> containers = pcc.containers;
-//                if (containers != null) {
-//                    for (PackedContainerConfiguration child : containers) {
-//                        PackedExtensionContext e = child.getExtension(model.extensionType);
-//                        if (e != null) {
-//                            model.onLinkage.accept(extension, e.extension);
-//                        }
-//                    }
-//                }
-//
-//                // Second link any parent
-//                if (pcc.parent instanceof PackedContainerConfiguration) {
-//                    PackedContainerConfiguration p = (PackedContainerConfiguration) pcc.parent;
-//                    PackedExtensionContext e = p.getExtension(model.extensionType);
-//                    // set activate extension???
-//                    if (e != null) {
-//                        // model.onLinkage.accept(e.extension, extension);
-//                    }
-//                }
-//            }
 
             // Registers this context with the artifact build context.
             // In order to compute a total order among dependencies within the artifact
@@ -191,9 +163,6 @@ public final class PackedExtensionContext implements ExtensionContext {
 
     /** Invoked by the container configuration, whenever the extension is configured. */
     public void onConfigured() {
-//        if (model.onConfigured != null) {
-//            model.onConfigured.accept(extension);
-//        }
         for (var v : model.l) {
             if (v.onMainFinished) {
                 try {
@@ -204,6 +173,19 @@ public final class PackedExtensionContext implements ExtensionContext {
             }
         }
         isConfigured = true;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<Extension> parent() {
+        AbstractComponentConfiguration parent = pcc.parent;
+        if (parent instanceof PackedContainerConfiguration) {
+            PackedExtensionContext pe = ((PackedContainerConfiguration) parent).getExtension(model.extensionType);
+            if (pe != null) {
+                return Optional.of(pe.extension);
+            }
+        }
+        return Optional.empty();
     }
 
     /**
@@ -221,11 +203,6 @@ public final class PackedExtensionContext implements ExtensionContext {
     public <T extends Extension> T use(Class<T> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
 
-        // We allow an extension to use itself, alternative would be to throw an IAE, but for what reason?
-        if (extensionType == extension.getClass()) {
-            return (T) extension;
-        }
-
         // We need to check whether or not the extension is allowed to use the specified extension every time.
         // An alternative would be to cache it in a map for each extension.
         // However this would incur extra memory usage. And if we only request an extension once
@@ -237,10 +214,14 @@ public final class PackedExtensionContext implements ExtensionContext {
         // And then look up the context before we can check.
 
         if (!model.dependenciesDirect.contains(extensionType)) {
+            // We allow an extension to use itself, alternative would be to throw an exception, but for what reason?
+            if (extensionType == extension.getClass()) {
+                return (T) extension;
+            }
+
             throw new UnsupportedOperationException("The specified extension type is not among " + model.extensionType.getSimpleName()
                     + " dependencies, extensionType = " + extensionType + ", valid dependencies = " + model.dependenciesDirect);
         }
-
         return (T) pcc.useExtension(extensionType, this).extension;
     }
 
@@ -257,17 +238,5 @@ public final class PackedExtensionContext implements ExtensionContext {
         PackedExtensionContext pec = new PackedExtensionContext(pcc, extensionType);
         pec.initialize(pcc);
         return pec;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Optional<Extension> parent() {
-        @Nullable
-        PackedExtensionContext pe = null;
-        AbstractComponentConfiguration parent = pcc.parent;
-        if (parent instanceof PackedContainerConfiguration) {
-            pe = ((PackedContainerConfiguration) parent).getExtension(model.extensionType);
-        }
-        return pe == null ? Optional.empty() : Optional.of(pe.extension);
     }
 }

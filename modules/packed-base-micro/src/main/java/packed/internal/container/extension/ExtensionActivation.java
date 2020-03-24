@@ -119,7 +119,7 @@ public class ExtensionActivation {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
-    @Packlet(MyExtension.class)
+    @Packlet(extension = MyExtension.class)
     public @interface ActivateMyExtension {
         String value();
     }

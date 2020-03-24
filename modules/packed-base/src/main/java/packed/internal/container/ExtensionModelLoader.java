@@ -20,51 +20,59 @@ import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 import app.packed.container.Extension;
-import app.packed.container.ExtensionMeta;
+import app.packed.container.ExtensionSidecar;
 import app.packed.container.ExtensionWireletPipeline;
 import app.packed.container.InternalExtensionException;
 import packed.internal.util.StringFormatter;
 
 /**
- *
+ * An extension loader is responsible for initializing models for extensions.
  */
 final class ExtensionModelLoader {
 
     private static final WeakHashMap<Class<? extends Extension>, Throwable> ERRORS = new WeakHashMap<>();
 
+    private static final WeakHashMap<Class<? extends Extension>, ExtensionModel<?>> EXTENSIONS = new WeakHashMap<>();
+
     /** A lock used for making sure that we only load one extension tree at a time. */
     private static final ReentrantLock GLOBAL_LOCK = new ReentrantLock();
 
-    private static final WeakHashMap<Class<? extends Extension>, ExtensionModel<?>> EXTENSIONS = new WeakHashMap<>();
-
     private static final WeakHashMap<Class<? extends ExtensionWireletPipeline<?, ?, ?>>, ExtensionWireletPipelineModel> PIPELINES = new WeakHashMap<>();
 
-    final ArrayDeque<Class<? extends Extension>> stack = new ArrayDeque<>();
+    private final ArrayDeque<Class<? extends Extension>> stack = new ArrayDeque<>();
 
     private ExtensionModelLoader() {}
 
-    static <E extends Extension> ExtensionModel<E> load(Class<E> extensionType) {
-        return load0(extensionType, null);
+    @SuppressWarnings("unchecked")
+    private <E extends Extension> ExtensionModel<E> load1(Class<E> extensionType) {
+        if (stack.contains(extensionType)) {
+            throw new RuntimeException("Cyclic error");
+        }
+        stack.push(extensionType);
+
+        ExtensionModel<E> m;
+        ExtensionModel.Builder builder = new ExtensionModel.Builder(extensionType, this);
+        try {
+            m = (ExtensionModel<E>) builder.build();
+        } catch (Throwable t) {
+            ERRORS.put(extensionType, t);
+            throw t;
+        } finally {
+            stack.pop();
+        }
+
+        // All dependencies have been successfully validated before we add the actual extension
+        // and any of its pipelines to permanent storage
+        EXTENSIONS.put(extensionType, m);
+        for (ExtensionWireletPipelineModel p : builder.pipelines.values()) {
+            PIPELINES.put(p.type, p);
+        }
+
+        return m;
     }
 
-    static ExtensionWireletPipelineModel pipeline(Class<? extends ExtensionWireletPipeline<?, ?, ?>> pipelineType) {
-        GLOBAL_LOCK.lock();
-        try {
-            ExtensionWireletPipelineModel m = PIPELINES.get(pipelineType);
-            if (m != null) {
-                return m;
-            }
-            Class<? extends Extension> c = ExtensionWireletPipelineModel.extensionTypeOf(pipelineType);
-            load(c);
-            m = PIPELINES.get(pipelineType);
-            if (m != null) {
-                return m;
-            }
-            throw new InternalExtensionException("Extension " + StringFormatter.format(c) + " must include " + StringFormatter.format(pipelineType) + " in @"
-                    + ExtensionMeta.class.getSimpleName() + "#pipelines");
-        } finally {
-            GLOBAL_LOCK.unlock();
-        }
+    static <E extends Extension> ExtensionModel<E> load(Class<E> extensionType) {
+        return load0(extensionType, null);
     }
 
     static <E extends Extension> ExtensionModel<E> load(Class<E> extensionType, ExtensionModelLoader runtime) {
@@ -97,31 +105,23 @@ final class ExtensionModelLoader {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private <E extends Extension> ExtensionModel<E> load1(Class<E> extensionType) {
-        if (stack.contains(extensionType)) {
-            throw new RuntimeException("Cyclic error");
-        }
-        stack.push(extensionType);
-
-        ExtensionModel<E> m;
-        ExtensionModel.Builder builder = new ExtensionModel.Builder(extensionType, this);
+    static ExtensionWireletPipelineModel pipeline(Class<? extends ExtensionWireletPipeline<?, ?, ?>> pipelineType) {
+        GLOBAL_LOCK.lock();
         try {
-            m = (ExtensionModel<E>) builder.build();
-        } catch (Throwable t) {
-            ERRORS.put(extensionType, t);
-            throw t;
+            ExtensionWireletPipelineModel m = PIPELINES.get(pipelineType);
+            if (m != null) {
+                return m;
+            }
+            Class<? extends Extension> c = ExtensionWireletPipelineModel.extensionTypeOf(pipelineType);
+            load(c);
+            m = PIPELINES.get(pipelineType);
+            if (m != null) {
+                return m;
+            }
+            throw new InternalExtensionException("Extension " + StringFormatter.format(c) + " must include " + StringFormatter.format(pipelineType) + " in @"
+                    + ExtensionSidecar.class.getSimpleName() + "#pipelines");
         } finally {
-            stack.pop();
+            GLOBAL_LOCK.unlock();
         }
-
-        // All dependencies have been successfully validated before we add the actual extension
-        // and any of its pipelines to permanent storage
-        EXTENSIONS.put(extensionType, m);
-        for (ExtensionWireletPipelineModel p : builder.pipelines2.values()) {
-            PIPELINES.put(p.type, p);
-        }
-
-        return m;
     }
 }
