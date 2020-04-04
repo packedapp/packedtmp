@@ -29,8 +29,9 @@ import java.util.function.Consumer;
 // Kan ogsaa flytte E til ExtensionWirelet, hvis vi ikke har #extension() paa pipelinen
 
 //WireletPipeline istedet for????? Nej vi har behov for E til at vide hvor vi skal smide den hen...
+// Kan vi ogsaa have en WireletPipeline....
 public abstract class ExtensionWireletPipeline<E extends Extension, P extends ExtensionWireletPipeline<E, P, W>, W extends ExtensionWirelet<P>>
-        implements Iterable<W> {
+        extends WireletPipeline<P, W> implements Iterable<W> {
 
     /** Any previous pipeline. */
     Optional<P> previous;

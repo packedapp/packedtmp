@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle;
+package app.packed.base;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  *
  */
-public class LifecycleContract {
-
-    boolean enabled = true;
-
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface OnAssembling {
+    String value();
 }
-
-// SyncPoint... SyncPoints har en default vaerdi.. F.eks. OpenPort = post process NetExtension...
-
-///////// Start / stop
-// Pre fase (sync, evt async start)
-// Concurrent fase (async)
-// Post fase (sync )

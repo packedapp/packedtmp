@@ -21,11 +21,26 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An extension sidecar annotation that can be used on subclasses of {@link Extension}.
+ * A sidecar annotation that can be used on subclasses of {@link Extension}.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ExtensionSidecar {
+
+    /**
+     * The extension has been successfully instantiated. But the extension instance has not yet been returned to the user.
+     * Used for invoking methods on {@link ExtensionContext}.
+     */
+    String ON_INSTANTIATION = "On_Instantiation";
+
+    /** All components and extensions have been added and configured. */
+    String ON_PREEMBLE = "on_premble";
+
+    /**
+     * Any child containers located in the same artifact will be has been defined. Typically using
+     * {@link Bundle#link(Bundle, app.packed.container.Wirelet...)}.
+     */
+    String ON_CHILDREN_DONE = "on_children_done";
 
     /**
      * Other extensions that an extension may use (but do not have to).
@@ -58,3 +73,43 @@ public @interface ExtensionSidecar {
 }
 // Pipelines will be made available if any wirelets using them are specified
 // Otherwise an empty Optional can be used...
+
+//Must be nonstatic and parameter less????
+//Well they should both nonstatic or static, and take ExtensionContext, InjectionContext
+
+//An extension cannot have more than one method for a given assembling event.
+//@AfterExtension(Instantiated)
+
+//Container finished
+
+//Child Linked
+//Parent Linked
+//NoParent Linked... //NoDirectLink
+
+//Er det her vi linker paa tvaers af artifacts?????
+
+//ExtensionBarrier....
+
+//Kan sagtens tage statiske metoder..
+
+//F.eks. en artifact finished....
+//enum ExtensionState {
+//
+///**
+//* The extension has been successfully instantiated. But the extension instance has not yet been returned to the user.
+//* Used for invoking methods on {@link ExtensionContext}.
+//*/
+//INSTANTIATED,
+//
+///** All components and extensions have been added and configured. */
+//PREEMBLED_DONE,
+//
+///**
+//* Any child containers located in the same artifact will be has been defined. Typically using
+//* {@link Bundle#link(Bundle, app.packed.container.Wirelet...)}.
+//*/
+//CHILDREN_ADDING_FINISHED,
+//
+///** */
+//GUESTS_FINISHED;
+//}

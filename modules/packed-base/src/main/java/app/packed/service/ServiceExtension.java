@@ -19,11 +19,11 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.analysis.BundleDescriptor;
 import app.packed.base.Key;
+import app.packed.base.OnAssembling;
 import app.packed.base.Key.Qualifier;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionCallback;
 import app.packed.container.ExtensionContext;
 import app.packed.container.ExtensionSidecar;
 import app.packed.container.Wirelet;
@@ -352,7 +352,7 @@ public final class ServiceExtension extends Extension {
         }
     }
 
-    @ExtensionCallback(onPreembleDone = true)
+    @OnAssembling(ExtensionSidecar.ON_PREEMBLE)
     void onConfd() {
         node.build();
     }

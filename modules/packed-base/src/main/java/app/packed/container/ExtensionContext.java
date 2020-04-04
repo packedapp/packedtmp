@@ -111,8 +111,8 @@ public interface ExtensionContext {
     <E extends Extension> E use(Class<E> extensionType);
 
     /**
-     * If the container in which this extension is register has a parent container within the same artifact, and the parent
-     * has this extension installed. Returns the extension otherwise empty.
+     * If the container in which this extension is register has a parent container located in the same artifact, and the
+     * parent has this extension installed. Returns the extension otherwise empty.
      * 
      * @return the parent extension
      */

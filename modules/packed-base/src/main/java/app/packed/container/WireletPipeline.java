@@ -13,20 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle;
+package app.packed.container;
 
 /**
  *
  */
-public class LifecycleContract {
-
-    boolean enabled = true;
+public abstract class WireletPipeline<P extends WireletPipeline<P, W>, W extends Wirelet> {
 
 }
-
-// SyncPoint... SyncPoints har en default vaerdi.. F.eks. OpenPort = post process NetExtension...
-
-///////// Start / stop
-// Pre fase (sync, evt async start)
-// Concurrent fase (async)
-// Post fase (sync )

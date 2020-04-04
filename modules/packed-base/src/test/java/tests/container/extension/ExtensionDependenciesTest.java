@@ -20,8 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import app.packed.base.OnAssembling;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionCallback;
 import app.packed.container.ExtensionSidecar;
 import testutil.util.AbstractArtifactTest;
 
@@ -52,7 +52,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
 
     @ExtensionSidecar(dependencies = Ex2.class)
     static final class Ex1 extends Extension {
-        @ExtensionCallback(onInstantiation = true)
+        @OnAssembling(ExtensionSidecar.ON_INSTANTIATION)
         void on() {
             use(Ex2.class);
         }
@@ -61,7 +61,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
     @ExtensionSidecar(dependencies = Ex3.class)
     static final class Ex2 extends Extension {
 
-        @ExtensionCallback(onInstantiation = true)
+        @OnAssembling(ExtensionSidecar.ON_INSTANTIATION)
         void on() {
             use(Ex3.class);
         }
@@ -74,7 +74,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
     @ExtensionSidecar(dependencies = ExRecursive2.class)
     static final class ExRecursive1 extends Extension {
 
-        @ExtensionCallback(onInstantiation = true)
+        @OnAssembling(ExtensionSidecar.ON_INSTANTIATION)
         void on() {
             use(ExRecursive2.class);
         }
@@ -82,7 +82,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
 
     static final class ExRecursive2 extends Extension {
 
-        @ExtensionCallback(onInstantiation = true)
+        @OnAssembling(ExtensionSidecar.ON_INSTANTIATION)
         void on() {
             use(ExRecursive1.class);
         }

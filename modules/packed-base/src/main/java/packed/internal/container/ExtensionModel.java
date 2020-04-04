@@ -32,10 +32,10 @@ import java.util.Set;
 
 import app.packed.base.Contract;
 import app.packed.base.Nullable;
+import app.packed.base.OnAssembling;
 import app.packed.component.Component;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionCallback;
 import app.packed.container.ExtensionSidecar;
 import app.packed.container.ExtensionWireletPipeline;
 import app.packed.container.InternalExtensionException;
@@ -239,16 +239,15 @@ public final class ExtensionModel<E extends Extension> {
             this.constructor = ConstructorFinder.find(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
             this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
             cp.findMethods(e -> {
-                ExtensionCallback ec = e.getAnnotation(ExtensionCallback.class);
 
-                if (ec != null) {
+                OnAssembling oa = e.getAnnotation(OnAssembling.class);
+                if (oa != null) {
                     if (Modifier.isStatic(e.getModifiers())) {
-                        throw new InternalExtensionException("Methods annotated with " + ExtensionCallback.class + " cannot be static, method = " + e);
+                        throw new InternalExtensionException("Methods annotated with " + OnAssembling.class + " cannot be static, method = " + e);
                     }
                     MethodHandle mh = cp.unreflect(e, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-                    l.add(new ECall(mh, ec.onInstantiation(), ec.onPreembleDone()));
+                    l.add(new ECall(mh, oa.value().equals(ExtensionSidecar.ON_INSTANTIATION), oa.value().equals(ExtensionSidecar.ON_PREEMBLE)));
                 }
-
                 Expose ex = e.getAnnotation(Expose.class);
                 if (ex != null) {
                     if (e.getReturnType() == void.class) {
