@@ -69,7 +69,7 @@ public @interface ExtensionSidecar {
      * 
      * @return pipelines
      */
-    Class<? extends ExtensionWireletPipeline<?, ?, ?>>[] pipelines() default {};
+    Class<? extends WireletPipeline<?, ?, ?>>[] pipelines() default {};
 }
 // Pipelines will be made available if any wirelets using them are specified
 // Otherwise an empty Optional can be used...

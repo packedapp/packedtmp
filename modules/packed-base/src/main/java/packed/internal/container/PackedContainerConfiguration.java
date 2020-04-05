@@ -469,6 +469,11 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return newLayer;
     }
 
+    @Nullable
+    public <T extends Wirelet> T wireletOfType(Class<T> wireletType) {
+        return wireletContext == null ? null : wireletContext.getSingle(wireletType);
+    }
+
     /** {@inheritDoc} */
     @Override
     public PackedContainerConfiguration setDescription(String description) {

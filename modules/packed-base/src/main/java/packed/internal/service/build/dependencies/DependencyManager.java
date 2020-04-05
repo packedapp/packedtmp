@@ -32,7 +32,8 @@ import app.packed.base.reflect.ParameterDescriptor;
 import app.packed.base.reflect.VariableDescriptor;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionWireletPipeline;
+import app.packed.container.WireletPipeline;
+import app.packed.container.Wirelet;
 import app.packed.inject.UnresolvedDependencyException;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
@@ -137,28 +138,38 @@ public final class DependencyManager {
                     BuildEntry<?> resolveTo = node.resolvedEntries.get(dependency.key());
                     if (resolveTo == null) {
                         Key<?> k = dependency.key();
-                        if (!k.hasQualifier() && Extension.class.isAssignableFrom(k.typeLiteral().rawType())) {
-                            if (entry instanceof ComponentFactoryBuildEntry) {
-                                Optional<Class<? extends Extension>> op = ((ComponentFactoryBuildEntry) entry).componentConfiguration.extension();
-                                if (op.isPresent()) {
-                                    Class<? extends Extension> cc = op.get();
-                                    if (cc == k.typeLiteral().type()) {
-                                        PackedExtensionContext e = ((PackedExtensionContext) node.context()).container().getExtension(cc);
-                                        resolveTo = extensionEntries.computeIfAbsent(e.type(), kk -> new RuntimeAdaptorEntry(node,
-                                                new SingletonInjectorEntry<Extension>(ConfigSite.UNKNOWN, (Key) Key.of(e.type()), null, e.extension())));
+                        if (!k.hasQualifier()) {
+                            Class<?> rawType = k.typeLiteral().rawType();
+                            if (Wirelet.class.isAssignableFrom(rawType)) {
+                                // Fail if pipelined wirelet...
+                                BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
+                                        new SingletonInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "foo", "Ignore"));
+                                resolveTo = ben;
+                                node.specials.put(dependency, ben);
+                            }
+                            if (Extension.class.isAssignableFrom(rawType)) {
+                                if (entry instanceof ComponentFactoryBuildEntry) {
+                                    Optional<Class<? extends Extension>> op = ((ComponentFactoryBuildEntry) entry).componentConfiguration.extension();
+                                    if (op.isPresent()) {
+                                        Class<? extends Extension> cc = op.get();
+                                        if (cc == k.typeLiteral().type()) {
+                                            PackedExtensionContext e = ((PackedExtensionContext) node.context()).container().getExtension(cc);
+                                            resolveTo = extensionEntries.computeIfAbsent(e.type(), kk -> new RuntimeAdaptorEntry(node,
+                                                    new SingletonInjectorEntry<Extension>(ConfigSite.UNKNOWN, (Key) Key.of(e.type()), null, e.extension())));
 
+                                        }
                                     }
                                 }
                             }
-                        }
-                        if (!k.hasQualifier() && ExtensionWireletPipeline.class.isAssignableFrom(k.typeLiteral().rawType())) {
-                            if (entry instanceof ComponentFactoryBuildEntry) {
-                                Optional<Class<? extends Extension>> op = ((ComponentFactoryBuildEntry) entry).componentConfiguration.extension();
-                                if (op.isPresent()) {
-                                    BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
-                                            new SingletonInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "foo", "Ignore"));
-                                    resolveTo = ben;
-                                    node.specials.put(dependency, ben);
+                            if (WireletPipeline.class.isAssignableFrom(rawType)) {
+                                if (entry instanceof ComponentFactoryBuildEntry) {
+                                    Optional<Class<? extends Extension>> op = ((ComponentFactoryBuildEntry) entry).componentConfiguration.extension();
+                                    if (op.isPresent()) {
+                                        BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
+                                                new SingletonInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "foo", "Ignore"));
+                                        resolveTo = ben;
+                                        node.specials.put(dependency, ben);
+                                    }
                                 }
                             }
                         }

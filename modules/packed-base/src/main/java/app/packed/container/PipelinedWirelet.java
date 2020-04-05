@@ -27,7 +27,7 @@ import app.packed.artifact.App;
  * the user which extension was missing. When throwing an exception if the wirelet was specified, but the extension was
  * not used
  */
-public abstract class ExtensionWirelet<T extends ExtensionWireletPipeline<?, T, ?>> extends Wirelet {
+public abstract class PipelinedWirelet<T extends WireletPipeline<?, T, ?>> extends Wirelet {
 
     /**
      * Invoked by the runtime whenever the user specified an extension wirelet for which a matching extension has not been
@@ -39,6 +39,7 @@ public abstract class ExtensionWirelet<T extends ExtensionWireletPipeline<?, T, 
      * @param extensionType
      *            the extension type that is missing
      */
+    // Maaske skal den vaere paa pipelinen???
     protected void extensionNotAvailable(Class<? extends Extension> extensionType) {
         throw new IllegalArgumentException(
                 toString() + " can only be specified when the extension " + extensionType.getSimpleName() + " is used by the target container");

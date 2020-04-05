@@ -29,8 +29,8 @@ import app.packed.service.ServiceConfiguration;
 import app.packed.service.ServiceExtension;
 
 /**
- * A BaseBundle contains shortcut access to common functionality defined by the various extension available in this
- * module.
+ * A convenience extension of {@link Bundle} which contains shortcut access to common functionality defined by the
+ * various extension available in this module.
  * <p>
  * For example, instead of doing use(ServiceExtension.class).provide(Foo.class) you can just use
  * service().provide(Foo.class) or even just provide(Foo.class).

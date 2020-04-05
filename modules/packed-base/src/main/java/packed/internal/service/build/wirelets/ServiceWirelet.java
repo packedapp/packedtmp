@@ -15,13 +15,13 @@
  */
 package packed.internal.service.build.wirelets;
 
-import app.packed.container.ExtensionWirelet;
+import app.packed.container.PipelinedWirelet;
 import packed.internal.service.build.ServiceWireletPipeline;
 
 /**
  *
  */
-public abstract class ServiceWirelet extends ExtensionWirelet<ServiceWireletPipeline> {
+public abstract class ServiceWirelet extends PipelinedWirelet<ServiceWireletPipeline> {
 
     /**
      * Process this wirelet.

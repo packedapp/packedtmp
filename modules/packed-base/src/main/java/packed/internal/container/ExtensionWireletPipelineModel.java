@@ -23,12 +23,12 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.UndeclaredThrowableException;
 
 import app.packed.container.Extension;
-import app.packed.container.ExtensionWireletPipeline;
+import app.packed.container.WireletPipeline;
 import packed.internal.reflect.OpenClass;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.UncheckedThrowableFactory;
 
-/** A descriptor for an {@link ExtensionWireletPipeline}. */
+/** A descriptor for an {@link WireletPipeline}. */
 final class ExtensionWireletPipelineModel {
 
     /** A cache of values. */
@@ -38,12 +38,12 @@ final class ExtensionWireletPipelineModel {
         @SuppressWarnings({ "unchecked" })
         @Override
         protected ExtensionWireletPipelineModel computeValue(Class<?> type) {
-            return ExtensionModelLoader.pipeline((Class<? extends ExtensionWireletPipeline<?, ?, ?>>) type);
+            return ExtensionModelLoader.pipeline((Class<? extends WireletPipeline<?, ?, ?>>) type);
         }
     };
 
     /** An extractor to find the extension the node is build upon. */
-    private static final TypeVariableExtractor EXTENSION_NODE_TV_EXTRACTOR = TypeVariableExtractor.of(ExtensionWireletPipeline.class, 0);
+    private static final TypeVariableExtractor EXTENSION_NODE_TV_EXTRACTOR = TypeVariableExtractor.of(WireletPipeline.class, 0);
 
     /** A method handle to create new pipeline instances. */
     private final MethodHandle constructor;
@@ -52,7 +52,7 @@ final class ExtensionWireletPipelineModel {
     final Class<? extends Extension> extensionType;
 
     /** The type of pipeline. */
-    final Class<? extends ExtensionWireletPipeline<?, ?, ?>> type;
+    final Class<? extends WireletPipeline<?, ?, ?>> type;
 
     /**
      * Create a new model.
@@ -71,12 +71,12 @@ final class ExtensionWireletPipelineModel {
      * 
      * @return a new pipeline instance
      */
-    ExtensionWireletPipeline<?, ?, ?> newPipeline(Extension extension) {
+    WireletPipeline<?, ?, ?> newPipeline(Extension extension) {
         try {
             if (constructor.type().parameterCount() == 0) {
-                return (ExtensionWireletPipeline<?, ?, ?>) constructor.invoke();
+                return (WireletPipeline<?, ?, ?>) constructor.invoke();
             } else {
-                return (ExtensionWireletPipeline<?, ?, ?>) constructor.invoke(extension);
+                return (WireletPipeline<?, ?, ?>) constructor.invoke(extension);
             }
         } catch (Throwable e) {
             throw new UndeclaredThrowableException(e);
@@ -84,7 +84,7 @@ final class ExtensionWireletPipelineModel {
     }
 
     @SuppressWarnings("unchecked")
-    static Class<? extends Extension> extensionTypeOf(Class<? extends ExtensionWireletPipeline<?, ?, ?>> pipelineType) {
+    static Class<? extends Extension> extensionTypeOf(Class<? extends WireletPipeline<?, ?, ?>> pipelineType) {
         return (Class<? extends Extension>) EXTENSION_NODE_TV_EXTRACTOR.extract(pipelineType);
     }
 
@@ -95,21 +95,21 @@ final class ExtensionWireletPipelineModel {
      *            the pipeline type to return a model for.
      * @return the model
      */
-    public static ExtensionWireletPipelineModel of(Class<? extends ExtensionWireletPipeline<?, ?, ?>> type) {
+    public static ExtensionWireletPipelineModel of(Class<? extends WireletPipeline<?, ?, ?>> type) {
         return CACHE.get(type);
     }
 
     /** A builder of {@link ExtensionWireletPipelineModel}. */
     static class Builder {
 
-        private final Class<? extends ExtensionWireletPipeline<?, ?, ?>> actualType;
+        private final Class<? extends WireletPipeline<?, ?, ?>> actualType;
 
         private MethodHandle constructor;
 
         /**
          * @param type
          */
-        Builder(Class<? extends ExtensionWireletPipeline<?, ?, ?>> type) {
+        Builder(Class<? extends WireletPipeline<?, ?, ?>> type) {
             actualType = requireNonNull(type);
         }
 

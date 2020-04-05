@@ -28,8 +28,8 @@ import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.ExtensionContext;
 import app.packed.inject.Inject;
-import app.packed.service.ServiceMode;
 import app.packed.service.ServiceContract;
+import app.packed.service.ServiceMode;
 import packed.internal.container.WireletContext;
 import packed.internal.inject.AtInject;
 import packed.internal.inject.AtInjectHook;
@@ -204,7 +204,9 @@ public final class ServiceExtensionNode {
             // } else { // pipeline
             Class<?> pipelineClass = e.getKey().key().typeLiteral().rawType();
 
-            instance = e.getKey().wrapIfOptional(requireNonNull(wc.getPipelin((Class) pipelineClass)));
+            // instance = e.getKey().wrapIfOptional(requireNonNull(wc.getPipelin((Class) pipelineClass)));
+
+            instance = e.getKey().wrapIfOptional(requireNonNull(wc.get(pipelineClass)));
             // }
             BuildEntry<?> be = e.getValue();
             con.transformers.put(be, new SingletonInjectorEntry<Object>(ConfigSite.UNKNOWN, (Key) be.key, be.description, instance));

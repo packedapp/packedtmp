@@ -80,7 +80,7 @@ public abstract class Extension {
             /** {@inheritDoc} */
             @SuppressWarnings({ "rawtypes", "unchecked" })
             @Override
-            public void pipelineInitialize(Optional<ExtensionWireletPipeline<?, ?, ?>> previous, List<?> wirelets, ExtensionWireletPipeline<?, ?, ?> pipeline) {
+            public void pipelineInitialize(Optional<WireletPipeline<?, ?, ?>> previous, List<?> wirelets, WireletPipeline<?, ?, ?> pipeline) {
                 pipeline.previous = (Optional) previous;
                 pipeline.wirelets = (List) wirelets;
                 pipeline.onInitialize();

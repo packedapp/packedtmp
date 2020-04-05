@@ -21,7 +21,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import app.packed.container.Extension;
 import app.packed.container.ExtensionSidecar;
-import app.packed.container.ExtensionWireletPipeline;
+import app.packed.container.WireletPipeline;
 import app.packed.container.InternalExtensionException;
 import packed.internal.util.StringFormatter;
 
@@ -37,7 +37,7 @@ final class ExtensionModelLoader {
     /** A lock used for making sure that we only load one extension tree at a time. */
     private static final ReentrantLock GLOBAL_LOCK = new ReentrantLock();
 
-    private static final WeakHashMap<Class<? extends ExtensionWireletPipeline<?, ?, ?>>, ExtensionWireletPipelineModel> PIPELINES = new WeakHashMap<>();
+    private static final WeakHashMap<Class<? extends WireletPipeline<?, ?, ?>>, ExtensionWireletPipelineModel> PIPELINES = new WeakHashMap<>();
 
     private final ArrayDeque<Class<? extends Extension>> stack = new ArrayDeque<>();
 
@@ -105,7 +105,7 @@ final class ExtensionModelLoader {
         }
     }
 
-    static ExtensionWireletPipelineModel pipeline(Class<? extends ExtensionWireletPipeline<?, ?, ?>> pipelineType) {
+    static ExtensionWireletPipelineModel pipeline(Class<? extends WireletPipeline<?, ?, ?>> pipelineType) {
         GLOBAL_LOCK.lock();
         try {
             ExtensionWireletPipelineModel m = PIPELINES.get(pipelineType);

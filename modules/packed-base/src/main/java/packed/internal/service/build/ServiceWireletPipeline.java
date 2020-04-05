@@ -17,17 +17,16 @@ package packed.internal.service.build;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.container.ExtensionWireletPipeline;
+import app.packed.container.WireletPipeline;
 import app.packed.service.ServiceExtension;
 import packed.internal.service.build.wirelets.ServiceWirelet;
 
 /** The default wirelet pipeline for */
-public final class ServiceWireletPipeline extends ExtensionWireletPipeline<ServiceExtension, ServiceWireletPipeline, ServiceWirelet> {
+public final class ServiceWireletPipeline extends WireletPipeline<ServiceExtension, ServiceWireletPipeline, ServiceWirelet> {
 
     public final ServiceExtensionNode node;
 
     public ServiceWireletPipeline(ServiceExtensionNode node) {
         this.node = requireNonNull(node);
     }
-
 }

@@ -29,6 +29,7 @@ import packed.internal.container.PackedExtensionDescriptor;
  * @apiNote In the future, if the Java language permits, {@link ExtensionDescriptor} may become a {@code sealed}
  *          interface, which would prohibit subclassing except by explicitly permitted types.
  */
+// Den er ikke streng noedvendig...
 public interface ExtensionDescriptor {
 
     /**
@@ -74,3 +75,4 @@ public interface ExtensionDescriptor {
         return PackedExtensionDescriptor.of(extensionType);
     }
 }
+// isExecutable()

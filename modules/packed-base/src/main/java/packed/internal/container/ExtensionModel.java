@@ -37,7 +37,7 @@ import app.packed.component.Component;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionSidecar;
-import app.packed.container.ExtensionWireletPipeline;
+import app.packed.container.WireletPipeline;
 import app.packed.container.InternalExtensionException;
 import app.packed.hook.Expose;
 import app.packed.hook.OnHook;
@@ -100,7 +100,7 @@ public final class ExtensionModel<E extends Extension> {
     /** An optional containing the extension type. To avoid excessive creation of them for {@link Component#extension()}. */
     public final Optional<Class<? extends Extension>> optional;
 
-    final Map<Class<? extends ExtensionWireletPipeline<?, ?, ?>>, ExtensionWireletPipelineModel> pipelines;
+    final Map<Class<? extends WireletPipeline<?, ?, ?>>, ExtensionWireletPipelineModel> pipelines;
 
     /**
      * Creates a new extension model from the specified builder.
@@ -201,7 +201,7 @@ public final class ExtensionModel<E extends Extension> {
         /** A builder for all methods annotated with {@link OnHook} on the extension. */
         private OnHookModel onHookModel;
 
-        final HashMap<Class<? extends ExtensionWireletPipeline<?, ?, ?>>, ExtensionWireletPipelineModel> pipelines = new HashMap<>();
+        final HashMap<Class<? extends WireletPipeline<?, ?, ?>>, ExtensionWireletPipelineModel> pipelines = new HashMap<>();
 
         /**
          * Creates a new builder.
@@ -227,7 +227,7 @@ public final class ExtensionModel<E extends Extension> {
                     ExtensionModelLoader.load(ccc, loader);
                     dependenciesDirect.add(ccc);
                 }
-                for (Class<? extends ExtensionWireletPipeline<?, ?, ?>> c : em.pipelines()) {
+                for (Class<? extends WireletPipeline<?, ?, ?>> c : em.pipelines()) {
                     ExtensionWireletPipelineModel m = new ExtensionWireletPipelineModel.Builder(c).build();
                     pipelines.put(c, m);
                 }
