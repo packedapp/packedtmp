@@ -24,13 +24,17 @@ import java.util.function.BiConsumer;
  */
 public abstract class DelayedAccessor {
 
-    public final Class<?> sidecarType;
-
     public final BiConsumer<?, ?> consumer;
+
+    public final Class<?> sidecarType;
 
     DelayedAccessor(Class<?> sidecarType, BiConsumer<?, ?> consumer) {
         this.sidecarType = requireNonNull(sidecarType);
         this.consumer = requireNonNull(consumer);
+    }
+
+    public Class<?> sidecarType() {
+        return sidecarType;
     }
 
     public static final class SidecarFieldDelayerAccessor extends DelayedAccessor {

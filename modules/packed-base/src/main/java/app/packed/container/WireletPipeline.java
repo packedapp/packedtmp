@@ -21,91 +21,100 @@ import java.util.Optional;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
+import app.packed.base.Nullable;
+import packed.internal.container.WireletPipelineModel;
+
 /**
  * Extension wirelet pipelines
+ * 
+ * <p>
+ * 
+ * @see PipelineWirelet
  */
-// Kan only define one pipeline per extension... Maybe...
-// Kunne jo godt have @Nullable GreenPipeline, @Nullable BlackPipeline
-// Kan ogsaa flytte E til ExtensionWirelet, hvis vi ikke har #extension() paa pipelinen
+//UseExtension -> Extension can be injected into the constructor of the pipeline
+//The pipeline and the extension must be located in the same module as returned by 
+//Constructor must be readable/open
+//API Design note: Pipelines should in general not be accessible by end-users.
 
-//WireletPipeline istedet for????? Nej vi har behov for E til at vide hvor vi skal smide den hen...
-public abstract class WireletPipeline<E extends Extension, P extends WireletPipeline<E, P, W>, W extends PipelinedWirelet<P>> implements Iterable<W> {
+// If a pipeline implementation makes use of an extension. The extension and the pipeline implementation must be located in the same module as returned by
+// ExtensionImplementation#getModule and WireletPipelineImplementation#getModule
+public abstract class WireletPipeline<E extends Extension, P extends WireletPipeline<E, P, W>, W extends PipelineWirelet<P>> implements Iterable<W> {
 
-    /** Any previous pipeline. */
+    /** Any previous pipeline, is initialized immediately after the constructor of the pipeline has finished. */
+    @Nullable
     Optional<P> previous;
 
-    /** A list initially containing the wirelets that was used to create this pipeline. */
+    /**
+     * A list initially containing the wirelets that was used to create this pipeline, is initialized immediately after the
+     * constructor of the pipeline has finished.
+     */
+    @Nullable
     List<W> wirelets;
+
+    @SuppressWarnings("unchecked")
+    protected void extensionNotAvailable() {
+        Class<? extends Extension> extensionType = WireletPipelineModel.of((Class<? extends WireletPipeline<?, ?, ?>>) getClass()).extensionType;
+        // Bliver noedt til at liste alle wirelets
+        throw new IllegalArgumentException(
+                toString() + " can only be specified when the extension " + extensionType.getSimpleName() + " is used by the target container");
+    }
 
     /** {@inheritDoc} */
     @Override
     public final void forEach(Consumer<? super W> action) {
-        wirelets.forEach(action);
+        wirelets().forEach(action);
     }
 
-    //
-    // public final void forEachLatest(Consumer<? super W> action) {
-    // wirelets.forEach(action);
-    // }
     /** {@inheritDoc} */
     @Override
     public final Iterator<W> iterator() {
-        return wirelets.iterator();
+        return wirelets().iterator();
     }
 
     /** Invoked by the runtime immediately after the pipeline has been constructed. */
+                                                                                      // This method is invoked exactly once
     protected void onInitialize() {}
 
     /**
      * If this pipeline was spawned from an existing pipeline, returns the pipeline, otherwise returns empty.
      * 
      * @return any pipeline this pipeline was spawned from
+     * @throws IllegalStateException
+     *             if called from the constructor of the pipeline
      */
     public final Optional<P> previous() {
-        return previous;
+        Optional<P> p = previous;
+        if (p == null) {
+            throw new IllegalStateException("This method cannot be called from the constructor of the pipeline, override #onInitialize() instead.");
+        }
+        return p;
     }
-
-    //// Ideen er egentlig at vi f.eks. kan validere et deploy af et image med givne wirelets.
-    // Saaledes at man kan vente med at instantiere den til man har brug for den...
-    // protected void validate();
-
-    // protected void optimize() <-- called by the runtime to optimize as much as possible
 
     /** {@inheritDoc} */
     @Override
     public final Spliterator<W> spliterator() {
-        return wirelets.spliterator();
+        return wirelets().spliterator();
     }
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return wirelets.toString();
+        return wirelets().toString();
     }
 
-    // /**
-    // * @param filter
-    // * a predicate which returns {@code true} for wirelets to be removed
-    // * @param action
-    // * an action to be performed on each removed element
-    // * @return whether or not any wirelets was removed
-    // */
-    // public boolean removeIf(Predicate<? super W> filter, Consumer<? super W> action) {
-    // throw new UnsupportedOperationException();
-    // }
-
-    // /**
-    // * Returns the extension this pipeline belongs to.
-    // *
-    // * @return the extension this pipeline belongs to
-    // */
-    // public final E extension() {
-    // return extension;
-    // }
-
-    protected void extensionNotAvailable(List<? extends W> wirelets) {
-//        throw new IllegalArgumentException(
-//                toString() + " can only be specified when the extension " + extensionType.getSimpleName() + " is used by the target container");
+    /**
+     * Returns all wirelets in this pipeline.
+     * 
+     * @return a list of the wirelets in the pipeline
+     * @throws IllegalStateException
+     *             if called from the constructor of the pipeline
+     */
+    private List<W> wirelets() {
+        List<W> w = wirelets;
+        if (w == null) {
+            throw new IllegalStateException("This method cannot be called from the constructor of the pipeline, override #onInitialize() instead.");
+        }
+        return w;
     }
 
     static Optional<Class<? extends Extension>> extensionTypeOf(Class<? extends Wirelet> wirelet) {
@@ -115,6 +124,33 @@ public abstract class WireletPipeline<E extends Extension, P extends WireletPipe
         throw new UnsupportedOperationException();
     }
 }
+// onImageGen() <- optimize stuff..
+
+//// Ideen er egentlig at vi f.eks. kan validere et deploy af et image med givne wirelets.
+// Saaledes at man kan vente med at instantiere den til man har brug for den...
+// protected void validate();
+
+// protected void optimize() <-- called by the runtime to optimize as much as possible
+
+// /**
+// * @param filter
+// * a predicate which returns {@code true} for wirelets to be removed
+// * @param action
+// * an action to be performed on each removed element
+// * @return whether or not any wirelets was removed
+// */
+// public boolean removeIf(Predicate<? super W> filter, Consumer<? super W> action) {
+// throw new UnsupportedOperationException();
+// }
+
+// /**
+// * Returns the extension this pipeline belongs to.
+// *
+// * @return the extension this pipeline belongs to
+// */
+// public final E extension() {
+// return extension;
+// }
 
 //Ideen er vel at bruge skal kunne laves deres egne pipelines.... som man saa kan faa injected....
 
@@ -155,3 +191,13 @@ public abstract class WireletPipeline<E extends Extension, P extends WireletPipe
 //Conf vs Wirelet...
 
 //OnWirelet unused (not part of a pipeline, not consumed anywhere...)
+//Kan only define one pipeline per extension... Maybe...
+//Kunne jo godt have @Nullable GreenPipeline, @Nullable BlackPipeline
+//Kan ogsaa flytte E til ExtensionWirelet, hvis vi ikke har #extension() paa pipelinen
+
+//WireletPipeline istedet for????? Nej vi har behov for E til at vide hvor vi skal smide den hen...
+
+//
+// public final void forEachLatest(Consumer<? super W> action) {
+// wirelets.forEach(action);
+// }

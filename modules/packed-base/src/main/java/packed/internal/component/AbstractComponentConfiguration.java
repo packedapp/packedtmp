@@ -308,7 +308,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
         if (this instanceof PackedContainerConfiguration) {
             PackedContainerConfiguration pcc = (PackedContainerConfiguration) this;
             if (pcc.wireletContext != null) {
-                n = pcc.wireletContext.name();
+                n = pcc.wireletContext.name(pcc);
             }
         }
 

@@ -126,7 +126,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * @param wirelets
      *            any wirelets specified by the user
      */
-    private PackedContainerConfiguration(AbstractComponentConfiguration parent, Bundle bundle, FixedWireletList wirelets) {
+    private PackedContainerConfiguration(AbstractComponentConfiguration parent, Bundle bundle, Wirelet... wirelets) {
         super(ConfigSiteUtil.captureStackFrame(parent.configSite(), InjectConfigSiteOperations.INJECTOR_OF), parent);
         this.source = requireNonNull(bundle);
         this.lookup = this.model = ContainerSourceModel.of(bundle.getClass());
@@ -267,7 +267,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * @see #useExtension(Class, PackedExtensionContext)
      */
     @Nullable
-    public PackedExtensionContext getExtension(Class<?> extensionType) {
+    public PackedExtensionContext getExtension(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         return extensions.get(extensionType);
     }
@@ -376,19 +376,19 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     @Override
     public void link(Bundle bundle, Wirelet... wirelets) {
         requireNonNull(bundle, "bundle is null");
-        FixedWireletList wl = FixedWireletList.of(wirelets);
-
-        // finalize name of this container
-        initializeName(State.LINK_INVOKED, null);
-        installPrepare(State.LINK_INVOKED);
-        currentComponent = null;// need to clear out current component...
 
         // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
         // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
         // loop situations, for example, if a bundle recursively links itself which fails by throwing
         // java.lang.StackOverflowError instead of an infinite loop.
 
-        PackedContainerConfiguration dcc = new PackedContainerConfiguration(this, bundle, wl);
+        // I think we can move this up to FixedWireletList so it can be replaced
+        PackedContainerConfiguration dcc = new PackedContainerConfiguration(this, bundle, wirelets);
+
+        // finalize name of this container
+        initializeName(State.LINK_INVOKED, null);
+        installPrepare(State.LINK_INVOKED);
+        currentComponent = null;// need to clear out current component...
         dcc.configure();
         addChild(dcc);
 

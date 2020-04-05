@@ -13,21 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.build.wirelets;
-
-import app.packed.container.PipelineWirelet;
-import packed.internal.service.build.ServiceWireletPipeline;
+package app.packed.container;
 
 /**
  *
  */
-public abstract class ServiceWirelet extends PipelineWirelet<ServiceWireletPipeline> {
-
-    /**
-     * Process this wirelet.
-     * 
-     * @param pipeline
-     *            the extensions pipeline
-     */
-    protected abstract void process(ServiceWireletPipeline pipeline);
+//Its more like Belongs to
+//@PartOf
+public @interface UseExtension {
+    Class<? extends Extension> value();
 }
+
+// Wirelet (non-pipelined) Will be available for injection into any extension runtime component
+// Pipelines -> The given extension must have been installed in order to use any wirelets that belong to the pipeline...
+// Packlet -> Will install the given extension if not already installed

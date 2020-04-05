@@ -108,7 +108,7 @@ public final class PackedArtifactImage implements ArtifactImage {
     @Override
     public String name() {
         // Return Optional<String>????
-        return wc == null ? pcc.getName() : wc.name();
+        return wc == null ? pcc.getName() : wc.name(pcc);
     }
 
     /**

@@ -15,39 +15,39 @@
  */
 package packed.internal.container;
 
-import app.packed.container.PipelinedWirelet;
+import app.packed.container.PipelineWirelet;
 import app.packed.container.WireletPipeline;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 
-/** A model for {@link PipelinedWirelet} types. */
-final class ExtensionWireletModel {
+/** A model for {@link PipelineWirelet} types. */
+final class PipelineWireletModel {
 
     /** A cache of models. */
-    private static final ClassValue<ExtensionWireletModel> CACHE = new ClassValue<>() {
+    private static final ClassValue<PipelineWireletModel> CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
         @Override
-        protected ExtensionWireletModel computeValue(Class<?> type) {
-            return new ExtensionWireletModel((Class<? extends PipelinedWirelet<?>>) type);
+        protected PipelineWireletModel computeValue(Class<?> type) {
+            return new PipelineWireletModel((Class<? extends PipelineWirelet<?>>) type);
         }
     };
 
     /** A type variable extractor to extract what kind of pipeline an extension wirelet belongs to. */
-    private static final TypeVariableExtractor PIPELINE_TYPE_EXTRACTOR = TypeVariableExtractor.of(PipelinedWirelet.class);
+    private static final TypeVariableExtractor PIPELINE_TYPE_EXTRACTOR = TypeVariableExtractor.of(PipelineWirelet.class);
 
     /** The extension pipeline the wirelet belongs to. */
-    private final ExtensionWireletPipelineModel pipeline;
+    private final WireletPipelineModel pipeline;
 
     /**
      * @param type
      *            the type of extension wirelet
      */
     @SuppressWarnings("unchecked")
-    private ExtensionWireletModel(Class<? extends PipelinedWirelet<?>> type) {
-        Class<? extends WireletPipeline<?, ?, ?>> pipelineType = (Class<? extends WireletPipeline<?, ?, ?>>) PIPELINE_TYPE_EXTRACTOR
-                .extract(type);
-        this.pipeline = ExtensionWireletPipelineModel.of(pipelineType);
+    private PipelineWireletModel(Class<? extends PipelineWirelet<?>> type) {
+        Class<? extends WireletPipeline<?, ?, ?>> p = (Class<? extends WireletPipeline<?, ?, ?>>) PIPELINE_TYPE_EXTRACTOR.extract(type);
+        this.pipeline = WireletPipelineModel.of(p);
+        // Should check that UseExtension is not used on the PipelineWirelet...
     }
 
     /**
@@ -57,7 +57,7 @@ final class ExtensionWireletModel {
      *            the extension wirelet type to return a model for.
      * @return the model
      */
-    static ExtensionWireletPipelineModel of(Class<? extends PipelinedWirelet<?>> wireletType) {
-        return ExtensionWireletModel.CACHE.get(wireletType).pipeline;
+    static WireletPipelineModel of(Class<? extends PipelineWirelet<?>> wireletType) {
+        return PipelineWireletModel.CACHE.get(wireletType).pipeline;
     }
 }

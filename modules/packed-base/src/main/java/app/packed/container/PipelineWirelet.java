@@ -26,8 +26,11 @@ import app.packed.artifact.App;
  * We need this class so we can see which extension the wirelet belongs to... Otherwise, we would not be able to tell
  * the user which extension was missing. When throwing an exception if the wirelet was specified, but the extension was
  * not used
+ * 
+ * @see WireletPipeline
  */
-public abstract class PipelinedWirelet<T extends WireletPipeline<?, T, ?>> extends Wirelet {
+// The wirelet must be in that same module as the pipeline???? Nej taenker at visibility burde vaere nok til at styre det...
+public abstract class PipelineWirelet<T extends WireletPipeline<?, T, ?>> extends Wirelet {
 
     /**
      * Invoked by the runtime whenever the user specified an extension wirelet for which a matching extension has not been
@@ -44,7 +47,6 @@ public abstract class PipelinedWirelet<T extends WireletPipeline<?, T, ?>> exten
         throw new IllegalArgumentException(
                 toString() + " can only be specified when the extension " + extensionType.getSimpleName() + " is used by the target container");
     }
-
 }
 
 // Grunden til vi gerne lave callback paa denne maade.

@@ -25,6 +25,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+//boolean requireExecution default false()???
 public @interface ExtensionSidecar {
 
     /**
@@ -69,6 +70,10 @@ public @interface ExtensionSidecar {
      * 
      * @return pipelines
      */
+    // Alternativt skal de defineres i samme module som extension'en
+    // Det vi gerne vil undgaa er at en eller anden random dude laver en pipeline
+    // som tager Extension instans...
+    // Men klart vi vil hellere undvaere den her metode hvis vi kan....
     Class<? extends WireletPipeline<?, ?, ?>>[] pipelines() default {};
 }
 // Pipelines will be made available if any wirelets using them are specified

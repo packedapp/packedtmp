@@ -30,7 +30,7 @@ import app.packed.inject.Factory;
 import packed.internal.component.AbstractComponentConfiguration;
 import packed.internal.moduleaccess.ModuleAccess;
 
-/** The default implementation of {@link ExtensionContext} with addition methods only available inside this module. */
+/** The default implementation of {@link ExtensionContext} with addition methods only available in app.packed.base. */
 public final class PackedExtensionContext implements ExtensionContext {
 
     /** The extension instance this context wraps, initialized in {@link #initialize(PackedContainerConfiguration)}. */
@@ -180,7 +180,7 @@ public final class PackedExtensionContext implements ExtensionContext {
     public Optional<Extension> parent() {
         AbstractComponentConfiguration parent = pcc.parent;
         if (parent instanceof PackedContainerConfiguration) {
-            PackedExtensionContext pe = ((PackedContainerConfiguration) parent).getExtension(model.extensionType);
+            PackedExtensionContext pe = ((PackedContainerConfiguration) parent).getExtension(model.extensionType());
             if (pe != null) {
                 return Optional.of(pe.extension);
             }
@@ -188,21 +188,11 @@ public final class PackedExtensionContext implements ExtensionContext {
         return Optional.empty();
     }
 
-    /**
-     * Returns the type of extension this context wraps.
-     * 
-     * @return the type of extension this context wraps
-     */
-    public Class<? extends Extension> type() {
-        return model.extensionType;
-    }
-
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Extension> T use(Class<T> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
-
         // We need to check whether or not the extension is allowed to use the specified extension every time.
         // An alternative would be to cache it in a map for each extension.
         // However this would incur extra memory usage. And if we only request an extension once
@@ -219,7 +209,7 @@ public final class PackedExtensionContext implements ExtensionContext {
                 return (T) extension;
             }
 
-            throw new UnsupportedOperationException("The specified extension type is not among " + model.extensionType.getSimpleName()
+            throw new UnsupportedOperationException("The specified extension type is not among " + model.extensionType().getSimpleName()
                     + " dependencies, extensionType = " + extensionType + ", valid dependencies = " + model.dependenciesDirect);
         }
         return (T) pcc.useExtension(extensionType, this).extension;

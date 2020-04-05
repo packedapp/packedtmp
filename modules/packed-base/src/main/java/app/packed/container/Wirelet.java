@@ -52,6 +52,9 @@ import packed.internal.container.FixedWireletList;
  * 
  * @apiNote User-code should never extend this class directly. Future versions of this class may make use of sealed
  *          types if they become available.
+ * 
+ * @see PipelineWirelet
+ * @see WireletPipeline
  */
 public abstract class Wirelet {
 

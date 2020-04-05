@@ -13,21 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.build.wirelets;
+package packed.internal.sidecar;
 
-import app.packed.container.PipelineWirelet;
-import packed.internal.service.build.ServiceWireletPipeline;
+import static java.util.Objects.requireNonNull;
 
 /**
  *
  */
-public abstract class ServiceWirelet extends PipelineWirelet<ServiceWireletPipeline> {
+public abstract class SidecarModel {
 
-    /**
-     * Process this wirelet.
-     * 
-     * @param pipeline
-     *            the extensions pipeline
-     */
-    protected abstract void process(ServiceWireletPipeline pipeline);
+    private final Class<?> sidecarType;
+
+    protected SidecarModel(Builder builder) {
+        this.sidecarType = builder.sidecarType;
+    }
+
+    public Class<?> sidecarType() {
+        return sidecarType;
+    }
+
+    public static abstract class Builder {
+
+        protected final Class<?> sidecarType;
+
+        protected Builder(Class<?> sidecarType) {
+            this.sidecarType = requireNonNull(sidecarType);
+        }
+    }
 }

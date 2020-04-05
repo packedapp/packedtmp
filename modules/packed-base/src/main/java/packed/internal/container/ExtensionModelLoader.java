@@ -37,7 +37,7 @@ final class ExtensionModelLoader {
     /** A lock used for making sure that we only load one extension tree at a time. */
     private static final ReentrantLock GLOBAL_LOCK = new ReentrantLock();
 
-    private static final WeakHashMap<Class<? extends WireletPipeline<?, ?, ?>>, ExtensionWireletPipelineModel> PIPELINES = new WeakHashMap<>();
+    private static final WeakHashMap<Class<? extends WireletPipeline<?, ?, ?>>, WireletPipelineModel> PIPELINES = new WeakHashMap<>();
 
     private final ArrayDeque<Class<? extends Extension>> stack = new ArrayDeque<>();
 
@@ -64,7 +64,7 @@ final class ExtensionModelLoader {
         // All dependencies have been successfully validated before we add the actual extension
         // and any of its pipelines to permanent storage
         EXTENSIONS.put(extensionType, m);
-        for (ExtensionWireletPipelineModel p : builder.pipelines.values()) {
+        for (WireletPipelineModel p : builder.pipelines.values()) {
             PIPELINES.put(p.type, p);
         }
 
@@ -105,14 +105,14 @@ final class ExtensionModelLoader {
         }
     }
 
-    static ExtensionWireletPipelineModel pipeline(Class<? extends WireletPipeline<?, ?, ?>> pipelineType) {
+    static WireletPipelineModel pipeline(Class<? extends WireletPipeline<?, ?, ?>> pipelineType) {
         GLOBAL_LOCK.lock();
         try {
-            ExtensionWireletPipelineModel m = PIPELINES.get(pipelineType);
+            WireletPipelineModel m = PIPELINES.get(pipelineType);
             if (m != null) {
                 return m;
             }
-            Class<? extends Extension> c = ExtensionWireletPipelineModel.extensionTypeOf(pipelineType);
+            Class<? extends Extension> c = WireletPipelineModel.extensionTypeOf(pipelineType);
             load(c);
             m = PIPELINES.get(pipelineType);
             if (m != null) {

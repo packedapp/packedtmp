@@ -32,8 +32,8 @@ import app.packed.base.reflect.ParameterDescriptor;
 import app.packed.base.reflect.VariableDescriptor;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
-import app.packed.container.WireletPipeline;
 import app.packed.container.Wirelet;
+import app.packed.container.WireletPipeline;
 import app.packed.inject.UnresolvedDependencyException;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
@@ -154,8 +154,9 @@ public final class DependencyManager {
                                         Class<? extends Extension> cc = op.get();
                                         if (cc == k.typeLiteral().type()) {
                                             PackedExtensionContext e = ((PackedExtensionContext) node.context()).container().getExtension(cc);
-                                            resolveTo = extensionEntries.computeIfAbsent(e.type(), kk -> new RuntimeAdaptorEntry(node,
-                                                    new SingletonInjectorEntry<Extension>(ConfigSite.UNKNOWN, (Key) Key.of(e.type()), null, e.extension())));
+                                            resolveTo = extensionEntries.computeIfAbsent(e.model().extensionType(),
+                                                    kk -> new RuntimeAdaptorEntry(node, new SingletonInjectorEntry<Extension>(ConfigSite.UNKNOWN,
+                                                            (Key) Key.of(e.model().extensionType()), null, e.extension())));
 
                                         }
                                     }

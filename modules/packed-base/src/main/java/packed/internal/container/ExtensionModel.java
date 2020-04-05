@@ -37,20 +37,21 @@ import app.packed.component.Component;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionSidecar;
-import app.packed.container.WireletPipeline;
 import app.packed.container.InternalExtensionException;
+import app.packed.container.WireletPipeline;
 import app.packed.hook.Expose;
 import app.packed.hook.OnHook;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
 import packed.internal.reflect.ConstructorFinder;
 import packed.internal.reflect.OpenClass;
+import packed.internal.sidecar.SidecarModel;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.UncheckedThrowableFactory;
 
 /** A model of an Extension. */
-public final class ExtensionModel<E extends Extension> {
+public final class ExtensionModel<E extends Extension> extends SidecarModel {
 
     /** A cache of values. */
     private static final ClassValue<ExtensionModel<?>> CACHE = new ClassValue<>() {
@@ -87,9 +88,6 @@ public final class ExtensionModel<E extends Extension> {
 
     final List<Class<? extends Extension>> dependenciesTotalOrder;
 
-    /** The type of the extension this model describes. */
-    final Class<? extends Extension> extensionType;
-
     final List<ECall> l;
 
     final BaseHookQualifierList nonActivatingHooks;
@@ -100,7 +98,7 @@ public final class ExtensionModel<E extends Extension> {
     /** An optional containing the extension type. To avoid excessive creation of them for {@link Component#extension()}. */
     public final Optional<Class<? extends Extension>> optional;
 
-    final Map<Class<? extends WireletPipeline<?, ?, ?>>, ExtensionWireletPipelineModel> pipelines;
+    final Map<Class<? extends WireletPipeline<?, ?, ?>>, WireletPipelineModel> pipelines;
 
     /**
      * Creates a new extension model from the specified builder.
@@ -109,18 +107,23 @@ public final class ExtensionModel<E extends Extension> {
      *            the builder for this model
      */
     private ExtensionModel(Builder builder) {
+        super(builder);
         this.constructor = builder.constructor;
-        this.extensionType = builder.extensionType;
         this.pipelines = Map.copyOf(builder.pipelines);
         this.bundleBuilderMethod = builder.builderMethod;
         this.contracts = Map.copyOf(builder.contracts);
         this.dependenciesDirect = Set.copyOf(builder.dependenciesDirect);
         this.dependenciesTotalOrder = builder.dependenciesTotalOrder;
-        this.optional = Optional.of(extensionType); // No need to create an optional every time we need this
+        this.optional = Optional.of(extensionType()); // No need to create an optional every time we need this
 
         this.onHookModel = builder.onHookModel;
         this.nonActivatingHooks = onHookModel == null ? null : LazyExtensionActivationMap.findNonExtending(onHookModel);
         this.l = List.copyOf(builder.l);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Class<? extends Extension> extensionType() {
+        return (Class<? extends Extension>) sidecarType();
     }
 
     /**
@@ -173,7 +176,7 @@ public final class ExtensionModel<E extends Extension> {
     }
 
     /** A builder for {@link ExtensionModel}. */
-    static final class Builder {
+    static final class Builder extends SidecarModel.Builder {
 
         MethodHandle builderMethod;
 
@@ -191,9 +194,6 @@ public final class ExtensionModel<E extends Extension> {
 
         private List<Class<? extends Extension>> dependenciesTotalOrder;
 
-        /** The type of extension we are building a model for. */
-        final Class<? extends Extension> extensionType;
-
         private final ArrayList<ECall> l = new ArrayList<>();
 
         final ExtensionModelLoader loader;
@@ -201,7 +201,7 @@ public final class ExtensionModel<E extends Extension> {
         /** A builder for all methods annotated with {@link OnHook} on the extension. */
         private OnHookModel onHookModel;
 
-        final HashMap<Class<? extends WireletPipeline<?, ?, ?>>, ExtensionWireletPipelineModel> pipelines = new HashMap<>();
+        final HashMap<Class<? extends WireletPipeline<?, ?, ?>>, WireletPipelineModel> pipelines = new HashMap<>();
 
         /**
          * Creates a new builder.
@@ -210,7 +210,7 @@ public final class ExtensionModel<E extends Extension> {
          *            the type of extension we are building a model for
          */
         Builder(Class<? extends Extension> extensionType, ExtensionModelLoader loader) {
-            this.extensionType = requireNonNull(extensionType);
+            super(extensionType);
             this.loader = requireNonNull(loader);
         }
 
@@ -221,21 +221,21 @@ public final class ExtensionModel<E extends Extension> {
          */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         ExtensionModel<?> build() {
-            ExtensionSidecar em = extensionType.getAnnotation(ExtensionSidecar.class);
+            ExtensionSidecar em = sidecarType.getAnnotation(ExtensionSidecar.class);
             if (em != null) {
                 for (Class<? extends Extension> ccc : em.dependencies()) {
                     ExtensionModelLoader.load(ccc, loader);
                     dependenciesDirect.add(ccc);
                 }
                 for (Class<? extends WireletPipeline<?, ?, ?>> c : em.pipelines()) {
-                    ExtensionWireletPipelineModel m = new ExtensionWireletPipelineModel.Builder(c).build();
+                    WireletPipelineModel m = new WireletPipelineModel.Builder(c).build();
                     pipelines.put(c, m);
                 }
             }
 
-            this.dependenciesTotalOrder = OldExtensionUseModel2.totalOrder(extensionType);
+            this.dependenciesTotalOrder = OldExtensionUseModel2.totalOrder(sidecarType);
 
-            OpenClass cp = new OpenClass(MethodHandles.lookup(), extensionType, true);
+            OpenClass cp = new OpenClass(MethodHandles.lookup(), sidecarType, true);
             this.constructor = ConstructorFinder.find(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
             this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
             cp.findMethods(e -> {
