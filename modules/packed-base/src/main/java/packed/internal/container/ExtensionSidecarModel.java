@@ -18,10 +18,7 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,18 +27,14 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Nullable;
-import app.packed.base.OnAssembling;
 import app.packed.component.Component;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionSidecar;
-import app.packed.container.InternalExtensionException;
 import app.packed.container.WireletPipeline;
-import app.packed.hook.Expose;
 import app.packed.hook.OnHook;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
-import packed.internal.reflect.ConstructorFinder;
 import packed.internal.reflect.OpenClass;
 import packed.internal.sidecar.SidecarModel;
 import packed.internal.sidecar.SidecarTypeMeta;
@@ -52,8 +45,8 @@ import packed.internal.util.UncheckedThrowableFactory;
 /** A model of an Extension. */
 public final class ExtensionSidecarModel extends SidecarModel {
 
-    /** A cache of values. */
-    private static final ClassValue<ExtensionSidecarModel> CACHE = new ClassValue<>() {
+    /** A cache of models. */
+    private static final ClassValue<ExtensionSidecarModel> MODELS = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
@@ -62,13 +55,12 @@ public final class ExtensionSidecarModel extends SidecarModel {
             // First, check that the user has specified an actual sub type of Extension to
             // ContainerConfiguration#use() or Bundle#use()
             if (type == Extension.class) {
-                throw new IllegalArgumentException("Cannot specify " + Extension.class.getSimpleName() + ".class as a parameter");
+                throw new IllegalArgumentException(Extension.class.getSimpleName() + ".class is not a valid argument.");
             } else if (!Extension.class.isAssignableFrom(type)) {
                 throw new IllegalArgumentException(
                         "The specified type '" + StringFormatter.format(type) + "' does not extend '" + StringFormatter.format(Extension.class) + "'");
             }
             return ExtensionModelLoader.load((Class<? extends Extension>) type);
-
         }
     };
 
@@ -80,14 +72,9 @@ public final class ExtensionSidecarModel extends SidecarModel {
 
     final MethodHandle bundleBuilderMethod;
 
-    /** The method handle used to create a new extension instance. */
-    private final MethodHandle constructor;
-
     final Set<Class<? extends Extension>> dependenciesDirect;
 
     final List<Class<? extends Extension>> dependenciesTotalOrder;
-
-    final List<ECall> l;
 
     final BaseHookQualifierList nonActivatingHooks;
 
@@ -107,7 +94,6 @@ public final class ExtensionSidecarModel extends SidecarModel {
      */
     private ExtensionSidecarModel(Builder builder) {
         super(builder);
-        this.constructor = builder.constructor;
         this.pipelines = Map.copyOf(builder.pipelines);
         this.bundleBuilderMethod = builder.builderMethod;
         this.dependenciesDirect = Set.copyOf(builder.dependenciesDirect);
@@ -116,7 +102,6 @@ public final class ExtensionSidecarModel extends SidecarModel {
 
         this.onHookModel = builder.onHookModel;
         this.nonActivatingHooks = onHookModel == null ? null : LazyExtensionActivationMap.findNonExtending(onHookModel);
-        this.l = List.copyOf(builder.l);
     }
 
     @SuppressWarnings("unchecked")
@@ -154,7 +139,7 @@ public final class ExtensionSidecarModel extends SidecarModel {
      * @return an extension model for the specified extension type
      */
     public static ExtensionSidecarModel of(Class<? extends Extension> extensionType) {
-        return CACHE.get(extensionType);
+        return MODELS.get(extensionType);
     }
 
     /**
@@ -177,19 +162,13 @@ public final class ExtensionSidecarModel extends SidecarModel {
         private static final SidecarTypeMeta STM = new SidecarTypeMeta(ExtensionSidecar.class, ExtensionSidecar.ON_INSTANTIATION, ExtensionSidecar.ON_PREEMBLE,
                 ExtensionSidecar.ON_CHILDREN_DONE);
 
-        MethodHandle builderMethod;
-
-        /** The constructor used to create a new extension instance. */
-        private MethodHandle constructor;
-
         /** A list of dependencies on other extensions. */
-        Set<Class<? extends Extension>> dependenciesDirect = new HashSet<>();
+        private Set<Class<? extends Extension>> dependenciesDirect = new HashSet<>();
 
         private List<Class<? extends Extension>> dependenciesTotalOrder;
 
-        private final ArrayList<ECall> l = new ArrayList<>();
-
-        final ExtensionModelLoader loader;
+        /** The loader used to load the extension. */
+        private final ExtensionModelLoader loader;
 
         /** A builder for all methods annotated with {@link OnHook} on the extension. */
         private OnHookModel onHookModel;
@@ -212,7 +191,6 @@ public final class ExtensionSidecarModel extends SidecarModel {
          * 
          * @return the extension model
          */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
         ExtensionSidecarModel build() {
             ExtensionSidecar em = sidecarType.getAnnotation(ExtensionSidecar.class);
             if (em != null) {
@@ -225,70 +203,12 @@ public final class ExtensionSidecarModel extends SidecarModel {
                     pipelines.put(c, m);
                 }
             }
-
             this.dependenciesTotalOrder = OldExtensionUseModel2.totalOrder(sidecarType);
 
-            OpenClass cp = new OpenClass(MethodHandles.lookup(), sidecarType, true);
-            this.constructor = ConstructorFinder.find(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-            cp.findMethods(e -> {
-                OnAssembling oa = e.getAnnotation(OnAssembling.class);
-                if (oa != null) {
-                    if (Modifier.isStatic(e.getModifiers())) {
-                        throw new InternalExtensionException("Methods annotated with " + OnAssembling.class + " cannot be static, method = " + e);
-                    }
-                    MethodHandle mh = cp.unreflect(e, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-                    l.add(new ECall(mh, oa.value().equals(ExtensionSidecar.ON_INSTANTIATION), oa.value().equals(ExtensionSidecar.ON_PREEMBLE)));
-                }
-                Expose ex = e.getAnnotation(Expose.class);
-                if (ex != null) {
-                    if (e.getReturnType() == void.class) {
-                        builderMethod = cp.unreflect(e, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-                    } else {
-                        MethodHandle mh = cp.unreflect(e, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-                        contracts.put((Class) e.getReturnType(), mh);
-                    }
-                }
-            });
-
+            OpenClass cp = prep();
             this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
-
             return new ExtensionSidecarModel(this);
         }
     }
 
-    public void invokeCallbacks(int id, Object sidecar) {
-        if (id == ExtensionSidecarModel.ON_INSTANTIATION) {
-            for (var v : l) {
-                if (v.onInstantiation) {
-                    try {
-                        v.mh.invoke(sidecar);
-                    } catch (Throwable e) {
-                        throw new UndeclaredThrowableException(e);
-                    }
-                }
-            }
-        } else if (id == ExtensionSidecarModel.ON_PREEMBLE) {
-            for (var v : l) {
-                if (v.onMainFinished) {
-                    try {
-                        v.mh.invoke(sidecar);
-                    } catch (Throwable e) {
-                        throw new UndeclaredThrowableException(e);
-                    }
-                }
-            }
-        }
-    }
-
-    static class ECall {
-        final MethodHandle mh;
-        final boolean onInstantiation;
-        final boolean onMainFinished;
-
-        ECall(MethodHandle mh, boolean onInstantiation, boolean onMainFinished) {
-            this.mh = requireNonNull(mh);
-            this.onInstantiation = onInstantiation;
-            this.onMainFinished = onMainFinished;
-        }
-    }
 }

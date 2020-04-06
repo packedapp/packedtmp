@@ -43,7 +43,7 @@ final class ExtensionModelLoader {
 
     private ExtensionModelLoader() {}
 
-    private <E extends Extension> ExtensionSidecarModel load1(Class<E> extensionType) {
+    private ExtensionSidecarModel load1(Class<? extends Extension> extensionType) {
         if (stack.contains(extensionType)) {
             throw new RuntimeException("Cyclic error");
         }

@@ -48,16 +48,18 @@ public final class WireletContext {
     // We might at some point, allow the setting of a default name...
     // In which we need to different between not-set and set to null
 
-    ComponentNameWirelet newName;
-
-    /** Pipelines for the various extensions. */
-    final IdentityHashMap<Class<? extends WireletPipeline<?, ?, ?>>, List<PipelineWirelet<?>>> pipelines = new IdentityHashMap<>();
-
     final IdentityHashMap<Class<? extends WireletPipeline<?, ?, ?>>, WireletPipeline<?, ?, ?>> actualpipelines = new IdentityHashMap<>();
+
+    ComponentNameWirelet newName;
 
     /** Any parent this context might have */
     @Nullable
     final WireletContext parent;
+
+    /** Pipelines for the various extensions. */
+    final IdentityHashMap<Class<? extends WireletPipeline<?, ?, ?>>, List<PipelineWirelet<?>>> pipelines = new IdentityHashMap<>();
+
+    private final IdentityHashMap<Class<? extends Wirelet>, Wirelet> wirelets = new IdentityHashMap<>();
 
     /**
      * Creates a new context
@@ -69,26 +71,34 @@ public final class WireletContext {
         this.parent = parent;
     }
 
-    public ComponentNameWirelet nameWirelet() {
-        WireletContext wc = this;
-        while (wc != null) {
-            if (wc.newName != null) {
-                return newName;
+    private void addWirelet(PackedContainerConfiguration pcc, Wirelet w) {
+        requireNonNull(w, "wirelets contain a null");
+        if (w instanceof PipelineWirelet) {
+            @SuppressWarnings("unchecked")
+            WireletPipelineModel model = PipelineWireletModel.of((Class<? extends PipelineWirelet<?>>) w.getClass());
+            pipelines.computeIfAbsent(model.type, k -> new ArrayList<>()).add((PipelineWirelet<?>) w);
+        } else if (w instanceof ContainerWirelet) {
+            ((ContainerWirelet) w).process(pcc, this);
+        } else if (w instanceof FixedWireletList) {
+            for (Wirelet ww : ((FixedWireletList) w).wirelets) {
+                addWirelet(pcc, ww);
             }
-            wc = wc.parent;
+        } else {
+            wirelets.put(w.getClass(), w);
         }
-        return null;
     }
 
-    public String name(PackedContainerConfiguration pcc) {
-        WireletContext wc = this;
-        while (wc != null) {
-            if (wc.newName != null) {
-                return newName.name;
+    private void extensionFixed(PackedContainerConfiguration pcc) {
+        for (var e : pipelines.entrySet()) {
+            Class<? extends Extension> etype = WireletPipelineModel.of(e.getKey()).extensionType;
+            PackedExtensionContext c = pcc.getExtension(etype);
+            if (c == null) {
+                // Call ExtensionWirelet#extensionNotAvailable
+                throw new IllegalArgumentException(
+                        "In order to use the wirelet(s) " + e.getValue() + ", " + etype.getSimpleName() + " is required to be installed.");
             }
-            wc = wc.parent;
+            initializex(c, e.getKey());
         }
-        return pcc.name;
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -114,46 +124,8 @@ public final class WireletContext {
         return null;
     }
 
-    private final IdentityHashMap<Class<? extends Wirelet>, Wirelet> wirelets = new IdentityHashMap<>();
-
-    @SuppressWarnings("unchecked")
-    private void apply(PackedContainerConfiguration pcc, FixedWireletList wirelets) {
-        for (Wirelet w : wirelets.toArray()) {
-            if (w instanceof PipelineWirelet) {
-                WireletPipelineModel pm = PipelineWireletModel.of((Class<? extends PipelineWirelet<?>>) w.getClass());
-                pipelines.computeIfAbsent(pm.type, k -> new ArrayList<>()).add((PipelineWirelet<?>) w);
-            } else if (w instanceof ContainerWirelet) {
-                ((ContainerWirelet) w).process(pcc, this);
-            } else {
-                this.wirelets.put(w.getClass(), w);
-//                throw new IllegalArgumentException("Wirelets of type " + StringFormatter.format(w.getClass()) + " are not supported");
-            }
-        }
-    }
-
-    private void extensionFixed(PackedContainerConfiguration pcc) {
-        for (var e : pipelines.entrySet()) {
-            Class<? extends Extension> etype = WireletPipelineModel.of(e.getKey()).extensionType;
-            PackedExtensionContext c = pcc.getExtension(etype);
-            if (c == null) {
-                // Call ExtensionWirelet#extensionNotAvailable
-                throw new IllegalArgumentException(
-                        "In order to use the wirelet(s) " + e.getValue() + ", " + etype.getSimpleName() + " is required to be installed.");
-            }
-            initializex(c, e.getKey());
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public void initializex(PackedExtensionContext pec, Class<? extends WireletPipeline<?, ?, ?>> etype) {
-        List<PipelineWirelet<?>> ewp = pipelines.get(etype);
-        if (ewp != null) {
-            WireletPipelineModel m = PipelineWireletModel.of((Class<? extends PipelineWirelet<?>>) ewp.iterator().next().getClass());
-            WireletPipeline<?, ?, ?> pip = m.newPipeline(pec.extension());
-            ModuleAccess.extension().pipelineInitialize(Optional.empty(), ewp, pip);
-            actualpipelines.put(etype, pip);
-
-        }
+    public <T extends Wirelet> T getSingle(Class<T> wireletType) {
+        return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -170,26 +142,54 @@ public final class WireletContext {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public void initializex(PackedExtensionContext pec, Class<? extends WireletPipeline<?, ?, ?>> etype) {
+        List<PipelineWirelet<?>> ewp = pipelines.get(etype);
+        if (ewp != null) {
+            WireletPipelineModel m = PipelineWireletModel.of((Class<? extends PipelineWirelet<?>>) ewp.iterator().next().getClass());
+            WireletPipeline<?, ?, ?> pip = m.newPipeline(pec.extension());
+            ModuleAccess.extension().pipelineInitialize(Optional.empty(), ewp, pip);
+            actualpipelines.put(etype, pip);
+
+        }
+    }
+
+    public String name(PackedContainerConfiguration pcc) {
+        WireletContext wc = this;
+        while (wc != null) {
+            if (wc.newName != null) {
+                return newName.name;
+            }
+            wc = wc.parent;
+        }
+        return pcc.name;
+    }
+
+    public ComponentNameWirelet nameWirelet() {
+        WireletContext wc = this;
+        while (wc != null) {
+            if (wc.newName != null) {
+                return newName;
+            }
+            wc = wc.parent;
+        }
+        return null;
+    }
+
     @Nullable
     public static WireletContext create(PackedContainerConfiguration pcc, @Nullable WireletContext existing, Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
         if (wirelets.length == 0) {
             return existing;
         }
-
-        // Taenker ogsaa vi har et enkelt map. Kan sagtens smide wirelets og pipelines i det samme....
-        // Taenker vi kan droppe FixedWireletList. Og lave en context direkte istedet for
         WireletContext wc = new WireletContext(existing);
-        FixedWireletList wl = FixedWireletList.of(wirelets);
-        wc.apply(pcc, wl);
+        for (Wirelet w : wirelets) {
+            wc.addWirelet(pcc, w);
+        }
         if (existing != null) {
             wc.extensionFixed(pcc);
         }
         return wc;
-    }
-
-    public <T extends Wirelet> T getSingle(Class<T> wireletType) {
-        return null;
     }
 }
 // Typer wirelets
