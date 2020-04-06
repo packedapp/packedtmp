@@ -118,7 +118,7 @@ public final class PackedExtensionContext implements ExtensionContext {
             pcc.activeExtension = this;
             model.invokeCallbacks(ExtensionSidecarModel.ON_INSTANTIATION, extension);
             if (pcc.wireletContext != null) {
-                pcc.wireletContext.initialize(this);
+                pcc.wireletContext.extensionInitialized(this);
             }
 
             // Registers this context with the artifact build context.

@@ -83,7 +83,7 @@ public abstract class Extension {
             public void pipelineInitialize(Optional<WireletPipeline<?, ?, ?>> previous, List<?> wirelets, WireletPipeline<?, ?, ?> pipeline) {
                 pipeline.previous = (Optional) previous;
                 pipeline.wirelets = (List) wirelets;
-                pipeline.onInitialize();
+                pipeline.verify();
             }
 
             /** {@inheritDoc} */
@@ -197,8 +197,8 @@ public abstract class Extension {
     /**
      * Returns an extension of the specified type.
      * <p>
-     * Any extension type passed to this method must have explicitly been registered using an {@link ExtensionSidecar} on the
-     * extension implementation.
+     * Any extension type passed to this method must have explicitly been registered using an {@link ExtensionSidecar} on
+     * the extension implementation.
      * <p>
      * Invoking this method is similar to calling {@link ContainerConfiguration#use(Class)}. However, this method also keeps
      * track of which extensions uses other extensions. And forming any kind of circle in the dependency graph will fail

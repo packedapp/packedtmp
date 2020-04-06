@@ -71,10 +71,6 @@ public abstract class WireletPipeline<E extends Extension, P extends WireletPipe
         return wirelets().iterator();
     }
 
-    /** Invoked by the runtime immediately after the pipeline has been constructed. */
-                                                                                      // This method is invoked exactly once
-    protected void onInitialize() {}
-
     /**
      * If this pipeline was spawned from an existing pipeline, returns the pipeline, otherwise returns empty.
      * 
@@ -85,7 +81,7 @@ public abstract class WireletPipeline<E extends Extension, P extends WireletPipe
     public final Optional<P> previous() {
         Optional<P> p = previous;
         if (p == null) {
-            throw new IllegalStateException("This method cannot be called from the constructor of the pipeline, override #onInitialize() instead.");
+            throw new IllegalStateException("This method cannot be called from the constructor of the pipeline, override #verify() instead.");
         }
         return p;
     }
@@ -102,6 +98,9 @@ public abstract class WireletPipeline<E extends Extension, P extends WireletPipe
         return wirelets().toString();
     }
 
+    /** Invoked by the runtime immediately after the pipeline has been constructed. */
+    protected void verify() {}
+
     /**
      * Returns all wirelets in this pipeline.
      * 
@@ -112,7 +111,7 @@ public abstract class WireletPipeline<E extends Extension, P extends WireletPipe
     private List<W> wirelets() {
         List<W> w = wirelets;
         if (w == null) {
-            throw new IllegalStateException("This method cannot be called from the constructor of the pipeline, override #onInitialize() instead.");
+            throw new IllegalStateException("This method cannot be called from the constructor of the pipeline, override #verify() instead.");
         }
         return w;
     }
@@ -121,6 +120,12 @@ public abstract class WireletPipeline<E extends Extension, P extends WireletPipe
         // is PipelinedWirelet
         // isPipeline of type extension...
         //
+        throw new UnsupportedOperationException();
+    }
+
+    static <T extends WireletPipeline<?, ?, ?>> T ini(T pipeline, Wirelet... wirelets) {
+        // Ideen er let at brugere kan bruge den for at faa populeret en pipeline???
+        // Altsaa hvad hvis man two pipelines... Maaske man skal kunne angive flere pipelines
         throw new UnsupportedOperationException();
     }
 }
