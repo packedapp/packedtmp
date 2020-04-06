@@ -18,9 +18,11 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
+import app.packed.container.Extension;
 import app.packed.container.PipelineWirelet;
 import app.packed.container.WireletPipeline;
 
@@ -30,18 +32,22 @@ import app.packed.container.WireletPipeline;
 public final class WireletPipelineContext {
 
     // Vi gennem den saa folk kan faa den injected..
-    WireletPipeline<?, ?, ?> instance;
+    public WireletPipeline<?, ?, ?> instance;
 
     final WireletPipelineModel model;
 
     @Nullable
-    WireletPipelineContext previous;
+    public WireletPipelineContext previous;
 
     final ArrayList<PipelineWirelet<?>> wirelets = new ArrayList<>();
 
     WireletPipelineContext(WireletPipelineModel model, @Nullable WireletPipelineContext previous) {
         this.model = requireNonNull(model);
         this.previous = previous;
+    }
+
+    Class<? extends Extension> extension() {
+        return model.extensionType;
     }
 
     @SuppressWarnings("unchecked")
@@ -57,5 +63,13 @@ public final class WireletPipelineContext {
     public void forEachInPipeline(@SuppressWarnings("rawtypes") Consumer action) {
         requireNonNull("action is null");
         wirelets.forEach(action);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<?> toList() {
+        @SuppressWarnings("rawtypes")
+        ArrayList l = new ArrayList<>();
+        forEach(w -> l.add(w));
+        return l;
     }
 }

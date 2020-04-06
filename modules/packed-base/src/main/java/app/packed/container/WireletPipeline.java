@@ -16,12 +16,12 @@
 package app.packed.container;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Optional;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
+import packed.internal.container.WireletPipelineContext;
 import packed.internal.container.WireletPipelineModel;
 
 /**
@@ -40,16 +40,24 @@ import packed.internal.container.WireletPipelineModel;
 // ExtensionImplementation#getModule and WireletPipelineImplementation#getModule
 public abstract class WireletPipeline<E extends Extension, P extends WireletPipeline<E, P, W>, W extends PipelineWirelet<P>> implements Iterable<W> {
 
-    /** Any previous pipeline, is initialized immediately after the constructor of the pipeline has finished. */
+    /** The pipeline context, initialized immediately after the constructor of the pipeline has finished. */
     @Nullable
-    Optional<P> previous;
+    WireletPipelineContext context;
 
     /**
-     * A list initially containing the wirelets that was used to create this pipeline, is initialized immediately after the
-     * constructor of the pipeline has finished.
+     * Returns all wirelets in this pipeline.
+     * 
+     * @return a list of the wirelets in the pipeline
+     * @throws IllegalStateException
+     *             if called from the constructor of the pipeline
      */
-    @Nullable
-    List<W> wirelets;
+    private WireletPipelineContext context() {
+        WireletPipelineContext c = context;
+        if (c == null) {
+            throw new IllegalStateException("This method cannot be called from the constructor of the pipeline, override #verify() instead.");
+        }
+        return c;
+    }
 
     @SuppressWarnings("unchecked")
     protected void extensionNotAvailable() {
@@ -62,13 +70,14 @@ public abstract class WireletPipeline<E extends Extension, P extends WireletPipe
     /** {@inheritDoc} */
     @Override
     public final void forEach(Consumer<? super W> action) {
-        wirelets().forEach(action);
+        context().forEach(action);
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
     @Override
     public final Iterator<W> iterator() {
-        return wirelets().iterator();
+        return (Iterator<W>) context().toList().iterator();
     }
 
     /**
@@ -78,43 +87,30 @@ public abstract class WireletPipeline<E extends Extension, P extends WireletPipe
      * @throws IllegalStateException
      *             if called from the constructor of the pipeline
      */
+    @SuppressWarnings("unchecked")
     public final Optional<P> previous() {
-        Optional<P> p = previous;
-        if (p == null) {
-            throw new IllegalStateException("This method cannot be called from the constructor of the pipeline, override #verify() instead.");
+        WireletPipelineContext c = context().previous;
+        if (c != null) {
+            return Optional.of((P) c.instance);
         }
-        return p;
+        return Optional.empty();
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
     @Override
     public final Spliterator<W> spliterator() {
-        return wirelets().spliterator();
+        return (Spliterator<W>) context().toList().spliterator();
     }
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return wirelets().toString();
+        return context().toList().toString();
     }
 
     /** Invoked by the runtime immediately after the pipeline has been constructed. */
     protected void verify() {}
-
-    /**
-     * Returns all wirelets in this pipeline.
-     * 
-     * @return a list of the wirelets in the pipeline
-     * @throws IllegalStateException
-     *             if called from the constructor of the pipeline
-     */
-    private List<W> wirelets() {
-        List<W> w = wirelets;
-        if (w == null) {
-            throw new IllegalStateException("This method cannot be called from the constructor of the pipeline, override #verify() instead.");
-        }
-        return w;
-    }
 
     static Optional<Class<? extends Extension>> extensionTypeOf(Class<? extends Wirelet> wirelet) {
         // is PipelinedWirelet

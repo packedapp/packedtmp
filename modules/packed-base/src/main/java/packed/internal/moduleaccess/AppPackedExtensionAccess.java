@@ -15,17 +15,14 @@
  */
 package packed.internal.moduleaccess;
 
-import java.util.List;
-import java.util.Optional;
-
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
-import app.packed.container.WireletPipeline;
+import packed.internal.container.WireletPipelineContext;
 
 /** A support class for calling package private methods in the app.packed.extension package. */
 public interface AppPackedExtensionAccess extends SecretAccess {
 
-    void pipelineInitialize(Optional<WireletPipeline<?, ?, ?>> previous, List<?> wirelets, WireletPipeline<?, ?, ?> pipeline);
+    void pipelineInitialize(WireletPipelineContext context);
 
     /**
      * Initializes the extension.

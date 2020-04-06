@@ -469,9 +469,10 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return newLayer;
     }
 
+    @SuppressWarnings("unchecked")
     @Nullable
     public <T extends Wirelet> T wireletOfType(Class<T> wireletType) {
-        return wireletContext == null ? null : wireletContext.getSingle(wireletType);
+        return wireletContext == null ? null : (T) wireletContext.getIt(wireletType);
     }
 
     /** {@inheritDoc} */

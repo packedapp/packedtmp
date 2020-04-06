@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Optional;
 
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
@@ -78,13 +77,16 @@ public final class WireletContext {
         if (w instanceof PipelineWirelet) {
             @SuppressWarnings("unchecked")
             WireletPipelineModel model = PipelineWireletModel.of((Class<? extends PipelineWirelet<?>>) w.getClass());
-            pipelineElements.computeIfAbsent(model.type, k -> new ArrayList<>()).add((PipelineWirelet<?>) w);
 
+            pipelineElements.computeIfAbsent(model.type, k -> new ArrayList<>()).add((PipelineWirelet<?>) w);
             ((WireletPipelineContext) wirelets.computeIfAbsent(model.type, k -> {
                 WireletPipelineContext pc = parent == null ? null : (WireletPipelineContext) parent.getIt(model.type);
-                return new WireletPipelineContext(model, pc);
+                WireletPipelineContext wpc = new WireletPipelineContext(model, pc);
+                if (model.extensionType != null) {
+                    extensions.put(model.extensionType, wpc);// We need to add it as a list if we have more than one wirelet context
+                }
+                return wpc;
             })).wirelets.add((PipelineWirelet<?>) w);
-
         } else if (w instanceof ContainerWirelet) {
             ((ContainerWirelet) w).process(pcc, this);
         } else if (w instanceof FixedWireletList) {
@@ -94,29 +96,6 @@ public final class WireletContext {
         } else {
             wirelets.put(w.getClass(), w);
         }
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    @Nullable
-    public Object get(Class<?> type) {
-        if (Wirelet.class.isAssignableFrom(type)) {
-            return wirelets.get(type);
-        } else {
-            return getPipelin((Class) type);
-        }
-    }
-
-    public <T extends WireletPipeline<?, ?, ?>> T getPipelin(Class<T> pipelineType) {
-        WireletContext wc = this;
-        while (wc != null) {
-            @SuppressWarnings("unchecked")
-            T pip = (T) actualpipelines.get(pipelineType);
-            if (pip != null) {
-                return pip;
-            }
-            wc = wc.parent;
-        }
-        return null;
     }
 
     @Nullable
@@ -132,56 +111,12 @@ public final class WireletContext {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
-    @Nullable
-    public <T> T getSingle(Class<T> type) {
-        WireletContext wc = this;
-        do {
-            T pip = (T) wc.wirelets.get(type);
-            if (pip != null) {
-                return pip;
-            }
-            wc = wc.parent;
-        } while (wc != null);
-        return null;
-    }
-
-    private void extensionFixed(PackedContainerConfiguration pcc) {
-        for (var e : pipelineElements.entrySet()) {
-            Class<? extends Extension> etype = WireletPipelineModel.of(e.getKey()).extensionType;
-            PackedExtensionContext c = pcc.getExtension(etype);
-            if (c == null) {
-                // Call ExtensionWirelet#extensionNotAvailable
-                throw new IllegalArgumentException(
-                        "In order to use the wirelet(s) " + e.getValue() + ", " + etype.getSimpleName() + " is required to be installed.");
-            }
-            initializex(c, e.getKey());
-        }
-    }
-
-    @SuppressWarnings("unchecked")
     public void extensionInitialized(PackedExtensionContext pec) {
-        for (var p : pec.model().pipelines.keySet()) {
-            List<PipelineWirelet<?>> ewp = pipelineElements.get(p);
-            if (ewp != null) {
-                WireletPipelineModel m = PipelineWireletModel.of((Class<? extends PipelineWirelet<?>>) ewp.iterator().next().getClass());
-
-                WireletPipeline<?, ?, ?> pip = m.newPipeline(pec.extension());
-                ModuleAccess.extension().pipelineInitialize(Optional.empty(), ewp, pip);
-                actualpipelines.put(p, pip);
-            }
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public void initializex(PackedExtensionContext pec, Class<? extends WireletPipeline<?, ?, ?>> etype) {
-        List<PipelineWirelet<?>> ewp = pipelineElements.get(etype);
-        if (ewp != null) {
-            WireletPipelineModel m = PipelineWireletModel.of((Class<? extends PipelineWirelet<?>>) ewp.iterator().next().getClass());
-            WireletPipeline<?, ?, ?> pip = m.newPipeline(pec.extension());
-            ModuleAccess.extension().pipelineInitialize(Optional.empty(), ewp, pip);
-            actualpipelines.put(etype, pip);
-
+        Object o = extensions.get(pec.model().extensionType());
+        if (o != null) {
+            WireletPipelineContext c = (WireletPipelineContext) o;
+            c.instance = c.model.newPipeline(pec.extension());
+            ModuleAccess.extension().pipelineInitialize(c);
         }
     }
 
@@ -208,6 +143,7 @@ public final class WireletContext {
     }
 
     public void extensionsConfigured() {
+        assert (parent == null);
         if (!extensions.isEmpty()) {
             throw new Error();
         }
@@ -225,10 +161,26 @@ public final class WireletContext {
             wc.addWirelet(pcc, w);
         }
 
-        // If we have an existing wirelet context, it means that all extensions have been added
-        if (existing != null) {
-            wc.extensionFixed(pcc);
+        for (Object o : wc.wirelets.values()) {
+            if (o instanceof WireletPipelineContext) {
+                WireletPipelineContext c = (WireletPipelineContext) o;
+                Class<? extends Extension> et = c.extension();
+                if (et == null || existing != null) {
+                    Extension extension = null;
+                    if (et != null) {
+                        PackedExtensionContext pec = pcc.getExtension(et);
+                        if (pec == null) {
+                            throw new IllegalArgumentException(
+                                    "In order to use the wirelet(s) " + c.wirelets.get(0) + ", " + et.getSimpleName() + " is required to be installed.");
+                        }
+                        extension = pec.extension();
+                    }
+                    c.instance = c.model.newPipeline(extension);
+                    ModuleAccess.extension().pipelineInitialize(c);
+                }
+            }
         }
+
         return wc;
     }
 }
@@ -238,3 +190,41 @@ public final class WireletContext {
 // Extension Pipeline -> Check Extension er installeret...
 
 // Internal Wirelets -> Kan kalde dem med en PCC, WC
+
+//private void extensionFixed(PackedContainerConfiguration pcc) {
+//  for (var e : pipelineElements.entrySet()) {
+//      Class<? extends Extension> etype = WireletPipelineModel.of(e.getKey()).extensionType;
+//      PackedExtensionContext c = pcc.getExtension(etype);
+//      if (c == null) {
+//          // Call ExtensionWirelet#extensionNotAvailable
+//          throw new IllegalArgumentException(
+//                  "In order to use the wirelet(s) " + e.getValue() + ", " + etype.getSimpleName() + " is required to be installed.");
+//      }
+//      initializex(c, e.getKey());
+//  }
+//}
+////
+//@SuppressWarnings("unchecked")
+//private void extensionInitialized(PackedExtensionContext pec) {
+//  for (var p : pec.model().pipelines.keySet()) {
+//      List<PipelineWirelet<?>> ewp = pipelineElements.get(p);
+//      if (ewp != null) {
+//          WireletPipelineModel m = PipelineWireletModel.of((Class<? extends PipelineWirelet<?>>) ewp.iterator().next().getClass());
+//
+//          WireletPipeline<?, ?, ?> pip = m.newPipeline(pec.extension());
+//          ModuleAccess.extension().pipelineInitialize(Optional.empty(), ewp, pip);
+//          actualpipelines.put(p, pip);
+//      }
+//  }
+//}
+//
+//@SuppressWarnings("unchecked")
+//private void initializex(PackedExtensionContext pec, Class<? extends WireletPipeline<?, ?, ?>> etype) {
+//List<PipelineWirelet<?>> ewp = pipelineElements.get(etype);
+//if (ewp != null) {
+//    WireletPipelineModel m = PipelineWireletModel.of((Class<? extends PipelineWirelet<?>>) ewp.iterator().next().getClass());
+//    WireletPipeline<?, ?, ?> pip = m.newPipeline(pec.extension());
+//    ModuleAccess.extension().pipelineInitialize(Optional.empty(), ewp, pip);
+//    actualpipelines.put(etype, pip);
+//}
+//}

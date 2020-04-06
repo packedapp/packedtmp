@@ -18,7 +18,6 @@ package app.packed.container;
 import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
 import java.lang.reflect.Modifier;
-import java.util.List;
 import java.util.Optional;
 
 import app.packed.artifact.Assembly;
@@ -26,6 +25,7 @@ import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 import packed.internal.config.ConfigSiteSupport;
+import packed.internal.container.WireletPipelineContext;
 import packed.internal.moduleaccess.AppPackedExtensionAccess;
 import packed.internal.moduleaccess.ModuleAccess;
 
@@ -78,12 +78,10 @@ public abstract class Extension {
         ModuleAccess.initialize(AppPackedExtensionAccess.class, new AppPackedExtensionAccess() {
 
             /** {@inheritDoc} */
-            @SuppressWarnings({ "rawtypes", "unchecked" })
             @Override
-            public void pipelineInitialize(Optional<WireletPipeline<?, ?, ?>> previous, List<?> wirelets, WireletPipeline<?, ?, ?> pipeline) {
-                pipeline.previous = (Optional) previous;
-                pipeline.wirelets = (List) wirelets;
-                pipeline.verify();
+            public void pipelineInitialize(WireletPipelineContext context) {
+                context.instance.context = context;
+                context.instance.verify();
             }
 
             /** {@inheritDoc} */

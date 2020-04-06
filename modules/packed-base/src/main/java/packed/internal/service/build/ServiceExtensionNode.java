@@ -31,6 +31,7 @@ import app.packed.inject.Inject;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceMode;
 import packed.internal.container.WireletContext;
+import packed.internal.container.WireletPipelineContext;
 import packed.internal.inject.AtInject;
 import packed.internal.inject.AtInjectHook;
 import packed.internal.inject.ServiceDependency;
@@ -206,7 +207,12 @@ public final class ServiceExtensionNode {
 
             // instance = e.getKey().wrapIfOptional(requireNonNull(wc.getPipelin((Class) pipelineClass)));
 
-            instance = e.getKey().wrapIfOptional(requireNonNull(wc.get(pipelineClass)));
+            instance = wc.getIt(pipelineClass);
+            if (instance instanceof WireletPipelineContext) {
+                instance = ((WireletPipelineContext) instance).instance;
+            }
+
+            instance = e.getKey().wrapIfOptional(requireNonNull(instance));
             // }
             BuildEntry<?> be = e.getValue();
             con.transformers.put(be, new SingletonInjectorEntry<Object>(ConfigSite.UNKNOWN, (Key) be.key, be.description, instance));
