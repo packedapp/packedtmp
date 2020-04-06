@@ -28,10 +28,10 @@ import app.packed.container.ExtensionDescriptor;
 public final class PackedExtensionDescriptor implements ExtensionDescriptor {
 
     /** The extension model we wrap. */
-    private final ExtensionSidecarModel<?> model;
+    private final ExtensionSidecarModel model;
 
     /** No public instantiation. */
-    private PackedExtensionDescriptor(ExtensionSidecarModel<?> model) {
+    private PackedExtensionDescriptor(ExtensionSidecarModel model) {
         this.model = requireNonNull(model);
     }
 

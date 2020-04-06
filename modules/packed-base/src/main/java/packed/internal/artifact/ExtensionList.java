@@ -24,7 +24,7 @@ import packed.internal.container.ExtensionSidecarModel;
  */
 final class ExtensionList {
 
-    final LinkedHashSet<ExtensionSidecarModel<?>> extensions = new LinkedHashSet<>();
+    final LinkedHashSet<ExtensionSidecarModel> extensions = new LinkedHashSet<>();
 
     void sort() {
 

@@ -50,15 +50,15 @@ import packed.internal.util.ThrowableUtil;
 import packed.internal.util.UncheckedThrowableFactory;
 
 /** A model of an Extension. */
-public final class ExtensionSidecarModel<E extends Extension> extends SidecarModel {
+public final class ExtensionSidecarModel extends SidecarModel {
 
     /** A cache of values. */
-    private static final ClassValue<ExtensionSidecarModel<?>> CACHE = new ClassValue<>() {
+    private static final ClassValue<ExtensionSidecarModel> CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
         @Override
-        protected ExtensionSidecarModel<? extends Extension> computeValue(Class<?> type) {
+        protected ExtensionSidecarModel computeValue(Class<?> type) {
             // First, check that the user has specified an actual sub type of Extension to
             // ContainerConfiguration#use() or Bundle#use()
             if (type == Extension.class) {
@@ -149,15 +149,12 @@ public final class ExtensionSidecarModel<E extends Extension> extends SidecarMod
     /**
      * Returns an extension model for the specified extension type.
      * 
-     * @param <T>
-     *            the type of extension to return a model for
      * @param extensionType
      *            the type of extension to return a model for
      * @return an extension model for the specified extension type
      */
-    @SuppressWarnings("unchecked")
-    public static <T extends Extension> ExtensionSidecarModel<T> of(Class<T> extensionType) {
-        return (ExtensionSidecarModel<T>) CACHE.get(extensionType);
+    public static ExtensionSidecarModel of(Class<? extends Extension> extensionType) {
+        return CACHE.get(extensionType);
     }
 
     /**
@@ -216,7 +213,7 @@ public final class ExtensionSidecarModel<E extends Extension> extends SidecarMod
          * @return the extension model
          */
         @SuppressWarnings({ "unchecked", "rawtypes" })
-        ExtensionSidecarModel<?> build() {
+        ExtensionSidecarModel build() {
             ExtensionSidecar em = sidecarType.getAnnotation(ExtensionSidecar.class);
             if (em != null) {
                 for (Class<? extends Extension> ccc : em.dependencies()) {
@@ -255,7 +252,7 @@ public final class ExtensionSidecarModel<E extends Extension> extends SidecarMod
 
             this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
 
-            return new ExtensionSidecarModel<>(this);
+            return new ExtensionSidecarModel(this);
         }
     }
 

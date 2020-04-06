@@ -40,7 +40,7 @@ public final class PackedExtensionContext implements ExtensionContext {
     private boolean isConfigured;
 
     /** The sidecar model of the extension. */
-    private final ExtensionSidecarModel<?> model;
+    private final ExtensionSidecarModel model;
 
     /** The configuration of the container the extension is registered in. */
     private final PackedContainerConfiguration pcc;
@@ -146,7 +146,7 @@ public final class PackedExtensionContext implements ExtensionContext {
      * 
      * @return the model of the extension
      */
-    public ExtensionSidecarModel<?> model() {
+    public ExtensionSidecarModel model() {
         return model;
     }
 
