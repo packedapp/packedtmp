@@ -55,10 +55,17 @@ public final class WireletContext {
 
     final IdentityHashMap<Class<? extends WireletPipeline<?, ?, ?>>, WireletPipeline<?, ?, ?>> actualpipelines = new IdentityHashMap<>();
 
+    /** Any parent this context might have */
     @Nullable
     final WireletContext parent;
 
-    WireletContext(@Nullable WireletContext parent) {
+    /**
+     * Creates a new context
+     * 
+     * @param parent
+     *            any parent
+     */
+    private WireletContext(@Nullable WireletContext parent) {
         this.parent = parent;
     }
 
@@ -110,13 +117,13 @@ public final class WireletContext {
     private final IdentityHashMap<Class<? extends Wirelet>, Wirelet> wirelets = new IdentityHashMap<>();
 
     @SuppressWarnings("unchecked")
-    private void apply(FixedWireletList wirelets) {
+    private void apply(PackedContainerConfiguration pcc, FixedWireletList wirelets) {
         for (Wirelet w : wirelets.toArray()) {
             if (w instanceof PipelineWirelet) {
                 WireletPipelineModel pm = PipelineWireletModel.of((Class<? extends PipelineWirelet<?>>) w.getClass());
                 pipelines.computeIfAbsent(pm.type, k -> new ArrayList<>()).add((PipelineWirelet<?>) w);
             } else if (w instanceof ContainerWirelet) {
-                ((ContainerWirelet) w).process(this);
+                ((ContainerWirelet) w).process(pcc, this);
             } else {
                 this.wirelets.put(w.getClass(), w);
 //                throw new IllegalArgumentException("Wirelets of type " + StringFormatter.format(w.getClass()) + " are not supported");
@@ -165,18 +172,16 @@ public final class WireletContext {
 
     @Nullable
     public static WireletContext create(PackedContainerConfiguration pcc, @Nullable WireletContext existing, Wirelet... wirelets) {
-
-        // Taenker ogsaa vi har et enkelt map. Kan sagtens smide wirelets og pipelines i det samme....
-
-        // Taenker vi kan droppe FixedWireletList. Og lave en context direkte istedet for
-
         requireNonNull(wirelets, "wirelets is null");
         if (wirelets.length == 0) {
             return existing;
         }
+
+        // Taenker ogsaa vi har et enkelt map. Kan sagtens smide wirelets og pipelines i det samme....
+        // Taenker vi kan droppe FixedWireletList. Og lave en context direkte istedet for
         WireletContext wc = new WireletContext(existing);
         FixedWireletList wl = FixedWireletList.of(wirelets);
-        wc.apply(wl);
+        wc.apply(pcc, wl);
         if (existing != null) {
             wc.extensionFixed(pcc);
         }
@@ -187,3 +192,9 @@ public final class WireletContext {
         return null;
     }
 }
+// Typer wirelets
+// Standalone -> Kan injectes... (ved ikke om vi skal holde styr paa om de bliver brugt...
+// PipelineWirelets -> Pipeline... holder styr paa om den bliver brugt
+// Extension Pipeline -> Check Extension er installeret...
+
+// Internal Wirelets -> Kan kalde dem med en PCC, WC

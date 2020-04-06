@@ -24,13 +24,11 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.base.Contract;
 import app.packed.base.Nullable;
 import app.packed.base.OnAssembling;
 import app.packed.component.Component;
@@ -46,20 +44,21 @@ import packed.internal.hook.OnHookModel;
 import packed.internal.reflect.ConstructorFinder;
 import packed.internal.reflect.OpenClass;
 import packed.internal.sidecar.SidecarModel;
+import packed.internal.sidecar.SidecarTypeMeta;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.UncheckedThrowableFactory;
 
 /** A model of an Extension. */
-public final class ExtensionModel<E extends Extension> extends SidecarModel {
+public final class ExtensionSidecarModel<E extends Extension> extends SidecarModel {
 
     /** A cache of values. */
-    private static final ClassValue<ExtensionModel<?>> CACHE = new ClassValue<>() {
+    private static final ClassValue<ExtensionSidecarModel<?>> CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
         @Override
-        protected ExtensionModel<? extends Extension> computeValue(Class<?> type) {
+        protected ExtensionSidecarModel<? extends Extension> computeValue(Class<?> type) {
             // First, check that the user has specified an actual sub type of Extension to
             // ContainerConfiguration#use() or Bundle#use()
             if (type == Extension.class) {
@@ -73,16 +72,16 @@ public final class ExtensionModel<E extends Extension> extends SidecarModel {
         }
     };
 
+    public static final int ON_CHILDREN_DONE = 2;
+
+    public static final int ON_INSTANTIATION = 0;
+
+    public static final int ON_PREEMBLE = 1;
+
     final MethodHandle bundleBuilderMethod;
 
     /** The method handle used to create a new extension instance. */
     private final MethodHandle constructor;
-
-    /** It is important this map is immutable as the key set is exposed via ExtensionDescriptor. */
-    // Can 2 extensions define the same contract???? Don't think so
-    // If not we could have a Contract.class->ContractFactory Map and a Contract.of(ContainerSource, Class<T extends
-    // Contract>);
-    final Map<Class<? extends Contract>, MethodHandle> contracts;
 
     final Set<Class<? extends Extension>> dependenciesDirect;
 
@@ -106,12 +105,11 @@ public final class ExtensionModel<E extends Extension> extends SidecarModel {
      * @param builder
      *            the builder for this model
      */
-    private ExtensionModel(Builder builder) {
+    private ExtensionSidecarModel(Builder builder) {
         super(builder);
         this.constructor = builder.constructor;
         this.pipelines = Map.copyOf(builder.pipelines);
         this.bundleBuilderMethod = builder.builderMethod;
-        this.contracts = Map.copyOf(builder.contracts);
         this.dependenciesDirect = Set.copyOf(builder.dependenciesDirect);
         this.dependenciesTotalOrder = builder.dependenciesTotalOrder;
         this.optional = Optional.of(extensionType()); // No need to create an optional every time we need this
@@ -133,14 +131,14 @@ public final class ExtensionModel<E extends Extension> extends SidecarModel {
      *            the extension context that can be constructor injected into the extension
      * @return a new instance of the extension
      */
-    public E newExtensionInstance(PackedExtensionContext context) {
+    public Extension newExtensionInstance(PackedExtensionContext context) {
         // Time goes from around 1000 ns to 12 ns when we cache the method handle.
         // With LambdaMetafactory wrapped in a supplier we can get down to 6 ns
         try {
             if (constructor.type().parameterCount() > 0) {
-                return (E) constructor.invoke(context);
+                return (Extension) constructor.invoke(context);
             } else {
-                return (E) constructor.invoke();
+                return (Extension) constructor.invoke();
             }
         } catch (Throwable e) {
             ThrowableUtil.throwIfUnchecked(e);
@@ -158,8 +156,8 @@ public final class ExtensionModel<E extends Extension> extends SidecarModel {
      * @return an extension model for the specified extension type
      */
     @SuppressWarnings("unchecked")
-    public static <T extends Extension> ExtensionModel<T> of(Class<T> extensionType) {
-        return (ExtensionModel<T>) CACHE.get(extensionType);
+    public static <T extends Extension> ExtensionSidecarModel<T> of(Class<T> extensionType) {
+        return (ExtensionSidecarModel<T>) CACHE.get(extensionType);
     }
 
     /**
@@ -175,19 +173,17 @@ public final class ExtensionModel<E extends Extension> extends SidecarModel {
         return of(extensionType).onHookModel;
     }
 
-    /** A builder for {@link ExtensionModel}. */
+    /** A builder for {@link ExtensionSidecarModel}. */
     static final class Builder extends SidecarModel.Builder {
+
+        /** Meta data about the extension sidecar. */
+        private static final SidecarTypeMeta STM = new SidecarTypeMeta(ExtensionSidecar.class, ExtensionSidecar.ON_INSTANTIATION, ExtensionSidecar.ON_PREEMBLE,
+                ExtensionSidecar.ON_CHILDREN_DONE);
 
         MethodHandle builderMethod;
 
         /** The constructor used to create a new extension instance. */
         private MethodHandle constructor;
-
-        // Need to check that a contract never belongs to two extension.
-        // Also, I think we want to do this atomically, so that we do not have half an extension registered somewhere.
-        // This means we want to synchronize things.
-        // So add all shit, quick validation-> Sync->Validate final -> AddAll ->UnSync
-        final IdentityHashMap<Class<? extends Contract>, MethodHandle> contracts = new IdentityHashMap<>();
 
         /** A list of dependencies on other extensions. */
         Set<Class<? extends Extension>> dependenciesDirect = new HashSet<>();
@@ -210,7 +206,7 @@ public final class ExtensionModel<E extends Extension> extends SidecarModel {
          *            the type of extension we are building a model for
          */
         Builder(Class<? extends Extension> extensionType, ExtensionModelLoader loader) {
-            super(extensionType);
+            super(STM, extensionType);
             this.loader = requireNonNull(loader);
         }
 
@@ -220,7 +216,7 @@ public final class ExtensionModel<E extends Extension> extends SidecarModel {
          * @return the extension model
          */
         @SuppressWarnings({ "unchecked", "rawtypes" })
-        ExtensionModel<?> build() {
+        ExtensionSidecarModel<?> build() {
             ExtensionSidecar em = sidecarType.getAnnotation(ExtensionSidecar.class);
             if (em != null) {
                 for (Class<? extends Extension> ccc : em.dependencies()) {
@@ -237,9 +233,7 @@ public final class ExtensionModel<E extends Extension> extends SidecarModel {
 
             OpenClass cp = new OpenClass(MethodHandles.lookup(), sidecarType, true);
             this.constructor = ConstructorFinder.find(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-            this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
             cp.findMethods(e -> {
-
                 OnAssembling oa = e.getAnnotation(OnAssembling.class);
                 if (oa != null) {
                     if (Modifier.isStatic(e.getModifiers())) {
@@ -258,7 +252,34 @@ public final class ExtensionModel<E extends Extension> extends SidecarModel {
                     }
                 }
             });
-            return new ExtensionModel<>(this);
+
+            this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
+
+            return new ExtensionSidecarModel<>(this);
+        }
+    }
+
+    public void invokeCallbacks(int id, Object sidecar) {
+        if (id == ExtensionSidecarModel.ON_INSTANTIATION) {
+            for (var v : l) {
+                if (v.onInstantiation) {
+                    try {
+                        v.mh.invoke(sidecar);
+                    } catch (Throwable e) {
+                        throw new UndeclaredThrowableException(e);
+                    }
+                }
+            }
+        } else if (id == ExtensionSidecarModel.ON_PREEMBLE) {
+            for (var v : l) {
+                if (v.onMainFinished) {
+                    try {
+                        v.mh.invoke(sidecar);
+                    } catch (Throwable e) {
+                        throw new UndeclaredThrowableException(e);
+                    }
+                }
+            }
         }
     }
 

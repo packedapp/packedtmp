@@ -26,7 +26,7 @@ import app.packed.container.Wirelet;
 // And then we only have Extension wirelets????
 public abstract class ContainerWirelet extends Wirelet {
 
-    abstract void process(WireletContext c);
+    abstract void process(PackedContainerConfiguration pcc, WireletContext c);
 
     public static final class ComponentNameWirelet extends ContainerWirelet {
 
@@ -45,7 +45,7 @@ public abstract class ContainerWirelet extends Wirelet {
 
         /** {@inheritDoc} */
         @Override
-        void process(WireletContext c) {
+        void process(PackedContainerConfiguration pcc, WireletContext c) {
             c.newName = this;// will override any set previously
         }
 

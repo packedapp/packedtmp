@@ -24,17 +24,17 @@ import org.junit.jupiter.api.Test;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 
-/** Tests {@link ExtensionModel}. */
+/** Tests {@link ExtensionSidecarModel}. */
 public class ExtensionModelTest {
 
     @Test
     public void normal() {
-        NormalExtension ne1 = ExtensionModel.of(NormalExtension.class).newExtensionInstance(null);
-        NormalExtension ne2 = ExtensionModel.of(NormalExtension.class).newExtensionInstance(null);
+        Extension ne1 = ExtensionSidecarModel.of(NormalExtension.class).newExtensionInstance(null);
+        Extension ne2 = ExtensionSidecarModel.of(NormalExtension.class).newExtensionInstance(null);
         assertThat(ne1).isNotNull();
         assertThat(ne1).isNotSameAs(ne2);
 
-        PrivateExtension priv = ExtensionModel.of(PrivateExtension.class).newExtensionInstance(null);
+        Extension priv = ExtensionSidecarModel.of(PrivateExtension.class).newExtensionInstance(null);
         assertThat(priv).isNotNull();
     }
 
@@ -42,7 +42,8 @@ public class ExtensionModelTest {
     @Test
     public void fails() {
         // abstract class
-        AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> ExtensionModel.of(AbstractExtension.class).newExtensionInstance(null));
+        AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(
+                () -> ExtensionSidecarModel.of(AbstractExtension.class).newExtensionInstance(null));
         a.isExactlyInstanceOf(InternalExtensionException.class);
         // TODO test messages
 
@@ -50,15 +51,15 @@ public class ExtensionModelTest {
         Class c = ExtensionModelTest.class;
         // Does not extend Extension, this is only relevant if some user calls
         // ComponentConfiguration.use((Class) someNonExtensionClass.class);
-        a = assertThatThrownBy(() -> ExtensionModel.of(c).newExtensionInstance(null));
+        a = assertThatThrownBy(() -> ExtensionSidecarModel.of(c).newExtensionInstance(null));
         a.isExactlyInstanceOf(IllegalArgumentException.class);
 
         // inner class
-        a = assertThatThrownBy(() -> ExtensionModel.of(InnerClassExtension.class).newExtensionInstance(null));
+        a = assertThatThrownBy(() -> ExtensionSidecarModel.of(InnerClassExtension.class).newExtensionInstance(null));
         a.isExactlyInstanceOf(InternalExtensionException.class);
 
         // Takes parameter
-        a = assertThatThrownBy(() -> ExtensionModel.of(TakesParameterExtension.class).newExtensionInstance(null));
+        a = assertThatThrownBy(() -> ExtensionSidecarModel.of(TakesParameterExtension.class).newExtensionInstance(null));
         a.isExactlyInstanceOf(InternalExtensionException.class);
     }
 

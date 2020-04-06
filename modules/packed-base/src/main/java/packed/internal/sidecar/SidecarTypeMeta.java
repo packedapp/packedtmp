@@ -13,33 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.artifact;
+package packed.internal.sidecar;
 
-import java.util.LinkedHashSet;
+import static java.util.Objects.requireNonNull;
 
-import packed.internal.container.ExtensionSidecarModel;
+import java.lang.annotation.Annotation;
 
 /**
  *
  */
-final class ExtensionList {
+public final class SidecarTypeMeta {
 
-    final LinkedHashSet<ExtensionSidecarModel<?>> extensions = new LinkedHashSet<>();
+    final Class<? extends Annotation> sidecarAnnotation;
+    final String[] lifecycleStates;
 
-    void sort() {
-
+    public SidecarTypeMeta(Class<? extends Annotation> sidecarAnnotation, String... lifecycleStates) {
+        this.sidecarAnnotation = requireNonNull(sidecarAnnotation);
+        this.lifecycleStates = requireNonNull(lifecycleStates);
     }
-
-    // Skal vaere extension keepe track om dens boern og foraeldre...
-    // Ja.. det goer det simpler
-
-    // Should extensionNode();
-
-    // onLink(BiConsumer, Consumer) <- last consumer processes every root when its finished...
-    // onEachRoot(Extension)
-    // onEach(Extension)
-    // onTree(ExtensionTree)
-
-    // trackHirachi()
-    // trackHirachi()
 }

@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.analysis.BundleDescriptor;
 import app.packed.base.Key;
-import app.packed.base.OnAssembling;
 import app.packed.base.Key.Qualifier;
+import app.packed.base.OnAssembling;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
@@ -358,6 +358,7 @@ public final class ServiceExtension extends Extension {
     }
 
     @Expose
+    // Should probably be Optional<Pipeline>...
     ServiceContract con(ServiceWireletPipeline swp) {
         return node.newServiceContract(swp);
     }

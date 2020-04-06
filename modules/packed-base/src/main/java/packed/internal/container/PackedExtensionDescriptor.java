@@ -28,17 +28,17 @@ import app.packed.container.ExtensionDescriptor;
 public final class PackedExtensionDescriptor implements ExtensionDescriptor {
 
     /** The extension model we wrap. */
-    private final ExtensionModel<?> model;
+    private final ExtensionSidecarModel<?> model;
 
     /** No public instantiation. */
-    private PackedExtensionDescriptor(ExtensionModel<?> model) {
+    private PackedExtensionDescriptor(ExtensionSidecarModel<?> model) {
         this.model = requireNonNull(model);
     }
 
     /** {@inheritDoc} */
     @Override
     public Set<Class<? extends Contract>> contracts() {
-        return model.contracts.keySet();
+        return model.contracts().keySet();
     }
 
     /** {@inheritDoc} */
@@ -68,7 +68,7 @@ public final class PackedExtensionDescriptor implements ExtensionDescriptor {
      */
     public static ExtensionDescriptor of(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
-        return new PackedExtensionDescriptor(ExtensionModel.of(extensionType)); // we could cache this
+        return new PackedExtensionDescriptor(ExtensionSidecarModel.of(extensionType));
     }
 }
 

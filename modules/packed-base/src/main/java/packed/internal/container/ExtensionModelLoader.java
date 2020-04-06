@@ -32,7 +32,7 @@ final class ExtensionModelLoader {
 
     private static final WeakHashMap<Class<? extends Extension>, Throwable> ERRORS = new WeakHashMap<>();
 
-    private static final WeakHashMap<Class<? extends Extension>, ExtensionModel<?>> EXTENSIONS = new WeakHashMap<>();
+    private static final WeakHashMap<Class<? extends Extension>, ExtensionSidecarModel<?>> EXTENSIONS = new WeakHashMap<>();
 
     /** A lock used for making sure that we only load one extension tree at a time. */
     private static final ReentrantLock GLOBAL_LOCK = new ReentrantLock();
@@ -44,16 +44,16 @@ final class ExtensionModelLoader {
     private ExtensionModelLoader() {}
 
     @SuppressWarnings("unchecked")
-    private <E extends Extension> ExtensionModel<E> load1(Class<E> extensionType) {
+    private <E extends Extension> ExtensionSidecarModel<E> load1(Class<E> extensionType) {
         if (stack.contains(extensionType)) {
             throw new RuntimeException("Cyclic error");
         }
         stack.push(extensionType);
 
-        ExtensionModel<E> m;
-        ExtensionModel.Builder builder = new ExtensionModel.Builder(extensionType, this);
+        ExtensionSidecarModel<E> m;
+        ExtensionSidecarModel.Builder builder = new ExtensionSidecarModel.Builder(extensionType, this);
         try {
-            m = (ExtensionModel<E>) builder.build();
+            m = (ExtensionSidecarModel<E>) builder.build();
         } catch (Throwable t) {
             ERRORS.put(extensionType, t);
             throw t;
@@ -71,22 +71,22 @@ final class ExtensionModelLoader {
         return m;
     }
 
-    static <E extends Extension> ExtensionModel<E> load(Class<E> extensionType) {
+    static <E extends Extension> ExtensionSidecarModel<E> load(Class<E> extensionType) {
         return load0(extensionType, null);
     }
 
-    static <E extends Extension> ExtensionModel<E> load(Class<E> extensionType, ExtensionModelLoader runtime) {
+    static <E extends Extension> ExtensionSidecarModel<E> load(Class<E> extensionType, ExtensionModelLoader runtime) {
         return load0(extensionType, runtime);
     }
 
     @SuppressWarnings("unchecked")
-    static <E extends Extension> ExtensionModel<E> load0(Class<E> extensionType, ExtensionModelLoader loader) {
+    static <E extends Extension> ExtensionSidecarModel<E> load0(Class<E> extensionType, ExtensionModelLoader loader) {
         GLOBAL_LOCK.lock();
         try {
             // First lets see if we have created the model before
-            ExtensionModel<?> m = EXTENSIONS.get(extensionType);
+            ExtensionSidecarModel<?> m = EXTENSIONS.get(extensionType);
             if (m != null) {
-                return (ExtensionModel<E>) m;
+                return (ExtensionSidecarModel<E>) m;
             }
 
             // Lets then see if we have tried to create the model before, but failed

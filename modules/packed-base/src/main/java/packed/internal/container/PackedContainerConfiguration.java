@@ -147,7 +147,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
                 }
             }
 
-            for (Object s : e.model().contracts.values()) {
+            for (Object s : e.model().contracts().values()) {
                 // TODO need a context
                 Contract con;
                 if (s instanceof Function) {

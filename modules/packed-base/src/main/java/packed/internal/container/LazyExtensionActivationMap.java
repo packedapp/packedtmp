@@ -116,7 +116,7 @@ public final class LazyExtensionActivationMap {
         LazyExtensionUsage uel = cl.getAnnotation(LazyExtensionUsage.class);
         if (uel != null) {
             for (Class<? extends Extension> c : uel.value()) {
-                ExtensionModel<? extends Extension> em = ExtensionModel.of(c);
+                ExtensionSidecarModel<? extends Extension> em = ExtensionSidecarModel.of(c);
                 BaseHookQualifierList dhu = em.nonActivatingHooks;
                 if (dhu != null) {
                     stats(c, annotatedFields, dhu.annotatedFields);
@@ -133,7 +133,7 @@ public final class LazyExtensionActivationMap {
         Packlet uela = cl.getAnnotation(Packlet.class);
         if (uela != null) {
             for (Class<? extends Extension> c : uela.extension()) {
-                ExtensionModel<? extends Extension> em = ExtensionModel.of(c);
+                ExtensionSidecarModel<? extends Extension> em = ExtensionSidecarModel.of(c);
                 BaseHookQualifierList dhu = em.nonActivatingHooks;
                 if (dhu != null) {
                     stats(c, annotatedFields, dhu.annotatedFields);

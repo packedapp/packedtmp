@@ -17,7 +17,6 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
@@ -40,8 +39,8 @@ public final class PackedExtensionContext implements ExtensionContext {
     /** Whether or not the extension has been configured. */
     private boolean isConfigured;
 
-    /** The model of the extension. */
-    private final ExtensionModel<?> model;
+    /** The sidecar model of the extension. */
+    private final ExtensionSidecarModel<?> model;
 
     /** The configuration of the container the extension is registered in. */
     private final PackedContainerConfiguration pcc;
@@ -56,7 +55,7 @@ public final class PackedExtensionContext implements ExtensionContext {
      */
     private PackedExtensionContext(PackedContainerConfiguration pcc, Class<? extends Extension> extensionType) {
         this.pcc = requireNonNull(pcc);
-        this.model = ExtensionModel.of(extensionType);
+        this.model = ExtensionSidecarModel.of(extensionType);
     }
 
     /** {@inheritDoc} */
@@ -110,7 +109,6 @@ public final class PackedExtensionContext implements ExtensionContext {
      *            the container container configuration where the extension is registered
      */
     private void initialize(PackedContainerConfiguration pcc) {
-        // Sets Extension.context = this
         this.extension = model.newExtensionInstance(this);
         ModuleAccess.extension().setExtensionContext(extension, this);
 
@@ -118,16 +116,7 @@ public final class PackedExtensionContext implements ExtensionContext {
         PackedExtensionContext existing = pcc.activeExtension;
         try {
             pcc.activeExtension = this;
-            for (var v : model.l) {
-                if (v.onInstantiation) {
-                    try {
-                        v.mh.invoke(extension);
-                    } catch (Throwable e) {
-                        throw new UndeclaredThrowableException(e);
-                    }
-                }
-            }
-
+            model.invokeCallbacks(ExtensionSidecarModel.ON_INSTANTIATION, extension);
             if (pcc.wireletContext != null) {
                 pcc.wireletContext.initialize(this);
             }
@@ -157,21 +146,13 @@ public final class PackedExtensionContext implements ExtensionContext {
      * 
      * @return the model of the extension
      */
-    public ExtensionModel<?> model() {
+    public ExtensionSidecarModel<?> model() {
         return model;
     }
 
     /** Invoked by the container configuration, whenever the extension is configured. */
     public void onConfigured() {
-        for (var v : model.l) {
-            if (v.onMainFinished) {
-                try {
-                    v.mh.invoke(extension);
-                } catch (Throwable e) {
-                    throw new UndeclaredThrowableException(e);
-                }
-            }
-        }
+        model.invokeCallbacks(ExtensionSidecarModel.ON_PREEMBLE, extension);
         isConfigured = true;
     }
 
