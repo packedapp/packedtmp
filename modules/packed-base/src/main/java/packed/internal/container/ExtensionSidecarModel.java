@@ -84,7 +84,7 @@ public final class ExtensionSidecarModel extends SidecarModel {
     /** An optional containing the extension type. To avoid excessive creation of them for {@link Component#extension()}. */
     public final Optional<Class<? extends Extension>> optional;
 
-    final Map<Class<? extends WireletPipeline<?, ?, ?>>, WireletPipelineModel> pipelines;
+    final Map<Class<? extends WireletPipeline<?, ?>>, WireletPipelineModel> pipelines;
 
     /**
      * Creates a new extension model from the specified builder.
@@ -173,7 +173,7 @@ public final class ExtensionSidecarModel extends SidecarModel {
         /** A builder for all methods annotated with {@link OnHook} on the extension. */
         private OnHookModel onHookModel;
 
-        final HashMap<Class<? extends WireletPipeline<?, ?, ?>>, WireletPipelineModel> pipelines = new HashMap<>();
+        final HashMap<Class<? extends WireletPipeline<?, ?>>, WireletPipelineModel> pipelines = new HashMap<>();
 
         /**
          * Creates a new builder.
@@ -198,7 +198,7 @@ public final class ExtensionSidecarModel extends SidecarModel {
                     ExtensionModelLoader.load(ccc, loader);
                     dependenciesDirect.add(ccc);
                 }
-                for (Class<? extends WireletPipeline<?, ?, ?>> c : em.pipelines()) {
+                for (Class<? extends WireletPipeline<?, ?>> c : em.pipelines()) {
                     WireletPipelineModel m = new WireletPipelineModel.Builder(c).build();
                     pipelines.put(c, m);
                 }

@@ -20,12 +20,13 @@ import java.util.Optional;
 
 import app.packed.artifact.App;
 import app.packed.container.BaseBundle;
-import app.packed.container.Wirelet;
+import app.packed.container.PipelineWirelet;
+import app.packed.container.WireletPipeline;
 
 /**
  *
  */
-public class WFreePipeline extends BaseBundle {
+public class WFreePipelinex extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
@@ -35,18 +36,23 @@ public class WFreePipeline extends BaseBundle {
     }
 
     public static void main(String[] args) {
-        App.initialize(new WFreePipeline(), new SomeWirelet("Saturday"), new SomeWirelet("Sundday"));
+        App.initialize(new WFreePipelinex(), new SomeWirelet("Saturday"), new SomeWirelet("Sundday"), new SomeWirelet("SunddayXX"));
+        App.initialize(new WFreePipelinex());
         System.out.println("Nye");
     }
 
     public static class MyComp {
 
-        public MyComp(Optional<SomeWirelet> o) {
-            System.out.println("Hello " + o.map(s -> s.x).orElse("World"));
+        public MyComp(Optional<SomePipeline> o) {
+            if (o.isPresent()) {
+                System.out.println(o.get().stream().count());
+            } else {
+                System.out.println("No pip specified");
+            }
         }
     }
 
-    static class SomeWirelet extends Wirelet {
+    static class SomeWirelet extends PipelineWirelet<SomePipeline> {
         final String x;
 
         SomeWirelet(String x) {
@@ -54,4 +60,5 @@ public class WFreePipeline extends BaseBundle {
         }
     }
 
+    static class SomePipeline extends WireletPipeline<SomePipeline, SomeWirelet> {}
 }

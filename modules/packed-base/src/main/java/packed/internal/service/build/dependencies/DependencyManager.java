@@ -38,6 +38,7 @@ import app.packed.inject.UnresolvedDependencyException;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import packed.internal.container.PackedExtensionContext;
+import packed.internal.container.WireletPipelineModel;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
@@ -163,13 +164,22 @@ public final class DependencyManager {
                                 }
                             }
                             if (WireletPipeline.class.isAssignableFrom(rawType)) {
-                                if (entry instanceof ComponentFactoryBuildEntry) {
-                                    Optional<Class<? extends Extension>> op = ((ComponentFactoryBuildEntry) entry).componentConfiguration.extension();
-                                    if (op.isPresent()) {
-                                        BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
-                                                new SingletonInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "foo", "Ignore"));
-                                        resolveTo = ben;
-                                        node.specials.put(dependency, ben);
+                                WireletPipelineModel wpc = WireletPipelineModel.of((Class<? extends WireletPipeline<?, ?>>) rawType);
+                                if (wpc.extensionType == null) {
+                                    // Fail if pipelined wirelet...
+                                    BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
+                                            new SingletonInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "foo", "Ignore"));
+                                    resolveTo = ben;
+                                    node.specials.put(dependency, ben);
+                                } else {
+                                    if (entry instanceof ComponentFactoryBuildEntry) {
+                                        Optional<Class<? extends Extension>> op = ((ComponentFactoryBuildEntry) entry).componentConfiguration.extension();
+                                        if (op.isPresent()) {
+                                            BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
+                                                    new SingletonInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "foo", "Ignore"));
+                                            resolveTo = ben;
+                                            node.specials.put(dependency, ben);
+                                        }
                                     }
                                 }
                             }

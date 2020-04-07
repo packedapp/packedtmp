@@ -15,8 +15,6 @@
  */
 package app.packed.container;
 
-import app.packed.artifact.App;
-
 /**
  * Extensions that define their own wirelets must extend this class.
  * 
@@ -30,25 +28,23 @@ import app.packed.artifact.App;
  * @see WireletPipeline
  */
 // The wirelet must be in that same module as the pipeline???? Nej taenker at visibility burde vaere nok til at styre det...
-public abstract class PipelineWirelet<T extends WireletPipeline<?, T, ?>> extends Wirelet {
-
-    /**
-     * Invoked by the runtime whenever the user specified an extension wirelet for which a matching extension has not been
-     * registered with the underlying container. For example, via {@link Bundle#link(Bundle, Wirelet...)} or
-     * {@link App#execute(app.packed.artifact.Assembly, Wirelet...)}.
-     * <p>
-     * The default implementation throws an {@link IllegalArgumentException}.
-     * 
-     * @param extensionType
-     *            the extension type that is missing
-     */
-    // Maaske skal den vaere paa pipelinen???
-    protected void extensionNotAvailable(Class<? extends Extension> extensionType) {
-        throw new IllegalArgumentException(
-                toString() + " can only be specified when the extension " + extensionType.getSimpleName() + " is used by the target container");
-    }
-}
-
+public abstract class PipelineWirelet<T extends WireletPipeline<T, ?>> extends Wirelet {}
+//
+///**
+// * Invoked by the runtime whenever the user specified an extension wirelet for which a matching extension has not been
+// * registered with the underlying container. For example, via {@link Bundle#link(Bundle, Wirelet...)} or
+// * {@link App#execute(app.packed.artifact.Assembly, Wirelet...)}.
+// * <p>
+// * The default implementation throws an {@link IllegalArgumentException}.
+// * 
+// * @param extensionType
+// *            the extension type that is missing
+// */
+//// Maaske skal den vaere paa pipelinen???
+//protected void extensionNotAvailable(Class<? extends Extension> extensionType) {
+//    throw new IllegalArgumentException(
+//            toString() + " can only be specified when the extension " + extensionType.getSimpleName() + " is used by the target container");
+//}
 // Grunden til vi gerne lave callback paa denne maade.
 // Er at vi saa kan eksekvere dem i total order...
 // Dvs f.eks. Wirelet.println("fooooBar").. Eller ting der skal saettes i andre extensions... f.eks.

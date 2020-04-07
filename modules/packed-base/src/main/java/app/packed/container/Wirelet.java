@@ -63,18 +63,19 @@ public abstract class Wirelet {
      * operation. If performing either operation throws an exception, it is relayed to the caller of the composed operation.
      * If performing this operation throws an exception, the {@code after} operation will not be performed.
      *
-     * @param after
+     * @param wirelet
      *            the operation to perform after this operation
      * @return a composed {@code WiringOperation} that performs in sequence this operation followed by the {@code after}
      *         operation
      */
-    public final Wirelet andThen(Wirelet after) {
-        return andThen(new Wirelet[] { after });
+    public final Wirelet andThen(Wirelet wirelet) {
+        return andThen(new Wirelet[] { wirelet });
     }
 
     public final Wirelet andThen(Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
         ArrayList<Wirelet> l = new ArrayList<>();
+        // Maaden vi rekursiv processere them betyder at jeg ikke tror vi behoever at pakke dem ud....
         if (this instanceof FixedWireletList) {
             l.addAll(List.of(((FixedWireletList) this).wirelets));
         } else {
@@ -100,6 +101,23 @@ public abstract class Wirelet {
 
     // Det er vel mere disable on runtime...
     protected boolean isAssembleTimeOnly() {
+
+//Wirelets 
+//Image
+//App
+//Image Expand
+//Image + App
+//
+//Expand
+//
+//expandables
+//
+//The wirelet XX cannot be used once the image is created
+//
+//The wirelet XX cannot be used together with an image that have already been created
+
+        // Maaske skal vi kun have den paa pipeline wirelets?? Hmmm
+
         return false;
     }
 

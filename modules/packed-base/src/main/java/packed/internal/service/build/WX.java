@@ -15,21 +15,12 @@
  */
 package packed.internal.service.build;
 
-import static java.util.Objects.requireNonNull;
+/**
+ *
+ */
+public class WX {
 
-import app.packed.container.UseExtension;
-import app.packed.container.WireletPipeline;
-import app.packed.service.ServiceExtension;
-import packed.internal.service.build.wirelets.ServiceWirelet;
-
-/** The default wirelet pipeline for */
-
-@UseExtension(ServiceExtension.class)
-public final class ServiceWireletPipeline extends WireletPipeline<ServiceWireletPipeline, ServiceWirelet> {
-
-    public final ServiceExtensionNode node;
-
-    public ServiceWireletPipeline(ServiceExtensionNode node) {
-        this.node = requireNonNull(node);
+    public static void main(String[] args) {
+        System.out.println("X");
     }
 }

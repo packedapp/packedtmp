@@ -24,9 +24,9 @@ import java.lang.reflect.UndeclaredThrowableException;
 
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
+import app.packed.container.UseExtension;
 import app.packed.container.WireletPipeline;
 import packed.internal.reflect.OpenClass;
-import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.UncheckedThrowableFactory;
 
 /** A model of a {@link WireletPipeline}. */
@@ -39,12 +39,9 @@ public final class WireletPipelineModel {
         @SuppressWarnings({ "unchecked" })
         @Override
         protected WireletPipelineModel computeValue(Class<?> type) {
-            return ExtensionModelLoader.pipeline((Class<? extends WireletPipeline<?, ?, ?>>) type);
+            return ExtensionModelLoader.pipeline((Class<? extends WireletPipeline<?, ?>>) type);
         }
     };
-
-    /** An extractor to find the extension the node is build upon. */
-    private static final TypeVariableExtractor EXTENSION_NODE_TV_EXTRACTOR = TypeVariableExtractor.of(WireletPipeline.class, 0);
 
     /** A method handle to create new pipeline instances. */
     private final MethodHandle constructor;
@@ -54,7 +51,7 @@ public final class WireletPipelineModel {
     public final Class<? extends Extension> extensionType;
 
     /** The type of pipeline. */
-    final Class<? extends WireletPipeline<?, ?, ?>> type;
+    final Class<? extends WireletPipeline<?, ?>> type;
 
     /**
      * Create a new model.
@@ -73,21 +70,22 @@ public final class WireletPipelineModel {
      * 
      * @return a new pipeline instance
      */
-    WireletPipeline<?, ?, ?> newPipeline(Extension extension) {
+    WireletPipeline<?, ?> newPipeline(Extension extension) {
         try {
             if (constructor.type().parameterCount() == 0) {
-                return (WireletPipeline<?, ?, ?>) constructor.invoke();
+                return (WireletPipeline<?, ?>) constructor.invoke();
             } else {
-                return (WireletPipeline<?, ?, ?>) constructor.invoke(extension);
+                return (WireletPipeline<?, ?>) constructor.invoke(extension);
             }
         } catch (Throwable e) {
             throw new UndeclaredThrowableException(e);
         }
     }
 
-    @SuppressWarnings("unchecked")
-    static Class<? extends Extension> extensionTypeOf(Class<? extends WireletPipeline<?, ?, ?>> pipelineType) {
-        return (Class<? extends Extension>) EXTENSION_NODE_TV_EXTRACTOR.extract(pipelineType);
+    @Nullable
+    static Class<? extends Extension> extensionTypeOf(Class<? extends WireletPipeline<?, ?>> pipelineType) {
+        UseExtension ue = pipelineType.getAnnotation(UseExtension.class);
+        return ue == null ? null : ue.value();
     }
 
     /**
@@ -97,21 +95,21 @@ public final class WireletPipelineModel {
      *            the pipeline type to return a model for.
      * @return the model
      */
-    public static WireletPipelineModel of(Class<? extends WireletPipeline<?, ?, ?>> type) {
+    public static WireletPipelineModel of(Class<? extends WireletPipeline<?, ?>> type) {
         return CACHE.get(type);
     }
 
     /** A builder of {@link WireletPipelineModel}. */
-    static class Builder {
+    public static class Builder {
 
-        private final Class<? extends WireletPipeline<?, ?, ?>> actualType;
+        private final Class<? extends WireletPipeline<?, ?>> actualType;
 
         private MethodHandle constructor;
 
         /**
          * @param type
          */
-        Builder(Class<? extends WireletPipeline<?, ?, ?>> type) {
+        public Builder(Class<? extends WireletPipeline<?, ?>> type) {
             actualType = requireNonNull(type);
         }
 

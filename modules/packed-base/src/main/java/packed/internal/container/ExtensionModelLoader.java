@@ -37,7 +37,7 @@ final class ExtensionModelLoader {
     /** A lock used for making sure that we only load one extension tree at a time. */
     private static final ReentrantLock GLOBAL_LOCK = new ReentrantLock();
 
-    private static final WeakHashMap<Class<? extends WireletPipeline<?, ?, ?>>, WireletPipelineModel> PIPELINES = new WeakHashMap<>();
+    private static final WeakHashMap<Class<? extends WireletPipeline<?, ?>>, WireletPipelineModel> PIPELINES = new WeakHashMap<>();
 
     private final ArrayDeque<Class<? extends Extension>> stack = new ArrayDeque<>();
 
@@ -103,7 +103,7 @@ final class ExtensionModelLoader {
         }
     }
 
-    static WireletPipelineModel pipeline(Class<? extends WireletPipeline<?, ?, ?>> pipelineType) {
+    static WireletPipelineModel pipeline(Class<? extends WireletPipeline<?, ?>> pipelineType) {
         GLOBAL_LOCK.lock();
         try {
             WireletPipelineModel m = PIPELINES.get(pipelineType);
@@ -111,6 +111,9 @@ final class ExtensionModelLoader {
                 return m;
             }
             Class<? extends Extension> c = WireletPipelineModel.extensionTypeOf(pipelineType);
+            if (c == null) {
+                return new WireletPipelineModel.Builder(pipelineType).build();
+            }
             load(c);
             m = PIPELINES.get(pipelineType);
             if (m != null) {

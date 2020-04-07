@@ -45,7 +45,7 @@ final class PipelineWireletModel {
      */
     @SuppressWarnings("unchecked")
     private PipelineWireletModel(Class<? extends PipelineWirelet<?>> type) {
-        Class<? extends WireletPipeline<?, ?, ?>> p = (Class<? extends WireletPipeline<?, ?, ?>>) PIPELINE_TYPE_EXTRACTOR.extract(type);
+        Class<? extends WireletPipeline<?, ?>> p = (Class<? extends WireletPipeline<?, ?>>) PIPELINE_TYPE_EXTRACTOR.extract(type);
         this.pipeline = WireletPipelineModel.of(p);
         // Should check that UseExtension is not used on the PipelineWirelet...
     }

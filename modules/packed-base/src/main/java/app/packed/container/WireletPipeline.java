@@ -19,10 +19,11 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.Spliterator;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import app.packed.base.Nullable;
 import packed.internal.container.WireletPipelineContext;
-import packed.internal.container.WireletPipelineModel;
 
 /**
  * Extension wirelet pipelines
@@ -38,7 +39,7 @@ import packed.internal.container.WireletPipelineModel;
 
 // If a pipeline implementation makes use of an extension. The extension and the pipeline implementation must be located in the same module as returned by
 // ExtensionImplementation#getModule and WireletPipelineImplementation#getModule
-public abstract class WireletPipeline<E extends Extension, P extends WireletPipeline<E, P, W>, W extends PipelineWirelet<P>> implements Iterable<W> {
+public abstract class WireletPipeline<P extends WireletPipeline<P, W>, W extends PipelineWirelet<P>> implements Iterable<W> {
 
     /** The pipeline context, initialized immediately after the constructor of the pipeline has finished. */
     @Nullable
@@ -59,17 +60,15 @@ public abstract class WireletPipeline<E extends Extension, P extends WireletPipe
         return c;
     }
 
-    @SuppressWarnings("unchecked")
-    protected void extensionNotAvailable() {
-        Class<? extends Extension> extensionType = WireletPipelineModel.of((Class<? extends WireletPipeline<?, ?, ?>>) getClass()).extensionType;
-        // Bliver noedt til at liste alle wirelets
-        throw new IllegalArgumentException(
-                toString() + " can only be specified when the extension " + extensionType.getSimpleName() + " is used by the target container");
-    }
-
     /** {@inheritDoc} */
     @Override
     public final void forEach(Consumer<? super W> action) {
+        context().forEach(action);
+    }
+
+    public final void forEachLocal(Consumer<? super W> action) {
+        // forEachCurrent
+        // localalized
         context().forEach(action);
     }
 
@@ -103,23 +102,25 @@ public abstract class WireletPipeline<E extends Extension, P extends WireletPipe
         return (Spliterator<W>) context().toList().spliterator();
     }
 
+    /**
+     * Returns a stream of all wirelet in the pipeline.
+     * 
+     * @return a stream of all wirelet in the pipeline
+     */
+    public final Stream<W> stream() {
+        return StreamSupport.stream(spliterator(), false);
+    }
+
     /** {@inheritDoc} */
     @Override
-    public String toString() {
+    public final String toString() {
         return context().toList().toString();
     }
 
     /** Invoked by the runtime immediately after the pipeline has been constructed. */
     protected void verify() {}
 
-    static Optional<Class<? extends Extension>> extensionTypeOf(Class<? extends Wirelet> wirelet) {
-        // is PipelinedWirelet
-        // isPipeline of type extension...
-        //
-        throw new UnsupportedOperationException();
-    }
-
-    static <T extends WireletPipeline<?, ?, ?>> T ini(T pipeline, Wirelet... wirelets) {
+    static <T extends WireletPipeline<?, ?>> T ini(T pipeline, Wirelet... wirelets) {
         // Ideen er let at brugere kan bruge den for at faa populeret en pipeline???
         // Altsaa hvad hvis man two pipelines... Maaske man skal kunne angive flere pipelines
         throw new UnsupportedOperationException();
@@ -132,46 +133,6 @@ public abstract class WireletPipeline<E extends Extension, P extends WireletPipe
 // protected void validate();
 
 // protected void optimize() <-- called by the runtime to optimize as much as possible
-
-// /**
-// * @param filter
-// * a predicate which returns {@code true} for wirelets to be removed
-// * @param action
-// * an action to be performed on each removed element
-// * @return whether or not any wirelets was removed
-// */
-// public boolean removeIf(Predicate<? super W> filter, Consumer<? super W> action) {
-// throw new UnsupportedOperationException();
-// }
-
-// /**
-// * Returns the extension this pipeline belongs to.
-// *
-// * @return the extension this pipeline belongs to
-// */
-// public final E extension() {
-// return extension;
-// }
-
-//Ideen er vel at bruge skal kunne laves deres egne pipelines.... som man saa kan faa injected....
-
-//MyPipeline extends WireletPipeline...
-//Altså skal man have Optional<Somepipeline> eller bare en empty Pipeline injected...
-
-//Det betyder ogsaa at wirelets skal belonge til en pipeline saa Wirelet<P extends Pipeline>
-//Men det er da irriterende for brugere...
-
-//Wirelet<?> gider vi ikke have...
-
-//PipelineWirelet<T extends>
-
-//Dvs 5 klasser?
-//Wirelet
-//PipelineWirelet
-//WireletPipeline
-
-//ExtensionWirelet
-//ExtensionWireletPipeline
 
 //Alternativ skal den have en annotation der peger paa pipelinen....
 

@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Optional;
 
 import app.packed.analysis.BundleDescriptor;
 import app.packed.base.Key;
@@ -194,7 +195,7 @@ public final class ServiceExtensionNode {
 
         ServiceExtensionInstantiationContext con = new ServiceExtensionInstantiationContext();
         for (var e : specials.entrySet()) {
-            Object instance;
+            Object instance = null;
 
             // if (e.getKey().key().typeLiteral().rawType() == ExtensionInstantiationContext.class) {
             // // DOES not really work c is the instantiation context for the service
@@ -206,13 +207,18 @@ public final class ServiceExtensionNode {
             Class<?> pipelineClass = e.getKey().key().typeLiteral().rawType();
 
             // instance = e.getKey().wrapIfOptional(requireNonNull(wc.getPipelin((Class) pipelineClass)));
-
-            instance = wc.getIt(pipelineClass);
-            if (instance instanceof WireletPipelineContext) {
-                instance = ((WireletPipelineContext) instance).instance;
+            if (wc != null) {
+                instance = wc.getIt(pipelineClass);
+                if (instance instanceof WireletPipelineContext) {
+                    instance = ((WireletPipelineContext) instance).instance;
+                }
+                requireNonNull(instance);
             }
-
-            instance = e.getKey().wrapIfOptional(requireNonNull(instance));
+            if (instance == null) {
+                instance = Optional.empty();
+            } else {
+                instance = e.getKey().wrapIfOptional(instance);
+            }
             // }
             BuildEntry<?> be = e.getValue();
             con.transformers.put(be, new SingletonInjectorEntry<Object>(ConfigSite.UNKNOWN, (Key) be.key, be.description, instance));

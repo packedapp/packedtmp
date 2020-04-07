@@ -194,6 +194,7 @@ public final class WireletContext {
 
             }
         }
+        System.out.println(m);
 //        throw new IllegalArgumentException("In order to use the wirelet(s) " + wpc.wirelets.get(0) + ", " + extensionType.getSimpleName()
 //        + " is required to be installed.");
 

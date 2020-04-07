@@ -33,7 +33,7 @@ import packed.internal.moduleaccess.ModuleAccess;
 public final class WireletPipelineContext {
 
     // Vi gennem den saa folk kan faa den injected..
-    public WireletPipeline<?, ?, ?> instance;
+    public WireletPipeline<?, ?> instance;
 
     final WireletPipelineModel model;
 

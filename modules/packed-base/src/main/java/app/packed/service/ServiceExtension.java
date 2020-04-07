@@ -74,7 +74,7 @@ import packed.internal.service.run.AbstractInjector;
 @ExtensionSidecar(pipelines = ServiceWireletPipeline.class)
 public final class ServiceExtension extends Extension {
 
-    /** The extension node that does most of the work. */
+    /** The node that does most of the heavy lifting. */
     final ServiceExtensionNode node;
 
     /** Should never be initialized by users. */
@@ -353,16 +353,18 @@ public final class ServiceExtension extends Extension {
     }
 
     @OnAssembling(ExtensionSidecar.ON_PREEMBLE)
-    void onConfd() {
+    // I would think we should include the pipeline.. If users have provided stuff...
+    void assemble() {
         node.build();
     }
 
     @Expose
-    // Should probably be Optional<Pipeline>...
+    // Should be Optional<Pipeline>...
     ServiceContract con(ServiceWireletPipeline swp) {
         return node.newServiceContract(swp);
     }
 
+    // Use pipeline???
     @Expose
     void con(BundleDescriptor.Builder builder) {
         node.buildDescriptor(builder);
