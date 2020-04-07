@@ -30,6 +30,7 @@ import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
+import packed.internal.container.WireletPipelineContext;
 import packed.internal.host.HostConfiguration;
 import packed.internal.moduleaccess.AppPackedContainerAccess;
 import packed.internal.moduleaccess.ModuleAccess;
@@ -63,6 +64,19 @@ public abstract class Bundle implements Assembly {
             @Override
             public void doConfigure(Bundle bundle, ContainerConfiguration configuration) {
                 bundle.doCompose(configuration);
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public void pipelineInitialize(WireletPipelineContext context, WireletPipeline<?, ?> pipeline) {
+                pipeline.context = context;
+                pipeline.verify();
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public void setExtensionContext(Extension extension, ExtensionContext context) {
+                extension.context = context;
             }
         });
     }

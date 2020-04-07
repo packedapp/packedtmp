@@ -15,20 +15,25 @@
  */
 package packed.internal.moduleaccess;
 
-import app.packed.container.Extension;
-import app.packed.container.ExtensionContext;
-import packed.internal.container.WireletPipelineContext;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
-/** A support class for calling package private methods in the app.packed.extension package. */
-public interface AppPackedExtensionAccess extends SecretAccess {
+import app.packed.base.Key;
+import app.packed.base.TypeLiteral;
 
-    void pipelineInitialize(WireletPipelineContext context);
+/** A support class for calling package private methods in the app.packed.base package. */
+public interface AppPackedBaseAccess extends SecretAccess {
+
+    boolean isCanonicalized(TypeLiteral<?> typeLiteral);
+
+    Key<?> toKeyNullableQualifier(Type type, Annotation qualifier);
 
     /**
-     * Initializes the extension.
+     * Converts the type to a type literal.
      * 
-     * @param context
-     *            the extension context containing the extension
+     * @param type
+     *            the type to convert
+     * @return the type literal
      */
-    void setExtensionContext(Extension extension, ExtensionContext context);
+    TypeLiteral<?> toTypeLiteral(Type type);
 }

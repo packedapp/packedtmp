@@ -110,7 +110,7 @@ public final class PackedExtensionContext implements ExtensionContext {
      */
     private void initialize(PackedContainerConfiguration pcc) {
         this.extension = model.newExtensionInstance(this);
-        ModuleAccess.extension().setExtensionContext(extension, this);
+        ModuleAccess.container().setExtensionContext(extension, this);
 
         // Run any onAdd action that has set via ExtensionComposer#onAdd().
         PackedExtensionContext existing = pcc.activeExtension;

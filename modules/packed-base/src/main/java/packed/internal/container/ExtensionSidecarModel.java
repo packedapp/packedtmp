@@ -153,8 +153,8 @@ public final class ExtensionSidecarModel extends SidecarModel {
     static final class Builder extends SidecarModel.Builder {
 
         /** Meta data about the extension sidecar. */
-        private static final SidecarTypeMeta STM = new SidecarTypeMeta(ExtensionSidecar.class, ExtensionSidecar.ON_INSTANTIATION, ExtensionSidecar.ON_PREEMBLE,
-                ExtensionSidecar.ON_CHILDREN_DONE);
+        private static final SidecarTypeMeta STM = new SidecarTypeMeta(ExtensionSidecar.class, ExtensionSidecar.INSTANTIATION, ExtensionSidecar.ON_PREEMBLE,
+                ExtensionSidecar.CHILDREN_CONFIGURED, ExtensionSidecar.GUESTS_CONFIGURED);
 
         /** A list of dependencies on other extensions. */
         private Set<Class<? extends Extension>> dependenciesDirect = new HashSet<>();

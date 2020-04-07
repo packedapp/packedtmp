@@ -66,6 +66,10 @@ public final class WireletContext {
         this.parent = parent;
     }
 
+    /**
+     * @param pcc
+     * @param w
+     */
     private void addWirelet(PackedContainerConfiguration pcc, Wirelet w) {
         requireNonNull(w, "wirelets contain a null");
         if (w instanceof PipelineWirelet) {
@@ -173,7 +177,7 @@ public final class WireletContext {
         for (Object o : wc.map.values()) {
             if (o instanceof WireletPipelineContext) {
                 WireletPipelineContext wpc = (WireletPipelineContext) o;
-                Class<? extends Extension> extensionType = wpc.extension();
+                Class<? extends Extension> extensionType = wpc.extensionType();
                 if (extensionType == null) {
                     wpc.instantiate(null);
                 } else if (existing != null) {

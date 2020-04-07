@@ -17,6 +17,10 @@ package packed.internal.moduleaccess;
 
 import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionContext;
+import app.packed.container.WireletPipeline;
+import packed.internal.container.WireletPipelineContext;
 
 /** A support class for calling package private methods in the app.packed.container package. */
 public interface AppPackedContainerAccess extends SecretAccess {
@@ -30,4 +34,14 @@ public interface AppPackedContainerAccess extends SecretAccess {
      *            the configuration of the container
      */
     void doConfigure(Bundle bundle, ContainerConfiguration configuration);
+
+    void pipelineInitialize(WireletPipelineContext context, WireletPipeline<?, ?> pipeline);
+
+    /**
+     * Initializes the extension.
+     * 
+     * @param context
+     *            the extension context containing the extension
+     */
+    void setExtensionContext(Extension extension, ExtensionContext context);
 }

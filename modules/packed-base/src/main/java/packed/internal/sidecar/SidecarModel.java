@@ -27,7 +27,7 @@ import java.util.Map;
 import app.packed.base.Contract;
 import app.packed.container.InternalExtensionException;
 import app.packed.hook.Expose;
-import app.packed.sidecar.OnAssembling;
+import app.packed.sidecar.PostSidecar;
 import packed.internal.reflect.ConstructorFinder;
 import packed.internal.reflect.OpenClass;
 import packed.internal.util.UncheckedThrowableFactory;
@@ -114,10 +114,10 @@ public abstract class SidecarModel {
             this.constructor = ConstructorFinder.find(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
 
             cp.findMethods(e -> {
-                OnAssembling oa = e.getAnnotation(OnAssembling.class);
+                PostSidecar oa = e.getAnnotation(PostSidecar.class);
                 if (oa != null) {
                     if (Modifier.isStatic(e.getModifiers())) {
-                        throw new InternalExtensionException("Methods annotated with " + OnAssembling.class + " cannot be static, method = " + e);
+                        throw new InternalExtensionException("Methods annotated with " + PostSidecar.class + " cannot be static, method = " + e);
                     }
                     int index = statics.indexOf(oa.value());
                     if (index == -1) {

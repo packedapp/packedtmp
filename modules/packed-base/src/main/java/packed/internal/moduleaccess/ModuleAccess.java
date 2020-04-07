@@ -20,7 +20,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import app.packed.artifact.BuildTarget;
 import app.packed.base.TypeLiteral;
 import app.packed.container.Bundle;
-import app.packed.container.Extension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.lifecycle.RunState;
 import app.packed.service.ServiceMode;
@@ -51,15 +50,6 @@ public final class ModuleAccess {
      */
     public static AppPackedContainerAccess container() {
         return ContainerSingletonHolder.INSTANCE;
-    }
-
-    /**
-     * Returns an access object for app.packed.container.extension.
-     * 
-     * @return an access object for app.packed.container.extension
-     */
-    public static AppPackedExtensionAccess extension() {
-        return ExtensionSingletonHolder.INSTANCE;
     }
 
     /**
@@ -132,8 +122,8 @@ public final class ModuleAccess {
      * 
      * @return an access object for app.packed.util
      */
-    public static AppPackedUtilAccess util() {
-        return UtilSingletonHolder.INSTANCE;
+    public static AppPackedBaseAccess base() {
+        return BaseSingletonHolder.INSTANCE;
     }
 
     /** Singleton holder for {@link AppPackedArtifactAccess}. */
@@ -148,13 +138,6 @@ public final class ModuleAccess {
 
         /** The singleton instance. */
         private static final AppPackedContainerAccess INSTANCE = singleton(AppPackedContainerAccess.class, Bundle.class);
-    }
-
-    /** Holder of the {@link AppPackedExtensionAccess} singleton. */
-    private static class ExtensionSingletonHolder {
-
-        /** The singleton instance. */
-        private static final AppPackedExtensionAccess INSTANCE = singleton(AppPackedExtensionAccess.class, Extension.class);
     }
 
     /** Holder of the {@link AppPackedHookAccess} singleton. */
@@ -185,10 +168,10 @@ public final class ModuleAccess {
 //        private static final AppPackedInjectAccess INSTANCE = singleton(AppPackedInjectAccess.class, ServiceMode.class);
 //    }
 
-    /** Holder of the {@link AppPackedUtilAccess} singleton. */
-    private static class UtilSingletonHolder {
+    /** Holder of the {@link AppPackedBaseAccess} singleton. */
+    private static class BaseSingletonHolder {
 
         /** The singleton instance. */
-        private static final AppPackedUtilAccess INSTANCE = singleton(AppPackedUtilAccess.class, TypeLiteral.class);
+        private static final AppPackedBaseAccess INSTANCE = singleton(AppPackedBaseAccess.class, TypeLiteral.class);
     }
 }

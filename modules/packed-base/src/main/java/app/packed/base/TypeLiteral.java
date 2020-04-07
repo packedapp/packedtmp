@@ -29,7 +29,7 @@ import java.lang.reflect.Type;
 import app.packed.base.reflect.FieldDescriptor;
 import app.packed.base.reflect.MethodDescriptor;
 import app.packed.base.reflect.ParameterDescriptor;
-import packed.internal.moduleaccess.AppPackedUtilAccess;
+import packed.internal.moduleaccess.AppPackedBaseAccess;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.types.TypeUtil;
@@ -60,7 +60,7 @@ public abstract class TypeLiteral<T> {
     };
 
     static {
-        ModuleAccess.initialize(AppPackedUtilAccess.class, new AppPackedUtilAccess() {
+        ModuleAccess.initialize(AppPackedBaseAccess.class, new AppPackedBaseAccess() {
 
             @Override
             public boolean isCanonicalized(TypeLiteral<?> typeLiteral) {

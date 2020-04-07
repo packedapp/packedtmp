@@ -28,18 +28,21 @@ import app.packed.container.WireletPipeline;
 import packed.internal.moduleaccess.ModuleAccess;
 
 /**
- *
+ * A context object created for each {@link WireletPipeline} instance.
  */
 public final class WireletPipelineContext {
 
     // Vi gennem den saa folk kan faa den injected..
     public WireletPipeline<?, ?> instance;
 
-    final WireletPipelineModel model;
+    /** A model of the pipeline */
+    private final WireletPipelineModel model;
 
+    /** Any previous pipeline. */
     @Nullable
-    public WireletPipelineContext previous;
+    private final WireletPipelineContext previous;
 
+    /** The wirelets in the pipeline */
     final ArrayList<PipelineWirelet<?>> wirelets = new ArrayList<>();
 
     WireletPipelineContext(WireletPipelineModel model, @Nullable WireletPipelineContext previous) {
@@ -47,17 +50,22 @@ public final class WireletPipelineContext {
         this.previous = previous;
     }
 
-    Class<? extends Extension> extension() {
+    /**
+     * Returns any extension this pipeline belongs to.
+     * 
+     * @return any extension this pipeline belongs to
+     */
+    Class<? extends Extension> extensionType() {
         return model.extensionType();
     }
 
-    @SuppressWarnings("unchecked")
-    public void forEach(@SuppressWarnings("rawtypes") Consumer action) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public void forEach(Consumer<?> action) {
         requireNonNull("action is null");
         if (previous != null) {
             previous.forEach(action);
         }
-        wirelets.forEach(action);
+        wirelets.forEach((Consumer) action);
     }
 
     @SuppressWarnings("unchecked")
@@ -66,16 +74,26 @@ public final class WireletPipelineContext {
         wirelets.forEach(action);
     }
 
+    void instantiate(@Nullable Extension extension) {
+        instance = model.newPipeline(extension);
+        ModuleAccess.container().pipelineInitialize(this, instance);
+    }
+
+    /**
+     * Returns any previous pipeline.
+     * 
+     * @return any previous pipeline.
+     */
+    public WireletPipeline<?, ?> previous() {
+        WireletPipelineContext p = previous;
+        return p == null ? null : p.instance;
+    }
+
     @SuppressWarnings("unchecked")
     public List<?> toList() {
         @SuppressWarnings("rawtypes")
         ArrayList l = new ArrayList<>();
         forEach(w -> l.add(w));
         return l;
-    }
-
-    void instantiate(@Nullable Extension extension) {
-        instance = model.newPipeline(extension);
-        ModuleAccess.extension().pipelineInitialize(this);
     }
 }

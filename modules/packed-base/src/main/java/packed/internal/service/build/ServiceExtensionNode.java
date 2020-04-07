@@ -201,12 +201,8 @@ public final class ServiceExtensionNode {
             // // DOES not really work c is the instantiation context for the service
             // // not nessesarily for the one we should inject....
             //
-            // requireNonNull(c);
-            // instance = c;
-            // } else { // pipeline
             Class<?> pipelineClass = e.getKey().key().typeLiteral().rawType();
 
-            // instance = e.getKey().wrapIfOptional(requireNonNull(wc.getPipelin((Class) pipelineClass)));
             if (wc != null) {
                 instance = wc.getIt(pipelineClass);
                 if (instance instanceof WireletPipelineContext) {
@@ -219,7 +215,6 @@ public final class ServiceExtensionNode {
             } else {
                 instance = e.getKey().wrapIfOptional(instance);
             }
-            // }
             BuildEntry<?> be = e.getValue();
             con.transformers.put(be, new SingletonInjectorEntry<Object>(ConfigSite.UNKNOWN, (Key) be.key, be.description, instance));
         }

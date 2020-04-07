@@ -64,7 +64,7 @@ public class BaseFactory<T> implements Factory<T> {
         @Override
         protected Factory<?> computeValue(Class<?> implementation) {
             Type t = TYPE_LITERAL_TV_EXTRACTOR.extract(implementation);
-            return new BaseFactory(FactoryFindInjectableExecutable.find(ModuleAccess.util().toTypeLiteral(t)));
+            return new BaseFactory(FactoryFindInjectableExecutable.find(ModuleAccess.base().toTypeLiteral(t)));
         }
     };
 
@@ -434,7 +434,7 @@ public class BaseFactory<T> implements Factory<T> {
     @SuppressWarnings("unchecked")
     public static <T> Factory<T> find(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        if (!ModuleAccess.util().isCanonicalized(implementation)) {
+        if (!ModuleAccess.base().isCanonicalized(implementation)) {
             // We cache factories for all "new TypeLiteral<>(){}"
             return (Factory<T>) TYPE_LITERAL_CACHE.get(implementation.getClass());
         }

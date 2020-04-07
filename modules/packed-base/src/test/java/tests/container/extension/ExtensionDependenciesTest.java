@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.container.Extension;
 import app.packed.sidecar.ExtensionSidecar;
-import app.packed.sidecar.OnAssembling;
+import app.packed.sidecar.PostSidecar;
 import testutil.util.AbstractArtifactTest;
 
 /**
@@ -52,7 +52,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
 
     @ExtensionSidecar(dependencies = Ex2.class)
     static final class Ex1 extends Extension {
-        @OnAssembling(ExtensionSidecar.ON_INSTANTIATION)
+        @PostSidecar(ExtensionSidecar.INSTANTIATION)
         void on() {
             use(Ex2.class);
         }
@@ -61,7 +61,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
     @ExtensionSidecar(dependencies = Ex3.class)
     static final class Ex2 extends Extension {
 
-        @OnAssembling(ExtensionSidecar.ON_INSTANTIATION)
+        @PostSidecar(ExtensionSidecar.INSTANTIATION)
         void on() {
             use(Ex3.class);
         }
@@ -74,7 +74,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
     @ExtensionSidecar(dependencies = ExRecursive2.class)
     static final class ExRecursive1 extends Extension {
 
-        @OnAssembling(ExtensionSidecar.ON_INSTANTIATION)
+        @PostSidecar(ExtensionSidecar.INSTANTIATION)
         void on() {
             use(ExRecursive2.class);
         }
@@ -82,7 +82,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
 
     static final class ExRecursive2 extends Extension {
 
-        @OnAssembling(ExtensionSidecar.ON_INSTANTIATION)
+        @PostSidecar(ExtensionSidecar.INSTANTIATION)
         void on() {
             use(ExRecursive1.class);
         }

@@ -25,7 +25,7 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 
 /**
- * A sidecar annotation that can be used on subclasses of {@link Extension}.
+ * An annotation that can be used on subclasses of {@link Extension}.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -34,18 +34,21 @@ public @interface ExtensionSidecar {
 
     /**
      * The extension has been successfully instantiated. But the extension instance has not yet been returned to the user.
-     * Used for invoking methods on {@link ExtensionContext}.
+     * Used for invoking methods on {@link ExtensionContext}. The next event will be {@link #ON_PREEMBLE}.
      */
-    String ON_INSTANTIATION = "On_Instantiation";
+    String INSTANTIATION = "Instantiation";
 
-    /** All components and extensions have been added and configured. */
+    /** All components and extensions have been added and configured. The next event will be {@link #CHILDREN_CONFIGURED} */
     String ON_PREEMBLE = "on_premble";
 
     /**
      * Any child containers located in the same artifact will be has been defined. Typically using
-     * {@link Bundle#link(Bundle, app.packed.container.Wirelet...)}.
+     * {@link Bundle#link(Bundle, app.packed.container.Wirelet...)}. The next event will be {@link #GUESTS_CONFIGURED}.
      */
-    String ON_CHILDREN_DONE = "on_children_done";
+    String CHILDREN_CONFIGURED = "ChildrenConfigured";
+
+    /** This is the final event. */
+    String GUESTS_CONFIGURED = "GuestsConfigured";
 
     /**
      * Other extensions that an extension may use (but do not have to).
@@ -70,38 +73,11 @@ public @interface ExtensionSidecar {
 //Must be nonstatic and parameter less????
 //Well they should both nonstatic or static, and take ExtensionContext, InjectionContext
 //An extension cannot have more than one method for a given assembling event.
-//@AfterExtension(Instantiated)
 
 //Container finished
 
 //Child Linked
 //Parent Linked
 //NoParent Linked... //NoDirectLink
-
 //Er det her vi linker paa tvaers af artifacts?????
-
 //ExtensionBarrier....
-
-//Kan sagtens tage statiske metoder..
-
-//F.eks. en artifact finished....
-//enum ExtensionState {
-//
-///**
-//* The extension has been successfully instantiated. But the extension instance has not yet been returned to the user.
-//* Used for invoking methods on {@link ExtensionContext}.
-//*/
-//INSTANTIATED,
-//
-///** All components and extensions have been added and configured. */
-//PREEMBLED_DONE,
-//
-///**
-//* Any child containers located in the same artifact will be has been defined. Typically using
-//* {@link Bundle#link(Bundle, app.packed.container.Wirelet...)}.
-//*/
-//CHILDREN_ADDING_FINISHED,
-//
-///** */
-//GUESTS_FINISHED;
-//}

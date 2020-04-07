@@ -26,9 +26,6 @@ import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 import app.packed.sidecar.ExtensionSidecar;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.container.WireletPipelineContext;
-import packed.internal.moduleaccess.AppPackedExtensionAccess;
-import packed.internal.moduleaccess.ModuleAccess;
 
 /**
  * All config Extensions are the main way that function primary way to add features to Packed.
@@ -75,28 +72,10 @@ public abstract class Extension {
     /** A stack walker used by {@link #captureStackFrame(String)}. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
-    static {
-        ModuleAccess.initialize(AppPackedExtensionAccess.class, new AppPackedExtensionAccess() {
-
-            /** {@inheritDoc} */
-            @Override
-            public void pipelineInitialize(WireletPipelineContext context) {
-                context.instance.context = context;
-                context.instance.verify();
-            }
-
-            /** {@inheritDoc} */
-            @Override
-            public void setExtensionContext(Extension extension, ExtensionContext context) {
-                extension.context = context;
-            }
-        });
-    }
-
     /** The extension context. This field should never be read directly, but only accessed via {@link #context()}. */
     // I think we should have a value representing configured. In this way people can store the extension
     // or keep it at runtime or whatever they want to do....
-    private ExtensionContext context;
+    ExtensionContext context;
 
     /**
      * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is

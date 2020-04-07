@@ -31,7 +31,7 @@ import app.packed.hook.OnHook;
 import app.packed.inject.Factory;
 import app.packed.lifecycle.OnStart;
 import app.packed.sidecar.ExtensionSidecar;
-import app.packed.sidecar.OnAssembling;
+import app.packed.sidecar.PostSidecar;
 import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.container.WireletList;
 import packed.internal.inject.ServiceDependency;
@@ -351,7 +351,7 @@ public final class ServiceExtension extends Extension {
         }
     }
 
-    @OnAssembling(ExtensionSidecar.ON_PREEMBLE)
+    @PostSidecar(ExtensionSidecar.ON_PREEMBLE)
     // I would think we should include the pipeline.. If users have provided stuff...
     void assemble() {
         node.build();

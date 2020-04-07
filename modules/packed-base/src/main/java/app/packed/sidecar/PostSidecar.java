@@ -15,20 +15,26 @@
  */
 package app.packed.sidecar;
 
-import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
+ * An annotation indicating that a particular method on a sidecar should be invoked by the runtime after a particular
+ * event. Each sidecar type defines the type of events it supports as static string fields on the sidecar annotation.
+ * For example, {@link ExtensionSidecar#INSTANTIATION}.
+ * <p>
+ * Annotated methods must be non-static and take no parameters.
  */
-@Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-// SidecarLifecycle
-// ExtensionSidecar her??????
-public @interface OnAssembling {
+public @interface PostSidecar {
+
+    /**
+     * The name of the event.
+     * 
+     * @return name of the event
+     */
     String value();
 }

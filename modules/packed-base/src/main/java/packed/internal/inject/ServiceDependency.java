@@ -339,7 +339,7 @@ public final class ServiceDependency {
             optionalType = Optionality.REQUIRED;
         }
         // TODO check that there are no qualifier annotations on the type.
-        return new ServiceDependency(ModuleAccess.util().toKeyNullableQualifier(type, qa), optionalType, null);
+        return new ServiceDependency(ModuleAccess.base().toKeyNullableQualifier(type, qa), optionalType, null);
     }
 
     public static <T> List<ServiceDependency> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass, int... baseClassTypeVariableIndexes) {
@@ -373,7 +373,7 @@ public final class ServiceDependency {
         } else if (rawType == Optional.class) {
             optionallaity = Optionality.OPTIONAL;
             Type cl = ((ParameterizedType) desc.getParameterizedType()).getActualTypeArguments()[0];
-            tl = ModuleAccess.util().toTypeLiteral(cl);
+            tl = ModuleAccess.base().toTypeLiteral(cl);
             if (TypeUtil.isOptionalType(tl.rawType())) {
                 throw new InvalidDeclarationException(ErrorMessageBuilder.of(desc).cannot("have multiple layers of optionals such as " + cl));
             }

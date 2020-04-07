@@ -88,11 +88,7 @@ public abstract class WireletPipeline<P extends WireletPipeline<P, W>, W extends
      */
     @SuppressWarnings("unchecked")
     public final Optional<P> previous() {
-        WireletPipelineContext c = context().previous;
-        if (c != null) {
-            return Optional.of((P) c.instance);
-        }
-        return Optional.empty();
+        return Optional.ofNullable((P) context().previous());
     }
 
     /** {@inheritDoc} */
