@@ -19,15 +19,13 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
-import java.util.List;
+import java.util.Map.Entry;
 
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.PipelineWirelet;
 import app.packed.container.Wirelet;
-import app.packed.container.WireletPipeline;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
-import packed.internal.moduleaccess.ModuleAccess;
 
 /**
  *
@@ -47,8 +45,7 @@ public final class WireletContext {
     // We might at some point, allow the setting of a default name...
     // In which we need to different between not-set and set to null
 
-    final IdentityHashMap<Class<? extends WireletPipeline<?, ?, ?>>, WireletPipeline<?, ?, ?>> actualpipelines = new IdentityHashMap<>();
-
+    // Could put them in wirelets. And then have an int countdown instead... every time an extension is removed.
     final IdentityHashMap<Class<? extends Extension>, Object> extensions = new IdentityHashMap<>();
 
     ComponentNameWirelet newName;
@@ -57,16 +54,13 @@ public final class WireletContext {
     @Nullable
     final WireletContext parent;
 
-    /** Pipelines for the various extensions. */
-    final IdentityHashMap<Class<? extends WireletPipeline<?, ?, ?>>, List<PipelineWirelet<?>>> pipelineElements = new IdentityHashMap<>();
-
-    private final IdentityHashMap<Class<?>, Object> wirelets = new IdentityHashMap<>();
+    private final IdentityHashMap<Class<?>, Object> map = new IdentityHashMap<>();
 
     /**
      * Creates a new context
      * 
      * @param parent
-     *            any parent
+     *            an existing parent
      */
     private WireletContext(@Nullable WireletContext parent) {
         this.parent = parent;
@@ -78,8 +72,7 @@ public final class WireletContext {
             @SuppressWarnings("unchecked")
             WireletPipelineModel model = PipelineWireletModel.of((Class<? extends PipelineWirelet<?>>) w.getClass());
 
-            pipelineElements.computeIfAbsent(model.type, k -> new ArrayList<>()).add((PipelineWirelet<?>) w);
-            ((WireletPipelineContext) wirelets.computeIfAbsent(model.type, k -> {
+            ((WireletPipelineContext) map.computeIfAbsent(model.type, k -> {
                 WireletPipelineContext pc = parent == null ? null : (WireletPipelineContext) parent.getIt(model.type);
                 WireletPipelineContext wpc = new WireletPipelineContext(model, pc);
                 if (model.extensionType != null) {
@@ -94,7 +87,8 @@ public final class WireletContext {
                 addWirelet(pcc, ww);
             }
         } else {
-            wirelets.put(w.getClass(), w);
+            // A standalone wirelet, just override any existing
+            map.put(w.getClass(), w);
         }
     }
 
@@ -102,7 +96,7 @@ public final class WireletContext {
     public Object getIt(Class<?> type) {
         WireletContext wc = this;
         do {
-            Object o = wc.wirelets.get(type);
+            Object o = wc.map.get(type);
             if (o != null) {
                 return o;
             }
@@ -112,11 +106,10 @@ public final class WireletContext {
     }
 
     public void extensionInitialized(PackedExtensionContext pec) {
-        Object o = extensions.get(pec.model().extensionType());
-        if (o != null) {
-            WireletPipelineContext c = (WireletPipelineContext) o;
-            c.instance = c.model.newPipeline(pec.extension());
-            ModuleAccess.extension().pipelineInitialize(c);
+        // See if we have installed a pipeline
+        WireletPipelineContext wpc = (WireletPipelineContext) extensions.get(pec.model().extensionType());
+        if (wpc != null) {
+            wpc.instantiate(pec.extension());
         }
     }
 
@@ -142,13 +135,26 @@ public final class WireletContext {
         return null;
     }
 
-    public void extensionsConfigured() {
+    /**
+     * This method checks that no wirelets have been specified requiring extensions that have not been used.
+     */
+    public void checkAllExtensionsAvailable(PackedContainerConfiguration pcc) {
         assert (parent == null);
         if (!extensions.isEmpty()) {
-            throw new Error();
+            extensionFailed(pcc);
         }
     }
 
+    /**
+     * Creates a new wirelet context or returns existing if the array of wirelets is empty.
+     * 
+     * @param pcc
+     *            the container configuration
+     * @param existing
+     * @param wirelets
+     *            the wirelets
+     * @return stuff
+     */
     @Nullable
     public static WireletContext create(PackedContainerConfiguration pcc, @Nullable WireletContext existing, Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
@@ -161,70 +167,37 @@ public final class WireletContext {
             wc.addWirelet(pcc, w);
         }
 
-        for (Object o : wc.wirelets.values()) {
+        // initialize all pipelines except for extension pipelines when existing == null
+        for (Object o : wc.map.values()) {
             if (o instanceof WireletPipelineContext) {
-                WireletPipelineContext c = (WireletPipelineContext) o;
-                Class<? extends Extension> et = c.extension();
-                if (et == null || existing != null) {
-                    Extension extension = null;
-                    if (et != null) {
-                        PackedExtensionContext pec = pcc.getExtension(et);
-                        if (pec == null) {
-                            throw new IllegalArgumentException(
-                                    "In order to use the wirelet(s) " + c.wirelets.get(0) + ", " + et.getSimpleName() + " is required to be installed.");
-                        }
-                        extension = pec.extension();
+                WireletPipelineContext wpc = (WireletPipelineContext) o;
+                Class<? extends Extension> extensionType = wpc.extension();
+                if (extensionType == null) {
+                    wpc.instantiate(null);
+                } else if (existing != null) {
+                    PackedExtensionContext pec = pcc.getExtension(extensionType);
+                    if (pec == null) {
+                        wc.extensionFailed(pcc);
                     }
-                    c.instance = c.model.newPipeline(extension);
-                    ModuleAccess.extension().pipelineInitialize(c);
+                    wpc.instantiate(pec.extension());
                 }
             }
         }
-
         return wc;
     }
+
+    private void extensionFailed(PackedContainerConfiguration pcc) {
+        IdentityHashMap<Class<? extends Extension>, ArrayList<Wirelet>> m = new IdentityHashMap<>();
+        for (Entry<Class<? extends Extension>, Object> c : extensions.entrySet()) {
+            Class<? extends Extension> k = c.getKey();
+            if (pcc.getExtension(k) == null) {
+
+            }
+        }
+//        throw new IllegalArgumentException("In order to use the wirelet(s) " + wpc.wirelets.get(0) + ", " + extensionType.getSimpleName()
+//        + " is required to be installed.");
+
+        // ArrayList<Class<? extends ExtensionT>>
+    }
+
 }
-// Typer wirelets
-// Standalone -> Kan injectes... (ved ikke om vi skal holde styr paa om de bliver brugt...
-// PipelineWirelets -> Pipeline... holder styr paa om den bliver brugt
-// Extension Pipeline -> Check Extension er installeret...
-
-// Internal Wirelets -> Kan kalde dem med en PCC, WC
-
-//private void extensionFixed(PackedContainerConfiguration pcc) {
-//  for (var e : pipelineElements.entrySet()) {
-//      Class<? extends Extension> etype = WireletPipelineModel.of(e.getKey()).extensionType;
-//      PackedExtensionContext c = pcc.getExtension(etype);
-//      if (c == null) {
-//          // Call ExtensionWirelet#extensionNotAvailable
-//          throw new IllegalArgumentException(
-//                  "In order to use the wirelet(s) " + e.getValue() + ", " + etype.getSimpleName() + " is required to be installed.");
-//      }
-//      initializex(c, e.getKey());
-//  }
-//}
-////
-//@SuppressWarnings("unchecked")
-//private void extensionInitialized(PackedExtensionContext pec) {
-//  for (var p : pec.model().pipelines.keySet()) {
-//      List<PipelineWirelet<?>> ewp = pipelineElements.get(p);
-//      if (ewp != null) {
-//          WireletPipelineModel m = PipelineWireletModel.of((Class<? extends PipelineWirelet<?>>) ewp.iterator().next().getClass());
-//
-//          WireletPipeline<?, ?, ?> pip = m.newPipeline(pec.extension());
-//          ModuleAccess.extension().pipelineInitialize(Optional.empty(), ewp, pip);
-//          actualpipelines.put(p, pip);
-//      }
-//  }
-//}
-//
-//@SuppressWarnings("unchecked")
-//private void initializex(PackedExtensionContext pec, Class<? extends WireletPipeline<?, ?, ?>> etype) {
-//List<PipelineWirelet<?>> ewp = pipelineElements.get(etype);
-//if (ewp != null) {
-//    WireletPipelineModel m = PipelineWireletModel.of((Class<? extends PipelineWirelet<?>>) ewp.iterator().next().getClass());
-//    WireletPipeline<?, ?, ?> pip = m.newPipeline(pec.extension());
-//    ModuleAccess.extension().pipelineInitialize(Optional.empty(), ewp, pip);
-//    actualpipelines.put(etype, pip);
-//}
-//}

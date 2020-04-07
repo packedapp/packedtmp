@@ -25,6 +25,7 @@ import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.PipelineWirelet;
 import app.packed.container.WireletPipeline;
+import packed.internal.moduleaccess.ModuleAccess;
 
 /**
  *
@@ -71,5 +72,10 @@ public final class WireletPipelineContext {
         ArrayList l = new ArrayList<>();
         forEach(w -> l.add(w));
         return l;
+    }
+
+    void instantiate(@Nullable Extension extension) {
+        instance = model.newPipeline(extension);
+        ModuleAccess.extension().pipelineInitialize(this);
     }
 }
