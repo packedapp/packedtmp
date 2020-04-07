@@ -23,6 +23,7 @@ import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
+import app.packed.sidecar.ExtensionSidecar;
 
 /**
  * An instance of this interface is available via {@link Extension#context()} or via constructor injection into an

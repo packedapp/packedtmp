@@ -48,7 +48,7 @@ public final class WireletPipelineContext {
     }
 
     Class<? extends Extension> extension() {
-        return model.extensionType;
+        return model.extensionType();
     }
 
     @SuppressWarnings("unchecked")

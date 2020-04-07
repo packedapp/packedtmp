@@ -31,6 +31,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
+// ExtensionMember
+// try look here https://www.thesaurus.com/browse/member
 public @interface UseExtension {
     Class<? extends Extension> value();
 }

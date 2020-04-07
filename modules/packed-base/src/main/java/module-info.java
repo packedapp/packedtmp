@@ -11,6 +11,7 @@ module app.packed.base {
     exports app.packed.inject;
     exports app.packed.lifecycle;
     exports app.packed.service;
+    exports app.packed.sidecar;
 
     // Temporary...
     exports packed.internal.reflect to app.packed.banana;

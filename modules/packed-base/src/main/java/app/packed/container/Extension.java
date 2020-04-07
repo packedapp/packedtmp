@@ -24,6 +24,7 @@ import app.packed.artifact.Assembly;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
+import app.packed.sidecar.ExtensionSidecar;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.WireletPipelineContext;
 import packed.internal.moduleaccess.AppPackedExtensionAccess;

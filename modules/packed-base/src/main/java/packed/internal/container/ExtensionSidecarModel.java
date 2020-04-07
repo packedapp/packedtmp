@@ -28,8 +28,8 @@ import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionSidecar;
 import app.packed.hook.OnHook;
+import app.packed.sidecar.ExtensionSidecar;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
 import packed.internal.reflect.OpenClass;
@@ -39,7 +39,7 @@ import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.UncheckedThrowableFactory;
 
-/** A model of an Extension. */
+/** A model of an Extension (sidecar). */
 public final class ExtensionSidecarModel extends SidecarModel {
 
     /** A cache of models. */
@@ -61,11 +61,11 @@ public final class ExtensionSidecarModel extends SidecarModel {
         }
     };
 
-    public static final int ON_CHILDREN_DONE = 2;
+    static final int ON_CHILDREN_DONE = 2;
 
-    public static final int ON_INSTANTIATION = 0;
+    static final int ON_INSTANTIATION = 0;
 
-    public static final int ON_PREEMBLE = 1;
+    static final int ON_PREEMBLE = 1;
 
     final MethodHandle bundleBuilderMethod;
 

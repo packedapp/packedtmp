@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.base;
+package app.packed.sidecar;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -27,6 +27,8 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
+// SidecarLifecycle
+// ExtensionSidecar her??????
 public @interface OnAssembling {
     String value();
 }

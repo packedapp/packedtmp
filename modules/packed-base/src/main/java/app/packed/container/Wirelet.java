@@ -24,7 +24,7 @@ import java.util.function.Predicate;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
-import packed.internal.container.FixedWireletList;
+import packed.internal.container.WireletList;
 
 /**
  * Packlets are an umbrella term for small pieces of glue code, that is used to connect, wire, instantiate, debug your
@@ -76,8 +76,8 @@ public abstract class Wirelet {
         requireNonNull(wirelets, "wirelets is null");
         ArrayList<Wirelet> l = new ArrayList<>();
         // Maaden vi rekursiv processere them betyder at jeg ikke tror vi behoever at pakke dem ud....
-        if (this instanceof FixedWireletList) {
-            l.addAll(List.of(((FixedWireletList) this).wirelets));
+        if (this instanceof WireletList) {
+            l.addAll(List.of(((WireletList) this).wirelets));
         } else {
             l.add(this);
         }
@@ -85,7 +85,7 @@ public abstract class Wirelet {
         // System.err.println();
         // System.err.println(this + " " + List.of(wirelets));
         // System.err.println(l);
-        return FixedWireletList.of(l.toArray(i -> new Wirelet[i]));
+        return WireletList.of(l.toArray(i -> new Wirelet[i]));
     }
 
     // Det er vel mere om den kun bruges i forbindelse med linkage...

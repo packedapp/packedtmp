@@ -20,20 +20,20 @@ import static java.util.Objects.requireNonNull;
 import app.packed.analysis.BundleDescriptor;
 import app.packed.base.Key;
 import app.packed.base.Key.Qualifier;
-import app.packed.base.OnAssembling;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
-import app.packed.container.ExtensionSidecar;
 import app.packed.container.Wirelet;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Expose;
 import app.packed.hook.OnHook;
 import app.packed.inject.Factory;
 import app.packed.lifecycle.OnStart;
+import app.packed.sidecar.ExtensionSidecar;
+import app.packed.sidecar.OnAssembling;
 import packed.internal.component.PackedSingletonConfiguration;
-import packed.internal.container.FixedWireletList;
+import packed.internal.container.WireletList;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.service.build.ServiceExtensionNode;
@@ -278,7 +278,7 @@ public final class ServiceExtension extends Extension {
         }
         checkConfigurable();
         node.provider().provideAll((AbstractInjector) injector, captureStackFrame(InjectConfigSiteOperations.INJECTOR_PROVIDE_ALL),
-                FixedWireletList.of(wirelets));
+                WireletList.of(wirelets));
     }
 
     /**

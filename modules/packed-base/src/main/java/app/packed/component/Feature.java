@@ -19,6 +19,7 @@ import app.packed.container.Extension;
 // Skal man tage en ComponentContext med?
 // Eller skal man ComponentContext.use(Scheduler.class).installl
 
+// Feature er maaske lidt daarlig pga Feature flags...
 public interface Feature {
 
     /**

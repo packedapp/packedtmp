@@ -29,7 +29,7 @@ import packed.internal.container.PackedExtensionDescriptor;
  * @apiNote In the future, if the Java language permits, {@link ExtensionDescriptor} may become a {@code sealed}
  *          interface, which would prohibit subclassing except by explicitly permitted types.
  */
-// Den er ikke streng noedvendig...
+// Den er ikke streng noedvendig... Men rar
 public interface ExtensionDescriptor {
 
     /**
@@ -70,6 +70,9 @@ public interface ExtensionDescriptor {
      * @param extensionType
      *            the extension type to return a descriptor for
      * @return a descriptor for the specified extension type
+     * 
+     * @throws InternalExtensionException
+     *             if a descriptor for the specified extension type could not be generated
      */
     static ExtensionDescriptor of(Class<? extends Extension> extensionType) {
         return PackedExtensionDescriptor.of(extensionType);

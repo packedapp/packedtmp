@@ -24,9 +24,18 @@ import app.packed.container.Wirelet;
  */
 // Maybe its just component wirelets....
 // And then we only have Extension wirelets????
+
+//ArchWirelets taenker det maaske mere er en annoteringen man kan bruge paa bundlen...
+// F.eks. alle containeres navn skal starte med "Xyz" hvis der er over 10 componenter...
+// Er det noget dev tools???? Det taenker jeg...
+// Eller er det noget vi gider validere i production???
+// Altsaa det bliver vel smidt vaek naar man har lavet et image....
+
+// Taenker det er noget man kan teste for ArchCheck.check(new DooBundle());
+
 public abstract class ContainerWirelet extends Wirelet {
 
-    abstract void process(PackedContainerConfiguration pcc, WireletContext c);
+    abstract void process(WireletContext c);
 
     public static final class ComponentNameWirelet extends ContainerWirelet {
 
@@ -45,7 +54,7 @@ public abstract class ContainerWirelet extends Wirelet {
 
         /** {@inheritDoc} */
         @Override
-        void process(PackedContainerConfiguration pcc, WireletContext c) {
+        void process(WireletContext c) {
             c.newName = this;// will override any set previously
         }
 
@@ -64,5 +73,4 @@ public abstract class ContainerWirelet extends Wirelet {
             return name;
         }
     }
-
 }

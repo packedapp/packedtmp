@@ -37,7 +37,7 @@ import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceMode;
 import packed.internal.component.PackedSingletonConfiguration;
-import packed.internal.container.FixedWireletList;
+import packed.internal.container.WireletList;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.util.InjectConfigSiteOperations;
@@ -123,7 +123,7 @@ public final class ServiceProvidingManager {
         componentConfigurationCache.put(cc, parentNode);
     }
 
-    public void provideAll(AbstractInjector injector, ConfigSite configSite, FixedWireletList wirelets) {
+    public void provideAll(AbstractInjector injector, ConfigSite configSite, WireletList wirelets) {
         ArrayList<ProvideAllFromOtherInjector> p = provideAll;
         if (provideAll == null) {
             p = provideAll = new ArrayList<>(1);

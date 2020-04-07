@@ -152,6 +152,7 @@ public abstract class BaseBundle extends Bundle {
      * @see InjectorAssembler#provide(Class)
      */
     protected final <T> ServiceComponentConfiguration<T> provide(Class<T> implementation) {
+        // Provide er i virkeligheden... install() followed by service().provide(Singleton or Static)
         return service().provide(implementation);
     }
 

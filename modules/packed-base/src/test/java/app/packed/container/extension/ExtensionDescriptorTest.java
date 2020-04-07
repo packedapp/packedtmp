@@ -23,8 +23,8 @@ import org.junit.jupiter.api.Test;
 import app.packed.base.Contract;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionDescriptor;
-import app.packed.container.ExtensionSidecar;
 import app.packed.hook.Expose;
+import app.packed.sidecar.ExtensionSidecar;
 import packed.internal.container.PackedExtensionDescriptor;
 
 /** Tests {@link PackedExtensionDescriptor}. */

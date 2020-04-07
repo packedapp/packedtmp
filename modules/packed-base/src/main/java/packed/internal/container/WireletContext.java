@@ -28,7 +28,7 @@ import app.packed.container.Wirelet;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
 
 /**
- *
+ * A container of one or more wirelets.
  */
 // Det er kun late binding wirelets we kan bruge...
 // Ikke f.eks. ConfigSite
@@ -48,7 +48,7 @@ public final class WireletContext {
     // Could put them in wirelets. And then have an int countdown instead... every time an extension is removed.
     final IdentityHashMap<Class<? extends Extension>, Object> extensions = new IdentityHashMap<>();
 
-    ComponentNameWirelet newName;
+    ComponentNameWirelet newName; // kan komme i map... og saa saetter vi et flag istedet for...
 
     /** Any parent this context might have */
     @Nullable
@@ -70,20 +70,22 @@ public final class WireletContext {
         requireNonNull(w, "wirelets contain a null");
         if (w instanceof PipelineWirelet) {
             @SuppressWarnings("unchecked")
-            WireletPipelineModel model = PipelineWireletModel.of((Class<? extends PipelineWirelet<?>>) w.getClass());
+            WireletPipelineModel model = WireletPipelineModel.ofWirelet((Class<? extends PipelineWirelet<?>>) w.getClass());
 
             ((WireletPipelineContext) map.computeIfAbsent(model.type, k -> {
                 WireletPipelineContext pc = parent == null ? null : (WireletPipelineContext) parent.getIt(model.type);
                 WireletPipelineContext wpc = new WireletPipelineContext(model, pc);
-                if (model.extensionType != null) {
-                    extensions.put(model.extensionType, wpc);// We need to add it as a list if we have more than one wirelet context
+                if (model.extensionType() != null) {
+                    extensions.put(model.extensionType(), wpc);// We need to add it as a list if we have more than one wirelet context
                 }
                 return wpc;
             })).wirelets.add((PipelineWirelet<?>) w);
         } else if (w instanceof ContainerWirelet) {
-            ((ContainerWirelet) w).process(pcc, this);
-        } else if (w instanceof FixedWireletList) {
-            for (Wirelet ww : ((FixedWireletList) w).wirelets) {
+            // Hmm skulle vi vente til alle wirelets er succesfuld processeret???
+            // Altsaa hvad hvis den fejler.... Altsaa taenker ikke den maa lavere aendringer i containeren.. kun i wirelet context
+            ((ContainerWirelet) w).process(this);
+        } else if (w instanceof WireletList) {
+            for (Wirelet ww : ((WireletList) w).wirelets) {
                 addWirelet(pcc, ww);
             }
         } else {

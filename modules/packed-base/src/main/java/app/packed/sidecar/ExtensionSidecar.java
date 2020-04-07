@@ -13,12 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.sidecar;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import app.packed.container.Bundle;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionContext;
 
 /**
  * A sidecar annotation that can be used on subclasses of {@link Extension}.
@@ -65,7 +69,6 @@ public @interface ExtensionSidecar {
 }
 //Must be nonstatic and parameter less????
 //Well they should both nonstatic or static, and take ExtensionContext, InjectionContext
-
 //An extension cannot have more than one method for a given assembling event.
 //@AfterExtension(Instantiated)
 

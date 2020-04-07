@@ -21,17 +21,13 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.ArrayList;
 import java.util.IdentityHashMap;
-import java.util.List;
 import java.util.Map;
 
 import app.packed.base.Contract;
-import app.packed.base.OnAssembling;
-import app.packed.container.ExtensionSidecar;
 import app.packed.container.InternalExtensionException;
 import app.packed.hook.Expose;
-import packed.internal.container.ExtensionSidecarModel;
+import app.packed.sidecar.OnAssembling;
 import packed.internal.reflect.ConstructorFinder;
 import packed.internal.reflect.OpenClass;
 import packed.internal.util.UncheckedThrowableFactory;
@@ -41,16 +37,18 @@ import packed.internal.util.UncheckedThrowableFactory;
  */
 public abstract class SidecarModel {
 
+    /** A method handle used for creating new sidecar instances. */
+    protected final MethodHandle constructor;
+
     /** It is important this map is immutable as the key set is exposed via ExtensionDescriptor. */
     // Can 2 extensions define the same contract???? Don't think so
     // If not we could have a Contract.class->ContractFactory Map and a Contract.of(ContainerSource, Class<T extends
     // Contract>);
     protected final Map<Class<? extends Contract>, MethodHandle> contracts;
 
-    /** A method handle used for creating new sidecar instances. */
-    protected final MethodHandle constructor;
-
     private final Class<?> sidecarType;
+
+    final Object[] callbacks;
 
     /**
      * Creates a new sidecar model.
@@ -62,13 +60,23 @@ public abstract class SidecarModel {
         this.constructor = builder.constructor;
         this.sidecarType = builder.sidecarType;
         this.contracts = Map.copyOf(builder.contracts);
-        this.l = List.copyOf(builder.l);
+        this.callbacks = builder.callbacks;
     }
-
-    final List<ECall> l;
 
     public Map<Class<? extends Contract>, MethodHandle> contracts() {
         return contracts;
+    }
+
+    public void invokeCallbacks(int id, Object sidecar) {
+        Object o = callbacks[id];
+        if (o != null) {
+            MethodHandle mh = (MethodHandle) o;
+            try {
+                mh.invoke(sidecar);
+            } catch (Throwable e) {
+                throw new UndeclaredThrowableException(e);
+            }
+        }
     }
 
     public Class<?> sidecarType() {
@@ -76,6 +84,11 @@ public abstract class SidecarModel {
     }
 
     public static abstract class Builder {
+
+        public MethodHandle builderMethod;
+
+        /** The constructor used to create a new extension instance. */
+        private MethodHandle constructor;
 
         // Need to check that a contract never belongs to two extension.
         // Also, I think we want to do this atomically, so that we do not have half an extension registered somewhere.
@@ -87,16 +100,12 @@ public abstract class SidecarModel {
 
         final SidecarTypeMeta statics;
 
-        public final ArrayList<ECall> l = new ArrayList<>();
-
-        public MethodHandle builderMethod;
-
-        /** The constructor used to create a new extension instance. */
-        private MethodHandle constructor;
+        final Object[] callbacks;
 
         protected Builder(SidecarTypeMeta statics, Class<?> sidecarType) {
             this.sidecarType = requireNonNull(sidecarType);
             this.statics = requireNonNull(statics);
+            this.callbacks = new Object[statics.lifecycleStates.length];
         }
 
         @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -110,8 +119,14 @@ public abstract class SidecarModel {
                     if (Modifier.isStatic(e.getModifiers())) {
                         throw new InternalExtensionException("Methods annotated with " + OnAssembling.class + " cannot be static, method = " + e);
                     }
+                    int index = statics.indexOf(oa.value());
+                    if (index == -1) {
+                        throw new Error();
+                    }
+
                     MethodHandle mh = cp.unreflect(e, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-                    l.add(new ECall(mh, oa.value().equals(ExtensionSidecar.ON_INSTANTIATION), oa.value().equals(ExtensionSidecar.ON_PREEMBLE)));
+
+                    callbacks[index] = mh;
                 }
                 Expose ex = e.getAnnotation(Expose.class);
                 if (ex != null) {
@@ -125,42 +140,6 @@ public abstract class SidecarModel {
             });
 
             return cp;
-        }
-    }
-
-    public void invokeCallbacks(int id, Object sidecar) {
-        if (id == ExtensionSidecarModel.ON_INSTANTIATION) {
-            for (var v : l) {
-                if (v.onInstantiation) {
-                    try {
-                        v.mh.invoke(sidecar);
-                    } catch (Throwable e) {
-                        throw new UndeclaredThrowableException(e);
-                    }
-                }
-            }
-        } else if (id == ExtensionSidecarModel.ON_PREEMBLE) {
-            for (var v : l) {
-                if (v.onMainFinished) {
-                    try {
-                        v.mh.invoke(sidecar);
-                    } catch (Throwable e) {
-                        throw new UndeclaredThrowableException(e);
-                    }
-                }
-            }
-        }
-    }
-
-    public static class ECall {
-        public final MethodHandle mh;
-        public final boolean onInstantiation;
-        public final boolean onMainFinished;
-
-        public ECall(MethodHandle mh, boolean onInstantiation, boolean onMainFinished) {
-            this.mh = requireNonNull(mh);
-            this.onInstantiation = onInstantiation;
-            this.onMainFinished = onMainFinished;
         }
     }
 }
