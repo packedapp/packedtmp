@@ -20,10 +20,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 import app.packed.container.Extension;
-import app.packed.container.ExtensionSidecar;
 import app.packed.container.InternalExtensionException;
-import app.packed.container.WireletPipeline;
-import packed.internal.util.StringFormatter;
 
 /**
  * An extension loader is responsible for initializing models for extensions.
@@ -36,8 +33,6 @@ final class ExtensionModelLoader {
 
     /** A lock used for making sure that we only load one extension tree at a time. */
     private static final ReentrantLock GLOBAL_LOCK = new ReentrantLock();
-
-    private static final WeakHashMap<Class<? extends WireletPipeline<?, ?>>, WireletPipelineModel> PIPELINES = new WeakHashMap<>();
 
     private final ArrayDeque<Class<? extends Extension>> stack = new ArrayDeque<>();
 
@@ -63,9 +58,6 @@ final class ExtensionModelLoader {
         // All dependencies have been successfully validated before we add the actual extension
         // and any of its pipelines to permanent storage
         EXTENSIONS.put(extensionType, m);
-        for (WireletPipelineModel p : builder.pipelines.values()) {
-            PIPELINES.put(p.type, p);
-        }
 
         return m;
     }
@@ -98,29 +90,6 @@ final class ExtensionModelLoader {
                 loader = new ExtensionModelLoader();
             }
             return loader.load1(extensionType);
-        } finally {
-            GLOBAL_LOCK.unlock();
-        }
-    }
-
-    static WireletPipelineModel pipeline(Class<? extends WireletPipeline<?, ?>> pipelineType) {
-        GLOBAL_LOCK.lock();
-        try {
-            WireletPipelineModel m = PIPELINES.get(pipelineType);
-            if (m != null) {
-                return m;
-            }
-            Class<? extends Extension> c = WireletPipelineModel.extensionTypeOf(pipelineType);
-            if (c == null) {
-                return new WireletPipelineModel.Builder(pipelineType).build();
-            }
-            load(c);
-            m = PIPELINES.get(pipelineType);
-            if (m != null) {
-                return m;
-            }
-            throw new InternalExtensionException("Extension " + StringFormatter.format(c) + " must include " + StringFormatter.format(pipelineType) + " in @"
-                    + ExtensionSidecar.class.getSimpleName() + "#pipelines");
         } finally {
             GLOBAL_LOCK.unlock();
         }

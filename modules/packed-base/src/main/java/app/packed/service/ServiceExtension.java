@@ -71,7 +71,6 @@ import packed.internal.service.run.AbstractInjector;
 // Taenker den kun bliver aktiveret hvis vi har en factory med mindste 1 unresolved dependency....
 // D.v.s. install(Class c) -> aktivere denne extension, hvis der er unresolved dependencies...
 // Ellers selvfoelgelig hvis man bruger provide/@Provides\
-@ExtensionSidecar(pipelines = ServiceWireletPipeline.class)
 public final class ServiceExtension extends Extension {
 
     /** The node that does most of the heavy lifting. */

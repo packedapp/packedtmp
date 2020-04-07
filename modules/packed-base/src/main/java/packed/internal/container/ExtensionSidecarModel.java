@@ -19,10 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -31,7 +29,6 @@ import app.packed.component.Component;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionSidecar;
-import app.packed.container.WireletPipeline;
 import app.packed.hook.OnHook;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
@@ -84,8 +81,6 @@ public final class ExtensionSidecarModel extends SidecarModel {
     /** An optional containing the extension type. To avoid excessive creation of them for {@link Component#extension()}. */
     public final Optional<Class<? extends Extension>> optional;
 
-    final Map<Class<? extends WireletPipeline<?, ?>>, WireletPipelineModel> pipelines;
-
     /**
      * Creates a new extension model from the specified builder.
      * 
@@ -94,7 +89,6 @@ public final class ExtensionSidecarModel extends SidecarModel {
      */
     private ExtensionSidecarModel(Builder builder) {
         super(builder);
-        this.pipelines = Map.copyOf(builder.pipelines);
         this.bundleBuilderMethod = builder.builderMethod;
         this.dependenciesDirect = Set.copyOf(builder.dependenciesDirect);
         this.dependenciesTotalOrder = builder.dependenciesTotalOrder;
@@ -173,8 +167,6 @@ public final class ExtensionSidecarModel extends SidecarModel {
         /** A builder for all methods annotated with {@link OnHook} on the extension. */
         private OnHookModel onHookModel;
 
-        final HashMap<Class<? extends WireletPipeline<?, ?>>, WireletPipelineModel> pipelines = new HashMap<>();
-
         /**
          * Creates a new builder.
          * 
@@ -197,10 +189,6 @@ public final class ExtensionSidecarModel extends SidecarModel {
                 for (Class<? extends Extension> ccc : em.dependencies()) {
                     ExtensionModelLoader.load(ccc, loader);
                     dependenciesDirect.add(ccc);
-                }
-                for (Class<? extends WireletPipeline<?, ?>> c : em.pipelines()) {
-                    WireletPipelineModel m = new WireletPipelineModel.Builder(c).build();
-                    pipelines.put(c, m);
                 }
             }
             this.dependenciesTotalOrder = OldExtensionUseModel2.totalOrder(sidecarType);

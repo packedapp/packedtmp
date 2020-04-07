@@ -39,7 +39,7 @@ public final class WireletPipelineModel {
         @SuppressWarnings({ "unchecked" })
         @Override
         protected WireletPipelineModel computeValue(Class<?> type) {
-            return ExtensionModelLoader.pipeline((Class<? extends WireletPipeline<?, ?>>) type);
+            return new WireletPipelineModel.Builder((Class<? extends WireletPipeline<?, ?>>) type).build();
         }
     };
 
@@ -61,7 +61,7 @@ public final class WireletPipelineModel {
      */
     private WireletPipelineModel(Builder builder) {
         this.type = builder.actualType;
-        this.extensionType = extensionTypeOf(builder.actualType);
+        this.extensionType = builder.extension == null ? null : builder.extension.extensionType();
         this.constructor = requireNonNull(builder.constructor);
     }
 
@@ -82,12 +82,6 @@ public final class WireletPipelineModel {
         }
     }
 
-    @Nullable
-    static Class<? extends Extension> extensionTypeOf(Class<? extends WireletPipeline<?, ?>> pipelineType) {
-        UseExtension ue = pipelineType.getAnnotation(UseExtension.class);
-        return ue == null ? null : ue.value();
-    }
-
     /**
      * Returns a model for the specified pipeline type.
      * 
@@ -104,18 +98,26 @@ public final class WireletPipelineModel {
 
         private final Class<? extends WireletPipeline<?, ?>> actualType;
 
+        @Nullable
+        private ExtensionSidecarModel extension;
         private MethodHandle constructor;
 
         /**
          * @param type
          */
-        public Builder(Class<? extends WireletPipeline<?, ?>> type) {
+        private Builder(Class<? extends WireletPipeline<?, ?>> type) {
             actualType = requireNonNull(type);
         }
 
         WireletPipelineModel build() {
             OpenClass cp = new OpenClass(MethodHandles.lookup(), actualType, true);
             Constructor<?> c = actualType.getDeclaredConstructors()[0];
+
+            UseExtension ue = actualType.getAnnotation(UseExtension.class);
+            if (ue != null) {
+                // TODO validate same module... Maybe put this in a UseExtensionHelper class
+                extension = ExtensionSidecarModel.of(ue.value());
+            }
 
             this.constructor = cp.unreflectConstructor(c, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
 

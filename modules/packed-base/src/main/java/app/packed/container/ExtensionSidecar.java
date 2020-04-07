@@ -62,23 +62,7 @@ public @interface ExtensionSidecar {
      * @return extensions that the extension may use if they are present on the classpath or modulepath
      */
     String[] optionalDependencies() default {};
-
-    /**
-     * Pipelines.
-     * 
-     * Will be made available to features, descriptors, and at instantiation.
-     * 
-     * @return pipelines
-     */
-    // Alternativt skal de defineres i samme module som extension'en
-    // Det vi gerne vil undgaa er at en eller anden random dude laver en pipeline
-    // som tager Extension instans...
-    // Men klart vi vil hellere undvaere den her metode hvis vi kan....
-    Class<? extends WireletPipeline<?, ?>>[] pipelines() default {};
 }
-// Pipelines will be made available if any wirelets using them are specified
-// Otherwise an empty Optional can be used...
-
 //Must be nonstatic and parameter less????
 //Well they should both nonstatic or static, and take ExtensionContext, InjectionContext
 
