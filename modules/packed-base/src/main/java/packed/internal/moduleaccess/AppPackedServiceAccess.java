@@ -21,5 +21,12 @@ import packed.internal.service.build.ServiceExtensionNode;
 /** A support class for calling package private methods in the app.packed.service package. */
 public interface AppPackedServiceAccess extends SecretAccess {
 
-    ServiceExtensionNode toNode(ServiceExtension e);
+    /**
+     * Extracts the service node from a service extension.
+     * 
+     * @param extension
+     *            the extension to extract from
+     * @return the service node
+     */
+    ServiceExtensionNode toNode(ServiceExtension extension);
 }
