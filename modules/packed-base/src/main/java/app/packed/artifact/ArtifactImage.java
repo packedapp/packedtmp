@@ -136,6 +136,6 @@ public interface ArtifactImage extends Assembly {
      *             if the image could not be constructed
      */
     static ArtifactImage build(Assembly source, Wirelet... wirelets) {
-        return PackedArtifactImage.build(source, wirelets);
+        return PackedArtifactImage.of(source, wirelets);
     }
 }

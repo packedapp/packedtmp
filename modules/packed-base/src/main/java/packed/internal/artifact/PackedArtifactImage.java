@@ -18,7 +18,6 @@ package packed.internal.artifact;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import app.packed.analysis.BundleDescriptor;
 import app.packed.artifact.ArtifactContext;
@@ -35,26 +34,7 @@ import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.WireletContext;
 import packed.internal.moduleaccess.ModuleAccess;
 
-/**
- * Artifact images are immutable ahead-of-time configured artifacts. By configuring an artifact ahead of time, the
- * actual time to instantiation an artifact can be severely decreased often down to a couple of microseconds. In
- * addition to this, artifact images can be reusable, so you can create multiple artifacts from a single image.
- * 
- * Creating artifacts in Packed is already really fast, and you can easily create one 10 or hundres of microseconds. But
- * by using artifact images you can into hundres or thousounds of nanoseconds.
- * <p>
- * Use cases: Extremely fast startup.. graal
- * 
- * Instantiate the same container many times
- * <p>
- * Limitations:
- * 
- * No structural changes... Only whole artifacts
- * 
- * <p>
- * An image can be used to create new instances of {@link app.packed.artifact.App}, {@link BundleDescriptor} or other
- * artifact images. It can not be used with {@link Bundle#link(Bundle, Wirelet...)}.
- */
+/** The default implementation of {@link ArtifactImage}. */
 public final class PackedArtifactImage implements ArtifactImage {
 
     /** The configuration of the root container. */
@@ -103,10 +83,10 @@ public final class PackedArtifactImage implements ArtifactImage {
     }
 
     /** {@inheritDoc} */
-    // Only if a name has been explicitly set?
-    // Or can we include "FooBar?"
     @Override
     public String name() {
+        // Only if a name has been explicitly set?
+        // Or can we include "FooBar?"
         // Return Optional<String>????
         return wc == null ? pcc.getName() : wc.name(pcc);
     }
@@ -123,7 +103,7 @@ public final class PackedArtifactImage implements ArtifactImage {
      * @return the instantiated artifact
      */
     public <T> T newArtifact(ArtifactDriver<T> driver, Wirelet... wirelets) {
-        WireletContext newWc = WireletContext.create(pcc, this.wc, wirelets);
+        WireletContext newWc = WireletContext.of(pcc, this.wc, wirelets);
         ArtifactContext context = pcc.instantiateArtifact(newWc).newArtifactContext(); // Does the actual instantiation
         return ModuleAccess.artifact().newArtifact(driver, context);
     }
@@ -145,7 +125,7 @@ public final class PackedArtifactImage implements ArtifactImage {
     @Override
     public PackedArtifactImage with(Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
-        return wirelets.length == 0 ? this : new PackedArtifactImage(pcc, WireletContext.create(pcc, wc, wirelets));
+        return wirelets.length == 0 ? this : new PackedArtifactImage(pcc, WireletContext.of(pcc, wc, wirelets));
     }
 
     /**
@@ -160,13 +140,31 @@ public final class PackedArtifactImage implements ArtifactImage {
      * @throws RuntimeException
      *             if the image could not be constructed
      */
-    public static PackedArtifactImage build(Assembly source, Wirelet... wirelets) {
+    public static PackedArtifactImage of(Assembly source, Wirelet... wirelets) {
         if (source instanceof PackedArtifactImage) {
             return ((PackedArtifactImage) source).with(wirelets);
         }
         // TODO check that it is a bundle????
         PackedContainerConfiguration pcc = new PackedContainerConfiguration(BuildOutput.image(), source, wirelets);
         return new PackedArtifactImage(pcc.doBuild(), pcc.wireletContext);
+    }
+}
+
+// De kunne jo strength taget vaere metoder paa imaged og ikke wirelets.
+// Vi kan jo sagtens internt lave det om til wirelets...
+// Der er bare ingen grund til at lave det public...
+final class ArtifactImageWirelets {
+
+    // retainStackTracesForEachInstantiation...
+    /// Her ligger vi jo lige 1000 ns oveni hvis vi vil se hvor den er instantieret.
+
+    // Maximum number of instantiations times...
+    // Could, for example, be one for native.
+    // The only think we want to instantiate the application once... And then forget everything
+
+    // Ideen er at vi kun skal lave en container en gang. F.eks. NativeBoot
+    static Wirelet oneShot() {
+        throw new UnsupportedOperationException();
     }
 
     // repeatable/singleUse
@@ -192,60 +190,4 @@ public final class PackedArtifactImage implements ArtifactImage {
     }
 
     enum Mode {}
-}
-
-// De kunne jo strength taget vaere metoder paa imaged og ikke wirelets.
-// Vi kan jo sagtens internt lave det om til wirelets...
-// Der er bare ingen grund til at lave det public...
-final class ArtifactImageWirelets {
-
-    // retainStackTracesForEachInstantiation...
-    /// Her ligger vi jo lige 1000 ns oveni hvis vi vil se hvor den er instantieret.
-
-    // Maximum number of instantiations times...
-    // Could, for example, be one for native.
-    // The only think we want to instantiate the application once... And then forget everything
-
-    // Ideen er at vi kun skal lave en container en gang. F.eks. NativeBoot
-    static Wirelet oneShot() {
-        throw new UnsupportedOperationException();
-    }
-}
-
-class BadIdeas {
-
-    // public static ArtifactImage of(Class<? extends Bundle> bundle, Wirelet... wirelets) {
-    // requireNonNull(bundle, "bundle is null");
-    // ContainerSourceModel csm = ContainerSourceModel.of(bundle);
-    // Bundle b;
-    // try {
-    // b = (Bundle) csm.emptyConstructor().invoke();
-    // } catch (Throwable e) {
-    // ThrowableUtil.rethrowErrorOrRuntimeException(e);
-    // throw new UndeclaredThrowableException(e);
-    // }
-    // return of(b, wirelets);
-    // }
-
-    // Skal bruge en artifact driver til at instantiatere dem jo....
-    void run(String[] args, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
-    void run(Wirelet... wirelets) {
-        // Paa den anden side, hvis vi f.eks. faar Job<R>
-        // Saa vil run jo se anderledes ud
-        // Will create an artifact of unknown type....
-        // Ideen er lidt at App.run()... aldrig egentlig laver en app.
-
-        // ArtifactDriver'en kan jo ogsaa goere et ellet andet.
-
-        throw new UnsupportedOperationException();
-    }
-
-    CompletableFuture<Void> runAsync(Wirelet... wirelets) {
-        // Will create an artifact of unknown type....
-        // Ideen er lidt at App.run()... aldrig egentlig laver en app.
-        throw new UnsupportedOperationException();
-    }
 }

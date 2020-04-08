@@ -34,6 +34,7 @@ import packed.internal.moduleaccess.ModuleAccess;
 // Failure on Initializain -> Stopping or Terminated?
 // Stop called on Initialized -> Stopping or Terminated? (should be same as above)
 // Stop while starting
+// RunState.... Tjah det implyer maaske Execution....
 public enum RunState {
 
     /**

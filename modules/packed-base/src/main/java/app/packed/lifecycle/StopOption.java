@@ -20,6 +20,9 @@ import java.util.concurrent.TimeUnit;
 /**
  *
  */
+
+// ContainerStopOption????
+// Eller er det generisk..?
 public interface StopOption {
 
     static StopOption erroneous(Throwable cause) {

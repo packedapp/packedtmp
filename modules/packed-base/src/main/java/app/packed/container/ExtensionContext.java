@@ -18,7 +18,6 @@ package app.packed.container;
 import java.util.List;
 import java.util.Optional;
 
-import app.packed.artifact.BuildTarget;
 import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
@@ -42,9 +41,9 @@ public interface ExtensionContext {
     // What we are generating...
     // This can be tricky, For example, if we create an image.
     // This method will always return image,
-    default BuildTarget buildTarget() {
-        throw new UnsupportedOperationException();
-    }
+//    default AssembleTarget buildTarget() {
+//        throw new UnsupportedOperationException();
+//    }
 
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.

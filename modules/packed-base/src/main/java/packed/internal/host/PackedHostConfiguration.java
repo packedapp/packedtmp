@@ -48,7 +48,7 @@ public final class PackedHostConfiguration extends AbstractComponentConfiguratio
         requireNonNull(source, "source is null");
         requireNonNull(driver, "driver is null");
         // For now we create an image...
-        PackedArtifactImage img = PackedArtifactImage.build(source, wirelets);
+        PackedArtifactImage img = PackedArtifactImage.of(source, wirelets);
 
         PackedGuestConfiguration pgc = new PackedGuestConfiguration(this, img.configuration(), img);
         pgc.initializeName(State.LINK_INVOKED, null);

@@ -1,13 +1,10 @@
-package packed.internal.artifact;
+package app.packed.artifact;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-import app.packed.artifact.App;
-import app.packed.artifact.ArtifactContext;
-import app.packed.artifact.ArtifactDriver;
 import app.packed.base.Key;
 import app.packed.component.Component;
 import app.packed.component.ComponentPath;
@@ -17,11 +14,11 @@ import app.packed.config.ConfigSite;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.StopOption;
 
-/** The default implementation of {@link App}, basically just wrapping a context object. */
-public final class PackedApp implements App {
+/** The default implementation of {@link App}. */
+final class PackedApp implements App {
 
     /** An artifact driver for creating {@link App} instances. */
-    public static final ArtifactDriver<App> DRIVER = new ArtifactDriver<>() {
+    static final ArtifactDriver<App> DRIVER = new ArtifactDriver<>() {
 
         /** {@inheritDoc} */
         @Override
@@ -73,10 +70,6 @@ public final class PackedApp implements App {
         return context.path();
     }
 
-    public void execute() {
-        context.execute();
-    }
-
     public <T> CompletableFuture<T> startAsync(T result) {
         return context.startAsync(result);
     }
@@ -125,61 +118,6 @@ public final class PackedApp implements App {
     }
 }
 
-/// ** An artifact driver for creating {@link App} instances. */
-// final class AppArtifactDriver extends ArtifactDriver<App> {
-//
-// /** Singleton */
-// AppArtifactDriver() {}
-//
-// /** {@inheritDoc} */
-// @Override
-// public App newArtifact(ArtifactContext container) {
-// return new PackedApp(container);
-// }
-// }
-// static void runThrowing(AnyBundle bundle, Wirelet... wirelets) throws Throwable
-// Basalt set har vi vel bare en Wiring property der angiver det
-// Basically we unwrap exceptions accordingly to some scheme in some way
-
-// /**
-// * Initiates an orderly asynchronously shutdown of the application because of an exceptional condition. Invocation has
-// * no additional effect if the application has already been shut down.
-// *
-// * @param cause
-// * the cause of the shutdown
-// * @return a future that can be used to query whether the application has completed shutdown (terminated). Or is still
-// * in the process of being shut down
-// */
-// App close(Throwable cause);
-
-// /**
-// * Initiates an orderly asynchronously shutdown of the application because of an exceptional condition. Invocation has
-// * no additional effect if the application has already been shut down.
-// *
-// * @param cause
-// * the cause of the shutdown
-// * @return a future that can be used to query whether the application has completed shutdown (terminated). Or is still
-// * in the process of being shut down
-// */
-// CompletableFuture<App> closeAsync(Throwable cause);
-
-// TODO dont know about this method... could use use(Injector.class) <- Injector.class is always the exported injector
-// Injector injector();
-
-// // Only use #close();
-// /// You close the app... That makes total sense.
-// // Rename of to Open....
-// //// Also those, starting, stopping,... I think that is wirelets....
-// App shutdown();// syntes sgu hellere man skal have shutdown().await(Terminated.class)
-
-// /**
-// * <p>
-// * If the application has previous been started this method return immediately. already started
-// *
-// * @return this application
-// */
-// App start();
-//
 // /**
 // * Initiates an asynchronously startup of the application. Normally, there is no need to call this methods since most
 // * methods on the container will lazily start the container whenever it is needed. For example, invoking

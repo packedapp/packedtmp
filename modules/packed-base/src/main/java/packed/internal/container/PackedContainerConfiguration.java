@@ -113,7 +113,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         super(ConfigSiteUtil.captureStackFrame(InjectConfigSiteOperations.INJECTOR_OF), output);
         this.source = requireNonNull(source);
         this.lookup = this.model = ContainerSourceModel.of(source.getClass());
-        this.wireletContext = WireletContext.create(this, null, wirelets);
+        this.wireletContext = WireletContext.of(this, null, wirelets);
     }
 
     /**
@@ -130,7 +130,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         super(ConfigSiteUtil.captureStackFrame(parent.configSite(), InjectConfigSiteOperations.INJECTOR_OF), parent);
         this.source = requireNonNull(bundle);
         this.lookup = this.model = ContainerSourceModel.of(bundle.getClass());
-        this.wireletContext = WireletContext.create(this, null, wirelets);
+        this.wireletContext = WireletContext.of(this, null, wirelets);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

@@ -1,10 +1,10 @@
-package app.packed.artifact;
+package packed.internal.artifact;
 
 import app.packed.analysis.BundleDescriptor;
+import app.packed.artifact.App;
+import app.packed.artifact.ArtifactImage;
 import app.packed.base.Contract;
 import app.packed.container.Bundle;
-import packed.internal.moduleaccess.AppPackedArtifactAccess;
-import packed.internal.moduleaccess.ModuleAccess;
 
 /**
  * The various types of build process goals available in Packed.
@@ -15,7 +15,19 @@ import packed.internal.moduleaccess.ModuleAccess;
 
 //was BuildGoal
 // BuildOutput...
-public enum BuildTarget {
+
+//Assemble and Analyze
+//Assemble and create Artifact
+//Assemble and create Image
+
+//AssembleType, AssembleAnd[Analyze, CreateArtifact, CreateImage]
+
+//AssembleReason
+
+// Hvad med pod??
+// Hvad hvis tilfoerjer en component til en artifact....
+
+public enum AssembleTarget {
 
     /** Create a report of some kind, for example a {@link Contract} or a {@link BundleDescriptor}. */
     // May throw exceptions
@@ -25,7 +37,7 @@ public enum BuildTarget {
 
     // Analyzes but does not instantiate...
     // Typically creates a report of some kind, or fails by throwing an exception
-    ANALYZE,
+    ANALYSIS,
 
     /** Create a new artifact such as an instance of {@link App}. */
     ARTIFACT,
@@ -36,16 +48,6 @@ public enum BuildTarget {
     /** Create a new {@link ArtifactImage} from a {@link Bundle} (or an existing image). */
     IMAGE;
 
-    static {
-        ModuleAccess.initialize(AppPackedArtifactAccess.class, new AppPackedArtifactAccess() {
-
-            /** {@inheritDoc} */
-            @Override
-            public <T> T newArtifact(ArtifactDriver<T> driver, ArtifactContext context) {
-                return driver.newArtifact(context);
-            }
-        });
-    }
 }
 
 // Assemblies are self-describing

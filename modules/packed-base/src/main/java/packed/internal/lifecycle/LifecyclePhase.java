@@ -18,6 +18,6 @@ package packed.internal.lifecycle;
 /**
  *
  */
-public enum LifecyclePhase {
+enum LifecyclePhase {
     BUILD, ANALYZE, CONSTRUCT, RUN;
 }

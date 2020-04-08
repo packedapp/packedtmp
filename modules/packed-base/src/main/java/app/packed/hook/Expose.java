@@ -31,4 +31,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RUNTIME)
 @Documented
+//Describe...
 public @interface Expose {}
+
+// Contracts

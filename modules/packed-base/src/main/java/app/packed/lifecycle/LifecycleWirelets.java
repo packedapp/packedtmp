@@ -54,9 +54,11 @@ public final class LifecycleWirelets {
     // Vi vil gerne have en version, vi kan refreshe ogsaa???
     // Maaske vi bare ikke skal supportered det direkte.
 
-    // Teknisk set er det vel en app wirelet
+    // Teknisk set er det vel en artifact wirelet
     // Det er vel en der kan bruges hver gang vi har en dynamisk wiring. Og ikke kun apps...
     // Men, f.eks. ogsaa actors...
+
+    // allowForLink() returns false // check(WireletPosition) <- if (wp == link -> throw new X)
 
     public static Wirelet timeToLive(long timeout, TimeUnit unit) {
         // Shuts down container normally

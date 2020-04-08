@@ -15,13 +15,11 @@
  */
 package app.packed.artifact;
 
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import app.packed.base.Key;
 import app.packed.component.Component;
 import app.packed.component.SingletonContext;
-import app.packed.container.Extension;
 import app.packed.lifecycle.StopOption;
 import app.packed.service.ServiceExtension;
 
@@ -31,33 +29,22 @@ import app.packed.service.ServiceExtension;
  * than delegates all calls to an instance of this context.
  * <p>
  * An instance of this interface is normally acquired via {@link ArtifactDriver#newArtifact(ArtifactContext)}.
+ * 
+ * @apiNote In the future, if the Java language permits, {@link ArtifactContext} may become a {@code sealed} interface,
+ *          which would prohibit subclassing except by explicitly permitted types.
  */
+// ArtifactContext extends ContainerContext???
 public interface ArtifactContext extends SingletonContext {
-    // Det er jo i virkeligheden ContainerContext uden lifecycle... + lidt ekstra
 
-    default Set<Class<? extends Extension>> extensionTypes() {
-        throw new UnsupportedOperationException();
+    // Optional<?>??? Maybe a ResultClass
+    default Object result() {
+        // awaitResult()...
+        // awaitResultUninterruptable()...
+        // Ideen er lidt at vi kan vente paa det...
+        return null;
     }
 
-    default boolean isExtensionPresent(Class<? extends Extension> extensionType) {
-        // Hmmmm.. if (isExtensionPresent(ServiceExtension.class) ( use(Stuff.class))
-        return false;
-    }
-
-    /**
-     * @throws UnsupportedOperationException
-     *             if the artifact is not executable
-     */
-    default void execute() {
-        // Spoergmaalet er hvor kommer den vaerdi fra????
-        // return null;
-    }
-
-    // has start/run/stop
-    default boolean isExecutable() {
-        return false;
-    }
-
+    // TypeLiteral??? Maaske returnere execute() et object...
     default Class<?> resultType() {
         // Ideen er her taenkt at vi kan bruge den samme med Job...
         //// En anden slags entry point annotering...
@@ -108,3 +95,31 @@ public interface ArtifactContext extends SingletonContext {
 
     Component useComponent(CharSequence path);
 }
+//// Det er jo i virkeligheden ContainerContext uden lifecycle... + lidt ekstra
+//
+//// Er det tilgaengelig paa runtime?????? Nej det syntes jeg ikke...
+//// Maaske fra en BundleDescriptor.... Men ikke paa runtime...
+//// Taenker ikke i foerste omgang...
+//default Set<Class<? extends Extension>> extensionTypes() {
+//  throw new UnsupportedOperationException();
+//}
+//
+//default boolean isExtensionPresent(Class<? extends Extension> extensionType) {
+//  // Hmmmm.. if (isExtensionPresent(ServiceExtension.class) ( use(Stuff.class))
+//  return false;
+//}
+
+///// De her skal doe
+///**
+//* @throws UnsupportedOperationException
+//*             if the artifact is not executable
+//*/
+//default void execute() {
+//  // Spoergmaalet er hvor kommer den vaerdi fra????
+//  // return null;
+//}
+
+// has start/run/stop
+//default boolean hasExecutionPhase() {
+//  return false;
+//}

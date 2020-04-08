@@ -15,9 +15,8 @@
  */
 package app.packed.artifact;
 
-/** An exception thrown when failing to create an artifact. */
-// AssemblyFailedException
-public class ArtifactAssembleException extends RuntimeException {
+/** An exception thrown by the runtime when assembling failed. */
+public class AssembleException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
@@ -30,7 +29,7 @@ public class ArtifactAssembleException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public ArtifactAssembleException(String message) {
+    public AssembleException(String message) {
         super(message);
     }
 
@@ -44,7 +43,14 @@ public class ArtifactAssembleException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public ArtifactAssembleException(String message, Throwable cause) {
+    public AssembleException(String message, Throwable cause) {
         super(message, cause);
     }
 }
+//Or in lifecycle???? or base??? Hmmmmmm
+//AssemblyFailedException
+//Hed noget med artifact foer, men hvis vi faar dynamiske componenter...
+//Saa er det jo ikke noedvendigvis en 
+
+// InitializationException
+// ExecutionException (vi har den jo i juc...)

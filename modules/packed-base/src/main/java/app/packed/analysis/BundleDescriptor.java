@@ -196,6 +196,7 @@ public class BundleDescriptor {
     }
 
     // has start/stop
+    // needsExecutionPhase...
     public boolean isExecutable() {
         return false;
     }

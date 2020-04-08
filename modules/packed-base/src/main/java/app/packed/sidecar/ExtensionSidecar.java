@@ -25,11 +25,11 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 
 /**
- * An annotation that can be used on subclasses of {@link Extension}.
+ * An annotation that can be used on subclasses of {@link Extension}. {@link Extension Extensions} are implicit sidecars
+ * even without this annotation.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-//boolean requireExecution default false()???
 public @interface ExtensionSidecar {
 
     /**
@@ -63,16 +63,16 @@ public @interface ExtensionSidecar {
      * The extension types will only be used if they can be resolved at runtime using
      * {@link Class#forName(String, boolean, ClassLoader)} or a similar mechanism.
      * <p>
-     * Checking whether or not an optional dependency is available is done exactly once per usage site. Caching the result
-     * for future usage.
+     * Checking whether or not an optional dependency is available is done exactly once when the extension is first used.
+     * Caching the result for future usage.
      * 
      * @return extensions that the extension may use if they are present on the classpath or modulepath
      */
     String[] optionalDependencies() default {};
 }
-//Must be nonstatic and parameter less????
+//boolean requireExecution default false()???
+
 //Well they should both nonstatic or static, and take ExtensionContext, InjectionContext
-//An extension cannot have more than one method for a given assembling event.
 
 //Container finished
 

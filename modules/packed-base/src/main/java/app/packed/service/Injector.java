@@ -298,6 +298,10 @@ public interface Injector {
         return t.get();
     }
 
+    static ArtifactDriver<Injector> driver() {
+        return InjectorArtifactDriver.INSTANCE;
+    }
+
     /**
      * Creates a new injector using a configurator object.
      *
@@ -312,7 +316,7 @@ public interface Injector {
     // interface ArtifactConfigurator() {}
     // configure()
     static Injector configure(Consumer<? super InjectorAssembler> configurator, Wirelet... wirelets) {
-        return InjectorArtifactDriver.INSTANCE.newArtifact(c -> new InjectorAssembler(c), configurator, wirelets);
+        return driver().configure(c -> new InjectorAssembler(c), configurator, wirelets);
     }
 
     /**
@@ -328,7 +332,7 @@ public interface Injector {
      *             that requires a lifecycle
      */
     static Injector of(Assembly source, Wirelet... wirelets) {
-        return InjectorArtifactDriver.INSTANCE.createAndInitialize(source, wirelets);
+        return driver().initialize(source, wirelets);
     }
 }
 

@@ -162,7 +162,7 @@ public final class WireletContext {
      * @return stuff
      */
     @Nullable
-    public static WireletContext create(PackedContainerConfiguration pcc, @Nullable WireletContext existing, Wirelet... wirelets) {
+    public static WireletContext of(PackedContainerConfiguration pcc, @Nullable WireletContext existing, Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
         if (wirelets.length == 0) {
             return existing;

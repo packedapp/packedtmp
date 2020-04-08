@@ -22,10 +22,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.artifact.App;
 import app.packed.container.BaseBundle;
 import app.packed.container.ContainerConfiguration;
-import packed.internal.artifact.PackedApp;
 
 /** Tests {@link App#start(app.packed.container.Bundle, app.packed.container.Wirelet...)} */
 public class AppOfTest {
@@ -40,8 +38,6 @@ public class AppOfTest {
                 ar.set(configuration());
             }
         });
-
-        assertThat(app).isInstanceOf(PackedApp.class);
 
         assertThat(app).isNotNull();
         assertThat(app.description()).isEmpty();

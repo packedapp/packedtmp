@@ -27,3 +27,9 @@ public interface InjectionLayer {
      */
     String name();
 }
+
+//ContainerImports [Provided(), FooContainer]
+//Container [All Unique]
+//Component [@Actor, @NiceMethod]
+//ComponentMethod
+//Optional<Previous>

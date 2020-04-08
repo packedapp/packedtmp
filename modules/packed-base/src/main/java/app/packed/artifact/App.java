@@ -20,17 +20,16 @@ import java.util.concurrent.CompletableFuture;
 
 import app.packed.base.Key;
 import app.packed.component.Component;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.component.ComponentStream.Option;
-import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Wirelet;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.RunState;
 import app.packed.lifecycle.StopOption;
 import app.packed.service.ServiceExtension;
-import packed.internal.artifact.PackedApp;
 
 /**
  * An App (application) is the main type of artifact available in Packed.
@@ -45,7 +44,7 @@ public interface App extends AutoCloseable {
 
     /**
      * Closes the app (synchronously). Calling this method is equivalent to calling {@code app.stop()}, but the method is
-     * here because of {@link AutoCloseable}.
+     * here in order to support try-with resources via {@link AutoCloseable}.
      **/
     @Override
     default void close() {
@@ -69,17 +68,17 @@ public interface App extends AutoCloseable {
      *
      * @return the description of this application
      *
-     * @see SingletonConfiguration#setDescription(String)
+     * @see ComponentConfiguration#setDescription(String)
      */
     Optional<String> description();
 
     /**
      * Returns the name of this application.
      * <p>
-     * The returned name is always identical to the name of the application's top container.
+     * The returned name is identical to the name of the application's top container.
      * <p>
-     * If no name is explicitly set when creating the application, the runtime will generate a name that is guaranteed to be
-     * unique among any siblings the application might have.
+     * If no name is explicitly set when creating the application, the runtime will generate a name. If the applications has
+     * siblings the name is guaranteed to be unique among them.
      * 
      * @return the name of this application
      */
@@ -111,6 +110,7 @@ public interface App extends AutoCloseable {
      * @return a future that can be used to query whether the application has completed shutdown (terminated). Or is still
      *         in the process of being shut down
      */
+    // StopOption.async() //OnStop.Option (nah det her er specifikke container options)
     CompletableFuture<App> stopAsync(StopOption... options);
 
     /**
@@ -172,15 +172,18 @@ public interface App extends AutoCloseable {
      * @return a component with the specified path
      */
     // TODO throw UnknownPathException();;
+    //
     Component useComponent(CharSequence path);
 
     /**
-     * Returns an artifact driver that can create new {@link App} instances. This method is mainly used when defining hosts.
+     * Returns an driver that can produce {@link App} instances.
+     * <p>
+     * This method is mainly used when defining hosts.
      * 
      * @return an app artifact driver
      */
     static ArtifactDriver<App> driver() {
-        return PackedApp.DRIVER; // The basic idea is that you can use it for hosts
+        return PackedApp.DRIVER;
     }
 
     /**
@@ -196,15 +199,8 @@ public interface App extends AutoCloseable {
      * @throws RuntimeException
      *             if the application did not execute properly
      */
-    // Maybe this is not on App....
-    // AppRunner??? Only static methods....
-    // Hvad hvis vi vil bruge nogle services...
-
-    // static void execute(Assembly source, Config configuration, Wirelet... wirelets){}
-
     static void execute(Assembly source, Wirelet... wirelets) {
-        PackedApp app = (PackedApp) driver().createAndInitialize(source, wirelets);
-        app.execute();
+        driver().execute(source, wirelets);
     }
 
     /**
@@ -220,7 +216,7 @@ public interface App extends AutoCloseable {
      *             if the application could not be initialized properly
      */
     static App initialize(Assembly source, Wirelet... wirelets) {
-        return driver().createAndInitialize(source, wirelets);
+        return driver().initialize(source, wirelets);
     }
 
     /**
@@ -236,12 +232,19 @@ public interface App extends AutoCloseable {
      *             if the application could not be initialized or started properly
      */
     static App start(Assembly source, Wirelet... wirelets) {
-        return driver().createAndStart(source, wirelets);
-    }
-
-    static CompletableFuture<App> startAsync(Assembly source, Wirelet... wirelets) {
-        // Why return CompletableFuture???
-        PackedApp app = (PackedApp) driver().createAndInitialize(source, wirelets);
-        return app.startAsync(app);
+        return driver().start(source, wirelets);
+        // 10 seconds is from start.. Otherwise people must use an exact deadline
+        // start(new SomeBundle(), LifecycleWirelets.stopAfter(10, TimeUnit.SECONDS));
+        // start(new SomeBundle(), LifecycleWirelets.stopAfter(10, TimeUnit.SECONDS), ()-> New CancelledException()); (failure)
     }
 }
+//
+//
+//// Ved ikke om CompletableFuture giver mening. Hvis App returnere initialize() betyder det jo
+//// at vi maa have nogle metoder vi kan afvente state paa...
+//static CompletableFuture<App> startAsync(Assembly source, Wirelet... wirelets) {
+//    // initialize().startAsync()
+//    // Why return CompletableFuture???
+//    PackedApp app = (PackedApp) driver().initialize(source, wirelets);
+//    return app.startAsync(app);
+//}

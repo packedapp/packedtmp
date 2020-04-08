@@ -39,6 +39,11 @@ import packed.internal.container.PackedContainerConfiguration;
 
 // Taenker Contract er oplagt som et interface...
 // Kan man implementere det via en record...
+
+// Maaske skal en contract altid vaere et interface.....
+
+// 
+
 public abstract class Contract {
 
     /** {@inheritDoc} */

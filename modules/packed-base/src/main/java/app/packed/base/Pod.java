@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle;
+package app.packed.base;
 
 /**
  *
  */
-//FailedToRuntException, ExecutionExceptionFailed
-// ExecutionExeception
-/// StartupFailedException();
-/// RunFailedException <- See execute fungere daaerlig here
-public class FailedToStartException {
+//Kan vaere et Bundle. eller bare en component
+// Men taenker at vi kun supportere noget med en enkelt rod....
+interface Pod {
 
 }
