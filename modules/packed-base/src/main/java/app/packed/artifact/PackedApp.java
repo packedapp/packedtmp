@@ -34,7 +34,7 @@ final class PackedApp implements App {
      * Creates a new app.
      * 
      * @param context
-     *            the artifact runtime context we are wrapping
+     *            the context to wrap
      */
     private PackedApp(ArtifactContext context) {
         this.context = requireNonNull(context);

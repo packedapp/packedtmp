@@ -91,6 +91,8 @@ public interface ArtifactContext extends SingletonContext {
      *             if a service with the specified key does not exist. Or if the application does not use
      *             {@link ServiceExtension}.
      */
+    // If the artifact has an execution phase this method will block while starting.
+    // It can safely be invoked after a container has been shutdown...
     <T> T use(Key<T> key);
 
     Component useComponent(CharSequence path);

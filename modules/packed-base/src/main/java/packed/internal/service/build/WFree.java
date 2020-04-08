@@ -35,7 +35,7 @@ public class WFree extends BaseBundle {
     }
 
     public static void main(String[] args) {
-        App.initialize(new WFree(), new SomeWirelet("Saturday"), new SomeWirelet("Sundday"));
+        App.of(new WFree(), new SomeWirelet("Saturday"), new SomeWirelet("Sundday"));
         System.out.println("Nye");
     }
 

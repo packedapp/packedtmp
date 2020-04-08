@@ -36,8 +36,8 @@ public class WFreePipelinex extends BaseBundle {
     }
 
     public static void main(String[] args) {
-        App.initialize(new WFreePipelinex(), new SomeWirelet("Saturday"), new SomeWirelet("Sundday"), new SomeWirelet("SunddayXX"));
-        App.initialize(new WFreePipelinex());
+        App.of(new WFreePipelinex(), new SomeWirelet("Saturday"), new SomeWirelet("Sundday"), new SomeWirelet("SunddayXX"));
+        App.of(new WFreePipelinex());
         System.out.println("Nye");
     }
 

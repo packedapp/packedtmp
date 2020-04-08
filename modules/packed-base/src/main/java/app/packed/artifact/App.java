@@ -176,11 +176,11 @@ public interface App extends AutoCloseable {
     Component useComponent(CharSequence path);
 
     /**
-     * Returns an driver that can produce {@link App} instances.
+     * Returns a driver for producing {@link App} instances.
      * <p>
-     * This method is mainly used when defining hosts.
+     * This method is mainly used by advanced users.
      * 
-     * @return an app artifact driver
+     * @return a driver for producing App instances
      */
     static ArtifactDriver<App> driver() {
         return PackedApp.DRIVER;
@@ -204,8 +204,9 @@ public interface App extends AutoCloseable {
     }
 
     /**
-     * Create and initialize an application from the specified source. The state of the returned application is
-     * {@link RunState#INITIALIZED}.
+     * Create an application (but does not start it) from the specified source. The state of the returned application is
+     * {@link RunState#INITIALIZED}. The returned application will lazily start itself when needed. For example, on first
+     * invocation of {@link #use(Class)}.
      *
      * @param source
      *            the source of the application
@@ -215,7 +216,7 @@ public interface App extends AutoCloseable {
      * @throws RuntimeException
      *             if the application could not be initialized properly
      */
-    static App initialize(Assembly source, Wirelet... wirelets) {
+    static App of(Assembly source, Wirelet... wirelets) {
         return driver().initialize(source, wirelets);
     }
 
