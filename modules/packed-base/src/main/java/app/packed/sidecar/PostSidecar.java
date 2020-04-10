@@ -21,9 +21,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An annotation indicating that a particular method on a sidecar should be invoked by the runtime after a particular
- * event. Each sidecar type defines the type of events it supports as static string fields on the sidecar annotation.
- * For example, {@link ExtensionSidecar#INSTANTIATION}.
+ * An annotation indicating that a method needs to be executed by the runtime after a particular event in the sidecars
+ * lifecycle. Each sidecar type defines the type of events it supports as static string fields on the sidecar
+ * annotation. For example, {@link ExtensionSidecar#INSTANTIATION}.
  * <p>
  * Annotated methods must be non-static and take no parameters.
  */

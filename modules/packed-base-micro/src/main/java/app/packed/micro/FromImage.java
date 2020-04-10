@@ -52,24 +52,24 @@ import app.packed.hook.OnHook;
 @State(Scope.Benchmark)
 public class FromImage {
 
-    static final ArtifactImage EMPTY = ArtifactImage.build(new Bundle() {
+    static final ArtifactImage EMPTY = ArtifactImage.of(new Bundle() {
         @Override
         protected void compose() {}
     });
 
-    static final ArtifactImage USE_EXTENSION = ArtifactImage.build(new Bundle() {
+    static final ArtifactImage USE_EXTENSION = ArtifactImage.of(new Bundle() {
         @Override
         public void compose() {
             use(MyExtension.class);
         }
     });
-    static final ArtifactImage INSTALL = ArtifactImage.build(new Bundle() {
+    static final ArtifactImage INSTALL = ArtifactImage.of(new Bundle() {
         @Override
         public void compose() {
             installInstance("foo");
         }
     });
-    static final ArtifactImage INSTALL_AUTO_ACTIVATE = ArtifactImage.build(new Bundle() {
+    static final ArtifactImage INSTALL_AUTO_ACTIVATE = ArtifactImage.of(new Bundle() {
         @Override
         public void compose() {
             installInstance(new MyStuff());

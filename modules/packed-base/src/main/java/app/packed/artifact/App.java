@@ -199,7 +199,7 @@ public interface App extends AutoCloseable {
      * @throws RuntimeException
      *             if the application did not execute properly
      */
-    static void execute(Assembly source, Wirelet... wirelets) {
+    static void execute(ArtifactSource source, Wirelet... wirelets) {
         driver().execute(source, wirelets);
     }
 
@@ -216,8 +216,16 @@ public interface App extends AutoCloseable {
      * @throws RuntimeException
      *             if the application could not be initialized properly
      */
-    static App of(Assembly source, Wirelet... wirelets) {
-        return driver().initialize(source, wirelets);
+    static App of(ArtifactSource source, Wirelet... wirelets) {
+        // Rename fordi vi gerne vil have at ArtifactDriver hedder det samme og
+        // AppHost.xxx() .. Dumt det hedder App.of og AppHost.instantiate
+
+        // Muligheder -> build... instantiate... create... initialize
+
+        // Build -> Image.of -> App.build() hmmm Image.Build <- kun assemble delen...
+
+        // Maaske build,,, you build an artifact...
+        return driver().instantiate(source, wirelets);
     }
 
     /**
@@ -232,7 +240,7 @@ public interface App extends AutoCloseable {
      * @throws RuntimeException
      *             if the application could not be initialized or started properly
      */
-    static App start(Assembly source, Wirelet... wirelets) {
+    static App start(ArtifactSource source, Wirelet... wirelets) {
         return driver().start(source, wirelets);
         // 10 seconds is from start.. Otherwise people must use an exact deadline
         // start(new SomeBundle(), LifecycleWirelets.stopAfter(10, TimeUnit.SECONDS));

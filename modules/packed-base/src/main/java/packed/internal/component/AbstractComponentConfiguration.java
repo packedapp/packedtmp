@@ -26,7 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import app.packed.artifact.Assembly;
+import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
@@ -35,9 +35,9 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
-import packed.internal.artifact.BuildOutput;
-import packed.internal.artifact.PackedArtifactBuildContext;
-import packed.internal.artifact.PackedArtifactInstantiationContext;
+import packed.internal.artifact.AssembleOutput;
+import packed.internal.artifact.PackedAssembleContext;
+import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
 import packed.internal.container.PackedContainerConfiguration;
@@ -52,7 +52,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
     /** The artifact this component is a part of. */
-    private final PackedArtifactBuildContext artifact;
+    private final PackedAssembleContext artifact;
 
     /** Any children of this component (lazily initialized), in order of insertion. */
     @Nullable
@@ -118,22 +118,22 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
      * @param output
      *            the output of the build process
      */
-    protected AbstractComponentConfiguration(ConfigSite configSite, BuildOutput output) {
+    protected AbstractComponentConfiguration(ConfigSite configSite, AssembleOutput output) {
         this.configSite = requireNonNull(configSite);
         this.parent = null;
         this.container = null;
         this.depth = 0;
         this.extension = null;
-        this.artifact = new PackedArtifactBuildContext((PackedContainerConfiguration) this, output);
+        this.artifact = new PackedAssembleContext((PackedContainerConfiguration) this, output);
     }
 
-    protected AbstractComponentConfiguration(ConfigSite configSite, PackedHostConfiguration parent, PackedContainerConfiguration pcc, BuildOutput output) {
+    protected AbstractComponentConfiguration(ConfigSite configSite, PackedHostConfiguration parent, PackedContainerConfiguration pcc, AssembleOutput output) {
         this.configSite = requireNonNull(configSite);
         this.parent = requireNonNull(parent);
         this.container = null;
         this.depth = parent.depth() + 1;
         this.extension = null;
-        this.artifact = new PackedArtifactBuildContext(pcc, output);
+        this.artifact = new PackedAssembleContext(pcc, output);
     }
 
     /**
@@ -157,13 +157,13 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
      * 
      * @return the artifact this component is a part of
      */
-    public final PackedArtifactBuildContext artifact() {
+    public final PackedAssembleContext artifact() {
         return artifact;
     }
 
     /**
      * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
-     * not located on any subclasses of {@link Extension} or any class that implements {@link Assembly}.
+     * not located on any subclasses of {@link Extension} or any class that implements {@link ArtifactSource}.
      * <p>
      * Invoking this method typically takes in the order of 1-2 microseconds.
      * <p>
@@ -205,7 +205,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
 
         // Dvs ourContainerSource
         return Extension.class.isAssignableFrom(c)
-                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && Assembly.class.isAssignableFrom(c));
+                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && ArtifactSource.class.isAssignableFrom(c));
     }
 
     /** {@inheritDoc} */
@@ -244,7 +244,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
         return extension == null ? Optional.empty() : extension.model().optional;
     }
 
-    protected void extensionsPrepareInstantiation(PackedArtifactInstantiationContext ic) {
+    protected void extensionsPrepareInstantiation(PackedInstantiationContext ic) {
         if (children != null) {
             for (AbstractComponentConfiguration acc : children.values()) {
                 if (artifact == acc.artifact) {
@@ -285,7 +285,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
         return containerX() == other.containerX();
     }
 
-    final Map<String, AbstractComponent> initializeChildren(AbstractComponent parent, PackedArtifactInstantiationContext ic) {
+    final Map<String, AbstractComponent> initializeChildren(AbstractComponent parent, PackedInstantiationContext ic) {
         if (children == null) {
             return null;
         }
@@ -337,7 +337,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
 
     protected abstract String initializeNameDefaultName();
 
-    protected abstract AbstractComponent instantiate(AbstractComponent parent, PackedArtifactInstantiationContext ic);
+    protected abstract AbstractComponent instantiate(AbstractComponent parent, PackedInstantiationContext ic);
 
     /** {@inheritDoc} */
     @Override

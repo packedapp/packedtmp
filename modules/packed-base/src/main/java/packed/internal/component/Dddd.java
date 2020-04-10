@@ -15,7 +15,6 @@
  */
 package packed.internal.component;
 
-import app.packed.analysis.BundleValidator;
 import app.packed.artifact.ArtifactImage;
 import app.packed.container.BaseBundle;
 import app.packed.container.Wirelet;
@@ -48,14 +47,15 @@ public class Dddd extends BaseBundle {
     }
 
     public static void main(String[] args) {
-        ArtifactImage img = ArtifactImage.build(new Dddd(4));
+        ArtifactImage img = ArtifactImage.of(new Dddd(4));
 
-        BundleValidator.assertValid(new Dddd(4));
+        // BundleValidator.assertValid(new Dddd(4));
 
         img.stream().forEach(c -> System.out.println(c.path() + " " + c.type()));
 
         img.stream().forEach(c -> System.out.println(c.path() + " " + c.type()));
         System.out.println("--------------");
+        System.out.println(img.stream().count());
         // try (App app = App.start(new Dddd(1))) {
         //
         // // ComponentStream.Option.skipOrigin().andInSameArtifact();

@@ -25,6 +25,7 @@ import java.lang.annotation.Annotation;
 public final class SidecarTypeMeta {
 
     final Class<? extends Annotation> sidecarAnnotation;
+
     final String[] lifecycleStates;
 
     public SidecarTypeMeta(Class<? extends Annotation> sidecarAnnotation, String... lifecycleStates) {

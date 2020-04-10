@@ -9,7 +9,7 @@ import packed.internal.inject.ServiceDependency;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionInstantiationContext;
 import packed.internal.service.build.ServiceExtensionNode;
-import packed.internal.service.run.InjectorEntry;
+import packed.internal.service.runtime.InjectorEntry;
 
 public class CompositeBuildEntry<T> extends BuildEntry<T> {
 

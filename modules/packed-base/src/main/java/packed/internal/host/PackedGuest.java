@@ -16,7 +16,7 @@
 package packed.internal.host;
 
 import app.packed.component.ComponentType;
-import packed.internal.artifact.PackedArtifactInstantiationContext;
+import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.component.AbstractComponent;
 
 /**
@@ -31,7 +31,7 @@ public final class PackedGuest extends AbstractComponent {
      * @param configuration
      * @param ic
      */
-    protected PackedGuest(AbstractComponent parent, PackedGuestConfiguration configuration, PackedArtifactInstantiationContext ic) {
+    protected PackedGuest(AbstractComponent parent, PackedGuestConfiguration configuration, PackedInstantiationContext ic) {
         super(parent, configuration, ic);
         this.configuration = configuration;
     }

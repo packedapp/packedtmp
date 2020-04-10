@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
-import packed.internal.artifact.PackedArtifactInstantiationContext;
+import packed.internal.artifact.PackedInstantiationContext;
 
 /** The default implementation of {@link StatelessConfiguration}. */
 public final class PackedStatelessComponentConfiguration extends AbstractComponentConfiguration implements StatelessConfiguration {
@@ -38,7 +38,7 @@ public final class PackedStatelessComponentConfiguration extends AbstractCompone
 
     /** {@inheritDoc} */
     @Override
-    public AbstractComponent instantiate(AbstractComponent parent, PackedArtifactInstantiationContext paic) {
+    public AbstractComponent instantiate(AbstractComponent parent, PackedInstantiationContext paic) {
         return new PackedStatelessComponent(parent, this, paic);
     }
 

@@ -57,7 +57,7 @@ public class ExtensionActivation {
             @Override
             protected void compose() {}
         };
-        return ArtifactImage.build(b);
+        return ArtifactImage.of(b);
     }
 
     @Benchmark
@@ -68,7 +68,7 @@ public class ExtensionActivation {
                 use(MyExtension.class);
             }
         };
-        return ArtifactImage.build(b);
+        return ArtifactImage.of(b);
     }
 
     @Benchmark
@@ -79,7 +79,7 @@ public class ExtensionActivation {
                 installInstance("foo");
             }
         };
-        return ArtifactImage.build(b);
+        return ArtifactImage.of(b);
     }
 
     @Benchmark
@@ -91,7 +91,7 @@ public class ExtensionActivation {
                 installInstance("foo");
             }
         };
-        return ArtifactImage.build(b);
+        return ArtifactImage.of(b);
     }
 
     @Benchmark
@@ -102,7 +102,7 @@ public class ExtensionActivation {
                 installInstance(new MyStuff());
             }
         };
-        return ArtifactImage.build(b);
+        return ArtifactImage.of(b);
     }
 
     static class MyStuff {

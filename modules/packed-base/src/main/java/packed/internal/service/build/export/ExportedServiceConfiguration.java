@@ -53,7 +53,7 @@ final class ExportedServiceConfiguration<T> implements ServiceConfiguration<T> {
     public ServiceConfiguration<T> as(@Nullable Key<? super T> key) {
         // TODO, maybe it gets disabled the minute we start analyzing exports???
         // Nah, lige saa snart, vi begynder
-        entry.serviceExtension.checkExportConfigurable();
+        entry.node.checkExportConfigurable();
         entry.as(key);
         return this;
     }
@@ -88,7 +88,7 @@ final class ExportedServiceConfiguration<T> implements ServiceConfiguration<T> {
     @Override
     public ServiceConfiguration<T> setDescription(String description) {
         requireNonNull(description, "description is null");
-        entry.serviceExtension.checkExportConfigurable();
+        entry.node.checkExportConfigurable();
         entry.description = description;
         return this;
     }

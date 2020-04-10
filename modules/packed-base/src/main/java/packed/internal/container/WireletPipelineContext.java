@@ -32,7 +32,7 @@ import packed.internal.moduleaccess.ModuleAccess;
  */
 public final class WireletPipelineContext {
 
-    // Vi gennem den saa folk kan faa den injected..
+    /** The pipeline instance that can be injected. */
     public WireletPipeline<?, ?> instance;
 
     /** A model of the pipeline */
@@ -42,7 +42,7 @@ public final class WireletPipelineContext {
     @Nullable
     private final WireletPipelineContext previous;
 
-    /** The wirelets in the pipeline */
+    /** The wirelets making up the pipeline */
     final ArrayList<PipelineWirelet<?>> wirelets = new ArrayList<>();
 
     WireletPipelineContext(WireletPipelineModel model, @Nullable WireletPipelineContext previous) {
@@ -51,10 +51,11 @@ public final class WireletPipelineContext {
     }
 
     /**
-     * Returns any extension this pipeline belongs to.
+     * Returns any extension this pipeline belongs to. Or null if it does not belong to an extension.
      * 
      * @return any extension this pipeline belongs to
      */
+    @Nullable
     Class<? extends Extension> extensionType() {
         return model.extensionType();
     }
@@ -80,7 +81,7 @@ public final class WireletPipelineContext {
     }
 
     /**
-     * Returns any previous pipeline.
+     * Returns any previous pipeline. Or null if there is no previous pipeline.
      * 
      * @return any previous pipeline.
      */

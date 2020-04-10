@@ -28,8 +28,8 @@ import app.packed.service.ServiceExtension;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionInstantiationContext;
 import packed.internal.service.build.ServiceExtensionNode;
-import packed.internal.service.run.DelegatingInjectorEntry;
-import packed.internal.service.run.InjectorEntry;
+import packed.internal.service.runtime.DelegatingInjectorEntry;
+import packed.internal.service.runtime.InjectorEntry;
 
 /**
  * A build entry representing an exported service. Entries at runtime has never any reference to how (or if) they where

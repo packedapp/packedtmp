@@ -18,12 +18,13 @@ package packed.internal.host;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.artifact.ArtifactDriver;
-import app.packed.artifact.Assembly;
+import app.packed.artifact.ArtifactSource;
 import app.packed.component.ComponentType;
 import app.packed.config.ConfigSite;
+import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
 import packed.internal.artifact.PackedArtifactImage;
-import packed.internal.artifact.PackedArtifactInstantiationContext;
+import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.component.AbstractComponent;
 import packed.internal.component.AbstractComponentConfiguration;
 
@@ -44,11 +45,16 @@ public final class PackedHostConfiguration extends AbstractComponentConfiguratio
 
     /** {@inheritDoc} */
     @Override
-    public void deploy(Assembly source, ArtifactDriver<?> driver, Wirelet... wirelets) {
+    public void deploy(ArtifactSource source, ArtifactDriver<?> driver, Wirelet... wirelets) {
         requireNonNull(source, "source is null");
         requireNonNull(driver, "driver is null");
-        // For now we create an image...
-        PackedArtifactImage img = PackedArtifactImage.of(source, wirelets);
+
+        PackedArtifactImage img;
+        if (source instanceof PackedArtifactImage) {
+            img = ((PackedArtifactImage) source).with(wirelets);
+        } else {
+            img = PackedArtifactImage.of((Bundle) source, wirelets);
+        }
 
         PackedGuestConfiguration pgc = new PackedGuestConfiguration(this, img.configuration(), img);
         pgc.initializeName(State.LINK_INVOKED, null);
@@ -65,7 +71,7 @@ public final class PackedHostConfiguration extends AbstractComponentConfiguratio
 
     /** {@inheritDoc} */
     @Override
-    protected AbstractComponent instantiate(AbstractComponent parent, PackedArtifactInstantiationContext ic) {
+    protected AbstractComponent instantiate(AbstractComponent parent, PackedInstantiationContext ic) {
         return new PackedHost(parent, this, ic);
     }
 

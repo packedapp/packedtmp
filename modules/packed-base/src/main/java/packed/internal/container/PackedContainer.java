@@ -35,9 +35,9 @@ import app.packed.container.Container;
 import app.packed.container.Extension;
 import app.packed.lifecycle.StopOption;
 import app.packed.service.Injector;
-import packed.internal.artifact.PackedArtifactInstantiationContext;
+import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.component.AbstractComponent;
-import packed.internal.service.run.DefaultInjector;
+import packed.internal.service.runtime.PackedInjector;
 
 /** The default implementation of {@link Container}. */
 public final class PackedContainer extends AbstractComponent implements Container {
@@ -54,22 +54,22 @@ public final class PackedContainer extends AbstractComponent implements Containe
      * @param instantiationContext
      *            the instantiation context of the container
      */
-    PackedContainer(@Nullable AbstractComponent parent, PackedContainerConfiguration pcc, PackedArtifactInstantiationContext instantiationContext) {
+    PackedContainer(@Nullable AbstractComponent parent, PackedContainerConfiguration pcc, PackedInstantiationContext instantiationContext) {
         super(parent, pcc, instantiationContext);
-        Injector i = instantiationContext.get(pcc, DefaultInjector.class);
+        Injector i = instantiationContext.get(pcc, PackedInjector.class);
         if (i == null) {
-            i = new DefaultInjector(pcc.configSite(), pcc.getDescription(), new LinkedHashMap<>());
+            i = new PackedInjector(pcc.configSite(), pcc.getDescription(), new LinkedHashMap<>());
         }
         this.injector = i;
         instantiationContext.put(pcc, this);
     }
 
-    public ArtifactContext newArtifactContext() {
-        return new ArtifactContextWrapper();
+    public ArtifactContext toArtifactContext() {
+        return new PackedArtifactContext();
     }
 
     /** Used to expose a container as an ArtifactContext. */
-    public class ArtifactContextWrapper implements ArtifactContext {
+    public final class PackedArtifactContext implements ArtifactContext {
 
         /** {@inheritDoc} */
         @Override

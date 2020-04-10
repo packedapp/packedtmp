@@ -24,12 +24,12 @@ import java.util.stream.Stream;
 import app.packed.artifact.App;
 import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.ArtifactDriver;
-import app.packed.artifact.Assembly;
+import app.packed.artifact.ArtifactSource;
 import app.packed.base.Key;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Wirelet;
-import packed.internal.container.PackedContainer.ArtifactContextWrapper;
+import packed.internal.container.PackedContainer.PackedArtifactContext;
 
 /**
  * An injector is an immutable holder of services that can be dependency injected or looked up by their type at runtime.
@@ -112,7 +112,8 @@ public interface Injector {
     ConfigSite configSite();
 
     /**
-     * Returns the service contract of this injector.
+     * Returns the service contract of this injector. The returned contract will only have
+     * {@link ServiceContract#services()} filled out.
      * 
      * @return the service contract of this injector
      */
@@ -331,8 +332,8 @@ public interface Injector {
      *             if the injector could not be created for some reason. For example, if the source defines any components
      *             that requires a lifecycle
      */
-    static Injector of(Assembly source, Wirelet... wirelets) {
-        return driver().initialize(source, wirelets);
+    static Injector of(ArtifactSource source, Wirelet... wirelets) {
+        return driver().instantiate(source, wirelets);
     }
 }
 
@@ -354,6 +355,6 @@ final class InjectorArtifactDriver extends ArtifactDriver<Injector> {
     /** {@inheritDoc} */
     @Override
     public Injector newArtifact(ArtifactContext container) {
-        return ((ArtifactContextWrapper) container).injector();
+        return ((PackedArtifactContext) container).injector();
     }
 }

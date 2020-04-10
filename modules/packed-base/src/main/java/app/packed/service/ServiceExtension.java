@@ -26,10 +26,10 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 import app.packed.container.Wirelet;
 import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.Expose;
 import app.packed.hook.OnHook;
 import app.packed.inject.Factory;
 import app.packed.lifecycle.OnStart;
+import app.packed.sidecar.Expose;
 import app.packed.sidecar.ExtensionSidecar;
 import app.packed.sidecar.PostSidecar;
 import packed.internal.component.PackedSingletonConfiguration;
@@ -37,9 +37,9 @@ import packed.internal.container.WireletList;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.service.build.ServiceExtensionNode;
-import packed.internal.service.build.ServiceWireletPipeline;
 import packed.internal.service.build.service.AtProvidesHook;
-import packed.internal.service.run.AbstractInjector;
+import packed.internal.service.build.wirelets.ServiceWireletPipeline;
+import packed.internal.service.runtime.AbstractInjector;
 
 /**
  * This extension provides functionality for service management and dependency injection.
@@ -73,7 +73,7 @@ import packed.internal.service.run.AbstractInjector;
 // Ellers selvfoelgelig hvis man bruger provide/@Provides\
 public final class ServiceExtension extends Extension {
 
-    /** The node that does most of the heavy lifting. */
+    /** The service node that does most of the actual work. */
     final ServiceExtensionNode node;
 
     /** Should never be initialized by users. */
@@ -277,8 +277,7 @@ public final class ServiceExtension extends Extension {
                     "Custom implementations of Injector are currently not supported, injector type = " + injector.getClass().getName());
         }
         checkConfigurable();
-        node.provider().provideAll((AbstractInjector) injector, captureStackFrame(InjectConfigSiteOperations.INJECTOR_PROVIDE_ALL),
-                WireletList.of(wirelets));
+        node.provider().provideAll((AbstractInjector) injector, captureStackFrame(InjectConfigSiteOperations.INJECTOR_PROVIDE_ALL), WireletList.of(wirelets));
     }
 
     /**

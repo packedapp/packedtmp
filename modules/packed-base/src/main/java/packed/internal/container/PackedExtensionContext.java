@@ -30,7 +30,7 @@ import packed.internal.component.AbstractComponentConfiguration;
 import packed.internal.moduleaccess.ModuleAccess;
 
 /** The default implementation of {@link ExtensionContext} with addition methods only available in app.packed.base. */
-public final class PackedExtensionContext implements ExtensionContext {
+public final class PackedExtensionContext implements ExtensionContext, Comparable<PackedExtensionContext> {
 
     /** The extension instance this context wraps, initialized in {@link #initialize(PackedContainerConfiguration)}. */
     @Nullable
@@ -64,6 +64,12 @@ public final class PackedExtensionContext implements ExtensionContext {
         if (isConfigured) {
             throw new IllegalStateException("This extension (" + extension().getClass().getSimpleName() + ") is no longer configurable");
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int compareTo(PackedExtensionContext c) {
+        return -model.compareTo(c.model);
     }
 
     /**
@@ -123,7 +129,7 @@ public final class PackedExtensionContext implements ExtensionContext {
 
             // Registers this context with the artifact build context.
             // In order to compute a total order among dependencies within the artifact
-            pcc.artifact().usesExtension(this);
+            // pcc.artifact().usesExtension(this);
         } finally {
             pcc.activeExtension = existing;
         }
@@ -156,6 +162,12 @@ public final class PackedExtensionContext implements ExtensionContext {
         isConfigured = true;
     }
 
+    /** Invoked by the container configuration, whenever the extension is configured. */
+    public void onChildrenConfigured() {
+        model.invokeCallbacks(ExtensionSidecarModel.ON_CHILDREN_DONE, extension);
+        isConfigured = true;
+    }
+
     /** {@inheritDoc} */
     @Override
     public Optional<Extension> parent() {
@@ -184,14 +196,14 @@ public final class PackedExtensionContext implements ExtensionContext {
         // We can use a simple bitmap here as well... But we need to move this method to PEC.
         // And then look up the context before we can check.
 
-        if (!model.dependenciesDirect.contains(extensionType)) {
+        if (!model.directDependencies().contains(extensionType)) {
             // We allow an extension to use itself, alternative would be to throw an exception, but for what reason?
             if (extensionType == extension.getClass()) {
                 return (T) extension;
             }
 
             throw new UnsupportedOperationException("The specified extension type is not among " + model.extensionType().getSimpleName()
-                    + " dependencies, extensionType = " + extensionType + ", valid dependencies = " + model.dependenciesDirect);
+                    + " dependencies, extensionType = " + extensionType + ", valid dependencies = " + model.directDependencies());
         }
         return (T) pcc.useExtension(extensionType, this).extension;
     }

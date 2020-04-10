@@ -50,7 +50,7 @@ import packed.internal.artifact.PackedArtifactImage;
  *          which would prohibit subclassing except by explicitly permitted types.
  * 
  */
-public interface ArtifactImage extends Assembly {
+public interface ArtifactImage extends ArtifactSource {
 
     /**
      * Returns the configuration site of this image.
@@ -77,6 +77,9 @@ public interface ArtifactImage extends Assembly {
      * 
      * @see BundleDescriptor#of(Bundle)
      */
+    // ImageDescriptor with all wirelets????? Eller bare med i BundleDescriptor???
+    // Vi har jo feks anderledes contract... Og kan vi se alt???
+    // AssemblyDescriptor?
     BundleDescriptor descriptor();
 
     /**
@@ -96,10 +99,11 @@ public interface ArtifactImage extends Assembly {
     /**
      * Returns the type of bundle that was used to create this image.
      * <p>
-     * Images created from an existing image, will retain the source type of the existing image.
+     * An image created from another image, will retain the source type of the source image.
      * 
      * @return the type of bundle that was used to create this image
      */
+    // bundleType()?
     Class<? extends Bundle> sourceType();
 
     /**
@@ -110,12 +114,11 @@ public interface ArtifactImage extends Assembly {
      * @return the component stream
      * @see Component#stream(app.packed.component.ComponentStream.Option...)
      */
+    /// Hmmmm. Altsaa vi skal maaske heller have en descriptor plug
     ComponentStream stream(ComponentStream.Option... options);
 
     /**
      * Returns a new artifact image by applying the specified wirelets.
-     * <p>
-     * The specified wirelets are never evaluated until the new image is used to create a new artifact or bundle descriptor.
      * 
      * @param wirelets
      *            the wirelets to apply
@@ -124,18 +127,17 @@ public interface ArtifactImage extends Assembly {
     ArtifactImage with(Wirelet... wirelets);
 
     /**
-     * Creates an artifact image using the specified source.
+     * Creates a new image from the specified bundle.
      *
-     * @param source
-     *            the source of the image
+     * @param bundle
+     *            the bundle to use for image creation
      * @param wirelets
-     *            any wirelets to use when construction the image. The wirelets will also be available when instantiating an
-     *            actual artifact
-     * @return the image that was built
+     *            wirelets used for the construction of the image.
+     * @return the new image
      * @throws RuntimeException
      *             if the image could not be constructed
      */
-    static ArtifactImage build(Assembly source, Wirelet... wirelets) {
-        return PackedArtifactImage.of(source, wirelets);
+    static ArtifactImage of(Bundle bundle, Wirelet... wirelets) {
+        return PackedArtifactImage.of(bundle, wirelets);
     }
 }

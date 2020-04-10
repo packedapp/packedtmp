@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.artifact.ArtifactDriver;
-import app.packed.artifact.Assembly;
+import app.packed.artifact.ArtifactSource;
 import app.packed.base.ContractSet;
 import app.packed.container.Wirelet;
 
@@ -61,7 +61,9 @@ public interface HostContext<T> {
      */
     ContractSet contracts();
 
-    Guest<T> add(ArtifactDriver<? extends T> driver, Assembly assembly, Wirelet[] userWirelets, Wirelet... hostWirelets);
+    // Skal vi tillade custom drivers?????
+    // Maaske have en default artifact driver
+    Guest<T> instantiate(ArtifactDriver<? extends T> driver, ArtifactSource assembly, Wirelet[] userWirelets, Wirelet... hostWirelets);
 }
 //HostContext<T> <---?? Why not
 //Runtime HostContext....

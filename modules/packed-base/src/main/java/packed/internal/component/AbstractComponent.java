@@ -35,7 +35,7 @@ import app.packed.component.FeatureMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.Container;
 import app.packed.container.Extension;
-import packed.internal.artifact.PackedArtifactInstantiationContext;
+import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
 
 /** An abstract base implementation of {@link Component}. */
@@ -56,9 +56,10 @@ public abstract class AbstractComponent implements Component {
     @Nullable
     private final String description;
 
-    /** Any extension the component belongs to. */
+    /** Any extension the component belongs to. */ // Generic Extension Table?
     private final Optional<Class<? extends Extension>> extension;
 
+    // Ligger vel i modelen????
     final FeatureMap features = new FeatureMap();
 
     final ReentrantLock lock = new ReentrantLock();
@@ -84,7 +85,7 @@ public abstract class AbstractComponent implements Component {
      * @param configuration
      *            the configuration used for creating this component
      */
-    protected AbstractComponent(@Nullable AbstractComponent parent, AbstractComponentConfiguration configuration, PackedArtifactInstantiationContext ic) {
+    protected AbstractComponent(@Nullable AbstractComponent parent, AbstractComponentConfiguration configuration, PackedInstantiationContext ic) {
         this.parent = parent;
         this.configSite = requireNonNull(configuration.configSite());
         this.description = configuration.getDescription();

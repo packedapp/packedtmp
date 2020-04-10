@@ -16,7 +16,6 @@
 package packed.internal.service.build.wirelets;
 
 import app.packed.container.PipelineWirelet;
-import packed.internal.service.build.ServiceWireletPipeline;
 
 /**
  *

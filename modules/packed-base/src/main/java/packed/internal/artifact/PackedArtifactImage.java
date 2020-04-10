@@ -21,9 +21,7 @@ import java.util.Optional;
 
 import app.packed.analysis.BundleDescriptor;
 import app.packed.artifact.ArtifactContext;
-import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactImage;
-import app.packed.artifact.Assembly;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
@@ -32,7 +30,6 @@ import app.packed.container.Wirelet;
 import packed.internal.component.ComponentConfigurationToComponentAdaptor;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.WireletContext;
-import packed.internal.moduleaccess.ModuleAccess;
 
 /** The default implementation of {@link ArtifactImage}. */
 public final class PackedArtifactImage implements ArtifactImage {
@@ -48,7 +45,7 @@ public final class PackedArtifactImage implements ArtifactImage {
      * Creates a new image from the specified configuration and wirelets.
      * 
      * @param pcc
-     *            the configuration this image will wrap
+     *            the container configuration to wrap
      * @param wc
      *            any wirelets for the image configuration or artifact instantiation
      */
@@ -92,20 +89,15 @@ public final class PackedArtifactImage implements ArtifactImage {
     }
 
     /**
-     * Instantiates a new artifact using the specified driver.
+     * Instantiates a new artifact context
      * 
-     * @param <T>
-     *            the type of artifact to instantiate
-     * @param driver
-     *            the artifact driver
      * @param wirelets
      *            any wirelets used for instantiation
      * @return the instantiated artifact
      */
-    public <T> T newArtifact(ArtifactDriver<T> driver, Wirelet... wirelets) {
-        WireletContext newWc = WireletContext.of(pcc, this.wc, wirelets);
-        ArtifactContext context = pcc.instantiateArtifact(newWc).newArtifactContext(); // Does the actual instantiation
-        return ModuleAccess.artifact().newArtifact(driver, context);
+    public ArtifactContext newArtifact(Wirelet... wirelets) {
+        WireletContext newWc = WireletContext.of(pcc, wc, wirelets);
+        return pcc.instantiateArtifact(newWc); // Does the actual instantiation
     }
 
     /** {@inheritDoc} */
@@ -131,7 +123,7 @@ public final class PackedArtifactImage implements ArtifactImage {
     /**
      * Creates an artifact image using the specified source.
      *
-     * @param source
+     * @param bundle
      *            the source of the image
      * @param wirelets
      *            any wirelets to use when construction the image. The wirelets will also be available when instantiating an
@@ -140,13 +132,9 @@ public final class PackedArtifactImage implements ArtifactImage {
      * @throws RuntimeException
      *             if the image could not be constructed
      */
-    public static PackedArtifactImage of(Assembly source, Wirelet... wirelets) {
-        if (source instanceof PackedArtifactImage) {
-            return ((PackedArtifactImage) source).with(wirelets);
-        }
-        // TODO check that it is a bundle????
-        PackedContainerConfiguration pcc = new PackedContainerConfiguration(BuildOutput.image(), source, wirelets);
-        return new PackedArtifactImage(pcc.doBuild(), pcc.wireletContext);
+    public static PackedArtifactImage of(Bundle bundle, Wirelet... wirelets) {
+        PackedContainerConfiguration pcc = new PackedContainerConfiguration(AssembleOutput.image(), bundle, wirelets);
+        return new PackedArtifactImage(pcc.assemble(), pcc.wireletContext);
     }
 }
 

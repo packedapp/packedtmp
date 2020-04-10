@@ -22,14 +22,14 @@ import java.util.List;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
-import app.packed.service.ServiceMode;
-import app.packed.service.ProvideContext;
 import app.packed.service.Provide;
+import app.packed.service.ProvideContext;
 import app.packed.service.ServiceConfiguration;
 import app.packed.service.ServiceDescriptor;
+import app.packed.service.ServiceMode;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.build.service.AbstractComponentBuildEntry;
-import packed.internal.service.run.InjectorEntry;
+import packed.internal.service.runtime.InjectorEntry;
 import packed.internal.util.KeyBuilder;
 
 /**
@@ -71,9 +71,9 @@ public abstract class BuildEntry<T> {
     /** The resolved dependencies of this node. */
     public final BuildEntry<?>[] resolvedDependencies;
 
-    /** The injector builder this node belongs to. */
+    /** The service no this entry belongs to. Or null for wirelets */
     @Nullable // Is nullable for stages for now
-    public final ServiceExtensionNode serviceExtension;
+    public final ServiceExtensionNode node;
 
     public final int offset;
 
@@ -83,7 +83,7 @@ public abstract class BuildEntry<T> {
 
     public BuildEntry(@Nullable ServiceExtensionNode serviceExtension, AbstractComponentBuildEntry<?> declaringEntry, ConfigSite configSite,
             List<ServiceDependency> dependencies) {
-        this.serviceExtension = serviceExtension;
+        this.node = serviceExtension;
         this.offset = declaringEntry == null ? 0 : 1;
         this.configSite = requireNonNull(configSite);
         this.dependencies = requireNonNull(dependencies);

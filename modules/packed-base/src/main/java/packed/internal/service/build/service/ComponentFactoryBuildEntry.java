@@ -28,9 +28,9 @@ import app.packed.service.ServiceComponentConfiguration;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.build.ServiceExtensionInstantiationContext;
 import packed.internal.service.build.ServiceExtensionNode;
-import packed.internal.service.run.CachingPrototypeInjectorEntry;
-import packed.internal.service.run.InjectorEntry;
-import packed.internal.service.run.PrototypeInjectorEntry;
+import packed.internal.service.runtime.CachingPrototypeInjectorEntry;
+import packed.internal.service.runtime.InjectorEntry;
+import packed.internal.service.runtime.PrototypeInjectorEntry;
 
 /**
  * An entry representing a component node. This node is used for all three binding modes mainly because it makes
@@ -47,7 +47,7 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
     public final MethodHandle mha;
 
     public ComponentFactoryBuildEntry(ConfigSite configSite, AtProvides atProvides, MethodHandle mh, AbstractComponentBuildEntry<?> parent) {
-        super(parent.serviceExtension, configSite, atProvides.dependencies, atProvides.isStaticMember ? null : parent, parent.componentConfiguration);
+        super(parent.node, configSite, atProvides.dependencies, atProvides.isStaticMember ? null : parent, parent.componentConfiguration);
         this.description = atProvides.description;
         this.instantionMode = atProvides.instantionMode;
         this.mha = requireNonNull(mh);

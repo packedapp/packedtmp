@@ -20,7 +20,6 @@ import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.artifact.Assembly;
 import app.packed.container.Wirelet;
 import testutil.util.AbstractArtifactTest;
 import testutil.util.ContainerConfigurationTester;
@@ -38,7 +37,7 @@ public class NameGeneratedTest extends AbstractArtifactTest {
         check(f -> new HelloWorldBundle(f), "HelloWorld");
     }
 
-    private static void check(Function<Consumer<? super ContainerConfigurationTester>, Assembly> cs, String defaultName) {
+    private static void check(Function<Consumer<? super ContainerConfigurationTester>, ? extends app.packed.container.Bundle> cs, String defaultName) {
         appOf(cs.apply(c -> {})).nameIs(defaultName);
         appOf(cs.apply(c -> {})).nameIs(defaultName);
         // We can override default name
@@ -55,25 +54,25 @@ public class NameGeneratedTest extends AbstractArtifactTest {
 
         // As a child
         appOf(new AbstractConsumableBundle(c -> {
-            c.link((app.packed.container.Bundle) cs.apply(cc -> {
+            c.link(cs.apply(cc -> {
                 cc.pathIs("/" + defaultName);
             }));
         }) {}).nameIs("Container");
 
         // As multiple children
         appOf(new AbstractConsumableBundle(c -> {
-            c.link((app.packed.container.Bundle) cs.apply(cc -> {
+            c.link(cs.apply(cc -> {
                 cc.pathIs("/" + defaultName);
             }));
-            c.link((app.packed.container.Bundle) cs.apply(cc -> {
+            c.link(cs.apply(cc -> {
                 cc.pathIs("/" + defaultName + "1");
             }));
         }) {}).nameIs("Container");
 
         // As two level nested
         appOf(new AbstractConsumableBundle(c -> {
-            c.link((app.packed.container.Bundle) cs.apply(cc -> {
-                cc.link((app.packed.container.Bundle) cs.apply(ccc -> {
+            c.link(cs.apply(cc -> {
+                cc.link(cs.apply(ccc -> {
                     ccc.pathIs("/" + defaultName + "/" + defaultName);
                 }));
             }));
@@ -81,9 +80,9 @@ public class NameGeneratedTest extends AbstractArtifactTest {
 
         // As 3 level nested
         appOf(new AbstractConsumableBundle(c -> {
-            c.link((app.packed.container.Bundle) cs.apply(cc -> {
-                cc.link((app.packed.container.Bundle) cs.apply(ccc -> {
-                    ccc.link((app.packed.container.Bundle) cs.apply(cccc -> {
+            c.link(cs.apply(cc -> {
+                cc.link(cs.apply(ccc -> {
+                    ccc.link(cs.apply(cccc -> {
                         cccc.pathIs("/" + defaultName + "/" + defaultName + "/" + defaultName);
                     }));
                 }));

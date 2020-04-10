@@ -18,7 +18,6 @@ package app.packed.container;
 import java.util.Set;
 
 import app.packed.base.Contract;
-import packed.internal.container.PackedExtensionDescriptor;
 
 /**
  * An extension descriptor.

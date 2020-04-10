@@ -98,7 +98,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
                     + " are not allowed, type = " + StringFormatter.format(configuration.getClass()));
         }
         BuildEntry<T> entryToExport = ((PackedServiceComponentConfiguration<T>) configuration).buildEntry;
-        if (entryToExport.serviceExtension != node) {
+        if (entryToExport.node != node) {
             throw new IllegalArgumentException("The specified configuration was created by another injector extension");
         }
         return export0(new ExportedBuildEntry<>(node, entryToExport, configSite));

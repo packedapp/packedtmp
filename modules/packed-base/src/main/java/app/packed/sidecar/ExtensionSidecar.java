@@ -25,16 +25,17 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 
 /**
- * An annotation that can be used on subclasses of {@link Extension}. {@link Extension Extensions} are implicit sidecars
- * even without this annotation.
+ * An annotation that can be used on subclasses of {@link Extension}. Classes that extend {@link Extension} are implicit
+ * sidecars even without the use of this annotation. However, if the extension uses any other extensions this annotation
+ * must be used to indicate which extensions it may use.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ExtensionSidecar {
 
     /**
-     * The extension has been successfully instantiated. But the extension instance has not yet been returned to the user.
-     * Used for invoking methods on {@link ExtensionContext}. The next event will be {@link #ON_PREEMBLE}.
+     * An sidecar lifecycle event that the sidecar has been successfully instantiated by the runtime. But the instance has
+     * not yet been returned to the user. The next event will be {@link #ON_PREEMBLE}.
      */
     String INSTANTIATION = "Instantiation";
 
@@ -47,11 +48,13 @@ public @interface ExtensionSidecar {
      */
     String CHILDREN_CONFIGURED = "ChildrenConfigured";
 
-    /** This is the final event. */
+    /** This is the final event. This event will be invoked even if no guests are defined. */
     String GUESTS_CONFIGURED = "GuestsConfigured";
 
     /**
-     * Other extensions that an extension may use (but do not have to).
+     * Other extensions that an extension may use (but do not have to). This need not include transitive dependencies
+     * (dependencies of dependencies). Only extensions that are directly used, for example, via
+     * {@link ExtensionContext#use(Class)}.
      * 
      * @return extensions that the extension may use
      */

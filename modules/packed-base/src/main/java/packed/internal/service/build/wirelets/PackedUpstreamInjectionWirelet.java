@@ -25,7 +25,6 @@ import app.packed.base.Key;
 import app.packed.service.ServiceDescriptor;
 import app.packed.service.ServiceWirelets;
 import packed.internal.service.build.BuildEntry;
-import packed.internal.service.build.ServiceWireletPipeline;
 import packed.internal.service.build.service.ProvideAllFromOtherInjector;
 
 /** The common superclass for upstream service wirelets. */

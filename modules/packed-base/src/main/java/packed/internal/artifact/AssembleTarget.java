@@ -27,6 +27,8 @@ import app.packed.container.Bundle;
 // Hvad med pod??
 // Hvad hvis tilfoerjer en component til en artifact....
 
+// Hvad hvis det bare er en komponent???
+
 public enum AssembleTarget {
 
     /** Create a report of some kind, for example a {@link Contract} or a {@link BundleDescriptor}. */

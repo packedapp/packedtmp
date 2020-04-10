@@ -36,6 +36,7 @@ public final class QualifierHelper {
             return;
         }
         // Har maaske nogle steder jeg hellere vil have IllegalArgumentException...
+        // InjectExtension??? I think that's better...
         throw new InvalidDeclarationException("@" + format(annotationType) + " is not a valid qualifier. The annotation must be annotated with @Qualifier");
     }
 

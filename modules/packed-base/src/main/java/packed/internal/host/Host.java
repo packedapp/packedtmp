@@ -22,6 +22,18 @@ import app.packed.component.ComponentType;
 /**
  * The runtime representation of a host.
  */
+
+// 1 HostType -> Kun X, f.eks. WebSessionHost
+
+// 1 Driver || Manage driveree
+// 1 Type || Mange typer
+// Isolated || Mesh || Somewhere inbetween
+
+// Restartable | 1-Instance
+
+// 1 Type, Many Types... AppHost, GenericHost...
+
+//HostComponent???
 public interface Host extends Component {
 
     /**
@@ -36,7 +48,6 @@ public interface Host extends Component {
     default ComponentType type() {
         return ComponentType.HOST;
     }
-    // number of guest...
 }
 // Vi vil gerne af med GuestInstance
 // Skal guest vaere side-effect free?,

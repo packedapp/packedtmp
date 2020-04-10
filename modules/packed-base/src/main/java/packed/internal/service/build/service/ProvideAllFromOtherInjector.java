@@ -28,8 +28,8 @@ import packed.internal.container.WireletList;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.build.wirelets.PackedUpstreamInjectionWirelet;
-import packed.internal.service.run.AbstractInjector;
-import packed.internal.service.run.InjectorEntry;
+import packed.internal.service.runtime.AbstractInjector;
+import packed.internal.service.runtime.InjectorEntry;
 
 /** Represents an injector that used via {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
 public final class ProvideAllFromOtherInjector {
@@ -65,7 +65,7 @@ public final class ProvideAllFromOtherInjector {
         this.configSite = requireNonNull(configSite);
         this.injector = requireNonNull(injector);
 
-        injector.forEachServiceEntry(e -> {
+        injector.forEachEntry(e -> {
             if (!e.isPrivate()) { // ignores Injector, and other
                 entries.put(e.key(), new FromOtherInjectorBuildEntry<>(this, (InjectorEntry<Object>) e));
             }

@@ -211,7 +211,7 @@ public interface ComponentStream extends Stream<Component> {
      * @see ArtifactImage#stream(Option...)
      */
     static ComponentStream of(Bundle bundle, Option... options) {
-        return ArtifactImage.build(bundle).stream(options);
+        return ArtifactImage.of(bundle).stream(options);
     }
 
     /**

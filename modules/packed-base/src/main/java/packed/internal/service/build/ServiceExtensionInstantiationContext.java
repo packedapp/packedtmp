@@ -17,7 +17,7 @@ package packed.internal.service.build;
 
 import java.util.IdentityHashMap;
 
-import packed.internal.service.run.InjectorEntry;
+import packed.internal.service.runtime.InjectorEntry;
 
 /** A special instantiation context that is created */
 public class ServiceExtensionInstantiationContext {

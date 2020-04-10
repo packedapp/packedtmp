@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.artifact.ArtifactImage;
 import app.packed.component.ComponentType;
-import packed.internal.artifact.BuildOutput;
-import packed.internal.artifact.PackedArtifactInstantiationContext;
+import packed.internal.artifact.AssembleOutput;
+import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.component.AbstractComponent;
 import packed.internal.component.AbstractComponentConfiguration;
 import packed.internal.container.PackedContainerConfiguration;
@@ -38,7 +38,7 @@ public class PackedGuestConfiguration extends AbstractComponentConfiguration {
     public final PackedContainerConfiguration delegate;
 
     PackedGuestConfiguration(PackedHostConfiguration host, PackedContainerConfiguration pcc, ArtifactImage image) {
-        super(pcc.configSite(), host, pcc, BuildOutput.image());
+        super(pcc.configSite(), host, pcc, AssembleOutput.image());
         this.delegate = requireNonNull(pcc);
         this.description = pcc.getDescription();
     }
@@ -54,7 +54,7 @@ public class PackedGuestConfiguration extends AbstractComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    protected AbstractComponent instantiate(AbstractComponent parent, PackedArtifactInstantiationContext ic) {
+    protected AbstractComponent instantiate(AbstractComponent parent, PackedInstantiationContext ic) {
         return delegate.instantiate(parent, ic);
         // Maaske, kan vi tilgaengeaeld nogen gange instantiered en PackedContainer direkte herfra...
 

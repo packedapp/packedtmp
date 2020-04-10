@@ -44,7 +44,7 @@ import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.build.service.ComponentFactoryBuildEntry;
 import packed.internal.service.build.service.RuntimeAdaptorEntry;
-import packed.internal.service.run.SingletonInjectorEntry;
+import packed.internal.service.runtime.ConstantInjectorEntry;
 
 /**
  * This class manages everything to do with dependencies of components and service for an {@link ServiceExtension}.
@@ -144,7 +144,7 @@ public final class DependencyManager {
                             if (Wirelet.class.isAssignableFrom(rawType)) {
                                 // Fail if pipelined wirelet...
                                 BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
-                                        new SingletonInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "foo", "Ignore"));
+                                        new ConstantInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "foo", "Ignore"));
                                 resolveTo = ben;
                                 node.specials.put(dependency, ben);
                             }
@@ -156,7 +156,7 @@ public final class DependencyManager {
                                         if (cc == k.typeLiteral().type()) {
                                             PackedExtensionContext e = ((PackedExtensionContext) node.context()).container().getExtension(cc);
                                             resolveTo = extensionEntries.computeIfAbsent(e.model().extensionType(),
-                                                    kk -> new RuntimeAdaptorEntry(node, new SingletonInjectorEntry<Extension>(ConfigSite.UNKNOWN,
+                                                    kk -> new RuntimeAdaptorEntry(node, new ConstantInjectorEntry<Extension>(ConfigSite.UNKNOWN,
                                                             (Key) Key.of(e.model().extensionType()), null, e.extension())));
 
                                         }
@@ -168,7 +168,7 @@ public final class DependencyManager {
                                 if (wpc.extensionType() == null) {
                                     // Fail if pipelined wirelet...
                                     BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
-                                            new SingletonInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "foo", "Ignore"));
+                                            new ConstantInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "foo", "Ignore"));
                                     resolveTo = ben;
                                     node.specials.put(dependency, ben);
                                 } else {
@@ -176,7 +176,7 @@ public final class DependencyManager {
                                         Optional<Class<? extends Extension>> op = ((ComponentFactoryBuildEntry) entry).componentConfiguration.extension();
                                         if (op.isPresent()) {
                                             BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
-                                                    new SingletonInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "foo", "Ignore"));
+                                                    new ConstantInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "foo", "Ignore"));
                                             resolveTo = ben;
                                             node.specials.put(dependency, ben);
                                         }

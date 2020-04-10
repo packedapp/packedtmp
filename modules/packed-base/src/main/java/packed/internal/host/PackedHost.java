@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import app.packed.artifact.App;
 import app.packed.base.ContractSet;
 import app.packed.component.ComponentType;
-import packed.internal.artifact.PackedArtifactInstantiationContext;
+import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.component.AbstractComponent;
 import packed.internal.component.AbstractComponentConfiguration;
 
@@ -38,7 +38,7 @@ public class PackedHost extends AbstractComponent implements Host {
     /**
      * @param configuration
      */
-    PackedHost(AbstractComponent parent, AbstractComponentConfiguration configuration, PackedArtifactInstantiationContext ic) {
+    PackedHost(AbstractComponent parent, AbstractComponentConfiguration configuration, PackedInstantiationContext ic) {
         super(parent, configuration, ic);
     }
 

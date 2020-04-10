@@ -15,12 +15,14 @@
  */
 package app.packed.service;
 
+import app.packed.artifact.AssembleException;
+
 /** This exception is typically thrown when a dependency graph contain cycles (not a DAG). */
 // in app.packed.service.* CyclicServiceDependencyException
 // CircularReferenceException
 
 // Hmm, men vi smider den jo ikke...
-public class CyclicDependencyGraphException extends RuntimeException {
+public class CyclicDependencyGraphException extends AssembleException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;

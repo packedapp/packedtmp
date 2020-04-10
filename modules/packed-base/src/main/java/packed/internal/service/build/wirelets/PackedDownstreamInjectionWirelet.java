@@ -25,10 +25,9 @@ import app.packed.base.Key;
 import app.packed.config.ConfigSite;
 import app.packed.service.ServiceDescriptor;
 import app.packed.service.ServiceWirelets;
-import packed.internal.service.build.ServiceWireletPipeline;
 import packed.internal.service.build.export.ExportedBuildEntry;
-import packed.internal.service.run.InjectorEntry;
-import packed.internal.service.run.SingletonInjectorEntry;
+import packed.internal.service.runtime.InjectorEntry;
+import packed.internal.service.runtime.ConstantInjectorEntry;
 
 /** The common superclass for upstream service wirelets. */
 public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
@@ -108,7 +107,7 @@ public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         public void process(ConfigSite cs, LinkedHashMap<Key<?>, InjectorEntry<?>> newServices) {
-            newServices.put(key, new SingletonInjectorEntry(cs, key, null, instance));
+            newServices.put(key, new ConstantInjectorEntry(cs, key, null, instance));
         }
 
         @Override

@@ -23,6 +23,8 @@ package app.packed.container;
 //ExtensionDefinitionException
 //PackletDefinitionException
 //SidecarDefinitionException
+
+// Hvis det er tilknyttet en extension saa bruger vi denne
 public class InternalExtensionException extends RuntimeException {
 
     /** */

@@ -15,18 +15,20 @@
  */
 package app.packed.lifecycle;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import app.packed.artifact.App;
-import app.packed.artifact.Assembly;
+import app.packed.artifact.ArtifactSource;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 
 /**
  * Wirelets that can be used when creating an {@link App} instance. For example, via
- * {@link App#start(Assembly, Wirelet...)} or {@link App#execute(Assembly, Wirelet...)}.
+ * {@link App#start(ArtifactSource, Wirelet...)} or {@link App#execute(ArtifactSource, Wirelet...)}.
  */
 // InvalidWireletApplicationException -> Thrown when trying to apply a wirelet in a situation where it cannot be used
 
@@ -65,12 +67,25 @@ public final class LifecycleWirelets {
         throw new UnsupportedOperationException();
     }
 
+    public static Wirelet timeToLive(Duration duration) {
+        // Duration is from Running transitioning...
+        // Shuts down container normally
+        throw new UnsupportedOperationException();
+    }
+
+    public static Wirelet timeToLive(Instant deadline) {
+        // Shuts down container normally
+        throw new UnsupportedOperationException();
+    }
+
     public static Wirelet timeToLive(long timeout, TimeUnit unit, Supplier<Throwable> supplier) {
         timeToLive(10, TimeUnit.SECONDS, () -> new CancellationException());
         // Alternativ, kan man wrappe dem i f.eks. WiringOperation.requireExecutionMode();
         throw new UnsupportedOperationException();
     }
 
+    // Den har et andet navn en CTRL_C...
+    // shutdownHook() -> Adds a shutdown directly I think...
     public static Wirelet shutdownOnCTRL_C() {
         throw new UnsupportedOperationException();
     }

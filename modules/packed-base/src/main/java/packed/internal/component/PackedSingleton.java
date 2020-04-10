@@ -17,14 +17,14 @@ package packed.internal.component;
 
 import app.packed.component.ComponentType;
 import app.packed.component.Singleton;
-import packed.internal.artifact.PackedArtifactInstantiationContext;
+import packed.internal.artifact.PackedInstantiationContext;
 
 /**
  *
  */
 final class PackedSingleton extends AbstractComponent implements Singleton {
 
-    PackedSingleton(AbstractComponent parent, PackedSingletonConfiguration<?> configuration, PackedArtifactInstantiationContext ic) {
+    PackedSingleton(AbstractComponent parent, PackedSingletonConfiguration<?> configuration, PackedInstantiationContext ic) {
         super(parent, configuration, ic);
     }
 

@@ -17,7 +17,7 @@ package packed.internal.component;
 
 import app.packed.component.ComponentType;
 import app.packed.component.Stateless;
-import packed.internal.artifact.PackedArtifactInstantiationContext;
+import packed.internal.artifact.PackedInstantiationContext;
 
 /**
  *
@@ -26,7 +26,7 @@ final class PackedStatelessComponent extends AbstractComponent implements Statel
 
     private final Class<?> type;
 
-    PackedStatelessComponent(AbstractComponent parent, PackedStatelessComponentConfiguration configuration, PackedArtifactInstantiationContext ic) {
+    PackedStatelessComponent(AbstractComponent parent, PackedStatelessComponentConfiguration configuration, PackedInstantiationContext ic) {
         super(parent, configuration, ic);
         this.type = configuration.definition();
     }

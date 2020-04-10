@@ -26,7 +26,7 @@ import java.util.Map;
 
 import app.packed.base.Contract;
 import app.packed.container.InternalExtensionException;
-import app.packed.hook.Expose;
+import app.packed.sidecar.Expose;
 import app.packed.sidecar.PostSidecar;
 import packed.internal.reflect.ConstructorFinder;
 import packed.internal.reflect.OpenClass;
@@ -72,6 +72,12 @@ public abstract class SidecarModel {
         if (o != null) {
             MethodHandle mh = (MethodHandle) o;
             try {
+//                if (mh.type().parameterCount() == 0) {
+//                    mh.invoke();
+//                } else {
+//                   
+//                }
+
                 mh.invoke(sidecar);
             } catch (Throwable e) {
                 throw new UndeclaredThrowableException(e);

@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
-import packed.internal.artifact.PackedArtifactInstantiationContext;
+import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
 
@@ -63,7 +63,7 @@ public final class PackedSingletonConfiguration<T> extends AbstractComponentConf
 
     /** {@inheritDoc} */
     @Override
-    public AbstractComponent instantiate(AbstractComponent parent, PackedArtifactInstantiationContext paic) {
+    public AbstractComponent instantiate(AbstractComponent parent, PackedInstantiationContext paic) {
         return new PackedSingleton(parent, this, paic);
     }
 

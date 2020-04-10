@@ -44,7 +44,7 @@ import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ErrorMessages;
 import packed.internal.service.build.ServiceExtensionNode;
-import packed.internal.service.run.AbstractInjector;
+import packed.internal.service.runtime.AbstractInjector;
 
 /**
  * This class manages everything to do with providing services for an {@link ServiceExtension}.
@@ -97,7 +97,7 @@ public final class ServiceProvidingManager {
         AbstractComponentBuildEntry parentNode;
         PackedSingletonConfiguration psc = (PackedSingletonConfiguration) cc;
         if (psc.instance != null) {
-            parentNode = new ComponentInstanceBuildEntry<>(node, cc.configSite(), cc, psc.instance);
+            parentNode = new ComponentConstantBuildEntry<>(node, cc.configSite(), cc, psc.instance);
         } else {
             BaseFactory<?> factory = psc.factory;
             List<ServiceDependency> dependencies = factory.factory.dependencies;
@@ -150,7 +150,7 @@ public final class ServiceProvidingManager {
         BuildEntry<?> c = componentConfigurationCache.get(cc);
         if (c == null) {
             // No node found, components has no @Provides method, create a new node
-            c = new ComponentInstanceBuildEntry<T>(node, cc.configSite(), cc, instance);
+            c = new ComponentConstantBuildEntry<T>(node, cc.configSite(), cc, instance);
         }
 
         c.as((Key) Key.of(instance.getClass()));

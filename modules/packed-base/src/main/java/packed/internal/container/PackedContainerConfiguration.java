@@ -27,11 +27,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import app.packed.analysis.BundleDescriptor;
+import app.packed.artifact.ArtifactContext;
 import app.packed.base.Contract;
 import app.packed.base.Nullable;
 import app.packed.component.SingletonConfiguration;
@@ -44,8 +46,8 @@ import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
-import packed.internal.artifact.BuildOutput;
-import packed.internal.artifact.PackedArtifactInstantiationContext;
+import packed.internal.artifact.AssembleOutput;
+import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.component.AbstractComponent;
 import packed.internal.component.AbstractComponentConfiguration;
 import packed.internal.component.ComponentModel;
@@ -64,7 +66,7 @@ import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.ConstructorFinder;
 import packed.internal.reflect.OpenClass;
-import packed.internal.service.run.DefaultInjector;
+import packed.internal.service.runtime.PackedInjector;
 import packed.internal.util.UncheckedThrowableFactory;
 
 /** The default implementation of {@link ContainerConfiguration}. */
@@ -90,31 +92,14 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** The current component lookup object, updated via {@link #lookup(Lookup)} */
     private ComponentLookup lookup;
 
-    /** A container model object, shared among all container sources of the same type. */
+    /** A container model. */
     private final ContainerSourceModel model;
 
-    /** The source of the container configuration. */
+    /** The source of the container configuration. Typically a Bundle */
     private final Object source;
 
-    /** Any wirelets that was given by the user when creating this configuration. */
+    /** Any wirelets that was specified by the user when creating this configuration. */
     public final WireletContext wireletContext;
-
-    /**
-     * Creates a new container configuration.
-     * 
-     * @param output
-     *            the build output
-     * @param source
-     *            the source of the container
-     * @param wirelets
-     *            any wirelets specified by the user
-     */
-    public PackedContainerConfiguration(BuildOutput output, Object source, Wirelet... wirelets) {
-        super(ConfigSiteUtil.captureStackFrame(InjectConfigSiteOperations.INJECTOR_OF), output);
-        this.source = requireNonNull(source);
-        this.lookup = this.model = ContainerSourceModel.of(source.getClass());
-        this.wireletContext = WireletContext.of(this, null, wirelets);
-    }
 
     /**
      * Creates a new container configuration via {@link #link(Bundle, Wirelet...)}.
@@ -128,9 +113,94 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      */
     private PackedContainerConfiguration(AbstractComponentConfiguration parent, Bundle bundle, Wirelet... wirelets) {
         super(ConfigSiteUtil.captureStackFrame(parent.configSite(), InjectConfigSiteOperations.INJECTOR_OF), parent);
-        this.source = requireNonNull(bundle);
+        this.source = requireNonNull(bundle, "bundle is null");
         this.lookup = this.model = ContainerSourceModel.of(bundle.getClass());
         this.wireletContext = WireletContext.of(this, null, wirelets);
+    }
+
+    /**
+     * Creates a new container configuration.
+     * 
+     * @param output
+     *            the build output
+     * @param source
+     *            the source of the container
+     * @param wirelets
+     *            any wirelets specified by the user
+     */
+    public PackedContainerConfiguration(AssembleOutput output, Object source, Wirelet... wirelets) {
+        super(ConfigSiteUtil.captureStackFrame(InjectConfigSiteOperations.INJECTOR_OF), output);
+        this.source = requireNonNull(source);
+        this.lookup = this.model = ContainerSourceModel.of(source.getClass());
+        this.wireletContext = WireletContext.of(this, null, wirelets);
+    }
+
+    private HostConfigurationContext addHost() {
+        ConfigSite configSite = captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL);
+        PackedHostConfiguration conf = new PackedHostConfiguration(configSite, this);
+        installPrepare(State.INSTALL_INVOKED);
+        currentComponent = conf;
+        return conf;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T extends HostConfiguration> T addHost(Class<T> hostType) {
+        OpenClass cp = new OpenClass(MethodHandles.lookup(), hostType, true);
+        MethodHandle mh = ConstructorFinder.find(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, HostConfigurationContext.class);
+        try {
+            return (T) mh.invoke(addHost());
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public PackedContainerConfiguration assemble() {
+        configure();
+        assembleExtensions();
+        return this;
+    }
+
+    private void assembleExtensions() {
+        // Extensions are not processed until the whole artifact has been configured.
+        // Mainly because some wirelets needs the parent container to be fully configured
+        // before they can be used. For example, downstream service wirelets
+
+        installPrepare(State.GET_NAME_INVOKED);
+        // We could actually end of installing new extensions...
+
+        // TODO we want to cache this at some point....
+
+        TreeSet<PackedExtensionContext> ts = new TreeSet<>(extensions.values());
+        for (PackedExtensionContext e : ts) {
+            activeExtension = e;
+            e.onConfigured();
+        }
+        activeExtension = null;
+
+        if (children != null) {
+            for (AbstractComponentConfiguration acc : children.values()) {
+                if (acc instanceof PackedContainerConfiguration) {
+                    ((PackedContainerConfiguration) acc).assembleExtensions();
+                }
+            }
+        }
+
+        for (PackedExtensionContext e : ts) {
+            activeExtension = e;
+            e.onChildrenConfigured();
+        }
+
+        // TODO, fix for unused wirelet, it was removed to fix other stuff..
+        // if (wireletContext != null) {
+        // for (Class<? extends Pipeline<?, ?, ?>> cc : wireletContext.pipelines.keySet()) {
+        // // List<ExtensionWirelet<?>> ll = wireletContext.pipelines.get(cc);
+        // // throw new IllegalArgumentException("The wirelets " + ll + " requires the extension " + cc.getSimpleName() + " to
+        // be
+        // // installed.");
+        //
+        // }
+        // }
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -178,6 +248,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * Configures the configuration.
      */
     private void configure() {
+        // If it is an image it has already been assembled
         if (source instanceof Bundle) {
             ModuleAccess.container().doConfigure((Bundle) source, this);
         }
@@ -186,61 +257,18 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         super.state.oldState = State.FINAL; // Thing is here, that initialize name returns early if name!=null
     }
 
-    public PackedContainerConfiguration doBuild() {
-        configure();
-        extensionsContainerConfigured();
-        return this;
-    }
-
     /** {@inheritDoc} */
     @Override
     public Set<Class<? extends Extension>> extensions() {
         return Collections.unmodifiableSet(extensions.keySet());
     }
 
-    void extensionsContainerConfigured() {
-        // Extensions are not processed until the whole artifact has been configured.
-        // Mainly because some wirelets needs the parent container to be fully configured
-        // before they can be used. For example, downstream service wirelets
-
-        installPrepare(State.GET_NAME_INVOKED);
-        // We could actually end of installing new extensions...
-
-        // TODO we want to cache this at some point....
-        for (Class<? extends Extension> c : OldExtensionUseModel2.totalOrderOfExtensionReversed(extensions.keySet())) {
-            PackedExtensionContext e = extensions.get(c);
-            if (e != null) {
-                activeExtension = e;
-                e.onConfigured();
-            }
-        }
-        activeExtension = null;
-
-        if (children != null) {
-            for (AbstractComponentConfiguration acc : children.values()) {
-                if (acc instanceof PackedContainerConfiguration) {
-                    ((PackedContainerConfiguration) acc).extensionsContainerConfigured();
-                }
-            }
-        }
-
-        // TODO, fix for unused wirelet, it was removed to fix other stuff..
-        // if (wireletContext != null) {
-        // for (Class<? extends Pipeline<?, ?, ?>> cc : wireletContext.pipelines.keySet()) {
-        // // List<ExtensionWirelet<?>> ll = wireletContext.pipelines.get(cc);
-        // // throw new IllegalArgumentException("The wirelets " + ll + " requires the extension " + cc.getSimpleName() + " to
-        // be
-        // // installed.");
-        //
-        // }
-        // }
-    }
-
+    /** {@inheritDoc} */
     @Override
-    protected void extensionsPrepareInstantiation(PackedArtifactInstantiationContext ic) {
+    protected void extensionsPrepareInstantiation(PackedInstantiationContext ic) {
         PackedExtensionContext ee = extensions.get(ServiceExtension.class);
         if (ee != null) {
-            DefaultInjector di = ModuleAccess.service().toNode(((ServiceExtension) ee.extension())).onInstantiate(ic.wirelets);
+            PackedInjector di = ModuleAccess.service().toNode(((ServiceExtension) ee.extension())).onInstantiate(ic.wirelets);
             ic.put(this, di);
         }
         super.extensionsPrepareInstantiation(ic);
@@ -262,7 +290,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * 
      * @param extensionType
      *            the type of extension to return a context for
-     * @return an extension's context, iff on of the specified type is already installed
+     * @return an extension's context, iff the specified extension type is already installed
      * @see #use(Class)
      * @see #useExtension(Class, PackedExtensionContext)
      */
@@ -352,18 +380,18 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     /** {@inheritDoc} */
     @Override
-    public PackedContainer instantiate(AbstractComponent parent, PackedArtifactInstantiationContext ic) {
+    public PackedContainer instantiate(AbstractComponent parent, PackedInstantiationContext ic) {
         return new PackedContainer(parent, this, ic);
     }
 
-    public PackedContainer instantiateArtifact(WireletContext wirelets) {
-        PackedArtifactInstantiationContext pic = new PackedArtifactInstantiationContext(wirelets);
+    public ArtifactContext instantiateArtifact(WireletContext wc) {
+        PackedInstantiationContext pic = new PackedInstantiationContext(wc);
         extensionsPrepareInstantiation(pic);
 
         // Will instantiate the whole container hierachy
         PackedContainer pc = new PackedContainer(null, this, pic);
         methodHandlePassing0(pc, pic);
-        return pc;
+        return pc.toArtifactContext();
     }
 
     /** {@inheritDoc} */
@@ -375,28 +403,24 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** {@inheritDoc} */
     @Override
     public void link(Bundle bundle, Wirelet... wirelets) {
-        requireNonNull(bundle, "bundle is null");
-
         // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
         // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
         // loop situations, for example, if a bundle recursively links itself which fails by throwing
         // java.lang.StackOverflowError instead of an infinite loop.
-
-        // I think we can move this up to FixedWireletList so it can be replaced
-        PackedContainerConfiguration dcc = new PackedContainerConfiguration(this, bundle, wirelets);
+        PackedContainerConfiguration child = new PackedContainerConfiguration(this, bundle, wirelets);
 
         // finalize name of this container
         initializeName(State.LINK_INVOKED, null);
         installPrepare(State.LINK_INVOKED);
         currentComponent = null;// need to clear out current component...
-        dcc.configure();
-        addChild(dcc);
+        child.configure();
+        addChild(child);
 
-        // We have an extra list for all containers.
+        // We have an extra list for all containers. Why? Its not used anywhere
         if (containers == null) {
             containers = new ArrayList<>(5);
         }
-        containers.add(dcc);
+        containers.add(child);
         // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
         // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return
         // type.
@@ -413,7 +437,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private void methodHandlePassing0(AbstractComponent ac, PackedArtifactInstantiationContext ic) {
+    private void methodHandlePassing0(AbstractComponent ac, PackedInstantiationContext ic) {
         if (children != null) {
             for (AbstractComponentConfiguration cc : children.values()) {
                 AbstractComponent child = ac.children.get(cc.name);
@@ -467,12 +491,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             throw new IllegalArgumentException("A layer with the name '" + name + "' has already been added");
         }
         return newLayer;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Nullable
-    public <T extends Wirelet> T wireletOfType(Class<T> wireletType) {
-        return wireletContext == null ? null : (T) wireletContext.getIt(wireletType);
     }
 
     /** {@inheritDoc} */
@@ -533,25 +551,5 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             extensions.put(extensionType, pec = PackedExtensionContext.of(this, extensionType));
         }
         return pec;
-    }
-
-    private HostConfigurationContext addHost() {
-        ConfigSite configSite = captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL);
-        PackedHostConfiguration conf = new PackedHostConfiguration(configSite, this);
-        installPrepare(State.INSTALL_INVOKED);
-        currentComponent = conf;
-        return conf;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T extends HostConfiguration> T addHost(Class<T> hostType) {
-        OpenClass cp = new OpenClass(MethodHandles.lookup(), hostType, true);
-        MethodHandle mh = ConstructorFinder.find(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, HostConfigurationContext.class);
-        try {
-            return (T) mh.invoke(addHost());
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
     }
 }

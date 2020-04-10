@@ -96,6 +96,11 @@ public final class ThrowableUtil {
         ThrowableUtil.<RuntimeException>throwAny0(throwable);
     }
 
+    public static <T> T throwReturn(Throwable throwable) {
+        ThrowableUtil.<RuntimeException>throwAny0(throwable);
+        throw new Error("This should never happen");
+    }
+
     /**
      * Throws the specified throwable.
      * 

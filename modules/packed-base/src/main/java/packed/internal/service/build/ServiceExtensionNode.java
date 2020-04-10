@@ -41,9 +41,10 @@ import packed.internal.service.build.export.ExportManager;
 import packed.internal.service.build.export.ExportedBuildEntry;
 import packed.internal.service.build.service.ComponentFactoryBuildEntry;
 import packed.internal.service.build.service.ServiceProvidingManager;
-import packed.internal.service.run.DefaultInjector;
-import packed.internal.service.run.InjectorEntry;
-import packed.internal.service.run.SingletonInjectorEntry;
+import packed.internal.service.build.wirelets.ServiceWireletPipeline;
+import packed.internal.service.runtime.PackedInjector;
+import packed.internal.service.runtime.InjectorEntry;
+import packed.internal.service.runtime.ConstantInjectorEntry;
 
 /** This class records all service related information for a single box. */
 public final class ServiceExtensionNode {
@@ -189,9 +190,9 @@ public final class ServiceExtensionNode {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public DefaultInjector onInstantiate(WireletContext wc) {
+    public PackedInjector onInstantiate(WireletContext wc) {
         LinkedHashMap<Key<?>, InjectorEntry<?>> snm = new LinkedHashMap<>();
-        DefaultInjector publicInjector = new DefaultInjector(context().containerConfigSite(), "Internal Descriptor", snm);
+        PackedInjector publicInjector = new PackedInjector(context().containerConfigSite(), "Internal Descriptor", snm);
 
         ServiceExtensionInstantiationContext con = new ServiceExtensionInstantiationContext();
         for (var e : specials.entrySet()) {
@@ -216,7 +217,7 @@ public final class ServiceExtensionNode {
                 instance = e.getKey().wrapIfOptional(instance);
             }
             BuildEntry<?> be = e.getValue();
-            con.transformers.put(be, new SingletonInjectorEntry<Object>(ConfigSite.UNKNOWN, (Key) be.key, be.description, instance));
+            con.transformers.put(be, new ConstantInjectorEntry<Object>(ConfigSite.UNKNOWN, (Key) be.key, be.description, instance));
         }
 
         for (var e : resolvedEntries.entrySet()) {

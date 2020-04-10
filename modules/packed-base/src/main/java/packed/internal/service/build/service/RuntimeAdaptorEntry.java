@@ -28,8 +28,8 @@ import app.packed.service.ServiceExtension;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionInstantiationContext;
 import packed.internal.service.build.ServiceExtensionNode;
-import packed.internal.service.run.DelegatingInjectorEntry;
-import packed.internal.service.run.InjectorEntry;
+import packed.internal.service.runtime.DelegatingInjectorEntry;
+import packed.internal.service.runtime.InjectorEntry;
 
 /** An entry specifically used for {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
 public final class RuntimeAdaptorEntry<T> extends BuildEntry<T> {

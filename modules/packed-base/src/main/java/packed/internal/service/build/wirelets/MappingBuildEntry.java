@@ -26,8 +26,8 @@ import app.packed.service.ServiceMode;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionInstantiationContext;
 import packed.internal.service.build.ServiceExtensionNode;
-import packed.internal.service.run.InjectorEntry;
-import packed.internal.service.run.MappingInjectorEntry;
+import packed.internal.service.runtime.InjectorEntry;
+import packed.internal.service.runtime.MappingInjectorEntry;
 
 /**
  * A build entry that that takes an existing entry and uses a {@link Function} to map the service provided by the entry.
