@@ -99,10 +99,6 @@ public final class HookRequestBuilder {
         return result;
     }
 
-    void foo(HookBaseType hbt, Class<?> qualifierType, Annotation annotation, Object memberOrClass) {
-
-    }
-
     public void onAnnotatedField(Field field, Annotation annotation) throws Throwable {
         Map<Class<?>, Link> annotatedFields = onHookModel.annotatedFields;
         if (annotatedFields != null) {

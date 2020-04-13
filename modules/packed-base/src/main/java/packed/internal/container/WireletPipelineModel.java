@@ -15,19 +15,14 @@
  */
 package packed.internal.container;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.UndeclaredThrowableException;
 
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
-import app.packed.container.InternalExtensionException;
 import app.packed.container.PipelineWirelet;
-import app.packed.container.UseExtension;
 import app.packed.container.WireletPipeline;
-import packed.internal.reflect.FindConstructor;
 import packed.internal.reflect.InjectionSpec;
 import packed.internal.reflect.OpenClass;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
@@ -42,31 +37,31 @@ public final class WireletPipelineModel {
         @SuppressWarnings({ "unchecked" })
         @Override
         protected WireletPipelineModel computeValue(Class<?> type) {
-            return new WireletPipelineModel.Builder((Class<? extends WireletPipeline<?, ?>>) type).build();
+            return new WireletPipelineModel((Class<? extends WireletPipeline<?, ?>>) type);
         }
     };
 
-    /** A cache of wirelet types to pipeline models. */
-    private static final ClassValue<WireletPipelineModel> WIRELET_MODELS = new ClassValue<>() {
+    /** A cache of pipeline wirelet types to pipeline models. */
+    private static final ClassValue<WireletPipelineModel> WIRELET_TYPE_TO_MODELS = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
         @Override
         protected WireletPipelineModel computeValue(Class<?> type) {
-            Class<? extends WireletPipeline<?, ?>> p = (Class<? extends WireletPipeline<?, ?>>) WIRELET_TO_PIPELINE_TYPE_EXTRACTOR.extract(type);
+            Class<? extends WireletPipeline<?, ?>> p = (Class<? extends WireletPipeline<?, ?>>) WIRELET_TYPE_TO_PIPELINE_TYPE_EXTRACTOR.extract(type);
             return WireletPipelineModel.of(p);
         }
     };
 
     /** A type variable extractor to extract what kind of pipeline a pipeline wirelet belongs to. */
-    private static final TypeVariableExtractor WIRELET_TO_PIPELINE_TYPE_EXTRACTOR = TypeVariableExtractor.of(PipelineWirelet.class);
+    private static final TypeVariableExtractor WIRELET_TYPE_TO_PIPELINE_TYPE_EXTRACTOR = TypeVariableExtractor.of(PipelineWirelet.class);
 
     /** A method handle to create new pipeline instances. */
     private final MethodHandle constructor;
 
-    /** Any extension this pipeline is a part of. */
+    /** Any extension this pipeline is a member of. */
     @Nullable
-    private final Class<? extends Extension> extensionType;
+    private final Class<? extends Extension> memberOfExtension;
 
     /** The type of pipeline this model represents. */
     private final Class<? extends WireletPipeline<?, ?>> type;
@@ -74,30 +69,37 @@ public final class WireletPipelineModel {
     /**
      * Create a new model.
      * 
-     * @param builder
-     *            the builder to use for creating a new model
+     * @param type
+     *            the type of pipeline
      */
-    private WireletPipelineModel(Builder builder) {
-        this.type = builder.type;
-        this.extensionType = builder.extension == null ? null : builder.extension.extensionType();
-        this.constructor = requireNonNull(builder.constructor);
+    private WireletPipelineModel(Class<? extends WireletPipeline<?, ?>> type) {
+        this.type = type; // should we check type assignable???
+        this.memberOfExtension = ExtensionSidecarModel.findIfMember(type);
+
+        OpenClass cp = new OpenClass(MethodHandles.lookup(), type, true);
+        InjectionSpec is = new InjectionSpec(type, memberOfExtension == null ? Extension.class : memberOfExtension);
+        this.constructor = cp.findConstructor(is);
     }
 
-    /** Any extension this pipeline is a part of (may be null). */
+    /** Any extension this pipeline is a member of (may be null). */
     @Nullable
-    public Class<? extends Extension> extensionType() {
-        return extensionType;
+    public Class<? extends Extension> memberOfExtension() {
+        return memberOfExtension;
     }
 
     /**
      * Creates a new pipeline instance.
      * 
+     * @param extension
+     *            An extension instance if the pipeline is a member of an extension. Otherwise null must be provided.
      * @return a new pipeline instance
      */
-    WireletPipeline<?, ?> newPipeline(Extension extension) {
+    WireletPipeline<?, ?> newPipeline(@Nullable Extension extension) {
         try {
             return (WireletPipeline<?, ?>) constructor.invoke(extension);
         } catch (Throwable e) {
+            // Yes how do we handle this...
+            // Probably different whether or not we are member of an extension...
             throw new UndeclaredThrowableException(e);
         }
     }
@@ -123,58 +125,13 @@ public final class WireletPipelineModel {
     }
 
     /**
-     * Returns a model for the specified extension wirelet type.
+     * Returns a model for the specified wirelet type.
      * 
      * @param wireletType
-     *            the extension wirelet type to return a model for.
+     *            the wirelet type to return a model for.
      * @return the model
      */
     static WireletPipelineModel ofWirelet(Class<? extends PipelineWirelet<?>> wireletType) {
-        return WIRELET_MODELS.get(wireletType);
-    }
-
-    /** A builder of {@link WireletPipelineModel}. */
-    private static class Builder {
-
-        private MethodHandle constructor;
-
-        /** Any extension the pipeline is a part of. */
-        @Nullable
-        private ExtensionSidecarModel extension;
-
-        /** The type of pipeline. */
-        private final Class<? extends WireletPipeline<?, ?>> type;
-
-        /**
-         * Creates a new builder
-         * 
-         * @param type
-         *            the pipeline type
-         */
-        private Builder(Class<? extends WireletPipeline<?, ?>> type) {
-            this.type = requireNonNull(type);
-        }
-
-        private WireletPipelineModel build() {
-            UseExtension ue = type.getAnnotation(UseExtension.class);
-            if (ue != null) {
-                Class<? extends Extension> eType = ue.value();
-                if (type.getModule() != eType.getModule()) {
-                    throw new InternalExtensionException("The extension " + eType + " and pipeline " + type + " must be defined in the same module, was "
-                            + eType.getModule() + " and " + type.getModule());
-                }
-                extension = ExtensionSidecarModel.of(eType);
-            }
-
-            // FindConstructor...
-            OpenClass cp = new OpenClass(MethodHandles.lookup(), type, true);
-
-            InjectionSpec is = new InjectionSpec(type, extension == null ? Extension.class : extension.extensionType());
-
-            // Constructor<?> c = type.getDeclaredConstructors()[0];
-            // this.constructor = cp.unreflectConstructor(c, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-            this.constructor = new FindConstructor().doIt(cp, is);
-            return new WireletPipelineModel(this);
-        }
+        return WIRELET_TYPE_TO_MODELS.get(wireletType);
     }
 }

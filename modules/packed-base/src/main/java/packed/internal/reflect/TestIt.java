@@ -40,8 +40,7 @@ public class TestIt {
         aa.add(Data.class, 0);
         aa.add(String.class, 0, mhhhh);
 
-        FindConstructor fc = new FindConstructor();
-        MethodHandle mh = fc.doIt(new OpenClass(MethodHandles.lookup(), TestIt.class, false), aa);
+        MethodHandle mh = new OpenClass(MethodHandles.lookup(), TestIt.class, false).findConstructor(aa);
 
         System.out.println(mh);
 

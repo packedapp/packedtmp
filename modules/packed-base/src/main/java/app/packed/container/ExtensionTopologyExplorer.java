@@ -30,6 +30,9 @@ import java.util.Optional;
 // Har aldrig descendents som ikke er extensions....
 
 //On runtime.. Saa kan en extension fejle og betyde at den ikke bliver tilfoert alligevel... Kan kun styre det med start/stop
+
+// Maaske kan bare faa den injected hvor man vil... 
+// Baade i selve extensionen men ogsaa alle dens members...
 public interface ExtensionTopologyExplorer<E extends Extension> {
 
     Optional<E> findAncestor(ExtensionContext ec);
@@ -37,6 +40,14 @@ public interface ExtensionTopologyExplorer<E extends Extension> {
     Optional<E> parent(ExtensionContext ec);
 
     List<E> children(ExtensionContext ec);
+
+    // TreeView decendents...
+
+    // TreeView<E> current();
+    // add postOperation();
+    // addPostOperation
+    // Altsaa man skal kunne gennem nogle constanter taenker jeg???
+    ///
 
     // desendents...
     // checkEitherRootArtifactOr Parent has extension (Check is viral... Maaske I ExtensionSidecar...

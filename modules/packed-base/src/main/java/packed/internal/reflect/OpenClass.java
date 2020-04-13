@@ -74,6 +74,10 @@ public final class OpenClass {
         }
     }
 
+    public MethodHandle findConstructor(InjectionSpec is) {
+        return new FindConstructor().doIt(this, is);
+    }
+
     /**
      * Returns the class that is processed.
      * 

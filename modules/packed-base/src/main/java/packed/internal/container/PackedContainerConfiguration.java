@@ -61,7 +61,6 @@ import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.moduleaccess.ModuleAccess;
-import packed.internal.reflect.FindConstructor;
 import packed.internal.reflect.InjectionSpec;
 import packed.internal.reflect.OpenClass;
 import packed.internal.service.runtime.PackedInjector;
@@ -149,7 +148,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
         InjectionSpec aa = new InjectionSpec(MethodType.methodType(hostType, HostConfigurationContext.class));
         aa.add(HostConfigurationContext.class, 0);
-        MethodHandle mh = new FindConstructor().doIt(cp, aa);
+        MethodHandle mh = cp.findConstructor(aa);
 
         try {
             return (T) mh.invoke(addHost());

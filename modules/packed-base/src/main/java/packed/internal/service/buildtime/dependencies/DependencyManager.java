@@ -165,7 +165,7 @@ public final class DependencyManager {
                             }
                             if (WireletPipeline.class.isAssignableFrom(rawType)) {
                                 WireletPipelineModel wpc = WireletPipelineModel.of((Class<? extends WireletPipeline<?, ?>>) rawType);
-                                if (wpc.extensionType() == null) {
+                                if (wpc.memberOfExtension() == null) {
                                     // Fail if pipelined wirelet...
                                     BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
                                             new ConstantInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "foo", "Ignore"));

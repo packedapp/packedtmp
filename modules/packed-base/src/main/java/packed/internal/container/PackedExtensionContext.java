@@ -38,6 +38,7 @@ import packed.internal.moduleaccess.ModuleAccess;
 /** The default implementation of {@link ExtensionContext} with addition methods only available in app.packed.base. */
 public final class PackedExtensionContext implements ExtensionContext, Comparable<PackedExtensionContext> {
 
+    public static final ExtensionContext CONFIGURED = new PackedExtensionContext();
     /** The extension instance this context wraps, initialized in {@link #of(PackedContainerConfiguration, Class)}. */
     @Nullable
     private Extension extension;
@@ -50,6 +51,11 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
 
     /** The configuration of the container the extension is registered in. */
     private final PackedContainerConfiguration pcc;
+
+    private PackedExtensionContext() {
+        this.pcc = null;
+        this.model = null;
+    }
 
     /**
      * Creates a new extension context.

@@ -56,8 +56,8 @@ public final class WireletPipelineContext {
      * @return any extension this pipeline belongs to
      */
     @Nullable
-    Class<? extends Extension> extensionType() {
-        return model.extensionType();
+    Class<? extends Extension> memberOfExtension() {
+        return model.memberOfExtension();
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

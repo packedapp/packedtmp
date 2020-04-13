@@ -58,7 +58,7 @@ import packed.internal.util.UncheckedThrowableFactory;
 //The rest is static, its not for injection, because we need
 
 //So ConstructorFinder is probably a bad name..
-public class FindConstructor {
+class FindConstructor {
 
     ArrayList<Parameter> parameters;
 

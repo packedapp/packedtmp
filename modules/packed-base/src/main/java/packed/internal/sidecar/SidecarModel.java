@@ -27,7 +27,6 @@ import java.util.Map;
 import app.packed.base.Contract;
 import app.packed.sidecar.Expose;
 import app.packed.sidecar.PostSidecar;
-import packed.internal.reflect.FindConstructor;
 import packed.internal.reflect.InjectionSpec;
 import packed.internal.reflect.OpenClass;
 import packed.internal.util.ThrowableUtil;
@@ -115,8 +114,7 @@ public abstract class SidecarModel {
         protected OpenClass prep(InjectionSpec spec) {
             OpenClass cp = new OpenClass(MethodHandles.lookup(), sidecarType, true);
 
-            FindConstructor fc = new FindConstructor();
-            this.constructor = fc.doIt(cp, spec);
+            this.constructor = cp.findConstructor(spec);
             cp.findMethods(e -> {
                 PostSidecar oa = e.getAnnotation(PostSidecar.class);
                 if (oa != null) {

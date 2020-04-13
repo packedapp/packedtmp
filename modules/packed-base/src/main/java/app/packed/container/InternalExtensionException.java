@@ -16,15 +16,11 @@
 package app.packed.container;
 
 /**
- * An exception typically thrown by the runtime to indicate that some part of an extension was not properly implemented
- * according to the basic contract of Packed's extension mechanism. As an extension user there is normally nothing you
- * can do, except for reporting the error to the extension developer(s).
+ * An exception typically thrown by the runtime to indicate that an extension failed in some way.
+ * <p>
+ * If you encounter this exception as an user of an extension there is normally nothing you can do, except for reporting
+ * the error to the developer of the extension.
  */
-//ExtensionDefinitionException
-//PackletDefinitionException
-//SidecarDefinitionException
-
-// Hvis det er tilknyttet en extension saa bruger vi denne
 public class InternalExtensionException extends RuntimeException {
 
     /** */

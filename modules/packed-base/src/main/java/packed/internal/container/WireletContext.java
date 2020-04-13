@@ -79,8 +79,8 @@ public final class WireletContext {
             ((WireletPipelineContext) map.computeIfAbsent(model.type(), k -> {
                 WireletPipelineContext pc = parent == null ? null : (WireletPipelineContext) parent.getIt(model.type());
                 WireletPipelineContext wpc = new WireletPipelineContext(model, pc);
-                if (model.extensionType() != null) {
-                    extensions.put(model.extensionType(), wpc);// We need to add it as a list if we have more than one wirelet context
+                if (model.memberOfExtension() != null) {
+                    extensions.put(model.memberOfExtension(), wpc);// We need to add it as a list if we have more than one wirelet context
                 }
                 return wpc;
             })).wirelets.add((PipelineWirelet<?>) w);
@@ -177,11 +177,11 @@ public final class WireletContext {
         for (Object o : wc.map.values()) {
             if (o instanceof WireletPipelineContext) {
                 WireletPipelineContext wpc = (WireletPipelineContext) o;
-                Class<? extends Extension> extensionType = wpc.extensionType();
-                if (extensionType == null) {
+                Class<? extends Extension> memberOfExtension = wpc.memberOfExtension();
+                if (memberOfExtension == null) {
                     wpc.instantiate(null);
                 } else if (existing != null) {
-                    PackedExtensionContext pec = pcc.getExtension(extensionType);
+                    PackedExtensionContext pec = pcc.getExtension(memberOfExtension);
                     if (pec == null) {
                         wc.extensionFailed(pcc);
                     }

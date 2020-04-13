@@ -29,6 +29,7 @@ import app.packed.component.Component;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
+import app.packed.container.ExtensionMember;
 import app.packed.container.InternalExtensionException;
 import app.packed.hook.OnHook;
 import app.packed.sidecar.ExtensionSidecar;
@@ -166,6 +167,20 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
      */
     public static ExtensionSidecarModel of(Class<? extends Extension> extensionType) {
         return MODELS.get(extensionType);
+    }
+
+    public static Class<? extends Extension> findIfMember(Class<?> type) {
+        ExtensionMember ue = type.getAnnotation(ExtensionMember.class);
+        if (ue != null) {
+            Class<? extends Extension> eType = ue.value();
+            if (type.getModule() != eType.getModule()) {
+                throw new InternalExtensionException("The extension " + eType + " and type " + type + " must be defined in the same module, was "
+                        + eType.getModule() + " and " + type.getModule());
+            }
+            of(eType); // Make sure the extension is valid
+            return eType;
+        }
+        return null;
     }
 
     /**

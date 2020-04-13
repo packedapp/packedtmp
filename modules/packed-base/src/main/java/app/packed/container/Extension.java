@@ -33,6 +33,9 @@ import packed.internal.config.ConfigSiteSupport;
  * For example, allows you to extend the basic functionality of containers.
  * <p>
  * Extensions form the basis, extensible model
+ * <p>
+ * constructor visibility is ignored. As long as user has class visibility. They can can use an extension via, for
+ * example, {@link Bundle#use(Class)} or {@link ContainerConfiguration#use(Class)}.
  * 
  * <p>
  * Any packages where extension implementations, custom hooks or extension wirelet pipelines are located must be open to
@@ -75,7 +78,7 @@ public abstract class Extension {
     /** The extension context. This field should never be read directly, but only accessed via {@link #context()}. */
     // I think we should have a value representing configured. In this way people can store the extension
     // or keep it at runtime or whatever they want to do....
-    ExtensionContext context;
+    ExtensionContext context; // = PEC.CONFIGURED
 
     /**
      * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
@@ -176,8 +179,8 @@ public abstract class Extension {
     /**
      * Returns an extension of the specified type.
      * <p>
-     * Any extension type passed to this method must have explicitly been registered using an {@link ExtensionSidecar} on
-     * the extension implementation.
+     * Only extension types that have been explicitly registered using {@link ExtensionSidecar#dependencies()} or
+     * {@link ExtensionSidecar#optionalDependencies()} may be specified as arguments to this method.
      * <p>
      * Invoking this method is similar to calling {@link ContainerConfiguration#use(Class)}. However, this method also keeps
      * track of which extensions uses other extensions. And forming any kind of circle in the dependency graph will fail
