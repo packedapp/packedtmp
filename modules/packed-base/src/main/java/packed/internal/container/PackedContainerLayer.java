@@ -23,7 +23,7 @@ import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
 
 /** The default implementation of Layer. */
-class DefaultContainerLayer implements ContainerLayer {
+class PackedContainerLayer implements ContainerLayer {
 
     final PackedContainerConfiguration container;
 
@@ -33,13 +33,13 @@ class DefaultContainerLayer implements ContainerLayer {
     /** The name of the layer. */
     private final String name;
 
-    DefaultContainerLayer(PackedContainerConfiguration container, String name, ContainerLayer... dependencies) {
+    PackedContainerLayer(PackedContainerConfiguration container, String name, ContainerLayer... dependencies) {
         this.container = requireNonNull(container);
         this.name = requireNonNull(name, "name is null");
         requireNonNull(dependencies, "dependencies is null");
         for (ContainerLayer l : dependencies) {
             requireNonNull(l, "layer is null");
-            if (!(l instanceof DefaultContainerLayer)) {
+            if (!(l instanceof PackedContainerLayer)) {
                 throw new IllegalArgumentException("Only Layer instances created by this runtime is allowed, was type " + l.getClass());
             }
         }

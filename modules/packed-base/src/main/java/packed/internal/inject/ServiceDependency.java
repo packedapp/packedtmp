@@ -45,7 +45,7 @@ import packed.internal.inject.util.QualifierHelper;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.ErrorMessageBuilder;
-import packed.internal.util.types.TypeUtil;
+import packed.internal.util.TypeUtil;
 
 /**
  * A descriptor of a dependency. An instance of this class is typically created from a parameter on a constructor or

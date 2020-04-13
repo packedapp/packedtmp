@@ -62,20 +62,20 @@ public abstract class Bundle implements ArtifactSource {
 
             /** {@inheritDoc} */
             @Override
-            public void doConfigure(Bundle bundle, ContainerConfiguration configuration) {
+            public void bundleConfigure(Bundle bundle, ContainerConfiguration configuration) {
                 bundle.doCompose(configuration);
             }
 
             /** {@inheritDoc} */
             @Override
-            public void pipelineInitialize(WireletPipelineContext context, WireletPipeline<?, ?> pipeline) {
+            public void pipelineInitialize(WireletPipeline<?, ?> pipeline, WireletPipelineContext context) {
                 pipeline.context = context;
                 pipeline.verify();
             }
 
             /** {@inheritDoc} */
             @Override
-            public void setExtensionContext(Extension extension, ExtensionContext context) {
+            public void extensionSetContext(Extension extension, ExtensionContext context) {
                 extension.context = context;
             }
         });

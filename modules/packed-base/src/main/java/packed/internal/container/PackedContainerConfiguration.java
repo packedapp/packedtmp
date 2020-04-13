@@ -61,9 +61,9 @@ import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.moduleaccess.ModuleAccess;
+import packed.internal.reflect.FindConstructor;
+import packed.internal.reflect.InjectionSpec;
 import packed.internal.reflect.OpenClass;
-import packed.internal.reflect.t2.FindConstructor;
-import packed.internal.reflect.t2.InjectionSpec;
 import packed.internal.service.runtime.PackedInjector;
 
 /** The default implementation of {@link ContainerConfiguration}. */
@@ -84,7 +84,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** All used extensions, in order of registration. */
     private final LinkedHashMap<Class<? extends Extension>, PackedExtensionContext> extensions = new LinkedHashMap<>();
 
-    private HashMap<String, DefaultContainerLayer> layers;
+    private HashMap<String, PackedContainerLayer> layers;
 
     /** The current component lookup object, updated via {@link #lookup(Lookup)} */
     private ComponentLookup lookup;
@@ -221,7 +221,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     private void configure() {
         // If it is an image it has already been assembled
         if (source instanceof Bundle) {
-            ModuleAccess.container().doConfigure((Bundle) source, this);
+            ModuleAccess.container().bundleConfigure((Bundle) source, this);
         }
         // Initializes the name of the container, and sets the state to State.FINAL
         initializeName(State.FINAL, null);
@@ -239,7 +239,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     protected void extensionsPrepareInstantiation(PackedInstantiationContext ic) {
         PackedExtensionContext ee = extensions.get(ServiceExtension.class);
         if (ee != null) {
-            PackedInjector di = ModuleAccess.service().toNode(((ServiceExtension) ee.extension())).onInstantiate(ic.wirelets);
+            PackedInjector di = ModuleAccess.service().extensionToNode(((ServiceExtension) ee.extension())).onInstantiate(ic.wirelets);
             ic.put(this, di);
         }
         super.extensionsPrepareInstantiation(ic);
@@ -453,11 +453,11 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * @return the new layer
      */
     public ContainerLayer newLayer(String name, ContainerLayer... dependencies) {
-        HashMap<String, DefaultContainerLayer> l = layers;
+        HashMap<String, PackedContainerLayer> l = layers;
         if (l == null) {
             l = layers = new HashMap<>();
         }
-        DefaultContainerLayer newLayer = new DefaultContainerLayer(this, name, dependencies);
+        PackedContainerLayer newLayer = new PackedContainerLayer(this, name, dependencies);
         if (l.putIfAbsent(name, newLayer) != null) {
             throw new IllegalArgumentException("A layer with the name '" + name + "' has already been added");
         }

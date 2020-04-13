@@ -33,9 +33,7 @@ public interface AppPackedContainerAccess extends SecretAccess {
      * @param configuration
      *            the configuration of the container
      */
-    void doConfigure(Bundle bundle, ContainerConfiguration configuration);
-
-    void pipelineInitialize(WireletPipelineContext context, WireletPipeline<?, ?> pipeline);
+    void bundleConfigure(Bundle bundle, ContainerConfiguration configuration);
 
     /**
      * Initializes the extension.
@@ -43,5 +41,7 @@ public interface AppPackedContainerAccess extends SecretAccess {
      * @param context
      *            the extension context containing the extension
      */
-    void setExtensionContext(Extension extension, ExtensionContext context);
+    void extensionSetContext(Extension extension, ExtensionContext context);
+
+    void pipelineInitialize(WireletPipeline<?, ?> pipeline, WireletPipelineContext context);
 }

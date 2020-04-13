@@ -242,7 +242,7 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
         ExtensionSidecarModel model = ExtensionSidecarModel.of(extensionType);
         PackedExtensionContext pec = new PackedExtensionContext(pcc, model);
         Extension e = pec.extension = model.newExtensionInstance(pec);
-        ModuleAccess.container().setExtensionContext(e, pec);
+        ModuleAccess.container().extensionSetContext(e, pec);
 
         PackedExtensionContext existing = pcc.activeExtension;
         try {

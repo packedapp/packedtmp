@@ -30,8 +30,8 @@ import java.lang.reflect.Modifier;
 import app.packed.base.NativeImage;
 import app.packed.base.invoke.InaccessibleMemberException;
 import packed.internal.util.StringFormatter;
+import packed.internal.util.ThrowableConsumer;
 import packed.internal.util.UncheckedThrowableFactory;
-import packed.internal.util.function.ThrowableConsumer;
 
 /**
  * An open class is a thin wrapper for a single class and a {@link Lookup} object.
@@ -85,10 +85,6 @@ public final class OpenClass {
 
     public OpenClass copy() {
         return new OpenClass(lookup, clazz, registerForNative);
-    }
-
-    public <T extends Throwable> OpenClassCreator findCreator(UncheckedThrowableFactory<?> tf, Class<?>... availableDependencies) throws T {
-        throw new UnsupportedOperationException();
     }
 
     public <T extends Throwable> void findMethods(ThrowableConsumer<? super Method, T> methodConsumer) throws T {

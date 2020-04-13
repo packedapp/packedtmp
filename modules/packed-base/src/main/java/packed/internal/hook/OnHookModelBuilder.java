@@ -48,8 +48,8 @@ import packed.internal.util.AnnotationUtil;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.Tiny;
 import packed.internal.util.TinyPair;
+import packed.internal.util.TypeUtil;
 import packed.internal.util.UncheckedThrowableFactory;
-import packed.internal.util.types.TypeUtil;
 
 /** A builder for classes that may contain methods annotated with {@link OnHook}. */
 final class OnHookModelBuilder {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.reflect.t2;
+package packed.internal.reflect;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,9 +22,7 @@ import java.util.Set;
 import app.packed.base.Key;
 import app.packed.inject.InjectionContext;
 
-/**
- *
- */
+/** The default implementation of {@link InjectionContext}. */
 public class PackedInjectionContext implements InjectionContext {
     private final Class<?> target;
     private final Set<Key<?>> keys;
@@ -42,7 +40,7 @@ public class PackedInjectionContext implements InjectionContext {
 
     /** {@inheritDoc} */
     @Override
-    public Class<?> target() {
+    public Class<?> targetClass() {
         return target;
     }
 

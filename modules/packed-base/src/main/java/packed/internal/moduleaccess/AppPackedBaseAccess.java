@@ -19,6 +19,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 import app.packed.base.Key;
+import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
 
 /** A support class for calling package private methods in the app.packed.base package. */
@@ -26,7 +27,7 @@ public interface AppPackedBaseAccess extends SecretAccess {
 
     boolean isCanonicalized(TypeLiteral<?> typeLiteral);
 
-    Key<?> toKeyNullableQualifier(Type type, Annotation qualifier);
+    Key<?> toKeyNullableQualifier(Type type, @Nullable Annotation qualifier);
 
     /**
      * Converts the type to a type literal.

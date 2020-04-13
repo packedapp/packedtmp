@@ -15,6 +15,8 @@
  */
 package packed.internal.service.buildtime.wirelets;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.container.UseExtension;
 import app.packed.container.WireletPipeline;
 import app.packed.service.ServiceExtension;
@@ -25,9 +27,10 @@ import packed.internal.service.buildtime.ServiceExtensionNode;
 @UseExtension(ServiceExtension.class)
 public final class ServiceWireletPipeline extends WireletPipeline<ServiceWireletPipeline, ServiceWirelet> {
 
+    /** The service extension node */
     final ServiceExtensionNode node;
 
     ServiceWireletPipeline(ServiceExtension extension) {
-        this.node = ModuleAccess.service().toNode(extension);
+        this.node = requireNonNull(ModuleAccess.service().extensionToNode(extension));
     }
 }

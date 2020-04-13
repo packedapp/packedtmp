@@ -77,7 +77,7 @@ public final class WireletPipelineContext {
 
     void instantiate(@Nullable Extension extension) {
         instance = model.newPipeline(extension);
-        ModuleAccess.container().pipelineInitialize(this, instance);
+        ModuleAccess.container().pipelineInitialize(instance, this);
     }
 
     /**

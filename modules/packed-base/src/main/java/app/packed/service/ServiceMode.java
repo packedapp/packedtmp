@@ -56,7 +56,7 @@ public enum ServiceMode {
         ModuleAccess.initialize(AppPackedServiceAccess.class, new AppPackedServiceAccess() {
 
             @Override
-            public ServiceExtensionNode toNode(ServiceExtension e) {
+            public ServiceExtensionNode extensionToNode(ServiceExtension e) {
                 return e.node;
             }
         });

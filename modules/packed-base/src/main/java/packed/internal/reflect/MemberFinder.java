@@ -22,13 +22,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import packed.internal.util.function.ThrowableConsumer;
+import packed.internal.util.ThrowableConsumer;
 
 /**
  * Processes all fields and methods on a specified class.
  */
 // https://stackoverflow.com/questions/28400408/what-is-the-new-way-of-getting-all-methods-of-a-class-including-inherited-defau
-public final class MemberFinder {
+final class MemberFinder {
 
     /** We never process any classes that are located in java.base. */
     private static final Module JAVA_BASE_MODULE = Class.class.getModule();
@@ -100,11 +100,11 @@ public final class MemberFinder {
         }
     }
 
-    public static <T extends Throwable> void findMethods(Class<?> baseType, Class<?> actualType, ThrowableConsumer<? super Method, T> methodConsumer) throws T {
+    static <T extends Throwable> void findMethods(Class<?> baseType, Class<?> actualType, ThrowableConsumer<? super Method, T> methodConsumer) throws T {
         find(baseType, actualType, methodConsumer, null);
     }
 
-    public static <T extends Throwable> void findMethodsAndFields(Class<?> baseType, Class<?> actualType, ThrowableConsumer<? super Method, T> methodConsumer,
+    static <T extends Throwable> void findMethodsAndFields(Class<?> baseType, Class<?> actualType, ThrowableConsumer<? super Method, T> methodConsumer,
             ThrowableConsumer<? super Field, T> fieldConsumer) throws T {
         find(baseType, actualType, methodConsumer, fieldConsumer);
     }

@@ -18,7 +18,7 @@ package packed.internal.moduleaccess;
 import app.packed.inject.Factory;
 import packed.internal.inject.factory.FactorySupport;
 
-/** A support class for calling package private methods in the app.packed.service package. */
+/** A support class for calling package private methods in the app.packed.inject package. */
 public interface AppPackedInjectAccess extends SecretAccess {
 
     /**

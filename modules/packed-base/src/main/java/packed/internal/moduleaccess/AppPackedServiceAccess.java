@@ -28,5 +28,5 @@ public interface AppPackedServiceAccess extends SecretAccess {
      *            the extension to extract from
      * @return the service node
      */
-    ServiceExtensionNode toNode(ServiceExtension extension);
+    ServiceExtensionNode extensionToNode(ServiceExtension extension);
 }

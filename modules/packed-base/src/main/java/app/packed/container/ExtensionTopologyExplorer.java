@@ -23,6 +23,13 @@ import java.util.Optional;
  */
 
 // Pipelines... Hosts...
+
+// Pipelines - no pipelines...
+// in same artifact / host-guest
+
+// Har aldrig descendents som ikke er extensions....
+
+//On runtime.. Saa kan en extension fejle og betyde at den ikke bliver tilfoert alligevel... Kan kun styre det med start/stop
 public interface ExtensionTopologyExplorer<E extends Extension> {
 
     Optional<E> findAncestor(ExtensionContext ec);

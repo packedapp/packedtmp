@@ -27,18 +27,18 @@ import java.util.Map;
 import app.packed.base.Contract;
 import app.packed.sidecar.Expose;
 import app.packed.sidecar.PostSidecar;
+import packed.internal.reflect.FindConstructor;
+import packed.internal.reflect.InjectionSpec;
 import packed.internal.reflect.OpenClass;
-import packed.internal.reflect.t2.FindConstructor;
-import packed.internal.reflect.t2.InjectionSpec;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.UncheckedThrowableFactory;
 
 /**
- * A model of a sidecar
+ * A model of a sidecar.
  */
 public abstract class SidecarModel {
 
-    /** A method handle used for creating new sidecar instances. */
+    /** A method handle for creating new sidecar instances. */
     protected final MethodHandle constructor;
 
     /** It is important this map is immutable as the key set is exposed via ExtensionDescriptor. */

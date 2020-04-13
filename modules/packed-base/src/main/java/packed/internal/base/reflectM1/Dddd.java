@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.base.reflectM1;
 
 import app.packed.artifact.ArtifactImage;
 import app.packed.container.BaseBundle;

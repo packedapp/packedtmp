@@ -14,7 +14,7 @@ import app.packed.base.reflect.ExecutableDescriptor;
 import app.packed.inject.Inject;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.util.StringFormatter;
-import packed.internal.util.types.TypeUtil;
+import packed.internal.util.TypeUtil;
 
 /** This class is responsible for finding an injectable executable. */
 

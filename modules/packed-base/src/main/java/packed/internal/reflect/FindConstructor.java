@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.reflect.t2;
+package packed.internal.reflect;
 
 import static packed.internal.util.StringFormatter.format;
 
@@ -34,8 +34,7 @@ import app.packed.base.Key;
 import app.packed.inject.Inject;
 import app.packed.inject.InjectionContext;
 import app.packed.inject.UnresolvedDependencyException;
-import packed.internal.reflect.OpenClass;
-import packed.internal.reflect.t2.InjectionSpec.Entry;
+import packed.internal.reflect.InjectionSpec.Entry;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.UncheckedThrowableFactory;
 
@@ -124,22 +123,6 @@ public class FindConstructor {
         }
 
         return mh;
-    }
-
-    static class InjC implements InjectionContext {
-
-        /** {@inheritDoc} */
-        @Override
-        public Set<Key<?>> keys() {
-            return Set.of();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Class<?> target() {
-            return null;
-        }
-
     }
 
     Constructor<?> findInjectableConstructor(Class<?> type) {

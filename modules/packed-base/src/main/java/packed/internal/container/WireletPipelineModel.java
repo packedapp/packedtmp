@@ -27,9 +27,9 @@ import app.packed.container.InternalExtensionException;
 import app.packed.container.PipelineWirelet;
 import app.packed.container.UseExtension;
 import app.packed.container.WireletPipeline;
+import packed.internal.reflect.FindConstructor;
+import packed.internal.reflect.InjectionSpec;
 import packed.internal.reflect.OpenClass;
-import packed.internal.reflect.t2.FindConstructor;
-import packed.internal.reflect.t2.InjectionSpec;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 
 /** A model of a {@link WireletPipeline}. */
