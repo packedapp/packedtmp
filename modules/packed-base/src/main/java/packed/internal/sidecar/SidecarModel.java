@@ -28,8 +28,9 @@ import app.packed.base.Contract;
 import app.packed.container.InternalExtensionException;
 import app.packed.sidecar.Expose;
 import app.packed.sidecar.PostSidecar;
-import packed.internal.reflect.ConstructorFinder;
 import packed.internal.reflect.OpenClass;
+import packed.internal.reflect.t2.FindConstructor;
+import packed.internal.reflect.t2.InjectionSpec;
 import packed.internal.util.UncheckedThrowableFactory;
 
 /**
@@ -46,6 +47,7 @@ public abstract class SidecarModel {
     // Contract>);
     protected final Map<Class<? extends Contract>, MethodHandle> contracts;
 
+    /** The type of sidecar. */
     private final Class<?> sidecarType;
 
     final Object[] callbacks;
@@ -115,10 +117,11 @@ public abstract class SidecarModel {
         }
 
         @SuppressWarnings({ "unchecked", "rawtypes" })
-        protected OpenClass prep() {
+        protected OpenClass prep(InjectionSpec spec) {
             OpenClass cp = new OpenClass(MethodHandles.lookup(), sidecarType, true);
-            this.constructor = ConstructorFinder.find(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
 
+            FindConstructor fc = new FindConstructor();
+            this.constructor = fc.doIt(cp, spec);
             cp.findMethods(e -> {
                 PostSidecar oa = e.getAnnotation(PostSidecar.class);
                 if (oa != null) {

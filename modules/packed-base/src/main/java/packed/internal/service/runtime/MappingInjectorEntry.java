@@ -21,7 +21,7 @@ import java.util.function.Function;
 
 import app.packed.service.ProvideContext;
 import app.packed.service.ServiceMode;
-import packed.internal.service.build.BuildEntry;
+import packed.internal.service.buildtime.BuildEntry;
 
 /** A runtime service entry that uses a {@link Function} to map an existing service. */
 public final class MappingInjectorEntry<F, T> extends InjectorEntry<T> {

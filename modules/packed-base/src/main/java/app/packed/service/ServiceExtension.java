@@ -36,9 +36,9 @@ import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.container.WireletList;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.inject.util.InjectConfigSiteOperations;
-import packed.internal.service.build.ServiceExtensionNode;
-import packed.internal.service.build.service.AtProvidesHook;
-import packed.internal.service.build.wirelets.ServiceWireletPipeline;
+import packed.internal.service.buildtime.ServiceExtensionNode;
+import packed.internal.service.buildtime.service.AtProvidesHook;
+import packed.internal.service.buildtime.wirelets.ServiceWireletPipeline;
 import packed.internal.service.runtime.AbstractInjector;
 
 /**

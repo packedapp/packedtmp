@@ -35,4 +35,14 @@ public @interface MethodSidecar {
 
     // Will only be available in the sidecar, not any of its runtime representations
     boolean injectDirectMethodHandle() default false; // Can also be used for consts....
+
+    Class<?>[] methodConst(); // MD og evt. DirectMH
+
+    //// Conditional installs a... Nah hvad med en annotation paa classen???
+    // Class<Predicate<? extends MethodDescriptor>>
+
+    // Problemet er lidt DirectMethodHandle... hvis vi ikke skal bruge den...
+
+    // Vi vil gerne kombinere const og predicated..
+    // F.eks. vi gider ikke extract ting i baade et predicate og saa igen i en const
 }

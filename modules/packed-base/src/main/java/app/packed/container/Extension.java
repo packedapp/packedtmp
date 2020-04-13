@@ -140,8 +140,9 @@ public abstract class Extension {
     }
 
     /**
-     * Returns this extension's context. Or fails with {@link IllegalStateException} if invoked from the constructor of the
-     * extension.
+     * Returns this extension's context.
+     * <p>
+     * This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension.
      * 
      * @throws IllegalArgumentException
      *             if invoked from the constructor of the extension

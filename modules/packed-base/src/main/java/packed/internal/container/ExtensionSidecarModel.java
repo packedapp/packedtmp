@@ -18,7 +18,6 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -29,12 +28,14 @@ import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
+import app.packed.container.ExtensionContext;
 import app.packed.container.InternalExtensionException;
 import app.packed.hook.OnHook;
 import app.packed.sidecar.ExtensionSidecar;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
 import packed.internal.reflect.OpenClass;
+import packed.internal.reflect.t2.InjectionSpec;
 import packed.internal.sidecar.SidecarModel;
 import packed.internal.sidecar.SidecarTypeMeta;
 import packed.internal.util.StringFormatter;
@@ -71,15 +72,18 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
 
     final MethodHandle bundleBuilderMethod;
 
-    /** A set of the direct dependencies of this extension. */
+    /** A set of this extension's direct dependencies of other extensions. */
     private final Set<Class<? extends Extension>> directDependencies;
 
     /** The depth of this extension. Defined as 0 if no dependencies otherwise max(all dependencies depth) + 1. */
     private final int depth;
 
+    /** A unique id of the extension. */
     final int id; //
 
+    /** The canonical name of the extension. */
     private final String name;
+
     final BaseHookQualifierList nonActivatingHooks;
 
     @Nullable
@@ -146,14 +150,10 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
         // Time goes from around 1000 ns to 12 ns when we cache the method handle.
         // With LambdaMetafactory wrapped in a supplier we can get down to 6 ns
         try {
-            if (constructor.type().parameterCount() > 0) {
-                return (Extension) constructor.invoke(context);
-            } else {
-                return (Extension) constructor.invoke();
-            }
+            return (Extension) constructor.invoke(context);
         } catch (Throwable e) {
-            ThrowableUtil.throwIfUnchecked(e);
-            throw new UndeclaredThrowableException(e);
+//            ThrowableUtil.throwIfUnchecked(e);
+            throw new InternalExtensionException("Instantiation of Extension failed", e);
         }
     }
 
@@ -232,7 +232,9 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
                 }
             }
 
-            OpenClass cp = prep();
+            InjectionSpec is = new InjectionSpec(sidecarType, ExtensionContext.class);
+            is.add(ExtensionContext.class, 0);
+            OpenClass cp = prep(is);
             this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
             return new ExtensionSidecarModel(this);
         }

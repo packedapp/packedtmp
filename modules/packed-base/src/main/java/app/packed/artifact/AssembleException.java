@@ -16,8 +16,8 @@
 package app.packed.artifact;
 
 /**
- * An exception thrown by the runtime when a pod cannot be assembled properly. This exception indicates a programmatic
- * error and can normally only be recovered in code.
+ * An exception thrown by the runtime when a pod cannot be assembled properly. This exception normally indicates a
+ * programmatic error and can usually only be recovered by updating the underlying code.
  */
 public class AssembleException extends RuntimeException {
 
@@ -52,5 +52,6 @@ public class AssembleException extends RuntimeException {
 }
 //Or in lifecycle???? or base??? Hmmmmmm
 //Hed noget med artifact foer, men hvis vi faar dynamiske componenter...
+
 // InitializationException
 // ExecutionException (vi har den jo i juc...)

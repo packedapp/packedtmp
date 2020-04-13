@@ -17,8 +17,8 @@ package packed.internal.service.runtime;
 
 import app.packed.service.ProvideContext;
 import app.packed.service.ServiceMode;
-import packed.internal.service.build.ServiceExtensionInstantiationContext;
-import packed.internal.service.build.service.ComponentFactoryBuildEntry;
+import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
+import packed.internal.service.buildtime.service.ComponentFactoryBuildEntry;
 
 /**
  *

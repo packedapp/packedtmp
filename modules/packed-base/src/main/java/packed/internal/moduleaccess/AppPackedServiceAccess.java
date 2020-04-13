@@ -16,7 +16,7 @@
 package packed.internal.moduleaccess;
 
 import app.packed.service.ServiceExtension;
-import packed.internal.service.build.ServiceExtensionNode;
+import packed.internal.service.buildtime.ServiceExtensionNode;
 
 /** A support class for calling package private methods in the app.packed.service package. */
 public interface AppPackedServiceAccess extends SecretAccess {

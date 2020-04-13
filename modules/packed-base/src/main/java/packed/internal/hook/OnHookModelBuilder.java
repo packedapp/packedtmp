@@ -19,28 +19,33 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayDeque;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import app.packed.base.Nullable;
 import app.packed.container.Bundle;
 import app.packed.container.Extension;
+import app.packed.container.ExtensionContext;
+import app.packed.container.InternalExtensionException;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
-import packed.internal.reflect.ClassFinder;
 import packed.internal.reflect.OpenClass;
-import packed.internal.reflect.ConstructorFinder;
 import packed.internal.thirdparty.guice.GTypeLiteral;
 import packed.internal.util.AnnotationUtil;
+import packed.internal.util.StringFormatter;
 import packed.internal.util.Tiny;
 import packed.internal.util.TinyPair;
 import packed.internal.util.UncheckedThrowableFactory;
@@ -315,14 +320,89 @@ final class OnHookModelBuilder {
 
         private Node(OpenClass cps, UncheckedThrowableFactory<? extends RuntimeException> tf, Class<?> type) {
             this.hookType = requireNonNull(type);
-            Class<?> builderClass = ClassFinder.findDeclaredClass(type, "Builder", Hook.Builder.class);
+            Class<?> builderClass = findDeclaredClass(type, "Builder", Hook.Builder.class);
             this.cp = cps.spawn(builderClass);
-            this.builderConstructor = ConstructorFinder.find(cp, tf);
+            this.builderConstructor = find(cp, tf);
+
             // TypeUtil.checkClassIsInstantiable(hookType);
 
             if (builderConstructor.type().returnType() != cp.clazz()) {
                 throw new IllegalStateException("OOPS");
             }
+        }
+
+        // Could have name = type.getSipleName?
+        // TODO include subclasses if they are assignable to type
+        public static Class<?> findDeclaredClass(Class<?> declaringClass, String name, Class<?> type) {
+            Class<?> groupType = null;
+
+            for (Class<?> c : declaringClass.getDeclaredClasses()) {
+                if (c.getSimpleName().equals(name)) {
+                    if (!type.isAssignableFrom(c)) {
+                        throw new InternalExtensionException(c.getCanonicalName() + " must extend " + StringFormatter.format(type));
+                    }
+                    groupType = c;
+                }
+            }
+
+            if (groupType == null) {
+                for (Class<?> c : declaringClass.getSuperclass().getDeclaredClasses()) {
+                    if (c.getSimpleName().equals(name)) {
+                        if (!type.isAssignableFrom(c)) {
+                            throw new InternalExtensionException(c.getCanonicalName() + " must extend " + StringFormatter.format(type));
+                        }
+                        groupType = c;
+                    }
+                }
+            }
+
+            if (groupType == null) {
+                throw new IllegalArgumentException("Could not find declared class named " + name + " for " + declaringClass);
+            }
+
+            return groupType;
+        }
+
+        /**
+         * Finds a constructor (method handle).
+         * 
+         * @param cp
+         *            the type to find the constructor or
+         * @param parameterTypes
+         *            the parameter types the constructor must take
+         * @return a method handle
+         */
+        static <T extends RuntimeException> MethodHandle find(OpenClass cp, UncheckedThrowableFactory<T> tf, Class<?>... parameterTypes) throws T {
+            Class<?> onType = cp.clazz();
+            if (Modifier.isAbstract(onType.getModifiers())) {
+                throw tf.newThrowable("'" + StringFormatter.format(onType) + "' cannot be an abstract class");
+            } else if (TypeUtil.isInnerOrLocalClass(onType)) {
+                throw tf.newThrowable("'" + StringFormatter.format(onType) + "' cannot be an inner or local class");
+            }
+
+            // First check that we have a constructor with specified parameters.
+            // We could use Lookup.findSpecial, but we need to register the constructor if we are generating a native image.
+            Constructor<?> constructor = null;
+            try {
+                constructor = onType.getDeclaredConstructor(parameterTypes);
+            } catch (NoSuchMethodException e) {
+                if (Extension.class.isAssignableFrom(onType)) {
+                    // Hack
+                    try {
+                        constructor = onType.getDeclaredConstructor(ExtensionContext.class);
+                    } catch (NoSuchMethodException ignore) {} // Already on failure path
+                }
+                if (constructor == null) {
+                    if (parameterTypes.length == 0) {
+                        throw tf.newThrowable("'" + StringFormatter.format(onType) + "' must have a no-argument constructor");
+                    } else {
+                        throw tf.newThrowable("'" + StringFormatter.format(onType) + "' must have a constructor taking ["
+                                + Stream.of(parameterTypes).map(p -> p.getName()).collect(Collectors.joining(",")) + "]");
+                    }
+                }
+            }
+
+            return cp.unreflectConstructor(constructor, tf);
         }
 
         @Override

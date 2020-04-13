@@ -17,7 +17,7 @@ package app.packed.service;
 
 import packed.internal.moduleaccess.AppPackedServiceAccess;
 import packed.internal.moduleaccess.ModuleAccess;
-import packed.internal.service.build.ServiceExtensionNode;
+import packed.internal.service.buildtime.ServiceExtensionNode;
 
 /**
  * The instantiation mode of a service.

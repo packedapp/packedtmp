@@ -19,17 +19,18 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.UndeclaredThrowableException;
 
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
+import app.packed.container.InternalExtensionException;
 import app.packed.container.PipelineWirelet;
 import app.packed.container.UseExtension;
 import app.packed.container.WireletPipeline;
 import packed.internal.reflect.OpenClass;
+import packed.internal.reflect.t2.FindConstructor;
+import packed.internal.reflect.t2.InjectionSpec;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
-import packed.internal.util.UncheckedThrowableFactory;
 
 /** A model of a {@link WireletPipeline}. */
 public final class WireletPipelineModel {
@@ -45,6 +46,21 @@ public final class WireletPipelineModel {
         }
     };
 
+    /** A cache of wirelet types to pipeline models. */
+    private static final ClassValue<WireletPipelineModel> WIRELET_MODELS = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        @SuppressWarnings("unchecked")
+        @Override
+        protected WireletPipelineModel computeValue(Class<?> type) {
+            Class<? extends WireletPipeline<?, ?>> p = (Class<? extends WireletPipeline<?, ?>>) WIRELET_TO_PIPELINE_TYPE_EXTRACTOR.extract(type);
+            return WireletPipelineModel.of(p);
+        }
+    };
+
+    /** A type variable extractor to extract what kind of pipeline a pipeline wirelet belongs to. */
+    private static final TypeVariableExtractor WIRELET_TO_PIPELINE_TYPE_EXTRACTOR = TypeVariableExtractor.of(PipelineWirelet.class);
+
     /** A method handle to create new pipeline instances. */
     private final MethodHandle constructor;
 
@@ -52,8 +68,8 @@ public final class WireletPipelineModel {
     @Nullable
     private final Class<? extends Extension> extensionType;
 
-    /** The type of pipeline. */
-    final Class<? extends WireletPipeline<?, ?>> type;
+    /** The type of pipeline this model represents. */
+    private final Class<? extends WireletPipeline<?, ?>> type;
 
     /**
      * Create a new model.
@@ -62,12 +78,12 @@ public final class WireletPipelineModel {
      *            the builder to use for creating a new model
      */
     private WireletPipelineModel(Builder builder) {
-        this.type = builder.actualType;
+        this.type = builder.type;
         this.extensionType = builder.extension == null ? null : builder.extension.extensionType();
         this.constructor = requireNonNull(builder.constructor);
     }
 
-    /** Any extension this pipeline is a part of. */
+    /** Any extension this pipeline is a part of (may be null). */
     @Nullable
     public Class<? extends Extension> extensionType() {
         return extensionType;
@@ -91,6 +107,15 @@ public final class WireletPipelineModel {
     }
 
     /**
+     * Returns the type of pipeline this model represents.
+     * 
+     * @return the type of pipeline this model represents
+     */
+    public Class<? extends WireletPipeline<?, ?>> type() {
+        return type;
+    }
+
+    /**
      * Returns a model for the specified pipeline type.
      * 
      * @param type
@@ -109,72 +134,51 @@ public final class WireletPipelineModel {
      * @return the model
      */
     static WireletPipelineModel ofWirelet(Class<? extends PipelineWirelet<?>> wireletType) {
-        return PipelineWireletModel.MODELS.get(wireletType).pipeline;
+        return WIRELET_MODELS.get(wireletType);
     }
 
     /** A builder of {@link WireletPipelineModel}. */
     private static class Builder {
 
-        private final Class<? extends WireletPipeline<?, ?>> actualType;
-
         private MethodHandle constructor;
 
+        /** Any extension the pipeline is a part of. */
         @Nullable
         private ExtensionSidecarModel extension;
 
+        /** The type of pipeline. */
+        private final Class<? extends WireletPipeline<?, ?>> type;
+
         /**
+         * Creates a new builder
+         * 
          * @param type
+         *            the pipeline type
          */
         private Builder(Class<? extends WireletPipeline<?, ?>> type) {
-            this.actualType = requireNonNull(type);
+            this.type = requireNonNull(type);
         }
 
         private WireletPipelineModel build() {
-            OpenClass cp = new OpenClass(MethodHandles.lookup(), actualType, true);
-            Constructor<?> c = actualType.getDeclaredConstructors()[0];
-
-            UseExtension ue = actualType.getAnnotation(UseExtension.class);
+            UseExtension ue = type.getAnnotation(UseExtension.class);
             if (ue != null) {
-                // TODO validate same module... Maybe put this in a UseExtensionHelper class
-                extension = ExtensionSidecarModel.of(ue.value());
+                Class<? extends Extension> eType = ue.value();
+                if (type.getModule() != eType.getModule()) {
+                    throw new InternalExtensionException("The extension " + eType + " and pipeline " + type + " must be defined in the same module, was "
+                            + eType.getModule() + " and " + type.getModule());
+                }
+                extension = ExtensionSidecarModel.of(eType);
             }
 
-            this.constructor = cp.unreflectConstructor(c, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+            // FindConstructor...
+            OpenClass cp = new OpenClass(MethodHandles.lookup(), type, true);
 
-            // I think we need to validate that the pipeline is specified in
+            InjectionSpec is = new InjectionSpec(type, extension == null ? Extension.class : extension.extensionType());
+
+            // Constructor<?> c = type.getDeclaredConstructors()[0];
+            // this.constructor = cp.unreflectConstructor(c, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+            this.constructor = new FindConstructor().doIt(cp, is);
             return new WireletPipelineModel(this);
-        }
-    }
-
-    /** A model for {@link PipelineWirelet} types. */
-    private static final class PipelineWireletModel {
-
-        /** A cache of models. */
-        private static final ClassValue<PipelineWireletModel> MODELS = new ClassValue<>() {
-
-            /** {@inheritDoc} */
-            @SuppressWarnings("unchecked")
-            @Override
-            protected PipelineWireletModel computeValue(Class<?> type) {
-                return new PipelineWireletModel((Class<? extends PipelineWirelet<?>>) type);
-            }
-        };
-
-        /** A type variable extractor to extract what kind of pipeline an extension wirelet belongs to. */
-        private static final TypeVariableExtractor PIPELINE_TYPE_EXTRACTOR = TypeVariableExtractor.of(PipelineWirelet.class);
-
-        /** The extension pipeline the wirelet belongs to. */
-        private final WireletPipelineModel pipeline;
-
-        /**
-         * @param type
-         *            the type of extension wirelet
-         */
-        @SuppressWarnings("unchecked")
-        private PipelineWireletModel(Class<? extends PipelineWirelet<?>> type) {
-            Class<? extends WireletPipeline<?, ?>> p = (Class<? extends WireletPipeline<?, ?>>) PIPELINE_TYPE_EXTRACTOR.extract(type);
-            this.pipeline = WireletPipelineModel.of(p);
-            // Should check that UseExtension is not used on the PipelineWirelet...
         }
     }
 }

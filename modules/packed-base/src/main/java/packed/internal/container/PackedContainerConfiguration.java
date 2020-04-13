@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,12 +29,9 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import app.packed.analysis.BundleDescriptor;
 import app.packed.artifact.ArtifactContext;
-import app.packed.base.Contract;
 import app.packed.base.Nullable;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
@@ -64,10 +61,10 @@ import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.moduleaccess.ModuleAccess;
-import packed.internal.reflect.ConstructorFinder;
 import packed.internal.reflect.OpenClass;
+import packed.internal.reflect.t2.FindConstructor;
+import packed.internal.reflect.t2.InjectionSpec;
 import packed.internal.service.runtime.PackedInjector;
-import packed.internal.util.UncheckedThrowableFactory;
 
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
@@ -147,7 +144,13 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     @Override
     public <T extends HostConfiguration> T addHost(Class<T> hostType) {
         OpenClass cp = new OpenClass(MethodHandles.lookup(), hostType, true);
-        MethodHandle mh = ConstructorFinder.find(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, HostConfigurationContext.class);
+        // MethodHandle mh = ConstructorFinder.find(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY,
+        // HostConfigurationContext.class);
+
+        InjectionSpec aa = new InjectionSpec(MethodType.methodType(hostType, HostConfigurationContext.class));
+        aa.add(HostConfigurationContext.class, 0);
+        MethodHandle mh = new FindConstructor().doIt(cp, aa);
+
         try {
             return (T) mh.invoke(addHost());
         } catch (Throwable e) {
@@ -203,43 +206,11 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         // }
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void buildDescriptor(BundleDescriptor.Builder builder) {
         builder.setBundleDescription(getDescription());
         builder.setName(getName());
         for (PackedExtensionContext e : extensions.values()) {
-            MethodHandle mha = e.model().bundleBuilderMethod;
-            if (mha != null) {
-                try {
-                    mha.invoke(e.extension(), builder);
-                } catch (Throwable e1) {
-                    throw new UndeclaredThrowableException(e1);
-                }
-            }
-
-            for (Object s : e.model().contracts().values()) {
-                // TODO need a context
-                Contract con;
-                if (s instanceof Function) {
-                    con = (Contract) ((Function) s).apply(e.extension());
-                } else if (s instanceof BiFunction) {
-                    con = (Contract) ((BiFunction) s).apply(e.extension(), null);
-                } else {
-                    // MethodHandle...
-                    try {
-                        MethodHandle mh = (MethodHandle) s;
-                        if (mh.type().parameterCount() == 0) {
-                            con = (Contract) mh.invoke(e.extension());
-                        } else {
-                            con = (Contract) mh.invoke(e.extension(), null);
-                        }
-                    } catch (Throwable e1) {
-                        throw new UndeclaredThrowableException(e1);
-                    }
-                }
-                requireNonNull(con);
-                builder.addContract(con);
-            }
+            e.buildDescriptor(builder);
         }
         builder.extensions.addAll(extensions.keySet());
     }

@@ -247,6 +247,22 @@ public interface App extends AutoCloseable {
         // start(new SomeBundle(), LifecycleWirelets.stopAfter(10, TimeUnit.SECONDS), ()-> New CancelledException()); (failure)
     }
 }
+
+///**
+//* Initiates an asynchronously startup of the application. Normally, there is no need to call this methods since most
+//* methods on the container will lazily start the container whenever it is needed. For example, invoking
+//* {@link #use(Class)} will automatically start the container if it has not already been started by another action.
+//* <p>
+//* If the container is in the process of being initialized when invoking this method, for example, from a method
+//* annotated with {@link OnInitialize}. The container will automatically be started immediately after it have been
+//* constructed.
+//* <p>
+//* Invocation has no additional effect if the container has already been started or shut down.
+//*
+//* @return a future that can be used to query whether the application has completed startup or is still in the process
+//* of starting up. Can also be used to retrieve any exception that might have prevented the container in
+//* starting properly
+//*/
 //
 //
 //// Ved ikke om CompletableFuture giver mening. Hvis App returnere initialize() betyder det jo

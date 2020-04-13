@@ -25,7 +25,7 @@ import app.packed.config.ConfigSite;
 import app.packed.service.ProvideContext;
 import app.packed.service.ServiceDescriptor;
 import app.packed.service.ServiceMode;
-import packed.internal.service.build.BuildEntry;
+import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.util.KeyBuilder;
 
 /** An entry that represents a service at runtime. */

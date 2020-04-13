@@ -29,8 +29,8 @@ import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.Factory0;
 import app.packed.inject.Factory1;
-import packed.internal.service.build.wirelets.PackedDownstreamInjectionWirelet;
-import packed.internal.service.build.wirelets.PackedUpstreamInjectionWirelet;
+import packed.internal.service.buildtime.wirelets.PackedDownstreamInjectionWirelet;
+import packed.internal.service.buildtime.wirelets.PackedUpstreamInjectionWirelet;
 
 /**
  * Various wirelets that can be used to transform and filter services being pull and pushed into containers.

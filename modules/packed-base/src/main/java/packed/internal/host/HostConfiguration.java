@@ -40,4 +40,7 @@ public interface HostConfiguration extends ComponentConfiguration {
     default ComponentType type() {
         return ComponentType.HOST;
     }
+
+    // BlackListed/Whitelisted extensions...
+    // Custom Packlets, ...
 }

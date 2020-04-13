@@ -21,8 +21,8 @@ import app.packed.inject.Provider;
 import app.packed.inject.ProvisionException;
 import app.packed.service.ServiceMode;
 import app.packed.service.ProvideContext;
-import packed.internal.service.build.ServiceExtensionInstantiationContext;
-import packed.internal.service.build.service.ComponentFactoryBuildEntry;
+import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
+import packed.internal.service.buildtime.service.ComponentFactoryBuildEntry;
 import packed.internal.util.ThrowableUtil;
 
 /** A runtime service node for prototypes. */

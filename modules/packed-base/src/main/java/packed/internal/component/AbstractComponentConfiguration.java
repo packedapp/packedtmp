@@ -241,7 +241,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
     /** {@inheritDoc} */
     @Override
     public final Optional<Class<? extends Extension>> extension() {
-        return extension == null ? Optional.empty() : extension.model().optional;
+        return extension == null ? Optional.empty() : extension.optional();
     }
 
     protected void extensionsPrepareInstantiation(PackedInstantiationContext ic) {

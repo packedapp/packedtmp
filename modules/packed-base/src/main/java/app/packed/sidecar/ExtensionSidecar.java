@@ -34,7 +34,11 @@ import app.packed.container.ExtensionContext;
 public @interface ExtensionSidecar {
 
     /**
-     * An sidecar lifecycle event that the sidecar has been successfully instantiated by the runtime. But the instance has
+     * Used together with the {@link PostSidecar} annotation to indicate that an {@link Extension}method should be executed
+     * as soon as the extension has been successfully instantiated and before it is returned to the user.
+     * <p>
+     * 
+     * An extension sidecar event that the sidecar has been successfully instantiated by the runtime. But the instance has
      * not yet been returned to the user. The next event will be {@link #ON_PREEMBLE}.
      */
     String INSTANTIATION = "Instantiation";

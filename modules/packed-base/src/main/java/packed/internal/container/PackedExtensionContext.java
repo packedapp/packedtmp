@@ -17,8 +17,14 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
+import app.packed.analysis.BundleDescriptor;
+import app.packed.base.Contract;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
@@ -32,7 +38,7 @@ import packed.internal.moduleaccess.ModuleAccess;
 /** The default implementation of {@link ExtensionContext} with addition methods only available in app.packed.base. */
 public final class PackedExtensionContext implements ExtensionContext, Comparable<PackedExtensionContext> {
 
-    /** The extension instance this context wraps, initialized in {@link #initialize(PackedContainerConfiguration)}. */
+    /** The extension instance this context wraps, initialized in {@link #of(PackedContainerConfiguration, Class)}. */
     @Nullable
     private Extension extension;
 
@@ -50,12 +56,48 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
      * 
      * @param pcc
      *            the configuration of the container the extension is registered in
-     * @param extensionType
-     *            the extension type to create a context for
+     * @param model
+     *            a model of the extension.
      */
-    private PackedExtensionContext(PackedContainerConfiguration pcc, Class<? extends Extension> extensionType) {
+    private PackedExtensionContext(PackedContainerConfiguration pcc, ExtensionSidecarModel model) {
         this.pcc = requireNonNull(pcc);
-        this.model = ExtensionSidecarModel.of(extensionType);
+        this.model = requireNonNull(model);
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    void buildDescriptor(BundleDescriptor.Builder builder) {
+        MethodHandle mha = model.bundleBuilderMethod;
+        if (mha != null) {
+            try {
+                mha.invoke(extension, builder);
+            } catch (Throwable e1) {
+                throw new UndeclaredThrowableException(e1);
+            }
+        }
+
+        for (Object s : model.contracts().values()) {
+            // TODO need a context
+            Contract con;
+            if (s instanceof Function) {
+                con = (Contract) ((Function) s).apply(extension);
+            } else if (s instanceof BiFunction) {
+                con = (Contract) ((BiFunction) s).apply(extension, null);
+            } else {
+                // MethodHandle...
+                try {
+                    MethodHandle mh = (MethodHandle) s;
+                    if (mh.type().parameterCount() == 0) {
+                        con = (Contract) mh.invoke(extension);
+                    } else {
+                        con = (Contract) mh.invoke(extension, null);
+                    }
+                } catch (Throwable e1) {
+                    throw new UndeclaredThrowableException(e1);
+                }
+            }
+            requireNonNull(con);
+            builder.addContract(con);
+        }
     }
 
     /** {@inheritDoc} */
@@ -108,31 +150,8 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
         return e;
     }
 
-    /**
-     * Initializes the extension.
-     * 
-     * @param pcc
-     *            the container container configuration where the extension is registered
-     */
-    private void initialize(PackedContainerConfiguration pcc) {
-        this.extension = model.newExtensionInstance(this);
-        ModuleAccess.container().setExtensionContext(extension, this);
-
-        // Run any onAdd action that has set via ExtensionComposer#onAdd().
-        PackedExtensionContext existing = pcc.activeExtension;
-        try {
-            pcc.activeExtension = this;
-            model.invokeCallbacks(ExtensionSidecarModel.ON_INSTANTIATION, extension);
-            if (pcc.wireletContext != null) {
-                pcc.wireletContext.extensionInitialized(this);
-            }
-
-            // Registers this context with the artifact build context.
-            // In order to compute a total order among dependencies within the artifact
-            // pcc.artifact().usesExtension(this);
-        } finally {
-            pcc.activeExtension = existing;
-        }
+    public Class<? extends Extension> extensionType() {
+        return model.extensionType();
     }
 
     /** {@inheritDoc} */
@@ -147,13 +166,10 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
         return pcc.installInstance(instance);
     }
 
-    /**
-     * Returns the model of the extension.
-     * 
-     * @return the model of the extension
-     */
-    public ExtensionSidecarModel model() {
-        return model;
+    /** Invoked by the container configuration, whenever the extension is configured. */
+    public void onChildrenConfigured() {
+        model.invokeCallbacks(ExtensionSidecarModel.ON_CHILDREN_DONE, extension);
+        isConfigured = true;
     }
 
     /** Invoked by the container configuration, whenever the extension is configured. */
@@ -162,10 +178,13 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
         isConfigured = true;
     }
 
-    /** Invoked by the container configuration, whenever the extension is configured. */
-    public void onChildrenConfigured() {
-        model.invokeCallbacks(ExtensionSidecarModel.ON_CHILDREN_DONE, extension);
-        isConfigured = true;
+    /**
+     * Returns an optional representing this extension. This is mainly to avoid allocation, as we can have a lot of them
+     * 
+     * @return an optional representing this extension
+     */
+    public Optional<Class<? extends Extension>> optional() {
+        return model.optional;
     }
 
     /** {@inheritDoc} */
@@ -185,6 +204,7 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Extension> T use(Class<T> extensionType) {
+        // TODO can we call this method from the constructor????
         requireNonNull(extensionType, "extensionType is null");
         // We need to check whether or not the extension is allowed to use the specified extension every time.
         // An alternative would be to cache it in a map for each extension.
@@ -198,7 +218,7 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
 
         if (!model.directDependencies().contains(extensionType)) {
             // We allow an extension to use itself, alternative would be to throw an exception, but for what reason?
-            if (extensionType == extension.getClass()) {
+            if (extensionType == extension().getClass()) { // extension() checks for constructor
                 return (T) extension;
             }
 
@@ -218,8 +238,22 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
      * @return the new extension context
      */
     public static PackedExtensionContext of(PackedContainerConfiguration pcc, Class<? extends Extension> extensionType) {
-        PackedExtensionContext pec = new PackedExtensionContext(pcc, extensionType);
-        pec.initialize(pcc);
+        // Create extension context and instantiate extension
+        ExtensionSidecarModel model = ExtensionSidecarModel.of(extensionType);
+        PackedExtensionContext pec = new PackedExtensionContext(pcc, model);
+        Extension e = pec.extension = model.newExtensionInstance(pec);
+        ModuleAccess.container().setExtensionContext(e, pec);
+
+        PackedExtensionContext existing = pcc.activeExtension;
+        try {
+            pcc.activeExtension = pec;
+            model.invokeCallbacks(ExtensionSidecarModel.ON_INSTANTIATION, e);
+            if (pcc.wireletContext != null) {
+                pcc.wireletContext.extensionInitialized(pec);
+            }
+        } finally {
+            pcc.activeExtension = existing;
+        }
         return pec;
     }
 }

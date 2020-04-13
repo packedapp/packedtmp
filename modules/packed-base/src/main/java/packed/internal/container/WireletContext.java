@@ -76,8 +76,8 @@ public final class WireletContext {
             @SuppressWarnings("unchecked")
             WireletPipelineModel model = WireletPipelineModel.ofWirelet((Class<? extends PipelineWirelet<?>>) w.getClass());
 
-            ((WireletPipelineContext) map.computeIfAbsent(model.type, k -> {
-                WireletPipelineContext pc = parent == null ? null : (WireletPipelineContext) parent.getIt(model.type);
+            ((WireletPipelineContext) map.computeIfAbsent(model.type(), k -> {
+                WireletPipelineContext pc = parent == null ? null : (WireletPipelineContext) parent.getIt(model.type());
                 WireletPipelineContext wpc = new WireletPipelineContext(model, pc);
                 if (model.extensionType() != null) {
                     extensions.put(model.extensionType(), wpc);// We need to add it as a list if we have more than one wirelet context
@@ -113,7 +113,7 @@ public final class WireletContext {
 
     public void extensionInitialized(PackedExtensionContext pec) {
         // See if we have installed a pipeline
-        WireletPipelineContext wpc = (WireletPipelineContext) extensions.get(pec.model().extensionType());
+        WireletPipelineContext wpc = (WireletPipelineContext) extensions.get(pec.extensionType());
         if (wpc != null) {
             wpc.instantiate(pec.extension());
         }

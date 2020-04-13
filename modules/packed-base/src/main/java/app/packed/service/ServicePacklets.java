@@ -22,8 +22,8 @@ import java.util.function.Consumer;
 import app.packed.base.Key;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
-import packed.internal.service.build.wirelets.PackedDownstreamInjectionWirelet;
-import packed.internal.service.build.wirelets.PackedUpstreamInjectionWirelet;
+import packed.internal.service.buildtime.wirelets.PackedDownstreamInjectionWirelet;
+import packed.internal.service.buildtime.wirelets.PackedUpstreamInjectionWirelet;
 
 /**
  *
