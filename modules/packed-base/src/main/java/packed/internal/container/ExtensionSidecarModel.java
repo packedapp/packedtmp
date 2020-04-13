@@ -71,13 +71,51 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
 
     static final int ON_PREEMBLE = 1;
 
-    final MethodHandle bundleBuilderMethod;
+    private static ClassValue<?> OPTIONALS = new ClassValue<>() {
 
-    /** A set of this extension's direct dependencies of other extensions. */
-    private final Set<Class<? extends Extension>> directDependencies;
+        @Override
+        protected Object computeValue(Class<?> type) {
+            try {
+                return computeValue0(type);
+            } catch (Throwable t) {
+                return t;
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        private List<Class<? extends Extension>> computeValue0(Class<?> type) {
+            String[] dependencies = type.getAnnotation(ExtensionSidecar.class).optionalDependencies();
+
+            ArrayList<Class<? extends Extension>> result = new ArrayList<>();
+            ClassLoader cl = type.getClassLoader(); // PrividligeAction???
+            for (String s : dependencies) {
+                Class<?> c = null;
+                try {
+                    c = Class.forName(s, false, cl);
+                } catch (ClassNotFoundException ignore) {}
+                if (c != null) {
+                    if (Extension.class == c) {
+                        throw new InternalExtensionException("@" + ExtensionSidecar.class.getSimpleName() + " " + StringFormatter.format(type)
+                                + " cannot specify Extension.class as an optional dependency, for " + StringFormatter.format(c));
+                    } else if (!Extension.class.isAssignableFrom(c)) {
+                        throw new InternalExtensionException("@" + ExtensionSidecar.class.getSimpleName() + " " + StringFormatter.format(type)
+                                + " specified an invalid extension " + StringFormatter.format(c));
+                    }
+
+                    result.add((Class<? extends Extension>) c);
+                }
+            }
+            return result;
+        }
+    };
+
+    final MethodHandle bundleBuilderMethod;
 
     /** The depth of this extension. Defined as 0 if no dependencies otherwise max(all dependencies depth) + 1. */
     private final int depth;
+
+    /** A set of this extension's direct dependencies of other extensions. */
+    private final Set<Class<? extends Extension>> directDependencies;
 
     /** A unique id of the extension. */
     final int id; //
@@ -159,16 +197,16 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
     }
 
     /**
-     * Returns an extension model for the specified extension type.
+     * Returns any value of {@link ExtensionMember} annotation.
      * 
-     * @param extensionType
-     *            the type of extension to return a model for
-     * @return an extension model for the specified extension type
+     * @param type
+     *            the type look for an ExtensionMember annotation on
+     * @return an extension the specified type is a member of
+     * @throws InternalExtensionException
+     *             if an annotation is present and the specified is not in the same module as the extension specified in
+     *             {@link ExtensionMember#value()}
      */
-    public static ExtensionSidecarModel of(Class<? extends Extension> extensionType) {
-        return MODELS.get(extensionType);
-    }
-
+    @Nullable
     public static Class<? extends Extension> findIfMember(Class<?> type) {
         ExtensionMember ue = type.getAnnotation(ExtensionMember.class);
         if (ue != null) {
@@ -184,6 +222,17 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
     }
 
     /**
+     * Returns an extension model for the specified extension type.
+     * 
+     * @param extensionType
+     *            the type of extension to return a model for
+     * @return an extension model for the specified extension type
+     */
+    public static ExtensionSidecarModel of(Class<? extends Extension> extensionType) {
+        return MODELS.get(extensionType);
+    }
+
+    /**
      * Returns a on hook model of all the methods annotated with {@link OnHook} on the extension. Or null if the extension
      * does not define any methods annotated with {@link OnHook}.
      * 
@@ -196,6 +245,15 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
         return of(extensionType).onHookModel;
     }
 
+    @SuppressWarnings("unchecked")
+    private static List<Class<? extends Extension>> resolveOptional(Class<?> extensionType) {
+        Object result = OPTIONALS.get(extensionType);
+        if (result instanceof List) {
+            return (List<Class<? extends Extension>>) result;
+        }
+        return ThrowableUtil.throwReturn((Throwable) result);
+    }
+
     /** A builder for {@link ExtensionSidecarModel}. */
     static final class Builder extends SidecarModel.Builder {
 
@@ -206,16 +264,16 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
         /** A list of dependencies on other extensions. */
         private Set<Class<? extends Extension>> dependenciesDirect = new HashSet<>();
 
+        /** The depth of the extension. */
+        private int depth;
+
+        int id;
+
         /** The loader used to load the extension. */
         private final ExtensionSidecarModelLoader loader;
 
         /** A builder for all methods annotated with {@link OnHook} on the extension. */
         private OnHookModel onHookModel;
-
-        /** The depth of the extension. */
-        private int depth;
-
-        int id;
 
         /**
          * Creates a new builder.
@@ -226,6 +284,15 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
         Builder(Class<? extends Extension> extensionType, ExtensionSidecarModelLoader loader) {
             super(STM, extensionType);
             this.loader = requireNonNull(loader);
+        }
+
+        private void addDependency(Class<? extends Extension> dependencyType) {
+            if (dependencyType == sidecarType) {
+                throw new InternalExtensionException("Extension " + sidecarType + " cannot dependend on itself via " + ExtensionSidecar.class);
+            }
+            ExtensionSidecarModel model = ExtensionSidecarModelLoader.load(this, dependencyType, loader);
+            depth = Math.max(depth, model.depth + 1);
+            dependenciesDirect.add(dependencyType);
         }
 
         /**
@@ -253,61 +320,5 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
             this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
             return new ExtensionSidecarModel(this);
         }
-
-        private void addDependency(Class<? extends Extension> dependencyType) {
-            if (dependencyType == sidecarType) {
-                throw new InternalExtensionException("Extension " + sidecarType + " cannot dependend on itself via " + ExtensionSidecar.class);
-            }
-            ExtensionSidecarModel model = ExtensionSidecarModelLoader.load(this, dependencyType, loader);
-            depth = Math.max(depth, model.depth + 1);
-            dependenciesDirect.add(dependencyType);
-        }
     }
-
-    @SuppressWarnings("unchecked")
-    private static List<Class<? extends Extension>> resolveOptional(Class<?> extensionType) {
-        Object result = OPTIONALS.get(extensionType);
-        if (result instanceof List) {
-            return (List<Class<? extends Extension>>) result;
-        }
-        return ThrowableUtil.throwReturn((Throwable) result);
-    }
-
-    private static ClassValue<?> OPTIONALS = new ClassValue<>() {
-
-        @Override
-        protected Object computeValue(Class<?> type) {
-            try {
-                return computeValue0(type);
-            } catch (Throwable t) {
-                return t;
-            }
-        }
-
-        @SuppressWarnings("unchecked")
-        private List<Class<? extends Extension>> computeValue0(Class<?> type) {
-            String[] dependencies = type.getAnnotation(ExtensionSidecar.class).optionalDependencies();
-
-            ArrayList<Class<? extends Extension>> result = new ArrayList<>();
-            ClassLoader cl = type.getClassLoader(); // PrividligeAction???
-            for (String s : dependencies) {
-                Class<?> c = null;
-                try {
-                    c = Class.forName(s, false, cl);
-                } catch (ClassNotFoundException ignore) {}
-                if (c != null) {
-                    if (Extension.class == c) {
-                        throw new InternalExtensionException("@" + ExtensionSidecar.class.getSimpleName() + " " + StringFormatter.format(type)
-                                + " cannot specify Extension.class as an optional dependency, for " + StringFormatter.format(c));
-                    } else if (!Extension.class.isAssignableFrom(c)) {
-                        throw new InternalExtensionException("@" + ExtensionSidecar.class.getSimpleName() + " " + StringFormatter.format(type)
-                                + " specified an invalid extension " + StringFormatter.format(c));
-                    }
-
-                    result.add((Class<? extends Extension>) c);
-                }
-            }
-            return result;
-        }
-    };
 }

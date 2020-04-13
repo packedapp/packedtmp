@@ -78,6 +78,9 @@ public final class WireletPipelineModel {
 
         OpenClass cp = new OpenClass(MethodHandles.lookup(), type, true);
         InjectionSpec is = new InjectionSpec(type, memberOfExtension == null ? Extension.class : memberOfExtension);
+        if (memberOfExtension != null) {
+            is.add(memberOfExtension, 0);
+        }
         this.constructor = cp.findConstructor(is);
     }
 
