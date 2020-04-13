@@ -21,6 +21,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
@@ -62,27 +64,45 @@ public class FindConstructor {
     ArrayList<Parameter> parameters;
 
     public MethodHandle doIt(OpenClass oc, InjectionSpec aa) {
+        Constructor<?> constructor = findInjectableConstructor(aa.input().returnType());
+        return doIt(oc, constructor, aa);
+    }
+
+    public MethodHandle doIt(OpenClass oc, Executable e, InjectionSpec aa) {
 
         MethodType expected = aa.input();
 
-        Constructor<?> constructor = findInjectableConstructor(expected.returnType());
-
-        MethodHandle mh = oc.unreflectConstructor(constructor, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-        this.parameters = new ArrayList<>(List.of(constructor.getParameters()));
+        boolean isInstanceMethod = false;
+        MethodHandle mh;
+        if (e instanceof Constructor) {
+            mh = oc.unreflectConstructor((Constructor<?>) e, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+        } else {
+            Method m = (Method) e;
+            mh = oc.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+            isInstanceMethod = !Modifier.isStatic(m.getModifiers());
+        }
+        // MethodHandle mh = oc.unreflectConstructor(constructor,
+        // UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+        this.parameters = new ArrayList<>(List.of(e.getParameters()));
 
         int injectionContext = -1;
         // Nej vi binder nogen til constant... Saa det er ikke sikkert...
-        int[] permutationArray = new int[this.parameters.size()];
-        for (int i = 0; i < permutationArray.length; i++) {
+
+        int add = isInstanceMethod ? 1 : 0;
+        int[] permutationArray = new int[this.parameters.size() + add];
+        if (isInstanceMethod) {
+            permutationArray[0] = 0;
+        }
+        for (int i = 0; i < this.parameters.size(); i++) {
             Parameter p = parameters.get(i);
+            int index;
             if (p.getType() == InjectionContext.class) {
-                injectionContext = expected.parameterCount();
-                permutationArray[i] = injectionContext;
+                index = injectionContext = expected.parameterCount();
             } else {
                 Key<?> kk = Key.of(p.getType());
                 Entry entry = aa.keys.get(kk);
                 if (entry != null) {
-                    permutationArray[i] = entry.index;
+                    index = entry.index;
                     if (entry.transformer != null) {
                         mh = MethodHandles.collectArguments(mh, i, entry.transformer);
                     }
@@ -90,6 +110,7 @@ public class FindConstructor {
                     throw new UnresolvedDependencyException("" + kk + " Available keys = " + aa.keys.keySet());
                 }
             }
+            permutationArray[i + add] = index;
         }
 
         if (injectionContext != -1) {

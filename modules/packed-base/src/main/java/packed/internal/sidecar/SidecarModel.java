@@ -25,12 +25,12 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 import app.packed.base.Contract;
-import app.packed.container.InternalExtensionException;
 import app.packed.sidecar.Expose;
 import app.packed.sidecar.PostSidecar;
 import packed.internal.reflect.OpenClass;
 import packed.internal.reflect.t2.FindConstructor;
 import packed.internal.reflect.t2.InjectionSpec;
+import packed.internal.util.ThrowableUtil;
 import packed.internal.util.UncheckedThrowableFactory;
 
 /**
@@ -69,19 +69,14 @@ public abstract class SidecarModel {
         return contracts;
     }
 
-    public void invokeCallbacks(int id, Object sidecar) {
+    public void invokePostSidecarAnnotatedMethods(int id, Object sidecar) {
         Object o = callbacks[id];
         if (o != null) {
             MethodHandle mh = (MethodHandle) o;
             try {
-//                if (mh.type().parameterCount() == 0) {
-//                    mh.invoke();
-//                } else {
-//                   
-//                }
-
                 mh.invoke(sidecar);
             } catch (Throwable e) {
+                ThrowableUtil.throwIfUnchecked(e);
                 throw new UndeclaredThrowableException(e);
             }
         }
@@ -125,15 +120,20 @@ public abstract class SidecarModel {
             cp.findMethods(e -> {
                 PostSidecar oa = e.getAnnotation(PostSidecar.class);
                 if (oa != null) {
-                    if (Modifier.isStatic(e.getModifiers())) {
-                        throw new InternalExtensionException("Methods annotated with " + PostSidecar.class + " cannot be static, method = " + e);
-                    }
                     int index = statics.indexOf(oa.value());
                     if (index == -1) {
                         throw new Error();
                     }
 
+                    // InjectionSpec is = new InjectionSpec(MethodType.methodType(e.getReturnType()));
+
                     MethodHandle mh = cp.unreflect(e, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+
+                    // mh = fc.doIt(cp, e, is);
+
+                    if (Modifier.isStatic(e.getModifiers())) {
+                        mh = MethodHandles.dropArguments(mh, 0, sidecarType);
+                    }
 
                     callbacks[index] = mh;
                 }

@@ -21,6 +21,8 @@ import app.packed.artifact.App;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.inject.InjectionContext;
+import app.packed.sidecar.ExtensionSidecar;
+import app.packed.sidecar.PostSidecar;
 
 /**
  *
@@ -48,6 +50,11 @@ public class Dddd extends BaseBundle {
 
         MyExt(InjectionContext conb) {
             System.out.println(conb);
+        }
+
+        @PostSidecar(ExtensionSidecar.INSTANTIATION)
+        static void foo() {
+            System.out.println("HEJ ");
         }
     }
 }

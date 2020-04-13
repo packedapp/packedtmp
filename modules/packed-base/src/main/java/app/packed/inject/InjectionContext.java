@@ -61,6 +61,8 @@ public interface InjectionContext {
     // constructors...
     // Og som tager hemmelige "klasser".. Nej man skal ikke kunne instantiere en eller anden composite, som man ikke har
     // adgang til... Men
+
+    // rename to targetClass?
     Class<?> target(); // Det er jo bare .getClass(); Med mindre det er en Composite...
 }
 

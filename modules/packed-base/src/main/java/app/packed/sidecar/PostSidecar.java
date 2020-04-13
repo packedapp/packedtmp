@@ -25,7 +25,8 @@ import java.lang.annotation.Target;
  * lifecycle. Each sidecar type defines the type of events it supports as static string fields on the sidecar
  * annotation. For example, {@link ExtensionSidecar#INSTANTIATION}.
  * <p>
- * Annotated methods must be non-static and take no parameters.
+ * Return values from annotated methods are always ignored. And unless otherwise specified no objects are available for
+ * injection into the method.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

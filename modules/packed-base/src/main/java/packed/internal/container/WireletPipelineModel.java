@@ -96,11 +96,7 @@ public final class WireletPipelineModel {
      */
     WireletPipeline<?, ?> newPipeline(Extension extension) {
         try {
-            if (constructor.type().parameterCount() == 0) {
-                return (WireletPipeline<?, ?>) constructor.invoke();
-            } else {
-                return (WireletPipeline<?, ?>) constructor.invoke(extension);
-            }
+            return (WireletPipeline<?, ?>) constructor.invoke(extension);
         } catch (Throwable e) {
             throw new UndeclaredThrowableException(e);
         }

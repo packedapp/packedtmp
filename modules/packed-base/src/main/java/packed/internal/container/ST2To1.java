@@ -65,7 +65,7 @@ public class ST2To1 {
         System.out.println(a0);
         System.out.println(a1);
         System.out.println(a3);
-
+        System.out.println(id);
         a0.invoke("Hoo");
         a1.invoke("Hoo");
         a3.invoke("Hoo");
