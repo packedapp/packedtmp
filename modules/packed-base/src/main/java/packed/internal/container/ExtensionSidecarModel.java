@@ -69,7 +69,7 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
 
     static final int ON_INSTANTIATION = 0;
 
-    static final int ON_PREEMBLE = 1;
+    static final int ON_MAIN = 1;
 
     private static ClassValue<?> OPTIONALS = new ClassValue<>() {
 

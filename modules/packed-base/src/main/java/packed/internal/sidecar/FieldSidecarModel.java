@@ -15,19 +15,13 @@
  */
 package packed.internal.sidecar;
 
-import app.packed.sidecar.MethodSidecar;
+import app.packed.sidecar.FieldSidecar;
 
-/**
- *
- */
-// Naar man har en Function sidecar... Laver vi i virkeligheden en MethodSidecarModel 
-// Maaske har vi kun en faelles ClassDataSidecar...
-
-/** A model of {@link MethodSidecar}. */
-public final class MethodSidecarModel extends SidecarModel {
+/** A model of {@link FieldSidecar}. */
+public final class FieldSidecarModel extends SidecarModel {
 
     /** Meta data about the extension sidecar. */
-    private static final SidecarTypeMeta STM = new SidecarTypeMeta(MethodSidecar.class, MethodSidecar.INSTANTIATION);
+    private static final SidecarTypeMeta STM = new SidecarTypeMeta(FieldSidecar.class, FieldSidecar.INSTANTIATION);
 
     /** The instance id into {@link ClassInstance#data}. */
     final int instanceId;
@@ -40,7 +34,7 @@ public final class MethodSidecarModel extends SidecarModel {
      * @param builder
      *            the builder used to construct the model
      */
-    protected MethodSidecarModel(Builder builder) {
+    protected FieldSidecarModel(Builder builder) {
         super(builder);
         this.instanceId = builder.instanceId;
         // MethodHandles.insertArguments(target, pos, values)

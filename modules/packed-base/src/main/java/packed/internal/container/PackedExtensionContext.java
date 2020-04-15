@@ -38,7 +38,9 @@ import packed.internal.moduleaccess.ModuleAccess;
 /** The default implementation of {@link ExtensionContext} with addition methods only available in app.packed.base. */
 public final class PackedExtensionContext implements ExtensionContext, Comparable<PackedExtensionContext> {
 
+    // Indicates that a bundle has already been configured...
     public static final ExtensionContext CONFIGURED = new PackedExtensionContext();
+
     /** The extension instance this context wraps, initialized in {@link #of(PackedContainerConfiguration, Class)}. */
     @Nullable
     private Extension extension;
@@ -180,7 +182,7 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
 
     /** Invoked by the container configuration, whenever the extension is configured. */
     public void onConfigured() {
-        model.invokePostSidecarAnnotatedMethods(ExtensionSidecarModel.ON_PREEMBLE, extension);
+        model.invokePostSidecarAnnotatedMethods(ExtensionSidecarModel.ON_MAIN, extension);
         isConfigured = true;
     }
 

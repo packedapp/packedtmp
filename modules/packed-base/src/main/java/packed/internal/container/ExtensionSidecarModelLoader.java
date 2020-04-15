@@ -55,8 +55,8 @@ final class ExtensionSidecarModelLoader {
         stack.push(extensionType);
 
         ExtensionSidecarModel m;
-        ExtensionSidecarModel.Builder builder = new ExtensionSidecarModel.Builder(extensionType, this);
         try {
+            ExtensionSidecarModel.Builder builder = new ExtensionSidecarModel.Builder(extensionType, this);
             // System.out.println("Building " + extensionType + " " + nextExtensionId);
             builder.id = nextExtensionId++;
             // System.out.println("Building " + extensionType + " " + nextExtensionId);
