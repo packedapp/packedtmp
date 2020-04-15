@@ -15,7 +15,7 @@
  */
 package app.packed.component;
 
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
 import app.packed.base.Nullable;
 import packed.internal.component.PackedComponentPath;
@@ -75,7 +75,7 @@ public interface ComponentPath extends Comparable<ComponentPath>, /* , Iterable<
 
     /**
      * Converts a path string, or a sequence of strings that when joined form a path string, to a {@code ComponentPath}.
-     * This method works similar to {@link Paths#get(java.net.URI)}.
+     * This method works similar to {@link Path#of(java.net.URI)}.
      *
      * @param first
      *            the path string or initial part of the component path string

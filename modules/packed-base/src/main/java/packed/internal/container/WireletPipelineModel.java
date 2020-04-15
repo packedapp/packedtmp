@@ -26,9 +26,10 @@ import app.packed.container.WireletPipeline;
 import packed.internal.reflect.InjectableFunction;
 import packed.internal.reflect.OpenClass;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
+import packed.internal.sidecar.Model;
 
 /** A model of a {@link WireletPipeline}. */
-public final class WireletPipelineModel {
+public final class WireletPipelineModel extends Model {
 
     /** A cache of models for each pipeline implementation. */
     private static final ClassValue<WireletPipelineModel> MODELS = new ClassValue<>() {
@@ -63,9 +64,6 @@ public final class WireletPipelineModel {
     @Nullable
     private final Class<? extends Extension> memberOfExtension;
 
-    /** The type of pipeline this model represents. */
-    private final Class<? extends WireletPipeline<?, ?>> type;
-
     /**
      * Create a new model.
      * 
@@ -73,7 +71,7 @@ public final class WireletPipelineModel {
      *            the type of pipeline
      */
     private WireletPipelineModel(Class<? extends WireletPipeline<?, ?>> type) {
-        this.type = type; // should we check type assignable???
+        super(type);
         this.memberOfExtension = ExtensionSidecarModel.findIfMember(type);
 
         OpenClass cp = new OpenClass(MethodHandles.lookup(), type, true);
@@ -105,15 +103,6 @@ public final class WireletPipelineModel {
             // Probably different whether or not we are member of an extension...
             throw new UndeclaredThrowableException(e);
         }
-    }
-
-    /**
-     * Returns the type of pipeline this model represents.
-     * 
-     * @return the type of pipeline this model represents
-     */
-    public Class<? extends WireletPipeline<?, ?>> type() {
-        return type;
     }
 
     /**

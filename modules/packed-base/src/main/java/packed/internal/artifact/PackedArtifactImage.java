@@ -22,6 +22,7 @@ import java.util.Optional;
 import app.packed.analysis.BundleDescriptor;
 import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.ArtifactImage;
+import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
@@ -135,6 +136,14 @@ public final class PackedArtifactImage implements ArtifactImage {
     public static PackedArtifactImage of(Bundle bundle, Wirelet... wirelets) {
         PackedContainerConfiguration pcc = new PackedContainerConfiguration(AssembleOutput.image(), bundle, wirelets);
         return new PackedArtifactImage(pcc.assemble(), pcc.wireletContext);
+    }
+
+    public static PackedArtifactImage ofOrCreate(ArtifactSource source, Wirelet... wirelets) {
+        if (source instanceof PackedArtifactImage) {
+            return (PackedArtifactImage) source;
+        } else {
+            return of((Bundle) source, wirelets);
+        }
     }
 }
 

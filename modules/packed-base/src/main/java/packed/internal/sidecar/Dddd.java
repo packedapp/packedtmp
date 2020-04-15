@@ -57,9 +57,20 @@ public class Dddd extends BaseBundle {
             System.out.println("HEJ " + ic);
         }
 
-        // @PostSidecar(ExtensionSidecar.INSTANTIATION)
+        @PostSidecar(ExtensionSidecar.INSTANTIATION)
         void foo() {
-            System.out.println("HEJ ");
+            System.out.println("HEJdd");
+            throw new RuntimeException();
+        }
+
+        @PostSidecar(ExtensionSidecar.INSTANTIATION)
+        void foox() {
+            System.out.println("HEJ");
+        }
+
+        @PostSidecar(ExtensionSidecar.INSTANTIATION)
+        void fodo() {
+            System.out.println("HEJ123");
         }
     }
 }

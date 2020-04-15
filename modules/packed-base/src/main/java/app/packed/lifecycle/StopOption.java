@@ -41,10 +41,6 @@ public interface StopOption {
     static StopOption graceTime(long timeout, TimeUnit unit) {
         throw new UnsupportedOperationException();
     }
-}
 
-//Or is this a StopOption????
-//I Think so.... There is not much there anyway....
-class RestartOption {
-
+    // restart.. (Artifact must have been started with RestartWirelets.restartable();
 }

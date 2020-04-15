@@ -25,12 +25,12 @@ import packed.internal.reflect.OpenClass;
  * This class exists because we have two ways to access the members of a component instance. One with a {@link Lookup}
  * object, and one using whatever power a module descriptor has given us.
  */
-abstract class ComponentLookup {
+interface ComponentLookup {
 
-    abstract ComponentModel componentModelOf(Class<?> componentType);
+    ComponentModel componentModelOf(Class<?> componentType);
 
-    abstract OpenClass newClassProcessor(Class<?> clazz, boolean registerNatives);
+    OpenClass newClassProcessor(Class<?> clazz, boolean registerNatives);
 
     // Just return MethodHandle directly???
-    abstract <T> FactoryHandle<T> readable(FactoryHandle<T> factory);
+    <T> FactoryHandle<T> readable(FactoryHandle<T> factory);
 }

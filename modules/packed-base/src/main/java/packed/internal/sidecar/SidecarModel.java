@@ -25,6 +25,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 import app.packed.base.Contract;
+import app.packed.container.InternalExtensionException;
 import app.packed.sidecar.Expose;
 import app.packed.sidecar.PostSidecar;
 import packed.internal.reflect.FindConstructor;
@@ -36,9 +37,9 @@ import packed.internal.util.UncheckedThrowableFactory;
 /**
  * A model of a sidecar.
  */
-public abstract class SidecarModel {
+public abstract class SidecarModel extends Model {
 
-    /** A method handle for creating new sidecar instances. */
+    /** A method handle for creating a new sidecar instance. */
     protected final MethodHandle constructor;
 
     /** It is important this map is immutable as the key set is exposed via ExtensionDescriptor. */
@@ -47,11 +48,8 @@ public abstract class SidecarModel {
     // Contract>);
     protected final Map<Class<? extends Contract>, MethodHandle> contracts;
 
-    /** The type of sidecar. */
-    private final Class<?> sidecarType;
-
-    // Change to MethodHandle and then chain them together if there are more than 1...
-    final MethodHandle[] callbacks;
+    /** Methods annotated with {@link PostSidecar}. Takes the sidecar instance */
+    private final MethodHandle[] postSidecars; // TODO take a SidecarModel as well as well???
 
     /**
      * Creates a new sidecar model.
@@ -60,10 +58,10 @@ public abstract class SidecarModel {
      *            the builder
      */
     protected SidecarModel(Builder builder) {
+        super(builder.sidecarType);
         this.constructor = builder.constructor;
-        this.sidecarType = builder.sidecarType;
         this.contracts = Map.copyOf(builder.contracts);
-        this.callbacks = builder.callbacks;
+        this.postSidecars = builder.postSidecars;
     }
 
     public Map<Class<? extends Contract>, MethodHandle> contracts() {
@@ -71,7 +69,7 @@ public abstract class SidecarModel {
     }
 
     public void invokePostSidecarAnnotatedMethods(int id, Object sidecar) {
-        MethodHandle mh = callbacks[id];
+        MethodHandle mh = postSidecars[id];
         if (mh != null) {
             try {
                 mh.invoke(sidecar);
@@ -80,10 +78,6 @@ public abstract class SidecarModel {
                 throw new UndeclaredThrowableException(e);
             }
         }
-    }
-
-    public Class<?> sidecarType() {
-        return sidecarType;
     }
 
     public static abstract class Builder {
@@ -99,16 +93,16 @@ public abstract class SidecarModel {
         // So add all shit, quick validation-> Sync->Validate final -> AddAll ->UnSync
         protected final IdentityHashMap<Class<? extends Contract>, MethodHandle> contracts = new IdentityHashMap<>();
 
+        private final MethodHandle[] postSidecars;
+
         protected final Class<?> sidecarType;
 
         final SidecarTypeMeta statics;
 
-        final MethodHandle[] callbacks;
-
-        protected Builder(SidecarTypeMeta statics, Class<?> sidecarType) {
+        protected Builder(Class<?> sidecarType, SidecarTypeMeta statics) {
             this.sidecarType = requireNonNull(sidecarType);
             this.statics = requireNonNull(statics);
-            this.callbacks = new MethodHandle[statics.lifecycleStates.length];
+            this.postSidecars = new MethodHandle[statics.numberOfLifecycleStates()];
         }
 
         @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -119,9 +113,9 @@ public abstract class SidecarModel {
             cp.findMethods(e -> {
                 PostSidecar oa = e.getAnnotation(PostSidecar.class);
                 if (oa != null) {
-                    int index = statics.indexOf(oa.value());
+                    int index = statics.indexOfState(oa.value());
                     if (index == -1) {
-                        throw new Error();
+                        throw new InternalExtensionException("Unknown sidecar lifecycle event '" + oa.value() + "' for method " + e);
                     }
 
                     // Static er fck irriterende...
@@ -138,12 +132,9 @@ public abstract class SidecarModel {
                         mh = fc.doIt(cp, e, is);
                     }
 
-                    // Vi laver bare method handles directly here...
-
-                    // Lav til en array af method handles og saa lav et loop....
-                    // Vi faar godt nok en masse method handles af method handles.. But I don't think
-                    MethodHandle existing = callbacks[index];
-                    callbacks[index] = existing == null ? mh : MethodHandleUtil.combine(existing, mh);
+                    // If there are multiple methods with the same index. We just fold them to a single MethodHandle
+                    MethodHandle existing = postSidecars[index];
+                    postSidecars[index] = existing == null ? mh : MethodHandles.foldArguments(existing, mh);
                 }
                 Expose ex = e.getAnnotation(Expose.class);
                 if (ex != null) {

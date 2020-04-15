@@ -20,8 +20,9 @@ package app.packed.lifecycle;
  */
 //FailedToRuntException, ExecutionExceptionFailed
 // ExecutionExeception
-/// StartupFailedException();
 /// RunFailedException <- See execute fungere daaerlig here
+
+/// StartupFailedException();
 public class FailedToStartException {
 
 }

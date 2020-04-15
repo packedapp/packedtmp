@@ -32,11 +32,12 @@ import packed.internal.hook.OnHookModel;
 import packed.internal.inject.factory.ExecutableFactoryHandle;
 import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.reflect.OpenClass;
+import packed.internal.sidecar.Model;
 import packed.internal.util.LookupValue;
 import packed.internal.util.UncheckedThrowableFactory;
 
 /** A model of a container source, typically a subclass of {@link Bundle}. */
-public final class ContainerSourceModel extends ComponentLookup {
+public final class ContainerSourceModel extends Model implements ComponentLookup {
 
     /** A cache of model. */
     private static final ClassValue<ContainerSourceModel> MODEL_CACHE = new ClassValue<>() {
@@ -80,9 +81,6 @@ public final class ContainerSourceModel extends ComponentLookup {
     @Nullable
     private final OnHookModel onHookModel;
 
-    /** The type of container source. Typically, a subclass of {@link Bundle}. */
-    private final Class<? extends ArtifactSource> sourceType;
-
     /**
      * Creates a new container source model.
      * 
@@ -90,10 +88,10 @@ public final class ContainerSourceModel extends ComponentLookup {
      *            the source type
      */
     private ContainerSourceModel(Class<? extends ArtifactSource> sourceType) {
+        super(sourceType);
         if (Hook.class.isAssignableFrom(sourceType)) {
             throw new InvalidDeclarationException(sourceType + " must not implement/extend " + Hook.class);
         }
-        this.sourceType = requireNonNull(sourceType);
 
         this.onHookModel = OnHookModel.newModel(new OpenClass(MethodHandles.lookup(), sourceType, true), false,
                 UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
@@ -103,7 +101,7 @@ public final class ContainerSourceModel extends ComponentLookup {
 
     /** {@inheritDoc} */
     @Override
-    ComponentModel componentModelOf(Class<?> componentType) {
+    public ComponentModel componentModelOf(Class<?> componentType) {
         return componentsNoLookup.get(componentType);
     }
 
@@ -120,12 +118,12 @@ public final class ContainerSourceModel extends ComponentLookup {
 
     /** {@inheritDoc} */
     @Override
-    OpenClass newClassProcessor(Class<?> clazz, boolean registerNatives) {
+    public OpenClass newClassProcessor(Class<?> clazz, boolean registerNatives) {
         return new OpenClass(MethodHandles.lookup(), clazz, registerNatives);
     }
 
     @Override
-    <T> FactoryHandle<T> readable(FactoryHandle<T> factory) {
+    public <T> FactoryHandle<T> readable(FactoryHandle<T> factory) {
         // TODO needs to cached
         // TODO add field...
         if (factory instanceof ExecutableFactoryHandle) {
@@ -137,10 +135,6 @@ public final class ContainerSourceModel extends ComponentLookup {
         return factory;
     }
 
-    public Class<? extends ArtifactSource> sourceType() {
-        return sourceType;
-    }
-
     ComponentLookup withLookup(Lookup lookup) {
         // Use default access (this) if we specify null lookup
 
@@ -148,7 +142,7 @@ public final class ContainerSourceModel extends ComponentLookup {
         // There are two classes in a lookup object.
         if (lookup == null) {
             return this;
-        } else if (lookup.lookupClass() == sourceType && lookup.lookupModes() == 3) {
+        } else if (lookup.lookupClass() == type() && lookup.lookupModes() == 3) {
             ComponentLookup cl = defaultLookup;
             if (cl != null) {
                 return cl;
@@ -170,7 +164,7 @@ public final class ContainerSourceModel extends ComponentLookup {
     }
 
     /** A component lookup class wrapping a {@link Lookup} object. */
-    private static final class PerLookup extends ComponentLookup {
+    private static final class PerLookup implements ComponentLookup {
 
         /** A cache of component class descriptors. */
         private final ClassValue<ComponentModel> components = new ClassValue<>() {
@@ -193,18 +187,18 @@ public final class ContainerSourceModel extends ComponentLookup {
 
         /** {@inheritDoc} */
         @Override
-        ComponentModel componentModelOf(Class<?> componentType) {
+        public ComponentModel componentModelOf(Class<?> componentType) {
             return components.get(componentType);
         }
 
         /** {@inheritDoc} */
         @Override
-        OpenClass newClassProcessor(Class<?> clazz, boolean registerNatives) {
+        public OpenClass newClassProcessor(Class<?> clazz, boolean registerNatives) {
             return new OpenClass(lookup, clazz, registerNatives);
         }
 
         @Override
-        <T> FactoryHandle<T> readable(FactoryHandle<T> factory) {
+        public <T> FactoryHandle<T> readable(FactoryHandle<T> factory) {
             // TODO needs to cached
             // TODO add field...
             if (factory instanceof ExecutableFactoryHandle) {

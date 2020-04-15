@@ -24,21 +24,25 @@ import java.lang.annotation.Annotation;
  */
 public final class SidecarTypeMeta {
 
-    final Class<? extends Annotation> sidecarAnnotation;
+    private final String[] lifecycleStates;
 
-    final String[] lifecycleStates;
+    final Class<? extends Annotation> sidecarAnnotation;
 
     public SidecarTypeMeta(Class<? extends Annotation> sidecarAnnotation, String... lifecycleStates) {
         this.sidecarAnnotation = requireNonNull(sidecarAnnotation);
         this.lifecycleStates = requireNonNull(lifecycleStates);
     }
 
-    int indexOf(String state) {
+    int indexOfState(String state) {
         for (int i = 0; i < lifecycleStates.length; i++) {
             if (lifecycleStates[i].equals(state)) {
                 return i;
             }
         }
         return -1;
+    }
+
+    int numberOfLifecycleStates() {
+        return lifecycleStates.length;
     }
 }

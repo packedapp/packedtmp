@@ -153,6 +153,8 @@ public abstract class ArtifactDriver<A> {
     }
 
     // <T, R> // AppDriver<App, Void>
+
+    // Kan take restart wirelets...\
     public final Object execute(ArtifactSource source, Wirelet... wirelets) {
         ArtifactContext context = create(source, wirelets);
         context.start();

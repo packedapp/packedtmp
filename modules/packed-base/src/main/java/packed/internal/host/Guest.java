@@ -40,6 +40,9 @@ import app.packed.component.ComponentPath;
 // En GuestInstans bliver erstattet....
 // Men selve Guest'en vil bare pege på en ny....
 
+// Kan en guest have mere end 2 instanser???
+
+// active/ prepping / failed
 public interface Guest<A> {
 
     /**
@@ -72,6 +75,13 @@ public interface Guest<A> {
 
         // Shutdown(For restart)
         // Clean shutdown....Hmmmm... Hvis GET nu er stuck med en tråd der...
+    }
+
+    // Men okay, hvis vi nu vil returnere et result...
+    interface GuestVisitor<T> {
+        void prepped(GuestInstance<T> instance);
+
+        void restarting(GuestInstance<T> instance);
     }
 }
 // ComponentSource.followSuspendedGuests() default false

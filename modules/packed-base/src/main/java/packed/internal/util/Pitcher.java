@@ -92,10 +92,7 @@ public abstract class Pitcher {
     }
 
     public class MethodBuilder {
-
-        void fail() {
-
-        }
+        void fail() {}
 
         String toMessage() {
             return "fff";

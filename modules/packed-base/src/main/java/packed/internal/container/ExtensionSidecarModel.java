@@ -175,7 +175,7 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
      */
     @SuppressWarnings("unchecked")
     public Class<? extends Extension> extensionType() {
-        return (Class<? extends Extension>) sidecarType();
+        return (Class<? extends Extension>) type();
     }
 
     /**
@@ -282,7 +282,7 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
          *            the type of extension we are building a model for
          */
         Builder(Class<? extends Extension> extensionType, ExtensionSidecarModelLoader loader) {
-            super(STM, extensionType);
+            super(extensionType, STM);
             this.loader = requireNonNull(loader);
         }
 

@@ -28,6 +28,10 @@ import app.packed.container.Wirelet;
  * <p>
  * This interface does not allow to
  */
+
+// Folk bestemmer jo helt selv hvad de vil expose... Men de har en HostContext ihvertfald
+
+// Supportere vi restart
 public interface HostContext<T> {
 
     /**
@@ -52,10 +56,11 @@ public interface HostContext<T> {
      * 
      * @return the number of guests that are currently deployed on the host
      */
+    // Active, non-active
     long size();
 
     /**
-     * All contracts
+     * All contracts exposed by the host.
      * 
      * @return all contracts
      */

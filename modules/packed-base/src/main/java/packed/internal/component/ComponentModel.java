@@ -35,6 +35,7 @@ import packed.internal.hook.HookRequest;
 import packed.internal.hook.HookRequestBuilder;
 import packed.internal.hook.MemberUnreflector;
 import packed.internal.reflect.OpenClass;
+import packed.internal.sidecar.Model;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.UncheckedThrowableFactory;
 
@@ -42,10 +43,7 @@ import packed.internal.util.UncheckedThrowableFactory;
  * A model of a container, a cached instance of this class is acquired via
  * {@link ContainerSourceModel#componentModelOf(Class)}.
  */
-public final class ComponentModel {
-
-    /** The type of component this is a model for. */
-    private final Class<?> componentType;
+public final class ComponentModel extends Model {
 
     /** An array of any extensions with relevant {@link OnHook} methods. */
     private final ExtensionRequestPair[] extensionHooks;
@@ -64,7 +62,7 @@ public final class ComponentModel {
      *            a builder for this descriptor
      */
     private ComponentModel(ComponentModel.Builder builder) {
-        this.componentType = requireNonNull(builder.cp.clazz());
+        super(builder.cp.clazz());
 
         try {
             this.sourceHook = builder.csb == null ? null : builder.csb.build();
@@ -99,13 +97,9 @@ public final class ComponentModel {
     String defaultPrefix() {
         String s = simpleName;
         if (s == null) {
-            s = simpleName = componentType.getSimpleName();
+            s = simpleName = type().getSimpleName();
         }
         return s;
-    }
-
-    public Class<?> type() {
-        return componentType;
     }
 
     <T> AbstractComponentConfiguration invokeOnHookOnInstall(Object cs, AbstractComponentConfiguration acc) {

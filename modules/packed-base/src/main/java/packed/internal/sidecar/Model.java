@@ -13,11 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.lifecycle;
+package packed.internal.sidecar;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  *
  */
-enum LifecyclePhase {
-    ASSEMBLING, INITIALIZATION, OPERATION;
+public abstract class Model {
+
+    /** The type this is a model for */
+    private final Class<?> type;
+
+    protected Model(Class<?> type) {
+        this.type = requireNonNull(type);
+    }
+
+    /**
+     * Returns the type this is a model for
+     * 
+     * @return the type this is a model for
+     */
+    public final Class<?> type() {
+        return type;
+    }
 }

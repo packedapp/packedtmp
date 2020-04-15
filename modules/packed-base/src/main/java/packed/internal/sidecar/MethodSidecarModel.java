@@ -53,7 +53,7 @@ public final class MethodSidecarModel extends SidecarModel {
          * @param sidecarType
          */
         public Builder(Class<?> sidecarType) {
-            super(STM, sidecarType);
+            super(sidecarType, STM);
         }
     }
 }

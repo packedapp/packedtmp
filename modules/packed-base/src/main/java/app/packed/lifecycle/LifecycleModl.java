@@ -32,31 +32,32 @@ package app.packed.lifecycle;
 
 // Is that right down to the default lifecycle model????
 // @OnStart(anyOrder=true)
-class LifecycleModl {
+//Hvordan goer man det paa tvaers af containere hosts....
 
-}
-// Hvordan goer man det paa tvaers af containere hosts....
-
-//// Tillader vi cirkler???
+////Tillader vi cirkler???
 /////// Saa virker det med at koere foran hinanden ihvertfald ikke
-// Bliver svaert
+//Bliver svaert
 
-// @Provide
+//@Provide
 
-// Udefra kan man koere de her skridt
+//Udefra kan man koere de her skridt
 ////
-//// ContainerWirelets.lazyInstantiation
-//// ContainerWirelets.lazyOnInjection
+////ContainerWirelets.lazyInstantiation
+////ContainerWirelets.lazyOnInjection
 
 /// Lifecycle is a viral extension
-//// Meaning that if a child container has the extension, the parent container must also have the extension..
+////Meaning that if a child container has the extension, the parent container must also have the extension..
 
 /// Giver det mening at en container har en Lifecycle???
 /// Vil isaer vaere rart
 
-// A container is considered running when all non-lazy components are in the running state
-// As well as all child containers...
+//A container is considered running when all non-lazy components are in the running state
+//As well as all child containers...
 
-// If a components has never been started, should shutdown be run???
+//If a components has never been started, should shutdown be run???
 
-// Giver vel mening, paa Container, Component og App (via Container)
+//Giver vel mening, paa Container, Component og App (via Container)
+
+class LifecycleModl {
+
+}
