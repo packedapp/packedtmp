@@ -17,12 +17,18 @@ package packed.internal.packlet;
 
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
+import packed.internal.sidecar.Model;
 
 /**
  *
  */
-public class PackletModel {
-    Class<?> type;
+public class PackletModel extends Model {
+    /**
+     * @param type
+     */
+    protected PackletModel(Class<?> type) {
+        super(type);
+    }
 
     @Nullable
     Class<? extends Extension> extensionType;

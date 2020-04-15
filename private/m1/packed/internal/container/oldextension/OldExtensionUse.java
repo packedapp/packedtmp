@@ -31,7 +31,7 @@ import packed.internal.util.StringFormatter;
  *
  */
 //Also checkout ExtensionDependencyValidator
-public class OldExtensionUseModel2 {
+public class OldExtensionUse {
 
     @SuppressWarnings("unchecked")
     private static void loadOptional(Collection<Class<? extends Extension>> addTo, Class<?> declaringClass, String[] optionals) {

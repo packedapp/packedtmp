@@ -18,7 +18,8 @@ package packed.internal.sidecar;
 import static java.util.Objects.requireNonNull;
 
 /**
- *
+ * An abstract class for the various models we have in Packed. A model is typically build upon a class provided by the
+ * user. Where we need to analyze constructors/methods/fields.
  */
 public abstract class Model {
 

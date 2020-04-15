@@ -66,8 +66,6 @@ public final class ContainerSourceModel extends Model implements ComponentLookup
     /** The default lookup object, when the user has specified no Lookup value */
     private ComponentLookup defaultLookup;
 
-    // final List<Class<? extends Extension>> dependenciesTotalOrder;
-
     /** A cache of lookup values, in 99 % of all cases this will hold no more than 1 value. */
     private final LookupValue<PerLookup> lookups = new LookupValue<>() {
 

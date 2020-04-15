@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 // ContainerStopOption????
-// Eller er det generisk..?
+// Eller er det generisk..? Kan den bruges paa en actor??? et Actor Trae...
 public interface StopOption {
 
     static StopOption erroneous(Throwable cause) {
@@ -38,9 +38,15 @@ public interface StopOption {
         throw new UnsupportedOperationException();
     }
 
+    static StopOption forced() {
+        throw new UnsupportedOperationException();
+    }
+
     static StopOption graceTime(long timeout, TimeUnit unit) {
+        // before forced???
         throw new UnsupportedOperationException();
     }
 
     // restart.. (Artifact must have been started with RestartWirelets.restartable();
+
 }
