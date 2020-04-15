@@ -27,7 +27,8 @@ import java.util.Map;
 import app.packed.base.Contract;
 import app.packed.sidecar.Expose;
 import app.packed.sidecar.PostSidecar;
-import packed.internal.reflect.InjectionSpec;
+import packed.internal.reflect.FindConstructor;
+import packed.internal.reflect.InjectableFunction;
 import packed.internal.reflect.OpenClass;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.UncheckedThrowableFactory;
@@ -49,7 +50,8 @@ public abstract class SidecarModel {
     /** The type of sidecar. */
     private final Class<?> sidecarType;
 
-    final Object[] callbacks;
+    // Change to MethodHandle and then chain them together if there are more than 1...
+    final MethodHandle[] callbacks;
 
     /**
      * Creates a new sidecar model.
@@ -69,9 +71,8 @@ public abstract class SidecarModel {
     }
 
     public void invokePostSidecarAnnotatedMethods(int id, Object sidecar) {
-        Object o = callbacks[id];
-        if (o != null) {
-            MethodHandle mh = (MethodHandle) o;
+        MethodHandle mh = callbacks[id];
+        if (mh != null) {
             try {
                 mh.invoke(sidecar);
             } catch (Throwable e) {
@@ -102,16 +103,16 @@ public abstract class SidecarModel {
 
         final SidecarTypeMeta statics;
 
-        final Object[] callbacks;
+        final MethodHandle[] callbacks;
 
         protected Builder(SidecarTypeMeta statics, Class<?> sidecarType) {
             this.sidecarType = requireNonNull(sidecarType);
             this.statics = requireNonNull(statics);
-            this.callbacks = new Object[statics.lifecycleStates.length];
+            this.callbacks = new MethodHandle[statics.lifecycleStates.length];
         }
 
         @SuppressWarnings({ "unchecked", "rawtypes" })
-        protected OpenClass prep(InjectionSpec spec) {
+        protected OpenClass prep(InjectableFunction spec) {
             OpenClass cp = new OpenClass(MethodHandles.lookup(), sidecarType, true);
 
             this.constructor = cp.findConstructor(spec);
@@ -123,17 +124,26 @@ public abstract class SidecarModel {
                         throw new Error();
                     }
 
-                    // InjectionSpec is = new InjectionSpec(MethodType.methodType(e.getReturnType()));
-
-                    MethodHandle mh = cp.unreflect(e, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-
-                    // mh = fc.doIt(cp, e, is);
-
+                    // Static er fck irriterende...
+                    //// Skal have en slags mapStaticMethodsToInstanceMethods paa InjectableFunction...
+                    MethodHandle mh;
                     if (Modifier.isStatic(e.getModifiers())) {
+                        InjectableFunction is = InjectableFunction.of(e.getReturnType());
+                        FindConstructor fc = new FindConstructor();
+                        mh = fc.doIt(cp, e, is);
                         mh = MethodHandles.dropArguments(mh, 0, sidecarType);
+                    } else {
+                        InjectableFunction is = InjectableFunction.of(e.getReturnType(), e.getDeclaringClass());
+                        FindConstructor fc = new FindConstructor();
+                        mh = fc.doIt(cp, e, is);
                     }
 
-                    callbacks[index] = mh;
+                    // Vi laver bare method handles directly here...
+
+                    // Lav til en array af method handles og saa lav et loop....
+                    // Vi faar godt nok en masse method handles af method handles.. But I don't think
+                    MethodHandle existing = callbacks[index];
+                    callbacks[index] = existing == null ? mh : MethodHandleUtil.combine(existing, mh);
                 }
                 Expose ex = e.getAnnotation(Expose.class);
                 if (ex != null) {

@@ -53,7 +53,12 @@ public class Dddd extends BaseBundle {
         }
 
         @PostSidecar(ExtensionSidecar.INSTANTIATION)
-        static void foo() {
+        static void foo(InjectionContext ic) {
+            System.out.println("HEJ " + ic);
+        }
+
+        // @PostSidecar(ExtensionSidecar.INSTANTIATION)
+        void foo() {
             System.out.println("HEJ ");
         }
     }

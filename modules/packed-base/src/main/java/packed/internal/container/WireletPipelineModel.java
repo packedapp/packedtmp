@@ -23,7 +23,7 @@ import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.PipelineWirelet;
 import app.packed.container.WireletPipeline;
-import packed.internal.reflect.InjectionSpec;
+import packed.internal.reflect.InjectableFunction;
 import packed.internal.reflect.OpenClass;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 
@@ -77,9 +77,9 @@ public final class WireletPipelineModel {
         this.memberOfExtension = ExtensionSidecarModel.findIfMember(type);
 
         OpenClass cp = new OpenClass(MethodHandles.lookup(), type, true);
-        InjectionSpec is = new InjectionSpec(type, memberOfExtension == null ? Extension.class : memberOfExtension);
+        InjectableFunction is = InjectableFunction.of(type, memberOfExtension == null ? Extension.class : memberOfExtension);
         if (memberOfExtension != null) {
-            is.add(memberOfExtension, 0);
+            is.addKey(memberOfExtension, 0);
         }
         this.constructor = cp.findConstructor(is);
     }

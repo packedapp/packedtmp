@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,7 +60,7 @@ import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.moduleaccess.ModuleAccess;
-import packed.internal.reflect.InjectionSpec;
+import packed.internal.reflect.InjectableFunction;
 import packed.internal.reflect.OpenClass;
 import packed.internal.service.runtime.PackedInjector;
 
@@ -146,10 +145,9 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         // MethodHandle mh = ConstructorFinder.find(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY,
         // HostConfigurationContext.class);
 
-        InjectionSpec aa = new InjectionSpec(MethodType.methodType(hostType, HostConfigurationContext.class));
-        aa.add(HostConfigurationContext.class, 0);
+        InjectableFunction aa = InjectableFunction.of(hostType, HostConfigurationContext.class);
+        aa.addKey(HostConfigurationContext.class, 0);
         MethodHandle mh = cp.findConstructor(aa);
-
         try {
             return (T) mh.invoke(addHost());
         } catch (Throwable e) {

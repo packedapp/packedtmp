@@ -29,6 +29,7 @@ public class TestIt {
 
     TestIt(Data data, InjectionContext ic, String sd, Data d2, InjectionContext i3, String s) {
         System.out.println(ic);
+        System.out.println(sd);
     }
 
     public static void main(String[] args) throws Throwable {
@@ -36,9 +37,9 @@ public class TestIt {
 
         MethodHandle mhhhh = ll.findSpecial(Data.class, "tt", MethodType.methodType(String.class), Data.class);
 
-        InjectionSpec aa = new InjectionSpec(MethodType.methodType(TestIt.class, Data.class));
-        aa.add(Data.class, 0);
-        aa.add(String.class, 0, mhhhh);
+        InjectableFunction aa = InjectableFunction.of(TestIt.class, Data.class);
+        aa.addKey(Data.class, 0);
+        aa.addKey(String.class, 0, mhhhh);
 
         MethodHandle mh = new OpenClass(MethodHandles.lookup(), TestIt.class, false).findConstructor(aa);
 

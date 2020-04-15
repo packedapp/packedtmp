@@ -35,7 +35,7 @@ import app.packed.hook.OnHook;
 import app.packed.sidecar.ExtensionSidecar;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
-import packed.internal.reflect.InjectionSpec;
+import packed.internal.reflect.InjectableFunction;
 import packed.internal.reflect.OpenClass;
 import packed.internal.sidecar.SidecarModel;
 import packed.internal.sidecar.SidecarTypeMeta;
@@ -314,8 +314,8 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
                 }
             }
 
-            InjectionSpec is = new InjectionSpec(sidecarType, ExtensionContext.class);
-            is.add(ExtensionContext.class, 0);
+            InjectableFunction is = InjectableFunction.of(sidecarType, ExtensionContext.class);
+            is.addKey(ExtensionContext.class, 0);
             OpenClass cp = prep(is);
             this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
             return new ExtensionSidecarModel(this);

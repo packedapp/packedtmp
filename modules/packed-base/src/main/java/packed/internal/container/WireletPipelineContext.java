@@ -50,16 +50,6 @@ public final class WireletPipelineContext {
         this.previous = previous;
     }
 
-    /**
-     * Returns any extension this pipeline belongs to. Or null if it does not belong to an extension.
-     * 
-     * @return any extension this pipeline belongs to
-     */
-    @Nullable
-    Class<? extends Extension> memberOfExtension() {
-        return model.memberOfExtension();
-    }
-
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void forEach(Consumer<?> action) {
         requireNonNull("action is null");
@@ -78,6 +68,16 @@ public final class WireletPipelineContext {
     void instantiate(@Nullable Extension extension) {
         instance = model.newPipeline(extension);
         ModuleAccess.container().pipelineInitialize(instance, this);
+    }
+
+    /**
+     * Returns any extension this pipeline is a member of. Or null if it does not belong to an extension.
+     * 
+     * @return any extension this pipeline is a member of
+     */
+    @Nullable
+    Class<? extends Extension> memberOfExtension() {
+        return model.memberOfExtension();
     }
 
     /**

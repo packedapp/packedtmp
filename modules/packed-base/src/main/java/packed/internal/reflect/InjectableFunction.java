@@ -28,46 +28,61 @@ import app.packed.base.Nullable;
 /**
  *
  */
-public class InjectionSpec {
-
-    final HashMap<Key<?>, Entry> keys = new HashMap<>();
+// Enten som en Builder, eller noget a.la. Bundle.
+//disableComposites/ignoreComposite/failOnComposite/...
+public final class InjectableFunction {
 
     private final MethodType input;
 
-    public InjectionSpec(Class<?> type, Class<?>... parameterTypes) {
-        this.input = MethodType.methodType(type, parameterTypes);
-    }
+    final HashMap<Key<?>, Entry> keys = new HashMap<>();
 
-    public InjectionSpec(MethodType input) {
+    private InjectableFunction(MethodType input) {
         this.input = requireNonNull(input);
     }
 
-    public InjectionSpec add(Class<?> key, int index) {
+    private InjectableFunction add(Key<?> key, int index, MethodHandle transformer) {
         Objects.checkFromIndexSize(index, 0, input.parameterCount());
-        // Class<?> c = input.parameterType(index);
-        Key<?> k = Key.of(key);
-        keys.put(k, new Entry(k, index, null));
+        // Check the various types...
+        if (keys.putIfAbsent(key, new Entry(index, transformer)) != null) {
+            throw new IllegalArgumentException("The specified key " + key + " has already been added");
+        }
         return this;
+    }
+
+    public InjectableFunction addKey(Class<?> key, int index) {
+        return addKey(Key.of(key), index);
+    }
+
+    public InjectableFunction addKey(Class<?> key, int index, MethodHandle transformer) {
+        return add(Key.of(key), index, transformer);
+    }
+
+    public InjectableFunction addKey(Key<?> key, int index) {
+        return add(key, index, null);
+    }
+
+    public InjectableFunction addKey(Key<?> key, int index, MethodHandle transformer) {
+        return add(key, index, requireNonNull(transformer, "transformer is null"));
     }
 
     public MethodType input() {
         return input;
     }
 
-    public InjectionSpec add(Class<?> key, int fromIndex, MethodHandle transformer) {
-        Key<?> k = Key.of(key);
-        keys.put(k, new Entry(k, fromIndex, transformer));
-        return this;
+    public static InjectableFunction of(Class<?> type, Class<?>... parameterTypes) {
+        return new InjectableFunction(MethodType.methodType(type, parameterTypes));
+    }
+
+    public static InjectableFunction of(MethodType mt) {
+        return new InjectableFunction(mt);
     }
 
     static class Entry {
-        Key<?> key; // do we need it in the entry...
         int index;
         @Nullable
         MethodHandle transformer;
 
-        Entry(Key<?> key, int index, MethodHandle transformer) {
-            this.key = key;
+        Entry(int index, MethodHandle transformer) {
             this.index = index;
             this.transformer = transformer;
         }

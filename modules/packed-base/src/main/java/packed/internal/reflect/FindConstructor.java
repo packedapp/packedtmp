@@ -34,7 +34,7 @@ import app.packed.base.Key;
 import app.packed.inject.Inject;
 import app.packed.inject.InjectionContext;
 import app.packed.inject.UnresolvedDependencyException;
-import packed.internal.reflect.InjectionSpec.Entry;
+import packed.internal.reflect.InjectableFunction.Entry;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.UncheckedThrowableFactory;
 
@@ -58,17 +58,16 @@ import packed.internal.util.UncheckedThrowableFactory;
 //The rest is static, its not for injection, because we need
 
 //So ConstructorFinder is probably a bad name..
-class FindConstructor {
+public class FindConstructor {
 
     ArrayList<Parameter> parameters;
 
-    public MethodHandle doIt(OpenClass oc, InjectionSpec aa) {
+    public MethodHandle doIt(OpenClass oc, InjectableFunction aa) {
         Constructor<?> constructor = findInjectableConstructor(aa.input().returnType());
         return doIt(oc, constructor, aa);
     }
 
-    public MethodHandle doIt(OpenClass oc, Executable e, InjectionSpec aa) {
-
+    public MethodHandle doIt(OpenClass oc, Executable e, InjectableFunction aa) {
         MethodType expected = aa.input();
 
         boolean isInstanceMethod = false;
@@ -79,6 +78,13 @@ class FindConstructor {
             Method m = (Method) e;
             mh = oc.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
             isInstanceMethod = !Modifier.isStatic(m.getModifiers());
+
+            if (isInstanceMethod) {
+                if (m.getDeclaringClass() != aa.input().parameterType(0)) {
+                    throw new IllegalArgumentException(
+                            "First signature parameter type must be " + m.getDeclaringClass() + " was " + aa.input().parameterType(0));
+                }
+            }
         }
         // MethodHandle mh = oc.unreflectConstructor(constructor,
         // UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
@@ -115,9 +121,8 @@ class FindConstructor {
         if (injectionContext != -1) {
             MethodType e2 = expected.appendParameterTypes(InjectionContext.class);
             mh = MethodHandles.permuteArguments(mh, e2, permutationArray);
-            PackedInjectionContext pic = new PackedInjectionContext(expected.returnType(), Set.copyOf(aa.keys.keySet()));
+            PackedInjectionContext pic = new PackedInjectionContext(e.getDeclaringClass(), Set.copyOf(aa.keys.keySet()));
             mh = MethodHandles.insertArguments(mh, injectionContext, pic);
-
         } else {
             mh = MethodHandles.permuteArguments(mh, expected, permutationArray);
         }

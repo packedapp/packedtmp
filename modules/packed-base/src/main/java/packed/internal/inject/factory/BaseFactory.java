@@ -40,6 +40,7 @@ import packed.internal.reflect.typevariable.TypeVariableExtractor;
 /**
  *
  */
+//FunctionFactory????
 public class BaseFactory<T> implements Factory<T> {
 
     /** A cache of factories used by {@link #find(Class)}. */
