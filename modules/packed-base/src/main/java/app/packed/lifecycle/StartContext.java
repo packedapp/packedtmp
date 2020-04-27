@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 // Startup stuff....
 
 // Is it Container/App/Component?????
-public interface StartupContext<T> {
+public interface StartContext<T> {
 
     CompletableFuture<T> now();
 

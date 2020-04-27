@@ -87,6 +87,8 @@ final class ExtensionSidecarModelLoader {
         return load0(dependency, loader);
     }
 
+    // taenker vi godt kan flytte global lock en class valuen...
+
     private static ExtensionSidecarModel load0(Class<? extends Extension> extensionType, @Nullable ExtensionSidecarModelLoader loader) {
         GLOBAL_LOCK.lock();
         try {

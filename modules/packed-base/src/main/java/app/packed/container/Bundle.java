@@ -55,6 +55,10 @@ import packed.internal.moduleaccess.ModuleAccess;
 
 // Kunne godt have nogle lifecycle metoder man kunne overskrive.
 // F.eks. at man vil validere noget
+
+// Bundle: States-> Ready -> Assembling|Composing -> Consumed|Composed... Ready | Using | Used... Usable | Using | Used
+
+// Trying to use a bundle multiple types will result in an ISE
 public abstract class Bundle implements ArtifactSource {
 
     static {
@@ -142,9 +146,9 @@ public abstract class Bundle implements ArtifactSource {
     private void doCompose(ContainerConfiguration configuration) {
         int s = state.compareAndExchange(0, 1);
         if (s == 1) {
-            throw new IllegalStateException("This bundle is being used elsewhere.");
+            throw new IllegalStateException("This bundle is being used elsewhere, bundleType = " + getClass());
         } else if (s == 2) {
-            throw new IllegalStateException("This bundle has already been used.");
+            throw new IllegalStateException("This bundle has already been used, bundleType = " + getClass());
         }
 
         this.configuration = configuration;
@@ -166,9 +170,9 @@ public abstract class Bundle implements ArtifactSource {
     }
 
     /**
-     * Returns an unmodifiable view of the extensions that are currently being used.
+     * Returns an unmodifiable view of the extensions that have been used.
      * 
-     * @return an unmodifiable view of the extensions that are currently being used
+     * @return an unmodifiable view of the extensions that have been used
      * @see ContainerConfiguration#extensions()
      * @see #use(Class)
      */
@@ -266,7 +270,7 @@ public abstract class Bundle implements ArtifactSource {
      *            the component instance to install
      * @return this configuration
      */
-    protected final <T> SingletonConfiguration<T> installInstance(T instance) {
+    protected final <T> SingletonConfiguration<T> installConstant(T instance) {
         return configuration().installInstance(instance);
     }
 

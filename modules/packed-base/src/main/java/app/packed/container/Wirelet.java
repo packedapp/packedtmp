@@ -15,10 +15,6 @@
  */
 package app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Predicate;
 
 import app.packed.service.Injector;
@@ -69,24 +65,27 @@ public abstract class Wirelet {
      *         operation
      */
     public final Wirelet andThen(Wirelet wirelet) {
-        return andThen(new Wirelet[] { wirelet });
+        return WireletList.of(this, wirelet);
     }
 
     public final Wirelet andThen(Wirelet... wirelets) {
-        requireNonNull(wirelets, "wirelets is null");
-        ArrayList<Wirelet> l = new ArrayList<>();
-        // Maaden vi rekursiv processere them betyder at jeg ikke tror vi behoever at pakke dem ud....
-        if (this instanceof WireletList) {
-            l.addAll(List.of(((WireletList) this).wirelets));
-        } else {
-            l.add(this);
-        }
-        l.addAll(List.of(wirelets));
-        // System.err.println();
-        // System.err.println(this + " " + List.of(wirelets));
-        // System.err.println(l);
-        return WireletList.of(l.toArray(i -> new Wirelet[i]));
+        return WireletList.of(this, wirelets);
     }
+
+    /**
+     * Returns a wirelet that will rename the container, overriding the the default naming scheme, or any name that might
+     * already have been set, for example, via {@link Bundle#setName(String)}.
+     * 
+     * @param name
+     *            the name of the container
+     * @return a wirelet that will set rename the container
+     */
+    public static Wirelet rename(String name) {
+        return new ComponentNameWirelet(name);
+    }
+}
+
+class XBadIdea {
 
     // Det er vel mere om den kun bruges i forbindelse med linkage...
     // D.v.s.
@@ -121,20 +120,6 @@ public abstract class Wirelet {
         return false;
     }
 
-    /**
-     * Returns a wirelet that will set the name of a container once wired, overriding any name that might already have been
-     * set, for example, via {@link Bundle#setName(String)}.
-     * 
-     * @param name
-     *            the name of the container
-     * @return a wirelet that will set name of a container once wired
-     */
-    public static Wirelet name(String name) {
-        return new ComponentNameWirelet(name);
-    }
-}
-
-class XBadIdea {
     // For bedre error messages. This operation can only be used if the parent or child bundle
     // has installed the XXX extension (As an alternative, annotated the key with
     // @RequiresExtension(JMXExtension.class)....)

@@ -13,25 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util;
-
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
+package app.packed.lifecycle2.fn;
 
 /**
  *
  */
-public final class MethodHandleUtil {
+// Som FN uden return vaerdi...
+// F.eks. Inject...
+// Vi skal jo ikke returnere noget...
+public interface OP {
 
-    /** Never instantiate. */
-    private MethodHandleUtil() {}
-
-    public static MethodHandle findVirtual(MethodHandles.Lookup caller, Class<?> refc, String name, MethodType type) {
-        try {
-            return caller.findVirtual(refc, name, type);
-        } catch (ReflectiveOperationException e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
 }

@@ -22,6 +22,9 @@ import app.packed.base.Nullable;
 /**
  *
  */
+// PreCompiler en Invoker der burger indy...
+// Saa laver vi en ny instant hver gang.. 
+// Og har en bootstrap metode der bruger noget thread local..
 public interface Invoker {
 
     /**
@@ -42,6 +45,7 @@ public interface Invoker {
      */
     MethodHandle toMethodHandle();
 }
+
 //<T> so we can specialize paa et tidspunkt... Eller faa SpecializedInvoker paa et senere tidspunkt
 //Invoker extends SpecializedInvoker<Object>
 //Maaske laver vi det til en inline klasse...
@@ -66,6 +70,7 @@ interface SpecializedInvoker<R> {
      */
     MethodHandle toMethodHandle();
 }
+
 interface SpecializedTemplateInvoker<R> {
-        
+
 }

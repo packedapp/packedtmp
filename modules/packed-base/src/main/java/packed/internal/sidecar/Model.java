@@ -23,7 +23,7 @@ import static java.util.Objects.requireNonNull;
  */
 public abstract class Model {
 
-    /** The type this is a model for */
+    /** The type this is a model for. */
     private final Class<?> type;
 
     protected Model(Class<?> type) {

@@ -13,21 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.sidecar;
-
-import java.lang.invoke.MethodHandle;
+package app.packed.analysis;
 
 /**
  *
  */
-public class MethodHandleUtil {
+public interface AssemblyEvent {
 
-    public static MethodHandle combine(MethodHandle... handles) {
+    // start
 
-        // Vi laver bare et loop...
+    // SomeEvent...
 
-        // Let at test
-
-        throw new UnsupportedOperationException();
-    }
+    // stop
 }

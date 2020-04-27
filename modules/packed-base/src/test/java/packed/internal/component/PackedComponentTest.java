@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 import app.packed.component.ComponentPath;
-import packed.internal.component.PackedComponentPath;
 
 /**
  *

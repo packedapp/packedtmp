@@ -49,6 +49,7 @@ public final class ComponentModel extends Model {
     private final ExtensionRequestPair[] extensionHooks;
 
     /** The simple name of the component type (razy), typically used for lazy generating a component name. */
+    /// Should we have a little of cache simpleName0, simpleName1, ...
     private String simpleName;
 
     /** Any methods annotated with {@link OnHook} on the container source. */

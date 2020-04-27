@@ -31,7 +31,7 @@ import app.packed.container.ExtensionContext;
 import app.packed.inject.Inject;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceMode;
-import packed.internal.container.WireletContext;
+import packed.internal.container.WireletContainer;
 import packed.internal.container.WireletPipelineContext;
 import packed.internal.inject.AtInject;
 import packed.internal.inject.AtInjectHook;
@@ -42,9 +42,9 @@ import packed.internal.service.buildtime.export.ExportedBuildEntry;
 import packed.internal.service.buildtime.service.ComponentFactoryBuildEntry;
 import packed.internal.service.buildtime.service.ServiceProvidingManager;
 import packed.internal.service.buildtime.wirelets.ServiceWireletPipeline;
-import packed.internal.service.runtime.PackedInjector;
-import packed.internal.service.runtime.InjectorEntry;
 import packed.internal.service.runtime.ConstantInjectorEntry;
+import packed.internal.service.runtime.InjectorEntry;
+import packed.internal.service.runtime.PackedInjector;
 
 /** This class records all service related information for a single box. */
 public final class ServiceExtensionNode {
@@ -190,7 +190,7 @@ public final class ServiceExtensionNode {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public PackedInjector onInstantiate(WireletContext wc) {
+    public PackedInjector onInstantiate(WireletContainer wc) {
         LinkedHashMap<Key<?>, InjectorEntry<?>> snm = new LinkedHashMap<>();
         PackedInjector publicInjector = new PackedInjector(context().containerConfigSite(), "Internal Descriptor", snm);
 
@@ -205,7 +205,7 @@ public final class ServiceExtensionNode {
             Class<?> pipelineClass = e.getKey().key().typeLiteral().rawType();
 
             if (wc != null) {
-                instance = wc.getIt(pipelineClass);
+                instance = wc.getWireletOrPipeline(pipelineClass);
                 if (instance instanceof WireletPipelineContext) {
                     instance = ((WireletPipelineContext) instance).instance;
                 }

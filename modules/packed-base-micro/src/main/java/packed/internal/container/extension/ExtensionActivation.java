@@ -76,7 +76,7 @@ public class ExtensionActivation {
         Bundle b = new Bundle() {
             @Override
             public void compose() {
-                installInstance("foo");
+                installConstant("foo");
             }
         };
         return ArtifactImage.of(b);
@@ -88,7 +88,7 @@ public class ExtensionActivation {
             @Override
             public void compose() {
                 use(MyExtension.class);
-                installInstance("foo");
+                installConstant("foo");
             }
         };
         return ArtifactImage.of(b);
@@ -99,7 +99,7 @@ public class ExtensionActivation {
         Bundle b = new Bundle() {
             @Override
             public void compose() {
-                installInstance(new MyStuff());
+                installConstant(new MyStuff());
             }
         };
         return ArtifactImage.of(b);

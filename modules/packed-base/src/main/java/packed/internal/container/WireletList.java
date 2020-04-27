@@ -17,7 +17,9 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -234,6 +236,23 @@ public final class WireletList extends Wirelet {
             return (WireletList) wirelet;
         }
         return new WireletList(wirelet); // we might provide optimized versions in the future
+    }
+
+    public static WireletList of(Wirelet w1, Wirelet w2) {
+        return new WireletList(w1, w2);
+    }
+
+    public static WireletList of(Wirelet w1, Wirelet... wirelets) {
+        requireNonNull(wirelets, "wirelets is null");
+        ArrayList<Wirelet> l = new ArrayList<>();
+        // Maaden vi rekursiv processere them betyder at jeg ikke tror vi behoever at pakke dem ud....
+        if (w1 instanceof WireletList) {
+            l.addAll(List.of(((WireletList) w1).wirelets));
+        } else {
+            l.add(w1);
+        }
+        l.addAll(List.of(wirelets));
+        return WireletList.of(l.toArray(i -> new Wirelet[i]));
     }
 
     public static WireletList of(Wirelet... wirelets) {

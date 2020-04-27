@@ -83,6 +83,9 @@ public interface ArtifactImage extends ArtifactSource {
     // ImageDescriptor with all wirelets????? Eller bare med i BundleDescriptor???
     // Vi har jo feks anderledes contract... Og kan vi se alt???
     // AssemblyDescriptor?
+
+    // Altsaa helt sikker med contracts saa skal det jo vaere whatever der er appliet...
+    /// Saa det gaelder jo saadan set ogsaa med #name()
     BundleDescriptor descriptor();
 
     /**
@@ -118,6 +121,7 @@ public interface ArtifactImage extends ArtifactSource {
      * @see Component#stream(app.packed.component.ComponentStream.Option...)
      */
     /// Hmmmm. Altsaa vi skal maaske heller have en descriptor plug
+    // descriptor().stream()...
     ComponentStream stream(ComponentStream.Option... options);
 
     /**
@@ -127,6 +131,9 @@ public interface ArtifactImage extends ArtifactSource {
      *            the wirelets to apply
      * @return the new image
      */
+    // f.eks. applyPartialConfiguration(SomeConf)... Vi aendrer schemaet..
+    // withFixedConf(app.threads = 123)... withDefaultConf(app.threads = 123)
+    // Vi fejler hvis det ikke kan bruges??? Pure static solution...
     ArtifactImage with(Wirelet... wirelets);
 
     /**

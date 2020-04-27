@@ -26,8 +26,8 @@ import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
-import app.packed.service.ServiceMode;
 import app.packed.service.Provide;
+import app.packed.service.ServiceMode;
 
 /**
  * Tests {@link Provide#instantionMode()} on static fields. In general we do not need to create an instance of the

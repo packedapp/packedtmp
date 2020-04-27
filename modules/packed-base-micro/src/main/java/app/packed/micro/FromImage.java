@@ -66,13 +66,13 @@ public class FromImage {
     static final ArtifactImage INSTALL = ArtifactImage.of(new Bundle() {
         @Override
         public void compose() {
-            installInstance("foo");
+            installConstant("foo");
         }
     });
     static final ArtifactImage INSTALL_AUTO_ACTIVATE = ArtifactImage.of(new Bundle() {
         @Override
         public void compose() {
-            installInstance(new MyStuff());
+            installConstant(new MyStuff());
         }
     });
 

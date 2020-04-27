@@ -18,6 +18,8 @@ package packed.internal.util;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.invoke.MethodHandles;
+import java.util.function.Function;
 
 /** A utility class for various functionality regarding annotations. */
 public final class AnnotationUtil {
@@ -53,4 +55,13 @@ public final class AnnotationUtil {
         Retention r = annotationType.getAnnotation(Retention.class);
         return r != null && r.value() == RetentionPolicy.RUNTIME;
     }
+
+    // Annotation instances returned by the function is not serializable...
+    public static <A extends Annotation, T extends Record> Function<T, A> annotationFactory(MethodHandles.Lookup lookup, Class<A> annotationType,
+            Class<T> annotationDataType) {
+        // assert annotation type. fields == annotaDT.components (default can be ignore if they are not defined)
+        throw new UnsupportedOperationException();
+    }
+
+    interface Record {}
 }

@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 
+import app.packed.base.Nullable;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import packed.internal.artifact.PackedInstantiationContext;
@@ -32,8 +33,10 @@ public final class PackedSingletonConfiguration<T> extends AbstractComponentConf
 
     public final ComponentModel componentModel;
 
+    @Nullable
     public final BaseFactory<T> factory;
 
+    @Nullable
     public final T instance;
 
     public PackedSingletonConfiguration(ConfigSite configSite, AbstractComponentConfiguration parent, ComponentModel componentModel, BaseFactory<T> factory) {

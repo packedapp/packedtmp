@@ -23,13 +23,13 @@ import java.lang.invoke.MethodType;
 import java.util.function.Function;
 
 import app.packed.base.TypeLiteral;
-import packed.internal.util.MethodHandleUtil;
+import packed.internal.util.LookupUtil;
 
 /** A function that maps the result of another function. */
 public final class MappingFactoryHandle<T, R> extends FactoryHandle<R> {
 
     /** A method handle for {@link Function#apply(Object)}. */
-    private static final MethodHandle APPLY = MethodHandleUtil.findVirtual(MethodHandles.lookup(), Function.class, "apply",
+    private static final MethodHandle APPLY = LookupUtil.findVirtualEIIE(MethodHandles.lookup(), Function.class, "apply",
             MethodType.methodType(Object.class, Object.class));
 
     /** The function we map the result from. */

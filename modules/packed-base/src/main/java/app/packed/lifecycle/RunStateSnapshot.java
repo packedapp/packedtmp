@@ -39,16 +39,16 @@ import java.util.Optional;
 interface RunStateSnapshot {
 
     /**
-     * Returns the current state of the artifact.
+     * Returns the current state of the object.
      * 
-     * @return the current state of the artifact
+     * @return the current state of the object
      */
     RunState actual(); // actual is maybe better???
 
     /**
-     * Returns the desired state of the artifact.
+     * Returns the desired state of the object.
      * 
-     * @return the desired state of the artifact
+     * @return the desired state of the object
      */
     RunState desired();
 

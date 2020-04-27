@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 /**
  *
  */
-@Target(ElementType.METHOD)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MethodSidecar {
 
@@ -33,16 +33,37 @@ public @interface MethodSidecar {
      */
     String INSTANTIATION = "Instantiation";
 
-    // Will only be available in the sidecar, not any of its runtime representations
-    boolean injectDirectMethodHandle() default false; // Can also be used for consts....
+    /**
+     * Applies to the target entity not the sidecar. Cannot be used together with an invoker
+     * 
+     * @return a state expression
+     */
+    // onSidecarTarget
+    // Sidecar must have a lifecycle otherwise the annot will fail...
+    String invokeOnSidecarTarget() default ""; // ExceptionHandler??? @HandleException on the sidecar??? @AfterInvoke...
 
-    Class<?>[] methodConst(); // MD og evt. DirectMH
+    // Will only be available in the sidecar, not any of its runtime representations (why not)
 
-    //// Conditional installs a... Nah hvad med en annotation paa classen???
-    // Class<Predicate<? extends MethodDescriptor>>
-
-    // Problemet er lidt DirectMethodHandle... hvis vi ikke skal bruge den...
-
-    // Vi vil gerne kombinere const og predicated..
-    // F.eks. vi gider ikke extract ting i baade et predicate og saa igen i en const
+    /**
+     * Whether or not a direct method handle should be available for injection. If set to <code>true</code> the method
+     * handle will be available to both injection into the sidecar and for sidecar bootstrap methods.
+     * 
+     * @return make a direct method handle to the underlying available
+     */
+    boolean injectDirectMethodHandle() default false;
 }
+
+// Alternative en bootstrap @Const statisk metode...
+// Class<?>[] methodConst() default {}; // MD og evt. DirectMH
+
+//// Conditional installs a... Nah hvad med en annotation paa classen???
+//// Kan lave noget a.la.  
+// Class<Predicate<? extends MethodDescriptor>>
+
+// @BootStrapMethod(cancelIfNull = true)
+// Object o return null if !!! 
+
+// Problemet er lidt DirectMethodHandle... hvis vi ikke skal bruge den...
+
+// Vi vil gerne kombinere const og predicated..
+// F.eks. vi gider ikke extract ting i baade et predicate og saa igen i en const

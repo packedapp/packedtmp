@@ -35,7 +35,7 @@ import app.packed.container.Wirelet;
 
 public abstract class ContainerWirelet extends Wirelet {
 
-    abstract void process(WireletContext c);
+    abstract void process(WireletContainer c);
 
     public static final class ComponentNameWirelet extends ContainerWirelet {
 
@@ -54,7 +54,7 @@ public abstract class ContainerWirelet extends Wirelet {
 
         /** {@inheritDoc} */
         @Override
-        void process(WireletContext c) {
+        void process(WireletContainer c) {
             c.newName = this;// will override any set previously
         }
 

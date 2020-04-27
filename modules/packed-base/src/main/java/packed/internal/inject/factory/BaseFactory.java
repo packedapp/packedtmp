@@ -225,8 +225,6 @@ public class BaseFactory<T> implements Factory<T> {
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
-    @Override
     public final List<?> dependencies() {
         // What if have Factory f = Factory.of(Foo(String x, String y));
         // f.bindVariable(0, "FooBar");
@@ -433,6 +431,7 @@ public class BaseFactory<T> implements Factory<T> {
      * @return a factory for the specified implementation type
      */
     @SuppressWarnings("unchecked")
+    // Can cache it with a Class[] array corresponding to type parameters...
     public static <T> Factory<T> find(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         if (!ModuleAccess.base().isCanonicalized(implementation)) {

@@ -28,13 +28,13 @@ import java.util.function.Function;
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory1;
 import packed.internal.inject.ServiceDependency;
-import packed.internal.util.MethodHandleUtil;
+import packed.internal.util.LookupUtil;
 
 /** An internal factory for {@link Factory1}. */
 public final class Factory1FactoryHandle<T, R> extends FactoryHandle<R> {
 
     /** A method handle for {@link Function#apply(Object)}. */
-    private static final MethodHandle APPLY = MethodHandleUtil.findVirtual(MethodHandles.lookup(), Function.class, "apply",
+    private static final MethodHandle APPLY = LookupUtil.findVirtualEIIE(MethodHandles.lookup(), Function.class, "apply",
             MethodType.methodType(Object.class, Object.class));
 
     /** The function that creates the actual objects. */

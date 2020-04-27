@@ -40,7 +40,7 @@ public class VariousBundles {
 
             @Override
             public void compose() {
-                installInstance("foo");
+                installConstant("foo");
             }
         };
     }
@@ -50,11 +50,11 @@ public class VariousBundles {
 
             @Override
             public void compose() {
-                installInstance("foo").setName("1");
-                installInstance("foo").setName("2");
-                installInstance("foo").setName("3");
-                installInstance("foo").setName("4");
-                installInstance("foo").setName("5");
+                installConstant("foo").setName("1");
+                installConstant("foo").setName("2");
+                installConstant("foo").setName("3");
+                installConstant("foo").setName("4");
+                installConstant("foo").setName("5");
             }
         };
     }

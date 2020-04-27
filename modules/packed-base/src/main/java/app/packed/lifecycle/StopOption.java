@@ -17,24 +17,20 @@ package app.packed.lifecycle;
 
 import java.util.concurrent.TimeUnit;
 
+import app.packed.container.Wirelet;
+
 /**
  *
  */
 
 // ContainerStopOption????
 // Eller er det generisk..? Kan den bruges paa en actor??? et Actor Trae...
+// Hehe, hvis actor ogsaa er en artifact...
+
+// Men taenker det her lifecycle er rimligt generisk...
 public interface StopOption {
 
     static StopOption erroneous(Throwable cause) {
-        throw new UnsupportedOperationException();
-    }
-
-    static StopOption now() {
-        // Now == shutdownNow();
-        throw new UnsupportedOperationException();
-    }
-
-    static StopOption now(Throwable cause) {
         throw new UnsupportedOperationException();
     }
 
@@ -47,6 +43,31 @@ public interface StopOption {
         throw new UnsupportedOperationException();
     }
 
-    // restart.. (Artifact must have been started with RestartWirelets.restartable();
+    static StopOption restart(Wirelet... wirelets) {
+        // restart(Wirelet.rename("Restart at ....");
+        //// Men okay hvad hvis det ikke kan lade sige goere at omnavngive den...
+        throw new UnsupportedOperationException();
+    }
 
+    static StopOption now() {
+        // Now == shutdownNow();
+        throw new UnsupportedOperationException();
+    }
+
+    static StopOption now(Throwable cause) {
+        throw new UnsupportedOperationException();
+    }
+
+    // restart.. (Artifact must have been started with RestartWirelets.restartable();
 }
+//normal
+//normal + restart(manual)
+//erroneous[cause]
+//erroneous[cause] + restart(manual)
+// forced() (either directly, or after 
+// forced(cause?)
+// delayForce(10 min) <- try shutdown normally and then forced after X mins... 
+
+// Scheduled (Altsaa er det ikke folks eget ansvar???)
+// Kun fordi vi supporter noget af det med wirelets
+// shutdown in 10 minutes and then restart... (altsaa kan man ikke s)

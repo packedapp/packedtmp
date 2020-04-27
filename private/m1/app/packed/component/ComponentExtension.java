@@ -22,8 +22,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Member;
 
-import app.packed.component.Component;
-import app.packed.component.SingletonConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 

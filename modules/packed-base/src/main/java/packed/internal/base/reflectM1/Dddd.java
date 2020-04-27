@@ -34,13 +34,13 @@ public class Dddd extends BaseBundle {
     @Override
     protected void compose() {
         // System.out.println(Option.inSameContainer());
-        installInstance("sdfsdf").setName("Hej");
-        installInstance("sdfsdf");
-        installInstance("sdfsdf");
-        installInstance("sdfsdf");
-        installInstance("sdfsdf");
+        installConstant("sdfsdf").setName("Hej");
+        installConstant("sdfsdf");
+        installConstant("sdfsdf");
+        installConstant("sdfsdf");
+        installConstant("sdfsdf");
         if (depth > 0) {
-            link(new Dddd(depth - 1), Wirelet.name("X123123XXX"));
+            link(new Dddd(depth - 1), Wirelet.rename("X123123XXX"));
             link(new Dddd(depth - 1));
             link(new Dddd(depth - 1));
         }

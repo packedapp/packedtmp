@@ -32,6 +32,7 @@ public class Factory1Test {
     /** Tests that we can capture information about a simple factory producing {@link Integer} instances. */
     @Test
     public void IntegerFactory0() {
+
         BaseFactory<Integer> f = new Factory1<String, Integer>(Integer::valueOf) {};
         checkThat(f).is(Integer.class);
         List<ServiceDependency> dependencies = f.factory.dependencies;

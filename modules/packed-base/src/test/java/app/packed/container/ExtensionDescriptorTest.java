@@ -21,9 +21,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Contract;
-import app.packed.container.Extension;
-import app.packed.container.ExtensionDescriptor;
-import app.packed.container.PackedExtensionDescriptor;
 import app.packed.sidecar.Expose;
 import app.packed.sidecar.ExtensionSidecar;
 

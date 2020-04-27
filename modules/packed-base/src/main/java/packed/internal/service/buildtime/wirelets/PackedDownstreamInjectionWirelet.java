@@ -25,9 +25,9 @@ import app.packed.base.Key;
 import app.packed.config.ConfigSite;
 import app.packed.service.ServiceDescriptor;
 import app.packed.service.ServiceWirelets;
-import packed.internal.service.runtime.InjectorEntry;
 import packed.internal.service.buildtime.export.ExportedBuildEntry;
 import packed.internal.service.runtime.ConstantInjectorEntry;
+import packed.internal.service.runtime.InjectorEntry;
 
 /** The common superclass for upstream service wirelets. */
 public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {

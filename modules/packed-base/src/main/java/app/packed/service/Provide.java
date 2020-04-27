@@ -15,15 +15,13 @@
  */
 package app.packed.service;
 
-import static app.packed.base.invoke.OpenMode.FIELD_SET;
-import static app.packed.base.invoke.OpenMode.METHOD_INVOKE;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.base.invoke.OpenMode;
 import app.packed.base.invoke.Opens;
 import app.packed.component.Packlet;
 
@@ -89,7 +87,7 @@ import app.packed.component.Packlet;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Packlet(extension = ServiceExtension.class)
-@Opens(to = { METHOD_INVOKE, FIELD_SET })
+@Opens(to = { OpenMode.METHOD_INVOKE, OpenMode.FIELD_SET })
 public @interface Provide {
 
     /**

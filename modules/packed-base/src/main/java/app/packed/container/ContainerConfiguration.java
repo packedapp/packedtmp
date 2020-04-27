@@ -85,7 +85,7 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      * @param factory
      *            the factory to install
      * @return the configuration of the component
-     * @see BaseBundle#install(Factory)
+     * @see Bundle#install(Factory)
      */
     <T> SingletonConfiguration<T> install(Factory<T> factory);
 
@@ -95,7 +95,7 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      * @param instance
      *            the instance to install
      * @return the configuration of the component
-     * @see BaseBundle#installInstance(Object)
+     * @see Bundle#installConstant(Object)
      */
     <T> SingletonConfiguration<T> installInstance(T instance);
 

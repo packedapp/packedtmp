@@ -28,13 +28,13 @@ import java.util.function.BiFunction;
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory2;
 import packed.internal.inject.ServiceDependency;
-import packed.internal.util.MethodHandleUtil;
+import packed.internal.util.LookupUtil;
 
 /** An internal factory for {@link Factory2}. */
 public class Factory2FactoryHandle<T, U, R> extends FactoryHandle<R> {
 
     /** A method handle for {@link BiFunction#apply(Object, Object)}. */
-    private static final MethodHandle APPLY = MethodHandleUtil.findVirtual(MethodHandles.lookup(), BiFunction.class, "apply",
+    private static final MethodHandle APPLY = LookupUtil.findVirtualEIIE(MethodHandles.lookup(), BiFunction.class, "apply",
             MethodType.methodType(Object.class, Object.class, Object.class));
 
     /** The function responsible for creating the actual objects. */

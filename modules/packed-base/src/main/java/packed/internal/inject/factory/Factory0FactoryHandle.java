@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory0;
-import packed.internal.util.MethodHandleUtil;
+import packed.internal.util.LookupUtil;
 
 /**
  * An function handle that wraps a {@link Supplier}. Is used, for example, from {@link Factory0}.
@@ -47,7 +47,7 @@ public final class Factory0FactoryHandle<T> extends FactoryHandle<T> {
     };
 
     /** A method handle for {@link Supplier#get()}. */
-    private static final MethodHandle GET = MethodHandleUtil.findVirtual(MethodHandles.lookup(), Supplier.class, "get", MethodType.methodType(Object.class));
+    private static final MethodHandle GET = LookupUtil.findVirtualEIIE(MethodHandles.lookup(), Supplier.class, "get", MethodType.methodType(Object.class));
 
     /** The supplier that creates the actual objects. */
     private final Supplier<? extends T> supplier;

@@ -23,6 +23,10 @@ import app.packed.sidecar.MethodSidecar;
 // Naar man har en Function sidecar... Laver vi i virkeligheden en MethodSidecarModel 
 // Maaske har vi kun en faelles ClassDataSidecar...
 
+// Uniqueness -> [SidecarType_X_MethodType_X_Name] 
+//MethodType kan maaske paa et tidspunkt bliver genericfiet..
+// Jamen saa skal vi jo bruge generiske typer... Optional<String> er forskellige for Optional<Long>
+// Selvom method typerne ender ens...
 /** A model of {@link MethodSidecar}. */
 public final class MethodSidecarModel extends SidecarModel {
 

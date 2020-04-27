@@ -86,16 +86,6 @@ public abstract class FactoryHandle<T> extends Object {
         }
         return instance;
     }
-    //
-    // /**
-    // * Instantiates a new object using the specified parameters
-    // *
-    // * @param params
-    // * the parameters to use
-    // * @return the new instance
-    // */
-    // @Nullable
-    // public abstract T invoke(Object[] params);
 
     /**
      * Returns the type of objects this operation returns on invocation.

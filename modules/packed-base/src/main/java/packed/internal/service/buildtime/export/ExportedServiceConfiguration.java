@@ -20,10 +20,10 @@ import static java.util.Objects.requireNonNull;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
-import app.packed.service.ServiceMode;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceConfiguration;
 import app.packed.service.ServiceExtension;
+import app.packed.service.ServiceMode;
 
 /**
  * An instance of {@link ServiceConfiguration} that is returned to the user when he exports a service

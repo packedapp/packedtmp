@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 /**
  * A sidecar annotation that can be applied to fields.
  */
-@Target(ElementType.FIELD)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FieldSidecar {
 

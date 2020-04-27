@@ -89,7 +89,7 @@ public interface Factory<T> {
 
     <S> Factory<T> bindSupplier(Key<S> key, Supplier<?> supplier);
 
-    List<?> dependencies();
+    // List<?> dependencies();
 
     // afterInstantiation
     <K> Factory<T> inject(Class<K> key, BiConsumer<? super T, ? super K> action);
@@ -115,6 +115,7 @@ public interface Factory<T> {
      * @return the new factory to return
      */
     // AddDependency.... OnX, looking for a better name...
+    // Flyt den til SingletonConfiguration...
     <K> Factory<T> inject(Key<K> key, BiConsumer<? super T, ? super K> action);
 
     /**
@@ -157,6 +158,7 @@ public interface Factory<T> {
      * 
      * @return any variables that was used to construct the factory
      */
+    // input, output...
     List<VariableDescriptor> variables();
 
     /**

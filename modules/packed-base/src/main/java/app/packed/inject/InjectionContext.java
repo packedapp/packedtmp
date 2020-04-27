@@ -34,6 +34,12 @@ import app.packed.base.Key;
  */
 public interface InjectionContext {
 
+    // Set<Class<Context>> contextTypes();
+
+    // ServiceTrace trace(SomeKey<?>); // Angiver totalt hvordan den service ankommer...
+    // Alternativt er at faa injected en speciel type.. Men naeh taenker det her er lettest.
+    // Igen.. Hops after Hops... Fra den hvor den er registreret her, og saa en mapper.. og fra den her config fil...
+
     /**
      * An immutable set of keys for which dependencies are available for injection at the injection site (typically a method
      * or constructor annotated with {@link Inject}).

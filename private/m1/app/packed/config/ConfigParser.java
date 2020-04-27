@@ -17,6 +17,8 @@ package app.packed.config;
 
 import java.io.InputStream;
 
+import app.packed.lifecycle2.Trace;
+
 /**
  *
  */
@@ -30,6 +32,16 @@ abstract class ConfigParser {
     // Throw IOException or ConfigException???
     Config parse(InputStream is) {
         throw new UnsupportedOperationException();
+    }
+
+    interface ConfigParserOption {
+        static ConfigParserOption doobar() {
+            throw new UnsupportedOperationException();
+        }
+
+        static ConfigParserOption traceWith(Trace tracer) {
+            throw new UnsupportedOperationException();
+        }
     }
 }
 // Should we support serialization also?????????? ConfigMarshaller

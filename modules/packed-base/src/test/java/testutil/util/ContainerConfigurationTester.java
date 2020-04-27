@@ -21,8 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.component.SingletonConfiguration;
 import app.packed.component.ComponentPath;
+import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;

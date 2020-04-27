@@ -21,6 +21,9 @@ package app.packed.lifecycle;
 // Kan injectes ind enhver metode annoteret med @On....
 
 // Fra, Til, Errors, IsRestarting, ...
+
+//Igen hvis det kun er runstate saa Runstate transition...
+
 public final class LifecycleTransition {
 
 }

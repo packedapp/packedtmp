@@ -21,7 +21,7 @@ import java.util.IdentityHashMap;
 
 import app.packed.base.Nullable;
 import app.packed.container.ContainerConfiguration;
-import packed.internal.container.WireletContext;
+import packed.internal.container.WireletContainer;
 
 /**
  * An instantiation context is created for every delimited tree hierachy.
@@ -49,9 +49,9 @@ public final class PackedInstantiationContext {
     /** All context objects. */
     private final IdentityHashMap<ContainerConfiguration, IdentityHashMap<Class<?>, Object>> map = new IdentityHashMap<>();
 
-    public final WireletContext wirelets;
+    public final WireletContainer wirelets;
 
-    public PackedInstantiationContext(WireletContext wirelets) {
+    public PackedInstantiationContext(WireletContainer wirelets) {
         this.wirelets = wirelets;
     }
 
@@ -85,7 +85,7 @@ public final class PackedInstantiationContext {
      * 
      * @return a list of wirelets that used to instantiate
      */
-    public WireletContext wirelets() {
+    public WireletContainer wirelets() {
         return wirelets;
     }
 

@@ -30,6 +30,9 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
+//Maybe rename to @Post an put in lifecycle
+
+//Or On
 public @interface PostSidecar {
 
     /**

@@ -22,10 +22,10 @@ import java.util.List;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.service.ServiceMode;
-import packed.internal.service.runtime.InjectorEntry;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.runtime.ConstantInjectorEntry;
+import packed.internal.service.runtime.InjectorEntry;
 
 /**
  *

@@ -80,7 +80,7 @@ public abstract class WireletPipeline<P extends WireletPipeline<P, W>, W extends
     }
 
     /**
-     * If this pipeline was spawned from an existing pipeline, returns the pipeline, otherwise returns empty.
+     * If this pipeline was spawned from another pipeline, returns the pipeline, otherwise returns empty.
      * 
      * @return any pipeline this pipeline was spawned from
      * @throws IllegalStateException

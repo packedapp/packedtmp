@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package app.packed.lifecycle;
 
 import app.packed.container.Wirelet;
 
@@ -24,6 +24,8 @@ import app.packed.container.Wirelet;
 // I mean the problem is with Hosts/Guests...
 // Guest / GuestInstance [Fordi en artifact maaske er ved at blive initializeret) / Artifact
 // I think it just returns G 
+
+//LifecycleWirelets???
 public class RestartWirelets {
 
     public static Wirelet restartable() {

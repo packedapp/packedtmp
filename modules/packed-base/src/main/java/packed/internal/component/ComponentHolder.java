@@ -24,6 +24,5 @@ package packed.internal.component;
 // No-Host
 // Container
 public interface ComponentHolder {
-
     int depth();
 }

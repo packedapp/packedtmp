@@ -62,8 +62,8 @@ public class AppConfigSiteTest {
             @Override
             protected void compose() {
                 ar.set(ConfigSiteTestHelper.caller());
-                installInstance("foo").setName("foo");
-                installInstance("doo").setName("doo");
+                installConstant("foo").setName("foo");
+                installConstant("doo").setName("doo");
             }
         });
 
@@ -108,7 +108,7 @@ public class AppConfigSiteTest {
                     public void compose() {
                         setName("woo");
                         ar2.set(ConfigSiteTestHelper.caller());
-                        installInstance("foo").setName("foo");
+                        installConstant("foo").setName("foo");
                     }
                 });
             }

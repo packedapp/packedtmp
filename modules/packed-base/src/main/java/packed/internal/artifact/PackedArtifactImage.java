@@ -30,7 +30,7 @@ import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
 import packed.internal.component.ComponentConfigurationToComponentAdaptor;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.container.WireletContext;
+import packed.internal.container.WireletContainer;
 
 /** The default implementation of {@link ArtifactImage}. */
 public final class PackedArtifactImage implements ArtifactImage {
@@ -40,7 +40,7 @@ public final class PackedArtifactImage implements ArtifactImage {
 
     /** Any wirelets that have been applied to the image. */
     @Nullable
-    private final WireletContext wc;
+    private final WireletContainer wc;
 
     /**
      * Creates a new image from the specified configuration and wirelets.
@@ -50,7 +50,7 @@ public final class PackedArtifactImage implements ArtifactImage {
      * @param wc
      *            any wirelets for the image configuration or artifact instantiation
      */
-    private PackedArtifactImage(PackedContainerConfiguration pcc, @Nullable WireletContext wc) {
+    private PackedArtifactImage(PackedContainerConfiguration pcc, @Nullable WireletContainer wc) {
         this.pcc = requireNonNull(pcc);
         this.wc = wc;
     }
@@ -97,7 +97,7 @@ public final class PackedArtifactImage implements ArtifactImage {
      * @return the instantiated artifact
      */
     public ArtifactContext newArtifact(Wirelet... wirelets) {
-        WireletContext newWc = WireletContext.of(pcc, wc, wirelets);
+        WireletContainer newWc = WireletContainer.of(pcc, wc, wirelets);
         return pcc.instantiateArtifact(newWc); // Does the actual instantiation
     }
 
@@ -118,7 +118,7 @@ public final class PackedArtifactImage implements ArtifactImage {
     @Override
     public PackedArtifactImage with(Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
-        return wirelets.length == 0 ? this : new PackedArtifactImage(pcc, WireletContext.of(pcc, wc, wirelets));
+        return wirelets.length == 0 ? this : new PackedArtifactImage(pcc, WireletContainer.of(pcc, wc, wirelets));
     }
 
     /**

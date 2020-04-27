@@ -27,7 +27,6 @@ import java.util.WeakHashMap;
 
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
-import packed.internal.container.ExtensionUtil;
 import packed.internal.util.StringFormatter;
 
 /**

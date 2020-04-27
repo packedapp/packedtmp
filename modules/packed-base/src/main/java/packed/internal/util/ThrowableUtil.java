@@ -15,6 +15,7 @@
  */
 package packed.internal.util;
 
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -65,6 +66,15 @@ public final class ThrowableUtil {
             throw (Exception) throwable;
         }
         return throwable;
+    }
+
+    static UndeclaredThrowableException rethrowAsUndeclared(Throwable throwable) {
+        if (throwable instanceof RuntimeException) {
+            throw (RuntimeException) throwable;
+        } else if (throwable instanceof Error) {
+            throw (Error) throwable;
+        }
+        return new UndeclaredThrowableException(throwable);
     }
 
     /**

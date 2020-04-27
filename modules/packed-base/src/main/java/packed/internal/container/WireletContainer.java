@@ -28,41 +28,31 @@ import app.packed.container.Wirelet;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
 
 /**
- * A container of one or more wirelets.
+ * A container of wirelets and wirelet pipelines.
  */
-// Det er kun late binding wirelets we kan bruge...
-// Ikke f.eks. ConfigSite
+public final class WireletContainer {
 
-// Har vi altid en af dem baar vi ...
-// Eller koerer vi noget if
+    // Could put them in wirelets. And then have an int countdown instead... every time an extension is removed.
+    private final IdentityHashMap<Class<? extends Extension>, Object> extensions = new IdentityHashMap<>();
 
-// Why this design.
-//// Alternativ. Keep a list of wirelets that was eva
-
-// Should we copy info into new context.. Or check recursively
-public final class WireletContext {
+    /** A map of wirelets and wirelet pipelines. */
+    private final IdentityHashMap<Class<?>, Object> map = new IdentityHashMap<>();
 
     // We might at some point, allow the setting of a default name...
     // In which we need to different between not-set and set to null
-
-    // Could put them in wirelets. And then have an int countdown instead... every time an extension is removed.
-    final IdentityHashMap<Class<? extends Extension>, Object> extensions = new IdentityHashMap<>();
-
     ComponentNameWirelet newName; // kan komme i map... og saa saetter vi et flag istedet for...
 
     /** Any parent this context might have */
     @Nullable
-    final WireletContext parent;
-
-    private final IdentityHashMap<Class<?>, Object> map = new IdentityHashMap<>();
+    final WireletContainer parent;
 
     /**
-     * Creates a new context
+     * Creates a new container.
      * 
      * @param parent
-     *            an existing parent
+     *            any existing parent
      */
-    private WireletContext(@Nullable WireletContext parent) {
+    private WireletContainer(@Nullable WireletContainer parent) {
         this.parent = parent;
     }
 
@@ -73,11 +63,12 @@ public final class WireletContext {
     private void addWirelet(PackedContainerConfiguration pcc, Wirelet w) {
         requireNonNull(w, "wirelets contain a null");
         if (w instanceof PipelineWirelet) {
+            // A wirelet that belongs to a pipeline
             @SuppressWarnings("unchecked")
             WireletPipelineModel model = WireletPipelineModel.ofWirelet((Class<? extends PipelineWirelet<?>>) w.getClass());
 
             ((WireletPipelineContext) map.computeIfAbsent(model.type(), k -> {
-                WireletPipelineContext pc = parent == null ? null : (WireletPipelineContext) parent.getIt(model.type());
+                WireletPipelineContext pc = parent == null ? null : (WireletPipelineContext) parent.getWireletOrPipeline(model.type());
                 WireletPipelineContext wpc = new WireletPipelineContext(model, pc);
                 if (model.memberOfExtension() != null) {
                     extensions.put(model.memberOfExtension(), wpc);// We need to add it as a list if we have more than one wirelet context
@@ -93,22 +84,35 @@ public final class WireletContext {
                 addWirelet(pcc, ww);
             }
         } else {
-            // A standalone wirelet, just override any existing
+            // A normal wirelet, just override any existing wirelet of the specific type
+            // TODO we need to make sure that the same wirelet is in two wirelet containers...
             map.put(w.getClass(), w);
         }
     }
 
-    @Nullable
-    public Object getIt(Class<?> type) {
-        WireletContext wc = this;
-        do {
-            Object o = wc.map.get(type);
-            if (o != null) {
-                return o;
+    /**
+     * This method checks that no wirelets have been specified that requires an extensions that have not been used.
+     */
+    public void checkAllExtensionsAvailable(PackedContainerConfiguration pcc) {
+        assert (parent == null);
+        if (!extensions.isEmpty()) {
+            extensionFailed(pcc);
+        }
+    }
+
+    private void extensionFailed(PackedContainerConfiguration pcc) {
+        IdentityHashMap<Class<? extends Extension>, ArrayList<Wirelet>> m = new IdentityHashMap<>();
+        for (Entry<Class<? extends Extension>, Object> c : extensions.entrySet()) {
+            Class<? extends Extension> k = c.getKey();
+            if (pcc.getExtension(k) == null) {
+
             }
-            wc = wc.parent;
-        } while (wc != null);
-        return null;
+        }
+        System.out.println(m);
+//        throw new IllegalArgumentException("In order to use the wirelet(s) " + wpc.wirelets.get(0) + ", " + extensionType.getSimpleName()
+//        + " is required to be installed.");
+
+        // ArrayList<Class<? extends ExtensionT>>
     }
 
     public void extensionInitialized(PackedExtensionContext pec) {
@@ -119,8 +123,21 @@ public final class WireletContext {
         }
     }
 
+    @Nullable
+    public Object getWireletOrPipeline(Class<?> type) {
+        WireletContainer wc = this;
+        do {
+            Object o = wc.map.get(type);
+            if (o != null) {
+                return o;
+            }
+            wc = wc.parent;
+        } while (wc != null);
+        return null;
+    }
+
     public String name(PackedContainerConfiguration pcc) {
-        WireletContext wc = this;
+        WireletContainer wc = this;
         while (wc != null) {
             if (wc.newName != null) {
                 return newName.name;
@@ -131,7 +148,7 @@ public final class WireletContext {
     }
 
     public ComponentNameWirelet nameWirelet() {
-        WireletContext wc = this;
+        WireletContainer wc = this;
         while (wc != null) {
             if (wc.newName != null) {
                 return newName;
@@ -139,16 +156,6 @@ public final class WireletContext {
             wc = wc.parent;
         }
         return null;
-    }
-
-    /**
-     * This method checks that no wirelets have been specified requiring extensions that have not been used.
-     */
-    public void checkAllExtensionsAvailable(PackedContainerConfiguration pcc) {
-        assert (parent == null);
-        if (!extensions.isEmpty()) {
-            extensionFailed(pcc);
-        }
     }
 
     /**
@@ -162,13 +169,13 @@ public final class WireletContext {
      * @return stuff
      */
     @Nullable
-    public static WireletContext of(PackedContainerConfiguration pcc, @Nullable WireletContext existing, Wirelet... wirelets) {
+    public static WireletContainer of(PackedContainerConfiguration pcc, @Nullable WireletContainer existing, Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
         if (wirelets.length == 0) {
-            return existing;
+            return existing; // existing is null in most situations
         }
 
-        WireletContext wc = new WireletContext(existing);
+        WireletContainer wc = new WireletContainer(existing);
         for (Wirelet w : wirelets) {
             wc.addWirelet(pcc, w);
         }
@@ -192,19 +199,14 @@ public final class WireletContext {
         return wc;
     }
 
-    private void extensionFailed(PackedContainerConfiguration pcc) {
-        IdentityHashMap<Class<? extends Extension>, ArrayList<Wirelet>> m = new IdentityHashMap<>();
-        for (Entry<Class<? extends Extension>, Object> c : extensions.entrySet()) {
-            Class<? extends Extension> k = c.getKey();
-            if (pcc.getExtension(k) == null) {
-
-            }
-        }
-        System.out.println(m);
-//        throw new IllegalArgumentException("In order to use the wirelet(s) " + wpc.wirelets.get(0) + ", " + extensionType.getSimpleName()
-//        + " is required to be installed.");
-
-        // ArrayList<Class<? extends ExtensionT>>
-    }
-
 }
+//Det er kun late binding wirelets we kan bruge...
+//Ikke f.eks. ConfigSite
+
+//Har vi altid en af dem baar vi ...
+//Eller koerer vi noget if
+
+//Why this design.
+////Alternativ. Keep a list of wirelets that was eva
+
+//Should we copy info into new context.. Or check recursively

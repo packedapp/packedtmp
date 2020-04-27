@@ -49,6 +49,7 @@ public abstract class SidecarModel extends Model {
     protected final Map<Class<? extends Contract>, MethodHandle> contracts;
 
     /** Methods annotated with {@link PostSidecar}. Takes the sidecar instance */
+    // Det kan jo vaere gemt i en int istedet for saa vi bare test noget modulo...
     private final MethodHandle[] postSidecars; // TODO take a SidecarModel as well as well???
 
     /**

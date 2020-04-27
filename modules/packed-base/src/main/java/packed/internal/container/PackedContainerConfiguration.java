@@ -94,7 +94,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     private final Object source;
 
     /** Any wirelets that was specified by the user when creating this configuration. */
-    public final WireletContext wireletContext;
+    @Nullable
+    public final WireletContainer wireletContext;
 
     /**
      * Creates a new container configuration via {@link #link(Bundle, Wirelet...)}.
@@ -110,11 +111,11 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         super(ConfigSiteUtil.captureStackFrame(parent.configSite(), InjectConfigSiteOperations.INJECTOR_OF), parent);
         this.source = requireNonNull(bundle, "bundle is null");
         this.lookup = this.model = ContainerSourceModel.of(bundle.getClass());
-        this.wireletContext = WireletContext.of(this, null, wirelets);
+        this.wireletContext = WireletContainer.of(this, null, wirelets);
     }
 
     /**
-     * Creates a new container configuration.
+     * Creates a new (root) container configuration.
      * 
      * @param output
      *            the build output
@@ -127,7 +128,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         super(ConfigSiteUtil.captureStackFrame(InjectConfigSiteOperations.INJECTOR_OF), output);
         this.source = requireNonNull(source);
         this.lookup = this.model = ContainerSourceModel.of(source.getClass());
-        this.wireletContext = WireletContext.of(this, null, wirelets);
+        this.wireletContext = WireletContainer.of(this, null, wirelets);
     }
 
     private HostConfigurationContext addHost() {
@@ -352,7 +353,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return new PackedContainer(parent, this, ic);
     }
 
-    public ArtifactContext instantiateArtifact(WireletContext wc) {
+    public ArtifactContext instantiateArtifact(WireletContainer wc) {
         PackedInstantiationContext pic = new PackedInstantiationContext(wc);
         extensionsPrepareInstantiation(pic);
 

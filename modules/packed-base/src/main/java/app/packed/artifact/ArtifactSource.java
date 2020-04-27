@@ -18,7 +18,7 @@ package app.packed.artifact;
 import app.packed.container.Bundle;
 
 /**
- * A source that can be used to create new artifacts. For example, via
+ * A source for creating new artifacts. For example, via
  * {@link App#start(ArtifactSource, app.packed.container.Wirelet...)}.
  * <p>
  * There An source is used to create an artifact. Currently the following types of sources are supported:
@@ -30,8 +30,6 @@ import app.packed.container.Bundle;
  * This is typically either a subclass of {@link Bundle} or a pre assembled {@link ArtifactImage artifact image}.
  * <p>
  * TODO maybe list all the s
- * <p>
- * 
  * 
  * @apiNote In the future, if the Java language permits, {@link ArtifactSource} may become a {@code sealed} interface,
  *          which would prohibit subclassing except by explicitly permitted types.

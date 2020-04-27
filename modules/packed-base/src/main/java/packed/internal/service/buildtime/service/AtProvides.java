@@ -26,8 +26,8 @@ import app.packed.base.Nullable;
 import app.packed.base.reflect.FieldDescriptor;
 import app.packed.base.reflect.MemberDescriptor;
 import app.packed.base.reflect.MethodDescriptor;
-import app.packed.service.ServiceMode;
 import app.packed.service.Provide;
+import app.packed.service.ServiceMode;
 import packed.internal.inject.ServiceDependency;
 
 /** A descriptor for a field or method (member) annotated with {@link Provide}. */

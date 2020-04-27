@@ -23,6 +23,9 @@ package app.packed.lifecycle;
 /// RunFailedException <- See execute fungere daaerlig here
 
 /// StartupFailedException();
-public class FailedToStartException {
+public class FailedToStartException extends RuntimeException {
+
+    /** */
+    private static final long serialVersionUID = 1L;
 
 }
