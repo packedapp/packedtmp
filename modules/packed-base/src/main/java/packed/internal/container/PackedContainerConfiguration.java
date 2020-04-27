@@ -28,9 +28,11 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import app.packed.analysis.BundleDescriptor;
 import app.packed.artifact.ArtifactContext;
+import app.packed.artifact.ArtifactImage;
 import app.packed.base.Nullable;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
@@ -120,7 +122,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * @param output
      *            the build output
      * @param source
-     *            the source of the container
+     *            the source of the container. Either a {@link Bundle}, {@link ArtifactImage} or a {@link Consumer}.
      * @param wirelets
      *            any wirelets specified by the user
      */

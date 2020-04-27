@@ -144,7 +144,7 @@ public abstract class ArtifactDriver<A> {
 
     private ArtifactContext create(ArtifactSource source, Wirelet... wirelets) {
         if (source instanceof PackedArtifactImage) {
-            return ((PackedArtifactImage) source).newArtifact(wirelets);
+            return ((PackedArtifactImage) source).instantiateArtifact(wirelets);
         }
         PackedContainerConfiguration pcc = new PackedContainerConfiguration(AssembleOutput.artifact(this), source, wirelets);
         pcc.assemble();

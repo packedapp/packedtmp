@@ -73,12 +73,12 @@ public abstract class Wirelet {
     }
 
     /**
-     * Returns a wirelet that will rename the container, overriding the the default naming scheme, or any name that might
+     * Returns a wirelet that will rename the container, overriding any default naming scheme , or any name that might
      * already have been set, for example, via {@link Bundle#setName(String)}.
      * 
      * @param name
-     *            the name of the container
-     * @return a wirelet that will set rename the container
+     *            the new name of the container
+     * @return a wirelet that can be used to rename a container
      */
     public static Wirelet rename(String name) {
         return new ComponentNameWirelet(name);

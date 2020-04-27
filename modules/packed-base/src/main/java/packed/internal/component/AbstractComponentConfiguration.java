@@ -232,6 +232,14 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
         return container;
     }
 
+    PackedContainerConfiguration containerX() {
+        AbstractComponentConfiguration c = this;
+        while (!(c instanceof PackedContainerConfiguration)) {
+            c = c.parent;
+        }
+        return (PackedContainerConfiguration) c;
+    }
+
     /** {@inheritDoc} */
     @Override
     public final int depth() {
@@ -271,18 +279,6 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
     @Override
     public final String getName() {
         return initializeName(State.GET_NAME_INVOKED, null);
-    }
-
-    PackedContainerConfiguration containerX() {
-        AbstractComponentConfiguration c = this;
-        while (!(c instanceof PackedContainerConfiguration)) {
-            c = c.parent;
-        }
-        return (PackedContainerConfiguration) c;
-    }
-
-    public boolean isInSameContainer(AbstractComponentConfiguration other) {
-        return containerX() == other.containerX();
     }
 
     final Map<String, AbstractComponent> initializeChildren(AbstractComponent parent, PackedInstantiationContext ic) {
@@ -339,6 +335,10 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
 
     protected abstract AbstractComponent instantiate(AbstractComponent parent, PackedInstantiationContext ic);
 
+    public boolean isInSameContainer(AbstractComponentConfiguration other) {
+        return containerX() == other.containerX();
+    }
+
     /** {@inheritDoc} */
     @Override
     public final ComponentPath path() {
@@ -386,9 +386,6 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
     public enum State {
 
         /** The initial state. */
-        INITIAL,
-
-        /** The initial state. */
         EXTENSION_USED,
 
         /** */
@@ -396,6 +393,9 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
 
         /** {@link ComponentConfiguration#getName()} has been invoked. */
         GET_NAME_INVOKED,
+
+        /** The initial state. */
+        INITIAL,
 
         /** One of the install component methods has been invoked. */
         INSTALL_INVOKED,

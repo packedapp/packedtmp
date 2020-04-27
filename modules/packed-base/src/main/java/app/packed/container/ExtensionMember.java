@@ -17,7 +17,6 @@ package app.packed.container;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -35,13 +34,12 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Inherited // Do we need this???
 public @interface ExtensionMember {
 
     /**
-     * Returns The extension the annotated member is a part of.
+     * Returns The extension the annotated target is a part of.
      * 
-     * @return the extension the annotated member is a part of
+     * @return the extension the annotated target is a part of
      */
     Class<? extends Extension> value();
 }
@@ -51,3 +49,5 @@ public @interface ExtensionMember {
 // Wirelet (non-pipelined) Will be available for injection into any extension runtime component
 // Pipelines -> The given extension must have been installed in order to use any wirelets that belong to the pipeline...
 // Packlet -> Will install the given extension if not already installed
+
+// @Inherited // Do we need this??? I removed it

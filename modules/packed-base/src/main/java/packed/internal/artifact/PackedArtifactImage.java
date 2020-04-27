@@ -38,7 +38,10 @@ public final class PackedArtifactImage implements ArtifactImage {
     /** The configuration of the root container. */
     private final PackedContainerConfiguration pcc;
 
-    /** Any wirelets that have been applied to the image. */
+    /**
+     * Any wirelets that have been applied to the image. Might consist of a chain of wirelet containers with repeat usage of
+     * {@link #with(Wirelet...)}.
+     */
     @Nullable
     private final WireletContainer wc;
 
@@ -48,21 +51,26 @@ public final class PackedArtifactImage implements ArtifactImage {
      * @param pcc
      *            the container configuration to wrap
      * @param wc
-     *            any wirelets for the image configuration or artifact instantiation
+     *            any wirelets specified when creating the image or later via {@link #with(Wirelet...)}
      */
     private PackedArtifactImage(PackedContainerConfiguration pcc, @Nullable WireletContainer wc) {
         this.pcc = requireNonNull(pcc);
         this.wc = wc;
     }
 
-    public PackedContainerConfiguration configuration() {
-        return pcc;
-    }
-
     /** {@inheritDoc} */
     @Override
     public ConfigSite configSite() {
         return pcc.configSite();
+    }
+
+    /**
+     * Returns the configuration of the root container.
+     * 
+     * @return the configuration of the root container
+     */
+    public PackedContainerConfiguration configuration() {
+        return pcc;
     }
 
     /** {@inheritDoc} */
@@ -90,13 +98,13 @@ public final class PackedArtifactImage implements ArtifactImage {
     }
 
     /**
-     * Instantiates a new artifact context
+     * Instantiates a new artifact.
      * 
      * @param wirelets
      *            any wirelets used for instantiation
-     * @return the instantiated artifact
+     * @return the instantiated artifact context
      */
-    public ArtifactContext newArtifact(Wirelet... wirelets) {
+    public ArtifactContext instantiateArtifact(Wirelet... wirelets) {
         WireletContainer newWc = WireletContainer.of(pcc, wc, wirelets);
         return pcc.instantiateArtifact(newWc); // Does the actual instantiation
     }
@@ -105,7 +113,7 @@ public final class PackedArtifactImage implements ArtifactImage {
     @Override
     @SuppressWarnings("unchecked")
     public Class<? extends Bundle> sourceType() {
-        return (Class<? extends Bundle>) pcc.sourceType();
+        return (Class<? extends Bundle>) pcc.sourceType(); // images can only be created from bundles
     }
 
     /** {@inheritDoc} */
@@ -138,19 +146,30 @@ public final class PackedArtifactImage implements ArtifactImage {
         return new PackedArtifactImage(pcc.assemble(), pcc.wireletContext);
     }
 
-    public static PackedArtifactImage ofOrCreate(ArtifactSource source, Wirelet... wirelets) {
+    /**
+     * If the specified source is an image returns the image with any specified wirelets applied. If the specified source is
+     * a {@link Bundle} creates and returns a new image from the specified bundle.
+     * 
+     * @param source
+     *            the artifact source
+     * @param wirelets
+     *            any wirelet
+     * @return the image
+     */
+    public static PackedArtifactImage lazyCreate(ArtifactSource source, Wirelet... wirelets) {
         if (source instanceof PackedArtifactImage) {
-            return (PackedArtifactImage) source;
+            PackedArtifactImage pai = (PackedArtifactImage) source;
+            return pai.with(wirelets);
         } else {
             return of((Bundle) source, wirelets);
         }
     }
 }
 
-// De kunne jo strength taget vaere metoder paa imaged og ikke wirelets.
+// De kunne jo strength taget vaere metoder paa selve imaged og ikke wirelets.
 // Vi kan jo sagtens internt lave det om til wirelets...
 // Der er bare ingen grund til at lave det public...
-final class ArtifactImageWirelets {
+final class XArtifactImageWirelets {
 
     // retainStackTracesForEachInstantiation...
     /// Her ligger vi jo lige 1000 ns oveni hvis vi vil se hvor den er instantieret.
@@ -159,8 +178,10 @@ final class ArtifactImageWirelets {
     // Could, for example, be one for native.
     // The only think we want to instantiate the application once... And then forget everything
 
-    // Ideen er at vi kun skal lave en container en gang. F.eks. NativeBoot
-    static Wirelet oneShot() {
+    /**
+     * @return lazy
+     */
+    static ArtifactImage lazy() {
         throw new UnsupportedOperationException();
     }
 
@@ -179,10 +200,8 @@ final class ArtifactImageWirelets {
     // Vi skal double down med det lazy paa runtime, og validation paa test time
     // Evt. et build plugin der validere det????
 
-    /**
-     * @return lazy
-     */
-    static ArtifactImage lazy() {
+    // Ideen er at vi kun skal lave en container en gang. F.eks. NativeBoot
+    static Wirelet oneShot() {
         throw new UnsupportedOperationException();
     }
 

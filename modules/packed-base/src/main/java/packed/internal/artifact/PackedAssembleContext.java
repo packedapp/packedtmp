@@ -30,8 +30,6 @@ public final class PackedAssembleContext implements AssembleContext {
     /** The configuration of the top container. */
     private final ContainerConfiguration topContainerConfiguration;
 
-    // private final ExtensionList extensions = new ExtensionList();
-
     /**
      * Creates a new build context object.
      * 
@@ -61,21 +59,6 @@ public final class PackedAssembleContext implements AssembleContext {
         return false;
     }
 
-//    /**
-//     * Registers the specified extension type for first use. This method is invoked the first time an extension is used for
-//     * in every container.
-//     * 
-//     * @param pec
-//     *            the context of the extension that was used.
-//     */
-//    public void usesExtension(PackedExtensionContext pec) {
-//        extensions.extensions.add(pec.model());
-//    }
-//
-//    public void forEachExtension() {
-//
-//    }
-
     /**
      * Returns the build output.
      * 
@@ -91,3 +74,18 @@ public final class PackedAssembleContext implements AssembleContext {
         return topContainerConfiguration.sourceType();
     }
 }
+
+///**
+//* Registers the specified extension type for first use. This method is invoked the first time an extension is used for
+//* in every container.
+//* 
+//* @param pec
+//*            the context of the extension that was used.
+//*/
+//public void usesExtension(PackedExtensionContext pec) {
+//  extensions.extensions.add(pec.model());
+//}
+//
+//public void forEachExtension() {
+//
+//}

@@ -248,10 +248,10 @@ public class BundleDescriptor {
      */
     public static BundleDescriptor of(Bundle bundle) {
         requireNonNull(bundle, "bundle is null");
-        PackedContainerConfiguration conf = new PackedContainerConfiguration(AssembleOutput.descriptor(BundleDescriptor.class), bundle);
-        conf.assemble();
+        PackedContainerConfiguration pcc = new PackedContainerConfiguration(AssembleOutput.descriptor(BundleDescriptor.class), bundle);
+        pcc.assemble();
         BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
-        conf.buildDescriptor(builder);
+        pcc.buildDescriptor(builder);
         return builder.build();
     }
 

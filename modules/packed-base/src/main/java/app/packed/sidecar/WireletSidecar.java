@@ -38,6 +38,8 @@ import app.packed.container.WireletPipeline;
 //@Inherited???
 @interface WireletSidecar {
 
+    boolean requireAssemblyTime() default false;
+
     // I think a boolean is fine. Can't imaging you would want to expose it as any other type
     boolean provideAsService() default false;
 

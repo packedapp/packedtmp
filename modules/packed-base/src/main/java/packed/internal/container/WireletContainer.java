@@ -200,6 +200,15 @@ public final class WireletContainer {
     }
 
 }
+///  3 måder vi laver wirelet containers på
+
+// AssemblyTime,  App.of(bundle, W?) | Image.of(bundle, W?)
+// NonExistingWL,  App.of(Image.of(bundle), W?)
+// ExistingML  App.of(Image.of(Bundle, W), W)
+
+// Der kan altid kun vaere en eksisterende WireletContainer hvis det er et image...
+// 
+
 //Det er kun late binding wirelets we kan bruge...
 //Ikke f.eks. ConfigSite
 
