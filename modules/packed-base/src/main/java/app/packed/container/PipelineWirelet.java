@@ -28,6 +28,7 @@ package app.packed.container;
  * @see WireletPipeline
  */
 // The wirelet must be in that same module as the pipeline???? Nej taenker at visibility burde vaere nok til at styre det...
+//@Deprecated
 public abstract class PipelineWirelet<T extends WireletPipeline<T, ?>> extends Wirelet {}
 //
 ///**

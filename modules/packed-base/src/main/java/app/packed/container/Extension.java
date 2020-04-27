@@ -150,12 +150,16 @@ public abstract class Extension {
      * @throws IllegalArgumentException
      *             if invoked from the constructor of the extension
      * @return an extension context object
+     * 
+     * @apiNote Original this method was protected. But extension is really the only sidecar that works this way. So to
+     *          streamline with other sidecars we only allow it to be dependency injected into subclasses.
      */
-    protected final ExtensionContext context() {
+    private ExtensionContext context() {
         ExtensionContext c = context;
         if (c == null) {
-            throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension."
-                    + " As an alternative ExtensionComposer.onAdd(action) can used to perform initialization");
+            // TODO fix with actual annotation type
+            throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension." + " As an alternative "
+                    + Extension.class.getSimpleName() + "#onAdd(action) can used to perform initialization");
         }
         return c;
     }
@@ -185,8 +189,6 @@ public abstract class Extension {
      * Invoking this method is similar to calling {@link ContainerConfiguration#use(Class)}. However, this method also keeps
      * track of which extensions uses other extensions. And forming any kind of circle in the dependency graph will fail
      * with a runtime exception.
-     * <p>
-     * This method delegate all calls to {@link ExtensionContext#use(Class)}.
      * 
      * @param <E>
      *            the type of extension to return
@@ -198,6 +200,7 @@ public abstract class Extension {
      *             configurable and an extension of the specified type has not already been installed
      * @throws UnsupportedOperationException
      *             if the specified extension type has not been specified via {@link ExtensionSidecar}
+     * @see ExtensionContext#use(Class)
      */
     protected final <E extends Extension> E use(Class<E> extensionType) {
         return context().use(extensionType);

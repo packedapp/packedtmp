@@ -39,7 +39,8 @@ import packed.internal.container.WireletPipelineContext;
 
 // If a pipeline implementation makes use of an extension. The extension and the pipeline implementation must be located in the same module as returned by
 // ExtensionImplementation#getModule and WireletPipelineImplementation#getModule
-public abstract class WireletPipeline<P extends WireletPipeline<P, W>, W extends PipelineWirelet<P>> implements Iterable<W> {
+
+public abstract class WireletPipeline<P extends WireletPipeline<P, W>, W extends Wirelet> implements Iterable<W> {
 
     /** The pipeline context, initialized immediately after the constructor of the pipeline has finished. */
     @Nullable

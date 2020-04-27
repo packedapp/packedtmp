@@ -18,6 +18,7 @@ package app.packed.sidecar;
 import app.packed.container.PipelineWirelet;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletPipeline;
+import packed.internal.container.WireletModel;
 
 /**
  * An annotation that can be used on subclasses of {@link Wirelet}. Classes that extend {@link Wirelet} are implicit
@@ -36,14 +37,14 @@ import app.packed.container.WireletPipeline;
 // Altsaa public klasser boer nok provide as service...
 
 //@Inherited???
-@interface WireletSidecar {
+public @interface WireletSidecar {
 
     boolean requireAssemblyTime() default false;
 
     // I think a boolean is fine. Can't imaging you would want to expose it as any other type
     boolean provideAsService() default false;
 
-    Class<? extends WireletPipeline<?, ?>> pipeline() default NoWireletPipeline.class;
+    Class<? extends WireletPipeline<?, ?>> pipeline() default WireletModel.NoWireletPipeline.class;
 
     // boolean requireAssemblyTime() must be used on assembly time
     // Cannot be used on an image after it has been created
