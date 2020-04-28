@@ -20,8 +20,9 @@ import java.util.Optional;
 
 import app.packed.artifact.App;
 import app.packed.container.BaseBundle;
-import app.packed.container.PipelineWirelet;
+import app.packed.container.Wirelet;
 import app.packed.container.WireletPipeline;
+import app.packed.sidecar.WireletSidecar;
 
 /**
  *
@@ -52,7 +53,8 @@ public class WFreePipelinex extends BaseBundle {
         }
     }
 
-    static class SomeWirelet implements PipelineWirelet<SomePipeline> {
+    @WireletSidecar(pipeline = SomePipeline.class)
+    static class SomeWirelet implements Wirelet {
         final String x;
 
         SomeWirelet(String x) {

@@ -22,10 +22,21 @@ import app.packed.container.WireletPipeline;
 import app.packed.sidecar.WireletSidecar;
 import packed.internal.sidecar.Model;
 
-/**
- *
- */
+/** A model of a {@link Wirelet}. */
 public class WireletModel extends Model {
+
+    /** A cache of models for each pipeline implementation. */
+    private static final ClassValue<WireletModel> MODELS = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        @SuppressWarnings({ "unchecked" })
+        @Override
+        protected WireletModel computeValue(Class<?> type) {
+            return new WireletModel((Class<? extends Wirelet>) type);
+        }
+    };
+
+    private final boolean inherited;
 
     /** Any extension this pipeline is a member of. */
     @Nullable
@@ -48,19 +59,31 @@ public class WireletModel extends Model {
 
         WireletPipelineModel wpm = null;
         WireletSidecar ws = type.getAnnotation(WireletSidecar.class);
+        boolean inherited = false;
+        boolean requireAssemblyTime = false;
         if (ws != null) {
             Class<? extends WireletPipeline<?, ?>> p = ws.pipeline();
             if (p != NoWireletPipeline.class) {
                 wpm = WireletPipelineModel.of(p);
                 // XXX must be assignable to YY to be a part of the pipeline
             }
-
-            this.requireAssemblyTime = ws.requireAssemblyTime();
-        } else {
-            this.requireAssemblyTime = false;
+            inherited = ws.inherited();
+            requireAssemblyTime = ws.requireAssemblyTime();
         }
 
+        this.requireAssemblyTime = requireAssemblyTime;
+        this.inherited = inherited;
         this.pipeline = wpm;
+    }
+
+    /**
+     * Returns whether or not the wirelet is inherited.
+     * 
+     * @return whether or not the wirelet is inherited
+     * @see WireletSidecar#inherited()
+     */
+    public boolean inherited() {
+        return inherited;
     }
 
     @Nullable
@@ -68,5 +91,20 @@ public class WireletModel extends Model {
         return pipeline;
     }
 
-    public static class NoWireletPipeline extends WireletPipeline<NoWireletPipeline, Wirelet> {}
+    /**
+     * Returns a model for the specified wirelet type.
+     * 
+     * @param wireletType
+     *            the wirelet type to return a model for.
+     * @return the model
+     */
+    static WireletModel of(Class<? extends Wirelet> wireletType) {
+        return MODELS.get(wireletType);
+    }
+
+    /** A dummy class indicating no pipeline for {@link WireletSidecar#pipeline()}. */
+    public static final class NoWireletPipeline extends WireletPipeline<NoWireletPipeline, Wirelet> {
+        /** No instantiation. */
+        private NoWireletPipeline() {}
+    }
 }

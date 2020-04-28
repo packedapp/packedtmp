@@ -21,7 +21,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
-import app.packed.container.PipelineWirelet;
 import app.packed.container.WireletPipeline;
 import packed.internal.reflect.InjectableFunction;
 import packed.internal.reflect.OpenClass;
@@ -29,6 +28,7 @@ import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.sidecar.Model;
 
 /** A model of a {@link WireletPipeline}. */
+// Extends WireletModel if pipeline-> wirelet
 public final class WireletPipelineModel extends Model {
 
     /** A cache of models for each pipeline implementation. */
@@ -42,20 +42,9 @@ public final class WireletPipelineModel extends Model {
         }
     };
 
-    /** A cache of pipeline wirelet types to pipeline models. */
-    private static final ClassValue<WireletPipelineModel> WIRELET_TYPE_TO_MODELS = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        @SuppressWarnings("unchecked")
-        @Override
-        protected WireletPipelineModel computeValue(Class<?> type) {
-            Class<? extends WireletPipeline<?, ?>> p = (Class<? extends WireletPipeline<?, ?>>) WIRELET_TYPE_TO_PIPELINE_TYPE_EXTRACTOR.extract(type);
-            return WireletPipelineModel.of(p);
-        }
-    };
-
     /** A type variable extractor to extract what kind of pipeline a pipeline wirelet belongs to. */
-    private static final TypeVariableExtractor WIRELET_TYPE_TO_PIPELINE_TYPE_EXTRACTOR = TypeVariableExtractor.of(PipelineWirelet.class);
+    // TODO check that wirelets match pipeline type..
+    static final TypeVariableExtractor WIRELET_TYPE_TO_PIPELINE_TYPE_EXTRACTOR = TypeVariableExtractor.of(WireletPipeline.class);
 
     /** A method handle to create new pipeline instances. */
     private final MethodHandle constructor;
@@ -114,16 +103,5 @@ public final class WireletPipelineModel extends Model {
      */
     public static WireletPipelineModel of(Class<? extends WireletPipeline<?, ?>> type) {
         return MODELS.get(type);
-    }
-
-    /**
-     * Returns a model for the specified wirelet type.
-     * 
-     * @param wireletType
-     *            the wirelet type to return a model for.
-     * @return the model
-     */
-    static WireletPipelineModel ofWirelet(Class<? extends PipelineWirelet<?>> wireletType) {
-        return WIRELET_TYPE_TO_MODELS.get(wireletType);
     }
 }

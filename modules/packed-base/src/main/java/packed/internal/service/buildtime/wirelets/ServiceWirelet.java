@@ -15,12 +15,14 @@
  */
 package packed.internal.service.buildtime.wirelets;
 
-import app.packed.container.PipelineWirelet;
+import app.packed.container.Wirelet;
+import app.packed.sidecar.WireletSidecar;
 
 /**
  *
  */
-public abstract class ServiceWirelet implements PipelineWirelet<ServiceWireletPipeline> {
+@WireletSidecar(pipeline = ServiceWireletPipeline.class)
+public abstract class ServiceWirelet implements Wirelet {
 
     /**
      * Process this wirelet.

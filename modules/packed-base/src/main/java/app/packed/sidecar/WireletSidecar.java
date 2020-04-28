@@ -15,6 +15,12 @@
  */
 package app.packed.sidecar;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import app.packed.artifact.SystemImage;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletPipeline;
@@ -25,6 +31,9 @@ import packed.internal.container.WireletModel;
  * sidecars even without the use of this annotation. However, if the wirelet is part of a pipeline this must be
  * indicated by using this annotation.
  */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited // see for example ServiceWirelet
 public @interface WireletSidecar {
 
     /**

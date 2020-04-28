@@ -23,7 +23,6 @@ import java.util.Map.Entry;
 
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
-import app.packed.container.PipelineWirelet;
 import app.packed.container.Wirelet;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
 
@@ -62,11 +61,10 @@ public final class WireletContainer {
      */
     private void addWirelet(PackedContainerConfiguration pcc, Wirelet w) {
         requireNonNull(w, "wirelets contain a null");
-        if (w instanceof PipelineWirelet) {
-            // A wirelet that belongs to a pipeline
-            @SuppressWarnings("unchecked")
-            WireletPipelineModel model = WireletPipelineModel.ofWirelet((Class<? extends PipelineWirelet<?>>) w.getClass());
+        WireletModel m = WireletModel.of(w.getClass());
 
+        if (m.pipeline() != null) {
+            WireletPipelineModel model = m.pipeline();
             ((WireletPipelineContext) map.computeIfAbsent(model.type(), k -> {
                 WireletPipelineContext pc = parent == null ? null : (WireletPipelineContext) parent.getWireletOrPipeline(model.type());
                 WireletPipelineContext wpc = new WireletPipelineContext(model, pc);
@@ -74,7 +72,8 @@ public final class WireletContainer {
                     extensions.put(model.memberOfExtension(), wpc);// We need to add it as a list if we have more than one wirelet context
                 }
                 return wpc;
-            })).wirelets.add((PipelineWirelet<?>) w);
+            })).wirelets.add(w);
+            System.out.println("CHECK");
         } else if (w instanceof ContainerWirelet) {
             // Hmm skulle vi vente til alle wirelets er succesfuld processeret???
             // Altsaa hvad hvis den fejler.... Altsaa taenker ikke den maa lavere aendringer i containeren.. kun i wirelet context

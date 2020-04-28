@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
-import app.packed.container.PipelineWirelet;
+import app.packed.container.Wirelet;
 import app.packed.container.WireletPipeline;
 import packed.internal.moduleaccess.ModuleAccess;
 
@@ -43,7 +43,7 @@ public final class WireletPipelineContext {
     private final WireletPipelineContext previous;
 
     /** The wirelets making up the pipeline */
-    final ArrayList<PipelineWirelet<?>> wirelets = new ArrayList<>();
+    final ArrayList<Wirelet> wirelets = new ArrayList<>();
 
     WireletPipelineContext(WireletPipelineModel model, @Nullable WireletPipelineContext previous) {
         this.model = requireNonNull(model);
