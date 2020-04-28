@@ -43,7 +43,7 @@ public class BasicExtensionTest extends AbstractArtifactTest {
     /** This extension is used by to check that we cannot call certain methods from the constructor of an extension. */
     public static final class CallingMethodsFromTheConstructor extends Extension {
         public CallingMethodsFromTheConstructor() {
-            String msg = "This operation cannot be invoked from the constructor of the extension. As an alternative ExtensionComposer.onAdd(action) can used to perform initialization";
+            String msg = "This operation cannot be invoked from the constructor of the extension. As an alternative Extension#onAdd(action) can used to perform initialization";
             // assertThatIllegalStateException().isThrownBy(() -> buildContext()).withMessage(msg);
             assertThatIllegalStateException().isThrownBy(() -> checkConfigurable()).withMessage(msg);
             assertThatIllegalStateException().isThrownBy(() -> use(TestExtension1.class)).withMessage(msg);

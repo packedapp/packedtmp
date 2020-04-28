@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
-import app.packed.artifact.ArtifactSource;
+import app.packed.artifact.SystemSource;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Nullable;
 import app.packed.container.Bundle;
@@ -47,7 +47,7 @@ public final class ContainerSourceModel extends Model implements ComponentLookup
         @SuppressWarnings("unchecked")
         @Override
         protected ContainerSourceModel computeValue(Class<?> type) {
-            return new ContainerSourceModel((Class<? extends ArtifactSource>) type);
+            return new ContainerSourceModel((Class<? extends SystemSource>) type);
         }
     };
 
@@ -86,7 +86,7 @@ public final class ContainerSourceModel extends Model implements ComponentLookup
      * @param sourceType
      *            the source type
      */
-    private ContainerSourceModel(Class<? extends ArtifactSource> sourceType) {
+    private ContainerSourceModel(Class<? extends SystemSource> sourceType) {
         super(sourceType);
         if (Hook.class.isAssignableFrom(sourceType)) {
             throw new InvalidDeclarationException(sourceType + " must not implement/extend " + Hook.class);

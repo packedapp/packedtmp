@@ -21,8 +21,8 @@ import java.util.Optional;
 
 import app.packed.analysis.BundleDescriptor;
 import app.packed.artifact.ArtifactContext;
-import app.packed.artifact.ArtifactImage;
-import app.packed.artifact.ArtifactSource;
+import app.packed.artifact.SystemImage;
+import app.packed.artifact.SystemSource;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
@@ -32,8 +32,8 @@ import packed.internal.component.ComponentConfigurationToComponentAdaptor;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.WireletContainer;
 
-/** The default implementation of {@link ArtifactImage}. */
-public final class PackedArtifactImage implements ArtifactImage {
+/** The default implementation of {@link SystemImage}. */
+public final class PackedArtifactImage implements SystemImage {
 
     /** The configuration of the root container. */
     private final PackedContainerConfiguration pcc;
@@ -156,7 +156,7 @@ public final class PackedArtifactImage implements ArtifactImage {
      *            any wirelet
      * @return the image
      */
-    public static PackedArtifactImage lazyCreate(ArtifactSource source, Wirelet... wirelets) {
+    public static PackedArtifactImage lazyCreate(SystemSource source, Wirelet... wirelets) {
         if (source instanceof PackedArtifactImage) {
             PackedArtifactImage pai = (PackedArtifactImage) source;
             return pai.with(wirelets);
@@ -181,7 +181,7 @@ final class XArtifactImageWirelets {
     /**
      * @return lazy
      */
-    static ArtifactImage lazy() {
+    static SystemImage lazy() {
         throw new UnsupportedOperationException();
     }
 

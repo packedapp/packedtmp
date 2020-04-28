@@ -21,8 +21,9 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 
-import app.packed.artifact.ArtifactSource;
+import app.packed.artifact.SystemSource;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
@@ -30,6 +31,7 @@ import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
+import app.packed.sidecar.WireletSidecar;
 import packed.internal.container.WireletPipelineContext;
 import packed.internal.host.HostConfiguration;
 import packed.internal.moduleaccess.AppPackedContainerAccess;
@@ -59,7 +61,7 @@ import packed.internal.moduleaccess.ModuleAccess;
 // Bundle: States-> Ready -> Assembling|Composing -> Consumed|Composed... Ready | Using | Used... Usable | Using | Used
 
 // Trying to use a bundle multiple types will result in an ISE
-public abstract class Bundle implements ArtifactSource {
+public abstract class Bundle implements SystemSource {
 
     static {
         ModuleAccess.initialize(AppPackedContainerAccess.class, new AppPackedContainerAccess() {
@@ -72,15 +74,15 @@ public abstract class Bundle implements ArtifactSource {
 
             /** {@inheritDoc} */
             @Override
-            public void pipelineInitialize(WireletPipeline<?, ?> pipeline, WireletPipelineContext context) {
-                pipeline.context = context;
-                pipeline.verify();
+            public void extensionSetContext(Extension extension, ExtensionContext context) {
+                extension.context = context;
             }
 
             /** {@inheritDoc} */
             @Override
-            public void extensionSetContext(Extension extension, ExtensionContext context) {
-                extension.context = context;
+            public void pipelineInitialize(WireletPipeline<?, ?> pipeline, WireletPipelineContext context) {
+                pipeline.context = context;
+                pipeline.verify();
             }
         });
     }
@@ -90,6 +92,10 @@ public abstract class Bundle implements ArtifactSource {
 
     /** The state of the bundle. 0 not-initialized, 1 in-progress, 2 completed. */
     private final AtomicInteger state = new AtomicInteger();
+
+    protected final <T extends HostConfiguration> T addHost(Class<T> type) {
+        return configuration().addHost(type);
+    }
 
     /**
      * Checks that the {@link #compose()} method has not already been invoked. This is typically used to make sure that
@@ -102,6 +108,13 @@ public abstract class Bundle implements ArtifactSource {
     protected final void checkConfigurable() {
         configuration().checkConfigurable();
     }
+
+    /**
+     * Configures the bundle using the various methods that are available.
+     * <p>
+     * This method is intended to be invoked by the runtime. Users should normally <b>never</b> invoke this method directly.
+     */
+    protected abstract void compose();
 
     /**
      * Returns the configuration site of this bundle.
@@ -127,13 +140,6 @@ public abstract class Bundle implements ArtifactSource {
         }
         return c;
     }
-
-    /**
-     * Configures the bundle using the various methods that are available.
-     * <p>
-     * This method is intended to be invoked by the runtime. Users should normally <b>never</b> invoke this method directly.
-     */
-    protected abstract void compose();
 
     /**
      * Invoked by the runtime to start the configuration process.
@@ -207,6 +213,20 @@ public abstract class Bundle implements ArtifactSource {
         return configuration().getName();
     }
 
+    final <W extends Wirelet> boolean ifWirelet(Class<W> wireletType, Predicate<? super W> predicate) {
+        // This should not really be the first tool you use...
+        // Yeah I think bundle.setFoo() is so much better????
+        // Not sure we want to encourage it....
+
+        // But its useful for extensions, no? Well only to override
+        // settings such as WebExtension.defaultPort(); <- but that's runtime
+        // I mean for
+        // The runtime then...
+        @WireletSidecar(requireAssemblyTime = true)
+        class MyWirelet implements Wirelet {}
+        return false;
+    }
+
     /**
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
      * <p>
@@ -228,14 +248,6 @@ public abstract class Bundle implements ArtifactSource {
         return configuration().install(implementation);
     }
 
-    protected final <T extends HostConfiguration> T addHost(Class<T> type) {
-        return configuration().addHost(type);
-    }
-
-    protected final <T extends HostConfiguration> T provideHost(Class<T> type) {
-        return configuration().addHost(type);
-    }
-
     /**
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
      * <p>
@@ -250,10 +262,6 @@ public abstract class Bundle implements ArtifactSource {
      */
     protected final <T> SingletonConfiguration<T> install(Factory<T> factory) {
         return configuration().install(factory);
-    }
-
-    protected final StatelessConfiguration installHelper(Class<?> implementation) {
-        return configuration().installStateless(implementation);
     }
 
     /**
@@ -272,6 +280,10 @@ public abstract class Bundle implements ArtifactSource {
      */
     protected final <T> SingletonConfiguration<T> installConstant(T instance) {
         return configuration().installInstance(instance);
+    }
+
+    protected final StatelessConfiguration installHelper(Class<?> implementation) {
+        return configuration().installStateless(implementation);
     }
 
     /**
@@ -329,6 +341,10 @@ public abstract class Bundle implements ArtifactSource {
      */
     protected final ComponentPath path() {
         return configuration().path();
+    }
+
+    protected final <T extends HostConfiguration> T provideHost(Class<T> type) {
+        return configuration().addHost(type);
     }
 
     /**

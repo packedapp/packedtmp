@@ -18,7 +18,7 @@ package packed.internal.host;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.artifact.ArtifactDriver;
-import app.packed.artifact.ArtifactSource;
+import app.packed.artifact.SystemSource;
 import app.packed.component.ComponentType;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
@@ -45,7 +45,7 @@ public final class PackedHostConfiguration extends AbstractComponentConfiguratio
 
     /** {@inheritDoc} */
     @Override
-    public void deploy(ArtifactSource source, ArtifactDriver<?> driver, Wirelet... wirelets) {
+    public void deploy(SystemSource source, ArtifactDriver<?> driver, Wirelet... wirelets) {
         requireNonNull(source, "source is null");
         requireNonNull(driver, "driver is null");
 

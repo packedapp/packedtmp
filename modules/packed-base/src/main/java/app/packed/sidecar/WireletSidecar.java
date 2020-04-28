@@ -15,7 +15,7 @@
  */
 package app.packed.sidecar;
 
-import app.packed.container.PipelineWirelet;
+import app.packed.artifact.SystemImage;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletPipeline;
 import packed.internal.container.WireletModel;
@@ -25,45 +25,50 @@ import packed.internal.container.WireletModel;
  * sidecars even without the use of this annotation. However, if the wirelet is part of a pipeline this must be
  * indicated by using this annotation.
  */
-// Wirelet skal laves til et interface..
-// Vi slipper af med PipelineWirelet
-// Det er lettere at override den for subclasses...
-// F.eks. MainArgs implements Wirelet... Men altsaa hvis vi kan injecte den... via @ProvideWirelet
-// Behoever vi saa service???? IDontThinkSo...
-// @ProvideWirelet kan ogsaa f.eks. go deeper... f.eks. ind i andre containere i wireletten
-
-// Altsaa for Conf giver ret god mening... Vi siger vi skal have en Conf...
-
-// Altsaa public klasser boer nok provide as service...
-
-//@Inherited???
 public @interface WireletSidecar {
 
-    boolean requireAssemblyTime() default false;
-
-    // I think a boolean is fine. Can't imaging you would want to expose it as any other type
-    boolean provideAsService() default false;
+    /**
+     * Whether or not a specified wirelet is inherited by child containers. The default value is <code>false</code>.
+     * 
+     * @return whether or not the wirelet is inherited by child containers
+     */
+    boolean inherited() default false;
 
     Class<? extends WireletPipeline<?, ?>> pipeline() default WireletModel.NoWireletPipeline.class;
 
-    // boolean requireAssemblyTime() must be used on assembly time
-    // Cannot be used on an image after it has been created
+    // I think a boolean is fine. Can't imaging you would want to expose it as any other type as the annotated type..
+    boolean provideAsService() default false;
 
-    // assembleOnly
-    // linkOnly
-    // hostOnly
+    /**
+     * Returns whether or not the wirelet is needed at assembly time. In which in cannot used together with a
+     * {@link SystemImage} that have already been constructed. However, it can be used when constructing the image.
+     * 
+     * @return stuff
+     */
+    boolean requireAssemblyTime() default false;
+}
+//Vi slipper af med PipelineWirelet
+//Det er lettere at override den for subclasses...
+//F.eks. MainArgs implements Wirelet... Men altsaa hvis vi kan injecte den... via @ProvideWirelet
+//Behoever vi saa service???? IDontThinkSo...
+//@ProvideWirelet kan ogsaa f.eks. go deeper... f.eks. ind i andre containere i wireletten
+
+//Altsaa for Conf giver ret god mening... Vi siger vi skal have en Conf...
+
+//Altsaa public klasser boer nok provide as service...
+// boolean requireAssemblyTime() must be used on assembly time
+// Cannot be used on an image after it has been created
+
+// assembleOnly
+// linkOnly
+// hostOnly
+
+// vil automatisk bliver provided som service
+@WireletSidecar(provideAsService = true)
+class XDoofar implements Wirelet {
+
 }
 
 // Must use Optional/Nullable for wirelet
 // Works for both wirelets and pipeline
-@interface ProvideWirelet {}
-
-class NoWireletPipeline extends WireletPipeline<NoWireletPipeline, NoWirelet> {}
-
-class NoWirelet extends PipelineWirelet<NoWireletPipeline> {}
-
-// vil automatisk bliver provided som service
-@WireletSidecar(provideAsService = true)
-class Doofar extends Wirelet {
-
-}
+@interface XProvideWirelet {}

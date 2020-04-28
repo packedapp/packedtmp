@@ -88,6 +88,7 @@ import app.packed.inject.InjectionContext;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 // @RequiresFeature(LifecycleFeature.class)
+//@WhenStarting???
 public @interface OnStart {
     String[] after() default {};
 }

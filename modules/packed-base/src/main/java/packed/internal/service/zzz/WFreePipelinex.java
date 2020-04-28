@@ -52,7 +52,7 @@ public class WFreePipelinex extends BaseBundle {
         }
     }
 
-    static class SomeWirelet extends PipelineWirelet<SomePipeline> {
+    static class SomeWirelet implements PipelineWirelet<SomePipeline> {
         final String x;
 
         SomeWirelet(String x) {

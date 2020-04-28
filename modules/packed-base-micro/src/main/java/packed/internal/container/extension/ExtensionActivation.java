@@ -31,7 +31,7 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import app.packed.artifact.ArtifactImage;
+import app.packed.artifact.SystemImage;
 import app.packed.component.Packlet;
 import app.packed.component.SingletonConfiguration;
 import app.packed.container.Bundle;
@@ -52,38 +52,38 @@ import app.packed.hook.OnHook;
 public class ExtensionActivation {
 
     @Benchmark
-    public ArtifactImage empty() {
+    public SystemImage empty() {
         Bundle b = new Bundle() {
             @Override
             protected void compose() {}
         };
-        return ArtifactImage.of(b);
+        return SystemImage.of(b);
     }
 
     @Benchmark
-    public ArtifactImage useExtension() {
+    public SystemImage useExtension() {
         Bundle b = new Bundle() {
             @Override
             public void compose() {
                 use(MyExtension.class);
             }
         };
-        return ArtifactImage.of(b);
+        return SystemImage.of(b);
     }
 
     @Benchmark
-    public ArtifactImage install() {
+    public SystemImage install() {
         Bundle b = new Bundle() {
             @Override
             public void compose() {
                 installConstant("foo");
             }
         };
-        return ArtifactImage.of(b);
+        return SystemImage.of(b);
     }
 
     @Benchmark
-    public ArtifactImage newExtensionUseInstall() {
+    public SystemImage newExtensionUseInstall() {
         Bundle b = new Bundle() {
             @Override
             public void compose() {
@@ -91,18 +91,18 @@ public class ExtensionActivation {
                 installConstant("foo");
             }
         };
-        return ArtifactImage.of(b);
+        return SystemImage.of(b);
     }
 
     @Benchmark
-    public ArtifactImage newExtensionAutoActivate() {
+    public SystemImage newExtensionAutoActivate() {
         Bundle b = new Bundle() {
             @Override
             public void compose() {
                 installConstant(new MyStuff());
             }
         };
-        return ArtifactImage.of(b);
+        return SystemImage.of(b);
     }
 
     static class MyStuff {

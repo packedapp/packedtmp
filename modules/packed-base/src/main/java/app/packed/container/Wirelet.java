@@ -52,7 +52,7 @@ import packed.internal.container.WireletList;
  * @see PipelineWirelet
  * @see WireletPipeline
  */
-public abstract class Wirelet {
+public interface Wirelet {
 
     /**
      * Returns a composed {@code Wirelet} that performs, in sequence, this operation followed by the {@code after}
@@ -64,11 +64,14 @@ public abstract class Wirelet {
      * @return a composed {@code WiringOperation} that performs in sequence this operation followed by the {@code after}
      *         operation
      */
-    public final Wirelet andThen(Wirelet wirelet) {
+    // Maaske flyt dem til en statisk metode...
+    // Altsaa hvor tit skal de bruges???
+    // Wirelet.combine(Wirelet w1, Wirelet w2)
+    default Wirelet andThen(Wirelet wirelet) {
         return WireletList.of(this, wirelet);
     }
 
-    public final Wirelet andThen(Wirelet... wirelets) {
+    default Wirelet andThen(Wirelet... wirelets) {
         return WireletList.of(this, wirelets);
     }
 

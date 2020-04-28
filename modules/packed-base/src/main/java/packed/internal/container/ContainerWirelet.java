@@ -33,7 +33,7 @@ import app.packed.container.Wirelet;
 
 // Taenker det er noget man kan teste for ArchCheck.check(new DooBundle());
 
-public abstract class ContainerWirelet extends Wirelet {
+public abstract class ContainerWirelet implements Wirelet {
 
     abstract void process(WireletContainer c);
 

@@ -20,7 +20,7 @@ import app.packed.container.PipelineWirelet;
 /**
  *
  */
-public abstract class ServiceWirelet extends PipelineWirelet<ServiceWireletPipeline> {
+public abstract class ServiceWirelet implements PipelineWirelet<ServiceWireletPipeline> {
 
     /**
      * Process this wirelet.

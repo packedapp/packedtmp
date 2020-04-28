@@ -2,7 +2,7 @@ package packed.internal.artifact;
 
 import app.packed.analysis.BundleDescriptor;
 import app.packed.artifact.App;
-import app.packed.artifact.ArtifactImage;
+import app.packed.artifact.SystemImage;
 import app.packed.base.Contract;
 import app.packed.container.Bundle;
 
@@ -47,7 +47,7 @@ public enum AssembleTarget {
     // Artifact_Initializing Artifact_Executing...
     // Managed Artifact, Unmanaged Artifact....
 
-    /** Create a new {@link ArtifactImage} from a {@link Bundle} (or an existing image). */
+    /** Create a new {@link SystemImage} from a {@link Bundle} (or an existing image). */
     IMAGE;
 
 }

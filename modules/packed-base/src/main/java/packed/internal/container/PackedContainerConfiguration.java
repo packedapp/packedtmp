@@ -32,7 +32,7 @@ import java.util.function.Consumer;
 
 import app.packed.analysis.BundleDescriptor;
 import app.packed.artifact.ArtifactContext;
-import app.packed.artifact.ArtifactImage;
+import app.packed.artifact.SystemImage;
 import app.packed.base.Nullable;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
@@ -122,7 +122,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * @param output
      *            the build output
      * @param source
-     *            the source of the container. Either a {@link Bundle}, {@link ArtifactImage} or a {@link Consumer}.
+     *            the source of the container. Either a {@link Bundle}, {@link SystemImage} or a {@link Consumer}.
      * @param wirelets
      *            any wirelets specified by the user
      */

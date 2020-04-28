@@ -54,7 +54,7 @@ public interface App extends AutoCloseable {
     /**
      * Returns the configuration site of this application.
      * <p>
-     * If this application was created from an {@link ArtifactImage image}, this method will return the site where the image
+     * If this application was created from an {@link SystemImage image}, this method will return the site where the image
      * was created. Unless the AI.Wiring option is used when construction the application.
      * 
      * @return the configuration site of this application
@@ -199,7 +199,7 @@ public interface App extends AutoCloseable {
      * @throws RuntimeException
      *             if the application did not execute properly
      */
-    static void execute(ArtifactSource source, Wirelet... wirelets) {
+    static void execute(SystemSource source, Wirelet... wirelets) {
         driver().execute(source, wirelets);
     }
 
@@ -216,7 +216,7 @@ public interface App extends AutoCloseable {
      * @throws RuntimeException
      *             if the application could not be initialized properly
      */
-    static App of(ArtifactSource source, Wirelet... wirelets) {
+    static App of(SystemSource source, Wirelet... wirelets) {
         // Rename fordi vi gerne vil have at ArtifactDriver hedder det samme og
         // AppHost.xxx() .. Dumt det hedder App.of og AppHost.instantiate
 
@@ -240,7 +240,7 @@ public interface App extends AutoCloseable {
      * @throws RuntimeException
      *             if the application could not be initialized or started properly
      */
-    static App start(ArtifactSource source, Wirelet... wirelets) {
+    static App start(SystemSource source, Wirelet... wirelets) {
         return driver().start(source, wirelets);
         // 10 seconds is from start.. Otherwise people must use an exact deadline
         // start(new SomeBundle(), LifecycleWirelets.stopAfter(10, TimeUnit.SECONDS));

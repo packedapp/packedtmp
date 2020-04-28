@@ -46,14 +46,14 @@ import packed.internal.artifact.PackedArtifactImage;
  * An image can be used to create new instances of {@link app.packed.artifact.App}, {@link BundleDescriptor} or other
  * artifact images. It can not be used with {@link Bundle#link(Bundle, Wirelet...)}.
  * 
- * @apiNote In the future, if the Java language permits, {@link ArtifactImage} may become a {@code sealed} interface,
+ * @apiNote In the future, if the Java language permits, {@link SystemImage} may become a {@code sealed} interface,
  *          which would prohibit subclassing except by explicitly permitted types.
  * 
  */
 
 // Hvad hvis man kan lave image af andre ting....????
 
-public interface ArtifactImage extends ArtifactSource {
+public interface SystemImage extends SystemSource {
 
     /**
      * Returns the configuration site of this image.
@@ -134,7 +134,7 @@ public interface ArtifactImage extends ArtifactSource {
     // f.eks. applyPartialConfiguration(SomeConf)... Vi aendrer schemaet..
     // withFixedConf(app.threads = 123)... withDefaultConf(app.threads = 123)
     // Vi fejler hvis det ikke kan bruges??? Pure static solution...
-    ArtifactImage with(Wirelet... wirelets);
+    SystemImage with(Wirelet... wirelets);
 
     /**
      * Creates a new image from the specified bundle.
@@ -147,7 +147,7 @@ public interface ArtifactImage extends ArtifactSource {
      * @throws RuntimeException
      *             if the image could not be constructed
      */
-    static ArtifactImage of(Bundle bundle, Wirelet... wirelets) {
+    static SystemImage of(Bundle bundle, Wirelet... wirelets) {
         return PackedArtifactImage.of(bundle, wirelets);
     }
 }

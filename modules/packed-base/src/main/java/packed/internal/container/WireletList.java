@@ -33,7 +33,7 @@ import app.packed.container.Wirelet;
  * @see Wirelet#andThen(Wirelet)
  * @see Wirelet#andThen(Wirelet...)
  */
-public final class WireletList extends Wirelet {
+public final class WireletList implements Wirelet {
 
     /** An empty wirelet list. */
     static final WireletList EMPTY = new WireletList();

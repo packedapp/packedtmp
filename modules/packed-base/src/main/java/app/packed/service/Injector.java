@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 import app.packed.artifact.App;
 import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.ArtifactDriver;
-import app.packed.artifact.ArtifactSource;
+import app.packed.artifact.SystemSource;
 import app.packed.base.Key;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
@@ -332,7 +332,7 @@ public interface Injector {
      *             if the injector could not be created for some reason. For example, if the source defines any components
      *             that requires a lifecycle
      */
-    static Injector of(ArtifactSource source, Wirelet... wirelets) {
+    static Injector of(SystemSource source, Wirelet... wirelets) {
         return driver().instantiate(source, wirelets);
     }
 }

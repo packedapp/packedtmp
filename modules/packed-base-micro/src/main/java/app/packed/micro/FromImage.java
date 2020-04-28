@@ -32,7 +32,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.artifact.App;
-import app.packed.artifact.ArtifactImage;
+import app.packed.artifact.SystemImage;
 import app.packed.component.Packlet;
 import app.packed.component.SingletonConfiguration;
 import app.packed.container.Bundle;
@@ -52,24 +52,24 @@ import app.packed.hook.OnHook;
 @State(Scope.Benchmark)
 public class FromImage {
 
-    static final ArtifactImage EMPTY = ArtifactImage.of(new Bundle() {
+    static final SystemImage EMPTY = SystemImage.of(new Bundle() {
         @Override
         protected void compose() {}
     });
 
-    static final ArtifactImage USE_EXTENSION = ArtifactImage.of(new Bundle() {
+    static final SystemImage USE_EXTENSION = SystemImage.of(new Bundle() {
         @Override
         public void compose() {
             use(MyExtension.class);
         }
     });
-    static final ArtifactImage INSTALL = ArtifactImage.of(new Bundle() {
+    static final SystemImage INSTALL = SystemImage.of(new Bundle() {
         @Override
         public void compose() {
             installConstant("foo");
         }
     });
-    static final ArtifactImage INSTALL_AUTO_ACTIVATE = ArtifactImage.of(new Bundle() {
+    static final SystemImage INSTALL_AUTO_ACTIVATE = SystemImage.of(new Bundle() {
         @Override
         public void compose() {
             installConstant(new MyStuff());

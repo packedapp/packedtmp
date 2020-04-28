@@ -115,8 +115,16 @@ public interface ExtensionContext {
      * parent has this extension installed. Returns the extension otherwise empty.
      * 
      * @return the parent extension
+     * @see #children(Class)
      */
-    Optional<Extension> parent();
+    Optional<Extension> parent(); // replace with Class<T>
+
+    /**
+     * Returns the type of extension this context wraps.
+     * 
+     * @return the type of extension this context wraps
+     */
+    Class<? extends Extension> extensionType(); // replace with descriptor???
 
     /**
      * @return child extensions
@@ -125,6 +133,26 @@ public interface ExtensionContext {
      *             if called before the runtime can guarantee that all children has been linked
      */
     default List<Extension> children() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * The specified extension type must be located in the same module as the module that extension this context is related
+     * to.
+     * 
+     * @param <T>
+     *            the type of extensions to return
+     * @param extensionType
+     * @return a list of all extensions of the particular type in child containers within the same artifact
+     * @throws IllegalStateException
+     *             if invoked before the child gathering phase has finished
+     * @implNote the implementation will gather extensions and create a new list on every invocation. So cache the result if
+     *           you need to, instead of calling this method multiple times with the same argument.
+     */
+    // The type must also be a dependency of this type as returned by #descriptor.dependencies();
+
+    // Unlike Children calling this method must be done after...
+    default <T extends Extension> List<Class<T>> children(Class<T> extensionType) {
         throw new UnsupportedOperationException();
     }
 }

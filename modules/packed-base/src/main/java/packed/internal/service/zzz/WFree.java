@@ -46,7 +46,7 @@ public class WFree extends BaseBundle {
         }
     }
 
-    static class SomeWirelet extends Wirelet {
+    static class SomeWirelet implements Wirelet {
         final String x;
 
         SomeWirelet(String x) {

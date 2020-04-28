@@ -15,7 +15,7 @@
  */
 package packed.internal.base.reflectM1;
 
-import app.packed.artifact.ArtifactImage;
+import app.packed.artifact.SystemImage;
 import app.packed.container.BaseBundle;
 import app.packed.container.Wirelet;
 
@@ -47,7 +47,7 @@ public class Dddd extends BaseBundle {
     }
 
     public static void main(String[] args) {
-        ArtifactImage img = ArtifactImage.of(new Dddd(4));
+        SystemImage img = SystemImage.of(new Dddd(4));
 
         // BundleValidator.assertValid(new Dddd(4));
 

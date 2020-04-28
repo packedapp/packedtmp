@@ -121,7 +121,7 @@ public abstract class ArtifactDriver<A> {
      * @throws RuntimeException
      *             if the artifact could not be created
      */
-    public final A instantiate(ArtifactSource source, Wirelet... wirelets) {
+    public final A instantiate(SystemSource source, Wirelet... wirelets) {
         return newArtifact(create(source, wirelets));
     }
 
@@ -136,13 +136,13 @@ public abstract class ArtifactDriver<A> {
      * @throws UnsupportedOperationException
      *             if the driver does not produce an artifact with an execution phase
      */
-    public final A start(ArtifactSource source, Wirelet... wirelets) {
+    public final A start(SystemSource source, Wirelet... wirelets) {
         ArtifactContext context = create(source, wirelets);
         context.start();
         return newArtifact(context);
     }
 
-    private ArtifactContext create(ArtifactSource source, Wirelet... wirelets) {
+    private ArtifactContext create(SystemSource source, Wirelet... wirelets) {
         if (source instanceof PackedArtifactImage) {
             return ((PackedArtifactImage) source).instantiateArtifact(wirelets);
         }
@@ -155,7 +155,7 @@ public abstract class ArtifactDriver<A> {
     // <T, R> // AppDriver<App, Void>
 
     // Kan take restart wirelets...\
-    public final Object execute(ArtifactSource source, Wirelet... wirelets) {
+    public final Object execute(SystemSource source, Wirelet... wirelets) {
         ArtifactContext context = create(source, wirelets);
         context.start();
         return null;
@@ -171,7 +171,7 @@ public abstract class ArtifactDriver<A> {
         return hasExecutionPhase;
     }
 
-    Supplier<A> startingProvider(ArtifactSource a, Wirelet... wirelets) {
+    Supplier<A> startingProvider(SystemSource a, Wirelet... wirelets) {
         // Kunne ogsaa lave den paa image...
         // Men altsaa taenker vi godt vil have noget wirelets med...
         // <A> Supplier<A> ArtifactImage.supplier(ArtifactDriver<A> driver);
@@ -181,8 +181,8 @@ public abstract class ArtifactDriver<A> {
     /**
      * Create a new artifact by wrapping an artifact context.
      * <p>
-     * This method is invoked by the runtime via calls such as {@link #instantiate(ArtifactSource, Wirelet...)} and
-     * {@link #start(ArtifactSource, Wirelet...)}.
+     * This method is invoked by the runtime via calls such as {@link #instantiate(SystemSource, Wirelet...)} and
+     * {@link #start(SystemSource, Wirelet...)}.
      * <p>
      * The implementation of this method must be safe for use by multiple concurrent threads.
      * 
