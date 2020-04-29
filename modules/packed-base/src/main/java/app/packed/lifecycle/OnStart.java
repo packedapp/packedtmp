@@ -89,6 +89,8 @@ import app.packed.inject.InjectionContext;
 @Retention(RetentionPolicy.RUNTIME)
 // @RequiresFeature(LifecycleFeature.class)
 //@WhenStarting???
+
+// Kan bruge @When naar man har en lifecycle model, ellers ikke....
 public @interface OnStart {
     String[] after() default {};
 }

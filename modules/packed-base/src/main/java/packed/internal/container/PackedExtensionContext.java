@@ -32,7 +32,6 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 import app.packed.inject.Factory;
-import packed.internal.component.AbstractComponentConfiguration;
 import packed.internal.moduleaccess.ModuleAccess;
 
 /** The default implementation of {@link ExtensionContext} with addition methods only available in app.packed.base. */
@@ -197,19 +196,6 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
     }
 
     /** {@inheritDoc} */
-    @Override
-    public Optional<Extension> parent() {
-        AbstractComponentConfiguration parent = pcc.parent;
-        if (parent instanceof PackedContainerConfiguration) {
-            PackedExtensionContext pe = ((PackedContainerConfiguration) parent).getExtension(model.extensionType());
-            if (pe != null) {
-                return Optional.of(pe.extension);
-            }
-        }
-        return Optional.empty();
-    }
-
-    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Extension> T use(Class<T> extensionType) {
@@ -261,23 +247,23 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
                 pcc.wireletContext.extensionInitialized(pec);
             }
 
-            // Link extension to any parents...
+            // See if there are extensions of the same type in parent containers that needs to
+            // notified of the addition of the extension. This must happen before the child extension
+            // is returned to the user.
 
             // Should we also set the active extension in the parent???
-//          if (model.onLinkage != null) {
-            if (model.linked != null) {
+            if (model.parentExtensionLinked != null) {
                 if (pcc.parent instanceof PackedContainerConfiguration) {
                     PackedContainerConfiguration p = (PackedContainerConfiguration) pcc.parent;
-                    PackedExtensionContext ep = p.getExtension(extensionType);
+                    PackedExtensionContext parentExtension = p.getExtension(extensionType);
                     // set activate extension???
                     // If not just parent link keep checking up until root/
-                    if (ep != null) {
+                    if (parentExtension != null) {
                         try {
-                            model.linked.invoke(ep.extension, e);
+                            model.parentExtensionLinked.invoke(parentExtension.extension, pec, e);
                         } catch (Throwable e1) {
                             e1.printStackTrace();
                         }
-                        // model.onLinkage.accept(e.extension, extension);
                     }
                 }
             }

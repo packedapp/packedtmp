@@ -22,7 +22,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.WireletPipeline;
-import packed.internal.reflect.InjectableFunction;
+import packed.internal.reflect.FunctionResolver;
 import packed.internal.reflect.OpenClass;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.sidecar.Model;
@@ -64,11 +64,11 @@ public final class WireletPipelineModel extends Model {
         this.memberOfExtension = ExtensionSidecarModel.findIfMember(type);
 
         OpenClass cp = new OpenClass(MethodHandles.lookup(), type, true);
-        InjectableFunction is = InjectableFunction.of(type, memberOfExtension == null ? Extension.class : memberOfExtension);
+        FunctionResolver dim = FunctionResolver.of(type, memberOfExtension == null ? Extension.class : memberOfExtension);
         if (memberOfExtension != null) {
-            is.addKey(memberOfExtension, 0);
+            dim.addKey(memberOfExtension, 0);
         }
-        this.constructor = cp.findConstructor(is);
+        this.constructor = cp.findConstructor(dim);
     }
 
     /** Any extension this pipeline is a member of (may be null). */

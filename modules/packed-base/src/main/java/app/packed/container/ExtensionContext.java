@@ -16,7 +16,6 @@
 package app.packed.container;
 
 import java.util.List;
-import java.util.Optional;
 
 import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
@@ -111,30 +110,11 @@ public interface ExtensionContext {
     <E extends Extension> E use(Class<E> extensionType);
 
     /**
-     * If the container in which this extension is register has a parent container located in the same artifact, and the
-     * parent has this extension installed. Returns the extension otherwise empty.
-     * 
-     * @return the parent extension
-     * @see #children(Class)
-     */
-    Optional<Extension> parent(); // replace with Class<T>
-
-    /**
      * Returns the type of extension this context wraps.
      * 
      * @return the type of extension this context wraps
      */
     Class<? extends Extension> extensionType(); // replace with descriptor???
-
-    /**
-     * @return child extensions
-     * 
-     * @throws IllegalStateException
-     *             if called before the runtime can guarantee that all children has been linked
-     */
-    default List<Extension> children() {
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * The specified extension type must be located in the same module as the module that extension this context is related

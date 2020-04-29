@@ -374,12 +374,12 @@ public final class ServiceExtension extends Extension {
     }
 
     @DescendentAdded
-    void foo(ServiceExtension se, InjectionContext ic) {
+    void foo(ServiceExtension se, InjectionContext ic, ExtensionContext ec) {
         node.link(se.node);
-
-        // Add ServiceExtension (the child)
-        System.out.println(se);
-        System.out.println(this);
+        System.out.println("This " + this + " child = " + se);
         System.out.println("GotIt " + ic.keys());
+
+        System.out.println(context().containerPath());
+        System.out.println(ec.containerPath());
     }
 }

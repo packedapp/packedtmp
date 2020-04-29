@@ -17,8 +17,10 @@ package packed.internal.reflect;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
+import java.lang.reflect.Executable;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -30,53 +32,81 @@ import app.packed.base.Nullable;
  */
 // Enten som en Builder, eller noget a.la. Bundle.
 //disableComposites/ignoreComposite/failOnComposite/...
-public final class InjectableFunction {
 
-    private final MethodType input;
+// TODO Add @AnnotationHandler...
+// Add Composite
+// Everything is instance for now
+public final class FunctionResolver {
+
+    private final MethodType callSiteType;
 
     final HashMap<Key<?>, Entry> keys = new HashMap<>();
 
-    private InjectableFunction(MethodType input) {
-        this.input = requireNonNull(input);
+    final HashMap<Class<? extends Annotation>, AnnoClassEntry> annoations = new HashMap<>();
+
+    private FunctionResolver(MethodType callSiteType) {
+        this.callSiteType = requireNonNull(callSiteType);
     }
 
-    private InjectableFunction add(Key<?> key, MethodHandle transformer, int... indexes) {
+    private FunctionResolver add(Key<?> key, MethodHandle transformer, int... indexes) {
         for (int i = 0; i < indexes.length; i++) {
-            Objects.checkFromIndexSize(indexes[i], 0, input.parameterCount());
+            Objects.checkFromIndexSize(indexes[i], 0, callSiteType.parameterCount());
         }
-        // Check the various types...
+
+        // Check the various types matches...
         if (keys.putIfAbsent(key, new Entry(indexes, transformer)) != null) {
             throw new IllegalArgumentException("The specified key " + key + " has already been added");
         }
         return this;
     }
 
-    public InjectableFunction addKey(Class<?> key, int index) {
+    public <T> FunctionResolver addAnnoClassMapper(Class<? extends Annotation> annotationType, MethodHandle mh, int index) {
+        annoations.put(annotationType, new AnnoClassEntry(annotationType, index, mh));
+        return this;
+    }
+
+    public FunctionResolver addKey(Class<?> key, int index) {
         return addKey(Key.of(key), index);
     }
 
-    public InjectableFunction addKey(Class<?> key, MethodHandle transformer, int... indexes) {
+    public FunctionResolver addKey(Class<?> key, MethodHandle transformer, int... indexes) {
         return add(Key.of(key), transformer, indexes);
     }
 
-    public InjectableFunction addKey(Key<?> key, int index) {
+    public FunctionResolver addKey(Key<?> key, int index) {
         return add(key, null, index);
     }
 
-    public InjectableFunction addKey(Key<?> key, MethodHandle transformer, int... indexes) {
+    public FunctionResolver addKey(Key<?> key, MethodHandle transformer, int... indexes) {
         return add(key, requireNonNull(transformer, "transformer is null"), indexes);
     }
 
-    public MethodType input() {
-        return input;
+    public MethodType callSiteType() {
+        return callSiteType;
     }
 
-    public static InjectableFunction of(Class<?> type, Class<?>... parameterTypes) {
-        return of(MethodType.methodType(type, parameterTypes));
+    public MethodHandle resolve(OpenClass oc, Executable e) {
+        return new FindMember().find(oc, e, this);
     }
 
-    static InjectableFunction of(MethodType mt) {
-        return new InjectableFunction(mt);
+    public static FunctionResolver of(Class<?> returnType, Class<?>... parameterTypes) {
+        return of(MethodType.methodType(returnType, parameterTypes));
+    }
+
+    static FunctionResolver of(MethodType callSiteType) {
+        return new FunctionResolver(callSiteType);
+    }
+
+    static class AnnoClassEntry {
+        Class<? extends Annotation> annotationType;
+        int index;
+        MethodHandle mh;
+
+        public AnnoClassEntry(Class<? extends Annotation> annotationType, int index, MethodHandle mh) {
+            this.annotationType = annotationType;
+            this.index = index;
+            this.mh = mh;
+        }
     }
 
     static class Entry {

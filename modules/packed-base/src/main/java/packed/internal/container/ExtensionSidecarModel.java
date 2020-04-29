@@ -33,12 +33,12 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 import app.packed.container.ExtensionMember;
 import app.packed.container.InternalExtensionException;
+import app.packed.container.Wirelet;
 import app.packed.hook.OnHook;
 import app.packed.sidecar.ExtensionSidecar;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
-import packed.internal.reflect.FindMember;
-import packed.internal.reflect.InjectableFunction;
+import packed.internal.reflect.FunctionResolver;
 import packed.internal.reflect.OpenClass;
 import packed.internal.sidecar.SidecarModel;
 import packed.internal.sidecar.SidecarTypeMeta;
@@ -135,7 +135,7 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
     public final Optional<Class<? extends Extension>> optional;
 
     @Nullable
-    public final MethodHandle linked;
+    public final MethodHandle parentExtensionLinked;
 
     /**
      * Creates a new extension model from the specified builder.
@@ -155,7 +155,7 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
         this.onHookModel = builder.onHookModel;
         this.nonActivatingHooks = onHookModel == null ? null : LazyExtensionActivationMap.findNonExtending(onHookModel);
 
-        this.linked = builder.li;
+        this.parentExtensionLinked = builder.li;
     }
 
     /** {@inheritDoc} */
@@ -335,16 +335,16 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
                 }
             }
 
-            InjectableFunction is = InjectableFunction.of(sidecarType, ExtensionContext.class);
+            FunctionResolver is = FunctionResolver.of(sidecarType, ExtensionContext.class);
             is.addKey(ExtensionContext.class, 0);
             OpenClass cp = prep(is);
             this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
             if (linked != null) {
-                li = cp.unreflect(linked, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-                InjectableFunction iss = InjectableFunction.of(void.class, sidecarType, sidecarType);
-                iss.addKey(sidecarType, 1); // 0 is the actual sidecar we are invoking the method on, 1 is the child
-                // iss.addKey(key, transformer, index);
-                li = new FindMember().find(cp, linked, iss);
+                FunctionResolver iss = FunctionResolver.of(void.class, sidecarType, ExtensionContext.class, sidecarType);
+                iss.addKey(ExtensionContext.class, 1); // Its the child extension context..
+                iss.addKey(sidecarType, 2); // 0 is the actual sidecar we are invoking the method on, 2 is the child
+                // lifecycle context
+                li = iss.resolve(cp, linked);
 
 //                DescendentAdded da = linked.getAnnotation(DescendentAdded.class);
             }
@@ -352,5 +352,10 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
         }
 
         MethodHandle li;
+    }
+
+    static Object findWirelet(ExtensionContext ec, Class<? extends Wirelet> wireletType) {
+        PackedExtensionContext pec = (PackedExtensionContext) ec;
+        return pec.container().wirelet(wireletType).orElse(null);
     }
 }

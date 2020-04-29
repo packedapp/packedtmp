@@ -15,6 +15,7 @@
  */
 package packed.internal.reflect;
 
+import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -28,10 +29,13 @@ import java.util.List;
 import java.util.Set;
 
 import app.packed.base.Key;
+import app.packed.base.Nullable;
+import app.packed.base.reflect.ParameterDescriptor;
 import app.packed.inject.InjectionContext;
 import app.packed.inject.UnresolvedDependencyException;
 import packed.internal.inject.PackedInjectionContext;
-import packed.internal.reflect.InjectableFunction.Entry;
+import packed.internal.inject.ServiceDependency;
+import packed.internal.reflect.FunctionResolver.Entry;
 import packed.internal.util.UncheckedThrowableFactory;
 
 /**
@@ -54,12 +58,12 @@ import packed.internal.util.UncheckedThrowableFactory;
 //The rest is static, its not for injection, because we need
 
 //So ConstructorFinder is probably a bad name..
-public class FindMember {
+class FindMember {
 
     ArrayList<Parameter> parameters;
 
-    public MethodHandle find(OpenClass oc, Executable e, InjectableFunction aa) {
-        MethodType expected = aa.input();
+    MethodHandle find(OpenClass oc, Executable e, FunctionResolver aa) {
+        MethodType expected = aa.callSiteType();
 
         boolean isInstanceMethod = false;
         MethodHandle mh;
@@ -71,9 +75,9 @@ public class FindMember {
             isInstanceMethod = !Modifier.isStatic(m.getModifiers());
 
             if (isInstanceMethod) {
-                if (m.getDeclaringClass() != aa.input().parameterType(0)) {
+                if (m.getDeclaringClass() != aa.callSiteType().parameterType(0)) {
                     throw new IllegalArgumentException(
-                            "First signature parameter type must be " + m.getDeclaringClass() + " was " + aa.input().parameterType(0));
+                            "First signature parameter type must be " + m.getDeclaringClass() + " was " + aa.callSiteType().parameterType(0));
                 }
             }
         }
@@ -95,15 +99,24 @@ public class FindMember {
             if (p.getType() == InjectionContext.class) {
                 index = injectionContext = expected.parameterCount();
             } else {
-                Key<?> kk = Key.of(p.getType());
-                Entry entry = aa.keys.get(kk);
-                if (entry != null) {
-                    index = entry.indexes[0];
-                    if (entry.transformer != null) {
-                        mh = MethodHandles.collectArguments(mh, i, entry.transformer);
+                FunctionResolver.AnnoClassEntry anno = find(aa, p);
+                if (anno == null) {
+                    Key<?> kk = Key.of(p.getType());
+                    Entry entry = aa.keys.get(kk);
+                    if (entry != null) {
+                        index = entry.indexes[0];
+                        if (entry.transformer != null) {
+                            mh = MethodHandles.collectArguments(mh, i, entry.transformer);
+                        }
+                    } else {
+                        throw new UnresolvedDependencyException("" + kk + " Available keys = " + aa.keys.keySet());
                     }
                 } else {
-                    throw new UnresolvedDependencyException("" + kk + " Available keys = " + aa.keys.keySet());
+                    ServiceDependency sd = ServiceDependency.fromVariable(ParameterDescriptor.from(p));
+                    Class<?> raw = sd.key().typeLiteral().rawType();
+                    MethodHandle tmp = MethodHandles.insertArguments(anno.mh, 1, raw);
+                    index = anno.index;
+                    mh = MethodHandles.collectArguments(mh, i, tmp);
                 }
             }
             permutationArray[i + add] = index;
@@ -119,5 +132,15 @@ public class FindMember {
         }
 
         return mh;
+    }
+
+    @Nullable
+    private FunctionResolver.AnnoClassEntry find(FunctionResolver aa, Parameter p) {
+        for (Annotation a : p.getAnnotations()) {
+            if (aa.annoations.containsKey(a.annotationType())) {
+                return aa.annoations.get(a.annotationType());
+            }
+        }
+        return null;
     }
 }

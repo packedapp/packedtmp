@@ -13,35 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
-
-import app.packed.artifact.App;
-import app.packed.container.BaseBundle;
+package packed.internal.reflect;
 
 /**
  *
  */
-public class TI extends BaseBundle {
+public class AnnotationResolutionStrategy {
 
-    public static void main(String[] args) {
-        App.of(new TI());
-    }
+    private Class<?> baseType;
 
-    /** {@inheritDoc} */
-    @Override
-    protected void compose() {
-        System.out.println("Parent = " + service());
-
-        provideConstant(123L);
-        link(new FFF());
-    }
-
-    static class FFF extends BaseBundle {
-
-        /** {@inheritDoc} */
-        @Override
-        protected void compose() {
-            provideConstant("HejHej");
-        }
-    }
 }

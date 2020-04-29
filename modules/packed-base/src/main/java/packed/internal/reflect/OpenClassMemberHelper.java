@@ -24,10 +24,7 @@ import java.util.HashSet;
 
 import packed.internal.util.ThrowableConsumer;
 
-/**
- * Processes all fields and methods on a specified class.
- */
-// https://stackoverflow.com/questions/28400408/what-is-the-new-way-of-getting-all-methods-of-a-class-including-inherited-defau
+/** Processes all fields and methods on a specified class. */
 final class OpenClassMemberHelper {
 
     /** We never process any classes that are located in java.base. */
@@ -138,6 +135,7 @@ final class OpenClassMemberHelper {
         }
     }
 }
+//https://stackoverflow.com/questions/28400408/what-is-the-new-way-of-getting-all-methods-of-a-class-including-inherited-defau
 
 //static <T extends Throwable> void findMethods(Class<?> baseType, Class<?> actualType, ThrowableConsumer<? super Method, T> methodConsumer) throws T {
 //  find(baseType, actualType, methodConsumer, null);

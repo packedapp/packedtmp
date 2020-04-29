@@ -152,7 +152,7 @@ public abstract class Extension {
      * @apiNote Original this method was protected. But extension is really the only sidecar that works this way. So to
      *          streamline with other sidecars we only allow it to be dependency injected into subclasses.
      */
-    private ExtensionContext context() {
+    protected ExtensionContext context() {
         ExtensionContext c = context;
         if (c == null) {
             // TODO fix with actual annotation type

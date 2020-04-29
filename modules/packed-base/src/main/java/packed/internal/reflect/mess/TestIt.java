@@ -15,13 +15,15 @@
  */
 package packed.internal.reflect.mess;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 
 import app.packed.inject.InjectionContext;
-import packed.internal.reflect.InjectableFunction;
+import packed.internal.reflect.FunctionResolver;
 import packed.internal.reflect.OpenClass;
 
 /**
@@ -35,14 +37,16 @@ public class TestIt {
     }
 
     public static void main(String[] args) throws Throwable {
+        MethodHandle mhhh = MethodHandles.lookup().findStatic(TestIt.class, "dd", MethodType.methodType(void.class, Data.class, Class.class));
+
         Lookup ll = MethodHandles.privateLookupIn(Data.class, MethodHandles.lookup());
 
         MethodHandle mhhhh = ll.findSpecial(Data.class, "tt", MethodType.methodType(String.class), Data.class);
 
-        InjectableFunction aa = InjectableFunction.of(TestIt.class, Data.class);
+        FunctionResolver aa = FunctionResolver.of(TestIt.class, Data.class);
         aa.addKey(Data.class, 0);
         aa.addKey(String.class, mhhhh, 0);
-
+        aa.addAnnoClassMapper(X.class, mhhh, 1);
         MethodHandle mh = new OpenClass(MethodHandles.lookup(), TestIt.class, false).findConstructor(aa);
         System.out.println(mh);
 
@@ -55,5 +59,14 @@ public class TestIt {
         String tt() {
             return "foobarwewe";
         }
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    static @interface X {
+
+    }
+
+    public static void dd(Data dd, Class<?> cl) {
+        System.out.println(dd + " " + cl);
     }
 }

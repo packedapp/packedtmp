@@ -51,7 +51,7 @@ import java.util.Set;
 // Men f.eks. for ExtensionSidecar saa er staten jo ens for alle extensions taenker jeg...
 // Eller arghh hvis der er en extension der fejler...
 
-public interface LifecycleContext {
+public interface FutureLifecycleContext {
 
     String actualState();
 
