@@ -89,4 +89,12 @@ public final class LookupUtil {
             throw new ExceptionInInitializerError(e);
         }
     }
+
+    public static MethodHandle findStaticEIIE(MethodHandles.Lookup caller, Class<?> refc, String name, MethodType type) {
+        try {
+            return caller.findStatic(refc, name, type);
+        } catch (ReflectiveOperationException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 }

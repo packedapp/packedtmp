@@ -18,6 +18,8 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -34,6 +36,7 @@ import app.packed.container.ExtensionContext;
 import app.packed.container.ExtensionMember;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
+import app.packed.container.WireletSupply;
 import app.packed.hook.OnHook;
 import app.packed.sidecar.ExtensionSidecar;
 import packed.internal.hook.BaseHookQualifierList;
@@ -42,6 +45,7 @@ import packed.internal.reflect.FunctionResolver;
 import packed.internal.reflect.OpenClass;
 import packed.internal.sidecar.SidecarModel;
 import packed.internal.sidecar.SidecarTypeMeta;
+import packed.internal.util.LookupUtil;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.UncheckedThrowableFactory;
@@ -337,12 +341,16 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
 
             FunctionResolver is = FunctionResolver.of(sidecarType, ExtensionContext.class);
             is.addKey(ExtensionContext.class, 0);
+            is.addAnnoClassMapper(WireletSupply.class, WS, 0);
             OpenClass cp = prep(is);
             this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
             if (linked != null) {
+
                 FunctionResolver iss = FunctionResolver.of(void.class, sidecarType, ExtensionContext.class, sidecarType);
                 iss.addKey(ExtensionContext.class, 1); // Its the child extension context..
                 iss.addKey(sidecarType, 2); // 0 is the actual sidecar we are invoking the method on, 2 is the child
+                iss.addAnnoClassMapper(WireletSupply.class, WS, 1);
+
                 // lifecycle context
                 li = iss.resolve(cp, linked);
 
@@ -354,8 +362,11 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
         MethodHandle li;
     }
 
+    static final MethodHandle WS = LookupUtil.findStaticEIIE(MethodHandles.lookup(), ExtensionSidecarModel.class, "findWirelet",
+            MethodType.methodType(Object.class, ExtensionContext.class, Class.class));
+
     static Object findWirelet(ExtensionContext ec, Class<? extends Wirelet> wireletType) {
         PackedExtensionContext pec = (PackedExtensionContext) ec;
-        return pec.container().wirelet(wireletType).orElse(null);
+        return pec.container().wireletAny(wireletType).orElse(null);
     }
 }

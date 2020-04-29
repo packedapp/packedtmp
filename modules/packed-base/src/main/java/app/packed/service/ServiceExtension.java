@@ -26,6 +26,7 @@ import app.packed.container.DescendentAdded;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 import app.packed.container.Wirelet;
+import app.packed.container.WireletSupply;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
 import app.packed.inject.Factory;
@@ -35,6 +36,7 @@ import app.packed.sidecar.Expose;
 import app.packed.sidecar.ExtensionSidecar;
 import app.packed.sidecar.PostSidecar;
 import packed.internal.component.PackedSingletonConfiguration;
+import packed.internal.container.TI.MyTestWirelet;
 import packed.internal.container.WireletList;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.inject.util.InjectConfigSiteOperations;
@@ -79,8 +81,10 @@ public final class ServiceExtension extends Extension {
     final ServiceExtensionNode node;
 
     /** Should never be initialized by users. */
-    ServiceExtension(ExtensionContext context) {
+    ServiceExtension(ExtensionContext context, @WireletSupply MyTestWirelet foo) {
         this.node = new ServiceExtensionNode(context);
+
+        System.out.println("Wirelet foo " + foo);
     }
 
     <T> ServiceConfiguration<T> addOptional(Class<T> optional) {
@@ -374,8 +378,9 @@ public final class ServiceExtension extends Extension {
     }
 
     @DescendentAdded
-    void foo(ServiceExtension se, InjectionContext ic, ExtensionContext ec) {
+    void foo(@WireletSupply ServiceWireletPipeline wirelets, ServiceExtension se, InjectionContext ic, ExtensionContext ec) {
         node.link(se.node);
+        System.out.println("Got wirelets " + wirelets);
         System.out.println("This " + this + " child = " + se);
         System.out.println("GotIt " + ic.keys());
 

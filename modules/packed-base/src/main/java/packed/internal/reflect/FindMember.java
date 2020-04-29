@@ -106,7 +106,7 @@ class FindMember {
                     if (entry != null) {
                         index = entry.indexes[0];
                         if (entry.transformer != null) {
-                            mh = MethodHandles.collectArguments(mh, i, entry.transformer);
+                            mh = MethodHandles.collectArguments(mh, i + add, entry.transformer);
                         }
                     } else {
                         throw new UnresolvedDependencyException("" + kk + " Available keys = " + aa.keys.keySet());
@@ -115,8 +115,13 @@ class FindMember {
                     ServiceDependency sd = ServiceDependency.fromVariable(ParameterDescriptor.from(p));
                     Class<?> raw = sd.key().typeLiteral().rawType();
                     MethodHandle tmp = MethodHandles.insertArguments(anno.mh, 1, raw);
+                    tmp = MethodHandles.explicitCastArguments(tmp, MethodType.methodType(raw, tmp.type().parameterArray()[0]));
+                    System.out.println("----");
+                    System.out.println(mh.type());
+                    System.out.println(tmp.type());
+                    System.out.println(i + " " + anno.index);
                     index = anno.index;
-                    mh = MethodHandles.collectArguments(mh, i, tmp);
+                    mh = MethodHandles.collectArguments(mh, i + add, tmp);
                 }
             }
             permutationArray[i + add] = index;

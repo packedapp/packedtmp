@@ -532,4 +532,34 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         }
         return wireletContext == null ? Optional.empty() : Optional.ofNullable((W) wireletContext.getWireletOrPipeline(type));
     }
+
+    @SuppressWarnings("unchecked")
+    public <W extends Wirelet> Optional<W> wireletAny(Class<W> type) {
+        WireletModel wm = WireletModel.of(type);
+        boolean inherited = wm.inherited();
+        Object wop = null;
+        if (wireletContext != null) {
+            wop = wireletContext.getWireletOrPipeline(type);
+        }
+        if (wop == null && inherited) {
+            AbstractComponentConfiguration acc = parent;
+            while (acc != null) {
+                if (acc instanceof PackedContainerConfiguration) {
+                    PackedContainerConfiguration pcc = (PackedContainerConfiguration) acc;
+                    if (pcc.wireletContext != null) {
+                        wop = pcc.wireletContext.getWireletOrPipeline(type);
+                        if (wop != null) {
+                            break;
+                        }
+                    }
+                }
+                acc = acc.parent;
+            }
+        }
+        if (wop instanceof WireletPipelineContext) {
+            wop = ((WireletPipelineContext) wop).instance;
+            requireNonNull(wop);// Maybe not instantiated yet???
+        }
+        return wop == null ? Optional.empty() : Optional.ofNullable((W) wop);
+    }
 }

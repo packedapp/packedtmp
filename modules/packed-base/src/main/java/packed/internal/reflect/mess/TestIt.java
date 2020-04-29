@@ -31,13 +31,13 @@ import packed.internal.reflect.OpenClass;
  */
 public class TestIt {
 
-    TestIt(Data data, InjectionContext ic, String sd, Data d2, InjectionContext i3, String s) {
+    TestIt(Data data, InjectionContext ic, @X String sd, Data d2, InjectionContext i3, String s) {
         System.out.println(ic);
         System.out.println(sd);
     }
 
     public static void main(String[] args) throws Throwable {
-        MethodHandle mhhh = MethodHandles.lookup().findStatic(TestIt.class, "dd", MethodType.methodType(void.class, Data.class, Class.class));
+        MethodHandle mhhh = MethodHandles.lookup().findStatic(TestIt.class, "dd", MethodType.methodType(Object.class, Data.class, Class.class));
 
         Lookup ll = MethodHandles.privateLookupIn(Data.class, MethodHandles.lookup());
 
@@ -46,7 +46,7 @@ public class TestIt {
         FunctionResolver aa = FunctionResolver.of(TestIt.class, Data.class);
         aa.addKey(Data.class, 0);
         aa.addKey(String.class, mhhhh, 0);
-        aa.addAnnoClassMapper(X.class, mhhh, 1);
+        aa.addAnnoClassMapper(X.class, mhhh, 0);
         MethodHandle mh = new OpenClass(MethodHandles.lookup(), TestIt.class, false).findConstructor(aa);
         System.out.println(mh);
 
@@ -66,7 +66,8 @@ public class TestIt {
 
     }
 
-    public static void dd(Data dd, Class<?> cl) {
-        System.out.println(dd + " " + cl);
+    public static Object dd(Data dd, Class<?> cl) {
+        System.out.println("Du er altid for sej" + dd + " " + cl);
+        return "Foo";
     }
 }

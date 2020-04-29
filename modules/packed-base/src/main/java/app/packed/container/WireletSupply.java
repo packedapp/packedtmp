@@ -31,7 +31,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 // Give me the wirelet...
-@interface WireletSupply {}
+public @interface WireletSupply {}
 
 // Why can this not be used on a Bundle?
 // Because we do not have access to a bundle. 

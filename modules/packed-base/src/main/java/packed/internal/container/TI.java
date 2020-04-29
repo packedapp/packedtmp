@@ -17,6 +17,9 @@ package packed.internal.container;
 
 import app.packed.artifact.App;
 import app.packed.container.BaseBundle;
+import app.packed.container.Wirelet;
+import app.packed.service.ServiceWirelets;
+import app.packed.sidecar.WireletSidecar;
 
 /**
  *
@@ -24,7 +27,7 @@ import app.packed.container.BaseBundle;
 public class TI extends BaseBundle {
 
     public static void main(String[] args) {
-        App.of(new TI());
+        App.of(new TI(), new MyTestWirelet("fofoof XXXXXXXXXX"));
     }
 
     /** {@inheritDoc} */
@@ -33,7 +36,7 @@ public class TI extends BaseBundle {
         System.out.println("Parent = " + service());
 
         provideConstant(123L);
-        link(new FFF());
+        link(new FFF(), ServiceWirelets.provide("const"));
     }
 
     static class FFF extends BaseBundle {
@@ -42,6 +45,20 @@ public class TI extends BaseBundle {
         @Override
         protected void compose() {
             provideConstant("HejHej");
+        }
+    }
+
+    @WireletSidecar(inherited = true)
+    public static class MyTestWirelet implements Wirelet {
+        String hejhej;
+
+        MyTestWirelet(String hejhej) {
+            this.hejhej = hejhej;
+        }
+
+        @Override
+        public String toString() {
+            return hejhej;
         }
     }
 }
