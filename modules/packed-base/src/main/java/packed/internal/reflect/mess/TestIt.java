@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.reflect;
+package packed.internal.reflect.mess;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -21,6 +21,8 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 
 import app.packed.inject.InjectionContext;
+import packed.internal.reflect.InjectableFunction;
+import packed.internal.reflect.OpenClass;
 
 /**
  *

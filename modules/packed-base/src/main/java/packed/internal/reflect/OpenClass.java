@@ -29,6 +29,7 @@ import java.lang.reflect.Modifier;
 
 import app.packed.base.NativeImage;
 import app.packed.base.invoke.InaccessibleMemberException;
+import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableConsumer;
 import packed.internal.util.UncheckedThrowableFactory;
@@ -36,17 +37,14 @@ import packed.internal.util.UncheckedThrowableFactory;
 /**
  * An open class is a thin wrapper for a single class and a {@link Lookup} object.
  * <p>
- * This class is not safe to use with multiple threads.
+ * This class is not safe for use with multiple threads.
  */
 public final class OpenClass {
 
     /** The app.packed.base module. */
     private static final Module APP_PACKED_BASE_MODULE = OpenClass.class.getModule();
 
-    /** The class that can be processed. */
-    private final Class<?> clazz;
-
-    /** A lookup object that can be used to access {@link #clazz}. */
+    /** A lookup object that can be used to access {@link #type}. */
     private final MethodHandles.Lookup lookup;
 
     /** A lookup that can be used on non-public members. */
@@ -58,64 +56,58 @@ public final class OpenClass {
     /** Whether or not every unreflected action results in the member being registered for native image generation. */
     private final boolean registerForNative;
 
+    /** The class that is wrapped. */
+    private final Class<?> type;
+
     public OpenClass(MethodHandles.Lookup lookup, Class<?> clazz, boolean registerForNative) {
         this.lookup = requireNonNull(lookup);
-        this.clazz = requireNonNull(clazz);
+        this.type = requireNonNull(clazz);
         this.registerForNative = registerForNative;
     }
 
     private <T extends RuntimeException> void checkPackageOpen(UncheckedThrowableFactory<T> tf) throws T {
-        String pckName = clazz.getPackageName();
-        if (!clazz.getModule().isOpen(pckName, APP_PACKED_BASE_MODULE)) {
-            String otherModule = clazz.getModule().getName();
+        String pckName = type.getPackageName();
+        if (!type.getModule().isOpen(pckName, APP_PACKED_BASE_MODULE)) {
+            String otherModule = type.getModule().getName();
             String m = APP_PACKED_BASE_MODULE.getName();
-            throw tf.newThrowable("In order to access '" + StringFormatter.format(clazz) + "', the module '" + otherModule + "' must be open to '" + m
+            throw tf.newThrowable("In order to access '" + StringFormatter.format(type) + "', the module '" + otherModule + "' must be open to '" + m
                     + "'. This can be done, for example, by adding 'opens " + pckName + " to " + m + ";' to the module-info.java file of " + otherModule);
         }
     }
 
+    public OpenClass copy() {
+        return new OpenClass(lookup, type, registerForNative);
+    }
+
     public MethodHandle findConstructor(InjectableFunction is) {
-        Constructor<?> constructor = FindConstructor.findInjectableConstructor(is.input().returnType());
+        Constructor<?> constructor = FindInjectableConstructor.find(is.input().returnType());
         return new FindMember().find(this, constructor, is);
     }
 
-    /**
-     * Returns the class that is processed.
-     * 
-     * @return the class that is processed
-     */
-    public Class<?> clazz() {
-        return clazz;
-    }
-
-    public OpenClass copy() {
-        return new OpenClass(lookup, clazz, registerForNative);
-    }
-
     public <T extends Throwable> void findMethods(ThrowableConsumer<? super Method, T> methodConsumer) throws T {
-        MemberFinder.findMethods(Object.class, clazz, methodConsumer);
+        OpenClassMemberHelper.find(Object.class, type, methodConsumer, null);
     }
 
     public <T extends Throwable> void findMethodsAndFields(Class<?> baseType, ThrowableConsumer<? super Method, T> methodConsumer,
             ThrowableConsumer<? super Field, T> fieldConsumer) throws T {
-        MemberFinder.findMethodsAndFields(baseType, clazz, methodConsumer, fieldConsumer);
+        OpenClassMemberHelper.find(baseType, type, methodConsumer, fieldConsumer);
     }
 
     public <T extends Throwable> void findMethodsAndFields(ThrowableConsumer<? super Method, T> methodConsumer,
             ThrowableConsumer<? super Field, T> fieldConsumer) throws T {
-        MemberFinder.findMethodsAndFields(Object.class, clazz, methodConsumer, fieldConsumer);
+        OpenClassMemberHelper.find(Object.class, type, methodConsumer, fieldConsumer);
     }
 
     private Lookup lookup(Member member, UncheckedThrowableFactory<?> tf) {
-        if (!member.getDeclaringClass().isAssignableFrom(clazz)) {
-            throw new IllegalArgumentException("Was " + member.getDeclaringClass() + " expecting " + clazz);
+        if (!member.getDeclaringClass().isAssignableFrom(type)) {
+            throw new IllegalArgumentException("Was " + member.getDeclaringClass() + " expecting " + type);
         }
 
         if (!privateLookupInitialized) {
             checkPackageOpen(tf);
             // Should we use lookup.getdeclaringClass???
-            if (!APP_PACKED_BASE_MODULE.canRead(clazz.getModule())) {
-                APP_PACKED_BASE_MODULE.addReads(clazz.getModule());
+            if (!APP_PACKED_BASE_MODULE.canRead(type.getModule())) {
+                APP_PACKED_BASE_MODULE.addReads(type.getModule());
             }
             privateLookupInitialized = true;
         }
@@ -133,7 +125,7 @@ public final class OpenClass {
 
         // Create and cache a private lookup.
         try {
-            return privateLookup = MethodHandles.privateLookupIn(clazz, lookup);
+            return privateLookup = MethodHandles.privateLookupIn(type, lookup);
         } catch (IllegalAccessException e) {
             throw new InaccessibleMemberException("Could not create private lookup", e);
         }
@@ -144,10 +136,19 @@ public final class OpenClass {
         // So maybe check that they are nest mates
         // We need it because private lookup is attached to one particular class.
         // So need a private lookup object for every class in the same nest.
-        if (clazz.getModule() != this.clazz.getModule()) {
+        if (clazz.getModule() != this.type.getModule()) {
             throw new IllegalArgumentException();
         }
         return new OpenClass(lookup, clazz, registerForNative);
+    }
+
+    /**
+     * Returns the class that is processed.
+     * 
+     * @return the class that is processed
+     */
+    public Class<?> type() {
+        return type;
     }
 
     /**

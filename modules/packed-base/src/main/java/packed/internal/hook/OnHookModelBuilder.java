@@ -81,7 +81,7 @@ final class OnHookModelBuilder {
     private final UncheckedThrowableFactory<? extends RuntimeException> tf;
 
     OnHookModelBuilder(OpenClass cp, boolean instantiateRoot, UncheckedThrowableFactory<? extends RuntimeException> tf, Class<?>... additionalParameters) {
-        this.root = instantiateRoot ? new HookBuilderNode(cp, tf, cp.clazz()) : new Node(cp);
+        this.root = instantiateRoot ? new HookBuilderNode(cp, tf, cp.type()) : new Node(cp);
         this.tf = requireNonNull(tf);
     }
 
@@ -158,7 +158,7 @@ final class OnHookModelBuilder {
         Parameter[] parameters = method.getParameters();
         Parameter hook = parameters[0];
 
-        Type hookT = getResolvedType(node.cp.clazz(), method, hook.getParameterizedType());
+        Type hookT = getResolvedType(node.cp.type(), method, hook.getParameterizedType());
 
         Class<?> rawHookType = GTypeLiteral.get(hookT).getRawType();
 
@@ -241,7 +241,7 @@ final class OnHookModelBuilder {
     }
 
     void onMethodCustomHook(Node node, Class<? extends Hook> hookType, Method method) {
-        if (hookType == node.cp.clazz()) {
+        if (hookType == node.cp.type()) {
             throw tf.newThrowableForMethod("Hook cannot depend on itself", method);
         }
 
@@ -326,7 +326,7 @@ final class OnHookModelBuilder {
 
             // TypeUtil.checkClassIsInstantiable(hookType);
 
-            if (builderConstructor.type().returnType() != cp.clazz()) {
+            if (builderConstructor.type().returnType() != cp.type()) {
                 throw new IllegalStateException("OOPS");
             }
         }
@@ -373,7 +373,7 @@ final class OnHookModelBuilder {
          * @return a method handle
          */
         static <T extends RuntimeException> MethodHandle find(OpenClass cp, UncheckedThrowableFactory<T> tf, Class<?>... parameterTypes) throws T {
-            Class<?> onType = cp.clazz();
+            Class<?> onType = cp.type();
             if (Modifier.isAbstract(onType.getModifiers())) {
                 throw tf.newThrowable("'" + StringFormatter.format(onType) + "' cannot be an abstract class");
             } else if (TypeUtil.isInnerOrLocalClass(onType)) {

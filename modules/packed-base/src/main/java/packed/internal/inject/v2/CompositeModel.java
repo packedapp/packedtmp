@@ -1,4 +1,4 @@
-package packed.internal.reflect;
+package packed.internal.inject.v2;
 
 import packed.internal.sidecar.Model;
 

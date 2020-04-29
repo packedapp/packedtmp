@@ -28,15 +28,15 @@ import packed.internal.util.ThrowableConsumer;
  * Processes all fields and methods on a specified class.
  */
 // https://stackoverflow.com/questions/28400408/what-is-the-new-way-of-getting-all-methods-of-a-class-including-inherited-defau
-final class MemberFinder {
+final class OpenClassMemberHelper {
 
     /** We never process any classes that are located in java.base. */
     private static final Module JAVA_BASE_MODULE = Class.class.getModule();
 
     /** Never instantiate. */
-    private MemberFinder() {}
+    private OpenClassMemberHelper() {}
 
-    private static <T extends Throwable> void find(Class<?> baseType, Class<?> actualType, ThrowableConsumer<? super Method, T> methodConsumer,
+    static <T extends Throwable> void find(Class<?> baseType, Class<?> actualType, ThrowableConsumer<? super Method, T> methodConsumer,
             ThrowableConsumer<? super Field, T> fieldConsumer) throws T {
         HashSet<Package> packages = new HashSet<>();
         HashMap<MethodEntry, HashSet<Package>> types = new HashMap<>();
@@ -100,15 +100,6 @@ final class MemberFinder {
         }
     }
 
-    static <T extends Throwable> void findMethods(Class<?> baseType, Class<?> actualType, ThrowableConsumer<? super Method, T> methodConsumer) throws T {
-        find(baseType, actualType, methodConsumer, null);
-    }
-
-    static <T extends Throwable> void findMethodsAndFields(Class<?> baseType, Class<?> actualType, ThrowableConsumer<? super Method, T> methodConsumer,
-            ThrowableConsumer<? super Field, T> fieldConsumer) throws T {
-        find(baseType, actualType, methodConsumer, fieldConsumer);
-    }
-
     private static final class MethodEntry {
 
         /** A pre-calculated hash. */
@@ -150,3 +141,12 @@ final class MemberFinder {
         }
     }
 }
+
+//static <T extends Throwable> void findMethods(Class<?> baseType, Class<?> actualType, ThrowableConsumer<? super Method, T> methodConsumer) throws T {
+//  find(baseType, actualType, methodConsumer, null);
+//}
+
+//static <T extends Throwable> void findMethodsAndFields(Class<?> baseType, Class<?> actualType, ThrowableConsumer<? super Method, T> methodConsumer,
+//      ThrowableConsumer<? super Field, T> fieldConsumer) throws T {
+//  find(baseType, actualType, methodConsumer, fieldConsumer);
+//}

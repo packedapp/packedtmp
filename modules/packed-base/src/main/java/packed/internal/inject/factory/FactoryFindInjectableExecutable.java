@@ -4,8 +4,8 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.base.TypeLiteral;
 import app.packed.base.reflect.ExecutableDescriptor;
+import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.inject.ServiceDependency;
-import packed.internal.reflect.FindConstructor;
 
 /** This class is responsible for finding an injectable executable. */
 
@@ -28,6 +28,6 @@ public class FactoryFindInjectableExecutable {
     // must return MyExtension... Det maa de sgu alle.. Den anden er findMethod()...
     // MyExtension.class create()
     private static ExecutableDescriptor findExecutable(Class<?> type) {
-        return ExecutableDescriptor.from(FindConstructor.findInjectableConstructor(type));
+        return ExecutableDescriptor.from(FindInjectableConstructor.find(type));
     }
 }

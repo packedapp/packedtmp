@@ -114,6 +114,7 @@ public abstract class SidecarModel extends Model {
             OpenClass cp = new OpenClass(MethodHandles.lookup(), sidecarType, true);
 
             this.constructor = cp.findConstructor(spec);
+
             cp.findMethods(m -> {
                 onMethod(m);
                 PostSidecar oa = m.getAnnotation(PostSidecar.class);

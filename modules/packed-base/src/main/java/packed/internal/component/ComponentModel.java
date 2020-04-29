@@ -63,7 +63,7 @@ public final class ComponentModel extends Model {
      *            a builder for this descriptor
      */
     private ComponentModel(ComponentModel.Builder builder) {
-        super(builder.cp.clazz());
+        super(builder.cp.type());
 
         try {
             this.sourceHook = builder.csb == null ? null : builder.csb.build();
@@ -169,7 +169,7 @@ public final class ComponentModel extends Model {
          */
         private ComponentModel build() {
             final LazyExtensionActivationMap activatorMap = csm.activatorMap;
-            Class<?> componentType = cp.clazz();
+            Class<?> componentType = cp.type();
 
             try (MemberUnreflector htp = new MemberUnreflector(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
                 this.csb = csm.hooks() == null ? null : new HookRequestBuilder(csm.hooks(), htp);

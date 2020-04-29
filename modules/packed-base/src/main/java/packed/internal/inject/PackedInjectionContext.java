@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.reflect;
+package packed.internal.inject;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,7 +27,7 @@ public class PackedInjectionContext implements InjectionContext {
     private final Class<?> target;
     private final Set<Key<?>> keys;
 
-    PackedInjectionContext(Class<?> target, Set<Key<?>> keys) {
+    public PackedInjectionContext(Class<?> target, Set<Key<?>> keys) {
         this.target = requireNonNull(target);
         this.keys = requireNonNull(keys);
     }

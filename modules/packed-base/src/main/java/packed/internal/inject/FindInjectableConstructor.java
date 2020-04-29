@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.reflect;
+package packed.internal.inject;
 
 import static packed.internal.util.StringFormatter.format;
 
@@ -25,18 +25,18 @@ import app.packed.inject.Inject;
 import packed.internal.util.StringFormatter;
 
 /**
- *
+ * A utility class for finding an injectable constructor
  */
 //Maybe allow to override to throw custom exception..
-public final class FindConstructor {
+public final class FindInjectableConstructor {
 
-    public static Constructor<?> findInjectableConstructor(Class<?> type) {
+    public static Constructor<?> find(Class<?> type) {
         if (type.isArray()) {
             throw new IllegalArgumentException(format(type) + " is an array and cannot be instantiated");
         } else if (type.isAnnotation()) {
             throw new IllegalArgumentException(format(type) + ") is an annotation and cannot be instantiated");
         } else if (Modifier.isAbstract(type.getModifiers())) {
-            throw new IllegalArgumentException("'" + StringFormatter.format(type) + "' cannot be an abstract class");
+            throw new IllegalArgumentException("'" + StringFormatter.format(type) + "' is an abstract class and cannot be instantiated");
         }
 
         Constructor<?>[] constructors = type.getDeclaredConstructors();

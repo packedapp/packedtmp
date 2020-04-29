@@ -30,6 +30,7 @@ import java.util.Set;
 import app.packed.base.Key;
 import app.packed.inject.InjectionContext;
 import app.packed.inject.UnresolvedDependencyException;
+import packed.internal.inject.PackedInjectionContext;
 import packed.internal.reflect.InjectableFunction.Entry;
 import packed.internal.util.UncheckedThrowableFactory;
 
