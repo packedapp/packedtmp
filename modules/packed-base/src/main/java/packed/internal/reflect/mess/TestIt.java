@@ -41,7 +41,7 @@ public class TestIt {
 
         InjectableFunction aa = InjectableFunction.of(TestIt.class, Data.class);
         aa.addKey(Data.class, 0);
-        aa.addKey(String.class, 0, mhhhh);
+        aa.addKey(String.class, mhhhh, 0);
 
         MethodHandle mh = new OpenClass(MethodHandles.lookup(), TestIt.class, false).findConstructor(aa);
         System.out.println(mh);

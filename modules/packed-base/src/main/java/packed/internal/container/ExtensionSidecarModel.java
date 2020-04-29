@@ -342,7 +342,8 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
             if (linked != null) {
                 li = cp.unreflect(linked, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
                 InjectableFunction iss = InjectableFunction.of(void.class, sidecarType, sidecarType);
-                iss.addKey(sidecarType, 1);
+                iss.addKey(sidecarType, 1); // 0 is the actual sidecar we are invoking the method on, 1 is the child
+                // iss.addKey(key, transformer, index);
                 li = new FindMember().find(cp, linked, iss);
 
 //                DescendentAdded da = linked.getAnnotation(DescendentAdded.class);

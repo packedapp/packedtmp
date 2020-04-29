@@ -98,7 +98,7 @@ public class FindMember {
                 Key<?> kk = Key.of(p.getType());
                 Entry entry = aa.keys.get(kk);
                 if (entry != null) {
-                    index = entry.index;
+                    index = entry.indexes[0];
                     if (entry.transformer != null) {
                         mh = MethodHandles.collectArguments(mh, i, entry.transformer);
                     }

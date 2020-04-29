@@ -40,10 +40,12 @@ public final class InjectableFunction {
         this.input = requireNonNull(input);
     }
 
-    private InjectableFunction add(Key<?> key, int index, MethodHandle transformer) {
-        Objects.checkFromIndexSize(index, 0, input.parameterCount());
+    private InjectableFunction add(Key<?> key, MethodHandle transformer, int... indexes) {
+        for (int i = 0; i < indexes.length; i++) {
+            Objects.checkFromIndexSize(indexes[i], 0, input.parameterCount());
+        }
         // Check the various types...
-        if (keys.putIfAbsent(key, new Entry(index, transformer)) != null) {
+        if (keys.putIfAbsent(key, new Entry(indexes, transformer)) != null) {
             throw new IllegalArgumentException("The specified key " + key + " has already been added");
         }
         return this;
@@ -53,16 +55,16 @@ public final class InjectableFunction {
         return addKey(Key.of(key), index);
     }
 
-    public InjectableFunction addKey(Class<?> key, int index, MethodHandle transformer) {
-        return add(Key.of(key), index, transformer);
+    public InjectableFunction addKey(Class<?> key, MethodHandle transformer, int... indexes) {
+        return add(Key.of(key), transformer, indexes);
     }
 
     public InjectableFunction addKey(Key<?> key, int index) {
-        return add(key, index, null);
+        return add(key, null, index);
     }
 
-    public InjectableFunction addKey(Key<?> key, int index, MethodHandle transformer) {
-        return add(key, index, requireNonNull(transformer, "transformer is null"));
+    public InjectableFunction addKey(Key<?> key, MethodHandle transformer, int... indexes) {
+        return add(key, requireNonNull(transformer, "transformer is null"), indexes);
     }
 
     public MethodType input() {
@@ -78,12 +80,14 @@ public final class InjectableFunction {
     }
 
     static class Entry {
-        int index;
+        @Nullable
+        int[] indexes;
+
         @Nullable
         MethodHandle transformer;
 
-        Entry(int index, MethodHandle transformer) {
-            this.index = index;
+        Entry(int[] indexes, MethodHandle transformer) {
+            this.indexes = indexes;
             this.transformer = transformer;
         }
     }

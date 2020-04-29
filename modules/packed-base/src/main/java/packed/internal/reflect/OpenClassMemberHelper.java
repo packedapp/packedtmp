@@ -126,12 +126,9 @@ final class OpenClassMemberHelper {
         /** {@inheritDoc} */
         @Override
         public boolean equals(Object obj) {
-            if (obj instanceof MethodEntry) {
-                MethodEntry e = (MethodEntry) obj;
-                // name is always interned so just use ==
-                return name == e.name && Arrays.equals(parameterTypes, e.parameterTypes);
-            }
-            return false;
+            MethodEntry e = (MethodEntry) obj;
+            // name is always interned so just use ==
+            return name == e.name && Arrays.equals(parameterTypes, e.parameterTypes);
         }
 
         /** {@inheritDoc} */

@@ -39,6 +39,8 @@ import packed.internal.util.UncheckedThrowableFactory;
  * <p>
  * This class is not safe for use with multiple threads.
  */
+//TODO should we know whether or the lookup is Packed one or a user supplied??
+// lookup.getClass().getModule==OpenClass.getModule...?
 public final class OpenClass {
 
     /** The app.packed.base module. */
