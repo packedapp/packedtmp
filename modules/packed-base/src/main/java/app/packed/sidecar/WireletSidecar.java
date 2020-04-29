@@ -56,6 +56,13 @@ public @interface WireletSidecar {
      */
     boolean requireAssemblyTime() default false;
 }
+
+// Hvis vi har behov for at differentiere mellem artifact og system...
+// Lav det som en inner class i WireletSidecar
+enum Inheritance {
+    NONE, ARTIFACT, SYSTEM;
+}
+
 //Vi slipper af med PipelineWirelet
 //Det er lettere at override den for subclasses...
 //F.eks. MainArgs implements Wirelet... Men altsaa hvis vi kan injecte den... via @ProvideWirelet

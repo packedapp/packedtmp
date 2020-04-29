@@ -179,8 +179,8 @@ public abstract class BaseBundle extends Bundle {
         service().provideAll(injector, wirelets);
     }
 
-    protected final <T> ServiceComponentConfiguration<T> provideInstance(T instance) {
-        return service().provideInstance(instance);
+    protected final <T> ServiceComponentConfiguration<T> provideConstant(T instance) {
+        return service().provideConstant(instance);
     }
 
     protected final void require(Class<?> key) {

@@ -18,6 +18,7 @@ package app.packed.container;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
+import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Nullable;
@@ -27,7 +28,8 @@ import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
-import packed.internal.host.HostConfiguration;
+import app.packed.sidecar.WireletSidecar;
+import packed.internal.host.api.HostDriver;
 
 /**
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
@@ -37,16 +39,18 @@ import packed.internal.host.HostConfiguration;
 // BundleContext....
 public interface ContainerConfiguration extends ComponentConfiguration {
 
-    /**
-     * Installs a host and returns the configuration of it.
-     * 
-     * @param <T>
-     *            the type of host configuration to return
-     * @param type
-     *            the type of host configuration to return
-     * @return a host configuration of the specified type
-     */
-    <T extends HostConfiguration> T addHost(Class<T> type);
+//    /**
+//     * Installs a host and returns the configuration of it.
+//     * 
+//     * @param <T>
+//     *            the type of host configuration to return
+//     * @param type
+//     *            the type of host configuration to return
+//     * @return a host configuration of the specified type
+//     */
+////    <T extends HostConfiguration> T addHost(Class<T> type);
+
+    <A, H, C> C addHost(HostDriver<A, H, C> driver);
 
     /**
      * Returns an unmodifiable view of the extensions that are currently being used.
@@ -181,6 +185,17 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      * @see #extensions()
      */
     <T extends Extension> T use(Class<T> extensionType);
+
+    /**
+     * @param <W>
+     *            the type of wirelet
+     * @param type
+     *            the type of wirelet
+     * @return an optional containing the wirelet if defined otherwise empty
+     * @throws IllegalArgumentException
+     *             if the specified wirelet type does not have {@link WireletSidecar#requireAssemblyTime()} set to true
+     */
+    <W extends Wirelet> Optional<W> wirelet(Class<W> type);
 }
 ///**
 //* Creates a new layer.

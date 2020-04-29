@@ -18,6 +18,7 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.Set;
 import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.DescendentAdded;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 import app.packed.container.ExtensionMember;
@@ -35,6 +37,7 @@ import app.packed.hook.OnHook;
 import app.packed.sidecar.ExtensionSidecar;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
+import packed.internal.reflect.FindMember;
 import packed.internal.reflect.InjectableFunction;
 import packed.internal.reflect.OpenClass;
 import packed.internal.sidecar.SidecarModel;
@@ -131,6 +134,9 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
     /** An optional containing the extension type. To avoid excessive creation of them for {@link Component#extension()}. */
     public final Optional<Class<? extends Extension>> optional;
 
+    @Nullable
+    public final MethodHandle linked;
+
     /**
      * Creates a new extension model from the specified builder.
      * 
@@ -148,6 +154,8 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
 
         this.onHookModel = builder.onHookModel;
         this.nonActivatingHooks = onHookModel == null ? null : LazyExtensionActivationMap.findNonExtending(onHookModel);
+
+        this.linked = builder.li;
     }
 
     /** {@inheritDoc} */
@@ -264,7 +272,7 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
         /** A list of dependencies on other extensions. */
         private Set<Class<? extends Extension>> dependenciesDirect = new HashSet<>();
 
-        /** The depth of the extension. */
+        /** The depth of the extension relative to other extensions. */
         private int depth;
 
         int id;
@@ -295,6 +303,19 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
             dependenciesDirect.add(dependencyType);
         }
 
+        Method linked;
+
+        @Override
+        protected void onMethod(Method m) {
+            DescendentAdded da = m.getAnnotation(DescendentAdded.class);
+            if (da != null) {
+                if (linked != null) {
+                    throw new IllegalStateException("Multiple methods annotated with " + DescendentAdded.class + " on " + m.getDeclaringClass());
+                }
+                linked = m;
+            }
+        }
+
         /**
          * Builds and returns an extension model.
          * 
@@ -318,7 +339,17 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
             is.addKey(ExtensionContext.class, 0);
             OpenClass cp = prep(is);
             this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
+            if (linked != null) {
+                li = cp.unreflect(linked, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                InjectableFunction iss = InjectableFunction.of(void.class, sidecarType, sidecarType);
+                iss.addKey(sidecarType, 1);
+                li = new FindMember().find(cp, linked, iss);
+
+//                DescendentAdded da = linked.getAnnotation(DescendentAdded.class);
+            }
             return new ExtensionSidecarModel(this);
         }
+
+        MethodHandle li;
     }
 }

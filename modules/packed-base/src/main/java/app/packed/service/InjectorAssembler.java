@@ -205,17 +205,17 @@ public final class InjectorAssembler {
      * 
      * @param injector
      *            the injector to import services from
-     * @param options
+     * @param wirelets
      *            any number of stages that restricts or transforms the services that are imported
      * @throws IllegalArgumentException
-     *             if the specified stages are not instance all instance of {@link Wirelet} or combinations (via
-     *             {@link Wirelet#andThen(Wirelet)} thereof
+     *             if the specified wirelet are not all wirelets from {@link ServiceWirelets} or combinations (via
+     *             {@link Wirelet#combine(Wirelet, Wirelet) combinations} thereof
      */
     // maybe bindAll()... Syntes man burde hedde det samme som Bindable()
     // Er ikke sikker paa vi skal have wirelets her....
     // Hvis det er noedvendigt saa maa man lave en ny injector taenker jeg....
-    public void provideAll(Injector injector, Wirelet... options) {
-        extension().provideAll(injector, options);
+    public void provideAll(Injector injector, Wirelet... wirelets) {
+        extension().provideAll(injector, wirelets);
     }
 
     /**
@@ -231,8 +231,8 @@ public final class InjectorAssembler {
      *            the instance to bind
      * @return a service configuration for the service
      */
-    public <T> ServiceComponentConfiguration<T> provideInstance(T instance) {
-        return extension().provideInstance(instance);
+    public <T> ServiceComponentConfiguration<T> provideConstant(T instance) {
+        return extension().provideConstant(instance);
     }
 
     /**

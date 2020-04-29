@@ -70,10 +70,10 @@ public final class InjectableFunction {
     }
 
     public static InjectableFunction of(Class<?> type, Class<?>... parameterTypes) {
-        return new InjectableFunction(MethodType.methodType(type, parameterTypes));
+        return of(MethodType.methodType(type, parameterTypes));
     }
 
-    public static InjectableFunction of(MethodType mt) {
+    static InjectableFunction of(MethodType mt) {
         return new InjectableFunction(mt);
     }
 
@@ -92,4 +92,4 @@ public final class InjectableFunction {
 // Kunne godt have noget hjaelpe tekst. hvis man ikke kan finde en key..
 // F.eks. ? extends Extension -> Du skal bruge UseExtension...
 // Extension -> Du skal dependende paa en specific extension...
-// 
+// LifecycleContext -> From the perspective of Packed "dddd" does not have a lifecycle, so no LifecycleContext is available.

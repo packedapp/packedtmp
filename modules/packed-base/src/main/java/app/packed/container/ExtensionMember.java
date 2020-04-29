@@ -24,8 +24,8 @@ import java.lang.annotation.Target;
 /**
  * Indicates that a type is a member of an extension in some way. This annotation can be applied to.
  * 
- * subclasses of {@link PipelineWirelet}. In which case the pipeline implementation can have an instance of the
- * extension injected its constructor.
+ * subclasses of {@link Wirelet}. In which case the pipeline implementation can have an instance of the extension
+ * injected its constructor.
  *
  * <p>
  * For security reasons, types that use this annotation must always be located in the same module as the Extension they

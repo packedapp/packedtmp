@@ -1,6 +1,6 @@
 module app.packed.base {
-    exports app.packed.artifact;
     exports app.packed.analysis;
+    exports app.packed.artifact;
     exports app.packed.base; // then have @Preview @DeprecatedWithReason
     exports app.packed.base.invoke;
     exports app.packed.base.reflect;

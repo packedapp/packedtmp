@@ -52,7 +52,7 @@ import packed.internal.service.runtime.AbstractInjector;
  * @see ServiceExtension#provide(Class)
  * @see ServiceExtension#provide(Factory)
  * @see ServiceExtension#provideAll(Injector, Wirelet...)
- * @see ServiceExtension#provideInstance(Object)
+ * @see ServiceExtension#provideConstant(Object)
  * @see Provide
  */
 public final class ServiceProvidingManager {

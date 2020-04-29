@@ -13,34 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package app.packed.base;
 
-import app.packed.artifact.App;
-import app.packed.container.BaseBundle;
+import app.packed.base.Key.Qualifier;
 
 /**
  *
  */
-public class TI extends BaseBundle {
+@Qualifier
+public @interface Name {
 
-    public static void main(String[] args) {
-        App.of(new TI());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void compose() {
-        System.out.println("NICE");
-        provideConstant(123L);
-        link(new FFF());
-    }
-
-    static class FFF extends BaseBundle {
-
-        /** {@inheritDoc} */
-        @Override
-        protected void compose() {
-            provideConstant("HejHej");
-        }
-    }
 }
+
+// Jaja, vi laver den....
+
+//Key.withName(String name)

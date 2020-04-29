@@ -43,7 +43,7 @@ public final class WireletPipelineModel extends Model {
     };
 
     /** A type variable extractor to extract what kind of pipeline a pipeline wirelet belongs to. */
-    // TODO check that wirelets match pipeline type..
+    // TODO replace with check that wirelets match pipeline type..
     static final TypeVariableExtractor WIRELET_TYPE_TO_PIPELINE_TYPE_EXTRACTOR = TypeVariableExtractor.of(WireletPipeline.class);
 
     /** A method handle to create new pipeline instances. */

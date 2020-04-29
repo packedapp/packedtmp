@@ -50,7 +50,7 @@ public class InjectorMicro {
 
     @Benchmark
     public Injector injectorStringInstance() {
-        return Injector.configure(c -> c.provideInstance("foo"));
+        return Injector.configure(c -> c.provideConstant("foo"));
     }
 
     @Benchmark
@@ -67,7 +67,7 @@ public class InjectorMicro {
     public Injector injectorServiceNeedingString() {
         return Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
-            c.provideInstance("foo");
+            c.provideConstant("foo");
             c.provide(NeedsString.class);
         });
     }
@@ -81,7 +81,7 @@ public class InjectorMicro {
         @Override
         public void compose() {
             ServiceExtension e = use(ServiceExtension.class);
-            e.export(e.provideInstance("Hey"));
+            e.export(e.provideConstant("Hey"));
         }
     }
 }

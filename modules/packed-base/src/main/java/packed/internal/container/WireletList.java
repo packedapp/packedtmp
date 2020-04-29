@@ -30,8 +30,6 @@ import app.packed.container.Wirelet;
 /**
  * An immutable list of wirelets.
  * 
- * @see Wirelet#andThen(Wirelet)
- * @see Wirelet#andThen(Wirelet...)
  */
 public final class WireletList implements Wirelet {
 
@@ -155,9 +153,9 @@ public final class WireletList implements Wirelet {
     // return List.of(wirelets).iterator();
     // }
 
-    public WireletList plus(Wirelet... wirelets) {
-        return (WireletList) andThen(wirelets);
-    }
+//    public WireletList plus(Wirelet... wirelets) {
+//        return Wire (WireletList) andThen(wirelets);
+//    }
     //
     // /**
     // * Returns an immutable {@link List} representation of all of the wirelets in this list.

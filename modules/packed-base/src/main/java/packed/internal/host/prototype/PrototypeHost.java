@@ -13,34 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.host.prototype;
 
-import app.packed.artifact.App;
-import app.packed.container.BaseBundle;
+import app.packed.artifact.ArtifactDriver;
+import app.packed.container.Bundle;
+import app.packed.container.Wirelet;
+import packed.internal.host.api.HostDriver;
 
 /**
  *
  */
-public class TI extends BaseBundle {
+public interface PrototypeHost<A> {
 
-    public static void main(String[] args) {
-        App.of(new TI());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void compose() {
-        System.out.println("NICE");
-        provideConstant(123L);
-        link(new FFF());
-    }
-
-    static class FFF extends BaseBundle {
-
-        /** {@inheritDoc} */
-        @Override
-        protected void compose() {
-            provideConstant("HejHej");
-        }
+    static <A> HostDriver<PrototypeHostConfiguration<A>, PrototypeHost<A>, A> driver(ArtifactDriver<A> driver, Bundle bundle, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
     }
 }
+// Noget 

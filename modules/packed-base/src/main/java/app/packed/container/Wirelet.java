@@ -49,17 +49,23 @@ import packed.internal.container.WireletList;
  * @apiNote User-code should never extend this class directly. Future versions of this class may make use of sealed
  *          types if they become available.
  * 
- * @see PipelineWirelet
  * @see WireletPipeline
  */
 public interface Wirelet {
+
+    static Wirelet combine(Wirelet wirelet, Wirelet... others) {
+        return WireletList.of(wirelet, others);
+    }
 
     /**
      * Returns a composed {@code Wirelet} that performs, in sequence, this operation followed by the {@code after}
      * operation. If performing either operation throws an exception, it is relayed to the caller of the composed operation.
      * If performing this operation throws an exception, the {@code after} operation will not be performed.
      *
-     * @param wirelet
+     * @param w1
+     *            the operation to perform after this operation
+     * 
+     * @param w2
      *            the operation to perform after this operation
      * @return a composed {@code WiringOperation} that performs in sequence this operation followed by the {@code after}
      *         operation
@@ -67,12 +73,8 @@ public interface Wirelet {
     // Maaske flyt dem til en statisk metode...
     // Altsaa hvor tit skal de bruges???
     // Wirelet.combine(Wirelet w1, Wirelet w2)
-    default Wirelet andThen(Wirelet wirelet) {
-        return WireletList.of(this, wirelet);
-    }
-
-    default Wirelet andThen(Wirelet... wirelets) {
-        return WireletList.of(this, wirelets);
+    static Wirelet combine(Wirelet w1, Wirelet w2) {
+        return WireletList.of(w1, w2);
     }
 
     /**
@@ -83,44 +85,18 @@ public interface Wirelet {
      *            the new name of the container
      * @return a wirelet that can be used to rename a container
      */
-    public static Wirelet rename(String name) {
+    static Wirelet rename(String name) {
         return new ComponentNameWirelet(name);
     }
+
+    // static Wirelet[] from(Collection<? extends Wirelet> wirelets)
 }
 
 class XBadIdea {
 
-    // Det er vel mere om den kun bruges i forbindelse med linkage...
-    // D.v.s.
-    /**
-     * Returns whether or not the wirelet can be used with an image
-     * 
-     * @return stuff
-     */
-    // TODO do we want to differentiate between when we use dem for an image or not???
-    // Or just whether they can be used outside link()? is only for connecting containers
-    // within the same artifact.
-
-    // Det er vel mere disable on runtime...
-    protected boolean isAssembleTimeOnly() {
-
-//Wirelets 
-//Image
-//App
-//Image Expand
-//Image + App
-//
-//Expand
-//
-//expandables
-//
-//The wirelet XX cannot be used once the image is created
-//
-//The wirelet XX cannot be used together with an image that have already been created
-
-        // Maaske skal vi kun have den paa pipeline wirelets?? Hmmm
-
-        return false;
+    // void verify();
+    protected void check() {
+        // checkApp() for Wirelet.appTimeToLive for example...
     }
 
     // For bedre error messages. This operation can only be used if the parent or child bundle
@@ -133,11 +109,6 @@ class XBadIdea {
     // bundleLink.bootstrapWith(StringArgs.of("sdsdsd");
     // bundleLink.bootstrapWith(Configuration.read("c:/sdasdasd\'");
     // run(new XBundle(), Configuration.read("c:/sdad"));
-
-    // void verify();
-    protected void check() {
-        // checkApp() for Wirelet.appTimeToLive for example...
-    }
 
     // force start, initialize, await start...
     protected final void checkApp() {
@@ -153,6 +124,35 @@ class XBadIdea {
         // conditional(Predicate, Wirelet alt1, Wirelet alt2). alt1 if true, otherwise alt2
         throw new UnsupportedOperationException();
     }
+
+    // Det er vel mere om den kun bruges i forbindelse med linkage...
+    // D.v.s.
+    /**
+     * Returns whether or not the wirelet can be used with an image
+     * 
+     * @return stuff
+     */
+    // TODO do we want to differentiate between when we use dem for an image or not???
+    // Or just whether they can be used outside link()? is only for connecting containers
+    // within the same artifact.
+
+    // Det er vel mere disable on runtime...
+
+//Wirelets 
+//Image
+//App
+//Image Expand
+//Image + App
+//
+//Expand
+//
+//expandables
+//
+//The wirelet XX cannot be used once the image is created
+//
+//The wirelet XX cannot be used together with an image that have already been created
+
+    // Maaske skal vi kun have den paa pipeline wirelets?? Hmmm
 
     final Wirelet onCondition(Predicate<Environment> predicate) {
         // Et problem hvis vi laver et image...

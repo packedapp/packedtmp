@@ -35,6 +35,13 @@ import app.packed.container.Wirelet;
 public interface HostContext<T> {
 
     /**
+     * All contracts exposed by the host.
+     * 
+     * @return all contracts
+     */
+    ContractSet contracts();
+
+    /**
      * Performs an action for each guest that are deployed on the host.
      * 
      * @param action
@@ -42,7 +49,11 @@ public interface HostContext<T> {
      */
     void forEach(Consumer<? extends Guest<T>> action); // Throwable Action???
 
+    <S extends T> void forEach(Consumer<? extends Guest<S>> action, Class<S> artifactType);
+
     Optional<Guest<T>> get(String name);
+
+    <S extends T> Optional<Guest<S>> get(String name, Class<S> artifactType);
 
     /**
      * Returns a stream of all the guests that are currently deployed on the host.
@@ -51,6 +62,10 @@ public interface HostContext<T> {
      */
     Stream<Guest<T>> guests();
 
+    // Skal vi tillade custom drivers?????
+    // Maaske have en default artifact driver
+    Guest<T> instantiate(ArtifactDriver<? extends T> driver, Bundle bundle, Wirelet[] userWirelets, Wirelet... hostWirelets);
+
     /**
      * Returns the number of guests that are currently deployed on the host.
      * 
@@ -58,17 +73,6 @@ public interface HostContext<T> {
      */
     // Active, non-active
     long size();
-
-    /**
-     * All contracts exposed by the host.
-     * 
-     * @return all contracts
-     */
-    ContractSet contracts();
-
-    // Skal vi tillade custom drivers?????
-    // Maaske have en default artifact driver
-    Guest<T> instantiate(ArtifactDriver<? extends T> driver, Bundle bundle, Wirelet[] userWirelets, Wirelet... hostWirelets);
 }
 //HostContext<T> <---?? Why not
 //Runtime HostContext....

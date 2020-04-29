@@ -30,7 +30,6 @@ import packed.internal.container.WireletPipelineContext;
  * 
  * <p>
  * 
- * @see PipelineWirelet
  */
 //UseExtension -> Extension can be injected into the constructor of the pipeline
 //The pipeline and the extension must be located in the same module as returned by 
@@ -39,7 +38,6 @@ import packed.internal.container.WireletPipelineContext;
 
 // If a pipeline implementation makes use of an extension. The extension and the pipeline implementation must be located in the same module as returned by
 // ExtensionImplementation#getModule and WireletPipelineImplementation#getModule
-
 public abstract class WireletPipeline<P extends WireletPipeline<P, W>, W extends Wirelet> implements Iterable<W> {
 
     /** The pipeline context, initialized immediately after the constructor of the pipeline has finished. */
@@ -160,3 +158,58 @@ public abstract class WireletPipeline<P extends WireletPipeline<P, W>, W extends
 // public final void forEachLatest(Consumer<? super W> action) {
 // wirelets.forEach(action);
 // }
+
+// Fra PipelineWirelet
+/**
+ * Extensions that define their own wirelets must extend this class.
+ * 
+ * Extension wirelets that uses the same extension pipeline type are processed in the order they are specified in. No
+ * guarantees are made for extension wirelets that define for different extension pipeline types.
+ * <p>
+ * We need this class so we can see which extension the wirelet belongs to... Otherwise, we would not be able to tell
+ * the user which extension was missing. When throwing an exception if the wirelet was specified, but the extension was
+ * not used
+ * 
+ * @see WireletPipeline
+ */
+//
+///**
+// * Invoked by the runtime whenever the user specified an extension wirelet for which a matching extension has not been
+// * registered with the underlying container. For example, via {@link Bundle#link(Bundle, Wirelet...)} or
+// * {@link App#execute(app.packed.artifact.Assembly, Wirelet...)}.
+// * <p>
+// * The default implementation throws an {@link IllegalArgumentException}.
+// * 
+// * @param extensionType
+// *            the extension type that is missing
+// */
+//// Maaske skal den vaere paa pipelinen???
+//protected void extensionNotAvailable(Class<? extends Extension> extensionType) {
+//    throw new IllegalArgumentException(
+//            toString() + " can only be specified when the extension " + extensionType.getSimpleName() + " is used by the target container");
+//}
+// Grunden til vi gerne lave callback paa denne maade.
+// Er at vi saa kan eksekvere dem i total order...
+// Dvs f.eks. Wirelet.println("fooooBar").. Eller ting der skal saettes i andre extensions... f.eks.
+// disableStackCapturing(), Service.provide(Stuff), enabledStackCapturing()...
+
+// Vi bliver noedt til at lave noget sen-validering af en evt. parent extension
+
+// Alternativt, skulle vi forbyde installering af extension, efter link()
+// -> mere eller mindre alle metoder...
+
+// Men nu har vi lige pludselig virale extensions...
+// Det ville vi jo ikke kunne have...
+
+// Ydermere kan en dependency, f.eks. vaere fra et andet bundle...
+// Og dependency transformer vi endda.
+// Som foerst bliver linket senere... Dvs vi kan ikke validere, foerend alle links er faerdige.
+// Summasumarum vi maa validere til sidst.
+
+// HVORFOR ikke bare en metode vi kan invoke fra extension'en?
+// Det virker ikke naar vi image.with(some wirelets)....
+// Fordi det kun er wirelets der bliver "koert".
+// Vi koere ikke hver extension...
+/// Maaske kan vi godt lave tmp bundles????
+/// Hvis vi bare stopper inde graf hullumhej...
+/// Det betyder dog ogsaa

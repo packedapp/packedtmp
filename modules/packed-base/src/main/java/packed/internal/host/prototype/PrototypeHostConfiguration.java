@@ -13,34 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.host.prototype;
 
-import app.packed.artifact.App;
-import app.packed.container.BaseBundle;
+import app.packed.container.Wirelet;
 
 /**
  *
  */
-public class TI extends BaseBundle {
+public interface PrototypeHostConfiguration<A> {
 
-    public static void main(String[] args) {
-        App.of(new TI());
-    }
+    public A initialize(Wirelet... wirelets);
 
-    /** {@inheritDoc} */
-    @Override
-    protected void compose() {
-        System.out.println("NICE");
-        provideConstant(123L);
-        link(new FFF());
-    }
+    public A start(Wirelet... wirelets);
 
-    static class FFF extends BaseBundle {
-
-        /** {@inheritDoc} */
-        @Override
-        protected void compose() {
-            provideConstant("HejHej");
-        }
-    }
+    public void execute(Wirelet... wirelets);
 }

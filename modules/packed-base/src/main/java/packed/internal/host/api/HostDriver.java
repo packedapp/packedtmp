@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.host;
+package packed.internal.host.api;
+
+import app.packed.artifact.ArtifactDriver;
+import packed.internal.host.HostContext;
 
 /**
  *
@@ -36,17 +39,31 @@ package packed.internal.host;
 // addHost(AppHost.driver()).
 
 // Paa den anden side... A er lidt ligegyldig for brugere...
-public abstract class HostDriver<A, H, C extends HostConfiguration> {
+public abstract class HostDriver<C, H, A> {
+
+    protected HostDriver(Option... options) {}
+    // protected abstract H newMultiHost(MultiHostContext context);
 
     protected abstract H newHost(HostContext<A> context);
 
-    protected final HostConfiguration newHostConfiguration(HostConfigurationContext context) {
-        throw new UnsupportedOperationException();
-    }
-
     protected abstract C newConfiguration(HostConfigurationContext context);
+
+    public static class Option {
+
+        public static Option defaultGuest(ArtifactDriver<?> driver) {
+            throw new UnsupportedOperationException();
+        }
+    }
 }
+//
+//protected final C newHostConfiguration(HostConfigurationContext context) {
+//  throw new UnsupportedOperationException();
+//}
 
 // Option -> OnlyAllowImagesAsGuests... <- makes sure we optimize stuff...
 
 // WebSessionHost
+
+interface MultiHostContext {
+
+}

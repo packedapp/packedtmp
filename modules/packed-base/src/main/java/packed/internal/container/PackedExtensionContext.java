@@ -158,6 +158,7 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
         return e;
     }
 
+    @Override
     public Class<? extends Extension> extensionType() {
         return model.extensionType();
     }
@@ -259,6 +260,28 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
             if (pcc.wireletContext != null) {
                 pcc.wireletContext.extensionInitialized(pec);
             }
+
+            // Link extension to any parents...
+
+            // Should we also set the active extension in the parent???
+//          if (model.onLinkage != null) {
+            if (model.linked != null) {
+                if (pcc.parent instanceof PackedContainerConfiguration) {
+                    PackedContainerConfiguration p = (PackedContainerConfiguration) pcc.parent;
+                    PackedExtensionContext ep = p.getExtension(extensionType);
+                    // set activate extension???
+                    // If not just parent link keep checking up until root/
+                    if (ep != null) {
+                        try {
+                            model.linked.invoke(ep.extension, e);
+                        } catch (Throwable e1) {
+                            e1.printStackTrace();
+                        }
+                        // model.onLinkage.accept(e.extension, extension);
+                    }
+                }
+            }
+
         } finally {
             pcc.activeExtension = existing;
         }

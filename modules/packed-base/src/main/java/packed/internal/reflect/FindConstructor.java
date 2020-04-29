@@ -17,120 +17,20 @@ package packed.internal.reflect;
 
 import static packed.internal.util.StringFormatter.format;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Executable;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 import app.packed.base.InvalidDeclarationException;
-import app.packed.base.Key;
 import app.packed.inject.Inject;
-import app.packed.inject.InjectionContext;
-import app.packed.inject.UnresolvedDependencyException;
-import packed.internal.reflect.InjectableFunction.Entry;
 import packed.internal.util.StringFormatter;
-import packed.internal.util.UncheckedThrowableFactory;
 
 /**
  *
  */
-//Allow multiple constructors, For example take a list of MethodType...
-//Custom ExtensionTypes
+//Maybe allow to override to throw custom exception..
+public final class FindConstructor {
 
-//Maybe a little customization of error messages...
-//Maybe just a protected method that creates the message that can then be overridden.
-
-//Usage
-//Bundle <- No Args, with potential custom lookup object
-//OnHookBuilder <- No args
-//Extension <- Maybe PackedExtensionContext
-//ExtensionComposer <- No Arg
-
-//We want to create a ConstructorFinder instance that we reuse..
-//So lookup object is probably an optional argument
-//The rest is static, its not for injection, because we need
-
-//So ConstructorFinder is probably a bad name..
-public class FindConstructor {
-
-    ArrayList<Parameter> parameters;
-
-    public MethodHandle doIt(OpenClass oc, InjectableFunction aa) {
-        Constructor<?> constructor = findInjectableConstructor(aa.input().returnType());
-        return doIt(oc, constructor, aa);
-    }
-
-    public MethodHandle doIt(OpenClass oc, Executable e, InjectableFunction aa) {
-        MethodType expected = aa.input();
-
-        boolean isInstanceMethod = false;
-        MethodHandle mh;
-        if (e instanceof Constructor) {
-            mh = oc.unreflectConstructor((Constructor<?>) e, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-        } else {
-            Method m = (Method) e;
-            mh = oc.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-            isInstanceMethod = !Modifier.isStatic(m.getModifiers());
-
-            if (isInstanceMethod) {
-                if (m.getDeclaringClass() != aa.input().parameterType(0)) {
-                    throw new IllegalArgumentException(
-                            "First signature parameter type must be " + m.getDeclaringClass() + " was " + aa.input().parameterType(0));
-                }
-            }
-        }
-        // MethodHandle mh = oc.unreflectConstructor(constructor,
-        // UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-        this.parameters = new ArrayList<>(List.of(e.getParameters()));
-
-        int injectionContext = -1;
-        // Nej vi binder nogen til constant... Saa det er ikke sikkert...
-
-        int add = isInstanceMethod ? 1 : 0;
-        int[] permutationArray = new int[this.parameters.size() + add];
-        if (isInstanceMethod) {
-            permutationArray[0] = 0;
-        }
-        for (int i = 0; i < this.parameters.size(); i++) {
-            Parameter p = parameters.get(i);
-            int index;
-            if (p.getType() == InjectionContext.class) {
-                index = injectionContext = expected.parameterCount();
-            } else {
-                Key<?> kk = Key.of(p.getType());
-                Entry entry = aa.keys.get(kk);
-                if (entry != null) {
-                    index = entry.index;
-                    if (entry.transformer != null) {
-                        mh = MethodHandles.collectArguments(mh, i, entry.transformer);
-                    }
-                } else {
-                    throw new UnresolvedDependencyException("" + kk + " Available keys = " + aa.keys.keySet());
-                }
-            }
-            permutationArray[i + add] = index;
-        }
-
-        if (injectionContext != -1) {
-            MethodType e2 = expected.appendParameterTypes(InjectionContext.class);
-            mh = MethodHandles.permuteArguments(mh, e2, permutationArray);
-            PackedInjectionContext pic = new PackedInjectionContext(e.getDeclaringClass(), Set.copyOf(aa.keys.keySet()));
-            mh = MethodHandles.insertArguments(mh, injectionContext, pic);
-        } else {
-            mh = MethodHandles.permuteArguments(mh, expected, permutationArray);
-        }
-
-        return mh;
-    }
-
-    Constructor<?> findInjectableConstructor(Class<?> type) {
+    public static Constructor<?> findInjectableConstructor(Class<?> type) {
         if (type.isArray()) {
             throw new IllegalArgumentException(format(type) + " is an array and cannot be instantiated");
         } else if (type.isAnnotation()) {
@@ -138,11 +38,7 @@ public class FindConstructor {
         } else if (Modifier.isAbstract(type.getModifiers())) {
             throw new IllegalArgumentException("'" + StringFormatter.format(type) + "' cannot be an abstract class");
         }
-//        if (Modifier.isAbstract(onType.getModifiers())) {
-//            throw tf.newThrowable("'" + StringFormatter.format(onType) + "' cannot be an abstract class");
-//        } else if (TypeUtil.isInnerOrLocalClass(onType)) {
-//            throw tf.newThrowable("'" + StringFormatter.format(onType) + "' cannot be an inner or local class");
-//        }
+
         Constructor<?>[] constructors = type.getDeclaredConstructors();
 
         // If we only have 1 constructor, return it.
@@ -165,6 +61,7 @@ public class FindConstructor {
             return constructor;
         }
 
+        // See if we have a single public constructor
         for (Constructor<?> c : constructors) {
             if (Modifier.isPublic(c.getModifiers())) {
                 if (constructor != null) {
@@ -178,6 +75,7 @@ public class FindConstructor {
             return constructor;
         }
 
+        // See if we have a single protected constructor
         for (Constructor<?> c : constructors) {
             if (Modifier.isProtected(c.getModifiers())) {
                 if (constructor != null) {
@@ -191,7 +89,7 @@ public class FindConstructor {
             return constructor;
         }
 
-        // Remaining constructors are private or package private
+        // Remaining constructors are either private or package private constructors
         for (Constructor<?> c : constructors) {
             if (!Modifier.isPrivate(c.getModifiers())) {
                 if (constructor != null) {
@@ -210,4 +108,30 @@ public class FindConstructor {
         throw new IllegalArgumentException(
                 "No constructor annotated with @" + Inject.class.getSimpleName() + ". And multiple private constructors on class " + format(type));
     }
+
+//  // Try to find a single static method annotated with @Inject
+//  Method method = null;
+//  for (Method m : type.getDeclaredMethods()) {
+//      if (Modifier.isStatic(m.getModifiers()) && m.isAnnotationPresent(Inject.class)) {
+//          if (method != null) {
+//              throw new IllegalArgumentException("There are multiple static methods annotated with @Inject on " + format(type));
+//          }
+//          method = m;
+//      }
+//  }
+//
+//  // If a single method has been found, use it
+//  if (method != null) {
+//      // Det er jo i virkeligheden en Key vi laver her, burde havde det samme checkout..
+//      if (method.getReturnType() == void.class /* || returnType == Void.class */) {
+//          throw new IllegalArgumentException("Static method " + method + " annotated with @Inject cannot have a void return type."
+//                  + " (@Inject on static methods are used to indicate that the method is a factory for a specific type, not for injecting values");
+//      } else if (TypeUtil.isOptionalType(method.getReturnType())) {
+//          throw new IllegalArgumentException("Static method " + method + " annotated with @Inject cannot have an optional return type ("
+//                  + method.getReturnType().getSimpleName() + "). A valid instance needs to be provided by the method");
+//      }
+//      // Sporgsmaalet er om den skal have this this.class som return type...
+//      // Og saa brugere skal bruge Factory.findStaticInject(Class, Type); <----
+//      return method;
+//  }
 }

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.BiConsumer;
@@ -56,8 +57,9 @@ import packed.internal.hook.applicator.DelayedAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarFieldDelayerAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarMethodDelayerAccessor;
 import packed.internal.host.HostConfiguration;
-import packed.internal.host.HostConfigurationContext;
 import packed.internal.host.PackedHostConfiguration;
+import packed.internal.host.api.HostConfigurationContext;
+import packed.internal.host.api.HostDriver;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.inject.util.InjectConfigSiteOperations;
@@ -141,8 +143,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return conf;
     }
 
-    /** {@inheritDoc} */
-    @Override
     public <T extends HostConfiguration> T addHost(Class<T> hostType) {
         OpenClass cp = new OpenClass(MethodHandles.lookup(), hostType, true);
         // MethodHandle mh = ConstructorFinder.find(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY,
@@ -156,6 +156,11 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public <A, H, C> C addHost(HostDriver<A, H, C> driver) {
+        return null;
     }
 
     public PackedContainerConfiguration assemble() {
@@ -522,5 +527,16 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             extensions.put(extensionType, pec = PackedExtensionContext.of(this, extensionType));
         }
         return pec;
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public <W extends Wirelet> Optional<W> wirelet(Class<W> type) {
+        WireletModel wm = WireletModel.of(type);
+        if (!wm.requireAssemblyTime) {
+            throw new IllegalStateException("Wirelet of type " + type + " does not have assemblytime = true");
+        }
+        return wireletContext == null ? Optional.empty() : Optional.ofNullable((W) wireletContext.getWireletOrPipeline(type));
     }
 }

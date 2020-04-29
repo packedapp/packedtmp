@@ -42,7 +42,6 @@ public class TestIt {
         aa.addKey(String.class, 0, mhhhh);
 
         MethodHandle mh = new OpenClass(MethodHandles.lookup(), TestIt.class, false).findConstructor(aa);
-
         System.out.println(mh);
 
         TestIt it = (TestIt) mh.invoke(new Data());

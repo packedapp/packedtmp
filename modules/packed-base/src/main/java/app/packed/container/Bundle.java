@@ -19,11 +19,13 @@ package app.packed.container;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
 import app.packed.artifact.SystemSource;
+import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
@@ -33,7 +35,7 @@ import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
 import app.packed.sidecar.WireletSidecar;
 import packed.internal.container.WireletPipelineContext;
-import packed.internal.host.HostConfiguration;
+import packed.internal.host.api.HostDriver;
 import packed.internal.moduleaccess.AppPackedContainerAccess;
 import packed.internal.moduleaccess.ModuleAccess;
 
@@ -93,8 +95,16 @@ public abstract class Bundle implements SystemSource {
     /** The state of the bundle. 0 not-initialized, 1 in-progress, 2 completed. */
     private final AtomicInteger state = new AtomicInteger();
 
-    protected final <T extends HostConfiguration> T addHost(Class<T> type) {
-        return configuration().addHost(type);
+    protected final <A, H, C> C addHost(HostDriver<A, H, C> driver) {
+        return configuration().addHost(driver);
+    }
+
+    protected final <A, H, C> C provideHost(HostDriver<A, H, C> driver) {
+        return configuration().addHost(driver);
+    }
+
+    protected final <A, H, C> C provideHost(HostDriver<A, H, C> driver, Key<? super A> key) {
+        return configuration().addHost(driver);
     }
 
     /**
@@ -213,7 +223,23 @@ public abstract class Bundle implements SystemSource {
         return configuration().getName();
     }
 
+    /**
+     * 
+     * 
+     * @param <W>
+     * @param wireletType
+     * @param predicate
+     * @return stuff
+     * @throws IllegalArgumentException
+     *             if the specified wirelet type does not have {@link WireletSidecar#requireAssemblyTime()} set to true
+     */
+    // Should we add wirelet(Type, consumer) or Optional<Wirelet>
     final <W extends Wirelet> boolean ifWirelet(Class<W> wireletType, Predicate<? super W> predicate) {
+        // Mainly used for inheritable wirelets...
+        // Would be nice if pipeline = wirelet... Because then we could do
+        // ifWirelet(somePipeline, containsX) ->
+        // Which we can if the user implements Wirelet themself
+
         // This should not really be the first tool you use...
         // Yeah I think bundle.setFoo() is so much better????
         // Not sure we want to encourage it....
@@ -343,10 +369,6 @@ public abstract class Bundle implements SystemSource {
         return configuration().path();
     }
 
-    protected final <T extends HostConfiguration> T provideHost(Class<T> type) {
-        return configuration().addHost(type);
-    }
-
     /**
      * Sets the description of the container.
      * 
@@ -397,5 +419,9 @@ public abstract class Bundle implements SystemSource {
      */
     protected final <T extends Extension> T use(Class<T> extensionType) {
         return configuration().use(extensionType);
+    }
+
+    protected final <W extends Wirelet> Optional<W> wirelet(Class<W> type) {
+        return configuration().wirelet(type);
     }
 }

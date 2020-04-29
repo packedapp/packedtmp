@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.host;
+package packed.internal.host.api;
 
 import java.util.Optional;
 
@@ -59,6 +59,8 @@ public interface HostConfigurationContext {
 
     // Do we need an ArtifactReference???
     // Kunne ogsaa godt bruge noget fra Bundle.link
+
+    // Will be made available from guests
     void deploy(SystemSource source, ArtifactDriver<?> driver, Wirelet... wirelets);
 
     /**

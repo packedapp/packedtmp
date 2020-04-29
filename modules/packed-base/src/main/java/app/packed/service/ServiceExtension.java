@@ -22,12 +22,14 @@ import app.packed.base.Key;
 import app.packed.base.Key.Qualifier;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
+import app.packed.container.DescendentAdded;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 import app.packed.container.Wirelet;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
 import app.packed.inject.Factory;
+import app.packed.inject.InjectionContext;
 import app.packed.lifecycle.OnStart;
 import app.packed.sidecar.Expose;
 import app.packed.sidecar.ExtensionSidecar;
@@ -293,7 +295,7 @@ public final class ServiceExtension extends Extension {
      *            the instance to bind
      * @return a service configuration for the service
      */
-    public <T> ServiceComponentConfiguration<T> provideInstance(T instance) {
+    public <T> ServiceComponentConfiguration<T> provideConstant(T instance) {
         // configurability is checked by ComponentExtension
         SingletonConfiguration<T> cc = installInstance(instance);
         return node.provider().provideInstance(cc, instance);
@@ -350,9 +352,12 @@ public final class ServiceExtension extends Extension {
         }
     }
 
-    @PostSidecar(ExtensionSidecar.ON_PREEMBLE)
-    // I would think we should include the pipeline.. If users have provided stuff...
-    void assemble() {
+    /**
+     * This method is invoked by the runtime after all children have been configured. But before any guests might have been
+     * defined.
+     */
+    @PostSidecar(ExtensionSidecar.CHILDREN_CONFIGURED)
+    void assemble(/* Optional<ServiceWireletPipeline> swp */ ) {
         node.build();
     }
 
@@ -366,5 +371,15 @@ public final class ServiceExtension extends Extension {
     @Expose
     void con(BundleDescriptor.Builder builder) {
         node.buildDescriptor(builder);
+    }
+
+    @DescendentAdded
+    void foo(ServiceExtension se, InjectionContext ic) {
+        node.link(se.node);
+
+        // Add ServiceExtension (the child)
+        System.out.println(se);
+        System.out.println(this);
+        System.out.println("GotIt " + ic.keys());
     }
 }

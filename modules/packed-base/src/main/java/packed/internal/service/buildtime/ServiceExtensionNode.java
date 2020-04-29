@@ -91,6 +91,7 @@ public final class ServiceExtensionNode {
     }
 
     public void build() {
+        // System.out.println("Childre " + children);
         HashMap<Key<?>, BuildEntry<?>> resolvedServices = provider().resolve();
         resolvedServices.values().forEach(e -> resolvedEntries.put(requireNonNull(e.key()), e));
 

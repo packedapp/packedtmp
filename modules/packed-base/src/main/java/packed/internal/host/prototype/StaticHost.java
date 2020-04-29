@@ -13,34 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
-
-import app.packed.artifact.App;
-import app.packed.container.BaseBundle;
+package packed.internal.host.prototype;
 
 /**
  *
  */
-public class TI extends BaseBundle {
+// A host that only allows definitions at assembly time...
+// This should probably be the default...
+// And if we want to do lazy initialize/start is the way...
 
-    public static void main(String[] args) {
-        App.of(new TI());
-    }
+// lazy(Bundle b, Wirelet... wirelets); just wraps LazyStart I think...
 
-    /** {@inheritDoc} */
-    @Override
-    protected void compose() {
-        System.out.println("NICE");
-        provideConstant(123L);
-        link(new FFF());
-    }
+// Also ServiceMesh... Should be fine for static host...
 
-    static class FFF extends BaseBundle {
+public interface StaticHost<A> {
 
-        /** {@inheritDoc} */
-        @Override
-        protected void compose() {
-            provideConstant("HejHej");
-        }
-    }
 }

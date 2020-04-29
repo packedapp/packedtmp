@@ -75,7 +75,8 @@ public final class OpenClass {
     }
 
     public MethodHandle findConstructor(InjectableFunction is) {
-        return new FindConstructor().doIt(this, is);
+        Constructor<?> constructor = FindConstructor.findInjectableConstructor(is.input().returnType());
+        return new FindMember().find(this, constructor, is);
     }
 
     /**

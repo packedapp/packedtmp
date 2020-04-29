@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.IdentityHashMap;
@@ -28,7 +29,7 @@ import app.packed.base.Contract;
 import app.packed.container.InternalExtensionException;
 import app.packed.sidecar.Expose;
 import app.packed.sidecar.PostSidecar;
-import packed.internal.reflect.FindConstructor;
+import packed.internal.reflect.FindMember;
 import packed.internal.reflect.InjectableFunction;
 import packed.internal.reflect.OpenClass;
 import packed.internal.util.ThrowableUtil;
@@ -106,46 +107,50 @@ public abstract class SidecarModel extends Model {
             this.postSidecars = new MethodHandle[statics.numberOfLifecycleStates()];
         }
 
+        protected void onMethod(Method m) {}
+
         @SuppressWarnings({ "unchecked", "rawtypes" })
         protected OpenClass prep(InjectableFunction spec) {
             OpenClass cp = new OpenClass(MethodHandles.lookup(), sidecarType, true);
 
             this.constructor = cp.findConstructor(spec);
-            cp.findMethods(e -> {
-                PostSidecar oa = e.getAnnotation(PostSidecar.class);
+            cp.findMethods(m -> {
+                onMethod(m);
+                PostSidecar oa = m.getAnnotation(PostSidecar.class);
                 if (oa != null) {
                     int index = statics.indexOfState(oa.value());
                     if (index == -1) {
-                        throw new InternalExtensionException("Unknown sidecar lifecycle event '" + oa.value() + "' for method " + e);
+                        throw new InternalExtensionException("Unknown sidecar lifecycle event '" + oa.value() + "' for method " + m);
                     }
 
                     // Static er fck irriterende...
                     //// Skal have en slags mapStaticMethodsToInstanceMethods paa InjectableFunction...
                     MethodHandle mh;
-                    if (Modifier.isStatic(e.getModifiers())) {
-                        InjectableFunction is = InjectableFunction.of(e.getReturnType());
-                        FindConstructor fc = new FindConstructor();
-                        mh = fc.doIt(cp, e, is);
+                    if (Modifier.isStatic(m.getModifiers())) {
+                        InjectableFunction is = InjectableFunction.of(m.getReturnType());
+                        FindMember fc = new FindMember();
+                        mh = fc.find(cp, m, is);
                         mh = MethodHandles.dropArguments(mh, 0, sidecarType);
                     } else {
-                        InjectableFunction is = InjectableFunction.of(e.getReturnType(), e.getDeclaringClass());
-                        FindConstructor fc = new FindConstructor();
-                        mh = fc.doIt(cp, e, is);
+                        InjectableFunction is = InjectableFunction.of(m.getReturnType(), m.getDeclaringClass());
+                        FindMember fc = new FindMember();
+                        mh = fc.find(cp, m, is);
                     }
 
                     // If there are multiple methods with the same index. We just fold them to a single MethodHandle
                     MethodHandle existing = postSidecars[index];
                     postSidecars[index] = existing == null ? mh : MethodHandles.foldArguments(existing, mh);
                 }
-                Expose ex = e.getAnnotation(Expose.class);
+                Expose ex = m.getAnnotation(Expose.class);
                 if (ex != null) {
-                    if (e.getReturnType() == void.class) {
-                        builderMethod = cp.unreflect(e, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                    if (m.getReturnType() == void.class) {
+                        builderMethod = cp.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
                     } else {
-                        MethodHandle mh = cp.unreflect(e, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-                        contracts.put((Class) e.getReturnType(), mh);
+                        MethodHandle mh = cp.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                        contracts.put((Class) m.getReturnType(), mh);
                     }
                 }
+
             });
 
             return cp;

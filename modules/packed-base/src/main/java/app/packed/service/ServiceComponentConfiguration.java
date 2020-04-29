@@ -32,11 +32,11 @@ import app.packed.inject.Factory;
  * 
  * @see ServiceExtension#provide(Class)
  * @see ServiceExtension#provide(Factory)
- * @see ServiceExtension#provideInstance(Object)
+ * @see ServiceExtension#provideConstant(Object)
  *
  * @see BaseBundle#provide(Class)
  * @see BaseBundle#provide(Factory)
- * @see BaseBundle#provideInstance(Object)
+ * @see BaseBundle#provideConstant(Object)
  */
 public interface ServiceComponentConfiguration<T> extends ServiceConfiguration<T>, SingletonConfiguration<T> {
 

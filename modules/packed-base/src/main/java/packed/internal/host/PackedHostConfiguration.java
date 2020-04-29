@@ -27,6 +27,7 @@ import packed.internal.artifact.PackedArtifactImage;
 import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.component.AbstractComponent;
 import packed.internal.component.AbstractComponentConfiguration;
+import packed.internal.host.api.HostConfigurationContext;
 
 /**
  * The defa
