@@ -17,6 +17,8 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Optional;
+
 import app.packed.analysis.BundleDescriptor;
 import app.packed.base.Key;
 import app.packed.base.Key.Qualifier;
@@ -378,7 +380,7 @@ public final class ServiceExtension extends Extension {
     }
 
     @DescendentAdded
-    void foo(@WireletSupply ServiceWireletPipeline wirelets, ServiceExtension se, InjectionContext ic, ExtensionContext ec) {
+    void foo(@WireletSupply Optional<MyTestWirelet> wirelets, ServiceExtension se, InjectionContext ic, ExtensionContext ec) {
         node.link(se.node);
         System.out.println("Got wirelets " + wirelets);
         System.out.println("This " + this + " child = " + se);

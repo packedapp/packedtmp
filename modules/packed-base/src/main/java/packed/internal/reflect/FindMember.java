@@ -24,7 +24,6 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -60,12 +59,49 @@ import packed.internal.util.UncheckedThrowableFactory;
 //So ConstructorFinder is probably a bad name..
 class FindMember {
 
-    ArrayList<Parameter> parameters;
+    final MethodType expected;
 
-    MethodHandle find(OpenClass oc, Executable e, FunctionResolver aa) {
-        MethodType expected = aa.callSiteType();
+    final MethodHandle executable;
+    final List<Parameter> parameters;
+    final int add;
+    final int[] permutationArray;
+
+    FindMember(OpenClass oc, Executable e, FunctionResolver aa) {
+        expected = aa.callSiteType();
 
         boolean isInstanceMethod = false;
+
+        // Setup MethodHandle for constructor or method
+        if (e instanceof Constructor) {
+            executable = oc.unreflectConstructor((Constructor<?>) e, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+        } else {
+            Method m = (Method) e;
+            executable = oc.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+            isInstanceMethod = !Modifier.isStatic(m.getModifiers());
+
+            if (isInstanceMethod) {
+                if (m.getDeclaringClass() != aa.callSiteType().parameterType(0)) {
+                    throw new IllegalArgumentException(
+                            "First signature parameter type must be " + m.getDeclaringClass() + " was " + aa.callSiteType().parameterType(0));
+                }
+            }
+        }
+
+        parameters = List.of(e.getParameters());
+
+        add = isInstanceMethod ? 1 : 0;
+        permutationArray = new int[parameters.size() + add];
+        if (isInstanceMethod) {
+            permutationArray[0] = 0;
+        }
+    }
+
+    MethodHandle find(OpenClass oc, Executable e, FunctionResolver aa) {
+        final MethodType expected = aa.callSiteType();
+
+        boolean isInstanceMethod = false;
+
+        // Setup MethodHandle for constructor or method
         MethodHandle mh;
         if (e instanceof Constructor) {
             mh = oc.unreflectConstructor((Constructor<?>) e, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
@@ -81,39 +117,42 @@ class FindMember {
                 }
             }
         }
-        // MethodHandle mh = oc.unreflectConstructor(constructor,
-        // UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-        this.parameters = new ArrayList<>(List.of(e.getParameters()));
+
+        List<Parameter> parameters = List.of(e.getParameters());
+
+        int add = isInstanceMethod ? 1 : 0;
+        int[] permutationArray = new int[parameters.size() + add];
+        if (isInstanceMethod) {
+            permutationArray[0] = 0;
+        }
 
         int injectionContext = -1;
         // Nej vi binder nogen til constant... Saa det er ikke sikkert...
 
-        int add = isInstanceMethod ? 1 : 0;
-        int[] permutationArray = new int[this.parameters.size() + add];
-        if (isInstanceMethod) {
-            permutationArray[0] = 0;
-        }
-        for (int i = 0; i < this.parameters.size(); i++) {
+        for (int i = 0; i < parameters.size(); i++) {
             Parameter p = parameters.get(i);
             int index;
             if (p.getType() == InjectionContext.class) {
                 index = injectionContext = expected.parameterCount();
             } else {
+                ServiceDependency sd = ServiceDependency.fromVariable(ParameterDescriptor.from(p));
+                Class<?> raw = sd.key().typeLiteral().rawType();
+
                 FunctionResolver.AnnoClassEntry anno = find(aa, p);
+
+                MethodHandle collectMe = null;
                 if (anno == null) {
                     Key<?> kk = Key.of(p.getType());
                     Entry entry = aa.keys.get(kk);
                     if (entry != null) {
                         index = entry.indexes[0];
                         if (entry.transformer != null) {
-                            mh = MethodHandles.collectArguments(mh, i + add, entry.transformer);
+                            collectMe = entry.transformer;
                         }
                     } else {
                         throw new UnresolvedDependencyException("" + kk + " Available keys = " + aa.keys.keySet());
                     }
                 } else {
-                    ServiceDependency sd = ServiceDependency.fromVariable(ParameterDescriptor.from(p));
-                    Class<?> raw = sd.key().typeLiteral().rawType();
                     MethodHandle tmp = MethodHandles.insertArguments(anno.mh, 1, raw);
                     tmp = MethodHandles.explicitCastArguments(tmp, MethodType.methodType(raw, tmp.type().parameterArray()[0]));
                     System.out.println("----");
@@ -121,7 +160,15 @@ class FindMember {
                     System.out.println(tmp.type());
                     System.out.println(i + " " + anno.index);
                     index = anno.index;
-                    mh = MethodHandles.collectArguments(mh, i + add, tmp);
+                    collectMe = tmp;
+                }
+                if (collectMe != null) {
+                    if (sd.isOptional()) {
+                        // Need to cast return type of collect to Object in order to feed it to Optional.ofNullable(Object)
+                        collectMe = MethodHandles.explicitCastArguments(collectMe, collectMe.type().changeReturnType(Object.class));
+                        collectMe = MethodHandles.collectArguments(FindMemberHelper.OPTIONAL_OF_NULLABLE, 0, collectMe);
+                    }
+                    mh = MethodHandles.collectArguments(mh, i + add, collectMe);
                 }
             }
             permutationArray[i + add] = index;
