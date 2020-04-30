@@ -341,23 +341,29 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
                 }
             }
 
-            // Use PackedExtensionContext instead...
+            // I Would love to get rid of CONV
+
             FunctionResolver is = FunctionResolver.of(sidecarType, PackedExtensionContext.class);
-            is.addKey(LifecycleContext.class, PackedExtensionContext.MH_LIFECYCLE_CONTEXT, 0); // Its the child extension context..
+
+            // Identical to linked, just 0-> 1
+            is.addKey(LifecycleContext.class, PackedExtensionContext.MH_LIFECYCLE_CONTEXT, 0);
             is.addKey(ExtensionContext.class, CONV, 0);
             is.addAnnoClassMapper(WireletSupply.class, WS, 0);
+
             OpenClass cp = prep(is);
             this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
             if (linked != null) {
-
+                // ancestor extension, descendant extension context, descendant extension
                 FunctionResolver iss = FunctionResolver.of(void.class, sidecarType, PackedExtensionContext.class, sidecarType);
-                iss.addKey(ExtensionContext.class, CONV, 1); // Its the child extension context..
-                iss.addKey(sidecarType, 2); // 0 is the actual sidecar we are invoking the method on, 2 is the child
+
+                // From the child's extension context
+                iss.addKey(ExtensionContext.class, CONV, 1);
+                iss.addKey(LifecycleContext.class, PackedExtensionContext.MH_LIFECYCLE_CONTEXT, 1);
                 iss.addAnnoClassMapper(WireletSupply.class, WS, 1);
 
-                iss.addKey(LifecycleContext.class, PackedExtensionContext.MH_LIFECYCLE_CONTEXT, 1); // Its the child extension context..
+                // The child's extension instance
+                iss.addKey(sidecarType, 2);
 
-                // lifecycle context
                 li = iss.resolve(cp, linked);
             }
             return new ExtensionSidecarModel(this);

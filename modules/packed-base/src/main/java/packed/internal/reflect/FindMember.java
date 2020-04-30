@@ -145,6 +145,9 @@ class FindMember {
                         mh = MethodHandles.collectArguments(mh, is.size() + add, transformer);
                     } else {
                         // We use a provided value directly. Wrap it in an Optional if needed
+//                        Class<?> expectedArg = executable.type().parameterType(entry.indexes[0]);
+//                        System.out.println("EXPECTED ______________" + expectedArg);
+//                        System.out.println("ACTUAL ______________" + kk);
                         if (sd.isOptional()) {
                             mh = MethodHandles.filterArguments(mh, is.size() + add, FindMemberHelper.optionalOfTo(askingForType));
                         }
