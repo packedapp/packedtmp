@@ -72,9 +72,11 @@ public class TI extends BaseBundle {
 
         String foo;
 
-        MyExte(LifecycleContext lc) {
+        MyExte(LifecycleContext lc, InjectionContext ic) {
             System.out.println("Current state " + lc.current());
             System.out.println("Next state " + lc.nextStates());
+
+            System.out.println(ic.keys());
         }
 
         @DescendentAdded

@@ -47,12 +47,6 @@ import packed.internal.util.UncheckedThrowableFactory;
 //Maybe a little customization of error messages...
 //Maybe just a protected method that creates the message that can then be overridden.
 
-//Usage
-//Bundle <- No Args, with potential custom lookup object
-//OnHookBuilder <- No args
-//Extension <- Maybe PackedExtensionContext
-//ExtensionComposer <- No Arg
-
 //We want to create a ConstructorFinder instance that we reuse..
 //So lookup object is probably an optional argument
 //The rest is static, its not for injection, because we need

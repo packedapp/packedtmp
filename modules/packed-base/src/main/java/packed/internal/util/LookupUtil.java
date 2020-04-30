@@ -94,6 +94,10 @@ public final class LookupUtil {
         }
     }
 
+    public static MethodHandle findStaticEIIE(MethodHandles.Lookup caller, String name, MethodType type) {
+        return findStaticEIIE(caller, caller.lookupClass(), name, type);
+    }
+
     public static MethodHandle findStaticEIIE(MethodHandles.Lookup caller, Class<?> refc, String name, MethodType type) {
         try {
             return caller.findStatic(refc, name, type);

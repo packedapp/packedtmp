@@ -84,7 +84,7 @@ final class OpenClassMemberHelper {
                             }
                         case Modifier.PROTECTED:
                             if (types.putIfAbsent(new MethodEntry(m), packages) != null) {
-                                continue;
+                                continue; // method has been overridden by a super type
                             }
                             // otherwise fall-through
                         case Modifier.PRIVATE:

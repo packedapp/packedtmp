@@ -372,10 +372,10 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
         MethodHandle li;
     }
 
-    static final MethodHandle WS = LookupUtil.findStaticEIIE(MethodHandles.lookup(), ExtensionSidecarModel.class, "findWirelet",
+    static final MethodHandle WS = LookupUtil.findStaticEIIE(MethodHandles.lookup(), "findWirelet",
             MethodType.methodType(Object.class, PackedExtensionContext.class, Class.class));
 
-    static final MethodHandle CONV = LookupUtil.findStaticEIIE(MethodHandles.lookup(), ExtensionSidecarModel.class, "conv",
+    static final MethodHandle CONV = LookupUtil.findStaticEIIE(MethodHandles.lookup(), "conv",
             MethodType.methodType(ExtensionContext.class, PackedExtensionContext.class));
 
     static ExtensionContext conv(PackedExtensionContext ec) {
