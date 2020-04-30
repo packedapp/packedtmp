@@ -20,6 +20,6 @@ package packed.internal.reflect;
  */
 public class AnnotationResolutionStrategy {
 
-    private Class<?> baseType;
+    Class<?> baseType;
 
 }

@@ -19,7 +19,6 @@ import app.packed.artifact.App;
 import app.packed.container.BaseBundle;
 import app.packed.container.Wirelet;
 import app.packed.service.ServiceWirelets;
-import app.packed.sidecar.WireletSidecar;
 
 /**
  *
@@ -48,7 +47,7 @@ public class TI extends BaseBundle {
         }
     }
 
-    @WireletSidecar(inherited = true)
+    // @WireletSidecar(inherited = true)
     public static class MyTestWirelet implements Wirelet {
         String hejhej;
 

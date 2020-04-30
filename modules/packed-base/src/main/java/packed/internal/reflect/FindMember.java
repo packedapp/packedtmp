@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Key;
@@ -55,13 +56,12 @@ import packed.internal.util.UncheckedThrowableFactory;
 //We want to create a ConstructorFinder instance that we reuse..
 //So lookup object is probably an optional argument
 //The rest is static, its not for injection, because we need
-
-//So ConstructorFinder is probably a bad name..
 class FindMember {
 
-    final MethodType expected;
+    final MethodType input;
 
     final MethodHandle executable;
+
     final List<Parameter> parameters;
     final int add;
     final int[] permutationArray;
@@ -71,7 +71,7 @@ class FindMember {
 
     FindMember(OpenClass oc, Executable e, FunctionResolver aa) {
         this.aa = aa;
-        expected = aa.callSiteType();
+        input = aa.callSiteType();
 
         boolean isInstanceMethod = false;
 
@@ -83,6 +83,7 @@ class FindMember {
             executable = oc.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
             isInstanceMethod = !Modifier.isStatic(m.getModifiers());
 
+            // If Instance method callsite type must always have the receiver at index 0
             if (isInstanceMethod) {
                 if (m.getDeclaringClass() != aa.callSiteType().parameterType(0)) {
                     throw new IllegalArgumentException(
@@ -100,7 +101,7 @@ class FindMember {
         }
     }
 
-    MethodHandle find() {
+    MethodHandle findOld() {
         MethodHandle mh = executable;
         int injectionContext = -1;
 
@@ -109,14 +110,13 @@ class FindMember {
             ServiceDependency sd = ServiceDependency.fromVariable(ParameterDescriptor.from(p));
             Class<?> askingForType = sd.key().typeLiteral().rawType();
             int index;
+            MethodHandle collectMe = null;
 
             if (askingForType == InjectionContext.class) {
-                index = injectionContext = expected.parameterCount();
+                index = injectionContext = input.parameterCount();
             } else {
-
                 FunctionResolver.AnnoClassEntry anno = find(aa, p);
 
-                MethodHandle collectMe = null;
                 if (anno == null) {
                     Key<?> kk = Key.of(p.getType());
                     Entry entry = aa.keys.get(kk);
@@ -127,6 +127,7 @@ class FindMember {
                         }
                         // Else it just the argument being relayed directly
                     } else {
+                        // Vil gerne indsaette argument...
                         throw new UnresolvedDependencyException("" + kk + " Available keys = " + aa.keys.keySet());
                     }
                 } else {
@@ -135,28 +136,125 @@ class FindMember {
                     index = anno.index;
                     collectMe = tmp;
                 }
+
+            }
+            if (sd.isOptional()) {
                 if (collectMe != null) {
-                    if (sd.isOptional()) {
-                        // Need to cast return type of collect to Object in order to feed it to Optional.ofNullable(Object)
-                        collectMe = MethodHandles.explicitCastArguments(collectMe, collectMe.type().changeReturnType(Object.class));
-                        collectMe = MethodHandles.collectArguments(FindMemberHelper.OPTIONAL_OF_NULLABLE, 0, collectMe);
-                    }
-                    mh = MethodHandles.collectArguments(mh, i + add, collectMe);
+                    // Need to cast return type of collect to Object in order to feed it to Optional.ofNullable(Object)
+                    collectMe = MethodHandles.explicitCastArguments(collectMe, collectMe.type().changeReturnType(Object.class));
+                    collectMe = MethodHandles.collectArguments(FindMemberHelper.OPTIONAL_OF_NULLABLE, 0, collectMe);
+                } else {
+                    // Men den eksistere jo ikke endnu...
+                    mh = MethodHandles.collectArguments(mh, index, FindMemberHelper.OPTIONAL_OF_NULLABLE);
+                    // collectMe = MethodHandles.collectArguments(FindMemberHelper.OPTIONAL_OF_NULLABLE, i + add, mh);
                 }
             }
 
+            if (collectMe != null) {
+                mh = MethodHandles.collectArguments(mh, i + add, collectMe);
+            }
             permutationArray[i + add] = index;
         }
 
         if (injectionContext != -1) {
-            MethodType e2 = expected.appendParameterTypes(InjectionContext.class);
+            // Vi indsaetter den som et argument fordi, saa kan runtimen selv finde ud af genbruge den...
+            // Hvis flere argumenter efterspoerger den
+            MethodType e2 = input.appendParameterTypes(InjectionContext.class);
             mh = MethodHandles.permuteArguments(mh, e2, permutationArray);
+
+            // En senere implementation har jo faktisk brug for baade aa.keys.ketSet() og noget runtime context...
+            // Saa vi bliver vel noedt til at lave et partial object vi kan injecte. Hvorefter den saa bliver lavet
+            // med en MH
             PackedInjectionContext pic = new PackedInjectionContext(declaringClass, Set.copyOf(aa.keys.keySet()));
             mh = MethodHandles.insertArguments(mh, injectionContext, pic);
         } else {
-            mh = MethodHandles.permuteArguments(mh, expected, permutationArray);
+            System.out.println("Before permute " + mh.type());
+            mh = MethodHandles.permuteArguments(mh, input, permutationArray);
+            System.out.println("After permute " + mh.type());
         }
 
+        return mh;
+    }
+
+    enum Transformer {
+        NONE, OPTIONAL, PROVIDER, COMPOSITE;
+    }
+
+    MethodHandle find() {
+        MethodHandle mh = executable;
+        IntStack is = new IntStack();
+
+        // vi pusher den rigtig vaerdi vi skal bruge for alle af dem
+        // dvs is.push(index)
+        // Er der andre en InjectionContext der laver nyt?
+        // Taenker jeg ikke
+
+        for (int i = 0; i < parameters.size(); i++) {
+            Parameter p = parameters.get(i);
+            ServiceDependency sd = ServiceDependency.fromVariable(ParameterDescriptor.from(p));
+            Class<?> askingForType = sd.key().typeLiteral().rawType();
+            FunctionResolver.AnnoClassEntry anno = find(aa, p);
+
+            if (anno == null) {
+                Key<?> kk = sd.key();
+
+                // Injection Context
+                if (kk.equals(Key.of(InjectionContext.class))) {
+                    // TODO we have a non-constant injection context, when we have a dynamic injector
+
+                    // Vi just add it as a normal entry with no indexes, will be picked up in the next section
+                    PackedInjectionContext pic = new PackedInjectionContext(declaringClass, Set.copyOf(aa.keys.keySet()));
+                    aa.keys.putIfAbsent(kk, new Entry(new int[0], MethodHandles.constant(InjectionContext.class, pic)));
+                }
+
+                Entry entry = aa.keys.get(kk);
+                if (entry != null) {
+                    // Vi have an explicit registered service.
+
+                    if (entry.transformer != null) {
+                        MethodHandle transformer = entry.transformer;
+                        if (sd.isOptional()) {
+                            // We need to the return value of transformer to an optional
+                            transformer = MethodHandles.filterReturnValue(transformer, FindMemberHelper.optionalOfTo(askingForType));
+                        }
+                        mh = MethodHandles.collectArguments(mh, is.size() + add, transformer);
+                    } else {
+                        // We use a provided value directly. Wrap it in an Optional if needed
+                        if (sd.isOptional()) {
+                            mh = MethodHandles.filterArguments(mh, is.size() + add, FindMemberHelper.optionalOfTo(askingForType));
+                        }
+                    }
+                    is.push(entry.indexes);
+                } else {
+                    // Det er saa her, at vi kalder ind paa en virtuel injector...
+                    if (sd.isOptional()) {
+                        mh = MethodHandles.insertArguments(mh, is.size() + add, Optional.empty());
+                    } else {
+                        throw new UnresolvedDependencyException("" + kk + " Available keys = " + aa.keys.keySet());
+                    }
+                }
+            } else {
+                // Annnotation
+                MethodHandle tmp = MethodHandles.insertArguments(anno.mh, 1, askingForType);
+                tmp = MethodHandles.explicitCastArguments(tmp, MethodType.methodType(askingForType, tmp.type().parameterArray()[0]));
+                // System.out.println(mh.type());
+                if (sd.isOptional()) {
+                    // We need to the return value of transformer to an optional, wirelet may be null
+                    tmp = MethodHandles.filterReturnValue(tmp, FindMemberHelper.optionalOfNullableTo(askingForType));
+                }
+
+                mh = MethodHandles.filterArguments(mh, is.size() + add, tmp);
+                is.push(anno.index);
+            }
+        }
+
+        // Providere.. Der binder man en MethodHandle
+
+        if (add == 1) {
+            mh = MethodHandles.permuteArguments(mh, input, is.toArrayAdd0());
+        } else {
+            mh = MethodHandles.permuteArguments(mh, input, is.toArray());
+        }
         return mh;
     }
 

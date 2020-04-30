@@ -38,7 +38,6 @@ import app.packed.sidecar.Expose;
 import app.packed.sidecar.ExtensionSidecar;
 import app.packed.sidecar.PostSidecar;
 import packed.internal.component.PackedSingletonConfiguration;
-import packed.internal.container.TI;
 import packed.internal.container.TI.MyTestWirelet;
 import packed.internal.container.WireletList;
 import packed.internal.inject.ServiceDependency;
@@ -84,7 +83,7 @@ public final class ServiceExtension extends Extension {
     final ServiceExtensionNode node;
 
     /** Should never be initialized by users. */
-    ServiceExtension(ExtensionContext context, @WireletSupply MyTestWirelet foo) {
+    ServiceExtension(ExtensionContext context, @WireletSupply Optional<MyTestWirelet> foo) {
         this.node = new ServiceExtensionNode(context);
 
         System.out.println("Wirelet foo " + foo);
@@ -381,16 +380,14 @@ public final class ServiceExtension extends Extension {
     }
 
     @DescendentAdded
-    void foo(@WireletSupply Optional<TI.MyTestWirelet> wirelets, ServiceExtension se, InjectionContext ic, ExtensionContext ec) {
+    void foo(ServiceExtension se, InjectionContext ic, ExtensionContext ec, @WireletSupply Optional<MyTestWirelet> mt) {
         node.link(se.node);
-        if (wirelets.isEmpty()) {
-            throw new Error();
-        }
-        System.out.println("Got wirelets " + wirelets);
-        System.out.println("This " + this + " child = " + se);
-        System.out.println("GotIt " + ic.keys());
-
-        System.out.println(context().containerPath());
-        System.out.println(ec.containerPath());
+        System.out.println("MT " + mt);
+//        // System.out.println("Got wirelets " + wirelets);
+//        System.out.println("This " + this + " child = " + se);
+//        System.out.println("GotIt " + ic.keys());
+//
+//        System.out.println(context().containerPath());
+//        System.out.println(ec.containerPath());
     }
 }

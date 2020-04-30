@@ -15,6 +15,8 @@
  */
 package app.packed.inject;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * A provider of object instances.
  */
@@ -30,4 +32,23 @@ public interface Provider<T> {
      *             if an exception is encountered while providing an instance
      */
     T provide();
+
+    static <T> Provider<T> of(T t) {
+        return new ConstantProvider<>(t);
+    }
+}
+
+class ConstantProvider<T> implements Provider<T> {
+
+    private final T t;
+
+    public ConstantProvider(T t) {
+        this.t = requireNonNull(t);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public T provide() {
+        return t;
+    }
 }

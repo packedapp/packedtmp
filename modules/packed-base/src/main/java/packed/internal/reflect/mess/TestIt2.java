@@ -19,39 +19,37 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.MethodType;
+import java.util.Optional;
 
 import app.packed.inject.InjectionContext;
 import packed.internal.reflect.FunctionResolver;
 import packed.internal.reflect.OpenClass;
+import packed.internal.reflect.mhadventures.MH1;
 
 /**
  *
  */
-public class TestIt {
+public class TestIt2 {
 
-    TestIt(Data data, InjectionContext ic, @X String sd, Data d2, InjectionContext i3, String s) {
-        System.out.println(ic);
-        System.out.println(sd);
+    TestIt2(InjectionContext icd, Optional<String> s, String s2, Integer l4, Optional<Long> ol, Optional<InjectionContext> ic) {
+        System.out.println(s + " - " + s2 + " " + l4);
+        System.out.println(ol);
+        System.out.println(ic.get().keys());
+        System.out.println(icd == ic.get());
     }
 
     public static void main(String[] args) throws Throwable {
-        MethodHandle mhhh = MethodHandles.lookup().findStatic(TestIt.class, "dd", MethodType.methodType(Object.class, Data.class, Class.class));
+        FunctionResolver aa = FunctionResolver.of(TestIt2.class, String.class);
+        // aa.addKey(String.class, 0);
+        aa.addKey(String.class, MH1.DUP, 0);
+        aa.addKey(Integer.class, MH1.LENGTH, 0);
 
-        Lookup ll = MethodHandles.privateLookupIn(Data.class, MethodHandles.lookup());
+        // aa.addKey(String.class, 0);
 
-        MethodHandle mhhhh = ll.findSpecial(Data.class, "tt", MethodType.methodType(String.class), Data.class);
-
-        FunctionResolver aa = FunctionResolver.of(TestIt.class, Data.class);
-        aa.addKey(Data.class, 0);
-        aa.addKey(String.class, mhhhh, 0);
-        aa.addAnnoClassMapper(X.class, mhhh, 0);
-
-        MethodHandle mh = new OpenClass(MethodHandles.lookup(), TestIt.class, false).findConstructor(aa);
+        MethodHandle mh = new OpenClass(MethodHandles.lookup(), TestIt2.class, false).findConstructor(aa);
         System.out.println(mh);
 
-        TestIt it = (TestIt) mh.invoke(new Data());
+        TestIt2 it = (TestIt2) mh.invoke("asdsd");
         System.out.println(it);
     }
 

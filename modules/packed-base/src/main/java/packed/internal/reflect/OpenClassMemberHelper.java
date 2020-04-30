@@ -24,7 +24,7 @@ import java.util.HashSet;
 
 import packed.internal.util.ThrowableConsumer;
 
-/** Processes all fields and methods on a specified class. */
+/** Processes all fields and methods on a class. */
 final class OpenClassMemberHelper {
 
     /** We never process any classes that are located in java.base. */
