@@ -38,6 +38,7 @@ import app.packed.sidecar.Expose;
 import app.packed.sidecar.ExtensionSidecar;
 import app.packed.sidecar.PostSidecar;
 import packed.internal.component.PackedSingletonConfiguration;
+import packed.internal.container.TI;
 import packed.internal.container.TI.MyTestWirelet;
 import packed.internal.container.WireletList;
 import packed.internal.inject.ServiceDependency;
@@ -380,8 +381,11 @@ public final class ServiceExtension extends Extension {
     }
 
     @DescendentAdded
-    void foo(@WireletSupply Optional<MyTestWirelet> wirelets, ServiceExtension se, InjectionContext ic, ExtensionContext ec) {
+    void foo(@WireletSupply Optional<TI.MyTestWirelet> wirelets, ServiceExtension se, InjectionContext ic, ExtensionContext ec) {
         node.link(se.node);
+        if (wirelets.isEmpty()) {
+            throw new Error();
+        }
         System.out.println("Got wirelets " + wirelets);
         System.out.println("This " + this + " child = " + se);
         System.out.println("GotIt " + ic.keys());

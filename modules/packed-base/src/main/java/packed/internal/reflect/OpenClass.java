@@ -83,7 +83,7 @@ public final class OpenClass {
 
     public MethodHandle findConstructor(FunctionResolver dim) {
         Constructor<?> constructor = FindInjectableConstructor.find(dim.callSiteType().returnType());
-        return new FindMember(this, constructor, dim).find(this, constructor, dim);
+        return new FindMember(this, constructor, dim).find();
     }
 
     public <T extends Throwable> void findMethods(ThrowableConsumer<? super Method, T> methodConsumer) throws T {

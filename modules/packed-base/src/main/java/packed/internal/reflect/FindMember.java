@@ -65,8 +65,12 @@ class FindMember {
     final List<Parameter> parameters;
     final int add;
     final int[] permutationArray;
+    final FunctionResolver aa;
+
+    final Class<?> declaringClass;
 
     FindMember(OpenClass oc, Executable e, FunctionResolver aa) {
+        this.aa = aa;
         expected = aa.callSiteType();
 
         boolean isInstanceMethod = false;
@@ -86,7 +90,7 @@ class FindMember {
                 }
             }
         }
-
+        this.declaringClass = e.getDeclaringClass();
         parameters = List.of(e.getParameters());
 
         add = isInstanceMethod ? 1 : 0;
@@ -96,47 +100,19 @@ class FindMember {
         }
     }
 
-    MethodHandle find(OpenClass oc, Executable e, FunctionResolver aa) {
-        final MethodType expected = aa.callSiteType();
-
-        boolean isInstanceMethod = false;
-
-        // Setup MethodHandle for constructor or method
-        MethodHandle mh;
-        if (e instanceof Constructor) {
-            mh = oc.unreflectConstructor((Constructor<?>) e, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-        } else {
-            Method m = (Method) e;
-            mh = oc.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-            isInstanceMethod = !Modifier.isStatic(m.getModifiers());
-
-            if (isInstanceMethod) {
-                if (m.getDeclaringClass() != aa.callSiteType().parameterType(0)) {
-                    throw new IllegalArgumentException(
-                            "First signature parameter type must be " + m.getDeclaringClass() + " was " + aa.callSiteType().parameterType(0));
-                }
-            }
-        }
-
-        List<Parameter> parameters = List.of(e.getParameters());
-
-        int add = isInstanceMethod ? 1 : 0;
-        int[] permutationArray = new int[parameters.size() + add];
-        if (isInstanceMethod) {
-            permutationArray[0] = 0;
-        }
-
+    MethodHandle find() {
+        MethodHandle mh = executable;
         int injectionContext = -1;
-        // Nej vi binder nogen til constant... Saa det er ikke sikkert...
 
         for (int i = 0; i < parameters.size(); i++) {
             Parameter p = parameters.get(i);
+            ServiceDependency sd = ServiceDependency.fromVariable(ParameterDescriptor.from(p));
+            Class<?> askingForType = sd.key().typeLiteral().rawType();
             int index;
-            if (p.getType() == InjectionContext.class) {
+
+            if (askingForType == InjectionContext.class) {
                 index = injectionContext = expected.parameterCount();
             } else {
-                ServiceDependency sd = ServiceDependency.fromVariable(ParameterDescriptor.from(p));
-                Class<?> raw = sd.key().typeLiteral().rawType();
 
                 FunctionResolver.AnnoClassEntry anno = find(aa, p);
 
@@ -149,16 +125,13 @@ class FindMember {
                         if (entry.transformer != null) {
                             collectMe = entry.transformer;
                         }
+                        // Else it just the argument being relayed directly
                     } else {
                         throw new UnresolvedDependencyException("" + kk + " Available keys = " + aa.keys.keySet());
                     }
                 } else {
-                    MethodHandle tmp = MethodHandles.insertArguments(anno.mh, 1, raw);
-                    tmp = MethodHandles.explicitCastArguments(tmp, MethodType.methodType(raw, tmp.type().parameterArray()[0]));
-                    System.out.println("----");
-                    System.out.println(mh.type());
-                    System.out.println(tmp.type());
-                    System.out.println(i + " " + anno.index);
+                    MethodHandle tmp = MethodHandles.insertArguments(anno.mh, 1, askingForType);
+                    tmp = MethodHandles.explicitCastArguments(tmp, MethodType.methodType(askingForType, tmp.type().parameterArray()[0]));
                     index = anno.index;
                     collectMe = tmp;
                 }
@@ -171,13 +144,14 @@ class FindMember {
                     mh = MethodHandles.collectArguments(mh, i + add, collectMe);
                 }
             }
+
             permutationArray[i + add] = index;
         }
 
         if (injectionContext != -1) {
             MethodType e2 = expected.appendParameterTypes(InjectionContext.class);
             mh = MethodHandles.permuteArguments(mh, e2, permutationArray);
-            PackedInjectionContext pic = new PackedInjectionContext(e.getDeclaringClass(), Set.copyOf(aa.keys.keySet()));
+            PackedInjectionContext pic = new PackedInjectionContext(declaringClass, Set.copyOf(aa.keys.keySet()));
             mh = MethodHandles.insertArguments(mh, injectionContext, pic);
         } else {
             mh = MethodHandles.permuteArguments(mh, expected, permutationArray);

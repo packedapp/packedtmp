@@ -86,7 +86,7 @@ public final class FunctionResolver {
     }
 
     public MethodHandle resolve(OpenClass oc, Executable e) {
-        return new FindMember(oc, e, this).find(oc, e, this);
+        return new FindMember(oc, e, this).find();
     }
 
     public static FunctionResolver of(Class<?> returnType, Class<?>... parameterTypes) {
