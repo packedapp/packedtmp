@@ -18,6 +18,8 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -32,10 +34,17 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 import app.packed.inject.Factory;
+import app.packed.lifecycle.LifecycleContext;
+import app.packed.lifecycle.impl.LifecycleContextHelper;
 import packed.internal.moduleaccess.ModuleAccess;
+import packed.internal.util.LookupUtil;
 
 /** The default implementation of {@link ExtensionContext} with addition methods only available in app.packed.base. */
 public final class PackedExtensionContext implements ExtensionContext, Comparable<PackedExtensionContext> {
+
+    /** A MethodHandle for {@link #lifecycle()}. */
+    public static final MethodHandle MH_LIFECYCLE_CONTEXT = LookupUtil.findVirtualEIIE(MethodHandles.lookup(), "lifecycle",
+            MethodType.methodType(LifecycleContext.class));
 
     // Indicates that a bundle has already been configured...
     public static final ExtensionContext CONFIGURED = new PackedExtensionContext();
@@ -184,6 +193,16 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
     public void onConfigured() {
         model.invokePostSidecarAnnotatedMethods(ExtensionSidecarModel.ON_MAIN, extension);
         isConfigured = true;
+    }
+
+    LifecycleContext lifecycle() {
+        return new LifecycleContextHelper.SimpleLifecycleContext(ExtensionSidecarModel.Builder.STM.toArray()) {
+
+            @Override
+            protected int state() {
+                return 1;
+            }
+        };
     }
 
     /**

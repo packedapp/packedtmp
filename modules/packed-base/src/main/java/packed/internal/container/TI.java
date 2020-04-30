@@ -17,7 +17,11 @@ package packed.internal.container;
 
 import app.packed.artifact.App;
 import app.packed.container.BaseBundle;
+import app.packed.container.DescendentAdded;
+import app.packed.container.Extension;
 import app.packed.container.Wirelet;
+import app.packed.inject.InjectionContext;
+import app.packed.lifecycle.LifecycleContext;
 import app.packed.service.ServiceWirelets;
 
 /**
@@ -32,9 +36,11 @@ public class TI extends BaseBundle {
     /** {@inheritDoc} */
     @Override
     protected void compose() {
-        System.out.println("Parent = " + service());
 
         provideConstant(123L);
+
+        use(MyExte.class).foo = "Gondor";
+
         link(new FFF(), ServiceWirelets.provide("const"));
     }
 
@@ -44,6 +50,7 @@ public class TI extends BaseBundle {
         @Override
         protected void compose() {
             provideConstant("HejHej");
+            System.out.println(use(MyExte.class).foo);
         }
     }
 
@@ -58,6 +65,21 @@ public class TI extends BaseBundle {
         @Override
         public String toString() {
             return hejhej;
+        }
+    }
+
+    public static class MyExte extends Extension {
+
+        String foo;
+
+        MyExte(LifecycleContext lc) {
+            System.out.println("Current state " + lc.current());
+            System.out.println("Next state " + lc.nextStates());
+        }
+
+        @DescendentAdded
+        public void ff(InjectionContext ic, MyExte child) {
+            child.foo = " Child of " + foo;
         }
     }
 }

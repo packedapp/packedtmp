@@ -38,6 +38,7 @@ import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSupply;
 import app.packed.hook.OnHook;
+import app.packed.lifecycle.LifecycleContext;
 import app.packed.sidecar.ExtensionSidecar;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
@@ -270,7 +271,7 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
     static final class Builder extends SidecarModel.Builder {
 
         /** Meta data about the extension sidecar. */
-        private static final SidecarTypeMeta STM = new SidecarTypeMeta(ExtensionSidecar.class, ExtensionSidecar.INSTANTIATION, ExtensionSidecar.ON_PREEMBLE,
+        public static final SidecarTypeMeta STM = new SidecarTypeMeta(ExtensionSidecar.class, ExtensionSidecar.INSTANTIATION, ExtensionSidecar.ON_PREEMBLE,
                 ExtensionSidecar.CHILDREN_CONFIGURED, ExtensionSidecar.GUESTS_CONFIGURED);
 
         /** A list of dependencies on other extensions. */
@@ -314,7 +315,8 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
             DescendentAdded da = m.getAnnotation(DescendentAdded.class);
             if (da != null) {
                 if (linked != null) {
-                    throw new IllegalStateException("Multiple methods annotated with " + DescendentAdded.class + " on " + m.getDeclaringClass());
+                    throw new IllegalStateException(
+                            "Multiple methods annotated with " + DescendentAdded.class + " on " + m.getDeclaringClass() + ", only 1 allowed.");
                 }
                 linked = m;
             }
@@ -339,22 +341,24 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
                 }
             }
 
-            FunctionResolver is = FunctionResolver.of(sidecarType, ExtensionContext.class);
-            is.addKey(ExtensionContext.class, 0);
+            // Use PackedExtensionContext instead...
+            FunctionResolver is = FunctionResolver.of(sidecarType, PackedExtensionContext.class);
+            is.addKey(LifecycleContext.class, PackedExtensionContext.MH_LIFECYCLE_CONTEXT, 0); // Its the child extension context..
+            is.addKey(ExtensionContext.class, CONV, 0);
             is.addAnnoClassMapper(WireletSupply.class, WS, 0);
             OpenClass cp = prep(is);
             this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
             if (linked != null) {
 
-                FunctionResolver iss = FunctionResolver.of(void.class, sidecarType, ExtensionContext.class, sidecarType);
-                iss.addKey(ExtensionContext.class, 1); // Its the child extension context..
+                FunctionResolver iss = FunctionResolver.of(void.class, sidecarType, PackedExtensionContext.class, sidecarType);
+                iss.addKey(ExtensionContext.class, CONV, 1); // Its the child extension context..
                 iss.addKey(sidecarType, 2); // 0 is the actual sidecar we are invoking the method on, 2 is the child
                 iss.addAnnoClassMapper(WireletSupply.class, WS, 1);
 
+                iss.addKey(LifecycleContext.class, PackedExtensionContext.MH_LIFECYCLE_CONTEXT, 1); // Its the child extension context..
+
                 // lifecycle context
                 li = iss.resolve(cp, linked);
-
-//                DescendentAdded da = linked.getAnnotation(DescendentAdded.class);
             }
             return new ExtensionSidecarModel(this);
         }
@@ -363,10 +367,16 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
     }
 
     static final MethodHandle WS = LookupUtil.findStaticEIIE(MethodHandles.lookup(), ExtensionSidecarModel.class, "findWirelet",
-            MethodType.methodType(Object.class, ExtensionContext.class, Class.class));
+            MethodType.methodType(Object.class, PackedExtensionContext.class, Class.class));
 
-    static Object findWirelet(ExtensionContext ec, Class<? extends Wirelet> wireletType) {
-        PackedExtensionContext pec = (PackedExtensionContext) ec;
-        return pec.container().wireletAny(wireletType).orElse(null);
+    static final MethodHandle CONV = LookupUtil.findStaticEIIE(MethodHandles.lookup(), ExtensionSidecarModel.class, "conv",
+            MethodType.methodType(ExtensionContext.class, PackedExtensionContext.class));
+
+    static ExtensionContext conv(PackedExtensionContext ec) {
+        return ec;
+    }
+
+    static Object findWirelet(PackedExtensionContext ec, Class<? extends Wirelet> wireletType) {
+        return ec.container().wireletAny(wireletType).orElse(null);
     }
 }

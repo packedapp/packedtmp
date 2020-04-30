@@ -65,6 +65,10 @@ public final class LookupUtil {
         return lookup.lookupModes() == DEFAULT_LOOKUP_MODES && (PREVIOUS_LOOKUP_CLASS == null || previousLookupClass(lookup) == null);
     }
 
+    public static MethodHandle findVirtualEIIE(MethodHandles.Lookup caller, String name, MethodType type) {
+        return findVirtualEIIE(caller, caller.lookupClass(), name, type);
+    }
+
     /**
      * A utility method that wraps any {@link ReflectiveOperationException} thrown by
      * {@link Lookup#findVirtual(Class, String, MethodType)} in an {@link ExceptionInInitializerError}.

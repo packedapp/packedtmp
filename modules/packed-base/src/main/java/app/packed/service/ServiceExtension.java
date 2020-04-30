@@ -85,8 +85,6 @@ public final class ServiceExtension extends Extension {
     /** Should never be initialized by users. */
     ServiceExtension(ExtensionContext context, @WireletSupply Optional<MyTestWirelet> foo) {
         this.node = new ServiceExtensionNode(context);
-
-        System.out.println("Wirelet foo " + foo);
     }
 
     <T> ServiceConfiguration<T> addOptional(Class<T> optional) {

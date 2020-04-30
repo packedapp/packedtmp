@@ -45,4 +45,8 @@ public final class SidecarTypeMeta {
     int numberOfLifecycleStates() {
         return lifecycleStates.length;
     }
+
+    public String[] toArray() {
+        return lifecycleStates.clone();
+    }
 }
