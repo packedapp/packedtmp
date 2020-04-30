@@ -16,6 +16,7 @@
 package packed.internal.container;
 
 import app.packed.artifact.App;
+import app.packed.artifact.SystemImage;
 import app.packed.container.BaseBundle;
 import app.packed.container.DescendentAdded;
 import app.packed.container.Extension;
@@ -30,7 +31,24 @@ import app.packed.service.ServiceWirelets;
 public class TI extends BaseBundle {
 
     public static void main(String[] args) {
+        long start = System.nanoTime();
         App.of(new TI(), new MyTestWirelet("fofoof XXXXXXXXXX"));
+        long stop = System.nanoTime();
+        System.out.println(((stop - start) / 1000000) + " ms");
+        App.of(new TI(), new MyTestWirelet("fofoof XXXXXXXXXX"));
+        long stop2 = System.nanoTime();
+        System.out.println(((stop2 - stop) / 1000) + " us");
+
+        App.of(new TI(), new MyTestWirelet("fofoof XXXXXXXXXX"));
+        long stop3 = System.nanoTime();
+        System.out.println(((stop3 - stop2) / 1000) + " us");
+
+        SystemImage si = SystemImage.of(new TI(), new MyTestWirelet("fofoof XXXXXXXXXX"));
+        stop3 = System.nanoTime();
+        App.of(si, new MyTestWirelet("fofoof XXXXXXXXXX"));
+        long stop4 = System.nanoTime();
+        System.out.println(((stop4 - stop3) / 1000) + " us");
+
     }
 
     /** {@inheritDoc} */
@@ -50,7 +68,7 @@ public class TI extends BaseBundle {
         @Override
         protected void compose() {
             provideConstant("HejHej");
-            System.out.println(use(MyExte.class).foo);
+            // System.out.println(use(MyExte.class).foo);
         }
     }
 
@@ -73,10 +91,10 @@ public class TI extends BaseBundle {
         String foo;
 
         MyExte(LifecycleContext lc, InjectionContext ic) {
-            System.out.println("Current state " + lc.current());
-            System.out.println("Next state " + lc.nextStates());
+            // System.out.println("Current state " + lc.current());
+            // System.out.println("Next state " + lc.nextStates());
 
-            System.out.println(ic.keys());
+            // System.out.println(ic.keys());
         }
 
         @DescendentAdded

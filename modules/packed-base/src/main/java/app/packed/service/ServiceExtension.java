@@ -380,7 +380,7 @@ public final class ServiceExtension extends Extension {
     @DescendentAdded
     void foo(ServiceExtension se, InjectionContext ic, ExtensionContext ec, @WireletSupply Optional<MyTestWirelet> mt) {
         node.link(se.node);
-        System.out.println("MT " + mt);
+        // System.out.println("MT " + mt);
 //        // System.out.println("Got wirelets " + wirelets);
 //        System.out.println("This " + this + " child = " + se);
 //        System.out.println("GotIt " + ic.keys());

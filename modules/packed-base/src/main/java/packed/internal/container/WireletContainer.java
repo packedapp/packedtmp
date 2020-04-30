@@ -73,7 +73,6 @@ public final class WireletContainer {
                 }
                 return wpc;
             })).wirelets.add(w);
-            System.out.println("CHECK");
         } else if (w instanceof ContainerWirelet) {
             // Hmm skulle vi vente til alle wirelets er succesfuld processeret???
             // Altsaa hvad hvis den fejler.... Altsaa taenker ikke den maa lavere aendringer i containeren.. kun i wirelet context
