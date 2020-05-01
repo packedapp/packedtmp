@@ -288,7 +288,7 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
                 // If not just parent link keep checking up until root/
                 if (parentExtension != null) {
                     try {
-                        model.parentExtensionLinked.invoke(parentExtension.extension, pec, e);
+                        model.parentExtensionLinked.invokeExact(parentExtension.extension, pec, e);
                     } catch (Throwable e1) {
                         e1.printStackTrace();
                     }

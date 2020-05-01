@@ -86,7 +86,7 @@ public abstract class SidecarModel extends Model {
         public MethodHandle builderMethod;
 
         /** The constructor used to create a new extension instance. */
-        private MethodHandle constructor;
+        protected MethodHandle constructor;
 
         // Need to check that a contract never belongs to two extension.
         // Also, I think we want to do this atomically, so that we do not have half an extension registered somewhere.

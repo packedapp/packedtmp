@@ -78,12 +78,12 @@ class MethodHandleBuilderHelper {
             isInstanceMethod = !Modifier.isStatic(m.getModifiers());
 
             // If Instance method callsite type must always have the receiver at index 0
-            if (isInstanceMethod) {
-                if (m.getDeclaringClass() != aa.targetType().parameterType(0)) {
-                    throw new IllegalArgumentException(
-                            "First signature parameter type must be " + m.getDeclaringClass() + " was " + aa.targetType().parameterType(0));
-                }
-            }
+//            if (isInstanceMethod) {
+//                if (m.getDeclaringClass() != aa.targetType().parameterType(0)) {
+//                    throw new IllegalArgumentException(
+//                            "First signature parameter type must be " + m.getDeclaringClass() + " was " + aa.targetType().parameterType(0));
+//                }
+//            }
         }
         this.declaringClass = e.getDeclaringClass();
         parameters = List.of(e.getParameters());
@@ -145,12 +145,12 @@ class MethodHandleBuilderHelper {
 
                         // Upcast if needed, I don't think we need to do this if we create an optional
                         if (actual != expected) {
-                            if (actual.isAssignableFrom(expected)) {
-                                // System.out.println("Before " + mh);
-                                MethodType newType = mh.type().changeParameterType(is.size() + add, expected);
-                                mh = mh.asType(newType);
-                                // System.out.println("After " + mh);
-                            } // else should fail...
+                            // if (actual.isAssignableFrom(expected)) {
+                            // System.out.println("Before " + mh);
+                            MethodType newType = mh.type().changeParameterType(is.size() + add, expected);
+                            mh = mh.asType(newType);
+                            // System.out.println("After " + mh);
+                            // } // else should fail...
                         }
                         if (sd.isOptional()) {
                             mh = MethodHandles.filterArguments(mh, is.size() + add, MethodHandleBuilderStatics.optionalOfTo(askingForType));
@@ -187,6 +187,13 @@ class MethodHandleBuilderHelper {
         // Providere.. Der binder man en MethodHandle
 
         if (add == 1) {
+            // We may need to cast the receiver
+            if (input.parameterType(0) != mh.type().parameterType(0)) {
+                mh = mh.asType(mh.type().changeParameterType(0, input.parameterType(0)));
+            }
+//              throw new IllegalArgumentException(
+//                      "First signature parameter type must be " + m.getDeclaringClass() + " was " + aa.targetType().parameterType(0));
+//          }
             mh = MethodHandles.permuteArguments(mh, input, is.toArrayAdd0());
         } else {
             mh = MethodHandles.permuteArguments(mh, input, is.toArray());

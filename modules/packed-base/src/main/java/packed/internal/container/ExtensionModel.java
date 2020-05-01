@@ -41,6 +41,7 @@ import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
 import packed.internal.reflect.MethodHandleBuilder;
 import packed.internal.reflect.OpenClass;
+import packed.internal.sidecar.MethodHandleUtil;
 import packed.internal.sidecar.SidecarModel;
 import packed.internal.sidecar.SidecarTypeMeta;
 import packed.internal.util.StringFormatter;
@@ -202,7 +203,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         // Time goes from around 1000 ns to 12 ns when we cache the method handle.
         // With LambdaMetafactory wrapped in a supplier we can get down to 6 ns
         try {
-            return (Extension) constructor.invoke(context);
+            return (Extension) constructor.invokeExact(context);
         } catch (Throwable e) {
 //            ThrowableUtil.throwIfUnchecked(e);
             throw new InternalExtensionException("Instantiation of Extension failed", e);
@@ -341,11 +342,12 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
             mhbConstructor.addAnnoClassMapper(WireletSupply.class, PackedExtensionContext.FIND_WIRELET, 0);
 
             OpenClass cp = prep(mhbConstructor);
+            constructor = MethodHandleUtil.castReturnType(constructor, Extension.class); // need to upcast to extension to invokeExact
             this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
 
             if (linked != null) {
                 // ancestor extension, descendant extension context, descendant extension
-                MethodHandleBuilder iss = MethodHandleBuilder.of(void.class, sidecarType, PackedExtensionContext.class, sidecarType);
+                MethodHandleBuilder iss = MethodHandleBuilder.of(void.class, Extension.class, PackedExtensionContext.class, Extension.class);
 
                 // From the child's extension context
                 iss.addKey(ExtensionContext.class, 1);
