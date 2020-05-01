@@ -16,7 +16,8 @@
 package app.packed.inject;
 
 /** This exception is typically thrown when a dependency could not be resolved. */
-public class UnresolvedDependencyException extends RuntimeException {
+
+public class UnsatisfiableDependencyException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
@@ -29,7 +30,7 @@ public class UnresolvedDependencyException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public UnresolvedDependencyException(String message) {
+    public UnsatisfiableDependencyException(String message) {
         super(message);
     }
 
@@ -43,7 +44,7 @@ public class UnresolvedDependencyException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public UnresolvedDependencyException(String message, Throwable cause) {
+    public UnsatisfiableDependencyException(String message, Throwable cause) {
         super(message, cause);
     }
 }

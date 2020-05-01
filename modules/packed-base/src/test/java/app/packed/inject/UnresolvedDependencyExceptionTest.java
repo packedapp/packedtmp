@@ -21,15 +21,15 @@ import org.junit.jupiter.api.Test;
 
 import testutil.stubs.Throwables.Exception1;
 
-/** Tests {@link UnresolvedDependencyException}. */
+/** Tests {@link UnsatisfiableDependencyException}. */
 public class UnresolvedDependencyExceptionTest {
 
     /** Tests the various constructors. */
     @Test
     public void test() {
-        assertThat(new UnresolvedDependencyException("foo")).hasNoCause();
-        assertThat(new UnresolvedDependencyException("foo")).hasMessage("foo");
-        assertThat(new UnresolvedDependencyException("foobar", Exception1.INSTANCE)).hasCause(Exception1.INSTANCE);
-        assertThat(new UnresolvedDependencyException("foobar", Exception1.INSTANCE)).hasMessage("foobar");
+        assertThat(new UnsatisfiableDependencyException("foo")).hasNoCause();
+        assertThat(new UnsatisfiableDependencyException("foo")).hasMessage("foo");
+        assertThat(new UnsatisfiableDependencyException("foobar", Exception1.INSTANCE)).hasCause(Exception1.INSTANCE);
+        assertThat(new UnsatisfiableDependencyException("foobar", Exception1.INSTANCE)).hasMessage("foobar");
     }
 }

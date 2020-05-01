@@ -39,27 +39,23 @@ public @interface ExtensionSidecar {
      * <p>
      * 
      * An extension sidecar event that the sidecar has been successfully instantiated by the runtime. But the instance has
-     * not yet been returned to the user. The next event will be {@link #ON_PREEMBLE}.
+     * not yet been returned to the user. The next event will be {@link #NORMAL_USAGE}.
      */
-    String INSTANTIATION = "Instantiation";
+    String INSTANTIATING = "Instantiating";
 
-    /** All components and extensions have been added and configured. The next event will be {@link #CHILDREN_CONFIGURED} */
-    String ON_PREEMBLE = "on_premble";
+    /**
+     * All components and extensions have been added and configured. The next event will be {@link #CHILDREN_DEFINITIONS}
+     */
+    String NORMAL_USAGE = "NormalUsage";
 
     /**
      * Any child containers located in the same artifact will be has been defined. Typically using
-     * {@link Bundle#link(Bundle, app.packed.container.Wirelet...)}. The next event will be {@link #GUESTS_CONFIGURED}.
+     * {@link Bundle#link(Bundle, app.packed.container.Wirelet...)}. The next event will be {@link #GUESTS_DEFINITIONS}.
      */
-    // Kan vi have a List<ExtensionType> <--- injected into the method....
-    // Maybe you can have the parent injected if any... into any methods???
-    // Den er bare irriterende fordi InjectionContext er per instans....
-    // Saa paa en eller anden maade, kan vi alligevel ikke lave den til en konstant...
-
-    // Maaske kan vi bare faa injected en topology here...
-    String CHILDREN_CONFIGURED = "ChildrenConfigured";
+    String CHILDREN_DEFINITIONS = "ChildrenDefinitions";
 
     /** This is the final event. This event will be invoked even if no guests are defined. */
-    String GUESTS_CONFIGURED = "GuestsConfigured";
+    String GUESTS_DEFINITIONS = "GuestsDefinitions";
 
     /**
      * Other extensions that an extension may use (but do not have to). This need not include transitive dependencies

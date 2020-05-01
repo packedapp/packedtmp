@@ -109,6 +109,8 @@ public class TI extends BaseBundle {
         String foo;
 
         MyExte(LifecycleContext lc, InjectionContext ic, @WireletSupply MyTestWirelet wc) {
+            System.out.println("State " + lc.current());
+
             // System.out.println("Current state " + lc.current());
             // System.out.println("Next state " + lc.nextStates());
 
@@ -120,14 +122,14 @@ public class TI extends BaseBundle {
             child.foo = " Child of " + foo;
         }
 
-        @PostSidecar(ExtensionSidecar.ON_PREEMBLE)
+        @PostSidecar(ExtensionSidecar.NORMAL_USAGE)
         protected void foo(ExtensionContext ec) {
             System.out.println(ec.containerPath());
         }
 
-        @PostSidecar(ExtensionSidecar.ON_PREEMBLE)
-        private static void foodd() {
-            System.out.println("STUF");
+        @PostSidecar(ExtensionSidecar.NORMAL_USAGE)
+        private static void foodd(InjectionContext ic) {
+            System.out.println("Available Services " + ic.keys());
         }
 
     }

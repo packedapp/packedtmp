@@ -52,7 +52,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
 
     @ExtensionSidecar(dependencies = Ex2.class)
     static final class Ex1 extends Extension {
-        @PostSidecar(ExtensionSidecar.INSTANTIATION)
+        @PostSidecar(ExtensionSidecar.INSTANTIATING)
         void on() {
             use(Ex2.class);
         }
@@ -61,7 +61,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
     @ExtensionSidecar(dependencies = Ex3.class)
     static final class Ex2 extends Extension {
 
-        @PostSidecar(ExtensionSidecar.INSTANTIATION)
+        @PostSidecar(ExtensionSidecar.INSTANTIATING)
         void on() {
             use(Ex3.class);
         }
@@ -74,7 +74,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
     @ExtensionSidecar(dependencies = ExRecursive2.class)
     static final class ExRecursive1 extends Extension {
 
-        @PostSidecar(ExtensionSidecar.INSTANTIATION)
+        @PostSidecar(ExtensionSidecar.INSTANTIATING)
         void on() {
             use(ExRecursive2.class);
         }
@@ -82,7 +82,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
 
     static final class ExRecursive2 extends Extension {
 
-        @PostSidecar(ExtensionSidecar.INSTANTIATION)
+        @PostSidecar(ExtensionSidecar.INSTANTIATING)
         void on() {
             use(ExRecursive1.class);
         }

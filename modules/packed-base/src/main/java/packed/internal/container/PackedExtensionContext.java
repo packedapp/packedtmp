@@ -201,7 +201,7 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
     }
 
     LifecycleContext lifecycle() {
-        return new LifecycleContextHelper.SimpleLifecycleContext(ExtensionModel.Builder.STM.toArray()) {
+        return new LifecycleContextHelper.SimpleLifecycleContext(ExtensionModel.Builder.STM.ld) {
 
             @Override
             protected int state() {

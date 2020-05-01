@@ -32,7 +32,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.reflect.ParameterDescriptor;
 import app.packed.inject.InjectionContext;
-import app.packed.inject.UnresolvedDependencyException;
+import app.packed.inject.UnsatisfiableDependencyException;
 import packed.internal.inject.PackedInjectionContext;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.reflect.MethodHandleBuilder.Entry;
@@ -164,7 +164,7 @@ class MethodHandleBuilderHelper {
                         mh = MethodHandles.insertArguments(mh, is.size() + add, Optional.empty());
                     } else {
                         // Could be inner class
-                        throw new UnresolvedDependencyException("Could not inject " + kk + " Available keys = " + aa.keys.keySet());
+                        throw new UnsatisfiableDependencyException("Could not inject " + kk + " Available keys = " + aa.keys.keySet());
                     }
                 }
             } else {
@@ -200,7 +200,10 @@ class MethodHandleBuilderHelper {
             // USed for example, for constructors to change the actually type being made
             // F.x Extension instead of ServiceExtension (so we can use invokeExact
             if (input.returnType() != mh.type().returnType()) {
-                mh = MethodHandleUtil.castReturnType(mh, mh.type().returnType()); // need to upcast to extension to invokeExact
+                // System.out.println("---");
+                // System.out.println(input.returnType() + " - " + mh.type().returnType());
+                mh = MethodHandleUtil.castReturnType(mh, input.returnType()); // need to upcast to extension to invokeExact
+                // System.out.println(input.returnType() + " - " + mh.type().returnType());
             }
             mh = MethodHandles.permuteArguments(mh, input, is.toArray());
         }

@@ -58,36 +58,40 @@ import packed.internal.util.BaseSupport;
 
 //Does this belong in app.packed.service????
 //No because components also uses it...
+
+// This class used to provide some bind methods...
+// But we don't do that no more. Because it was just impossible to
+// see what was what...
 public interface Factory<T> {
 
-    /**
-     * Returns a list of all of the dependencies that needs to be fulfilled in order for this factory to successfully create
-     * an instance. Returns an empty list if this factory does not have any dependencies.
-     * <p>
-     * 
-     * @apiNote The list does not include dependencies that may be needed to do field or instance method injection. As these
-     *          are the responsibility of the injector in which they are registered.
-     * 
-     * @return a list of all of the dependencies of this factory
-     */
-    // Required/Optional - Key - Variable?
-    // Requirement
-
-    // FactoryDescriptor.of(Factory f) <--- in devtools???
-    <S> Factory<T> bind(Class<S> key, @Nullable S instance);
-
-    <S> Factory<T> bind(Key<S> key, @Nullable S instance);
-
-    /**
-     * @param instance
-     *            the instance to bind
-     * @return a new factory
-     */
-    Factory<T> bind(Object instance);
-
-    <S> Factory<T> bindSupplier(Class<S> key, Supplier<?> supplier);
-
-    <S> Factory<T> bindSupplier(Key<S> key, Supplier<?> supplier);
+//    /**
+//     * Returns a list of all of the dependencies that needs to be fulfilled in order for this factory to successfully create
+//     * an instance. Returns an empty list if this factory does not have any dependencies.
+//     * <p>
+//     * 
+//     * @apiNote The list does not include dependencies that may be needed to do field or instance method injection. As these
+//     *          are the responsibility of the injector in which they are registered.
+//     * 
+//     * @return a list of all of the dependencies of this factory
+//     */
+//    // Required/Optional - Key - Variable?
+//    // Requirement
+//
+//    // FactoryDescriptor.of(Factory f) <--- in devtools???
+//    <S> Factory<T> bind(Class<S> key, @Nullable S instance);
+//
+//    <S> Factory<T> bind(Key<S> key, @Nullable S instance);
+//
+//    /**
+//     * @param instance
+//     *            the instance to bind
+//     * @return a new factory
+//     */
+//    Factory<T> bind(Object instance);
+//
+//    <S> Factory<T> bindSupplier(Class<S> key, Supplier<?> supplier);
+//
+//    <S> Factory<T> bindSupplier(Key<S> key, Supplier<?> supplier);
 
     // List<?> dependencies();
 
@@ -229,13 +233,13 @@ public interface Factory<T> {
      */
     Factory<T> withVariable(int index, @Nullable Object argument);
 
-    Factory<T> withVariableSupplier(int index, Supplier<?> supplier);
-
     default Factory<T> withVariable(VariableDescriptor variable, @Nullable Object argument) {
         // variable must be in variable()
         // IAE the specified variable is not a valid variable
         return this;
     }
+
+    Factory<T> withVariableSupplier(int index, Supplier<?> supplier);
 
     default Factory<T> withVariableSupplier(VariableDescriptor variable, Supplier<?> supplier) {
         return this;

@@ -39,6 +39,7 @@ import app.packed.lifecycle.LifecycleContext;
 import app.packed.sidecar.ExtensionSidecar;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
+import packed.internal.lifecycle2.LifecycleDefinition;
 import packed.internal.reflect.MethodHandleBuilder;
 import packed.internal.reflect.OpenClass;
 import packed.internal.sidecar.SidecarModel;
@@ -271,8 +272,8 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
     static final class Builder extends SidecarModel.Builder {
 
         /** Meta data about the extension sidecar. */
-        public static final SidecarTypeMeta STM = new SidecarTypeMeta(ExtensionSidecar.class, ExtensionSidecar.INSTANTIATION, ExtensionSidecar.ON_PREEMBLE,
-                ExtensionSidecar.CHILDREN_CONFIGURED, ExtensionSidecar.GUESTS_CONFIGURED);
+        public static final SidecarTypeMeta STM = new SidecarTypeMeta(ExtensionSidecar.class, LifecycleDefinition.of(ExtensionSidecar.INSTANTIATING,
+                ExtensionSidecar.NORMAL_USAGE, ExtensionSidecar.CHILDREN_DEFINITIONS, ExtensionSidecar.GUESTS_DEFINITIONS));
 
         private boolean callbackOnlyDirectChildren;
 
@@ -336,9 +337,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
             // I Would love to get rid of CONV
 
             MethodHandleBuilder mhbConstructor = MethodHandleBuilder.of(Extension.class, PackedExtensionContext.class);
-            mhbConstructor.addKey(ExtensionContext.class, 0);
-            mhbConstructor.addKey(LifecycleContext.class, PackedExtensionContext.MH_LIFECYCLE_CONTEXT, 0);
-            mhbConstructor.addAnnoClassMapper(WireletSupply.class, PackedExtensionContext.MH_FIND_WIRELET, 0);
+            addExtensionContextElements(mhbConstructor, 0);
 
             OpenClass cp = prep(mhbConstructor);
             this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
@@ -348,9 +347,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
                 MethodHandleBuilder iss = MethodHandleBuilder.of(void.class, Extension.class, PackedExtensionContext.class, Extension.class);
 
                 // From the child's extension context
-                iss.addKey(ExtensionContext.class, 1);
-                iss.addKey(LifecycleContext.class, PackedExtensionContext.MH_LIFECYCLE_CONTEXT, 1);
-                iss.addAnnoClassMapper(WireletSupply.class, PackedExtensionContext.MH_FIND_WIRELET, 1);
+                addExtensionContextElements(iss, 1);
 
                 // The child's extension instance
                 iss.addKey(sidecarType, 2); // should perform an implicit cast
@@ -362,9 +359,13 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
 
         @Override
         protected void decorateOnSidecar(MethodHandleBuilder builder) {
-            builder.addKey(ExtensionContext.class, 1);
-            builder.addKey(LifecycleContext.class, PackedExtensionContext.MH_LIFECYCLE_CONTEXT, 1);
-            builder.addAnnoClassMapper(WireletSupply.class, PackedExtensionContext.MH_FIND_WIRELET, 1);
+            addExtensionContextElements(builder, 1);
+        }
+
+        protected void addExtensionContextElements(MethodHandleBuilder builder, int index) {
+            builder.addKey(ExtensionContext.class, index);
+            builder.addKey(LifecycleContext.class, PackedExtensionContext.MH_LIFECYCLE_CONTEXT, index);
+            builder.addAnnoClassMapper(WireletSupply.class, PackedExtensionContext.MH_FIND_WIRELET, index);
         }
 
         @Override

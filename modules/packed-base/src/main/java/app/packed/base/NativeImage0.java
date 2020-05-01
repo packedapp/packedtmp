@@ -67,7 +67,7 @@ class NativeImage0 {
                 throw new IllegalStateException("OOPS, this method should have called when creating the image");
             }
             try {
-                MH_REGISTER_EXECUTABLES.invoke(e);
+                MH_REGISTER_EXECUTABLES.invoke(e); // TODO change to invoke exact
             } catch (Throwable t) {
                 throw new RuntimeException(t);
             }

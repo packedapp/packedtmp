@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 /**
  * An annotation indicating that a method needs to be executed by the runtime after a particular event in the sidecars
  * lifecycle. Each sidecar type defines the type of events it supports as static string fields on the sidecar
- * annotation. For example, {@link ExtensionSidecar#INSTANTIATION}.
+ * annotation. For example, {@link ExtensionSidecar#INSTANTIATING}.
  * <p>
  * Return values from annotated methods are always ignored. And unless otherwise specified no objects are available for
  * injection into the method.

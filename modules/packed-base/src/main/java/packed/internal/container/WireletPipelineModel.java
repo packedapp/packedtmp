@@ -64,7 +64,7 @@ public final class WireletPipelineModel extends Model {
         this.memberOfExtension = ExtensionModel.findIfMember(type);
 
         OpenClass cp = new OpenClass(MethodHandles.lookup(), type, true);
-        MethodHandleBuilder dim = MethodHandleBuilder.of(type, memberOfExtension == null ? Extension.class : memberOfExtension);
+        MethodHandleBuilder dim = MethodHandleBuilder.of(WireletPipeline.class, Extension.class);
         if (memberOfExtension != null) {
             dim.addKey(memberOfExtension, 0);
         }
@@ -86,7 +86,7 @@ public final class WireletPipelineModel extends Model {
      */
     WireletPipeline<?, ?> newPipeline(@Nullable Extension extension) {
         try {
-            return (WireletPipeline<?, ?>) constructor.invoke(extension);
+            return (WireletPipeline<?, ?>) constructor.invokeExact(extension);
         } catch (Throwable e) {
             // Yes how do we handle this...
             // Probably different whether or not we are member of an extension...

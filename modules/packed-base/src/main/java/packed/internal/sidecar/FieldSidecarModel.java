@@ -16,12 +16,13 @@
 package packed.internal.sidecar;
 
 import app.packed.sidecar.FieldSidecar;
+import packed.internal.lifecycle2.LifecycleDefinition;
 
 /** A model of {@link FieldSidecar}. */
 public final class FieldSidecarModel extends SidecarModel {
 
     /** Meta data about the extension sidecar. */
-    private static final SidecarTypeMeta STM = new SidecarTypeMeta(FieldSidecar.class, FieldSidecar.INSTANTIATION);
+    private static final SidecarTypeMeta STM = new SidecarTypeMeta(FieldSidecar.class, LifecycleDefinition.of(FieldSidecar.INSTANTIATION));
 
     /** The instance id into {@link ClassInstance#data}. */
     final int instanceId;

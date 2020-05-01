@@ -72,6 +72,8 @@ public final class HookRequest {
     private void invokeHook(MethodHandle mh, Hook hook, Object target, Object additional) throws Throwable {
         // Its somewhat of a hack, but will do for now.
         // As neither ContainerSource or Bundle can implement Hook (Dobbeltcheck)
+
+        // Dropparameters is obviously a thing, which I didn't know about at the time...
         boolean isStatic = Hook.class.isAssignableFrom(mh.type().parameterType(0));
         if (isStatic) {
             if (mh.type().parameterCount() == 1) {

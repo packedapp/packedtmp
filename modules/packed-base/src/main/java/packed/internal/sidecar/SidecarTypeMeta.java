@@ -19,34 +19,36 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 
+import packed.internal.lifecycle2.LifecycleDefinition;
+
 /**
  *
  */
 public final class SidecarTypeMeta {
 
-    private final String[] lifecycleStates;
+    public final LifecycleDefinition ld;
 
     final Class<? extends Annotation> sidecarAnnotation;
 
-    public SidecarTypeMeta(Class<? extends Annotation> sidecarAnnotation, String... lifecycleStates) {
+    public SidecarTypeMeta(Class<? extends Annotation> sidecarAnnotation, LifecycleDefinition ld) {
         this.sidecarAnnotation = requireNonNull(sidecarAnnotation);
-        this.lifecycleStates = requireNonNull(lifecycleStates);
+        this.ld = requireNonNull(ld);
     }
 
-    int indexOfState(String state) {
-        for (int i = 0; i < lifecycleStates.length; i++) {
-            if (lifecycleStates[i].equals(state)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    int numberOfLifecycleStates() {
-        return lifecycleStates.length;
-    }
-
-    public String[] toArray() {
-        return lifecycleStates.clone();
-    }
+//    int indexOfState(String state) {
+//        for (int i = 0; i < lifecycleStates.length; i++) {
+//            if (lifecycleStates[i].equals(state)) {
+//                return i;
+//            }
+//        }
+//        return -1;
+//    }
+//
+//    int numberOfLifecycleStates() {
+//        return lifecycleStates.length;
+//    }
+//
+//    public String[] toArray() {
+//        return lifecycleStates.clone();
+//    }
 }

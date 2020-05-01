@@ -72,43 +72,6 @@ public class BaseFactory<T> implements Factory<T> {
     /** A type variable extractor. */
     private static final TypeVariableExtractor TYPE_LITERAL_TV_EXTRACTOR = TypeVariableExtractor.of(TypeLiteral.class);
 
-    /** {@inheritDoc} */
-    @Override
-    public final <S> Factory<T> bind(Class<S> key, @Nullable S instance) {
-
-        // Do we allow binding non-matching keys???
-        // Could be useful from Prime annotations...
-
-        // Tror vi skal have to forskellige
-
-        // bindParameter(int index).... retains index....
-        // Throws
-
-        // bindWithKey();
-
-        // bindRaw(); <---- Only takes a class, ignores nullable.....
-
-        // Hvordan klarer vi Foo(String firstName, String lastName)...
-        // Eller
-
-        // Hvordan klarer vi Foo(String firstName, SomeComposite sc)...
-
-        // Det eneste der er forskel er parameter index'et...
-        // Maaske bliver man bare noedt til at lave en statisk metoder....
-
-        // Skal vi have en speciel MemberFactory?????
-
-        //
-
-        // bindTo? Det er jo ikke et argument hvis det f.eks. er et field...
-
-        // resolveDependency()...
-        // Its not really an argument its a dependency that we resolve...
-
-        // withArgumentSupplier
-        throw new UnsupportedOperationException();
-    }
-
     /** The internal instance that all calls delegate to. */
     public final FactorySupport<T> factory;
 
@@ -157,73 +120,85 @@ public class BaseFactory<T> implements Factory<T> {
         this.factory = (FactorySupport<T>) Factory0FactoryHandle.create(getClass(), supplier);
     }
 
-    /** {@inheritDoc} */
-    // Required/Optional - Key - Variable?
-    // Requirement
+//    /** {@inheritDoc} */
+//    @Override
+//    public final <S> Factory<T> bind(Class<S> key, @Nullable S instance) {
+//
+//        // Do we allow binding non-matching keys???
+//        // Could be useful from Prime annotations...
+//
+//        // Tror vi skal have to forskellige
+//
+//        // bindParameter(int index).... retains index....
+//        // Throws
+//
+//        // bindWithKey();
+//
+//        // bindRaw(); <---- Only takes a class, ignores nullable.....
+//
+//        // Hvordan klarer vi Foo(String firstName, String lastName)...
+//        // Eller
+//
+//        // Hvordan klarer vi Foo(String firstName, SomeComposite sc)...
+//
+//        // Det eneste der er forskel er parameter index'et...
+//        // Maaske bliver man bare noedt til at lave en statisk metoder....
+//
+//        // Skal vi have en speciel MemberFactory?????
+//
+//        //
+//
+//        // bindTo? Det er jo ikke et argument hvis det f.eks. er et field...
+//
+//        // resolveDependency()...
+//        // Its not really an argument its a dependency that we resolve...
+//
+//        // withArgumentSupplier
+//        throw new UnsupportedOperationException();
+//    }
 
-    // FactoryDescriptor.of(Factory f) <--- in devtools???
-
-    @Override
-    public final <S> Factory<T> bind(Key<S> key, @Nullable S instance) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public final Factory<T> bind(Object instance) {
-        requireNonNull(instance, "instance is null");
-        return bind((Class) instance.getClass(), instance);
-
-        // someExtension()
-        // install(Factory.of(Foo.class).withArgument(this))).
-
-        // There is going to be some automatic support for injecting extensions into
-        // services installed by them. We are just not quite there yet.
-        // Will bind to any assignable parameter...
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final <S> Factory<T> bindSupplier(Class<S> key, Supplier<?> supplier) {
-        // Altsaa vi kan vel bruge et andet factory????
-        // En mulig usecase f.eks. for Factory1 er at kunne mappe dependencies...
-        // f.eks. fra Foo(CardReader) -> new Factory0<
-        // new Factory0<>(e->e);
-        // withArgumentSupplier
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final <S> Factory<T> bindSupplier(Key<S> key, Supplier<?> supplier) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final Factory<T> withVariable(int index, @Nullable Object argument) {
-        // Problemet med at fjerne ting fra #variables() er at saa bliver index'et lige pludselig aendret.
-        // F.eks. for dooo(String x, String y)
-        // Og det gider vi ikke....
-        // Saa variables stay the same -> Why shouldn't we able to bind them...
-
-        // Maybe add isVariableBound(int index)
-
-        // Rebinding? Ja hvorfor ikke... maaske have en #unbindable()
-
-        // Har vi en optional MemberDescriptor?????
-
-        // Hvis man nu vil injecte en composite....
-
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final Factory<T> withVariableSupplier(int index, Supplier<?> supplier) {
-        throw new UnsupportedOperationException();
-    }
+//    /** {@inheritDoc} */
+//    // Required/Optional - Key - Variable?
+//    // Requirement
+//
+//    // FactoryDescriptor.of(Factory f) <--- in devtools???
+//
+//    @Override
+//    public final <S> Factory<T> bind(Key<S> key, @Nullable S instance) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    /** {@inheritDoc} */
+//    @Override
+//    @SuppressWarnings({ "rawtypes", "unchecked" })
+//    public final Factory<T> bind(Object instance) {
+//        requireNonNull(instance, "instance is null");
+//        return bind((Class) instance.getClass(), instance);
+//
+//        // someExtension()
+//        // install(Factory.of(Foo.class).withArgument(this))).
+//
+//        // There is going to be some automatic support for injecting extensions into
+//        // services installed by them. We are just not quite there yet.
+//        // Will bind to any assignable parameter...
+//    }
+//
+//    /** {@inheritDoc} */
+//    @Override
+//    public final <S> Factory<T> bindSupplier(Class<S> key, Supplier<?> supplier) {
+//        // Altsaa vi kan vel bruge et andet factory????
+//        // En mulig usecase f.eks. for Factory1 er at kunne mappe dependencies...
+//        // f.eks. fra Foo(CardReader) -> new Factory0<
+//        // new Factory0<>(e->e);
+//        // withArgumentSupplier
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    /** {@inheritDoc} */
+//    @Override
+//    public final <S> Factory<T> bindSupplier(Key<S> key, Supplier<?> supplier) {
+//        throw new UnsupportedOperationException();
+//    }
 
     public final List<?> dependencies() {
         // What if have Factory f = Factory.of(Foo(String x, String y));
@@ -239,15 +214,15 @@ public class BaseFactory<T> implements Factory<T> {
 
     /** {@inheritDoc} */
     @Override
-    public final Factory<T> inject(Consumer<? super T> action) {
-        // Bare u
-        throw new UnsupportedOperationException();
+    public final <K> Factory<T> inject(Class<K> key, BiConsumer<? super T, ? super K> action) {
+        return inject(Key.of(key), action);
     }
 
     /** {@inheritDoc} */
     @Override
-    public final <K> Factory<T> inject(Class<K> key, BiConsumer<? super T, ? super K> action) {
-        return inject(Key.of(key), action);
+    public final Factory<T> inject(Consumer<? super T> action) {
+        // Bare u
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -260,29 +235,6 @@ public class BaseFactory<T> implements Factory<T> {
     @Override
     public final Key<T> key() {
         return factory.key;
-    }
-
-    /**
-     * Returns a new factory that maps every object this factory create using the specified mapper.
-     * 
-     * @param <R>
-     *            the type of result to map to
-     * @param mapper
-     *            the mapper used to map the result
-     * @return a new mapped factory
-     */
-    // Men keys er vel ikke laengere compatible saa... f.eks. hvis vi har Factory<String> f
-    // f.map(UUID.class, e->new UUID(e)); -> Factory<UUID> ff, ff.key=String.class();
-
-    // Hvem skal vi scanne???? Den vi laver oprindelig?? Eller den vi har mappet til?
-    // Haelder nok til den vi har mappet til?????
-
-    final <R> Factory<R> mapTo0(Factory1<? super T, ? extends R> mapper) {
-        // Factory<String> f = null;
-        // @SuppressWarnings({ "null", "unused" })
-        // Create a factory by taking the output and mapping it...
-        // Factory<Integer> fi = f.mapTo0(new Factory1<>(e -> e.length()) {});
-        throw new UnsupportedOperationException();
     }
 
     final <R> Factory<R> mapTo(Class<R> key, Function<? super T, ? extends R> mapper) {
@@ -323,6 +275,29 @@ public class BaseFactory<T> implements Factory<T> {
     final <R> Factory<R> mapTo(TypeLiteral<R> type, Function<? super T, ? extends R> mapper) {
         // MappingFactoryHandle<T, R> f = new MappingFactoryHandle<>(type, factory.handle, mapper);
         // return new Factory<>(new FactorySupport<>(f, factory.dependencies));
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns a new factory that maps every object this factory create using the specified mapper.
+     * 
+     * @param <R>
+     *            the type of result to map to
+     * @param mapper
+     *            the mapper used to map the result
+     * @return a new mapped factory
+     */
+    // Men keys er vel ikke laengere compatible saa... f.eks. hvis vi har Factory<String> f
+    // f.map(UUID.class, e->new UUID(e)); -> Factory<UUID> ff, ff.key=String.class();
+
+    // Hvem skal vi scanne???? Den vi laver oprindelig?? Eller den vi har mappet til?
+    // Haelder nok til den vi har mappet til?????
+
+    final <R> Factory<R> mapTo0(Factory1<? super T, ? extends R> mapper) {
+        // Factory<String> f = null;
+        // @SuppressWarnings({ "null", "unused" })
+        // Create a factory by taking the output and mapping it...
+        // Factory<Integer> fi = f.mapTo0(new Factory1<>(e -> e.length()) {});
         throw new UnsupportedOperationException();
     }
 
@@ -413,6 +388,31 @@ public class BaseFactory<T> implements Factory<T> {
     public final Factory<T> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
         return new BaseFactory<>(new FactorySupport<T>(factory.handle.withLookup(lookup), factory.dependencies));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final Factory<T> withVariable(int index, @Nullable Object argument) {
+        // Problemet med at fjerne ting fra #variables() er at saa bliver index'et lige pludselig aendret.
+        // F.eks. for dooo(String x, String y)
+        // Og det gider vi ikke....
+        // Saa variables stay the same -> Why shouldn't we able to bind them...
+
+        // Maybe add isVariableBound(int index)
+
+        // Rebinding? Ja hvorfor ikke... maaske have en #unbindable()
+
+        // Har vi en optional MemberDescriptor?????
+
+        // Hvis man nu vil injecte en composite....
+
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final Factory<T> withVariableSupplier(int index, Supplier<?> supplier) {
+        throw new UnsupportedOperationException();
     }
 
     @SuppressWarnings("unchecked")

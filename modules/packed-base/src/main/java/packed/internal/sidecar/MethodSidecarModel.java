@@ -16,6 +16,7 @@
 package packed.internal.sidecar;
 
 import app.packed.sidecar.MethodSidecar;
+import packed.internal.lifecycle2.LifecycleDefinition;
 
 /**
  *
@@ -31,7 +32,7 @@ import app.packed.sidecar.MethodSidecar;
 public final class MethodSidecarModel extends SidecarModel {
 
     /** Meta data about the extension sidecar. */
-    private static final SidecarTypeMeta STM = new SidecarTypeMeta(MethodSidecar.class, MethodSidecar.INSTANTIATION);
+    private static final SidecarTypeMeta STM = new SidecarTypeMeta(MethodSidecar.class, LifecycleDefinition.of(MethodSidecar.INSTANTIATION));
 
     /** The instance id into {@link ClassInstance#data}. */
     final int instanceId;

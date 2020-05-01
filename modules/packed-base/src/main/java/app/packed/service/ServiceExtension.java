@@ -32,7 +32,6 @@ import app.packed.container.WireletSupply;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
 import app.packed.inject.Factory;
-import app.packed.inject.InjectionContext;
 import app.packed.lifecycle.OnStart;
 import app.packed.sidecar.Expose;
 import app.packed.sidecar.ExtensionSidecar;
@@ -83,7 +82,7 @@ public final class ServiceExtension extends Extension {
     final ServiceExtensionNode node;
 
     /** Should never be initialized by users. */
-    ServiceExtension(ExtensionContext context, @WireletSupply Optional<MyTestWirelet> foo) {
+    ServiceExtension(ExtensionContext context) {
         this.node = new ServiceExtensionNode(context);
     }
 
@@ -356,12 +355,16 @@ public final class ServiceExtension extends Extension {
         }
     }
 
+    public void requireOptionally(Class<?>... keys) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * This method is invoked by the runtime after all children have been configured. But before any guests might have been
      * defined.
      */
-    @PostSidecar(ExtensionSidecar.CHILDREN_CONFIGURED)
-    void assemble(/* Optional<ServiceWireletPipeline> swp */ ) {
+    @PostSidecar(ExtensionSidecar.CHILDREN_DEFINITIONS)
+    void assemble(Optional<ServiceWireletPipeline> swp) {
         node.build();
     }
 
@@ -378,14 +381,7 @@ public final class ServiceExtension extends Extension {
     }
 
     @DescendentAdded
-    void foo(ServiceExtension se, InjectionContext ic, ExtensionContext ec, @WireletSupply Optional<MyTestWirelet> mt) {
-        node.link(se.node);
-        // System.out.println("MT " + mt);
-//        // System.out.println("Got wirelets " + wirelets);
-//        System.out.println("This " + this + " child = " + se);
-//        System.out.println("GotIt " + ic.keys());
-//
-//        System.out.println(context().containerPath());
-//        System.out.println(ec.containerPath());
+    private void linkChild(ServiceExtension childExtension, @WireletSupply Optional<MyTestWirelet> mt) {
+        node.link(childExtension.node);
     }
 }

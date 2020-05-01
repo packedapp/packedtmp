@@ -55,8 +55,6 @@ public final class MappingFactoryHandle<T, R> extends FactoryHandle<R> {
         c = c.asType(c.type().changeReturnType(Object.class));
         System.out.println(MethodHandles.foldArguments(fu, c).type());
 
-        System.out.println(MethodHandles.foldArguments(fu, c).invoke());
-
         // Skal vel vaere en filter operation istedet for folding
 
     }

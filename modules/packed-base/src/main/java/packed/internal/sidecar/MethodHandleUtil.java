@@ -17,14 +17,12 @@ package packed.internal.sidecar;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.container.Extension;
-
 /**
  *
  */
 public class MethodHandleUtil {
 
     public static MethodHandle castReturnType(MethodHandle target, Class<?> newReturnType) {
-        return target.asType(target.type().changeReturnType(Extension.class));
+        return target.asType(target.type().changeReturnType(newReturnType));
     }
 }

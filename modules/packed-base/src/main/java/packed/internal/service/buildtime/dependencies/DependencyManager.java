@@ -34,7 +34,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletPipeline;
-import app.packed.inject.UnresolvedDependencyException;
+import app.packed.inject.UnsatisfiableDependencyException;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import packed.internal.container.PackedExtensionContext;
@@ -282,7 +282,7 @@ public final class DependencyManager {
                     // b.root.requiredServicesMandatory.add(e.get)
                     // System.err.println(b.root.privateNodeMap.stream().map(e -> e.key()).collect(Collectors.toList()));
                     // UnresolvedVariableException
-                    throw new UnresolvedDependencyException(sb.toString());
+                    throw new UnsatisfiableDependencyException(sb.toString());
                 }
             }
         }

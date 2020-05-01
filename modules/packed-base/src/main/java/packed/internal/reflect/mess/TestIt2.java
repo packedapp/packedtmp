@@ -24,7 +24,6 @@ import java.util.Optional;
 import app.packed.inject.InjectionContext;
 import packed.internal.reflect.MethodHandleBuilder;
 import packed.internal.reflect.OpenClass;
-import packed.internal.reflect.mhadventures.MH1;
 
 /**
  *

@@ -100,7 +100,7 @@ public abstract class SidecarModel extends Model {
         protected Builder(Class<?> sidecarType, SidecarTypeMeta statics) {
             this.sidecarType = requireNonNull(sidecarType);
             this.statics = requireNonNull(statics);
-            this.postSidecars = new MethodHandle[statics.numberOfLifecycleStates()];
+            this.postSidecars = new MethodHandle[statics.ld.numberOfStates()];
         }
 
         protected void decorateOnSidecar(MethodHandleBuilder builder) {}
@@ -116,7 +116,7 @@ public abstract class SidecarModel extends Model {
                 onMethod(m);
                 PostSidecar oa = m.getAnnotation(PostSidecar.class);
                 if (oa != null) {
-                    int index = statics.indexOfState(oa.value());
+                    int index = statics.ld.indexOf(oa.value());
                     if (index == -1) {
                         throw new InternalExtensionException("Unknown sidecar lifecycle event '" + oa.value() + "' for method " + m);
                     }

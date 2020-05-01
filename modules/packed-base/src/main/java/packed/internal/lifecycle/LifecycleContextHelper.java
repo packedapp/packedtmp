@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Set;
 
 import app.packed.lifecycle.LifecycleContext;
+import packed.internal.lifecycle2.LifecycleDefinition;
 
 /**
  *
@@ -29,6 +30,10 @@ public class LifecycleContextHelper {
     public static abstract class SimpleLifecycleContext implements LifecycleContext {
 
         private final String[] states;
+
+        public SimpleLifecycleContext(LifecycleDefinition ld) {
+            this(ld.toArray());
+        }
 
         public SimpleLifecycleContext(String[] states) {
             this.states = requireNonNull(states);

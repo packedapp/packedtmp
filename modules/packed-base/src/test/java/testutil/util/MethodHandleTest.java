@@ -30,7 +30,7 @@ public class MethodHandleTest {
     @Test
     public void arrayConstructor() throws Throwable {
         MethodHandle mh = MethodHandles.arrayConstructor(String[].class);
-        String[] arg = (String[]) mh.invoke(123);
+        String[] arg = (String[]) mh.invokeExact(123);
         assertEquals(123, arg.length);
     }
 }
