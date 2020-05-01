@@ -55,7 +55,7 @@ public class WireletModel extends Model {
      */
     private WireletModel(Class<? extends Wirelet> type) {
         super(type);
-        this.memberOfExtension = ExtensionSidecarModel.findIfMember(type);
+        this.memberOfExtension = ExtensionModel.findIfMember(type);
 
         WireletPipelineModel wpm = null;
         WireletSidecar ws = type.getAnnotation(WireletSidecar.class);

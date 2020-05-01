@@ -71,6 +71,16 @@ public class TI extends BaseBundle {
         @Override
         protected void compose() {
             provideConstant("HejHej");
+            link(new FFFFFF(), ServiceWirelets.provide("const"));
+        }
+    }
+
+    static class FFFFFF extends BaseBundle {
+
+        /** {@inheritDoc} */
+        @Override
+        protected void compose() {
+            provideConstant("HejHej");
             System.out.println(use(MyExte.class).foo);
         }
     }
@@ -100,7 +110,7 @@ public class TI extends BaseBundle {
             // System.out.println(ic.keys());
         }
 
-        @DescendentAdded
+        @DescendentAdded(onlyDirectChildren = true)
         public void ff(InjectionContext ic, MyExte child) {
             child.foo = " Child of " + foo;
         }

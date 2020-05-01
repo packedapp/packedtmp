@@ -17,14 +17,14 @@ package packed.internal.container.oldextension;
 
 import java.util.LinkedHashSet;
 
-import packed.internal.container.ExtensionSidecarModel;
+import packed.internal.container.ExtensionModel;
 
 /**
  *
  */
 final class ExtensionList {
 
-    final LinkedHashSet<ExtensionSidecarModel> extensions = new LinkedHashSet<>();
+    final LinkedHashSet<ExtensionModel> extensions = new LinkedHashSet<>();
 
     void sort() {
 

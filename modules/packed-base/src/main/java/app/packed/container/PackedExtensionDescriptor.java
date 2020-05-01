@@ -21,16 +21,16 @@ import java.util.Set;
 
 import app.packed.base.Contract;
 import app.packed.base.reflect.ExecutableDescriptor;
-import packed.internal.container.ExtensionSidecarModel;
+import packed.internal.container.ExtensionModel;
 
 /** The default implementation of {@link ExecutableDescriptor}. */
 final class PackedExtensionDescriptor implements ExtensionDescriptor {
 
     /** The extension model we wrap. */
-    private final ExtensionSidecarModel model;
+    private final ExtensionModel model;
 
     /** No public instantiation. */
-    private PackedExtensionDescriptor(ExtensionSidecarModel model) {
+    private PackedExtensionDescriptor(ExtensionModel model) {
         this.model = requireNonNull(model);
     }
 
@@ -67,7 +67,7 @@ final class PackedExtensionDescriptor implements ExtensionDescriptor {
      */
     static ExtensionDescriptor of(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
-        return new PackedExtensionDescriptor(ExtensionSidecarModel.of(extensionType));
+        return new PackedExtensionDescriptor(ExtensionModel.of(extensionType));
     }
 }
 

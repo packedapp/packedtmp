@@ -28,8 +28,9 @@ import java.lang.annotation.Target;
 public @interface DescendentAdded {
 
     // Only children not anything farther removed...
+    // If not only direct children. Only the closest ancestor will have its
+    // method invoked.
     boolean onlyDirectChildren() default false;
-
     // boolean crossArtifacts default ???
 }
 

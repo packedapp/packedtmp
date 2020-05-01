@@ -57,7 +57,7 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
     private boolean isConfigured;
 
     /** The sidecar model of the extension. */
-    private final ExtensionSidecarModel model;
+    private final ExtensionModel model;
 
     /** The configuration of the container the extension is registered in. */
     private final PackedContainerConfiguration pcc;
@@ -75,7 +75,7 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
      * @param model
      *            a model of the extension.
      */
-    private PackedExtensionContext(PackedContainerConfiguration pcc, ExtensionSidecarModel model) {
+    private PackedExtensionContext(PackedContainerConfiguration pcc, ExtensionModel model) {
         this.pcc = requireNonNull(pcc);
         this.model = requireNonNull(model);
     }
@@ -185,18 +185,18 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
 
     /** Invoked by the container configuration, whenever the extension is configured. */
     public void onChildrenConfigured() {
-        model.invokePostSidecarAnnotatedMethods(ExtensionSidecarModel.ON_CHILDREN_DONE, extension);
+        model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_CHILDREN_DONE, extension);
         isConfigured = true;
     }
 
     /** Invoked by the container configuration, whenever the extension is configured. */
     public void onConfigured() {
-        model.invokePostSidecarAnnotatedMethods(ExtensionSidecarModel.ON_MAIN, extension);
+        model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_MAIN, extension);
         isConfigured = true;
     }
 
     LifecycleContext lifecycle() {
-        return new LifecycleContextHelper.SimpleLifecycleContext(ExtensionSidecarModel.Builder.STM.toArray()) {
+        return new LifecycleContextHelper.SimpleLifecycleContext(ExtensionModel.Builder.STM.toArray()) {
 
             @Override
             protected int state() {
@@ -253,7 +253,7 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
      */
     public static PackedExtensionContext of(PackedContainerConfiguration pcc, Class<? extends Extension> extensionType) {
         // Create extension context and instantiate extension
-        ExtensionSidecarModel model = ExtensionSidecarModel.of(extensionType);
+        ExtensionModel model = ExtensionModel.of(extensionType);
         PackedExtensionContext pec = new PackedExtensionContext(pcc, model);
         Extension e = pec.extension = model.newExtensionInstance(pec);
         ModuleAccess.container().extensionSetContext(e, pec);
@@ -261,7 +261,7 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
         PackedExtensionContext existing = pcc.activeExtension;
         try {
             pcc.activeExtension = pec;
-            model.invokePostSidecarAnnotatedMethods(ExtensionSidecarModel.ON_INSTANTIATION, e);
+            model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_INSTANTIATION, e);
             if (pcc.wireletContext != null) {
                 pcc.wireletContext.extensionInitialized(pec);
             }
@@ -272,24 +272,27 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
 
             // Should we also set the active extension in the parent???
             if (model.parentExtensionLinked != null) {
-                
-                // This needs to be done recursively, if onlyDirectParent false;
-                PackedContainerConfiguration parent = pcc.parentContainer();
-                if (pcc.parent instanceof PackedContainerConfiguration) {
-                    PackedContainerConfiguration p = (PackedContainerConfiguration) pcc.parent;
-                    PackedExtensionContext parentExtension = p.getExtension(extensionType);
-                    // set activate extension???
-                    // If not just parent link keep checking up until root/
-                    if (parentExtension != null) {
-                        try {
-                            model.parentExtensionLinked.invoke(parentExtension.extension, pec, e);
-                        } catch (Throwable e1) {
-                            e1.printStackTrace();
-                        }
+                PackedExtensionContext parentExtension = null;
+                PackedContainerConfiguration parent = pcc.container();
+                if (!model.callbackOnlyDirectChildren) {
+                    while (parentExtension == null && parent != null) {
+                        parentExtension = parent.getExtension(extensionType);
+                        parent = parent.container();
+                    }
+                } else if (parent != null) {
+                    parentExtension = parent.getExtension(extensionType);
+                }
+
+                // set activate extension???
+                // If not just parent link keep checking up until root/
+                if (parentExtension != null) {
+                    try {
+                        model.parentExtensionLinked.invoke(parentExtension.extension, pec, e);
+                    } catch (Throwable e1) {
+                        e1.printStackTrace();
                     }
                 }
             }
-
         } finally {
             pcc.activeExtension = existing;
         }

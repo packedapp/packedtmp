@@ -29,7 +29,7 @@ import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.hook.OnHook;
 import packed.internal.container.ContainerSourceModel;
-import packed.internal.container.ExtensionSidecarModel;
+import packed.internal.container.ExtensionModel;
 import packed.internal.container.LazyExtensionActivationMap;
 import packed.internal.hook.HookRequest;
 import packed.internal.hook.HookRequestBuilder;
@@ -213,7 +213,7 @@ public final class ComponentModel extends Model {
                 throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
-                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequestBuilder(ExtensionSidecarModel.onHookModelOf(etype), hookProcessor))
+                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequestBuilder(ExtensionModel.onHookModelOf(etype), hookProcessor))
                             .onAssignableTo(hookType, actualType);
                 }
             }
@@ -235,7 +235,7 @@ public final class ComponentModel extends Model {
                 throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
-                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequestBuilder(ExtensionSidecarModel.onHookModelOf(etype), hookProcessor))
+                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequestBuilder(ExtensionModel.onHookModelOf(etype), hookProcessor))
                             .onAnnotatedField(field, a);
                 }
             }
@@ -257,7 +257,7 @@ public final class ComponentModel extends Model {
                 throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
-                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequestBuilder(ExtensionSidecarModel.onHookModelOf(etype), hookProcessor))
+                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequestBuilder(ExtensionModel.onHookModelOf(etype), hookProcessor))
                             .onAnnotatedMethod(method, a);
                 }
             }
@@ -279,7 +279,7 @@ public final class ComponentModel extends Model {
                 throws Throwable {
             if (extensionTypes != null) {
                 for (Class<? extends Extension> eType : extensionTypes) {
-                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequestBuilder(ExtensionSidecarModel.onHookModelOf(etype), hookProcessor))
+                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequestBuilder(ExtensionModel.onHookModelOf(etype), hookProcessor))
                             .onAnnotatedType(componentType, a);
                 }
             }

@@ -52,15 +52,15 @@ import packed.internal.util.ThrowableUtil;
 import packed.internal.util.UncheckedThrowableFactory;
 
 /** A model of an Extension (sidecar). */
-public final class ExtensionSidecarModel extends SidecarModel implements Comparable<ExtensionSidecarModel> {
+public final class ExtensionModel extends SidecarModel implements Comparable<ExtensionModel> {
 
     /** A cache of models. */
-    private static final ClassValue<ExtensionSidecarModel> MODELS = new ClassValue<>() {
+    private static final ClassValue<ExtensionModel> MODELS = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
         @Override
-        protected ExtensionSidecarModel computeValue(Class<?> type) {
+        protected ExtensionModel computeValue(Class<?> type) {
             // First, check that the user has specified an actual sub type of Extension to
             // ContainerConfiguration#use() or Bundle#use()
             if (type == Extension.class) {
@@ -69,7 +69,7 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
                 throw new IllegalArgumentException(
                         "The specified type '" + StringFormatter.format(type) + "' does not extend '" + StringFormatter.format(Extension.class) + "'");
             }
-            return ExtensionSidecarModelLoader.load((Class<? extends Extension>) type);
+            return ExtensionModelLoader.load((Class<? extends Extension>) type);
         }
     };
 
@@ -142,13 +142,15 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
     @Nullable
     public final MethodHandle parentExtensionLinked;
 
+    public final boolean callbackOnlyDirectChildren;
+
     /**
      * Creates a new extension model from the specified builder.
      * 
      * @param builder
      *            the builder for this model
      */
-    private ExtensionSidecarModel(Builder builder) {
+    private ExtensionModel(Builder builder) {
         super(builder);
         this.id = builder.id;
         this.depth = builder.depth;
@@ -161,11 +163,12 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
         this.nonActivatingHooks = onHookModel == null ? null : LazyExtensionActivationMap.findNonExtending(onHookModel);
 
         this.parentExtensionLinked = builder.li;
+        this.callbackOnlyDirectChildren = builder.callbackOnlyDirectChildren;
     }
 
     /** {@inheritDoc} */
     @Override
-    public int compareTo(ExtensionSidecarModel m) {
+    public int compareTo(ExtensionModel m) {
         // id < #baseExtension return id-id;
         // otherwise non base extension
         int d = depth - m.depth;
@@ -241,7 +244,7 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
      *            the type of extension to return a model for
      * @return an extension model for the specified extension type
      */
-    public static ExtensionSidecarModel of(Class<? extends Extension> extensionType) {
+    public static ExtensionModel of(Class<? extends Extension> extensionType) {
         return MODELS.get(extensionType);
     }
 
@@ -267,7 +270,7 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
         return ThrowableUtil.throwReturn((Throwable) result);
     }
 
-    /** A builder for {@link ExtensionSidecarModel}. */
+    /** A builder for {@link ExtensionModel}. */
     static final class Builder extends SidecarModel.Builder {
 
         /** Meta data about the extension sidecar. */
@@ -283,10 +286,12 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
         int id;
 
         /** The loader used to load the extension. */
-        private final ExtensionSidecarModelLoader loader;
+        private final ExtensionModelLoader loader;
 
         /** A builder for all methods annotated with {@link OnHook} on the extension. */
         private OnHookModel onHookModel;
+
+        private boolean callbackOnlyDirectChildren;
 
         /**
          * Creates a new builder.
@@ -294,7 +299,7 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
          * @param extensionType
          *            the type of extension we are building a model for
          */
-        Builder(Class<? extends Extension> extensionType, ExtensionSidecarModelLoader loader) {
+        Builder(Class<? extends Extension> extensionType, ExtensionModelLoader loader) {
             super(extensionType, STM);
             this.loader = requireNonNull(loader);
         }
@@ -303,7 +308,7 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
             if (dependencyType == sidecarType) {
                 throw new InternalExtensionException("Extension " + sidecarType + " cannot dependend on itself via " + ExtensionSidecar.class);
             }
-            ExtensionSidecarModel model = ExtensionSidecarModelLoader.load(this, dependencyType, loader);
+            ExtensionModel model = ExtensionModelLoader.load(this, dependencyType, loader);
             depth = Math.max(depth, model.depth + 1);
             dependenciesDirect.add(dependencyType);
         }
@@ -319,6 +324,7 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
                             "Multiple methods annotated with " + DescendentAdded.class + " on " + m.getDeclaringClass() + ", only 1 allowed.");
                 }
                 linked = m;
+                callbackOnlyDirectChildren = da.onlyDirectChildren();
             }
         }
 
@@ -327,7 +333,7 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
          * 
          * @return the extension model
          */
-        ExtensionSidecarModel build() {
+        ExtensionModel build() {
 
             ExtensionSidecar em = sidecarType.getAnnotation(ExtensionSidecar.class);
             if (em != null) {
@@ -365,7 +371,7 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
 
                 li = iss.build(cp, linked);
             }
-            return new ExtensionSidecarModel(this);
+            return new ExtensionModel(this);
         }
 
         MethodHandle li;

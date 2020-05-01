@@ -28,25 +28,25 @@ import app.packed.container.InternalExtensionException;
 /**
  * An extension loader is responsible for initializing models for extensions.
  */
-final class ExtensionSidecarModelLoader {
+final class ExtensionModelLoader {
 
     private static final WeakHashMap<Class<? extends Extension>, Throwable> ERRORS = new WeakHashMap<>();
 
-    private static final WeakHashMap<Class<? extends Extension>, ExtensionSidecarModel> EXTENSIONS = new WeakHashMap<>();
+    private static final WeakHashMap<Class<? extends Extension>, ExtensionModel> EXTENSIONS = new WeakHashMap<>();
 
     /** A lock used for making sure that we only load one extension tree at a time. */
     private static final ReentrantLock GLOBAL_LOCK = new ReentrantLock();
 
     private final ArrayDeque<Class<? extends Extension>> stack = new ArrayDeque<>();
 
-    private ExtensionSidecarModelLoader() {}
+    private ExtensionModelLoader() {}
 
     // Maaske skal vi baade have id, og depth... Eller er depth ligegyldigt???
     final static Map<String, String> baseExtensions = Map.of();
 
     private static int nextExtensionId;
 
-    private ExtensionSidecarModel load1(Class<? extends Extension> extensionType) {
+    private ExtensionModel load1(Class<? extends Extension> extensionType) {
         // Den eneste grund til at vi gennem en exception er pga
         if (stack.contains(extensionType)) {
             String st = stack.stream().map(e -> e.getCanonicalName()).collect(Collectors.joining(" -> "));
@@ -54,9 +54,9 @@ final class ExtensionSidecarModelLoader {
         }
         stack.push(extensionType);
 
-        ExtensionSidecarModel m;
+        ExtensionModel m;
         try {
-            ExtensionSidecarModel.Builder builder = new ExtensionSidecarModel.Builder(extensionType, this);
+            ExtensionModel.Builder builder = new ExtensionModel.Builder(extensionType, this);
             // System.out.println("Building " + extensionType + " " + nextExtensionId);
             builder.id = nextExtensionId++;
             // System.out.println("Building " + extensionType + " " + nextExtensionId);
@@ -79,21 +79,21 @@ final class ExtensionSidecarModelLoader {
         return m;
     }
 
-    static ExtensionSidecarModel load(Class<? extends Extension> extensionType) {
+    static ExtensionModel load(Class<? extends Extension> extensionType) {
         return load0(extensionType, null);
     }
 
-    static ExtensionSidecarModel load(ExtensionSidecarModel.Builder builder, Class<? extends Extension> dependency, ExtensionSidecarModelLoader loader) {
+    static ExtensionModel load(ExtensionModel.Builder builder, Class<? extends Extension> dependency, ExtensionModelLoader loader) {
         return load0(dependency, loader);
     }
 
     // taenker vi godt kan flytte global lock en class valuen...
 
-    private static ExtensionSidecarModel load0(Class<? extends Extension> extensionType, @Nullable ExtensionSidecarModelLoader loader) {
+    private static ExtensionModel load0(Class<? extends Extension> extensionType, @Nullable ExtensionModelLoader loader) {
         GLOBAL_LOCK.lock();
         try {
             // First lets see if we have created the model before
-            ExtensionSidecarModel m = EXTENSIONS.get(extensionType);
+            ExtensionModel m = EXTENSIONS.get(extensionType);
             if (m != null) {
                 return m;
             }
@@ -106,7 +106,7 @@ final class ExtensionSidecarModelLoader {
 
             // Create a new loader if we are not already part of one
             if (loader == null) {
-                loader = new ExtensionSidecarModelLoader();
+                loader = new ExtensionModelLoader();
             }
             return loader.load1(extensionType);
         } finally {
