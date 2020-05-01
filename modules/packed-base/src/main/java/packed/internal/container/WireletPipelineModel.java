@@ -61,7 +61,7 @@ public final class WireletPipelineModel extends Model {
      */
     private WireletPipelineModel(Class<? extends WireletPipeline<?, ?>> type) {
         super(type);
-        this.memberOfExtension = ExtensionModel.findIfMember(type);
+        this.memberOfExtension = ExtensionModel.findAnyExtensionMember(type);
 
         OpenClass cp = new OpenClass(MethodHandles.lookup(), type, true);
         MethodHandleBuilder dim = MethodHandleBuilder.of(WireletPipeline.class, Extension.class);

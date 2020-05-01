@@ -171,6 +171,7 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
         return e;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Class<? extends Extension> extensionType() {
         return model.extensionType();
@@ -205,20 +206,20 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
 
             @Override
             protected int state() {
-                return 1;
+                return extension == null ? 0 : 1;
             }
         };
     }
 
     /** Invoked by the container configuration, whenever the extension is configured. */
     public void onChildrenConfigured() {
-        model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_CHILDREN_DONE, extension, this);
+        model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_2_CHILDREN_DONE, extension, this);
         isConfigured = true;
     }
 
     /** Invoked by the container configuration, whenever the extension is configured. */
     public void onConfigured() {
-        model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_MAIN, extension, this);
+        model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_1_MAIN, extension, this);
         isConfigured = true;
     }
 
@@ -272,13 +273,13 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
         // Create extension context and instantiate extension
         ExtensionModel model = ExtensionModel.of(extensionType);
         PackedExtensionContext pec = new PackedExtensionContext(pcc, model);
-        Extension e = pec.extension = model.newExtensionInstance(pec);
+        Extension e = pec.extension = model.newInstance(pec);
         ModuleAccess.container().extensionSetContext(e, pec);
 
         PackedExtensionContext existing = pcc.activeExtension;
         try {
             pcc.activeExtension = pec;
-            model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_INSTANTIATION, e, pec);
+            model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_0_INSTANTIATION, e, pec);
             if (pcc.wireletContext != null) {
                 pcc.wireletContext.extensionInitialized(pec);
             }
@@ -288,10 +289,10 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
             // is returned to the user.
 
             // Should we also set the active extension in the parent???
-            if (model.parentExtensionLinked != null) {
+            if (model.extensionLinkedToAncestorExtension != null) {
                 PackedExtensionContext parentExtension = null;
                 PackedContainerConfiguration parent = pcc.container();
-                if (!model.callbackOnlyDirectChildren) {
+                if (!model.extensionLinkedDirectChildrenOnly) {
                     while (parentExtension == null && parent != null) {
                         parentExtension = parent.getExtension(extensionType);
                         parent = parent.container();
@@ -304,7 +305,7 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
                 // If not just parent link keep checking up until root/
                 if (parentExtension != null) {
                     try {
-                        model.parentExtensionLinked.invokeExact(parentExtension.extension, pec, e);
+                        model.extensionLinkedToAncestorExtension.invokeExact(parentExtension.extension, pec, e);
                     } catch (Throwable e1) {
                         throw ThrowableUtil.easyThrow(e1);
                     }

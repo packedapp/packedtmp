@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.extension;
+package packed.internal.container;
 
 import java.util.concurrent.TimeUnit;
 
@@ -28,7 +28,6 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.container.Extension;
-import packed.internal.container.ExtensionModel;
 
 /**
  *
@@ -53,7 +52,7 @@ public class ExtensionMicro {
 
     @Benchmark
     public Extension newExtensionCachedMethodHandle() {
-        return ExtensionModel.of(MyExtension.class).newExtensionInstance(null);
+        return ExtensionModel.of(MyExtension.class).newInstance(null);
     }
 
     @Benchmark

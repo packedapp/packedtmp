@@ -192,6 +192,12 @@ class MethodHandleBuilderHelper {
             if (input.parameterType(0) != mh.type().parameterType(0)) {
                 mh = mh.asType(mh.type().changeParameterType(0, input.parameterType(0)));
             }
+//            if (input.parameterCount() > 1 && mh.type().parameterCount() > 1) {
+//                if (input.parameterType(1) != mh.type().parameterType(1)) {
+//                    mh = mh.asType(mh.type().changeParameterType(1, input.parameterType(1)));
+//                }
+//            }
+
 //              throw new IllegalArgumentException(
 //                      "First signature parameter type must be " + m.getDeclaringClass() + " was " + aa.targetType().parameterType(0));
 //          }

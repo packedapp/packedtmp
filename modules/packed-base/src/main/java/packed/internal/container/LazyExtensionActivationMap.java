@@ -117,7 +117,7 @@ public final class LazyExtensionActivationMap {
         if (uel != null) {
             for (Class<? extends Extension> c : uel.value()) {
                 ExtensionModel em = ExtensionModel.of(c);
-                BaseHookQualifierList dhu = em.nonActivatingHooks;
+                BaseHookQualifierList dhu = em.hooksNonActivating;
                 if (dhu != null) {
                     stats(c, annotatedFields, dhu.annotatedFields);
                     stats(c, annotatedMethods, dhu.annotatedMethods);
@@ -134,7 +134,7 @@ public final class LazyExtensionActivationMap {
         if (uela != null) {
             for (Class<? extends Extension> c : uela.extension()) {
                 ExtensionModel em = ExtensionModel.of(c);
-                BaseHookQualifierList dhu = em.nonActivatingHooks;
+                BaseHookQualifierList dhu = em.hooksNonActivating;
                 if (dhu != null) {
                     stats(c, annotatedFields, dhu.annotatedFields);
                     stats(c, annotatedMethods, dhu.annotatedMethods);

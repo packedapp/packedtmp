@@ -107,14 +107,12 @@ public class TI extends BaseBundle {
     public static class MyExte extends Extension {
 
         String foo;
+        final LifecycleContext lc;
 
         MyExte(LifecycleContext lc, InjectionContext ic, @WireletSupply MyTestWirelet wc) {
             System.out.println("State " + lc.current());
+            this.lc = lc;
 
-            // System.out.println("Current state " + lc.current());
-            // System.out.println("Next state " + lc.nextStates());
-
-            // System.out.println(ic.keys());
         }
 
         @DescendentAdded(onlyDirectChildren = false)
@@ -125,6 +123,8 @@ public class TI extends BaseBundle {
         @PostSidecar(ExtensionSidecar.NORMAL_USAGE)
         protected void foo(ExtensionContext ec) {
             System.out.println(ec.containerPath());
+            System.out.println("State now " + lc.current());
+            // System.out.println(lc);
         }
 
         @PostSidecar(ExtensionSidecar.NORMAL_USAGE)

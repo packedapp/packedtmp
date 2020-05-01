@@ -57,6 +57,9 @@ public @interface ExtensionSidecar {
     /** This is the final event. This event will be invoked even if no guests are defined. */
     String GUESTS_DEFINITIONS = "GuestsDefinitions";
 
+    /** The end state of the extension. */
+    String ASSEMBLED = "Assembled";
+
     /**
      * Other extensions that an extension may use (but do not have to). This need not include transitive dependencies
      * (dependencies of dependencies). Only extensions that are directly used, for example, via
@@ -79,16 +82,3 @@ public @interface ExtensionSidecar {
      */
     String[] optionalDependencies() default {};
 }
-//boolean requireExecution default false()???
-
-//Well they should both nonstatic or static, and take ExtensionContext, InjectionContext
-
-//Container finished
-
-//Child Linked
-//Parent Linked
-//NoParent Linked... //NoDirectLink
-//Er det her vi linker paa tvaers af artifacts?????
-//ExtensionBarrier....
-
-// L

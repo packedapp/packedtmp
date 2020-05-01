@@ -51,7 +51,7 @@ import packed.internal.util.UncheckedThrowableFactory;
 /** A model of an Extension (sidecar). */
 public final class ExtensionModel extends SidecarModel implements Comparable<ExtensionModel> {
 
-    /** A cache of models. */
+    /** A cache of extension models. */
     private static final ClassValue<ExtensionModel> MODELS = new ClassValue<>() {
 
         /** {@inheritDoc} */
@@ -70,11 +70,11 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         }
     };
 
-    static final int ON_CHILDREN_DONE = 2;
+    static final int ON_0_INSTANTIATION = 0;
 
-    static final int ON_INSTANTIATION = 0;
+    static final int ON_1_MAIN = 1;
 
-    static final int ON_MAIN = 1;
+    static final int ON_2_CHILDREN_DONE = 2;
 
     /**  */
     private static ClassValue<?> OPTIONALS = new ClassValue<>() {
@@ -100,6 +100,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
                     c = Class.forName(s, false, cl);
                 } catch (ClassNotFoundException ignore) {}
                 if (c != null) {
+                    // We check this in models also...
                     if (Extension.class == c) {
                         throw new InternalExtensionException("@" + ExtensionSidecar.class.getSimpleName() + " " + StringFormatter.format(type)
                                 + " cannot specify Extension.class as an optional dependency, for " + StringFormatter.format(c));
@@ -117,30 +118,32 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
 
     final MethodHandle bundleBuilderMethod;
 
-    public final boolean callbackOnlyDirectChildren;
-
     /** The depth of this extension. Defined as 0 if no dependencies otherwise max(all dependencies depth) + 1. */
     private final int depth;
 
-    /** A set of this extension's direct dependencies of other extensions. */
+    /** This extension's direct dependencies (on other extensions). */
     private final Set<Class<? extends Extension>> directDependencies;
+
+    /** Whether or not is is only any immediately parent that will be linked. */
+    final boolean extensionLinkedDirectChildrenOnly;
+
+    /** A method handle to an optional method annotated with {@link DescendentAdded} on the extension. */
+    @Nullable
+    final MethodHandle extensionLinkedToAncestorExtension; // will have an extensionLinkedToAncestorService in the future
+
+    final BaseHookQualifierList hooksNonActivating;
+
+    @Nullable
+    private final OnHookModel hooksOnHookModel;
 
     /** A unique id of the extension. */
     final int id; //
 
-    /** The canonical name of the extension. */
-    private final String name;
-
-    final BaseHookQualifierList nonActivatingHooks;
-
-    @Nullable
-    private final OnHookModel onHookModel;
+    /** The canonical name of the extension. Used when needing to deterministically sort extensions. */
+    private final String nameUsedForSorting;
 
     /** An optional containing the extension type. To avoid excessive creation of them for {@link Component#extension()}. */
-    public final Optional<Class<? extends Extension>> optional;
-
-    @Nullable
-    public final MethodHandle parentExtensionLinked;
+    public final Optional<Class<? extends Extension>> optional; // can go away with Valhalla
 
     /**
      * Creates a new extension model from the specified builder.
@@ -155,13 +158,13 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         this.bundleBuilderMethod = builder.builderMethod;
         this.directDependencies = Set.copyOf(builder.dependenciesDirect);
         this.optional = Optional.of(extensionType()); // No need to create an optional every time we need this
-        this.name = requireNonNull(extensionType().getCanonicalName());
+        this.nameUsedForSorting = requireNonNull(extensionType().getCanonicalName());
 
-        this.onHookModel = builder.onHookModel;
-        this.nonActivatingHooks = onHookModel == null ? null : LazyExtensionActivationMap.findNonExtending(onHookModel);
+        this.extensionLinkedToAncestorExtension = builder.li;
+        this.extensionLinkedDirectChildrenOnly = builder.callbackOnlyDirectChildren;
 
-        this.parentExtensionLinked = builder.li;
-        this.callbackOnlyDirectChildren = builder.callbackOnlyDirectChildren;
+        this.hooksOnHookModel = builder.onHookModel;
+        this.hooksNonActivating = hooksOnHookModel == null ? null : LazyExtensionActivationMap.findNonExtending(hooksOnHookModel);
     }
 
     /** {@inheritDoc} */
@@ -170,7 +173,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         // id < #baseExtension return id-id;
         // otherwise non base extension
         int d = depth - m.depth;
-        return d == 0 ? name.compareTo(m.name) : d;
+        return d == 0 ? nameUsedForSorting.compareTo(m.nameUsedForSorting) : d;
     }
 
     /**
@@ -199,9 +202,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
      *            the extension context that can be constructor injected into the extension
      * @return a new instance of the extension
      */
-    public Extension newExtensionInstance(PackedExtensionContext context) {
-        // Time goes from around 1000 ns to 12 ns when we cache the method handle.
-        // With LambdaMetafactory wrapped in a supplier we can get down to 6 ns
+    Extension newInstance(PackedExtensionContext context) {
         try {
             return (Extension) constructor.invokeExact(context);
         } catch (Throwable e) {
@@ -221,7 +222,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
      *             {@link ExtensionMember#value()}
      */
     @Nullable
-    public static Class<? extends Extension> findIfMember(Class<?> type) {
+    public static Class<? extends Extension> findAnyExtensionMember(Class<?> type) {
         ExtensionMember ue = type.getAnnotation(ExtensionMember.class);
         if (ue != null) {
             Class<? extends Extension> eType = ue.value();
@@ -256,7 +257,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
      */
     @Nullable
     public static OnHookModel onHookModelOf(Class<? extends Extension> extensionType) {
-        return of(extensionType).onHookModel;
+        return of(extensionType).hooksOnHookModel;
     }
 
     @SuppressWarnings("unchecked")
@@ -308,11 +309,17 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
 
         private void addDependency(Class<? extends Extension> dependencyType) {
             if (dependencyType == sidecarType) {
-                throw new InternalExtensionException("Extension " + sidecarType + " cannot dependend on itself via " + ExtensionSidecar.class);
+                throw new InternalExtensionException("Extension " + sidecarType + " cannot depend on itself via " + ExtensionSidecar.class);
             }
             ExtensionModel model = ExtensionModelLoader.load(this, dependencyType, loader);
             depth = Math.max(depth, model.depth + 1);
             dependenciesDirect.add(dependencyType);
+        }
+
+        protected void addExtensionContextElements(MethodHandleBuilder builder, int index) {
+            builder.addKey(ExtensionContext.class, index);
+            builder.addKey(LifecycleContext.class, PackedExtensionContext.MH_LIFECYCLE_CONTEXT, index);
+            builder.addAnnoClassMapper(WireletSupply.class, PackedExtensionContext.MH_FIND_WIRELET, index);
         }
 
         /**
@@ -321,7 +328,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
          * @return the extension model
          */
         ExtensionModel build() {
-
+            // See if the extension is annotated with @ExtensionSidecar
             ExtensionSidecar em = sidecarType.getAnnotation(ExtensionSidecar.class);
             if (em != null) {
                 for (Class<? extends Extension> dependencyType : em.dependencies()) {
@@ -360,12 +367,6 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         @Override
         protected void decorateOnSidecar(MethodHandleBuilder builder) {
             addExtensionContextElements(builder, 1);
-        }
-
-        protected void addExtensionContextElements(MethodHandleBuilder builder, int index) {
-            builder.addKey(ExtensionContext.class, index);
-            builder.addKey(LifecycleContext.class, PackedExtensionContext.MH_LIFECYCLE_CONTEXT, index);
-            builder.addAnnoClassMapper(WireletSupply.class, PackedExtensionContext.MH_FIND_WIRELET, index);
         }
 
         @Override
