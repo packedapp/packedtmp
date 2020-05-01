@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.sidecar;
+package app.packed.api;
 
 import java.lang.invoke.MethodHandles;
 

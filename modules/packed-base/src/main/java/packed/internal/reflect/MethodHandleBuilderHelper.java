@@ -35,7 +35,7 @@ import app.packed.inject.InjectionContext;
 import app.packed.inject.UnresolvedDependencyException;
 import packed.internal.inject.PackedInjectionContext;
 import packed.internal.inject.ServiceDependency;
-import packed.internal.reflect.FunctionResolver.Entry;
+import packed.internal.reflect.MethodHandleBuilder.Entry;
 import packed.internal.util.UncheckedThrowableFactory;
 
 /**
@@ -50,7 +50,7 @@ import packed.internal.util.UncheckedThrowableFactory;
 //We want to create a ConstructorFinder instance that we reuse..
 //So lookup object is probably an optional argument
 //The rest is static, its not for injection, because we need
-class FindMember {
+class MethodHandleBuilderHelper {
 
     final MethodType input;
 
@@ -59,13 +59,13 @@ class FindMember {
     final List<Parameter> parameters;
     final int add;
     final int[] permutationArray;
-    final FunctionResolver aa;
+    final MethodHandleBuilder aa;
 
     final Class<?> declaringClass;
 
-    FindMember(OpenClass oc, Executable e, FunctionResolver aa) {
+    MethodHandleBuilderHelper(OpenClass oc, Executable e, MethodHandleBuilder aa) {
         this.aa = aa;
-        input = aa.callSiteType();
+        input = aa.targetType();
 
         boolean isInstanceMethod = false;
 
@@ -79,9 +79,9 @@ class FindMember {
 
             // If Instance method callsite type must always have the receiver at index 0
             if (isInstanceMethod) {
-                if (m.getDeclaringClass() != aa.callSiteType().parameterType(0)) {
+                if (m.getDeclaringClass() != aa.targetType().parameterType(0)) {
                     throw new IllegalArgumentException(
-                            "First signature parameter type must be " + m.getDeclaringClass() + " was " + aa.callSiteType().parameterType(0));
+                            "First signature parameter type must be " + m.getDeclaringClass() + " was " + aa.targetType().parameterType(0));
                 }
             }
         }
@@ -112,7 +112,7 @@ class FindMember {
             Parameter p = parameters.get(i);
             ServiceDependency sd = ServiceDependency.fromVariable(ParameterDescriptor.from(p));
             Class<?> askingForType = sd.key().typeLiteral().rawType();
-            FunctionResolver.AnnoClassEntry anno = find(aa, p);
+            MethodHandleBuilder.AnnoClassEntry anno = find(aa, p);
 
             if (anno == null) {
                 Key<?> kk = sd.key();
@@ -134,7 +134,7 @@ class FindMember {
                         MethodHandle transformer = entry.transformer;
                         if (sd.isOptional()) {
                             // We need to the return value of transformer to an optional
-                            transformer = MethodHandles.filterReturnValue(transformer, FindMemberHelper.optionalOfTo(askingForType));
+                            transformer = MethodHandles.filterReturnValue(transformer, MethodHandleBuilderStatics.optionalOfTo(askingForType));
                         }
                         mh = MethodHandles.collectArguments(mh, is.size() + add, transformer);
                     } else {
@@ -143,7 +143,7 @@ class FindMember {
 //                        System.out.println("EXPECTED ______________" + expectedArg);
 //                        System.out.println("ACTUAL ______________" + kk);
                         if (sd.isOptional()) {
-                            mh = MethodHandles.filterArguments(mh, is.size() + add, FindMemberHelper.optionalOfTo(askingForType));
+                            mh = MethodHandles.filterArguments(mh, is.size() + add, MethodHandleBuilderStatics.optionalOfTo(askingForType));
                         }
                     }
                     is.push(entry.indexes);
@@ -165,7 +165,7 @@ class FindMember {
                 // System.out.println(mh.type());
                 if (sd.isOptional()) {
                     // We need to the return value of transformer to an optional, may be null
-                    tmp = MethodHandles.filterReturnValue(tmp, FindMemberHelper.optionalOfNullableTo(askingForType));
+                    tmp = MethodHandles.filterReturnValue(tmp, MethodHandleBuilderStatics.optionalOfNullableTo(askingForType));
                 }
 
                 mh = MethodHandles.filterArguments(mh, is.size() + add, tmp);
@@ -184,7 +184,7 @@ class FindMember {
     }
 
     @Nullable
-    private FunctionResolver.AnnoClassEntry find(FunctionResolver aa, Parameter p) {
+    private MethodHandleBuilder.AnnoClassEntry find(MethodHandleBuilder aa, Parameter p) {
         for (Annotation a : p.getAnnotations()) {
             if (aa.annoations.containsKey(a.annotationType())) {
                 return aa.annoations.get(a.annotationType());

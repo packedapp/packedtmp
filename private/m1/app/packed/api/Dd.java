@@ -13,14 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.zzz;
+package app.packed.api;
+
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 
 /**
  *
  */
-public class WX {
+public class Dd {
 
-    public static void main(String[] args) {
-        System.out.println("X");
+    public static void main(String[] args) throws Throwable {
+        MethodHandle mh = MethodHandles.lookup().findStatic(Dd.class, "doo", MethodType.methodType(void.class));
+        for (int i = 0; i < 4; i++) {
+            mh = MethodHandles.foldArguments(mh, mh);
+        }
+        mh.invoke();
+    }
+
+    static void doo() {
+        System.out.println("FFFF");
     }
 }

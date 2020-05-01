@@ -81,23 +81,23 @@ public final class OpenClass {
         return new OpenClass(lookup, type, registerForNative);
     }
 
-    public MethodHandle findConstructor(FunctionResolver dim) {
-        Constructor<?> constructor = FindInjectableConstructor.find(dim.callSiteType().returnType());
-        return new FindMember(this, constructor, dim).find();
+    public MethodHandle findConstructor(MethodHandleBuilder dim) {
+        Constructor<?> constructor = FindInjectableConstructor.find(dim.targetType().returnType());
+        return new MethodHandleBuilderHelper(this, constructor, dim).find();
     }
 
     public <T extends Throwable> void findMethods(ThrowableConsumer<? super Method, T> methodConsumer) throws T {
-        OpenClassMemberHelper.find(Object.class, type, methodConsumer, null);
+        OpenClassHelper.find(Object.class, type, methodConsumer, null);
     }
 
     public <T extends Throwable> void findMethodsAndFields(Class<?> baseType, ThrowableConsumer<? super Method, T> methodConsumer,
             ThrowableConsumer<? super Field, T> fieldConsumer) throws T {
-        OpenClassMemberHelper.find(baseType, type, methodConsumer, fieldConsumer);
+        OpenClassHelper.find(baseType, type, methodConsumer, fieldConsumer);
     }
 
     public <T extends Throwable> void findMethodsAndFields(ThrowableConsumer<? super Method, T> methodConsumer,
             ThrowableConsumer<? super Field, T> fieldConsumer) throws T {
-        OpenClassMemberHelper.find(Object.class, type, methodConsumer, fieldConsumer);
+        OpenClassHelper.find(Object.class, type, methodConsumer, fieldConsumer);
     }
 
     private Lookup lookup(Member member, UncheckedThrowableFactory<?> tf) {

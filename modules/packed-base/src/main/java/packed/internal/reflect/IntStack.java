@@ -20,7 +20,7 @@ import java.util.Stack;
 /**
  *
  */
-public class IntStack {
+final class IntStack {
 
     private final Stack<Integer> s = new Stack<>();
 

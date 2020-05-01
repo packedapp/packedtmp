@@ -25,13 +25,13 @@ import java.util.HashSet;
 import packed.internal.util.ThrowableConsumer;
 
 /** Processes all fields and methods on a class. */
-final class OpenClassMemberHelper {
+final class OpenClassHelper {
 
     /** We never process any classes that are located in java.base. */
     private static final Module JAVA_BASE_MODULE = Class.class.getModule();
 
     /** Never instantiate. */
-    private OpenClassMemberHelper() {}
+    private OpenClassHelper() {}
 
     static <T extends Throwable> void find(Class<?> baseType, Class<?> actualType, ThrowableConsumer<? super Method, T> methodConsumer,
             ThrowableConsumer<? super Field, T> fieldConsumer) throws T {

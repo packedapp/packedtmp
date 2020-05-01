@@ -36,21 +36,21 @@ import app.packed.base.Nullable;
 // TODO Add @AnnotationHandler...
 // Add Composite
 // Everything is instance for now
-public final class FunctionResolver {
-
-    private final MethodType callSiteType;
-
-    final HashMap<Key<?>, Entry> keys = new HashMap<>();
+public final class MethodHandleBuilder {
 
     final HashMap<Class<? extends Annotation>, AnnoClassEntry> annoations = new HashMap<>();
 
-    private FunctionResolver(MethodType callSiteType) {
-        this.callSiteType = requireNonNull(callSiteType);
+    final HashMap<Key<?>, Entry> keys = new HashMap<>();
+
+    private final MethodType targetType;
+
+    private MethodHandleBuilder(MethodType targetType) {
+        this.targetType = requireNonNull(targetType);
     }
 
-    private FunctionResolver add(Key<?> key, MethodHandle transformer, int... indexes) {
+    private MethodHandleBuilder add(Key<?> key, MethodHandle transformer, int... indexes) {
         for (int i = 0; i < indexes.length; i++) {
-            Objects.checkFromIndexSize(indexes[i], 0, callSiteType.parameterCount());
+            Objects.checkFromIndexSize(indexes[i], 0, targetType.parameterCount());
         }
 
         // Check the various types matches...
@@ -60,41 +60,54 @@ public final class FunctionResolver {
         return this;
     }
 
-    public <T> FunctionResolver addAnnoClassMapper(Class<? extends Annotation> annotationType, MethodHandle mh, int index) {
+    public <T> MethodHandleBuilder addAnnoClassMapper(Class<? extends Annotation> annotationType, MethodHandle mh, int index) {
         annoations.put(annotationType, new AnnoClassEntry(annotationType, index, mh));
         return this;
     }
 
-    public FunctionResolver addKey(Class<?> key, int index) {
+    public MethodHandleBuilder addKey(Class<?> key, int index) {
         return addKey(Key.of(key), index);
     }
 
-    public FunctionResolver addKey(Class<?> key, MethodHandle transformer, int... indexes) {
+    public MethodHandleBuilder addKey(Class<?> key, MethodHandle transformer, int... indexes) {
         return add(Key.of(key), transformer, indexes);
     }
 
-    public FunctionResolver addKey(Key<?> key, int index) {
+    public MethodHandleBuilder addKey(Key<?> key, int index) {
         return add(key, null, index);
     }
 
-    public FunctionResolver addKey(Key<?> key, MethodHandle transformer, int... indexes) {
+    public MethodHandleBuilder addKey(Key<?> key, MethodHandle transformer, int... indexes) {
         return add(key, requireNonNull(transformer, "transformer is null"), indexes);
     }
 
-    public MethodType callSiteType() {
-        return callSiteType;
+    public MethodHandle build(OpenClass oc, Executable e) {
+        return new MethodHandleBuilderHelper(oc, e, this).find();
     }
 
-    public MethodHandle resolve(OpenClass oc, Executable e) {
-        return new FindMember(oc, e, this).find();
+    /**
+     * Returns the target type of the method handle to build. Calling {@link #build(OpenClass, Executable)} will return a
+     * method handle with this exact type.
+     * 
+     * @return the target type of the method handle to build
+     */
+    public MethodType targetType() {
+        return targetType;
     }
 
-    public static FunctionResolver of(Class<?> returnType, Class<?>... parameterTypes) {
+    public static MethodHandleBuilder of(Class<?> returnType, Class<?>... parameterTypes) {
         return of(MethodType.methodType(returnType, parameterTypes));
     }
 
-    static FunctionResolver of(MethodType callSiteType) {
-        return new FunctionResolver(callSiteType);
+    /**
+     * Creates a new builder.
+     * 
+     * @param targetType
+     *            the type of the method handle being build
+     * @return a builder
+     */
+    static MethodHandleBuilder of(MethodType targetType) {
+        return new MethodHandleBuilder(targetType);
     }
 
     static class AnnoClassEntry {
@@ -109,6 +122,12 @@ public final class FunctionResolver {
         }
     }
 
+    public static class AnnotationResolutionStrategy {
+
+        Class<?> baseType;
+
+    }
+
     static class Entry {
         @Nullable
         int[] indexes;
@@ -121,6 +140,7 @@ public final class FunctionResolver {
             this.transformer = transformer;
         }
     }
+
 }
 
 // Kunne godt have noget hjaelpe tekst. hvis man ikke kan finde en key..

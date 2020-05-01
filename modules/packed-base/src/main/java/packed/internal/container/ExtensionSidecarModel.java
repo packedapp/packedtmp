@@ -42,7 +42,7 @@ import app.packed.lifecycle.LifecycleContext;
 import app.packed.sidecar.ExtensionSidecar;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
-import packed.internal.reflect.FunctionResolver;
+import packed.internal.reflect.MethodHandleBuilder;
 import packed.internal.reflect.OpenClass;
 import packed.internal.sidecar.SidecarModel;
 import packed.internal.sidecar.SidecarTypeMeta;
@@ -343,18 +343,17 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
 
             // I Would love to get rid of CONV
 
-            FunctionResolver is = FunctionResolver.of(sidecarType, PackedExtensionContext.class);
+            MethodHandleBuilder mhbConstructor = MethodHandleBuilder.of(sidecarType, PackedExtensionContext.class);
+            mhbConstructor.addKey(LifecycleContext.class, PackedExtensionContext.MH_LIFECYCLE_CONTEXT, 0);
+            mhbConstructor.addKey(ExtensionContext.class, CONV, 0);
+            mhbConstructor.addAnnoClassMapper(WireletSupply.class, WS, 0);
 
-            // Identical to linked, just 0-> 1
-            is.addKey(LifecycleContext.class, PackedExtensionContext.MH_LIFECYCLE_CONTEXT, 0);
-            is.addKey(ExtensionContext.class, CONV, 0);
-            is.addAnnoClassMapper(WireletSupply.class, WS, 0);
-
-            OpenClass cp = prep(is);
+            OpenClass cp = prep(mhbConstructor);
             this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
+
             if (linked != null) {
                 // ancestor extension, descendant extension context, descendant extension
-                FunctionResolver iss = FunctionResolver.of(void.class, sidecarType, PackedExtensionContext.class, sidecarType);
+                MethodHandleBuilder iss = MethodHandleBuilder.of(void.class, sidecarType, PackedExtensionContext.class, sidecarType);
 
                 // From the child's extension context
                 iss.addKey(ExtensionContext.class, CONV, 1);
@@ -364,7 +363,7 @@ public final class ExtensionSidecarModel extends SidecarModel implements Compara
                 // The child's extension instance
                 iss.addKey(sidecarType, 2);
 
-                li = iss.resolve(cp, linked);
+                li = iss.build(cp, linked);
             }
             return new ExtensionSidecarModel(this);
         }

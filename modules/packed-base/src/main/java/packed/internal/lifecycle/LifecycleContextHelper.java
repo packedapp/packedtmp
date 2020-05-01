@@ -13,41 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle.impl;
+package packed.internal.lifecycle;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Set;
 
 import app.packed.lifecycle.LifecycleContext;
-import packed.internal.util.ThrowableUtil;
 
 /**
  *
  */
-public final class LinearLifecycleModel {
+public class LifecycleContextHelper {
 
-    /** The set of possible states for an object with a monotonic deterministic lifecycle. */
-    private final String[] states;
-
-    public LinearLifecycleModel(String... states) {
-        this.states = states;
-    }
-
-    public LifecycleContext toContext(MethodHandle mh) {
-        return new SimpleLifecycleContext(mh, states);
-    }
-
-    static class SimpleLifecycleContext implements LifecycleContext {
-
-        private final MethodHandle mh;
+    public static abstract class SimpleLifecycleContext implements LifecycleContext {
 
         private final String[] states;
 
-        SimpleLifecycleContext(MethodHandle mh, String[] states) {
-            this.mh = requireNonNull(mh);
+        public SimpleLifecycleContext(String[] states) {
             this.states = requireNonNull(states);
         }
 
@@ -73,15 +56,9 @@ public final class LinearLifecycleModel {
         @Override
         public Set<String> nextStates() {
             int state = state();
-            return state == states.length - 1 ? Set.of() : Set.of(states[states.length + 1]);
+            return state == states.length - 1 ? Set.of() : Set.of(states[state + 1]);
         }
 
-        private int state() {
-            try {
-                return (int) mh.invokeExact();
-            } catch (Throwable e) {
-                throw new UndeclaredThrowableException(ThrowableUtil.throwIfUnchecked(e));
-            }
-        }
+        protected abstract int state();
     }
 }

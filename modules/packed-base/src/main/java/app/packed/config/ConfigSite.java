@@ -62,6 +62,8 @@ import packed.internal.config.ConfigSiteSupport;
 // Maaske lav om til Abstract Class (IGEn!!! dough).
 // Og saa automatisk intern naar man laver noget...
 // Det
+
+// Maybe a sealed interface???
 public interface ConfigSite {
 
     /** A special configuration site indicating that the actual configuration site could not be determined. */

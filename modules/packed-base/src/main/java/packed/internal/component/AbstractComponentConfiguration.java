@@ -93,6 +93,11 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
     /** The state of this configuration. */
     protected ComponentConfigurationState state = new ComponentConfigurationState();
 
+    public PackedContainerConfiguration parentContainer() {
+        AbstractComponentConfiguration c = container;
+        return c == null ? null : c.container;
+    }
+
     /**
      * Creates a new abstract component configuration
      * 

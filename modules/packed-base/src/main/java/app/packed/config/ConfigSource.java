@@ -18,7 +18,7 @@ package app.packed.config;
 /**
  *
  */
-public abstract class ConfigSource {
+abstract class ConfigSource {
 
     protected abstract void configure();
 

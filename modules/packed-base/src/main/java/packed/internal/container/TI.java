@@ -31,6 +31,10 @@ import app.packed.service.ServiceWirelets;
 public class TI extends BaseBundle {
 
     public static void main(String[] args) {
+        App.of(new TI(), new MyTestWirelet("fofoof XXXXXXXXXX"));
+    }
+
+    public static void mainTimed(String[] args) {
         long start = System.nanoTime();
         App.of(new TI(), new MyTestWirelet("fofoof XXXXXXXXXX"));
         long stop = System.nanoTime();
@@ -56,7 +60,6 @@ public class TI extends BaseBundle {
     protected void compose() {
 
         provideConstant(123L);
-
         use(MyExte.class).foo = "Gondor";
 
         link(new FFF(), ServiceWirelets.provide("const"));
@@ -68,7 +71,7 @@ public class TI extends BaseBundle {
         @Override
         protected void compose() {
             provideConstant("HejHej");
-            // System.out.println(use(MyExte.class).foo);
+            System.out.println(use(MyExte.class).foo);
         }
     }
 

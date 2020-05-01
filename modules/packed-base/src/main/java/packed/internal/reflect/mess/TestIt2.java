@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 
 import app.packed.inject.InjectionContext;
-import packed.internal.reflect.FunctionResolver;
+import packed.internal.reflect.MethodHandleBuilder;
 import packed.internal.reflect.OpenClass;
 import packed.internal.reflect.mhadventures.MH1;
 
@@ -39,7 +39,7 @@ public class TestIt2 {
     }
 
     public static void main(String[] args) throws Throwable {
-        FunctionResolver aa = FunctionResolver.of(TestIt2.class, String.class);
+        MethodHandleBuilder aa = MethodHandleBuilder.of(TestIt2.class, String.class);
         // aa.addKey(String.class, 0);
         aa.addKey(String.class, MH1.DUP, 0);
         aa.addKey(Integer.class, MH1.LENGTH, 0);

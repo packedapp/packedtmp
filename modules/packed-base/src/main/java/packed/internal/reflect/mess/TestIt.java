@@ -23,7 +23,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 
 import app.packed.inject.InjectionContext;
-import packed.internal.reflect.FunctionResolver;
+import packed.internal.reflect.MethodHandleBuilder;
 import packed.internal.reflect.OpenClass;
 
 /**
@@ -43,7 +43,7 @@ public class TestIt {
 
         MethodHandle mhhhh = ll.findSpecial(Data.class, "tt", MethodType.methodType(String.class), Data.class);
 
-        FunctionResolver aa = FunctionResolver.of(TestIt.class, Data.class);
+        MethodHandleBuilder aa = MethodHandleBuilder.of(TestIt.class, Data.class);
         aa.addKey(Data.class, 0);
         aa.addKey(String.class, mhhhh, 0);
         aa.addAnnoClassMapper(X.class, mhhh, 0);

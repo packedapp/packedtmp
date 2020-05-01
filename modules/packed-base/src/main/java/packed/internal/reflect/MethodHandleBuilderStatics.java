@@ -30,8 +30,10 @@ import packed.internal.util.ThrowableUtil;
 
 /**
  *
+ * <p>
+ * Yes the name is intentional.
  */
-class FindMemberHelper {
+final class MethodHandleBuilderStatics {
 
     static final MethodHandle WRAP_OPTIONAL = LookupUtil.findVirtualEIIE(MethodHandles.lookup(), ServiceDependency.class, "wrapIfOptional",
             MethodType.methodType(Object.class, Object.class));
@@ -46,14 +48,14 @@ class FindMemberHelper {
             MethodType.methodType(Optional.class, Object.class));
 
     static final MethodHandle optionalOfTo(Class<?> type) {
-        return MethodHandles.explicitCastArguments(FindMemberHelper.OPTIONAL_OF, MethodType.methodType(Optional.class, type));
+        return MethodHandles.explicitCastArguments(MethodHandleBuilderStatics.OPTIONAL_OF, MethodType.methodType(Optional.class, type));
     }
 
     static final MethodHandle optionalOfNullableTo(Class<?> type) {
-        return MethodHandles.explicitCastArguments(FindMemberHelper.OPTIONAL_OF_NULLABLE, MethodType.methodType(Optional.class, type));
+        return MethodHandles.explicitCastArguments(MethodHandleBuilderStatics.OPTIONAL_OF_NULLABLE, MethodType.methodType(Optional.class, type));
     }
 
-    public static class InvokeExactProvider<T> implements Provider<T> {
+    static class InvokeExactProvider<T> implements Provider<T> {
 
         private final MethodHandle mh;
 

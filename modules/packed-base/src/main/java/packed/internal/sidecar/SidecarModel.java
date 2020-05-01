@@ -29,7 +29,7 @@ import app.packed.base.Contract;
 import app.packed.container.InternalExtensionException;
 import app.packed.sidecar.Expose;
 import app.packed.sidecar.PostSidecar;
-import packed.internal.reflect.FunctionResolver;
+import packed.internal.reflect.MethodHandleBuilder;
 import packed.internal.reflect.OpenClass;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.UncheckedThrowableFactory;
@@ -109,7 +109,7 @@ public abstract class SidecarModel extends Model {
         protected void onMethod(Method m) {}
 
         @SuppressWarnings({ "unchecked", "rawtypes" })
-        protected OpenClass prep(FunctionResolver spec) {
+        protected OpenClass prep(MethodHandleBuilder spec) {
             OpenClass cp = new OpenClass(MethodHandles.lookup(), sidecarType, true);
 
             this.constructor = cp.findConstructor(spec);
@@ -127,12 +127,12 @@ public abstract class SidecarModel extends Model {
                     //// Skal have en slags mapStaticMethodsToInstanceMethods paa InjectableFunction...
                     MethodHandle mh;
                     if (Modifier.isStatic(m.getModifiers())) {
-                        FunctionResolver is = FunctionResolver.of(m.getReturnType());
-                        mh = is.resolve(cp, m);
+                        MethodHandleBuilder is = MethodHandleBuilder.of(m.getReturnType());
+                        mh = is.build(cp, m);
                         mh = MethodHandles.dropArguments(mh, 0, sidecarType);
                     } else {
-                        FunctionResolver is = FunctionResolver.of(m.getReturnType(), m.getDeclaringClass());
-                        mh = is.resolve(cp, m);
+                        MethodHandleBuilder is = MethodHandleBuilder.of(m.getReturnType(), m.getDeclaringClass());
+                        mh = is.build(cp, m);
                     }
 
                     // If there are multiple methods with the same index. We just fold them to a single MethodHandle

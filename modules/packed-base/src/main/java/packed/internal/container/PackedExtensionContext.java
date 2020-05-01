@@ -35,7 +35,7 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 import app.packed.inject.Factory;
 import app.packed.lifecycle.LifecycleContext;
-import app.packed.lifecycle.impl.LifecycleContextHelper;
+import packed.internal.lifecycle.LifecycleContextHelper;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.util.LookupUtil;
 
@@ -272,6 +272,9 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
 
             // Should we also set the active extension in the parent???
             if (model.parentExtensionLinked != null) {
+                
+                // This needs to be done recursively, if onlyDirectParent false;
+                PackedContainerConfiguration parent = pcc.parentContainer();
                 if (pcc.parent instanceof PackedContainerConfiguration) {
                     PackedContainerConfiguration p = (PackedContainerConfiguration) pcc.parent;
                     PackedExtensionContext parentExtension = p.getExtension(extensionType);

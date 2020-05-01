@@ -99,7 +99,7 @@ public interface SystemImage extends SystemSource {
      * @return the name
      */
     // Only if a name has been explicitly set?
-    // Or can we include "FooBar?"
+    // Or can we include "FooBar?" Ja det taenker jeg
     String name();
 
     /**
