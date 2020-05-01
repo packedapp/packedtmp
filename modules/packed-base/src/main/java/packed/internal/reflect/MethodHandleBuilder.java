@@ -52,7 +52,6 @@ public final class MethodHandleBuilder {
         for (int i = 0; i < indexes.length; i++) {
             Objects.checkFromIndexSize(indexes[i], 0, targetType.parameterCount());
         }
-
         // Check the various types matches...
         if (keys.putIfAbsent(key, new Entry(indexes, transformer)) != null) {
             throw new IllegalArgumentException("The specified key " + key + " has already been added");
@@ -74,6 +73,8 @@ public final class MethodHandleBuilder {
     }
 
     public MethodHandleBuilder addKey(Key<?> key, int index) {
+        // Check that we can perform upcast?
+        // if (targetType.parameterType(index))
         return add(key, null, index);
     }
 

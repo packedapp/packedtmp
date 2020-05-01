@@ -142,6 +142,7 @@ class MethodHandleBuilderHelper {
 
                         Class<?> actual = kk.typeLiteral().rawType();
                         Class<?> expected = input.parameterType(entry.indexes[0]);
+
                         // Upcast if needed, I don't think we need to do this if we create an optional
                         if (actual != expected) {
                             if (actual.isAssignableFrom(expected)) {
@@ -149,7 +150,7 @@ class MethodHandleBuilderHelper {
                                 MethodType newType = mh.type().changeParameterType(is.size() + add, expected);
                                 mh = mh.asType(newType);
                                 // System.out.println("After " + mh);
-                            }
+                            } // else should fail...
                         }
                         if (sd.isOptional()) {
                             mh = MethodHandles.filterArguments(mh, is.size() + add, MethodHandleBuilderStatics.optionalOfTo(askingForType));
@@ -203,78 +204,3 @@ class MethodHandleBuilderHelper {
         return null;
     }
 }
-//
-//MethodHandle findOld() {
-//    MethodHandle mh = executable;
-//    int injectionContext = -1;
-//
-//    for (int i = 0; i < parameters.size(); i++) {
-//        Parameter p = parameters.get(i);
-//        ServiceDependency sd = ServiceDependency.fromVariable(ParameterDescriptor.from(p));
-//        Class<?> askingForType = sd.key().typeLiteral().rawType();
-//        int index;
-//        MethodHandle collectMe = null;
-//
-//        if (askingForType == InjectionContext.class) {
-//            index = injectionContext = input.parameterCount();
-//        } else {
-//            FunctionResolver.AnnoClassEntry anno = find(aa, p);
-//
-//            if (anno == null) {
-//                Key<?> kk = Key.of(p.getType());
-//                Entry entry = aa.keys.get(kk);
-//                if (entry != null) {
-//                    index = entry.indexes[0];
-//                    if (entry.transformer != null) {
-//                        collectMe = entry.transformer;
-//                    }
-//                    // Else it just the argument being relayed directly
-//                } else {
-//                    // Vil gerne indsaette argument...
-//                    throw new UnresolvedDependencyException("" + kk + " Available keys = " + aa.keys.keySet());
-//                }
-//            } else {
-//                MethodHandle tmp = MethodHandles.insertArguments(anno.mh, 1, askingForType);
-//                tmp = MethodHandles.explicitCastArguments(tmp, MethodType.methodType(askingForType, tmp.type().parameterArray()[0]));
-//                index = anno.index;
-//                collectMe = tmp;
-//            }
-//
-//        }
-//        if (sd.isOptional()) {
-//            if (collectMe != null) {
-//                // Need to cast return type of collect to Object in order to feed it to Optional.ofNullable(Object)
-//                collectMe = MethodHandles.explicitCastArguments(collectMe, collectMe.type().changeReturnType(Object.class));
-//                collectMe = MethodHandles.collectArguments(FindMemberHelper.OPTIONAL_OF_NULLABLE, 0, collectMe);
-//            } else {
-//                // Men den eksistere jo ikke endnu...
-//                mh = MethodHandles.collectArguments(mh, index, FindMemberHelper.OPTIONAL_OF_NULLABLE);
-//                // collectMe = MethodHandles.collectArguments(FindMemberHelper.OPTIONAL_OF_NULLABLE, i + add, mh);
-//            }
-//        }
-//
-//        if (collectMe != null) {
-//            mh = MethodHandles.collectArguments(mh, i + add, collectMe);
-//        }
-//        permutationArray[i + add] = index;
-//    }
-//
-//    if (injectionContext != -1) {
-//        // Vi indsaetter den som et argument fordi, saa kan runtimen selv finde ud af genbruge den...
-//        // Hvis flere argumenter efterspoerger den
-//        MethodType e2 = input.appendParameterTypes(InjectionContext.class);
-//        mh = MethodHandles.permuteArguments(mh, e2, permutationArray);
-//
-//        // En senere implementation har jo faktisk brug for baade aa.keys.ketSet() og noget runtime context...
-//        // Saa vi bliver vel noedt til at lave et partial object vi kan injecte. Hvorefter den saa bliver lavet
-//        // med en MH
-//        PackedInjectionContext pic = new PackedInjectionContext(declaringClass, Set.copyOf(aa.keys.keySet()));
-//        mh = MethodHandles.insertArguments(mh, injectionContext, pic);
-//    } else {
-//        System.out.println("Before permute " + mh.type());
-//        mh = MethodHandles.permuteArguments(mh, input, permutationArray);
-//        System.out.println("After permute " + mh.type());
-//    }
-//
-//    return mh;
-//}

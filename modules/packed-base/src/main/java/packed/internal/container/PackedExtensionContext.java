@@ -33,6 +33,7 @@ import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
+import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.lifecycle.LifecycleContext;
 import packed.internal.lifecycle.LifecycleContextHelper;
@@ -297,5 +298,12 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
             pcc.activeExtension = existing;
         }
         return pec;
+    }
+
+    static final MethodHandle FIND_WIRELET = LookupUtil.findVirtualEIIE(MethodHandles.lookup(), "findWirelet",
+            MethodType.methodType(Object.class, Class.class));
+
+    Object findWirelet(Class<? extends Wirelet> wireletType) {
+        return container().wireletAny(wireletType).orElse(null);
     }
 }

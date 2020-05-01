@@ -18,8 +18,6 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -35,7 +33,6 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 import app.packed.container.ExtensionMember;
 import app.packed.container.InternalExtensionException;
-import app.packed.container.Wirelet;
 import app.packed.container.WireletSupply;
 import app.packed.hook.OnHook;
 import app.packed.lifecycle.LifecycleContext;
@@ -46,7 +43,6 @@ import packed.internal.reflect.MethodHandleBuilder;
 import packed.internal.reflect.OpenClass;
 import packed.internal.sidecar.SidecarModel;
 import packed.internal.sidecar.SidecarTypeMeta;
-import packed.internal.util.LookupUtil;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.UncheckedThrowableFactory;
@@ -79,6 +75,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
 
     static final int ON_MAIN = 1;
 
+    /**  */
     private static ClassValue<?> OPTIONALS = new ClassValue<>() {
 
         @Override
@@ -119,6 +116,8 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
 
     final MethodHandle bundleBuilderMethod;
 
+    public final boolean callbackOnlyDirectChildren;
+
     /** The depth of this extension. Defined as 0 if no dependencies otherwise max(all dependencies depth) + 1. */
     private final int depth;
 
@@ -141,8 +140,6 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
 
     @Nullable
     public final MethodHandle parentExtensionLinked;
-
-    public final boolean callbackOnlyDirectChildren;
 
     /**
      * Creates a new extension model from the specified builder.
@@ -277,6 +274,8 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         public static final SidecarTypeMeta STM = new SidecarTypeMeta(ExtensionSidecar.class, ExtensionSidecar.INSTANTIATION, ExtensionSidecar.ON_PREEMBLE,
                 ExtensionSidecar.CHILDREN_CONFIGURED, ExtensionSidecar.GUESTS_CONFIGURED);
 
+        private boolean callbackOnlyDirectChildren;
+
         /** A list of dependencies on other extensions. */
         private Set<Class<? extends Extension>> dependenciesDirect = new HashSet<>();
 
@@ -285,13 +284,15 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
 
         int id;
 
+        MethodHandle li;
+
+        Method linked;
+
         /** The loader used to load the extension. */
         private final ExtensionModelLoader loader;
 
         /** A builder for all methods annotated with {@link OnHook} on the extension. */
         private OnHookModel onHookModel;
-
-        private boolean callbackOnlyDirectChildren;
 
         /**
          * Creates a new builder.
@@ -311,21 +312,6 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
             ExtensionModel model = ExtensionModelLoader.load(this, dependencyType, loader);
             depth = Math.max(depth, model.depth + 1);
             dependenciesDirect.add(dependencyType);
-        }
-
-        Method linked;
-
-        @Override
-        protected void onMethod(Method m) {
-            DescendentAdded da = m.getAnnotation(DescendentAdded.class);
-            if (da != null) {
-                if (linked != null) {
-                    throw new IllegalStateException(
-                            "Multiple methods annotated with " + DescendentAdded.class + " on " + m.getDeclaringClass() + ", only 1 allowed.");
-                }
-                linked = m;
-                callbackOnlyDirectChildren = da.onlyDirectChildren();
-            }
         }
 
         /**
@@ -352,7 +338,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
             MethodHandleBuilder mhbConstructor = MethodHandleBuilder.of(sidecarType, PackedExtensionContext.class);
             mhbConstructor.addKey(LifecycleContext.class, PackedExtensionContext.MH_LIFECYCLE_CONTEXT, 0);
             mhbConstructor.addKey(ExtensionContext.class, 0);
-            mhbConstructor.addAnnoClassMapper(WireletSupply.class, WS, 0);
+            mhbConstructor.addAnnoClassMapper(WireletSupply.class, PackedExtensionContext.FIND_WIRELET, 0);
 
             OpenClass cp = prep(mhbConstructor);
             this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
@@ -364,23 +350,27 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
                 // From the child's extension context
                 iss.addKey(ExtensionContext.class, 1);
                 iss.addKey(LifecycleContext.class, PackedExtensionContext.MH_LIFECYCLE_CONTEXT, 1);
-                iss.addAnnoClassMapper(WireletSupply.class, WS, 1);
+                iss.addAnnoClassMapper(WireletSupply.class, PackedExtensionContext.FIND_WIRELET, 1);
 
                 // The child's extension instance
-                iss.addKey(sidecarType, 2);
+                iss.addKey(sidecarType, 2); // should perform an implicit cast
 
                 li = iss.build(cp, linked);
             }
             return new ExtensionModel(this);
         }
 
-        MethodHandle li;
-    }
-
-    static final MethodHandle WS = LookupUtil.findStaticEIIE(MethodHandles.lookup(), "findWirelet",
-            MethodType.methodType(Object.class, PackedExtensionContext.class, Class.class));
-
-    static Object findWirelet(PackedExtensionContext ec, Class<? extends Wirelet> wireletType) {
-        return ec.container().wireletAny(wireletType).orElse(null);
+        @Override
+        protected void onMethod(Method m) {
+            DescendentAdded da = m.getAnnotation(DescendentAdded.class);
+            if (da != null) {
+                if (linked != null) {
+                    throw new IllegalStateException(
+                            "Multiple methods annotated with " + DescendentAdded.class + " on " + m.getDeclaringClass() + ", only 1 allowed.");
+                }
+                linked = m;
+                callbackOnlyDirectChildren = da.onlyDirectChildren();
+            }
+        }
     }
 }

@@ -21,6 +21,7 @@ import app.packed.container.BaseBundle;
 import app.packed.container.DescendentAdded;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
+import app.packed.container.WireletSupply;
 import app.packed.inject.InjectionContext;
 import app.packed.lifecycle.LifecycleContext;
 import app.packed.service.ServiceWirelets;
@@ -103,7 +104,7 @@ public class TI extends BaseBundle {
 
         String foo;
 
-        MyExte(LifecycleContext lc, InjectionContext ic) {
+        MyExte(LifecycleContext lc, InjectionContext ic, @WireletSupply MyTestWirelet wc) {
             // System.out.println("Current state " + lc.current());
             // System.out.println("Next state " + lc.nextStates());
 
