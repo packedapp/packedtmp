@@ -351,7 +351,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
 
             MethodHandleBuilder mhbConstructor = MethodHandleBuilder.of(sidecarType, PackedExtensionContext.class);
             mhbConstructor.addKey(LifecycleContext.class, PackedExtensionContext.MH_LIFECYCLE_CONTEXT, 0);
-            mhbConstructor.addKey(ExtensionContext.class, CONV, 0);
+            mhbConstructor.addKey(ExtensionContext.class, 0);
             mhbConstructor.addAnnoClassMapper(WireletSupply.class, WS, 0);
 
             OpenClass cp = prep(mhbConstructor);
@@ -362,7 +362,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
                 MethodHandleBuilder iss = MethodHandleBuilder.of(void.class, sidecarType, PackedExtensionContext.class, sidecarType);
 
                 // From the child's extension context
-                iss.addKey(ExtensionContext.class, CONV, 1);
+                iss.addKey(ExtensionContext.class, 1);
                 iss.addKey(LifecycleContext.class, PackedExtensionContext.MH_LIFECYCLE_CONTEXT, 1);
                 iss.addAnnoClassMapper(WireletSupply.class, WS, 1);
 
@@ -379,13 +379,6 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
 
     static final MethodHandle WS = LookupUtil.findStaticEIIE(MethodHandles.lookup(), "findWirelet",
             MethodType.methodType(Object.class, PackedExtensionContext.class, Class.class));
-
-    static final MethodHandle CONV = LookupUtil.findStaticEIIE(MethodHandles.lookup(), "conv",
-            MethodType.methodType(ExtensionContext.class, PackedExtensionContext.class));
-
-    static ExtensionContext conv(PackedExtensionContext ec) {
-        return ec;
-    }
 
     static Object findWirelet(PackedExtensionContext ec, Class<? extends Wirelet> wireletType) {
         return ec.container().wireletAny(wireletType).orElse(null);

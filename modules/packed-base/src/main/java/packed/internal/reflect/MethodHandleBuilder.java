@@ -106,7 +106,7 @@ public final class MethodHandleBuilder {
      *            the type of the method handle being build
      * @return a builder
      */
-    static MethodHandleBuilder of(MethodType targetType) {
+    public static MethodHandleBuilder of(MethodType targetType) {
         return new MethodHandleBuilder(targetType);
     }
 

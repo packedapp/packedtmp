@@ -139,9 +139,18 @@ class MethodHandleBuilderHelper {
                         mh = MethodHandles.collectArguments(mh, is.size() + add, transformer);
                     } else {
                         // We use a provided value directly. Wrap it in an Optional if needed
-//                        Class<?> expectedArg = executable.type().parameterType(entry.indexes[0]);
-//                        System.out.println("EXPECTED ______________" + expectedArg);
-//                        System.out.println("ACTUAL ______________" + kk);
+
+                        Class<?> actual = kk.typeLiteral().rawType();
+                        Class<?> expected = input.parameterType(entry.indexes[0]);
+                        // Upcast if needed, I don't think we need to do this if we create an optional
+                        if (actual != expected) {
+                            if (actual.isAssignableFrom(expected)) {
+                                // System.out.println("Before " + mh);
+                                MethodType newType = mh.type().changeParameterType(is.size() + add, expected);
+                                mh = mh.asType(newType);
+                                // System.out.println("After " + mh);
+                            }
+                        }
                         if (sd.isOptional()) {
                             mh = MethodHandles.filterArguments(mh, is.size() + add, MethodHandleBuilderStatics.optionalOfTo(askingForType));
                         }
@@ -160,6 +169,7 @@ class MethodHandleBuilderHelper {
                 // Annnotation
                 // Vi supportere kun lige nu noget der sporger paa typen (class)
                 // Som vi binder til en supplied methodhandle som vi derefter kalder
+
                 MethodHandle tmp = MethodHandles.insertArguments(anno.mh, 1, askingForType);
                 tmp = MethodHandles.explicitCastArguments(tmp, MethodType.methodType(askingForType, tmp.type().parameterArray()[0]));
                 // System.out.println(mh.type());

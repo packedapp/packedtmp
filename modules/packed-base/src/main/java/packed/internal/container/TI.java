@@ -110,7 +110,7 @@ public class TI extends BaseBundle {
             // System.out.println(ic.keys());
         }
 
-        @DescendentAdded(onlyDirectChildren = true)
+        @DescendentAdded(onlyDirectChildren = false)
         public void ff(InjectionContext ic, MyExte child) {
             child.foo = " Child of " + foo;
         }
