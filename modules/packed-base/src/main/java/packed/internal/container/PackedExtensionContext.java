@@ -212,13 +212,13 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
 
     /** Invoked by the container configuration, whenever the extension is configured. */
     public void onChildrenConfigured() {
-        model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_CHILDREN_DONE, extension);
+        model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_CHILDREN_DONE, extension, this);
         isConfigured = true;
     }
 
     /** Invoked by the container configuration, whenever the extension is configured. */
     public void onConfigured() {
-        model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_MAIN, extension);
+        model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_MAIN, extension, this);
         isConfigured = true;
     }
 
@@ -278,7 +278,7 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
         PackedExtensionContext existing = pcc.activeExtension;
         try {
             pcc.activeExtension = pec;
-            model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_INSTANTIATION, e);
+            model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_INSTANTIATION, e, pec);
             if (pcc.wireletContext != null) {
                 pcc.wireletContext.extensionInitialized(pec);
             }

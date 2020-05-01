@@ -20,6 +20,7 @@ import app.packed.artifact.SystemImage;
 import app.packed.container.BaseBundle;
 import app.packed.container.DescendentAdded;
 import app.packed.container.Extension;
+import app.packed.container.ExtensionContext;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSupply;
 import app.packed.inject.InjectionContext;
@@ -120,12 +121,12 @@ public class TI extends BaseBundle {
         }
 
         @PostSidecar(ExtensionSidecar.ON_PREEMBLE)
-        protected void foo() {
-            System.out.println("STUF");
+        protected void foo(ExtensionContext ec) {
+            System.out.println(ec.containerPath());
         }
 
         @PostSidecar(ExtensionSidecar.ON_PREEMBLE)
-        protected static void foodd() {
+        private static void foodd() {
             System.out.println("STUF");
         }
 

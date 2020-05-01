@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
@@ -68,11 +67,11 @@ public abstract class SidecarModel extends Model {
         return contracts;
     }
 
-    public void invokePostSidecarAnnotatedMethods(int id, Object sidecar) {
+    public void invokePostSidecarAnnotatedMethods(int id, Object sidecar, Object context) {
         MethodHandle mh = postSidecars[id];
         if (mh != null) {
             try {
-                mh.invokeExact(sidecar);
+                mh.invokeExact(sidecar, context);
             } catch (Throwable e) {
                 throw ThrowableUtil.easyThrow(e);
             }
@@ -104,6 +103,8 @@ public abstract class SidecarModel extends Model {
             this.postSidecars = new MethodHandle[statics.numberOfLifecycleStates()];
         }
 
+        protected void decorateOnSidecar(MethodHandleBuilder builder) {}
+
         protected void onMethod(Method m) {}
 
         @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -123,15 +124,9 @@ public abstract class SidecarModel extends Model {
                     // Vi vil helst ikke lave vores egen code her....
                     // Static er fck irriterende...
                     //// Skal have en slags mapStaticMethodsToInstanceMethods paa InjectableFunction...
-                    MethodHandle mh;
-                    if (Modifier.isStatic(m.getModifiers())) {
-                        MethodHandleBuilder is = MethodHandleBuilder.of(void.class);
-                        mh = is.build(cp, m);
-                        mh = MethodHandles.dropArguments(mh, 0, Object.class);
-                    } else {
-                        MethodHandleBuilder is = MethodHandleBuilder.of(void.class, Object.class);
-                        mh = is.build(cp, m);
-                    }
+                    MethodHandleBuilder mhb = MethodHandleBuilder.of(void.class, Object.class, Object.class);
+                    decorateOnSidecar(mhb);
+                    MethodHandle mh = mhb.build(cp, m);
 
                     // If there are multiple methods with the same index. We just fold them to a single MethodHandle
                     MethodHandle existing = postSidecars[index];

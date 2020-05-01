@@ -361,6 +361,13 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         }
 
         @Override
+        protected void decorateOnSidecar(MethodHandleBuilder builder) {
+            builder.addKey(ExtensionContext.class, 1);
+            builder.addKey(LifecycleContext.class, PackedExtensionContext.MH_LIFECYCLE_CONTEXT, 1);
+            builder.addAnnoClassMapper(WireletSupply.class, PackedExtensionContext.MH_FIND_WIRELET, 1);
+        }
+
+        @Override
         protected void onMethod(Method m) {
             DescendentAdded da = m.getAnnotation(DescendentAdded.class);
             if (da != null) {
