@@ -36,6 +36,7 @@ import app.packed.inject.UnresolvedDependencyException;
 import packed.internal.inject.PackedInjectionContext;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.reflect.MethodHandleBuilder.Entry;
+import packed.internal.sidecar.MethodHandleUtil;
 import packed.internal.util.UncheckedThrowableFactory;
 
 /**
@@ -196,6 +197,11 @@ class MethodHandleBuilderHelper {
 //          }
             mh = MethodHandles.permuteArguments(mh, input, is.toArrayAdd0());
         } else {
+            // USed for example, for constructors to change the actually type being made
+            // F.x Extension instead of ServiceExtension (so we can use invokeExact
+            if (input.returnType() != mh.type().returnType()) {
+                mh = MethodHandleUtil.castReturnType(mh, mh.type().returnType()); // need to upcast to extension to invokeExact
+            }
             mh = MethodHandles.permuteArguments(mh, input, is.toArray());
         }
         return mh;

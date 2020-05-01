@@ -43,12 +43,15 @@ import packed.internal.util.LookupUtil;
 /** The default implementation of {@link ExtensionContext} with addition methods only available in app.packed.base. */
 public final class PackedExtensionContext implements ExtensionContext, Comparable<PackedExtensionContext> {
 
+    // Indicates that a bundle has already been configured...
+    public static final ExtensionContext CONFIGURED = new PackedExtensionContext();
+
+    static final MethodHandle MH_FIND_WIRELET = LookupUtil.findVirtualEIIE(MethodHandles.lookup(), "findWirelet",
+            MethodType.methodType(Object.class, Class.class));
+
     /** A MethodHandle for {@link #lifecycle()}. */
     public static final MethodHandle MH_LIFECYCLE_CONTEXT = LookupUtil.findVirtualEIIE(MethodHandles.lookup(), "lifecycle",
             MethodType.methodType(LifecycleContext.class));
-
-    // Indicates that a bundle has already been configured...
-    public static final ExtensionContext CONFIGURED = new PackedExtensionContext();
 
     /** The extension instance this context wraps, initialized in {@link #of(PackedContainerConfiguration, Class)}. */
     @Nullable
@@ -172,6 +175,18 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
         return model.extensionType();
     }
 
+    /**
+     * Used by {@link ExtensionModel}.
+     * 
+     * @param wireletType
+     *            the type of wirelet
+     * @return the wirelet or null
+     */
+    @Nullable
+    Object findWirelet(Class<? extends Wirelet> wireletType) {
+        return container().wireletAny(wireletType).orElse(null);
+    }
+
     /** {@inheritDoc} */
     @Override
     public <T> SingletonConfiguration<T> install(Factory<T> factory) {
@@ -184,6 +199,16 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
         return pcc.installInstance(instance);
     }
 
+    LifecycleContext lifecycle() {
+        return new LifecycleContextHelper.SimpleLifecycleContext(ExtensionModel.Builder.STM.toArray()) {
+
+            @Override
+            protected int state() {
+                return 1;
+            }
+        };
+    }
+
     /** Invoked by the container configuration, whenever the extension is configured. */
     public void onChildrenConfigured() {
         model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_CHILDREN_DONE, extension);
@@ -194,16 +219,6 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
     public void onConfigured() {
         model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_MAIN, extension);
         isConfigured = true;
-    }
-
-    LifecycleContext lifecycle() {
-        return new LifecycleContextHelper.SimpleLifecycleContext(ExtensionModel.Builder.STM.toArray()) {
-
-            @Override
-            protected int state() {
-                return 1;
-            }
-        };
     }
 
     /**
@@ -298,12 +313,5 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
             pcc.activeExtension = existing;
         }
         return pec;
-    }
-
-    static final MethodHandle FIND_WIRELET = LookupUtil.findVirtualEIIE(MethodHandles.lookup(), "findWirelet",
-            MethodType.methodType(Object.class, Class.class));
-
-    Object findWirelet(Class<? extends Wirelet> wireletType) {
-        return container().wireletAny(wireletType).orElse(null);
     }
 }

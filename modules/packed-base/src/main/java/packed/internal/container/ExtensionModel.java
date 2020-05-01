@@ -41,7 +41,6 @@ import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
 import packed.internal.reflect.MethodHandleBuilder;
 import packed.internal.reflect.OpenClass;
-import packed.internal.sidecar.MethodHandleUtil;
 import packed.internal.sidecar.SidecarModel;
 import packed.internal.sidecar.SidecarTypeMeta;
 import packed.internal.util.StringFormatter;
@@ -336,13 +335,12 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
 
             // I Would love to get rid of CONV
 
-            MethodHandleBuilder mhbConstructor = MethodHandleBuilder.of(sidecarType, PackedExtensionContext.class);
-            mhbConstructor.addKey(LifecycleContext.class, PackedExtensionContext.MH_LIFECYCLE_CONTEXT, 0);
+            MethodHandleBuilder mhbConstructor = MethodHandleBuilder.of(Extension.class, PackedExtensionContext.class);
             mhbConstructor.addKey(ExtensionContext.class, 0);
-            mhbConstructor.addAnnoClassMapper(WireletSupply.class, PackedExtensionContext.FIND_WIRELET, 0);
+            mhbConstructor.addKey(LifecycleContext.class, PackedExtensionContext.MH_LIFECYCLE_CONTEXT, 0);
+            mhbConstructor.addAnnoClassMapper(WireletSupply.class, PackedExtensionContext.MH_FIND_WIRELET, 0);
 
             OpenClass cp = prep(mhbConstructor);
-            constructor = MethodHandleUtil.castReturnType(constructor, Extension.class); // need to upcast to extension to invokeExact
             this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
 
             if (linked != null) {
@@ -352,7 +350,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
                 // From the child's extension context
                 iss.addKey(ExtensionContext.class, 1);
                 iss.addKey(LifecycleContext.class, PackedExtensionContext.MH_LIFECYCLE_CONTEXT, 1);
-                iss.addAnnoClassMapper(WireletSupply.class, PackedExtensionContext.FIND_WIRELET, 1);
+                iss.addAnnoClassMapper(WireletSupply.class, PackedExtensionContext.MH_FIND_WIRELET, 1);
 
                 // The child's extension instance
                 iss.addKey(sidecarType, 2); // should perform an implicit cast

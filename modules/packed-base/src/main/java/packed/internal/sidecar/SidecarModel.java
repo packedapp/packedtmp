@@ -73,7 +73,8 @@ public abstract class SidecarModel extends Model {
         MethodHandle mh = postSidecars[id];
         if (mh != null) {
             try {
-                mh.invoke(sidecar);
+                Object ss = sidecar;
+                mh.invoke(ss);
             } catch (Throwable e) {
                 ThrowableUtil.throwIfUnchecked(e);
                 throw new UndeclaredThrowableException(e);
@@ -86,7 +87,7 @@ public abstract class SidecarModel extends Model {
         public MethodHandle builderMethod;
 
         /** The constructor used to create a new extension instance. */
-        protected MethodHandle constructor;
+        private MethodHandle constructor;
 
         // Need to check that a contract never belongs to two extension.
         // Also, I think we want to do this atomically, so that we do not have half an extension registered somewhere.
@@ -113,7 +114,6 @@ public abstract class SidecarModel extends Model {
             OpenClass cp = new OpenClass(MethodHandles.lookup(), sidecarType, true);
 
             this.constructor = cp.findConstructor(spec);
-
             cp.findMethods(m -> {
                 onMethod(m);
                 PostSidecar oa = m.getAnnotation(PostSidecar.class);
@@ -138,6 +138,8 @@ public abstract class SidecarModel extends Model {
                     // If there are multiple methods with the same index. We just fold them to a single MethodHandle
                     MethodHandle existing = postSidecars[index];
                     postSidecars[index] = existing == null ? mh : MethodHandles.foldArguments(existing, mh);
+                    // mh = MethodHandles.explicitCastArguments(mh, MethodType.methodType(void.class, Object.class));
+                    // mh = mh.asType(MethodType.methodType(void.class, Object.class));
                 }
                 Expose ex = m.getAnnotation(Expose.class);
                 if (ex != null) {
