@@ -196,7 +196,7 @@ class MethodHandleBuilderHelper {
 //                      "First signature parameter type must be " + m.getDeclaringClass() + " was " + aa.targetType().parameterType(0));
 //          }
             mh = MethodHandles.permuteArguments(mh, input, is.toArrayAdd0());
-        } else {
+        } else { // static
             // USed for example, for constructors to change the actually type being made
             // F.x Extension instead of ServiceExtension (so we can use invokeExact
             if (input.returnType() != mh.type().returnType()) {

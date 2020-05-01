@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
@@ -73,11 +72,9 @@ public abstract class SidecarModel extends Model {
         MethodHandle mh = postSidecars[id];
         if (mh != null) {
             try {
-                Object ss = sidecar;
-                mh.invoke(ss);
+                mh.invokeExact(sidecar);
             } catch (Throwable e) {
-                ThrowableUtil.throwIfUnchecked(e);
-                throw new UndeclaredThrowableException(e);
+                throw ThrowableUtil.easyThrow(e);
             }
         }
     }
@@ -123,23 +120,22 @@ public abstract class SidecarModel extends Model {
                         throw new InternalExtensionException("Unknown sidecar lifecycle event '" + oa.value() + "' for method " + m);
                     }
 
+                    // Vi vil helst ikke lave vores egen code her....
                     // Static er fck irriterende...
                     //// Skal have en slags mapStaticMethodsToInstanceMethods paa InjectableFunction...
                     MethodHandle mh;
                     if (Modifier.isStatic(m.getModifiers())) {
-                        MethodHandleBuilder is = MethodHandleBuilder.of(m.getReturnType());
+                        MethodHandleBuilder is = MethodHandleBuilder.of(void.class);
                         mh = is.build(cp, m);
-                        mh = MethodHandles.dropArguments(mh, 0, sidecarType);
+                        mh = MethodHandles.dropArguments(mh, 0, Object.class);
                     } else {
-                        MethodHandleBuilder is = MethodHandleBuilder.of(m.getReturnType(), m.getDeclaringClass());
+                        MethodHandleBuilder is = MethodHandleBuilder.of(void.class, Object.class);
                         mh = is.build(cp, m);
                     }
 
                     // If there are multiple methods with the same index. We just fold them to a single MethodHandle
                     MethodHandle existing = postSidecars[index];
                     postSidecars[index] = existing == null ? mh : MethodHandles.foldArguments(existing, mh);
-                    // mh = MethodHandles.explicitCastArguments(mh, MethodType.methodType(void.class, Object.class));
-                    // mh = mh.asType(MethodType.methodType(void.class, Object.class));
                 }
                 Expose ex = m.getAnnotation(Expose.class);
                 if (ex != null) {

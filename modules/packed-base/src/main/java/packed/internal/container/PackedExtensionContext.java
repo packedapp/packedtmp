@@ -39,6 +39,7 @@ import app.packed.lifecycle.LifecycleContext;
 import packed.internal.lifecycle.LifecycleContextHelper;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.util.LookupUtil;
+import packed.internal.util.ThrowableUtil;
 
 /** The default implementation of {@link ExtensionContext} with addition methods only available in app.packed.base. */
 public final class PackedExtensionContext implements ExtensionContext, Comparable<PackedExtensionContext> {
@@ -305,7 +306,7 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
                     try {
                         model.parentExtensionLinked.invokeExact(parentExtension.extension, pec, e);
                     } catch (Throwable e1) {
-                        e1.printStackTrace();
+                        throw ThrowableUtil.easyThrow(e1);
                     }
                 }
             }

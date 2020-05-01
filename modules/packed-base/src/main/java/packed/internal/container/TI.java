@@ -25,6 +25,8 @@ import app.packed.container.WireletSupply;
 import app.packed.inject.InjectionContext;
 import app.packed.lifecycle.LifecycleContext;
 import app.packed.service.ServiceWirelets;
+import app.packed.sidecar.ExtensionSidecar;
+import app.packed.sidecar.PostSidecar;
 
 /**
  *
@@ -74,6 +76,7 @@ public class TI extends BaseBundle {
             provideConstant("HejHej");
             link(new FFFFFF(), ServiceWirelets.provide("const"));
         }
+
     }
 
     static class FFFFFF extends BaseBundle {
@@ -115,5 +118,16 @@ public class TI extends BaseBundle {
         public void ff(InjectionContext ic, MyExte child) {
             child.foo = " Child of " + foo;
         }
+
+        @PostSidecar(ExtensionSidecar.ON_PREEMBLE)
+        protected void foo() {
+            System.out.println("STUF");
+        }
+
+        @PostSidecar(ExtensionSidecar.ON_PREEMBLE)
+        protected static void foodd() {
+            System.out.println("STUF");
+        }
+
     }
 }

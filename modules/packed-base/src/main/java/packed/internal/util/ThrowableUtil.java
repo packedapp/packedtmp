@@ -68,7 +68,16 @@ public final class ThrowableUtil {
         return throwable;
     }
 
-    static UndeclaredThrowableException rethrowAsUndeclared(Throwable throwable) {
+    public static UndeclaredThrowableException rethrowAsUndeclared(Throwable throwable) {
+        if (throwable instanceof RuntimeException) {
+            throw (RuntimeException) throwable;
+        } else if (throwable instanceof Error) {
+            throw (Error) throwable;
+        }
+        return new UndeclaredThrowableException(throwable);
+    }
+
+    public static UndeclaredThrowableException easyThrow(Throwable throwable) {
         if (throwable instanceof RuntimeException) {
             throw (RuntimeException) throwable;
         } else if (throwable instanceof Error) {

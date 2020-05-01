@@ -96,6 +96,14 @@ public final class MethodHandleBuilder {
         return targetType;
     }
 
+    /** Used for figuring out where the receiver is if instance method. -1 we only static methods. TODO implement */
+    int receiverIndex = 0;
+
+    MethodHandleBuilder setStatic() {
+        this.receiverIndex = -1;
+        return this;
+    }
+
     public static MethodHandleBuilder of(Class<?> returnType, Class<?>... parameterTypes) {
         return of(MethodType.methodType(returnType, parameterTypes));
     }
