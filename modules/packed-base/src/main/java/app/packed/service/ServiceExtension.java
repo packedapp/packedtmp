@@ -24,9 +24,9 @@ import app.packed.base.Key;
 import app.packed.base.Key.Qualifier;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.container.DescendentAdded;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
+import app.packed.container.ExtensionLinked;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSupply;
 import app.packed.hook.AnnotatedMethodHook;
@@ -37,7 +37,6 @@ import app.packed.sidecar.Expose;
 import app.packed.sidecar.ExtensionSidecar;
 import app.packed.sidecar.PostSidecar;
 import packed.internal.component.PackedSingletonConfiguration;
-import packed.internal.container.TI.MyTestWirelet;
 import packed.internal.container.WireletList;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.inject.util.InjectConfigSiteOperations;
@@ -380,8 +379,8 @@ public final class ServiceExtension extends Extension {
         node.buildDescriptor(builder);
     }
 
-    @DescendentAdded
-    private void linkChild(ServiceExtension childExtension, @WireletSupply Optional<MyTestWirelet> mt) {
+    @ExtensionLinked(onlyDirectChildren = true)
+    private void linkChild(ServiceExtension childExtension, @WireletSupply Optional<ServiceWireletPipeline> wirelets) {
         node.link(childExtension.node);
     }
 }

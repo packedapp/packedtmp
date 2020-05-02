@@ -15,8 +15,8 @@
  */
 package app.packed.inject;
 
-/** This exception is typically thrown when a dependency could not be resolved. */
-
+/** This exception is typically thrown when a dependency could not be satisfied. */
+// Or UnsatisfiedDependencyException
 public class UnsatisfiableDependencyException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */

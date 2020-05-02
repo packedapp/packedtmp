@@ -83,5 +83,11 @@ public final class LinearLifecycleModel {
                 throw new UndeclaredThrowableException(ThrowableUtil.throwIfUnchecked(e));
             }
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public LifecycleContext snapshot() {
+            throw new UnsupportedOperationException();
+        }
     }
 }

@@ -15,10 +15,12 @@
  */
 package packed.internal.container;
 
+import java.lang.management.ManagementFactory;
+
 import app.packed.artifact.App;
 import app.packed.artifact.SystemImage;
 import app.packed.container.BaseBundle;
-import app.packed.container.DescendentAdded;
+import app.packed.container.ExtensionLinked;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 import app.packed.container.Wirelet;
@@ -36,9 +38,12 @@ public class TI extends BaseBundle {
 
     public static void main(String[] args) {
         App.of(new TI(), new MyTestWirelet("fofoof XXXXXXXXXX"));
+        long currentTime = System.currentTimeMillis();
+        long vmStartTime = ManagementFactory.getRuntimeMXBean().getStartTime();
+        System.out.println("STARTED Application started: " + (currentTime - vmStartTime));
     }
 
-    public static void mainTimed(String[] args) {
+    public static void maindd(String[] args) {
         long start = System.nanoTime();
         App.of(new TI(), new MyTestWirelet("fofoof XXXXXXXXXX"));
         long stop = System.nanoTime();
@@ -86,7 +91,7 @@ public class TI extends BaseBundle {
         @Override
         protected void compose() {
             provideConstant("HejHej");
-            System.out.println(use(MyExte.class).foo);
+            // System.out.println(use(MyExte.class).foo);
         }
     }
 
@@ -110,26 +115,26 @@ public class TI extends BaseBundle {
         final LifecycleContext lc;
 
         MyExte(LifecycleContext lc, InjectionContext ic, @WireletSupply MyTestWirelet wc) {
-            System.out.println("State " + lc.current());
+            // System.out.println("State " + lc.current());
             this.lc = lc;
 
         }
 
-        @DescendentAdded(onlyDirectChildren = false)
+        @ExtensionLinked(onlyDirectChildren = false)
         public void ff(InjectionContext ic, MyExte child) {
             child.foo = " Child of " + foo;
         }
 
         @PostSidecar(ExtensionSidecar.NORMAL_USAGE)
         protected void foo(ExtensionContext ec) {
-            System.out.println(ec.containerPath());
-            System.out.println("State now " + lc.current());
+            // System.out.println(ec.containerPath());
+            // System.out.println("State now " + lc.current());
             // System.out.println(lc);
         }
 
         @PostSidecar(ExtensionSidecar.NORMAL_USAGE)
         private static void foodd(InjectionContext ic) {
-            System.out.println("Available Services " + ic.keys());
+            // System.out.println("Available Services " + ic.keys());
         }
 
     }

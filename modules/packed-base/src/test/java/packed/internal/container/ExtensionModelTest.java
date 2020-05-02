@@ -45,8 +45,7 @@ public class ExtensionModelTest {
     // TODO fix exact exception types..
     public void fails() {
         // abstract class
-        AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(
-                () -> ExtensionModel.of(AbstractExtension.class).newInstance(null));
+        AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> ExtensionModel.of(AbstractExtension.class).newInstance(null));
         a.isExactlyInstanceOf(InternalExtensionException.class);
         // TODO test messages
 

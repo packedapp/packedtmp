@@ -47,12 +47,6 @@ public class LifecycleContextHelper {
 
         /** {@inheritDoc} */
         @Override
-        public String desired() {
-            return current();
-        }
-
-        /** {@inheritDoc} */
-        @Override
         public boolean isStable() {
             return true;
         }
@@ -64,6 +58,45 @@ public class LifecycleContextHelper {
             return state == states.length - 1 ? Set.of() : Set.of(states[state + 1]);
         }
 
+        @Override
+        public LifecycleContext snapshot() {
+            return new SnapshotLifecycleContext(states, state());
+        }
+
         protected abstract int state();
+
+    }
+
+    private static class SnapshotLifecycleContext implements LifecycleContext {
+        private final int state;
+        private final String[] states;
+
+        private SnapshotLifecycleContext(String[] states, int state) {
+            this.states = states;
+            this.state = state;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public String current() {
+            return states[state];
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean isStable() {
+            return true;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Set<String> nextStates() {
+            return state == states.length - 1 ? Set.of() : Set.of(states[state + 1]);
+        }
+
+        @Override
+        public LifecycleContext snapshot() {
+            return this;
+        }
     }
 }

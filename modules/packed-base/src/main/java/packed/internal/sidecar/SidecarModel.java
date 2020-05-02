@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
@@ -118,7 +119,9 @@ public abstract class SidecarModel extends Model {
                 if (oa != null) {
                     int index = statics.ld.indexOf(oa.value());
                     if (index == -1) {
-                        throw new InternalExtensionException("Unknown sidecar lifecycle event '" + oa.value() + "' for method " + m);
+                        // TODO remove instantiating, available values
+                        throw new InternalExtensionException("Unknown sidecar lifecycle event '" + oa.value() + "' for method " + m + ", available states are "
+                                + Arrays.toString(statics.ld.toArray()));
                     }
 
                     // Vi vil helst ikke lave vores egen code her....

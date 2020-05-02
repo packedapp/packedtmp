@@ -66,6 +66,14 @@ import packed.internal.service.runtime.PackedInjector;
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
 
+    private static final int LS_0_MAINL = 0;
+
+    private static final int LS_1_LINKING = 1;
+
+    private static final int LS_2_HOSTING = 2;
+
+    private static final int LS_3_FINISHED = 3;
+
     /** Any extension that is active. */
     @Nullable
     public PackedExtensionContext activeExtension;
@@ -95,6 +103,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** Any wirelets that was specified by the user when creating this configuration. */
     @Nullable
     public final WireletContainer wireletContext;
+
+    int realState;
 
     /**
      * Creates a new container configuration via {@link #link(Bundle, Wirelet...)}.
@@ -172,6 +182,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
         // TODO we want to cache this at some point....
 
+        // Could have extensions in a TreeMap, but a treemap sorts by keys and not values
         TreeSet<PackedExtensionContext> ts = new TreeSet<>(extensions.values());
         for (PackedExtensionContext e : ts) {
             activeExtension = e;
@@ -377,6 +388,14 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         // loop situations, for example, if a bundle recursively links itself which fails by throwing
         // java.lang.StackOverflowError instead of an infinite loop.
         PackedContainerConfiguration child = new PackedContainerConfiguration(this, bundle, wirelets);
+
+        if (realState == LS_0_MAINL) {
+            realState = 1;
+        } else if (realState == LS_2_HOSTING) {
+            throw new IllegalStateException("Was hosting");
+        } else if (realState == LS_3_FINISHED) {
+            throw new IllegalStateException("Was Assembled");
+        }
 
         // finalize name of this container
         initializeName(State.LINK_INVOKED, null);

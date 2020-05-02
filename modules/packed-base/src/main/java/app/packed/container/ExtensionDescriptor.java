@@ -18,6 +18,7 @@ package app.packed.container;
 import java.util.Set;
 
 import app.packed.base.Contract;
+import app.packed.sidecar.ExtensionSidecar;
 
 /**
  * An extension descriptor.
@@ -28,7 +29,8 @@ import app.packed.base.Contract;
  * @apiNote In the future, if the Java language permits, {@link ExtensionDescriptor} may become a {@code sealed}
  *          interface, which would prohibit subclassing except by explicitly permitted types.
  */
-// Den er ikke streng noedvendig... Men rar
+// Lad os lige se om den er noget vaerd...
+// 
 public interface ExtensionDescriptor {
 
     /**
@@ -42,7 +44,8 @@ public interface ExtensionDescriptor {
      * Returns an immutable set of any other extensions this extension depends on. The returned set does not include
      * transitive dependencies.
      * <p>
-     * The returned set includes optional dependencies specified via ... that could be resolved successfully.
+     * The returned set includes all optional dependencies specified via {@link ExtensionSidecar#optionalDependencies()}
+     * that could be successfully resolved.
      * 
      * @return any other extensions this extension depends on
      */
@@ -54,7 +57,9 @@ public interface ExtensionDescriptor {
      * @return the module that the extension belongs to
      * @see Class#getModule()
      */
-    Module module();
+    default Module module() {
+        return type().getModule();
+    }
 
     /**
      * Returns the type of extension this descriptor describes.
@@ -77,4 +82,4 @@ public interface ExtensionDescriptor {
         return PackedExtensionDescriptor.of(extensionType);
     }
 }
-// isExecutable()
+// requiresExecution() // usesResources // ResourceUser

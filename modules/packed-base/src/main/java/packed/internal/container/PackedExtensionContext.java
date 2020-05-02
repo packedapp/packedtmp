@@ -201,24 +201,30 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
         return pcc.installInstance(instance);
     }
 
-    LifecycleContext lifecycle() {
+    /**
+     * Returns a lifecycle context for the extension. Used by {@link #MH_LIFECYCLE_CONTEXT}.
+     * 
+     * @return a lifecycle context for the extension
+     */
+    @SuppressWarnings("unused")
+    private LifecycleContext lifecycle() {
         return new LifecycleContextHelper.SimpleLifecycleContext(ExtensionModel.Builder.STM.ld) {
 
             @Override
             protected int state() {
-                return extension == null ? 0 : 1;
+                return extension == null ? 0 : 1;// 0 or container configuration state...
             }
         };
     }
 
     /** Invoked by the container configuration, whenever the extension is configured. */
-    public void onChildrenConfigured() {
+    void onChildrenConfigured() {
         model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_2_CHILDREN_DONE, extension, this);
         isConfigured = true;
     }
 
     /** Invoked by the container configuration, whenever the extension is configured. */
-    public void onConfigured() {
+    void onConfigured() {
         model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_1_MAIN, extension, this);
         isConfigured = true;
     }
@@ -269,7 +275,7 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
      *            the type of extension to initialize
      * @return the new extension context
      */
-    public static PackedExtensionContext of(PackedContainerConfiguration pcc, Class<? extends Extension> extensionType) {
+    static PackedExtensionContext of(PackedContainerConfiguration pcc, Class<? extends Extension> extensionType) {
         // Create extension context and instantiate extension
         ExtensionModel model = ExtensionModel.of(extensionType);
         PackedExtensionContext pec = new PackedExtensionContext(pcc, model);

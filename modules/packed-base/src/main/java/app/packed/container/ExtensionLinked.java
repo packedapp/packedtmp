@@ -21,11 +21,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
+ * An extension cannot define more than one method annotated with this annotation.
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DescendentAdded {
+//Or ExtensionWired if linked=strong, ... onExtensionLinked  (Separate naming for lifecycle and events at,on,post,pre, when)
+public @interface ExtensionLinked {
 
     // Only children not anything farther removed...
     // If not only direct children. Only the closest ancestor will have its
@@ -38,7 +39,8 @@ public @interface DescendentAdded {
 // And with Any extension wirelets specified for the child...
 // So @WireletSupply will override what the actual parent does...
 
-interface DescendentDescriptor {
+// Det kan ogsaa vaere vi laver noget generisk her..
+interface ExtensionLinkedContext {
 
     default boolean isChild() {
         return distance() == 1;

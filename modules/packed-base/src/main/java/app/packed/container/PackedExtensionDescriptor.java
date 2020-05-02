@@ -23,7 +23,12 @@ import app.packed.base.Contract;
 import app.packed.base.reflect.ExecutableDescriptor;
 import packed.internal.container.ExtensionModel;
 
-/** The default implementation of {@link ExecutableDescriptor}. */
+/**
+ * The default implementation of {@link ExecutableDescriptor}.
+ * 
+ * @implNote ExtensionModel implements Comparable which we do not want to expose. So we have this thin wrapper. Well we
+ *           expose the context which implements {@link Comparable}... So should probably fix that as well.
+ **/
 final class PackedExtensionDescriptor implements ExtensionDescriptor {
 
     /** The extension model we wrap. */
@@ -48,12 +53,6 @@ final class PackedExtensionDescriptor implements ExtensionDescriptor {
 
     /** {@inheritDoc} */
     @Override
-    public Module module() {
-        return type().getModule();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public Class<? extends Extension> type() {
         return model.extensionType();
     }
@@ -71,20 +70,10 @@ final class PackedExtensionDescriptor implements ExtensionDescriptor {
     }
 }
 
-// public Hook
-// Map<Class<? extends Hook>, List<Object>>
-
 // A method for transitive dependencies...
-
 // DirectedVertexGraph<T>
 // Or Just DependencyGraph<T>
 // DependencyGraph<Module>
 // DependencyGraph<ExtensionDescriptor>
 // DependencyGraph<ServiceDescriptor>...
 //// What about export... Change stuff
-
-//// Her vil vi maaske gerne have
-// Hook Annotations
-//// Field | Method | Activating (Although you can see that on the Annotation)
-//// Other Extension
-//// Sidecars

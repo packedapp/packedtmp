@@ -15,6 +15,7 @@ module app.packed.base {
 
     // Temporary...
     exports packed.internal.reflect to app.packed.banana;
+    requires java.management;
 }
 
 // requires static org.graalvm.sdk;

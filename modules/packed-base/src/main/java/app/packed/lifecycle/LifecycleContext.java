@@ -41,7 +41,9 @@ public interface LifecycleContext {
      * 
      * @return the desired state of the lifecycle enabled object
      */
-    String desired();
+    default String desired() {
+        return current();
+    }
 
     /**
      * Returns whether or not the current state and the desired state are identical.
@@ -56,6 +58,13 @@ public interface LifecycleContext {
      * @return the possible next states
      */
     Set<String> nextStates();
+
+    /**
+     * Returns an immutable snapshot of the current state.
+     * 
+     * @return an immutable snapshot of the current state
+     */
+    LifecycleContext snapshot(); // Or Maybe we have LifecycleState which this interface extends. + returned by this method
 }
 
 // List<String> path(); path to get from current state to desired state...
