@@ -29,7 +29,7 @@ import app.packed.inject.InjectionContext;
 import app.packed.lifecycle.LifecycleContext;
 import app.packed.service.ServiceWirelets;
 import app.packed.sidecar.ExtensionSidecar;
-import app.packed.sidecar.PostSidecar;
+import app.packed.sidecar.WhenSidecar;
 
 /**
  *
@@ -125,14 +125,14 @@ public class TI extends BaseBundle {
             child.foo = " Child of " + foo;
         }
 
-        @PostSidecar(ExtensionSidecar.NORMAL_USAGE)
+        @WhenSidecar(ExtensionSidecar.NORMAL_USAGE)
         protected void foo(ExtensionContext ec) {
             // System.out.println(ec.containerPath());
             // System.out.println("State now " + lc.current());
             // System.out.println(lc);
         }
 
-        @PostSidecar(ExtensionSidecar.NORMAL_USAGE)
+        @WhenSidecar(ExtensionSidecar.NORMAL_USAGE)
         private static void foodd(InjectionContext ic) {
             // System.out.println("Available Services " + ic.keys());
         }

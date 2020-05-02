@@ -36,6 +36,7 @@ import app.packed.container.ExtensionContext;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.lifecycle.LifecycleContext;
+import app.packed.sidecar.ExtensionSidecar;
 import packed.internal.lifecycle.LifecycleContextHelper;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.util.LookupUtil;
@@ -62,7 +63,7 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
     private boolean isConfigured;
 
     /** The sidecar model of the extension. */
-    private final ExtensionModel model;
+    final ExtensionModel model;
 
     /** The configuration of the container the extension is registered in. */
     private final PackedContainerConfiguration pcc;
@@ -209,27 +210,42 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
      * 
      * @return a lifecycle context for the extension
      */
-    @SuppressWarnings("unused")
     private LifecycleContext lifecycle() {
         return new LifecycleContextHelper.SimpleLifecycleContext(ExtensionModel.Builder.STM.ld) {
 
             @Override
             protected int state() {
-                return extension == null ? 0 : 1;// 0 or container configuration state...
+                if (extension == null) {
+                    return 0;
+                } else if (isConfigured == false) {
+                    return 1;
+                } else {
+                    return 2;
+                }
             }
         };
     }
 
     /** Invoked by the container configuration, whenever the extension is configured. */
     void onChildrenConfigured() {
+        checkState(ExtensionSidecar.CHILDREN_DEFINITIONS);
         model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_2_CHILDREN_DONE, extension, this);
-        isConfigured = true;
     }
 
     /** Invoked by the container configuration, whenever the extension is configured. */
     void onConfigured() {
+        checkState(ExtensionSidecar.NORMAL_USAGE);
         model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_1_MAIN, extension, this);
         isConfigured = true;
+        checkState(ExtensionSidecar.CHILDREN_DEFINITIONS);
+    }
+
+    private void checkState(String expected) {
+        String current = lifecycle().current();
+        if (!current.equals(expected)) {
+            throw new IllegalStateException("Expected " + expected + ", was " + current);
+        }
+
     }
 
     /**
@@ -279,23 +295,22 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
      * @return the new extension context
      */
     static PackedExtensionContext of(PackedContainerConfiguration pcc, Class<? extends Extension> extensionType) {
+        // I think move to the constructor of this context??? Then extension can be final...
         // Create extension context and instantiate extension
         ExtensionModel model = ExtensionModel.of(extensionType);
         PackedExtensionContext pec = new PackedExtensionContext(pcc, model);
-        Extension e = pec.extension = model.newInstance(pec);
+        pec.checkState(ExtensionSidecar.INSTANTIATING);
+        Extension e = pec.extension = model.newInstance(pec); // Creates a new [XX]Extension instance
+        pec.checkState(ExtensionSidecar.NORMAL_USAGE);
         ModuleAccess.container().extensionSetContext(e, pec);
 
+        // Run the following 3 steps before the extension is handed back to the user.
         PackedExtensionContext existing = pcc.activeExtension;
         try {
             pcc.activeExtension = pec;
-            model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_0_INSTANTIATION, e, pec);
-            if (pcc.wireletContext != null) {
-                pcc.wireletContext.extensionInitialized(pec);
-            }
-
-            // See if there are extensions of the same type in parent containers that needs to
-            // notified of the addition of the extension. This must happen before the child extension
-            // is returned to the user.
+            // 1. The first step we take is seeing if there are parent or ancestors that needs to be notified
+            // of the extensions existence. This is done first in order to let the remaining steps use any
+            // information set by the parent or ancestor.
 
             // Should we also set the active extension in the parent???
             if (model.extensionLinkedToAncestorExtension != null) {
@@ -320,9 +335,17 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
                     }
                 }
             }
+
+            // 2. Invoke all methods on the extension annotated with @When(Normal)
+            model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_0_INSTANTIATION, e, pec);
+
+            // 3. Finally initialize any pipeline (??swap step 2 and 3??)
+            if (pcc.wireletContext != null) {
+                pcc.wireletContext.extensionInitialized(pec);
+            }
         } finally {
             pcc.activeExtension = existing;
         }
-        return pec;
+        return pec; // Return extension to users
     }
 }

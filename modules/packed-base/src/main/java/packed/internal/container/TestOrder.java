@@ -16,9 +16,10 @@
 package packed.internal.container;
 
 import app.packed.artifact.App;
+import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
 import app.packed.sidecar.ExtensionSidecar;
-import app.packed.sidecar.PostSidecar;
+import app.packed.sidecar.WhenSidecar;
 
 /**
  *
@@ -27,29 +28,58 @@ public class TestOrder extends Bundle {
 
     public static class Extension extends app.packed.container.Extension {
 
-        @PostSidecar(ExtensionSidecar.CHILDREN_DEFINITIONS)
+        @WhenSidecar(ExtensionSidecar.CHILDREN_DEFINITIONS)
         public void foo() {
-            System.out.println(getClass());
+            System.out.println("Main " + getClass().getSimpleName());
         }
     }
 
-    public static class E1 extends Extension {}
+    public static class E1 extends Extension {
+
+        public void doStuff() {
+            checkConfigurable();
+        }
+    }
 
     @ExtensionSidecar(dependencies = E1.class)
-    public static class E2 extends Extension {}
+    public static class E2 extends Extension {
+
+    }
 
     @ExtensionSidecar(dependencies = E2.class)
-    public static class E3 extends Extension {}
+    public static class E3 extends Extension {
+
+        public void doStuff() {
+            checkConfigurable();
+        }
+
+        @Override
+        @WhenSidecar(ExtensionSidecar.NORMAL_USAGE)
+        public void foo() {
+            System.out.println("Main " + getClass().getSimpleName());
+            // use(E1.class).doStuff();
+        }
+    }
 
     /** {@inheritDoc} */
     @Override
     protected void compose() {
         use(E3.class);
-        use(E2.class);
         use(E1.class);
+        use(E2.class);
+        link(new SomeBundle());
     }
 
     public static void main(String[] args) {
         App.of(new TestOrder());
+    }
+
+    public static class SomeBundle extends BaseBundle {
+
+        /** {@inheritDoc} */
+        @Override
+        protected void compose() {
+            System.out.println("Composed");
+        }
     }
 }

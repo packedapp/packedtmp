@@ -171,12 +171,28 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     private void advanceTo(int newState) {
         if (realState == 0) {
             extensionsOrdered = new TreeSet<>(extensions.values());
-            for (PackedExtensionContext e : extensionsOrdered) {
-                activeExtension = e;
-                e.onConfigured();
+            for (PackedExtensionContext pec : extensionsOrdered) {
+                activeExtension = pec;
+                // model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_1_MAIN, extension, this);
+                // isConfigured = true;
+                pec.onConfigured();
             }
             activeExtension = null;
             realState = LS_1_LINKING;
+        }
+        if (realState == LS_1_LINKING && newState >= LS_1_LINKING) {
+            if (children != null) {
+                for (AbstractComponentConfiguration acc : children.values()) {
+                    if (acc instanceof PackedContainerConfiguration) {
+                        ((PackedContainerConfiguration) acc).assembleExtensions();
+                    }
+                }
+            }
+
+            for (PackedExtensionContext e : extensionsOrdered) {
+                activeExtension = e;
+                e.onChildrenConfigured();
+            }
         }
     }
 
@@ -187,29 +203,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     }
 
     private void assembleExtensions() {
-        // Extensions are not processed until the whole artifact has been configured.
-        // Mainly because some wirelets needs the parent container to be fully configured
-        // before they can be used. For example, downstream service wirelets
-
         installPrepare(State.GET_NAME_INVOKED);
-        // We could actually end of installing new extensions...
-
-        // TODO we want to cache this at some point....
-
         advanceTo(LS_3_FINISHED);
-
-        if (children != null) {
-            for (AbstractComponentConfiguration acc : children.values()) {
-                if (acc instanceof PackedContainerConfiguration) {
-                    ((PackedContainerConfiguration) acc).assembleExtensions();
-                }
-            }
-        }
-
-        for (PackedExtensionContext e : extensionsOrdered) {
-            activeExtension = e;
-            e.onChildrenConfigured();
-        }
 
         // TODO, fix for unused wirelet, it was removed to fix other stuff..
         // if (wireletContext != null) {
@@ -539,6 +534,10 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         if (pec == null) {
             // Checks that we are still configurable
             if (caller == null) {
+                if (realState != 0) {
+                    // Cannot perform this operation
+                    throw new IllegalStateException("Cannot install new extensions at this point, extensionType = " + extensionType);
+                }
                 checkConfigurable();
             } else {
                 caller.checkConfigurable();

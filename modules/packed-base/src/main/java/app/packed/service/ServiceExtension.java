@@ -35,7 +35,7 @@ import app.packed.inject.Factory;
 import app.packed.lifecycle.OnStart;
 import app.packed.sidecar.Expose;
 import app.packed.sidecar.ExtensionSidecar;
-import app.packed.sidecar.PostSidecar;
+import app.packed.sidecar.WhenSidecar;
 import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.container.WireletList;
 import packed.internal.inject.ServiceDependency;
@@ -362,7 +362,7 @@ public final class ServiceExtension extends Extension {
      * This method is invoked by the runtime after all children have been configured. But before any guests might have been
      * defined.
      */
-    @PostSidecar(ExtensionSidecar.CHILDREN_DEFINITIONS)
+    @WhenSidecar(ExtensionSidecar.CHILDREN_DEFINITIONS)
     void assemble(Optional<ServiceWireletPipeline> swp) {
         node.build();
     }

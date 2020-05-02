@@ -34,7 +34,7 @@ import app.packed.container.ExtensionContext;
 public @interface ExtensionSidecar {
 
     /**
-     * Used together with the {@link PostSidecar} annotation to indicate that an {@link Extension}method should be executed
+     * Used together with the {@link WhenSidecar} annotation to indicate that an {@link Extension}method should be executed
      * as soon as the extension has been successfully instantiated and before it is returned to the user.
      * <p>
      * 

@@ -27,7 +27,7 @@ import java.util.Map;
 import app.packed.base.Contract;
 import app.packed.container.InternalExtensionException;
 import app.packed.sidecar.Expose;
-import app.packed.sidecar.PostSidecar;
+import app.packed.sidecar.WhenSidecar;
 import packed.internal.reflect.MethodHandleBuilder;
 import packed.internal.reflect.OpenClass;
 import packed.internal.util.ThrowableUtil;
@@ -47,7 +47,7 @@ public abstract class SidecarModel extends Model {
     // Contract>);
     protected final Map<Class<? extends Contract>, MethodHandle> contracts;
 
-    /** Methods annotated with {@link PostSidecar}. Takes the sidecar instance */
+    /** Methods annotated with {@link WhenSidecar}. Takes the sidecar instance */
     // Det kan jo vaere gemt i en int istedet for saa vi bare test noget modulo...
     private final MethodHandle[] postSidecars; // TODO take a SidecarModel as well as well???
 
@@ -115,7 +115,7 @@ public abstract class SidecarModel extends Model {
             this.constructor = cp.findConstructor(spec);
             cp.findMethods(m -> {
                 onMethod(m);
-                PostSidecar oa = m.getAnnotation(PostSidecar.class);
+                WhenSidecar oa = m.getAnnotation(WhenSidecar.class);
                 if (oa != null) {
                     int index = statics.ld.indexOf(oa.value());
                     if (index == -1) {

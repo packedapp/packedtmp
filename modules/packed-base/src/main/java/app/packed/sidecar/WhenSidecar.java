@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
 //Maybe rename to @Post an put in lifecycle
 
 //Or On
-public @interface PostSidecar {
+public @interface WhenSidecar {
 
     /**
      * The name of the event.
