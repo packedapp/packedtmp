@@ -124,6 +124,9 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
     /** {@inheritDoc} */
     @Override
     public void checkConfigurable() {
+        if (container().realState != 0) {
+            throw new IllegalStateException("This extension (" + extension().getClass().getSimpleName() + ") is no longer configurable");
+        }
         if (isConfigured) {
             throw new IllegalStateException("This extension (" + extension().getClass().getSimpleName() + ") is no longer configurable");
         }

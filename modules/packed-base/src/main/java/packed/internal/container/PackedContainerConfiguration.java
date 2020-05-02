@@ -89,6 +89,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** All used extensions, in order of registration. */
     private final LinkedHashMap<Class<? extends Extension>, PackedExtensionContext> extensions = new LinkedHashMap<>();
 
+    private TreeSet<PackedExtensionContext> extensionsOrdered;
+
     private HashMap<String, PackedContainerLayer> layers;
 
     /** The current component lookup object, updated via {@link #lookup(Lookup)} */
@@ -97,14 +99,14 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** A container model. */
     private final ContainerSourceModel model;
 
+    int realState;
+
     /** The source of the container configuration. Typically a Bundle */
     private final Object source;
 
     /** Any wirelets that was specified by the user when creating this configuration. */
     @Nullable
     public final WireletContainer wireletContext;
-
-    int realState;
 
     /**
      * Creates a new container configuration via {@link #link(Bundle, Wirelet...)}.
@@ -166,6 +168,18 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return null;
     }
 
+    private void advanceTo(int newState) {
+        if (realState == 0) {
+            extensionsOrdered = new TreeSet<>(extensions.values());
+            for (PackedExtensionContext e : extensionsOrdered) {
+                activeExtension = e;
+                e.onConfigured();
+            }
+            activeExtension = null;
+            realState = LS_1_LINKING;
+        }
+    }
+
     public PackedContainerConfiguration assemble() {
         configure();
         assembleExtensions();
@@ -182,13 +196,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
         // TODO we want to cache this at some point....
 
-        // Could have extensions in a TreeMap, but a treemap sorts by keys and not values
-        TreeSet<PackedExtensionContext> ts = new TreeSet<>(extensions.values());
-        for (PackedExtensionContext e : ts) {
-            activeExtension = e;
-            e.onConfigured();
-        }
-        activeExtension = null;
+        advanceTo(LS_3_FINISHED);
 
         if (children != null) {
             for (AbstractComponentConfiguration acc : children.values()) {
@@ -198,7 +206,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             }
         }
 
-        for (PackedExtensionContext e : ts) {
+        for (PackedExtensionContext e : extensionsOrdered) {
             activeExtension = e;
             e.onChildrenConfigured();
         }
@@ -390,7 +398,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         PackedContainerConfiguration child = new PackedContainerConfiguration(this, bundle, wirelets);
 
         if (realState == LS_0_MAINL) {
-            realState = 1;
+            advanceTo(LS_1_LINKING);
         } else if (realState == LS_2_HOSTING) {
             throw new IllegalStateException("Was hosting");
         } else if (realState == LS_3_FINISHED) {
