@@ -109,10 +109,10 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     public final WireletContainer wireletContext;
 
     /**
-     * Creates a new container configuration via {@link #link(Bundle, Wirelet...)}.
+     * Creates a new configuration via {@link #link(Bundle, Wirelet...)}.
      * 
      * @param parent
-     *            the parent container configuration
+     *            the parent component (always a container for now)
      * @param bundle
      *            the bundle that was linked
      * @param wirelets
@@ -126,8 +126,10 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     }
 
     /**
-     * Creates a new (root) container configuration.
+     * Creates a new root configuration.
      * 
+     * @param cs
+     *            the config site
      * @param output
      *            the build output
      * @param source
@@ -135,15 +137,16 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * @param wirelets
      *            any wirelets specified by the user
      */
-    private PackedContainerConfiguration(AssembleOutput output, Object source, Wirelet... wirelets) {
-        super(ConfigSiteUtil.captureStackFrame(InjectConfigSiteOperations.INJECTOR_OF), output);
+    private PackedContainerConfiguration(ConfigSite cs, AssembleOutput output, Object source, Wirelet... wirelets) {
+        super(cs, output);
         this.source = requireNonNull(source);
         this.lookup = this.model = ContainerSourceModel.of(source.getClass());
         this.wireletContext = WireletContainer.of(this, null, wirelets);
     }
 
-    public static PackedContainerConfiguration of(AssembleOutput output, Object source, Wirelet... wirelets) {
-        return new PackedContainerConfiguration(output, source, wirelets);
+    @Override
+    public <A, H, C> C addHost(HostDriver<A, H, C> driver) {
+        return null;
     }
 
 //    private HostConfigurationContext addHost() {
@@ -166,11 +169,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 //            throw new RuntimeException(e);
 //        }
 //    }
-
-    @Override
-    public <A, H, C> C addHost(HostDriver<A, H, C> driver) {
-        return null;
-    }
 
     private void advanceTo(int newState) {
         if (realState == 0) {
@@ -591,5 +589,10 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             requireNonNull(wop);// Maybe not instantiated yet???
         }
         return wop == null ? Optional.empty() : Optional.ofNullable((W) wop);
+    }
+
+    public static PackedContainerConfiguration of(AssembleOutput output, Object source, Wirelet... wirelets) {
+        ConfigSite cs = ConfigSiteUtil.captureStackFrame(InjectConfigSiteOperations.INJECTOR_OF);
+        return new PackedContainerConfiguration(cs, output, source, wirelets);
     }
 }

@@ -93,9 +93,10 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
     /** The state of this configuration. */
     protected ComponentConfigurationState state = new ComponentConfigurationState();
 
+    @Nullable
     public PackedContainerConfiguration parentContainer() {
-        AbstractComponentConfiguration c = container;
-        return c == null ? null : c.container;
+        PackedContainerConfiguration pcc = container();
+        return pcc == null ? null : pcc.container();
     }
 
     /**
@@ -111,6 +112,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
         this.parent = requireNonNull(parent);
         this.depth = parent.depth() + 1;
         this.artifact = parent.artifact;
+        // Hvor tit har en container ikke en anden container som parent....????
         this.container = parent instanceof PackedContainerConfiguration ? (PackedContainerConfiguration) parent : parent.container;
         this.extension = container.activeExtension;
     }
