@@ -152,7 +152,7 @@ public final class PackedSystemImage implements SystemImage {
      *             if the image could not be constructed
      */
     public static PackedSystemImage of(Bundle bundle, Wirelet... wirelets) {
-        PackedContainerConfiguration pcc = new PackedContainerConfiguration(AssembleOutput.image(), bundle, wirelets);
+        PackedContainerConfiguration pcc = PackedContainerConfiguration.of(AssembleOutput.image(), bundle, wirelets);
         return new PackedSystemImage(pcc.assemble(), pcc.wireletContext);
     }
 }

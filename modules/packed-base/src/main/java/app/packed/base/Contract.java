@@ -95,7 +95,7 @@ public abstract class Contract {
 
     public static <T extends Contract> Optional<T> of(Bundle bundle, Class<T> contractType) {
         requireNonNull(bundle, "bundle is null");
-        PackedContainerConfiguration conf = new PackedContainerConfiguration(AssembleOutput.descriptor(BundleDescriptor.class), bundle);
+        PackedContainerConfiguration conf = PackedContainerConfiguration.of(AssembleOutput.descriptor(BundleDescriptor.class), bundle);
         conf.assemble();
         BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
         conf.buildDescriptor(builder);

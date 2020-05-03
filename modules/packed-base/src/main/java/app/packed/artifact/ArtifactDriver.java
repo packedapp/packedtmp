@@ -146,12 +146,13 @@ public abstract class ArtifactDriver<A> {
     private ArtifactContext create(SystemSource source, Wirelet... wirelets) {
         PackedContainerConfiguration pcc;
         WireletContainer wc;
+        // Either we create from an image, or from a bundle
         if (source instanceof PackedSystemImage) {
             PackedSystemImage pai = (PackedSystemImage) source;
             pcc = pai.configuration();
             wc = WireletContainer.of(pcc, pai.wirelets(), wirelets); // TODO check no assemble wirelets
-        } else {
-            pcc = new PackedContainerConfiguration(AssembleOutput.artifact(this), source, wirelets);
+        } else { // assert Bundle?
+            pcc = PackedContainerConfiguration.of(AssembleOutput.artifact(this), source, wirelets);
             pcc.assemble();
             wc = pcc.wireletContext;
         }
@@ -200,7 +201,7 @@ public abstract class ArtifactDriver<A> {
 
     // Hmmm
     public final <C> A configure(Function<ContainerConfiguration, C> factory, Consumer<C> consumer, Wirelet... wirelets) {
-        PackedContainerConfiguration pcc = new PackedContainerConfiguration(AssembleOutput.artifact(this), consumer, wirelets);
+        PackedContainerConfiguration pcc = PackedContainerConfiguration.of(AssembleOutput.artifact(this), consumer, wirelets);
         C c = factory.apply(pcc);
         consumer.accept(c);
         pcc.assemble();

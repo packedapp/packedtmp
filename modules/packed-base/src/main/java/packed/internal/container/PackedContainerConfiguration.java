@@ -135,11 +135,15 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * @param wirelets
      *            any wirelets specified by the user
      */
-    public PackedContainerConfiguration(AssembleOutput output, Object source, Wirelet... wirelets) {
+    private PackedContainerConfiguration(AssembleOutput output, Object source, Wirelet... wirelets) {
         super(ConfigSiteUtil.captureStackFrame(InjectConfigSiteOperations.INJECTOR_OF), output);
         this.source = requireNonNull(source);
         this.lookup = this.model = ContainerSourceModel.of(source.getClass());
         this.wireletContext = WireletContainer.of(this, null, wirelets);
+    }
+
+    public static PackedContainerConfiguration of(AssembleOutput output, Object source, Wirelet... wirelets) {
+        return new PackedContainerConfiguration(output, source, wirelets);
     }
 
 //    private HostConfigurationContext addHost() {
