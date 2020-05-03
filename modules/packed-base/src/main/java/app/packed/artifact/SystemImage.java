@@ -24,7 +24,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
-import packed.internal.artifact.PackedArtifactImage;
+import packed.internal.artifact.PackedSystemImage;
 
 /**
  * Artifact images are immutable ahead-of-time configured artifacts. By configuring an artifact ahead of time, the
@@ -148,6 +148,6 @@ public interface SystemImage extends SystemSource {
      *             if the image could not be constructed
      */
     static SystemImage of(Bundle bundle, Wirelet... wirelets) {
-        return PackedArtifactImage.of(bundle, wirelets);
+        return PackedSystemImage.of(bundle, wirelets);
     }
 }

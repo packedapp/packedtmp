@@ -26,7 +26,7 @@ import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.service.Injector;
 import packed.internal.artifact.AssembleOutput;
-import packed.internal.artifact.PackedArtifactImage;
+import packed.internal.artifact.PackedSystemImage;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.WireletContainer;
 import packed.internal.moduleaccess.AppPackedArtifactAccess;
@@ -146,8 +146,8 @@ public abstract class ArtifactDriver<A> {
     private ArtifactContext create(SystemSource source, Wirelet... wirelets) {
         PackedContainerConfiguration pcc;
         WireletContainer wc;
-        if (source instanceof PackedArtifactImage) {
-            PackedArtifactImage pai = (PackedArtifactImage) source;
+        if (source instanceof PackedSystemImage) {
+            PackedSystemImage pai = (PackedSystemImage) source;
             pcc = pai.configuration();
             wc = WireletContainer.of(pcc, pai.wirelets(), wirelets); // TODO check no assemble wirelets
         } else {

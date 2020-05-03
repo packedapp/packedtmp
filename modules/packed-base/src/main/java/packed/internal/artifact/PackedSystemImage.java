@@ -32,7 +32,7 @@ import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.WireletContainer;
 
 /** The default implementation of {@link SystemImage}. */
-public final class PackedArtifactImage implements SystemImage {
+public final class PackedSystemImage implements SystemImage {
 
     /** The configuration of the root container. */
     private final PackedContainerConfiguration pcc;
@@ -52,7 +52,7 @@ public final class PackedArtifactImage implements SystemImage {
      * @param wc
      *            any wirelets specified when creating the image or later via {@link #with(Wirelet...)}
      */
-    private PackedArtifactImage(PackedContainerConfiguration pcc, @Nullable WireletContainer wc) {
+    private PackedSystemImage(PackedContainerConfiguration pcc, @Nullable WireletContainer wc) {
         this.pcc = requireNonNull(pcc);
         this.wc = wc;
     }
@@ -115,9 +115,9 @@ public final class PackedArtifactImage implements SystemImage {
 
     /** {@inheritDoc} */
     @Override
-    public PackedArtifactImage with(Wirelet... wirelets) {
+    public PackedSystemImage with(Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
-        return wirelets.length == 0 ? this : new PackedArtifactImage(pcc, WireletContainer.of(pcc, wc, wirelets));
+        return wirelets.length == 0 ? this : new PackedSystemImage(pcc, WireletContainer.of(pcc, wc, wirelets));
     }
 
     /**
@@ -130,9 +130,9 @@ public final class PackedArtifactImage implements SystemImage {
      *            any wirelet
      * @return the image
      */
-    public static PackedArtifactImage lazyCreate(SystemSource source, Wirelet... wirelets) {
-        if (source instanceof PackedArtifactImage) {
-            PackedArtifactImage pai = (PackedArtifactImage) source;
+    public static PackedSystemImage lazyCreate(SystemSource source, Wirelet... wirelets) {
+        if (source instanceof PackedSystemImage) {
+            PackedSystemImage pai = (PackedSystemImage) source;
             return pai.with(wirelets);
         } else {
             return of((Bundle) source, wirelets);
@@ -151,9 +151,9 @@ public final class PackedArtifactImage implements SystemImage {
      * @throws RuntimeException
      *             if the image could not be constructed
      */
-    public static PackedArtifactImage of(Bundle bundle, Wirelet... wirelets) {
+    public static PackedSystemImage of(Bundle bundle, Wirelet... wirelets) {
         PackedContainerConfiguration pcc = new PackedContainerConfiguration(AssembleOutput.image(), bundle, wirelets);
-        return new PackedArtifactImage(pcc.assemble(), pcc.wireletContext);
+        return new PackedSystemImage(pcc.assemble(), pcc.wireletContext);
     }
 }
 

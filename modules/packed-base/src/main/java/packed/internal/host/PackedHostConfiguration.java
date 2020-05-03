@@ -23,7 +23,7 @@ import app.packed.component.ComponentType;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
-import packed.internal.artifact.PackedArtifactImage;
+import packed.internal.artifact.PackedSystemImage;
 import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.component.AbstractComponent;
 import packed.internal.component.AbstractComponentConfiguration;
@@ -50,11 +50,11 @@ public final class PackedHostConfiguration extends AbstractComponentConfiguratio
         requireNonNull(source, "source is null");
         requireNonNull(driver, "driver is null");
 
-        PackedArtifactImage img;
-        if (source instanceof PackedArtifactImage) {
-            img = ((PackedArtifactImage) source).with(wirelets);
+        PackedSystemImage img;
+        if (source instanceof PackedSystemImage) {
+            img = ((PackedSystemImage) source).with(wirelets);
         } else {
-            img = PackedArtifactImage.of((Bundle) source, wirelets);
+            img = PackedSystemImage.of((Bundle) source, wirelets);
         }
 
         PackedGuestConfiguration pgc = new PackedGuestConfiguration(this, img.configuration(), img);
