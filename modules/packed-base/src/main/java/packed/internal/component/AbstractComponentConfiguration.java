@@ -93,11 +93,11 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
     /** The state of this configuration. */
     protected ComponentConfigurationState state = new ComponentConfigurationState();
 
-    @Nullable
-    public PackedContainerConfiguration parentContainer() {
-        PackedContainerConfiguration pcc = container();
-        return pcc == null ? null : pcc.container();
-    }
+//    @Nullable
+//    public PackedContainerConfiguration parentContainer() {
+//        PackedContainerConfiguration pcc = container();
+//        return pcc == null ? null : pcc.container();
+//    }
 
     /**
      * Creates a new abstract component configuration
