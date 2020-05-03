@@ -422,6 +422,6 @@ public abstract class Bundle implements SystemSource {
     }
 
     protected final <W extends Wirelet> Optional<W> wirelet(Class<W> type) {
-        return configuration().wirelet(type);
+        return configuration().assemblyWirelet(type);
     }
 }

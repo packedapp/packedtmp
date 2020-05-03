@@ -65,6 +65,7 @@ public interface LifecycleContext {
      * @return an immutable snapshot of the current state
      */
     LifecycleContext snapshot(); // Or Maybe we have LifecycleState which this interface extends. + returned by this method
+    // And maybe have an isSnapshot() <- indicating whether or not the instance is live or snapshot
 
     // Hmm I mean this is a hard failure...
     // What about the notification we where talking about

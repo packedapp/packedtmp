@@ -39,7 +39,7 @@ import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedAssembleContext;
 import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
+import packed.internal.container.ContainerWirelet.ContainerSetNameWirelet;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.PackedExtensionContext;
 import packed.internal.hook.applicator.DelayedAccessor;
@@ -91,6 +91,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
     public final AbstractComponentConfiguration parent;
 
     /** The state of this configuration. */
+    // Maaske er det en special GuestConfigurationAdaptor som er rod paa runtime.
     protected ComponentConfigurationState state = new ComponentConfigurationState();
 
 //    @Nullable
@@ -366,7 +367,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
     @Override
     public AbstractComponentConfiguration setName(String name) {
         // First lets check the name is valid
-        ComponentNameWirelet.checkName(name);
+        ContainerSetNameWirelet.checkName(name);
         switch (state.oldState) {
         case INITIAL:
             initializeName(State.SET_NAME_INVOKED, name);

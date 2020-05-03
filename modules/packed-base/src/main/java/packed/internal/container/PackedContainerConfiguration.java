@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -78,9 +77,9 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     @Nullable
     public PackedExtensionContext activeExtension;
 
-    /** Any child containers of this component (lazily initialized), in order of insertion. */
-    @Nullable
-    ArrayList<PackedContainerConfiguration> containers;
+//    /** Any child containers of this component (lazily initialized), in order of insertion. */
+//    @Nullable
+//    ArrayList<PackedContainerConfiguration> containers;
 
     /** The component that was last installed. */
     @Nullable
@@ -106,7 +105,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     /** Any wirelets that was specified by the user when creating this configuration. */
     @Nullable
-    public final WireletContainer wireletContext;
+    public final WireletPack wireletContext;
 
     /**
      * Creates a new configuration via {@link #link(Bundle, Wirelet...)}.
@@ -122,7 +121,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         super(ConfigSiteUtil.captureStackFrame(parent.configSite(), InjectConfigSiteOperations.INJECTOR_OF), parent);
         this.source = requireNonNull(bundle, "bundle is null");
         this.lookup = this.model = ContainerSourceModel.of(bundle.getClass());
-        this.wireletContext = WireletContainer.of(this, null, wirelets);
+        this.wireletContext = WireletPack.of(this, null, wirelets);
     }
 
     /**
@@ -141,7 +140,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         super(cs, output);
         this.source = requireNonNull(source);
         this.lookup = this.model = ContainerSourceModel.of(source.getClass());
-        this.wireletContext = WireletContainer.of(this, null, wirelets);
+        this.wireletContext = WireletPack.of(this, null, wirelets);
     }
 
     @Override
@@ -172,17 +171,18 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     private void advanceTo(int newState) {
         if (realState == 0) {
+            // We need to sort all extensions that are used. To make sure
+            // they progress in their lifecycle in the right order.
             extensionsOrdered = new TreeSet<>(extensions.values());
             for (PackedExtensionContext pec : extensionsOrdered) {
                 activeExtension = pec;
-                // model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_1_MAIN, extension, this);
-                // isConfigured = true;
                 pec.onConfigured();
             }
             activeExtension = null;
             realState = LS_1_LINKING;
         }
-        if (realState == LS_1_LINKING && newState >= LS_1_LINKING) {
+
+        if (realState == LS_1_LINKING && newState > LS_1_LINKING) {
             if (children != null) {
                 for (AbstractComponentConfiguration acc : children.values()) {
                     if (acc instanceof PackedContainerConfiguration) {
@@ -191,9 +191,9 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
                 }
             }
 
-            for (PackedExtensionContext e : extensionsOrdered) {
-                activeExtension = e;
-                e.onChildrenConfigured();
+            for (PackedExtensionContext pec : extensionsOrdered) {
+                activeExtension = pec;
+                pec.onChildrenConfigured();
             }
         }
     }
@@ -207,17 +207,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     private void assembleExtensions() {
         installPrepare(State.GET_NAME_INVOKED);
         advanceTo(LS_3_FINISHED);
-
-        // TODO, fix for unused wirelet, it was removed to fix other stuff..
-        // if (wireletContext != null) {
-        // for (Class<? extends Pipeline<?, ?, ?>> cc : wireletContext.pipelines.keySet()) {
-        // // List<ExtensionWirelet<?>> ll = wireletContext.pipelines.get(cc);
-        // // throw new IllegalArgumentException("The wirelets " + ll + " requires the extension " + cc.getSimpleName() + " to
-        // be
-        // // installed.");
-        //
-        // }
-        // }
     }
 
     public void buildDescriptor(BundleDescriptor.Builder builder) {
@@ -271,16 +260,17 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     }
 
     /**
-     * Returns the context for the specified extension type. Or null if no extension of the specified type is installed.
+     * Returns the context for the specified extension type. Or null if no extension of the specified type has already been
+     * added.
      * 
      * @param extensionType
      *            the type of extension to return a context for
-     * @return an extension's context, iff the specified extension type is already installed
+     * @return an extension's context, iff the specified extension type has already been added
      * @see #use(Class)
      * @see #useExtension(Class, PackedExtensionContext)
      */
     @Nullable
-    public PackedExtensionContext getExtension(Class<? extends Extension> extensionType) {
+    public PackedExtensionContext getExtensionContext(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         return extensions.get(extensionType);
     }
@@ -369,7 +359,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return new PackedContainer(parent, this, ic);
     }
 
-    public ArtifactContext instantiateArtifact(WireletContainer wc) {
+    public ArtifactContext instantiateArtifact(WireletPack wc) {
         PackedInstantiationContext pic = new PackedInstantiationContext(wc);
         extensionsPrepareInstantiation(pic);
 
@@ -388,12 +378,9 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** {@inheritDoc} */
     @Override
     public void link(Bundle bundle, Wirelet... wirelets) {
-        // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
-        // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
-        // loop situations, for example, if a bundle recursively links itself which fails by throwing
-        // java.lang.StackOverflowError instead of an infinite loop.
         PackedContainerConfiguration child = new PackedContainerConfiguration(this, bundle, wirelets);
 
+        // IDK do we want to progress to next stage just in case...
         if (realState == LS_0_MAINL) {
             advanceTo(LS_1_LINKING);
         } else if (realState == LS_2_HOSTING) {
@@ -410,10 +397,12 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         addChild(child);
 
         // We have an extra list for all containers. Why? Its not used anywhere
-        if (containers == null) {
-            containers = new ArrayList<>(5);
-        }
-        containers.add(child);
+
+        // Tror det var brugt til at iterere over alle container boern...
+//        if (containers == null) {
+//            containers = new ArrayList<>(5);
+//        }
+//        containers.add(child);
         // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
         // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return
         // type.
@@ -553,7 +542,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public <W extends Wirelet> Optional<W> wirelet(Class<W> type) {
+    public <W extends Wirelet> Optional<W> assemblyWirelet(Class<W> type) {
         WireletModel wm = WireletModel.of(type);
         if (!wm.requireAssemblyTime) {
             throw new IllegalStateException("Wirelet of type " + type + " does not have assemblytime = true");
@@ -596,3 +585,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return new PackedContainerConfiguration(cs, output, source, wirelets);
     }
 }
+// Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
+// has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
+// loop situations, for example, if a bundle recursively links itself which fails by throwing
+// java.lang.StackOverflowError instead of an infinite loop.

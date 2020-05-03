@@ -19,7 +19,7 @@ import java.util.function.Predicate;
 
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
-import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
+import packed.internal.container.ContainerWirelet.ContainerSetNameWirelet;
 import packed.internal.container.WireletList;
 
 /**
@@ -53,6 +53,15 @@ import packed.internal.container.WireletList;
  */
 public interface Wirelet {
 
+    /**
+     * Creates a wiring operation by composing a sequence of zero or more wiring operations.
+     * 
+     * @param wirelet
+     *            stuff
+     * @param others
+     *            stuff
+     * @return stuff
+     */
     static Wirelet combine(Wirelet wirelet, Wirelet... others) {
         return WireletList.of(wirelet, others);
     }
@@ -78,15 +87,17 @@ public interface Wirelet {
     }
 
     /**
-     * Returns a wirelet that will rename the container, overriding any default naming scheme , or any name that might
-     * already have been set, for example, via {@link Bundle#setName(String)}.
+     * Returns a wirelet that will set the name container to the specified value.
+     * <p>
+     * Overriding any default naming scheme, or any name that might already have been set, for example, via
+     * {@link Bundle#setName(String)}.
      * 
      * @param name
-     *            the new name of the container
-     * @return a wirelet that can be used to rename a container
+     *            the name of the container
+     * @return a wirelet that can be used to set the name of the container
      */
-    static Wirelet rename(String name) {
-        return new ComponentNameWirelet(name);
+    static Wirelet rename(String name) {// If we get describe I think we should use name()
+        return new ContainerSetNameWirelet(name);
     }
 
     // static Wirelet[] from(Collection<? extends Wirelet> wirelets)

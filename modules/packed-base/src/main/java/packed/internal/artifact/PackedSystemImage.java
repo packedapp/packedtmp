@@ -29,7 +29,7 @@ import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
 import packed.internal.component.ComponentConfigurationToComponentAdaptor;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.container.WireletContainer;
+import packed.internal.container.WireletPack;
 
 /** The default implementation of {@link SystemImage}. */
 public final class PackedSystemImage implements SystemImage {
@@ -42,7 +42,7 @@ public final class PackedSystemImage implements SystemImage {
      * {@link #with(Wirelet...)}.
      */
     @Nullable
-    private final WireletContainer wc;
+    private final WireletPack wc;
 
     /**
      * Creates a new image from the specified configuration and wirelets.
@@ -52,7 +52,7 @@ public final class PackedSystemImage implements SystemImage {
      * @param wc
      *            any wirelets specified when creating the image or later via {@link #with(Wirelet...)}
      */
-    private PackedSystemImage(PackedContainerConfiguration pcc, @Nullable WireletContainer wc) {
+    private PackedSystemImage(PackedContainerConfiguration pcc, @Nullable WireletPack wc) {
         this.pcc = requireNonNull(pcc);
         this.wc = wc;
     }
@@ -109,7 +109,7 @@ public final class PackedSystemImage implements SystemImage {
         return ComponentConfigurationToComponentAdaptor.of(pcc).stream(options);
     }
 
-    public WireletContainer wirelets() {
+    public WireletPack wirelets() {
         return wc;
     }
 
@@ -117,7 +117,7 @@ public final class PackedSystemImage implements SystemImage {
     @Override
     public PackedSystemImage with(Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
-        return wirelets.length == 0 ? this : new PackedSystemImage(pcc, WireletContainer.of(pcc, wc, wirelets) /* check no assemble Wirelets */);
+        return wirelets.length == 0 ? this : new PackedSystemImage(pcc, WireletPack.of(pcc, wc, wirelets) /* check no assemble Wirelets */);
     }
 
     /**

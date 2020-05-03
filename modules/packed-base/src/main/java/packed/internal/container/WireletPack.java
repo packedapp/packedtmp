@@ -24,12 +24,12 @@ import java.util.Map.Entry;
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
-import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
+import packed.internal.container.ContainerWirelet.ContainerSetNameWirelet;
 
 /**
  * A container of wirelets and wirelet pipelines.
  */
-public final class WireletContainer {
+public final class WireletPack {
 
     // Could put them in wirelets. And then have an int countdown instead... every time an extension is removed.
     private final IdentityHashMap<Class<? extends Extension>, Object> extensions = new IdentityHashMap<>();
@@ -39,19 +39,19 @@ public final class WireletContainer {
 
     // We might at some point, allow the setting of a default name...
     // In which we need to different between not-set and set to null
-    ComponentNameWirelet newName; // kan komme i map... og saa saetter vi et flag istedet for...
+    ContainerSetNameWirelet newName; // kan komme i map... og saa saetter vi et flag istedet for...
 
-    /** Any parent this context might have */
+    /** An optional parent. */
     @Nullable
-    final WireletContainer parent;
+    final WireletPack parent;
 
     /**
-     * Creates a new container.
+     * Creates a new pack.
      * 
      * @param parent
-     *            any existing parent
+     *            any parent
      */
-    private WireletContainer(@Nullable WireletContainer parent) {
+    private WireletPack(@Nullable WireletPack parent) {
         this.parent = parent;
     }
 
@@ -102,7 +102,7 @@ public final class WireletContainer {
         IdentityHashMap<Class<? extends Extension>, ArrayList<Wirelet>> m = new IdentityHashMap<>();
         for (Entry<Class<? extends Extension>, Object> c : extensions.entrySet()) {
             Class<? extends Extension> k = c.getKey();
-            if (pcc.getExtension(k) == null) {
+            if (pcc.getExtensionContext(k) == null) {
 
             }
         }
@@ -123,7 +123,7 @@ public final class WireletContainer {
 
     @Nullable
     public Object getWireletOrPipeline(Class<?> type) {
-        WireletContainer wc = this;
+        WireletPack wc = this;
         do {
             Object o = wc.map.get(type);
             if (o != null) {
@@ -135,7 +135,7 @@ public final class WireletContainer {
     }
 
     public String name(PackedContainerConfiguration pcc) {
-        WireletContainer wc = this;
+        WireletPack wc = this;
         while (wc != null) {
             if (wc.newName != null) {
                 return newName.name;
@@ -145,8 +145,8 @@ public final class WireletContainer {
         return pcc.name;
     }
 
-    public ComponentNameWirelet nameWirelet() {
-        WireletContainer wc = this;
+    public ContainerSetNameWirelet nameWirelet() {
+        WireletPack wc = this;
         while (wc != null) {
             if (wc.newName != null) {
                 return newName;
@@ -167,13 +167,13 @@ public final class WireletContainer {
      * @return stuff
      */
     @Nullable
-    public static WireletContainer of(PackedContainerConfiguration pcc, @Nullable WireletContainer existing, Wirelet... wirelets) {
+    public static WireletPack of(PackedContainerConfiguration pcc, @Nullable WireletPack existing, Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
         if (wirelets.length == 0) {
             return existing; // existing is null in most situations
         }
 
-        WireletContainer wc = new WireletContainer(existing);
+        WireletPack wc = new WireletPack(existing);
         for (Wirelet w : wirelets) {
             wc.addWirelet(pcc, w);
         }
@@ -186,7 +186,7 @@ public final class WireletContainer {
                 if (memberOfExtension == null) {
                     wpc.instantiate(null);
                 } else if (existing != null) {
-                    PackedExtensionContext pec = pcc.getExtension(memberOfExtension);
+                    PackedExtensionContext pec = pcc.getExtensionContext(memberOfExtension);
                     if (pec == null) {
                         wc.extensionFailed(pcc);
                     }

@@ -318,11 +318,11 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
                 PackedContainerConfiguration parent = pcc.container();
                 if (!model.extensionLinkedDirectChildrenOnly) {
                     while (parentExtension == null && parent != null) {
-                        parentExtension = parent.getExtension(extensionType);
+                        parentExtension = parent.getExtensionContext(extensionType);
                         parent = parent.container();
                     }
                 } else if (parent != null) {
-                    parentExtension = parent.getExtension(extensionType);
+                    parentExtension = parent.getExtensionContext(extensionType);
                 }
 
                 // set activate extension???

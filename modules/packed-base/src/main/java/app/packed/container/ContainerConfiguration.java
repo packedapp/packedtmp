@@ -187,15 +187,17 @@ public interface ContainerConfiguration extends ComponentConfiguration {
     <T extends Extension> T use(Class<T> extensionType);
 
     /**
+     * The specified wirelet type must have
+     * 
      * @param <W>
      *            the type of wirelet
      * @param type
      *            the type of wirelet
-     * @return an optional containing the wirelet if defined otherwise empty
+     * @return an optional containing the wirelet if defined otherwise empty.
      * @throws IllegalArgumentException
      *             if the specified wirelet type does not have {@link WireletSidecar#requireAssemblyTime()} set to true
      */
-    <W extends Wirelet> Optional<W> wirelet(Class<W> type);
+    <W extends Wirelet> Optional<W> assemblyWirelet(Class<W> type); // Should assembly be the default????
 }
 ///**
 //* Creates a new layer.

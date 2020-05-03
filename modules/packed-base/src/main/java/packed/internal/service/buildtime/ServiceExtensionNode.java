@@ -31,7 +31,7 @@ import app.packed.container.ExtensionContext;
 import app.packed.inject.Inject;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceMode;
-import packed.internal.container.WireletContainer;
+import packed.internal.container.WireletPack;
 import packed.internal.container.WireletPipelineContext;
 import packed.internal.inject.AtInject;
 import packed.internal.inject.AtInjectHook;
@@ -96,15 +96,20 @@ public final class ServiceExtensionNode {
     }
 
     public void buildBundle() {
+        // We could actually have a desired state = Hosting (No linking just hosting)
+        // But I do think it would be correct to say that the desired state is hosting...
+        // Don't know if it would help anything...
 
+        // No more services or components registered in this extension instance.
+        // Let's run some quick tests before we start with linking..
+        // We might even
+        // System.out.println("First " + (parent == null));
     }
 
     public void buildTree() {
         System.out.println("Root = " + (parent == null));
         if (parent == null) {
             TreePrinter.print(this, n -> n.children, "", n -> n.context.containerPath().toString());
-            System.out.println("BUILDING!!!");
-            new Exception().printStackTrace();
         }
         // System.out.println("Childre " + children);
         HashMap<Key<?>, BuildEntry<?>> resolvedServices = provider().resolve();
@@ -206,7 +211,7 @@ public final class ServiceExtensionNode {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public PackedInjector onInstantiate(WireletContainer wc) {
+    public PackedInjector onInstantiate(WireletPack wc) {
         LinkedHashMap<Key<?>, InjectorEntry<?>> snm = new LinkedHashMap<>();
         PackedInjector publicInjector = new PackedInjector(context().containerConfigSite(), "Internal Descriptor", snm);
 

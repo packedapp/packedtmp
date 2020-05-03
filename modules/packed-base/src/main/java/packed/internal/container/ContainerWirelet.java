@@ -35,9 +35,10 @@ import app.packed.container.Wirelet;
 
 public abstract class ContainerWirelet implements Wirelet {
 
-    abstract void process(WireletContainer c);
+    abstract void process(WireletPack c);
 
-    public static final class ComponentNameWirelet extends ContainerWirelet {
+    /** A wirelet that will set the name of the container. Used by {@link Wirelet#rename(String)}. */
+    public static final class ContainerSetNameWirelet extends ContainerWirelet {
 
         /** The (checked) name to override with. */
         public final String name;
@@ -48,13 +49,13 @@ public abstract class ContainerWirelet implements Wirelet {
          * @param name
          *            the name to override any existing container name with
          */
-        public ComponentNameWirelet(String name) {
+        public ContainerSetNameWirelet(String name) {
             this.name = checkName(name);
         }
 
         /** {@inheritDoc} */
         @Override
-        void process(WireletContainer c) {
+        void process(WireletPack c) {
             c.newName = this;// will override any set previously
         }
 

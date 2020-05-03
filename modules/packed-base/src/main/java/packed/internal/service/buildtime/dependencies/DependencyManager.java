@@ -154,7 +154,7 @@ public final class DependencyManager {
                                     if (op.isPresent()) {
                                         Class<? extends Extension> cc = op.get();
                                         if (cc == k.typeLiteral().type()) {
-                                            PackedExtensionContext e = ((PackedExtensionContext) node.context()).container().getExtension(cc);
+                                            PackedExtensionContext e = ((PackedExtensionContext) node.context()).container().getExtensionContext(cc);
                                             resolveTo = extensionEntries.computeIfAbsent(e.extensionType(),
                                                     kk -> new RuntimeAdaptorEntry(node, new ConstantInjectorEntry<Extension>(ConfigSite.UNKNOWN,
                                                             (Key) Key.of(e.extensionType()), null, e.extension())));

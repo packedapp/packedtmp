@@ -70,8 +70,8 @@ public abstract class SidecarModel extends Model {
         return contracts;
     }
 
-    public void invokePostSidecarAnnotatedMethods(int id, Object sidecar, Object context) {
-        MethodHandle mh = postSidecars[id];
+    public void invokePostSidecarAnnotatedMethods(int stateId, Object sidecar, Object context) {
+        MethodHandle mh = postSidecars[stateId];
         if (mh != null) {
             try {
                 mh.invokeExact(sidecar, context);

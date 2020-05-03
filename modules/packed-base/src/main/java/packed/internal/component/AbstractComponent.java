@@ -36,7 +36,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Container;
 import app.packed.container.Extension;
 import packed.internal.artifact.PackedInstantiationContext;
-import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
+import packed.internal.container.ContainerWirelet.ContainerSetNameWirelet;
 
 /** An abstract base implementation of {@link Component}. */
 public abstract class AbstractComponent implements Component {
@@ -94,7 +94,7 @@ public abstract class AbstractComponent implements Component {
         this.extension = configuration.extension();
         if (parent == null) {
             String n = configuration.name;
-            ComponentNameWirelet ol = ic.wirelets() == null ? null : ic.wirelets().nameWirelet();
+            ContainerSetNameWirelet ol = ic.wirelets() == null ? null : ic.wirelets().nameWirelet();
             if (ol != null) {
                 n = ol.name;
                 if (n.endsWith("?")) {
