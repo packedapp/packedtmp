@@ -22,16 +22,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
+ * Attempts to find a wirelet of targets type.
  */
-//Assembly time must be true if used from sidecars...
-//Parameters Y Fields
-// TypeParameter->Injected into a function... nicee
 @Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 // Give me the wirelet...
-public @interface WireletSupply {}
+//Assembly time must be true if used from sidecars...
+//Parameters Y Fields
+//TypeParameter->Injected into a function... nicee
+//WireletLookup..
+//@WireletFind
+public @interface WireletFind {}
 
 // Why can this not be used on a Bundle?
 // Because we do not have access to a bundle. 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.sidecar;
+package app.packed.container;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -22,8 +22,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.artifact.SystemImage;
-import app.packed.container.Wirelet;
-import app.packed.container.WireletPipeline;
 import packed.internal.container.WireletModel;
 
 /**
@@ -33,7 +31,7 @@ import packed.internal.container.WireletModel;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Inherited // see for example ServiceWirelet
+@Inherited // see for example ServiceWirelet, should be enough just to have a test for it...
 public @interface WireletSidecar {
 
     /**
@@ -54,6 +52,7 @@ public @interface WireletSidecar {
      * 
      * @return stuff
      */
+    // Taenker paa vende den om...
     boolean requireAssemblyTime() default false;
 }
 
@@ -78,13 +77,3 @@ enum Inheritance {
 // assembleOnly
 // linkOnly
 // hostOnly
-
-// vil automatisk bliver provided som service
-@WireletSidecar(provideAsService = true)
-class XDoofar implements Wirelet {
-
-}
-
-// Must use Optional/Nullable for wirelet
-// Works for both wirelets and pipeline
-@interface XProvideWirelet {}

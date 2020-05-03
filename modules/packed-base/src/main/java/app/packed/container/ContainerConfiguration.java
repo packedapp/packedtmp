@@ -28,7 +28,6 @@ import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
-import app.packed.sidecar.WireletSidecar;
 import packed.internal.host.api.HostDriver;
 
 /**

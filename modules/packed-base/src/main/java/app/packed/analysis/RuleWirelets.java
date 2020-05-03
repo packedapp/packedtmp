@@ -22,6 +22,10 @@ import app.packed.container.Wirelet;
 /**
  *
  */
+// Har jo ikke noget med Analysis at goere...
+
+// AssertWirelets... Nice for tests
+// But idk about runtime...
 class RuleWirelets {
 
     // BundleValidate.assertThat(SomeBundle, error(DependencyGraphModel.class, DGM.size < 10);

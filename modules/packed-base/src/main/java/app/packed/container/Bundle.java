@@ -33,7 +33,6 @@ import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
-import app.packed.sidecar.WireletSidecar;
 import packed.internal.container.WireletPipelineContext;
 import packed.internal.host.api.HostDriver;
 import packed.internal.moduleaccess.AppPackedContainerAccess;

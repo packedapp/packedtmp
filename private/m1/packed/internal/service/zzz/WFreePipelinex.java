@@ -22,7 +22,7 @@ import app.packed.artifact.App;
 import app.packed.container.BaseBundle;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletPipeline;
-import app.packed.sidecar.WireletSidecar;
+import app.packed.container.WireletSidecar;
 
 /**
  *

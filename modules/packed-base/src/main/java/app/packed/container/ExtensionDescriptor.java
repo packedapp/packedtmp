@@ -29,7 +29,8 @@ import app.packed.sidecar.ExtensionSidecar;
  * @apiNote In the future, if the Java language permits, {@link ExtensionDescriptor} may become a {@code sealed}
  *          interface, which would prohibit subclassing except by explicitly permitted types.
  */
-// Lad os lige se om den er noget vaerd...
+// Lad os lige se om den er noget vaerd... Altsaa dependencies kan man jo se paa Javadoc...
+// Og taenker vi linker til alle contracts fra Javadoc
 // 
 public interface ExtensionDescriptor {
 

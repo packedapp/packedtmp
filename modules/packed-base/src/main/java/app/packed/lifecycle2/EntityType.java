@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import app.packed.container.Extension;
-import app.packed.container.ExtensionMember;
+import app.packed.container.MemberOfExtension;
 import app.packed.sidecar.ExtensionSidecar;
 
 /**
@@ -54,7 +54,7 @@ public enum EntityType {
 
     EXTENSION(Set.of(ExtensionSidecar.class)),
 
-    WIRELET_PIPELINE(Set.of(ExtensionMember.class));
+    WIRELET_PIPELINE(Set.of(MemberOfExtension.class));
 
     // Activity..
     // States, Available Contexts

@@ -117,7 +117,7 @@ public final class PackedSystemImage implements SystemImage {
     @Override
     public PackedSystemImage with(Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
-        return wirelets.length == 0 ? this : new PackedSystemImage(pcc, WireletPack.of(pcc, wc, wirelets) /* check no assemble Wirelets */);
+        return wirelets.length == 0 ? this : new PackedSystemImage(pcc, WireletPack.fromImage(pcc, wc, wirelets));
     }
 
     /**

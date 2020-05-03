@@ -19,7 +19,7 @@ import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletPipeline;
-import app.packed.sidecar.WireletSidecar;
+import app.packed.container.WireletSidecar;
 import packed.internal.sidecar.Model;
 
 /** A model of a {@link Wirelet}. */

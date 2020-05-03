@@ -31,9 +31,9 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.ExtensionLinked;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
-import app.packed.container.ExtensionMember;
+import app.packed.container.MemberOfExtension;
 import app.packed.container.InternalExtensionException;
-import app.packed.container.WireletSupply;
+import app.packed.container.WireletFind;
 import app.packed.hook.OnHook;
 import app.packed.lifecycle.LifecycleContext;
 import app.packed.sidecar.ExtensionSidecar;
@@ -212,18 +212,18 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
     }
 
     /**
-     * Returns any value of {@link ExtensionMember} annotation.
+     * Returns any value of {@link MemberOfExtension} annotation.
      * 
      * @param type
      *            the type look for an ExtensionMember annotation on
      * @return an extension the specified type is a member of
      * @throws InternalExtensionException
      *             if an annotation is present and the specified is not in the same module as the extension specified in
-     *             {@link ExtensionMember#value()}
+     *             {@link MemberOfExtension#value()}
      */
     @Nullable
     public static Class<? extends Extension> findAnyExtensionMember(Class<?> type) {
-        ExtensionMember ue = type.getAnnotation(ExtensionMember.class);
+        MemberOfExtension ue = type.getAnnotation(MemberOfExtension.class);
         if (ue != null) {
             Class<? extends Extension> eType = ue.value();
             if (type.getModule() != eType.getModule()) {
@@ -319,7 +319,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         protected void addExtensionContextElements(MethodHandleBuilder builder, int index) {
             builder.addKey(ExtensionContext.class, index);
             builder.addKey(LifecycleContext.class, PackedExtensionContext.MH_LIFECYCLE_CONTEXT, index);
-            builder.addAnnoClassMapper(WireletSupply.class, PackedExtensionContext.MH_FIND_WIRELET, index);
+            builder.addAnnoClassMapper(WireletFind.class, PackedExtensionContext.MH_FIND_WIRELET, index);
         }
 
         /**

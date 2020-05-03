@@ -27,9 +27,7 @@ import app.packed.container.Wirelet;
 import app.packed.container.WireletPipeline;
 import packed.internal.moduleaccess.ModuleAccess;
 
-/**
- * A context object created for each {@link WireletPipeline} instance.
- */
+/** A context for each {@link WireletPipeline} instance. */
 public final class WireletPipelineContext {
 
     /** The pipeline instance that can be injected. */

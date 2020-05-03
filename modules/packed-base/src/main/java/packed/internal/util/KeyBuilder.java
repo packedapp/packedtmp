@@ -16,19 +16,12 @@
 package packed.internal.util;
 
 import app.packed.base.Key;
-import app.packed.component.Component;
 import app.packed.inject.Inject;
 import app.packed.service.Injector;
 import app.packed.service.ProvideContext;
 
 /** A builder of keys, mainly useful for creating proper error messages. */
 public final class KeyBuilder {
-
-    /** The {@link Component} interface as a key. */
-    public static final Key<Component> COMPONENT_KEY = Key.of(Component.class);
-
-    /// ** The {@link Container} class as a key. */
-    // public static final Key<?> CONTAINER_KEY = Key.of(Container.class);
 
     /** The {@link ProvideContext} class as a key. */
     public static final Key<?> INJECTION_SITE_KEY = Key.of(ProvideContext.class);

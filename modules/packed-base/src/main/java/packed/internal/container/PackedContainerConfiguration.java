@@ -121,7 +121,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         super(ConfigSiteUtil.captureStackFrame(parent.configSite(), InjectConfigSiteOperations.INJECTOR_OF), parent);
         this.source = requireNonNull(bundle, "bundle is null");
         this.lookup = this.model = ContainerSourceModel.of(bundle.getClass());
-        this.wireletContext = WireletPack.of(this, null, wirelets);
+        this.wireletContext = WireletPack.fromLink(this, wirelets);
     }
 
     /**
@@ -140,7 +140,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         super(cs, output);
         this.source = requireNonNull(source);
         this.lookup = this.model = ContainerSourceModel.of(source.getClass());
-        this.wireletContext = WireletPack.of(this, null, wirelets);
+        this.wireletContext = WireletPack.fromRoot(this, wirelets);
     }
 
     @Override

@@ -34,7 +34,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ExtensionMember {
+//Was ExtensionMember
+public @interface MemberOfExtension {
 
     /**
      * Returns The extension the annotated target is a part of.

@@ -22,7 +22,7 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 import app.packed.container.ExtensionLinked;
 import app.packed.container.Wirelet;
-import app.packed.container.WireletSupply;
+import app.packed.container.WireletFind;
 import app.packed.inject.InjectionContext;
 import app.packed.lifecycle.LifecycleContext;
 import app.packed.service.ServiceWirelets;
@@ -112,7 +112,7 @@ public class TI extends BaseBundle {
         String foo;
         final LifecycleContext lc;
 
-        MyExte(LifecycleContext lc, InjectionContext ic, @WireletSupply MyTestWirelet wc) {
+        MyExte(LifecycleContext lc, InjectionContext ic, @WireletFind MyTestWirelet wc) {
             // System.out.println("State " + lc.current());
             this.lc = lc;
 

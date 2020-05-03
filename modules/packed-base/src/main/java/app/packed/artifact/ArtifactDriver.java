@@ -150,7 +150,7 @@ public abstract class ArtifactDriver<A> {
         if (source instanceof PackedSystemImage) {
             PackedSystemImage pai = (PackedSystemImage) source;
             pcc = pai.configuration();
-            wc = WireletPack.of(pcc, pai.wirelets(), wirelets); // TODO check no assemble wirelets
+            wc = WireletPack.fromImage(pcc, pai.wirelets(), wirelets);
         } else { // assert Bundle?
             pcc = PackedContainerConfiguration.of(AssembleOutput.artifact(this), source, wirelets);
             pcc.assemble();

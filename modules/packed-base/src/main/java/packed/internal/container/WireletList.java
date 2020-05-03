@@ -148,23 +148,7 @@ public final class WireletList implements Wirelet {
             action.accept(w);
         }
     }
-    //
-    // public Iterator<Wirelet> iterator() {
-    // return List.of(wirelets).iterator();
-    // }
 
-//    public WireletList plus(Wirelet... wirelets) {
-//        return Wire (WireletList) andThen(wirelets);
-//    }
-    //
-    // /**
-    // * Returns an immutable {@link List} representation of all of the wirelets in this list.
-    // *
-    // * @return a immutable list representation of all of the wirelets in this list
-    // */
-    // public List<Wirelet> toList() {
-    // return List.of(wirelets);
-    // }
     //
     // /**
     // * Returns a list of all wirelets of the specified type
@@ -211,31 +195,14 @@ public final class WireletList implements Wirelet {
     }
 
     /**
-     * Returns a empty wirelet list.
-     *
-     * @return an empty {@code WireletList}
-     */
-    public static WireletList of() {
-        return EMPTY;
-    }
-
-    /**
      * Returns a wirelet list containing the specified element.
      * <p>
      * If the specified wirelet is a WireletList this method will cast it and return it.
      * 
-     * @param wirelet
+     * @param w1
      *            the single wirelet
      * @return a {@code WireletList} containing the specified wirelet
      */
-    public static WireletList of(Wirelet wirelet) {
-        requireNonNull(wirelet, "wirelet is null");
-        if (wirelet instanceof WireletList) {
-            return (WireletList) wirelet;
-        }
-        return new WireletList(wirelet); // we might provide optimized versions in the future
-    }
-
     public static WireletList of(Wirelet w1, Wirelet w2) {
         return new WireletList(w1, w2);
     }
