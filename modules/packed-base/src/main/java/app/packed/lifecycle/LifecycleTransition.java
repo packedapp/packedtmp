@@ -15,8 +15,10 @@
  */
 package app.packed.lifecycle;
 
+import java.util.Optional;
+
 /**
- *
+ * Immutable
  */
 // Kan injectes ind enhver metode annoteret med @On....
 
@@ -24,6 +26,40 @@ package app.packed.lifecycle;
 
 //Igen hvis det kun er runstate saa Runstate transition...
 
-public final class LifecycleTransition {
+// Action ConfigurationSite? ActionSite?, ...
+public interface LifecycleTransition {
 
+    /**
+     * Returns a readable string, representing the reason for the transition.
+     * 
+     * @return a readable string, representing the reason for the transition
+     */
+    Optional<String> action();
+
+    /**
+     * The state than an entity is transitioning from.
+     * 
+     * @return state than an entity is transitioning from
+     */
+    String from();
+
+    /**
+     * The state than an entity is transitioning to.
+     * 
+     * @return state than an entity is transitioning to
+     */
+    String to();
+
+    default boolean isFailed() {
+        return true;
+    }
+
+    default Optional<Throwable> failure() {
+        return Optional.empty();
+    }
 }
+
+// Something about failures
+// boolean isEndState
+
+// Something about whether or not this is the desired state???

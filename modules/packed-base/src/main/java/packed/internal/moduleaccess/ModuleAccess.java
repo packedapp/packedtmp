@@ -21,7 +21,7 @@ import app.packed.artifact.ArtifactDriver;
 import app.packed.base.TypeLiteral;
 import app.packed.container.Bundle;
 import app.packed.hook.AnnotatedFieldHook;
-import app.packed.lifecycle.RunState;
+import app.packed.lifecycleold.RunState;
 import app.packed.service.ServiceMode;
 
 /** A mechanism for calling package private methods in public packages without using reflection. */

@@ -26,8 +26,10 @@ import java.util.Map;
 
 import app.packed.base.Contract;
 import app.packed.container.InternalExtensionException;
+import app.packed.lifecycle.LifecycleTransition;
+import app.packed.lifecycle2.DefaultLifecycleTransition;
 import app.packed.sidecar.Expose;
-import app.packed.sidecar.WhenSidecar;
+import app.packed.sidecar.Leaving;
 import packed.internal.reflect.MethodHandleBuilder;
 import packed.internal.reflect.OpenClass;
 import packed.internal.util.ThrowableUtil;
@@ -47,7 +49,7 @@ public abstract class SidecarModel extends Model {
     // Contract>);
     protected final Map<Class<? extends Contract>, MethodHandle> contracts;
 
-    /** Methods annotated with {@link WhenSidecar}. Takes the sidecar instance */
+    /** Methods annotated with {@link Leaving}. Takes the sidecar instance */
     // Det kan jo vaere gemt i en int istedet for saa vi bare test noget modulo...
     private final MethodHandle[] postSidecars; // TODO take a SidecarModel as well as well???
 
@@ -115,20 +117,26 @@ public abstract class SidecarModel extends Model {
             this.constructor = cp.findConstructor(spec);
             cp.findMethods(m -> {
                 onMethod(m);
-                WhenSidecar oa = m.getAnnotation(WhenSidecar.class);
+                Leaving oa = m.getAnnotation(Leaving.class);
                 if (oa != null) {
-                    int index = statics.ld.indexOf(oa.value());
+                    // To support nextStates. We create a MH filter with a guard on the next state...
+                    // To support Error transitions. I think we have specific code for this
+                    // It is not performance criticial... So we do not want to check this normally...
+
+                    // Validate states
+                    String state = oa.state();
+                    int index = statics.ld.indexOf(state);
                     if (index == -1) {
                         // TODO remove instantiating, available values
-                        throw new InternalExtensionException("Unknown sidecar lifecycle event '" + oa.value() + "' for method " + m + ", available states are "
+                        throw new InternalExtensionException("Unknown sidecar lifecycle event '" + state + "' for method " + m + ", available states are "
                                 + Arrays.toString(statics.ld.toArray()));
                     }
 
-                    // Vi vil helst ikke lave vores egen code her....
-                    // Static er fck irriterende...
-                    //// Skal have en slags mapStaticMethodsToInstanceMethods paa InjectableFunction...
                     MethodHandleBuilder mhb = MethodHandleBuilder.of(void.class, Object.class, Object.class);
                     decorateOnSidecar(mhb);
+                    MethodHandle lt = MethodHandles.constant(LifecycleTransition.class, new DefaultLifecycleTransition("Gll", "F", "FordiDuErDum"));
+                    lt = MethodHandles.dropArguments(lt, 0, Object.class);
+                    mhb.addKey(LifecycleTransition.class, lt, 0);
                     MethodHandle mh = mhb.build(cp, m);
 
                     // If there are multiple methods with the same index. We just fold them to a single MethodHandle
@@ -148,4 +156,5 @@ public abstract class SidecarModel extends Model {
             return cp;
         }
     }
+
 }

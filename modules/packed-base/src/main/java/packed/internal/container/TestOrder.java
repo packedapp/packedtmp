@@ -19,7 +19,7 @@ import app.packed.artifact.App;
 import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
 import app.packed.sidecar.ExtensionSidecar;
-import app.packed.sidecar.WhenSidecar;
+import app.packed.sidecar.Leaving;
 
 /**
  *
@@ -28,7 +28,7 @@ public class TestOrder extends Bundle {
 
     public static class Extension extends app.packed.container.Extension {
 
-        @WhenSidecar(ExtensionSidecar.CHILDREN_DEFINITIONS)
+        @Leaving(state = ExtensionSidecar.CHILD_LINKING)
         public void foo() {
             System.out.println("Main " + getClass().getSimpleName());
         }
@@ -54,7 +54,7 @@ public class TestOrder extends Bundle {
         }
 
         @Override
-        @WhenSidecar(ExtensionSidecar.NORMAL_USAGE)
+        @Leaving(state = ExtensionSidecar.NORMAL_USAGE)
         public void foo() {
             System.out.println("Main " + getClass().getSimpleName());
             // use(E1.class).doStuff();

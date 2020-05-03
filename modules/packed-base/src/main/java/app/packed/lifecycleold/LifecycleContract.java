@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle;
+package app.packed.lifecycleold;
 
 /**
  *
  */
-//FailedToRuntException, ExecutionExceptionFailed
-// ExecutionExeception
-/// RunFailedException <- See execute fungere daaerlig here
+public class LifecycleContract {
 
-/// StartupFailedException();
-public class FailedToStartException extends RuntimeException {
-
-    /** */
-    private static final long serialVersionUID = 1L;
+    boolean enabled = true;
 
 }
+
+// SyncPoint... SyncPoints har en default vaerdi.. F.eks. OpenPort = post process NetExtension...
+
+///////// Start / stop
+// Pre fase (sync, evt async start)
+// Concurrent fase (async)
+// Post fase (sync )

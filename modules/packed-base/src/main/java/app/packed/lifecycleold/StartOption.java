@@ -13,13 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package app.packed.lifecycleold;
 
 /**
- * Provides annotations and classes for general lifecycle management.
- *
- *
- * <p>
- * This package provides 3 annotations that can be used to annotate methods with so they are run when an entity
  *
  */
-package app.packed.lifecycle;
+// Altsaa vi skal ikke have interface StartOption of @interface WireletOption... Saa maa de hedde noget forskelligt
+
+// Altsaa skal vi have den her.. eller kan vi komme langt nok med wirelets???
+// Og stopoptions... Kan vi komme derhen med wirelets??? F.eks. lad os sige vi gerne vil restarte med nogle andre settings???? StopOption.restart(Wirelet... wirelets)
+public interface StartOption {
+
+    // LifecycleTransition
+    static StartOption reason(String reason) {
+        throw new UnsupportedOperationException();
+    }
+}

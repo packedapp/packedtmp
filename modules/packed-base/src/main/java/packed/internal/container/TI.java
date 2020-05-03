@@ -15,21 +15,19 @@
  */
 package packed.internal.container;
 
-import java.lang.management.ManagementFactory;
-
 import app.packed.artifact.App;
 import app.packed.artifact.SystemImage;
 import app.packed.container.BaseBundle;
-import app.packed.container.ExtensionLinked;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
+import app.packed.container.ExtensionLinked;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSupply;
 import app.packed.inject.InjectionContext;
 import app.packed.lifecycle.LifecycleContext;
 import app.packed.service.ServiceWirelets;
 import app.packed.sidecar.ExtensionSidecar;
-import app.packed.sidecar.WhenSidecar;
+import app.packed.sidecar.Leaving;
 
 /**
  *
@@ -38,9 +36,9 @@ public class TI extends BaseBundle {
 
     public static void main(String[] args) {
         App.of(new TI(), new MyTestWirelet("fofoof XXXXXXXXXX"));
-        long currentTime = System.currentTimeMillis();
-        long vmStartTime = ManagementFactory.getRuntimeMXBean().getStartTime();
-        System.out.println("STARTED Application started: " + (currentTime - vmStartTime));
+//        long currentTime = System.currentTimeMillis();
+//        long vmStartTime = ManagementFactory.getRuntimeMXBean().getStartTime();
+//        System.out.println("STARTED Application started: " + (currentTime - vmStartTime));
     }
 
     public static void maindd(String[] args) {
@@ -125,14 +123,14 @@ public class TI extends BaseBundle {
             child.foo = " Child of " + foo;
         }
 
-        @WhenSidecar(ExtensionSidecar.NORMAL_USAGE)
+        @Leaving(state = ExtensionSidecar.NORMAL_USAGE)
         protected void foo(ExtensionContext ec) {
             // System.out.println(ec.containerPath());
             // System.out.println("State now " + lc.current());
             // System.out.println(lc);
         }
 
-        @WhenSidecar(ExtensionSidecar.NORMAL_USAGE)
+        @Leaving(state = ExtensionSidecar.NORMAL_USAGE)
         private static void foodd(InjectionContext ic) {
             // System.out.println("Available Services " + ic.keys());
         }

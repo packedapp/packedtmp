@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 
 import app.packed.analysis.BundleDescriptor;
-import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.SystemImage;
 import app.packed.artifact.SystemSource;
 import app.packed.base.Nullable;
@@ -97,18 +96,6 @@ public final class PackedArtifactImage implements SystemImage {
         return wc == null ? pcc.getName() : wc.name(pcc);
     }
 
-    /**
-     * Instantiates a new artifact.
-     * 
-     * @param wirelets
-     *            any wirelets used for instantiation
-     * @return the instantiated artifact context
-     */
-    public ArtifactContext instantiateArtifact(Wirelet... wirelets) {
-        WireletContainer newWc = WireletContainer.of(pcc, wc, wirelets);
-        return pcc.instantiateArtifact(newWc); // Does the actual instantiation
-    }
-
     /** {@inheritDoc} */
     @Override
     @SuppressWarnings("unchecked")
@@ -122,28 +109,15 @@ public final class PackedArtifactImage implements SystemImage {
         return ComponentConfigurationToComponentAdaptor.of(pcc).stream(options);
     }
 
+    public WireletContainer wirelets() {
+        return wc;
+    }
+
     /** {@inheritDoc} */
     @Override
     public PackedArtifactImage with(Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
         return wirelets.length == 0 ? this : new PackedArtifactImage(pcc, WireletContainer.of(pcc, wc, wirelets));
-    }
-
-    /**
-     * Creates an artifact image using the specified source.
-     *
-     * @param bundle
-     *            the source of the image
-     * @param wirelets
-     *            any wirelets to use when construction the image. The wirelets will also be available when instantiating an
-     *            actual artifact
-     * @return the image that was built
-     * @throws RuntimeException
-     *             if the image could not be constructed
-     */
-    public static PackedArtifactImage of(Bundle bundle, Wirelet... wirelets) {
-        PackedContainerConfiguration pcc = new PackedContainerConfiguration(AssembleOutput.image(), bundle, wirelets);
-        return new PackedArtifactImage(pcc.assemble(), pcc.wireletContext);
     }
 
     /**
@@ -163,6 +137,23 @@ public final class PackedArtifactImage implements SystemImage {
         } else {
             return of((Bundle) source, wirelets);
         }
+    }
+
+    /**
+     * Creates an artifact image using the specified source.
+     *
+     * @param bundle
+     *            the source of the image
+     * @param wirelets
+     *            any wirelets to use when construction the image. The wirelets will also be available when instantiating an
+     *            actual artifact
+     * @return the image that was built
+     * @throws RuntimeException
+     *             if the image could not be constructed
+     */
+    public static PackedArtifactImage of(Bundle bundle, Wirelet... wirelets) {
+        PackedContainerConfiguration pcc = new PackedContainerConfiguration(AssembleOutput.image(), bundle, wirelets);
+        return new PackedArtifactImage(pcc.assemble(), pcc.wireletContext);
     }
 }
 

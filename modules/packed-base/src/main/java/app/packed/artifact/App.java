@@ -26,9 +26,9 @@ import app.packed.component.ComponentStream;
 import app.packed.component.ComponentStream.Option;
 import app.packed.config.ConfigSite;
 import app.packed.container.Wirelet;
-import app.packed.lifecycle.LifecycleOperations;
-import app.packed.lifecycle.RunState;
-import app.packed.lifecycle.StopOption;
+import app.packed.lifecycleold.LifecycleOperations;
+import app.packed.lifecycleold.RunState;
+import app.packed.lifecycleold.StopOption;
 import app.packed.service.ServiceExtension;
 
 /**

@@ -26,6 +26,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 //Or ExtensionWired if linked=strong, ... onExtensionLinked  (Separate naming for lifecycle and events at,on,post,pre, when)
+
+// Er den generisk?? Hvad med runtime??? Vi skal jo paa en eller anden maade have fat i en webserver...
+
+// Maaske en WebServerExtensionRuntime kan have baade en for configuration time and start time...
 public @interface ExtensionLinked {
 
     // Only children not anything farther removed...

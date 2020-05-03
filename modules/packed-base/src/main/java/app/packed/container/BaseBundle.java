@@ -20,7 +20,7 @@ import app.packed.base.Key;
 import app.packed.base.Key.Qualifier;
 import app.packed.component.SingletonConfiguration;
 import app.packed.inject.Factory;
-import app.packed.lifecycle.OnStart;
+import app.packed.lifecycleold.OnStart;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
 import app.packed.service.Provide;

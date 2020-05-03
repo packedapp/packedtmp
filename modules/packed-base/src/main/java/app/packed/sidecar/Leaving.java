@@ -30,18 +30,26 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-//Maybe rename to @Post an put in lifecycle
-
-//Or On
-public @interface WhenSidecar {
+// Useable with Qualifiers...
+// @Exiting
+public @interface Leaving {
 
     /**
-     * The name of the event.
+     * The state that the object is leaving for which the method should be invoked.
      * 
      * @return name of the event
      */
-    String value();
+    String state(); // StateExpression????
+
+    String andNextStateIs() default "*";
+
+    // Normally the annotated method will never be invoked
+    Class<? extends Throwable>[] alsoOnFailure() default {};
 }
+// Failing(types = IOException.class , state = Starting)
+
+// LifecycleTest(Object instance()
+
 //Host.exportAll()...
 
 //Altsaa det med kontrakter hvor skal vi putte det????

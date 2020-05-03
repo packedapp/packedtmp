@@ -68,6 +68,12 @@ public interface InjectionContext {
     // Og som tager hemmelige "klasser".. Nej man skal ikke kunne instantiere en eller anden composite, som man ikke har
     // adgang til... Men
     Class<?> targetClass(); // Det er jo bare .getClass(); Med mindre det er en Composite...
+
+    // The reason for why this key is here
+    // Could also do codepath...
+    default String reason(Key<?> key) {
+        throw new UnsupportedOperationException();
+    }
 }
 
 // Something about layers....

@@ -46,10 +46,13 @@ import packed.internal.service.runtime.ConstantInjectorEntry;
 import packed.internal.service.runtime.InjectorEntry;
 import packed.internal.service.runtime.PackedInjector;
 
-/** This class records all service related information for a single box. */
+/**
+ * Since the logic for the service extension is quite complex. Especially with cross-container integration. We have put
+ * most logic in this separate class.
+ */
 public final class ServiceExtensionNode {
 
-    /** Any children of this node. */
+    /** Any children of the extension. */
     @Nullable
     ArrayList<ServiceExtensionNode> children;
 
@@ -64,7 +67,8 @@ public final class ServiceExtensionNode {
 
     private boolean hasFailed;
 
-    /** Any parent of this node. */
+    /** Any parent of the extension. */
+    @Nullable
     ServiceExtensionNode parent;
 
     /** A service exporter handles everything to do with exports. */
@@ -84,13 +88,24 @@ public final class ServiceExtensionNode {
      */
     public ServiceExtensionNode(ExtensionContext context) {
         this.context = requireNonNull(context, "context is null");
+
     }
 
     public void addErrorMessage() {
         hasFailed = true;
     }
 
-    public void build() {
+    public void buildBundle() {
+
+    }
+
+    public void buildTree() {
+        System.out.println("Root = " + (parent == null));
+        if (parent == null) {
+            TreePrinter.print(this, n -> n.children, "", n -> n.context.containerPath().toString());
+            System.out.println("BUILDING!!!");
+            new Exception().printStackTrace();
+        }
         // System.out.println("Childre " + children);
         HashMap<Key<?>, BuildEntry<?>> resolvedServices = provider().resolve();
         resolvedServices.values().forEach(e -> resolvedEntries.put(requireNonNull(e.key()), e));

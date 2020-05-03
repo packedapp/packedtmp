@@ -274,7 +274,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
 
         /** Meta data about the extension sidecar. */
         public static final SidecarTypeMeta STM = new SidecarTypeMeta(ExtensionSidecar.class, LifecycleDefinition.of(ExtensionSidecar.INSTANTIATING,
-                ExtensionSidecar.NORMAL_USAGE, ExtensionSidecar.CHILDREN_DEFINITIONS, ExtensionSidecar.GUESTS_DEFINITIONS));
+                ExtensionSidecar.NORMAL_USAGE, ExtensionSidecar.CHILD_LINKING, ExtensionSidecar.GUESTS_DEFINITIONS));
 
         private boolean callbackOnlyDirectChildren;
 

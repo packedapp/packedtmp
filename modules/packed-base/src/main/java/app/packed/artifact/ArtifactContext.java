@@ -20,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import app.packed.base.Key;
 import app.packed.component.Component;
 import app.packed.component.SingletonContext;
-import app.packed.lifecycle.StopOption;
+import app.packed.lifecycleold.StopOption;
 import app.packed.service.ServiceExtension;
 
 /**

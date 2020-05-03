@@ -33,7 +33,7 @@ import app.packed.component.FeatureMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.Container;
 import app.packed.container.Extension;
-import app.packed.lifecycle.StopOption;
+import app.packed.lifecycleold.StopOption;
 import app.packed.service.Injector;
 import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.component.AbstractComponent;

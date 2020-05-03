@@ -228,7 +228,7 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
 
     /** Invoked by the container configuration, whenever the extension is configured. */
     void onChildrenConfigured() {
-        checkState(ExtensionSidecar.CHILDREN_DEFINITIONS);
+        checkState(ExtensionSidecar.CHILD_LINKING);
         model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_2_CHILDREN_DONE, extension, this);
     }
 
@@ -237,7 +237,7 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
         checkState(ExtensionSidecar.NORMAL_USAGE);
         model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_1_MAIN, extension, this);
         isConfigured = true;
-        checkState(ExtensionSidecar.CHILDREN_DEFINITIONS);
+        checkState(ExtensionSidecar.CHILD_LINKING);
     }
 
     private void checkState(String expected) {
@@ -331,6 +331,7 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
                     try {
                         model.extensionLinkedToAncestorExtension.invokeExact(parentExtension.extension, pec, e);
                     } catch (Throwable e1) {
+                        System.out.println(e.getClass());
                         throw ThrowableUtil.easyThrow(e1);
                     }
                 }

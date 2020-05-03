@@ -17,7 +17,7 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Optional;
+import java.util.function.BiConsumer;
 
 import app.packed.analysis.BundleDescriptor;
 import app.packed.base.Key;
@@ -28,14 +28,14 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 import app.packed.container.ExtensionLinked;
 import app.packed.container.Wirelet;
-import app.packed.container.WireletSupply;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
 import app.packed.inject.Factory;
-import app.packed.lifecycle.OnStart;
+import app.packed.lifecycle2.fn.OP2;
+import app.packed.lifecycleold.OnStart;
 import app.packed.sidecar.Expose;
 import app.packed.sidecar.ExtensionSidecar;
-import app.packed.sidecar.WhenSidecar;
+import app.packed.sidecar.Leaving;
 import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.container.WireletList;
 import packed.internal.inject.ServiceDependency;
@@ -83,6 +83,63 @@ public final class ServiceExtension extends Extension {
     /** Should never be initialized by users. */
     ServiceExtension(ExtensionContext context) {
         this.node = new ServiceExtensionNode(context);
+    }
+
+    <S, U> void breakCycle(Class<S> key1, Class<U> key2, BiConsumer<S, U> consumer) {
+        // Taenker om vi skal checke at key2 depender on key1...
+        // Jeg taenker ja, fordi saa saa kan vi visuelleciere det...
+        // Og vi fejler hvis der ikke er en actuel dependency
+
+//        Break circular references...
+//        runOnInitialize(ST2<Xcomp, YComp>(xComp.setY(yComp){});
+//        Ideen er at vi har super streng cyclic check...
+//        Og saa kan man bruge saadan en her til at bende det...
+
+        // Maaske har vi endda en eksplicit i ServiceManager...
+        // breakCycle, breakDependencyCycle
+        // cyclicBreak(Op2(X, Y) -> x.setY(y)
+
+        // Will probably validate if there is an actual cycle...
+
+//        Of course the idea is that we want to be very explicit about the eyesoar
+//        So people can find it...
+
+        // In a perfect world we would also write perfect cycle free code..
+        // But to support your petty little program
+
+        // http://blog.jdevelop.eu/?p=382
+        // We don't support this. Server must instantiate the Client if it needs it
+        // But then client isn't managed!!!
+
+        // Could we also allow the user, to provide another OP???
+        // That server could get which it could invoke
+        // FN<Client, Server, String> : from server
+        // this.client = fn.invoke(this, "fooobar");
+        // Hmm, ikke saerlig paen... Men hvis vi vil have final/final
+        // Vi tillader kun et object... Hvis man vil have flere.
+        // Maa man pakke det ind i en Composite... I saa fald.. Vil det se ud som om
+        // At det faktisk er client'en der kalder ting. F.eks. kunne man have en logger.... Som stadig ville se
+        // client og ikke server. Selvom man kaldte gemmen servers constructor
+        // CycleBreak
+        // CConf c= install(Server.class)
+        // c.assistInstall(client, new FN2<Client, Server, @Composite SomeRecord(Logger, RandomOtherThing))
+
+        // Break down circles manuel.. https://github.com/google/guice/wiki/CyclicDependencies
+        // Using decomposition
+
+        throw new UnsupportedOperationException();
+    }
+
+    <S, U> void breakCycle(Key<S> key1, Key<U> key2, BiConsumer<S, U> consumer) {
+        // cycleBreaker
+        throw new UnsupportedOperationException();
+    }
+
+    <S, U> void breakCycle(OP2<S, U> op) {
+        // Denne kraever at vi paa en eller anden maade kan bruge OP2...
+        // MethodHandle op.invoker() <--- Saa maaske er det bare ikke hemmeligt mere.
+        // Eller kan bruge det...
+        throw new UnsupportedOperationException();
     }
 
     <T> ServiceConfiguration<T> addOptional(Class<T> optional) {
@@ -358,13 +415,18 @@ public final class ServiceExtension extends Extension {
         throw new UnsupportedOperationException();
     }
 
+    @Leaving(state = ExtensionSidecar.NORMAL_USAGE)
+    void assemble() {
+        node.buildBundle();
+    }
+
     /**
      * This method is invoked by the runtime after all children have been configured. But before any guests might have been
      * defined.
      */
-    @WhenSidecar(ExtensionSidecar.CHILDREN_DEFINITIONS)
-    void assemble(Optional<ServiceWireletPipeline> swp) {
-        node.build();
+    @Leaving(state = ExtensionSidecar.CHILD_LINKING)
+    void childenLinked() {
+        node.buildTree();
     }
 
     @Expose
@@ -380,7 +442,7 @@ public final class ServiceExtension extends Extension {
     }
 
     @ExtensionLinked(onlyDirectChildren = true)
-    private void linkChild(ServiceExtension childExtension, @WireletSupply Optional<ServiceWireletPipeline> wirelets) {
+    private void linkChild(ServiceExtension childExtension /* , @WireletSupply Optional<ServiceWireletPipeline> wirelets */) {
         node.link(childExtension.node);
     }
 }

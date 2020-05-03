@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle;
 
 /**
+ * Provides annotations and classes for general lifecycle management.
+ *
+ *
+ * <p>
+ * This package provides 3 annotations that can be used to annotate methods with so they are run when an entity
  *
  */
-public interface StopContext {
-
-}
+package app.packed.lifecycleold;

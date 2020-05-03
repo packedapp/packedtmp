@@ -34,8 +34,8 @@ import app.packed.container.ExtensionContext;
 public @interface ExtensionSidecar {
 
     /**
-     * Used together with the {@link WhenSidecar} annotation to indicate that an {@link Extension}method should be executed
-     * as soon as the extension has been successfully instantiated and before it is returned to the user.
+     * Used together with the {@link Leaving} annotation to indicate that an {@link Extension}method should be
+     * executed as soon as the extension has been successfully instantiated and before it is returned to the user.
      * <p>
      * 
      * An extension sidecar event that the sidecar has been successfully instantiated by the runtime. But the instance has
@@ -44,7 +44,7 @@ public @interface ExtensionSidecar {
     String INSTANTIATING = "Instantiating";
 
     /**
-     * All components and extensions have been added and configured. The next event will be {@link #CHILDREN_DEFINITIONS}
+     * All components and extensions have been added and configured. The next event will be {@link #CHILD_LINKING}
      */
     String NORMAL_USAGE = "NormalUsage";
 
@@ -52,7 +52,7 @@ public @interface ExtensionSidecar {
      * Any child containers located in the same artifact will be has been defined. Typically using
      * {@link Bundle#link(Bundle, app.packed.container.Wirelet...)}. The next event will be {@link #GUESTS_DEFINITIONS}.
      */
-    String CHILDREN_DEFINITIONS = "ChildrenDefinitions";
+    String CHILD_LINKING = "ChildLinking";
 
     /** This is the final event. This event will be invoked even if no guests are defined. */
     String GUESTS_DEFINITIONS = "GuestsDefinitions";

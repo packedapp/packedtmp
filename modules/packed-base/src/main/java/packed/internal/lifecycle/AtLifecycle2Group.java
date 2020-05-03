@@ -19,7 +19,7 @@ import java.util.List;
 
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
-import app.packed.lifecycle.OnStart;
+import app.packed.lifecycleold.OnStart;
 
 /**
  * Information about methods annotated with {@link OnStart} or friends, typically on a single class. Used mainly for

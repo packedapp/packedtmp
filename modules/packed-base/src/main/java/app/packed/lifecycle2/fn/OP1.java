@@ -13,26 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle;
-
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+package app.packed.lifecycle2.fn;
 
 /**
  *
  */
-public class LifecycleBundleContractPoints {
-    // Navn + Description, alternative, Map<String, Optional<String>> name+ description
-    public Map<String, Optional<String>> exposed() {
-        return Map.of();
-    }
+public class OP1 {
 
-    public Set<String> optional() {
-        return Set.of();
-    }
-
-    public Set<String> required() {
-        return Set.of();
-    }
 }

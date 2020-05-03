@@ -65,6 +65,10 @@ public interface LifecycleContext {
      * @return an immutable snapshot of the current state
      */
     LifecycleContext snapshot(); // Or Maybe we have LifecycleState which this interface extends. + returned by this method
+
+    // Hmm I mean this is a hard failure...
+    // What about the notification we where talking about
+    // void fail(Throwable cause);
 }
 
 // List<String> path(); path to get from current state to desired state...

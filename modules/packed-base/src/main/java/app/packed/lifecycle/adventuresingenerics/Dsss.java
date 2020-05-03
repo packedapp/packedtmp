@@ -22,6 +22,7 @@ import java.util.function.Supplier;
 import app.packed.base.Nullable;
 import app.packed.inject.Factory;
 import app.packed.inject.Factory1;
+import app.packed.service.ServiceExtension;
 
 /**
  *
@@ -49,5 +50,13 @@ public class Dsss {
 
     static Integer foo(Function<Integer, Integer> fi) {
         return fi.apply(123);
+    }
+
+    void foo(ServiceExtension e) {
+        // e.breakCycle(new OP2<String, Integer>((s, i) -> s.compareTo(i.toString())) {});
+
+        // e.breakCycle(Key.of(String.class), Key.of(Integer.class), (s, i) -> s.compareTo(i.toString()));
+
+        // e.breakCycle(String.class, Integer.class, (s, i) -> s.compareTo(i.toString()));
     }
 }

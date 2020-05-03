@@ -11,8 +11,8 @@ import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.component.ComponentStream.Option;
 import app.packed.config.ConfigSite;
-import app.packed.lifecycle.LifecycleOperations;
-import app.packed.lifecycle.StopOption;
+import app.packed.lifecycleold.LifecycleOperations;
+import app.packed.lifecycleold.StopOption;
 
 /** The default implementation of {@link App}. */
 final class PackedApp implements App {

@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle;
+package app.packed.lifecycle2.fn;
+
+import java.util.function.BiConsumer;
 
 /**
  *
  */
-// Altsaa vi skal ikke have interface StartOption of @interface WireletOption... Saa maa de hedde noget forskelligt
+public abstract class OP2<P1, P2> {
 
-// Altsaa skal vi have den her.. eller kan vi komme langt nok med wirelets???
-// Og stopoptions... Kan vi komme derhen med wirelets??? F.eks. lad os sige vi gerne vil restarte med nogle andre settings???? StopOption.restart(Wirelet... wirelets)
-public interface StartOption {
+    protected OP2(BiConsumer<P1, P2> consumer) {
 
+    }
 }
