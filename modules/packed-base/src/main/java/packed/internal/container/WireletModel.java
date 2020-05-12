@@ -22,7 +22,7 @@ import app.packed.container.WireletPipeline;
 import app.packed.container.WireletSidecar;
 import packed.internal.sidecar.Model;
 
-/** A model of a {@link Wirelet}. */
+/** A model of a {@link Wirelet}. This class is public because of {@link NoWireletPipeline}. */
 public class WireletModel extends Model {
 
     /** A cache of models for each pipeline implementation. */
@@ -42,38 +42,41 @@ public class WireletModel extends Model {
     @Nullable
     private final Class<? extends Extension> memberOfExtension;
 
+    /** Any pipeline the wirelet might belong to. */
     @Nullable
     private final WireletPipelineModel pipeline;
 
-    public final boolean requireAssemblyTime;
+    final boolean requireAssemblyTime;
 
     /**
      * Create a new model.
      * 
      * @param type
-     *            the type of pipeline
+     *            the type of wirelet
      */
     private WireletModel(Class<? extends Wirelet> type) {
         super(type);
         this.memberOfExtension = ExtensionModel.findAnyExtensionMember(type);
 
-        WireletPipelineModel wpm = null;
+        // Let's see if the wirelet has an annotation
         WireletSidecar ws = type.getAnnotation(WireletSidecar.class);
-        boolean inherited = false;
-        boolean requireAssemblyTime = false;
         if (ws != null) {
+            this.inherited = ws.inherited();
+            this.requireAssemblyTime = ws.failOnExpand();
+
+            // Find any pipeline this wirelet is part of
             Class<? extends WireletPipeline<?, ?>> p = ws.pipeline();
             if (p != NoWireletPipeline.class) {
-                wpm = WireletPipelineModel.of(p);
+                this.pipeline = WireletPipelineModel.of(p);
                 // XXX must be assignable to YY to be a part of the pipeline
+            } else {
+                this.pipeline = null;
             }
-            inherited = ws.inherited();
-            requireAssemblyTime = ws.requireAssemblyTime();
+        } else { // No annotation, use default values.
+            this.pipeline = null;
+            this.inherited = false;
+            this.requireAssemblyTime = false;
         }
-
-        this.requireAssemblyTime = requireAssemblyTime;
-        this.inherited = inherited;
-        this.pipeline = wpm;
     }
 
     /**
@@ -82,12 +85,12 @@ public class WireletModel extends Model {
      * @return whether or not the wirelet is inherited
      * @see WireletSidecar#inherited()
      */
-    public boolean inherited() {
+    boolean inherited() {
         return inherited;
     }
 
     @Nullable
-    public WireletPipelineModel pipeline() {
+    WireletPipelineModel pipeline() {
         return pipeline;
     }
 

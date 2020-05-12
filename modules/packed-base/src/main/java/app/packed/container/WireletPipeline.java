@@ -112,8 +112,12 @@ public abstract class WireletPipeline<P extends WireletPipeline<P, W>, W extends
         return context().toList().toString();
     }
 
+    public final boolean isExpanding() {
+        return false;
+    }
+
     /** Invoked by the runtime immediately after the pipeline has been constructed. */
-    protected void verify() {}
+    protected void verify() {} // expand
 
     static <T extends WireletPipeline<?, ?>> T ini(T pipeline, Wirelet... wirelets) {
         // Ideen er let at brugere kan bruge den for at faa populeret en pipeline???

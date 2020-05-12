@@ -33,7 +33,14 @@ import java.lang.annotation.Target;
 //TypeParameter->Injected into a function... nicee
 //WireletLookup..
 //@WireletFind
-public @interface WireletFind {}
+public @interface WireletFind {
+
+    // Ideen var egentlig lidt at man kunne stjaele f.eks. en ServiceExtensionPipeline...
+    // I constructeren...
+
+    // Kunne ogsaa koere en consume paa en enkelt wirelet... Saa man ikke kan nedarve den...
+    boolean consumePipeline() default false;
+}
 
 // Why can this not be used on a Bundle?
 // Because we do not have access to a bundle. 

@@ -24,7 +24,6 @@ import app.packed.artifact.SystemSource;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
-import app.packed.sidecar.ExtensionSidecar;
 import packed.internal.config.ConfigSiteSupport;
 
 /**

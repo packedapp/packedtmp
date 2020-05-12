@@ -21,13 +21,13 @@ import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 import app.packed.container.ExtensionLinked;
+import app.packed.container.ExtensionSidecar;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletFind;
 import app.packed.inject.InjectionContext;
+import app.packed.lifecycle.Leaving;
 import app.packed.lifecycle.LifecycleContext;
 import app.packed.service.ServiceWirelets;
-import app.packed.sidecar.ExtensionSidecar;
-import app.packed.sidecar.Leaving;
 
 /**
  *
@@ -118,7 +118,7 @@ public class TI extends BaseBundle {
 
         }
 
-        @ExtensionLinked(onlyDirectChildren = false)
+        @ExtensionLinked(onlyDirectLink = false)
         public void ff(InjectionContext ic, MyExte child) {
             child.foo = " Child of " + foo;
         }

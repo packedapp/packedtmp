@@ -17,7 +17,7 @@ package packed.internal.lifecycle2;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.sidecar.ExtensionSidecar;
+import app.packed.container.ExtensionSidecar;
 
 /**
  *

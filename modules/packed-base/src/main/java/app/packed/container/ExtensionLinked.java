@@ -21,7 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An extension cannot define more than one method annotated with this annotation.
+ * An {@link Extension} cannot define more than one method annotated with {@link ExtensionLinked}.
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
@@ -35,7 +35,7 @@ public @interface ExtensionLinked {
     // Only children not anything farther removed...
     // If not only direct children. Only the closest ancestor will have its
     // method invoked.
-    boolean onlyDirectChildren() default false;
+    boolean onlyDirectLink() default false;// onlyDirectLink
     // boolean crossArtifacts default ???
 }
 

@@ -29,6 +29,7 @@ import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ExtensionLinked;
+import app.packed.container.ExtensionSidecar;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 import app.packed.container.MemberOfExtension;
@@ -36,7 +37,6 @@ import app.packed.container.InternalExtensionException;
 import app.packed.container.WireletFind;
 import app.packed.hook.OnHook;
 import app.packed.lifecycle.LifecycleContext;
-import app.packed.sidecar.ExtensionSidecar;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
 import packed.internal.lifecycle2.LifecycleDefinition;
@@ -378,7 +378,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
                             "Multiple methods annotated with " + ExtensionLinked.class + " on " + m.getDeclaringClass() + ", only 1 allowed.");
                 }
                 linked = m;
-                callbackOnlyDirectChildren = da.onlyDirectChildren();
+                callbackOnlyDirectChildren = da.onlyDirectLink();
             }
         }
     }

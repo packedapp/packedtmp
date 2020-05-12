@@ -26,6 +26,8 @@ import java.util.Set;
 // Context giver jo som regel control.. Skal vi have en readonly udgave???
 // Nej taenker vi exposer den fra ArtifactContext og saa maa folk sgu selv om
 // det...
+
+// Desired er ikke en state i en StateMachine....
 public interface LifecycleContext {
 
     /**

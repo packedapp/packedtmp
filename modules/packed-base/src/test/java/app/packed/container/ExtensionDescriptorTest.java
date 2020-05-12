@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.Contract;
 import app.packed.sidecar.Expose;
-import app.packed.sidecar.ExtensionSidecar;
 
 /** Tests {@link PackedExtensionDescriptor}. */
 public class ExtensionDescriptorTest {

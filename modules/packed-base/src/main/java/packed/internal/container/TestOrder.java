@@ -18,15 +18,15 @@ package packed.internal.container;
 import app.packed.artifact.App;
 import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
-import app.packed.sidecar.ExtensionSidecar;
-import app.packed.sidecar.Leaving;
+import app.packed.container.ExtensionSidecar;
+import app.packed.lifecycle.Leaving;
 
 /**
  *
  */
 public class TestOrder extends Bundle {
 
-    public static class Extension extends app.packed.container.Extension {
+    public static class SomeExtension extends app.packed.container.Extension {
 
         @Leaving(state = ExtensionSidecar.CHILD_LINKING)
         public void foo() {
@@ -34,7 +34,7 @@ public class TestOrder extends Bundle {
         }
     }
 
-    public static class E1 extends Extension {
+    public static class E1 extends SomeExtension {
 
         public void doStuff() {
             checkConfigurable();
@@ -42,12 +42,12 @@ public class TestOrder extends Bundle {
     }
 
     @ExtensionSidecar(dependencies = E1.class)
-    public static class E2 extends Extension {
+    public static class E2 extends SomeExtension {
 
     }
 
     @ExtensionSidecar(dependencies = E2.class)
-    public static class E3 extends Extension {
+    public static class E3 extends SomeExtension {
 
         public void doStuff() {
             checkConfigurable();

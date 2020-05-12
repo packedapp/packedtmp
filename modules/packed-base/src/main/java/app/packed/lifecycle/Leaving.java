@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.sidecar;
+package app.packed.lifecycle;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import app.packed.container.ExtensionSidecar;
 
 /**
  * An annotation indicating that a method needs to be executed by the runtime after a particular event in the sidecars
@@ -32,6 +34,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 // Useable with Qualifiers...
 // @Exiting
+
 public @interface Leaving {
 
     /**

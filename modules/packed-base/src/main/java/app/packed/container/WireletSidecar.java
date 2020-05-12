@@ -32,6 +32,7 @@ import packed.internal.container.WireletModel;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited // see for example ServiceWirelet, should be enough just to have a test for it...
+// If this is inherited. I think all sidecar annotations should be inherited...
 public @interface WireletSidecar {
 
     /**
@@ -41,10 +42,11 @@ public @interface WireletSidecar {
      */
     boolean inherited() default false;
 
+    /**
+     * 
+     * @return a pipeline
+     */
     Class<? extends WireletPipeline<?, ?>> pipeline() default WireletModel.NoWireletPipeline.class;
-
-    // I think a boolean is fine. Can't imaging you would want to expose it as any other type as the annotated type..
-    boolean provideAsService() default false;
 
     /**
      * Returns whether or not the wirelet is needed at assembly time. In which in cannot used together with a
@@ -52,23 +54,28 @@ public @interface WireletSidecar {
      * 
      * @return stuff
      */
-    // Taenker paa vende den om...
-    boolean requireAssemblyTime() default false;
+    // Taenker paa at vende den om...Saa vi som default kun kan bruges paa AssemblyTime...
+    // Nej fordi user er altid 100% ligegyldig. Eftersom det aldrig eksekvere...
+    // Bundle??? inject Wirelets
+
+    // Must be specified when On Image creation time.
+
+    // This setting is primary used by extensions that define wirelets that can only be used at assembly time
+    // Navnet er daarligt syntes jeg.. Syntes det hurtigt begyndet at bliver kompliceret hvis vi bruger expand.
+    // AssemblyTime.. Ikke grund til at introduce expand....
+    // require
+    boolean failOnExpand() default false;
 }
+// failIfExtensionUnavailable default true();
+// ArtifactWirelets... Wirelets that cannot be used for linkage...
+// For example, timeToLive...
+// Maybe also system Wirelets.. Only the root... For example, App.of(SystemWirelets.AddShutdownHook());
 
 // Hvis vi har behov for at differentiere mellem artifact og system...
 // Lav det som en inner class i WireletSidecar
 enum Inheritance {
     NONE, ARTIFACT, SYSTEM;
 }
-
-//Vi slipper af med PipelineWirelet
-//Det er lettere at override den for subclasses...
-//F.eks. MainArgs implements Wirelet... Men altsaa hvis vi kan injecte den... via @ProvideWirelet
-//Behoever vi saa service???? IDontThinkSo...
-//@ProvideWirelet kan ogsaa f.eks. go deeper... f.eks. ind i andre containere i wireletten
-
-//Altsaa for Conf giver ret god mening... Vi siger vi skal have en Conf...
 
 //Altsaa public klasser boer nok provide as service...
 // boolean requireAssemblyTime() must be used on assembly time

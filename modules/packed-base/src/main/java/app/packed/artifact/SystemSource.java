@@ -24,9 +24,9 @@ import app.packed.container.Bundle;
  * 
  * Bundle
  * 
- * ArtifactImage -> Can be repeatable
+ * SystemImage -> Can be repeatable
  * 
- * This is typically either a subclass of {@link Bundle} or a pre assembled {@link SystemImage artifact image}.
+ * This is typically either a subclass of {@link Bundle} or a pre assembled {@link SystemImage system image}.
  * <p>
  * TODO maybe list all the s
  * 

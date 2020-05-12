@@ -22,6 +22,8 @@ package app.packed.lifecycleold;
 
 // Altsaa skal vi have den her.. eller kan vi komme langt nok med wirelets???
 // Og stopoptions... Kan vi komme derhen med wirelets??? F.eks. lad os sige vi gerne vil restarte med nogle andre settings???? StopOption.restart(Wirelet... wirelets)
+
+// Jeg vil ikke afvise at vi skal have den... men Wirelets er maaske lidt bedre...
 public interface StartOption {
 
     // LifecycleTransition

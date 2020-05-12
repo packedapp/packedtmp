@@ -15,13 +15,10 @@
  */
 package app.packed.container;
 
-import java.util.List;
-
 import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
-import app.packed.sidecar.ExtensionSidecar;
 
 /**
  * An instance of this interface is available via {@link Extension#context()} or via constructor injection into an
@@ -130,9 +127,4 @@ public interface ExtensionContext {
      *           you need to, instead of calling this method multiple times with the same argument.
      */
     // The type must also be a dependency of this type as returned by #descriptor.dependencies();
-
-    // Unlike Children calling this method must be done after...
-    default <T extends Extension> List<Class<T>> children(Class<T> extensionType) {
-        throw new UnsupportedOperationException();
-    }
 }

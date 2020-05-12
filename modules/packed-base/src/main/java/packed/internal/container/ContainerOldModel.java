@@ -28,6 +28,7 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import packed.internal.component.ComponentModel;
+import packed.internal.container.packlet.PackletSystemModel;
 import packed.internal.hook.OnHookModel;
 import packed.internal.inject.factory.ExecutableFactoryHandle;
 import packed.internal.inject.factory.FactoryHandle;
@@ -37,17 +38,17 @@ import packed.internal.util.LookupUtil;
 import packed.internal.util.LookupValue;
 import packed.internal.util.UncheckedThrowableFactory;
 
-/** A model of a container source, typically a subclass of {@link Bundle}. */
-public final class ContainerSourceModel extends Model implements ComponentLookup {
+/** A model of a container, typically a subclass of {@link Bundle}. */
+public final class ContainerOldModel extends Model implements ComponentLookup {
 
     /** A cache of model. */
-    private static final ClassValue<ContainerSourceModel> MODEL_CACHE = new ClassValue<>() {
+    private static final ClassValue<ContainerOldModel> MODEL_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
         @Override
-        protected ContainerSourceModel computeValue(Class<?> type) {
-            return new ContainerSourceModel((Class<? extends SystemSource>) type);
+        protected ContainerOldModel computeValue(Class<?> type) {
+            return new ContainerOldModel((Class<? extends SystemSource>) type);
         }
     };
 
@@ -60,7 +61,7 @@ public final class ContainerSourceModel extends Model implements ComponentLookup
 
         @Override
         protected ComponentModel computeValue(Class<?> type) {
-            return ComponentModel.newInstance(ContainerSourceModel.this, ContainerSourceModel.this.newClassProcessor(type, true));
+            return ComponentModel.newInstance(ContainerOldModel.this, ContainerOldModel.this.newClassProcessor(type, true));
         }
     };
 
@@ -72,7 +73,7 @@ public final class ContainerSourceModel extends Model implements ComponentLookup
 
         @Override
         protected PerLookup computeValue(Lookup lookup) {
-            return new PerLookup(ContainerSourceModel.this, lookup);
+            return new PerLookup(ContainerOldModel.this, lookup);
         }
     };
 
@@ -80,17 +81,21 @@ public final class ContainerSourceModel extends Model implements ComponentLookup
     @Nullable
     private final OnHookModel onHookModel;
 
+    final PackletSystemModel psm;
+
     /**
      * Creates a new container source model.
      * 
      * @param sourceType
      *            the source type
      */
-    private ContainerSourceModel(Class<? extends SystemSource> sourceType) {
+    private ContainerOldModel(Class<? extends SystemSource> sourceType) {
         super(sourceType);
         if (Hook.class.isAssignableFrom(sourceType)) {
             throw new InvalidDeclarationException(sourceType + " must not implement/extend " + Hook.class);
         }
+
+        psm = PackletSystemModel.of(sourceType);
 
         this.onHookModel = OnHookModel.newModel(new OpenClass(MethodHandles.lookup(), sourceType, true), false,
                 UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
@@ -142,13 +147,15 @@ public final class ContainerSourceModel extends Model implements ComponentLookup
         if (lookup == null) {
             return this;
         } else if (lookup.lookupClass() == type() && LookupUtil.isLookupDefault(lookup)) {
+            // The default lookup is just BundleImpl { MethodHandles.lookup()}
             ComponentLookup cl = defaultLookup;
             if (cl != null) {
                 return cl;
             }
             return defaultLookup = lookups.get(lookup);
+        } else {
+            return lookups.get(lookup);
         }
-        return lookups.get(lookup);
     }
 
     /**
@@ -158,9 +165,11 @@ public final class ContainerSourceModel extends Model implements ComponentLookup
      *            the container source type
      * @return a container source model for the specified type
      */
-    public static ContainerSourceModel of(Class<?> sourceType) {
+    public static ContainerOldModel of(Class<?> sourceType) {
         return MODEL_CACHE.get(sourceType);
     }
+
+    // I
 
     /** A component lookup class wrapping a {@link Lookup} object. */
     private static final class PerLookup implements ComponentLookup {
@@ -177,9 +186,9 @@ public final class ContainerSourceModel extends Model implements ComponentLookup
         /** The actual lookup object we are wrapping. */
         private final Lookup lookup;
 
-        private final ContainerSourceModel parent;
+        private final ContainerOldModel parent;
 
-        private PerLookup(ContainerSourceModel parent, Lookup lookup) {
+        private PerLookup(ContainerOldModel parent, Lookup lookup) {
             this.parent = requireNonNull(parent);
             this.lookup = requireNonNull(lookup);
         }

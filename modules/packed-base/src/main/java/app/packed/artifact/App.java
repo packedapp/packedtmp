@@ -187,8 +187,8 @@ public interface App extends AutoCloseable {
     }
 
     /**
-     * This method will create and start an {@link App application} from the specified container source. Blocking until the
-     * run state of the application is {@link RunState#TERMINATED}.
+     * This method will create and start an {@link App application} from the specified source. Blocking until the run state
+     * of the application is {@link RunState#TERMINATED}.
      * <p>
      * Entry point or run to termination
      * 
@@ -236,7 +236,7 @@ public interface App extends AutoCloseable {
      *            the source of the application
      * @param wirelets
      *            any wirelets to use in the construction of the application
-     * @return the new application
+     * @return the new (running) application
      * @throws RuntimeException
      *             if the application could not be initialized or started properly
      */

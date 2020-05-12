@@ -96,7 +96,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     private ComponentLookup lookup;
 
     /** A container model. */
-    private final ContainerSourceModel model;
+    private final ContainerOldModel model;
 
     int realState;
 
@@ -120,7 +120,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     private PackedContainerConfiguration(AbstractComponentConfiguration parent, Bundle bundle, Wirelet... wirelets) {
         super(ConfigSiteUtil.captureStackFrame(parent.configSite(), InjectConfigSiteOperations.INJECTOR_OF), parent);
         this.source = requireNonNull(bundle, "bundle is null");
-        this.lookup = this.model = ContainerSourceModel.of(bundle.getClass());
+        this.lookup = this.model = ContainerOldModel.of(bundle.getClass());
         this.wireletContext = WireletPack.fromLink(this, wirelets);
     }
 
@@ -139,7 +139,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     private PackedContainerConfiguration(ConfigSite cs, AssembleOutput output, Object source, Wirelet... wirelets) {
         super(cs, output);
         this.source = requireNonNull(source);
-        this.lookup = this.model = ContainerSourceModel.of(source.getClass());
+        this.lookup = this.model = ContainerOldModel.of(source.getClass());
         this.wireletContext = WireletPack.fromRoot(this, wirelets);
     }
 

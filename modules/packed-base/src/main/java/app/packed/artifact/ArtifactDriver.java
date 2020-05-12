@@ -104,7 +104,7 @@ public abstract class ArtifactDriver<A> {
      * @return the type of artifact this driver produce
      */
     // RawType? Should we have a TypeLiteral???
-    // For example, I create BigMap<K, V>
+    // For example, I create BigMap<String, Long>
     public final Class<A> artifactType() {
         return artifactType;
     }
@@ -258,6 +258,9 @@ public abstract class ArtifactDriver<A> {
     // Can jo ikke prefix'e med noget som helst hvis foerst imaged er lavet...
     // Eller f.eks. Whitelist/Blacklist kan vi godt. fordi vi har listen af dem...
     // naar vi instantiere...
+    // Saa vi kan checke ting...
+    // Men ikke paavirke hvordan de bliver lavet...
+
     static class Option {
 
         // custom ServiceProvider..

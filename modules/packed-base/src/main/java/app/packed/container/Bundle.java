@@ -230,7 +230,7 @@ public abstract class Bundle implements SystemSource {
      * @param predicate
      * @return stuff
      * @throws IllegalArgumentException
-     *             if the specified wirelet type does not have {@link WireletSidecar#requireAssemblyTime()} set to true
+     *             if the specified wirelet type does not have {@link WireletSidecar#failOnExpand()} set to true
      */
     // Should we add wirelet(Type, consumer) or Optional<Wirelet>
     final <W extends Wirelet> boolean ifWirelet(Class<W> wireletType, Predicate<? super W> predicate) {
@@ -247,7 +247,7 @@ public abstract class Bundle implements SystemSource {
         // settings such as WebExtension.defaultPort(); <- but that's runtime
         // I mean for
         // The runtime then...
-        @WireletSidecar(requireAssemblyTime = true)
+        @WireletSidecar(failOnExpand = true)
         class MyWirelet implements Wirelet {}
         return false;
     }

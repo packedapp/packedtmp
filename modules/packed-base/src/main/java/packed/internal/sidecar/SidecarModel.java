@@ -26,10 +26,10 @@ import java.util.Map;
 
 import app.packed.base.Contract;
 import app.packed.container.InternalExtensionException;
-import app.packed.lifecycle.LifecycleTransition;
+import app.packed.lifecycle.Leaving;
+import app.packed.lifecycle.StateTransition;
 import app.packed.lifecycle2.DefaultLifecycleTransition;
 import app.packed.sidecar.Expose;
-import app.packed.sidecar.Leaving;
 import packed.internal.reflect.MethodHandleBuilder;
 import packed.internal.reflect.OpenClass;
 import packed.internal.util.ThrowableUtil;
@@ -134,9 +134,9 @@ public abstract class SidecarModel extends Model {
 
                     MethodHandleBuilder mhb = MethodHandleBuilder.of(void.class, Object.class, Object.class);
                     decorateOnSidecar(mhb);
-                    MethodHandle lt = MethodHandles.constant(LifecycleTransition.class, new DefaultLifecycleTransition("Gll", "F", "FordiDuErDum"));
+                    MethodHandle lt = MethodHandles.constant(StateTransition.class, new DefaultLifecycleTransition("Gll", "F", "FordiDuErDum"));
                     lt = MethodHandles.dropArguments(lt, 0, Object.class);
-                    mhb.addKey(LifecycleTransition.class, lt, 0);
+                    mhb.addKey(StateTransition.class, lt, 0);
                     MethodHandle mh = mhb.build(cp, m);
 
                     // If there are multiple methods with the same index. We just fold them to a single MethodHandle

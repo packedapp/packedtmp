@@ -20,26 +20,27 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
-import app.packed.lifecycle.LifecycleTransition;
+import app.packed.lifecycle.StateTransition;
 
-public final class DefaultLifecycleTransition implements LifecycleTransition {
+public final class DefaultLifecycleTransition implements StateTransition {
 
     @Nullable
-    private final String action;
+    private final String event;
 
     private final String from;
+
     private final String to;
 
-    public DefaultLifecycleTransition(String from, String to, @Nullable String action) {
+    public DefaultLifecycleTransition(String from, String to, @Nullable String event) {
         this.from = requireNonNull(from);
         this.to = requireNonNull(to);
-        this.action = action;
+        this.event = event;
     }
 
     /** {@inheritDoc} */
     @Override
-    public Optional<String> action() {
-        return Optional.ofNullable(action);
+    public Optional<String> event() {
+        return Optional.ofNullable(event);
     }
 
     /** {@inheritDoc} */
@@ -56,6 +57,6 @@ public final class DefaultLifecycleTransition implements LifecycleTransition {
 
     @Override
     public String toString() {
-        return "Transition ['" + from + "' -> '" + to + "' , action = " + action + "]";
+        return "Transition ['" + from + "' -> '" + to + "' , action = " + event + "]";
     }
 }

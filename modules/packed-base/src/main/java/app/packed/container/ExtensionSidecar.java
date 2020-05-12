@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.sidecar;
+package app.packed.container;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.container.Bundle;
-import app.packed.container.Extension;
-import app.packed.container.ExtensionContext;
+import app.packed.lifecycle.Leaving;
 
 /**
  * An annotation that can be used on subclasses of {@link Extension}. Classes that extend {@link Extension} are implicit
@@ -31,11 +29,12 @@ import app.packed.container.ExtensionContext;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+//app.packed.state.... Also ExtensionSidecar.STATE2_MAIN, ExtensionSidecar.STATE3_LINKING, ExtensionSidecar.STATE4_HOSTING
 public @interface ExtensionSidecar {
 
     /**
-     * Used together with the {@link Leaving} annotation to indicate that an {@link Extension}method should be
-     * executed as soon as the extension has been successfully instantiated and before it is returned to the user.
+     * Used together with the {@link Leaving} annotation to indicate that an {@link Extension}method should be executed as
+     * soon as the extension has been successfully instantiated and before it is returned to the user.
      * <p>
      * 
      * An extension sidecar event that the sidecar has been successfully instantiated by the runtime. But the instance has
@@ -81,4 +80,11 @@ public @interface ExtensionSidecar {
      * @return extensions that the extension may use if they are present on the classpath or modulepath
      */
     String[] optionalDependencies() default {};
+
+    /**
+     * Returns any runtime sidecar representations.
+     * 
+     * @return any runtime sidecar representations
+     */
+    Class<?>[] runtime() default {};
 }

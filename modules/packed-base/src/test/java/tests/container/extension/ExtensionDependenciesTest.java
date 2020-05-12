@@ -21,8 +21,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.Extension;
-import app.packed.sidecar.ExtensionSidecar;
-import app.packed.sidecar.Leaving;
+import app.packed.container.ExtensionSidecar;
+import app.packed.lifecycle.Leaving;
 import testutil.util.AbstractArtifactTest;
 
 /**

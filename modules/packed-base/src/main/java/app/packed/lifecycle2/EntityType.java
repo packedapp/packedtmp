@@ -23,8 +23,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import app.packed.container.Extension;
+import app.packed.container.ExtensionSidecar;
 import app.packed.container.MemberOfExtension;
-import app.packed.sidecar.ExtensionSidecar;
 
 /**
  *

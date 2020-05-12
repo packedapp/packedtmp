@@ -17,7 +17,6 @@ package packed.internal.container;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.UndeclaredThrowableException;
 
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
@@ -26,6 +25,7 @@ import packed.internal.reflect.MethodHandleBuilder;
 import packed.internal.reflect.OpenClass;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.sidecar.Model;
+import packed.internal.util.ThrowableUtil;
 
 /** A model of a {@link WireletPipeline}. */
 // Extends WireletModel if pipeline-> wirelet
@@ -88,9 +88,7 @@ public final class WireletPipelineModel extends Model {
         try {
             return (WireletPipeline<?, ?>) constructor.invokeExact(extension);
         } catch (Throwable e) {
-            // Yes how do we handle this...
-            // Probably different whether or not we are member of an extension...
-            throw new UndeclaredThrowableException(e);
+            throw ThrowableUtil.easyThrow(e);// Probably different whether or not we are member of an extension...
         }
     }
 

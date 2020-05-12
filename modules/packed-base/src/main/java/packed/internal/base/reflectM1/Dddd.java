@@ -47,13 +47,16 @@ public class Dddd extends BaseBundle {
     }
 
     public static void main(String[] args) {
-        SystemImage img = SystemImage.of(new Dddd(4));
-
+        long start = System.currentTimeMillis();
+        SystemImage img = SystemImage.of(new Dddd(10));
+        System.out.println(System.currentTimeMillis() - start);
+        start = System.currentTimeMillis();
+        img = SystemImage.of(new Dddd(10));
+        System.out.println(System.currentTimeMillis() - start);
         // BundleValidator.assertValid(new Dddd(4));
 
-        img.stream().forEach(c -> System.out.println(c.path() + " " + c.type()));
+//        img.stream().forEach(c -> System.out.println(c.path() + " " + c.type()));
 
-        img.stream().forEach(c -> System.out.println(c.path() + " " + c.type()));
         System.out.println("--------------");
         System.out.println(img.stream().count());
         // try (App app = App.start(new Dddd(1))) {

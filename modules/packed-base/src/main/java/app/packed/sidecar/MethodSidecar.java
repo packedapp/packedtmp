@@ -28,6 +28,13 @@ import java.lang.annotation.Target;
 public @interface MethodSidecar {
 
     /**
+     * Returns any runtime sidecar representations.
+     * 
+     * @return any runtime sidecar representations
+     */
+    Class<?>[] runtime() default {};
+
+    /**
      * An sidecar lifecycle event that the sidecar has been successfully instantiated by the runtime. But the instance has
      * not yet been returned to the user.
      */

@@ -13,34 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.sidecar;
+package app.packed.config;
+
+import app.packed.container.Extension;
 
 /**
  *
  */
-public class Styff {
+final class ConfigExtension extends Extension {
 
-    final String x;
-    {
-        System.out.println("What");
-        foo();
-        x = "dsd";
-    }
-
-    Styff() {
-        System.out.println("Lol");
-    }
-
-    Styff(String o) {
-        System.out.println("Lol");
-        System.out.println(x);
-    }
-
-    private void foo() {
-        System.out.println("Nam nam");
-    }
-
-    public static void main(String[] args) {
-        new Styff("ff");
-    }
+    // Stuff...
 }
