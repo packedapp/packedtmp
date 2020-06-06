@@ -37,7 +37,7 @@ public interface OldHostConfiguration extends ComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    default ComponentDescriptor type() {
+    default ComponentDescriptor model() {
         return ComponentDescriptor.COMPONENT_INSTANCE;
     }
 

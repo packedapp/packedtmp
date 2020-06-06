@@ -15,7 +15,7 @@
  */
 package packed.internal.component;
 
-import packed.internal.component.AbstractOldComponentConfiguration.State;
+import packed.internal.component.PackedComponentContext.State;
 
 /**
  *
@@ -23,7 +23,7 @@ import packed.internal.component.AbstractOldComponentConfiguration.State;
 public final class ComponentConfigurationState {
 
     /** The state of this configuration. */
-    public State oldState = AbstractOldComponentConfiguration.State.INITIAL;
+    public State oldState = PackedComponentContext.State.INITIAL;
 
     void checkNameSet() {
         switch (oldState) {

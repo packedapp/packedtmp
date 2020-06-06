@@ -16,7 +16,7 @@
 package app.packed.component;
 
 /**
- *
+ * A context object used by {@link AbstractComponentConfiguration}.
  *
  * @apiNote In the future, if the Java language permits, {@link ComponentConfigurationContext} may become a
  *          {@code sealed} interface, which would prohibit subclassing except by explicitly permitted types.

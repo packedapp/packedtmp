@@ -29,7 +29,7 @@ import packed.internal.inject.factory.FactoryHandle;
 /**
  *
  */
-public final class PackedSingletonConfiguration<T> extends AbstractOldComponentConfiguration implements SingletonConfiguration<T> {
+public final class PackedSingletonConfiguration<T> extends PackedComponentContext implements SingletonConfiguration<T> {
 
     public final ComponentModel componentModel;
 
@@ -39,15 +39,15 @@ public final class PackedSingletonConfiguration<T> extends AbstractOldComponentC
     @Nullable
     public final T instance;
 
-    public PackedSingletonConfiguration(ConfigSite configSite, AbstractOldComponentConfiguration parent, ComponentModel componentModel, BaseFactory<T> factory) {
-        super(configSite, parent);
+    public PackedSingletonConfiguration(ConfigSite configSite, PackedComponentContext parent, ComponentModel componentModel, BaseFactory<T> factory) {
+        super(ComponentDescriptor.COMPONENT_INSTANCE, configSite, parent);
         this.componentModel = requireNonNull(componentModel);
         this.factory = requireNonNull(factory);
         this.instance = null;
     }
 
-    public PackedSingletonConfiguration(ConfigSite configSite, AbstractOldComponentConfiguration parent, ComponentModel componentModel, T instance) {
-        super(configSite, parent);
+    public PackedSingletonConfiguration(ConfigSite configSite, PackedComponentContext parent, ComponentModel componentModel, T instance) {
+        super(ComponentDescriptor.COMPONENT_INSTANCE, configSite, parent);
         this.componentModel = requireNonNull(componentModel);
         this.factory = null;
         this.instance = requireNonNull(instance);
@@ -81,11 +81,5 @@ public final class PackedSingletonConfiguration<T> extends AbstractOldComponentC
     public PackedSingletonConfiguration<T> setName(String name) {
         super.setName(name);
         return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentDescriptor descritor() {
-        return ComponentDescriptor.COMPONENT_INSTANCE;
     }
 }

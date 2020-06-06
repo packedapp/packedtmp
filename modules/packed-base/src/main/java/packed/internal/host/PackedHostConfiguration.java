@@ -24,7 +24,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
 import packed.internal.artifact.PackedArtifactImage;
-import packed.internal.component.AbstractOldComponentConfiguration;
+import packed.internal.component.PackedComponentContext;
 import packed.internal.host.api.HostConfigurationContext;
 
 /**
@@ -32,14 +32,14 @@ import packed.internal.host.api.HostConfigurationContext;
  */
 // We don't actually store the HostConfiguration in this class.
 
-public final class PackedHostConfiguration extends AbstractOldComponentConfiguration implements HostConfigurationContext {
+public final class PackedHostConfiguration extends PackedComponentContext implements HostConfigurationContext {
 
     /**
      * @param configSite
      * @param parent
      */
-    public PackedHostConfiguration(ConfigSite configSite, AbstractOldComponentConfiguration parent) {
-        super(configSite, parent);
+    public PackedHostConfiguration(ConfigSite configSite, PackedComponentContext parent) {
+        super(ComponentDescriptor.COMPONENT_INSTANCE, configSite, parent);
     }
 
     /** {@inheritDoc} */
@@ -82,15 +82,4 @@ public final class PackedHostConfiguration extends AbstractOldComponentConfigura
         return this;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ComponentDescriptor type() {
-        return ComponentDescriptor.COMPONENT_INSTANCE;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentDescriptor descritor() {
-        throw new UnsupportedOperationException();
-    }
 }

@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.artifact.ArtifactImage;
 import app.packed.component.ComponentDescriptor;
 import packed.internal.artifact.AssembleOutput;
-import packed.internal.component.AbstractOldComponentConfiguration;
+import packed.internal.component.PackedComponentContext;
 import packed.internal.container.PackedContainerConfiguration;
 
 /**
@@ -31,12 +31,12 @@ import packed.internal.container.PackedContainerConfiguration;
 // Hvilke resultere i to forskellige paths.
 
 // Der er ikke nogen vej udenom
-public class PackedGuestConfiguration extends AbstractOldComponentConfiguration {
+public class PackedGuestConfiguration extends PackedComponentContext {
 
     public final PackedContainerConfiguration delegate;
 
     PackedGuestConfiguration(PackedHostConfiguration host, PackedContainerConfiguration pcc, ArtifactImage image) {
-        super(pcc.configSite(), host, pcc, AssembleOutput.image());
+        super(ComponentDescriptor.STATELESS, pcc.configSite(), host, pcc, AssembleOutput.image());
         this.delegate = requireNonNull(pcc);
         this.description = pcc.getDescription();
     }
@@ -48,17 +48,5 @@ public class PackedGuestConfiguration extends AbstractOldComponentConfiguration 
             return delegate.name;
         }
         return delegate.initializeNameDefaultName();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentDescriptor type() {
-        return delegate.type();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentDescriptor descritor() {
-        throw new UnsupportedOperationException();
     }
 }

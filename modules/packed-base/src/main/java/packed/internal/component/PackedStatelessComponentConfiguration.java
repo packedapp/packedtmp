@@ -22,12 +22,12 @@ import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 
 /** The default implementation of {@link StatelessConfiguration}. */
-public final class PackedStatelessComponentConfiguration extends AbstractOldComponentConfiguration implements StatelessConfiguration {
+public final class PackedStatelessComponentConfiguration extends PackedComponentContext implements StatelessConfiguration {
 
     private final ComponentModel componentModel;
 
-    public PackedStatelessComponentConfiguration(ConfigSite configSite, AbstractOldComponentConfiguration parent, ComponentModel componentModel) {
-        super(configSite, parent);
+    public PackedStatelessComponentConfiguration(ConfigSite configSite, PackedComponentContext parent, ComponentModel componentModel) {
+        super(ComponentDescriptor.STATELESS, configSite, parent);
         this.componentModel = requireNonNull(componentModel);
     }
 
@@ -59,11 +59,5 @@ public final class PackedStatelessComponentConfiguration extends AbstractOldComp
     @Override
     public Class<?> definition() {
         return componentModel.type();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentDescriptor descritor() {
-        return ComponentDescriptor.STATELESS;
     }
 }

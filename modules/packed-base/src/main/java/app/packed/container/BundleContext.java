@@ -167,7 +167,7 @@ public interface BundleContext extends ComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    default ComponentDescriptor type() {
+    default ComponentDescriptor model() {
         return ComponentDescriptor.CONTAINER;
     }
 

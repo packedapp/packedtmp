@@ -103,7 +103,7 @@ public final class ComponentModel extends Model {
         return s;
     }
 
-    <T> AbstractOldComponentConfiguration invokeOnHookOnInstall(Object cs, AbstractOldComponentConfiguration acc) {
+    <T> PackedComponentContext invokeOnHookOnInstall(Object cs, PackedComponentContext acc) {
         try {
             // First invoke any OnHook methods on the container source (bundle)
             if (sourceHook != null) {

@@ -88,7 +88,7 @@ public class BaseComponent implements Component {
      * @param configuration
      *            the configuration used for creating this component
      */
-    public BaseComponent(@Nullable BaseComponent parent, AbstractOldComponentConfiguration configuration, PackedInstantiationContext ic) {
+    public BaseComponent(@Nullable BaseComponent parent, PackedComponentContext configuration, PackedInstantiationContext ic) {
         this.parent = parent;
         this.configSite = requireNonNull(configuration.configSite());
         this.description = configuration.getDescription();

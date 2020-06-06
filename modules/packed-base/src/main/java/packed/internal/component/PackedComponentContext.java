@@ -44,15 +44,14 @@ import packed.internal.hook.applicator.DelayedAccessor;
 import packed.internal.host.PackedHostConfiguration;
 
 /** A common superclass for all component configuration classes. */
-public abstract class AbstractOldComponentConfiguration extends AbstractComponentConfiguration
-        implements ComponentHolder, ComponentConfiguration, ComponentConfigurationContext {
+public abstract class PackedComponentContext extends AbstractComponentConfiguration implements ComponentConfigurationContext {
 
     /** The artifact this component is a part of. */
     private final PackedAssembleContext artifact;
 
     /** Any children of this component (lazily initialized), in order of insertion. */
     @Nullable
-    protected LinkedHashMap<String, AbstractOldComponentConfiguration> children;
+    protected LinkedHashMap<String, PackedComponentContext> children;
 
     /** The configuration site of this component. */
     private final ConfigSite configSite;
@@ -84,11 +83,13 @@ public abstract class AbstractOldComponentConfiguration extends AbstractComponen
 
     /** The parent of this component, or null for a root container. */
     @Nullable
-    public final AbstractOldComponentConfiguration parent;
+    public final PackedComponentContext parent;
 
     /** The state of this configuration. */
     // Maaske er det en special GuestConfigurationAdaptor som er rod paa runtime.
     protected ComponentConfigurationState state = new ComponentConfigurationState();
+
+    final ComponentDescriptor descriptor;
 
     /**
      * Creates a new abstract component configuration
@@ -98,7 +99,7 @@ public abstract class AbstractOldComponentConfiguration extends AbstractComponen
      * @param parent
      *            the parent of the component
      */
-    protected AbstractOldComponentConfiguration(ConfigSite configSite, AbstractOldComponentConfiguration parent) {
+    protected PackedComponentContext(ComponentDescriptor descriptor, ConfigSite configSite, PackedComponentContext parent) {
         this.configSite = requireNonNull(configSite);
         this.parent = requireNonNull(parent);
         this.depth = parent.depth() + 1;
@@ -106,6 +107,7 @@ public abstract class AbstractOldComponentConfiguration extends AbstractComponen
         // Hvor tit har en container ikke en anden container som parent....????
         this.container = parent instanceof PackedContainerConfiguration ? (PackedContainerConfiguration) parent : parent.container;
         this.extension = container.activeExtension;
+        this.descriptor = requireNonNull(descriptor);
     }
 
     /**
@@ -116,16 +118,17 @@ public abstract class AbstractOldComponentConfiguration extends AbstractComponen
      * @param output
      *            the output of the build process
      */
-    protected AbstractOldComponentConfiguration(ConfigSite configSite, AssembleOutput output) {
+    protected PackedComponentContext(ComponentDescriptor descriptor, ConfigSite configSite, AssembleOutput output) {
         this.configSite = requireNonNull(configSite);
         this.parent = null;
         this.container = null;
         this.depth = 0;
         this.extension = null;
         this.artifact = new PackedAssembleContext((PackedContainerConfiguration) this, output);
+        this.descriptor = requireNonNull(descriptor);
     }
 
-    protected AbstractOldComponentConfiguration(ConfigSite configSite, PackedHostConfiguration parent, PackedContainerConfiguration pcc,
+    protected PackedComponentContext(ComponentDescriptor descriptor, ConfigSite configSite, PackedHostConfiguration parent, PackedContainerConfiguration pcc,
             AssembleOutput output) {
         this.configSite = requireNonNull(configSite);
         this.parent = requireNonNull(parent);
@@ -133,6 +136,7 @@ public abstract class AbstractOldComponentConfiguration extends AbstractComponen
         this.depth = parent.depth() + 1;
         this.extension = null;
         this.artifact = new PackedAssembleContext(pcc, output);
+        this.descriptor = requireNonNull(descriptor);
     }
 
     /**
@@ -141,9 +145,9 @@ public abstract class AbstractOldComponentConfiguration extends AbstractComponen
      * @param child
      *            the child to add
      */
-    protected final void addChild(AbstractOldComponentConfiguration child) {
+    protected final void addChild(PackedComponentContext child) {
         requireNonNull(child.name);
-        LinkedHashMap<String, AbstractOldComponentConfiguration> c = children;
+        LinkedHashMap<String, PackedComponentContext> c = children;
         if (c == null) {
             c = children = new LinkedHashMap<>();
         }
@@ -232,15 +236,13 @@ public abstract class AbstractOldComponentConfiguration extends AbstractComponen
     }
 
     PackedContainerConfiguration containerX() {
-        AbstractOldComponentConfiguration c = this;
+        PackedComponentContext c = this;
         while (!(c instanceof PackedContainerConfiguration)) {
             c = c.parent;
         }
         return (PackedContainerConfiguration) c;
     }
 
-    /** {@inheritDoc} */
-    @Override
     public final int depth() {
         return depth;
     }
@@ -253,7 +255,7 @@ public abstract class AbstractOldComponentConfiguration extends AbstractComponen
 
     protected void extensionsPrepareInstantiation(PackedInstantiationContext ic) {
         if (children != null) {
-            for (AbstractOldComponentConfiguration acc : children.values()) {
+            for (PackedComponentContext acc : children.values()) {
                 if (artifact == acc.artifact) {
                     acc.extensionsPrepareInstantiation(ic);
                 }
@@ -287,7 +289,7 @@ public abstract class AbstractOldComponentConfiguration extends AbstractComponen
         // Hmm, we should probably used LinkedHashMap to retain order.
         // It just uses so much memory...
         HashMap<String, BaseComponent> result = new HashMap<>(children.size());
-        for (AbstractOldComponentConfiguration acc : children.values()) {
+        for (PackedComponentContext acc : children.values()) {
             BaseComponent ac = acc.instantiate(parent, ic);
             result.put(ac.name(), ac);
         }
@@ -330,17 +332,25 @@ public abstract class AbstractOldComponentConfiguration extends AbstractComponen
         return this.name = n;
     }
 
+    @Deprecated
     protected abstract String initializeNameDefaultName();
 
     protected BaseComponent instantiate(BaseComponent parent, PackedInstantiationContext ic) {
         return new BaseComponent(parent, this, ic);
     }
 
-    public boolean isInSameContainer(AbstractOldComponentConfiguration other) {
+    public boolean isInSameContainer(PackedComponentContext other) {
         return containerX() == other.containerX();
     }
 
-    public abstract ComponentDescriptor descritor();
+    public final ComponentDescriptor descritor() {
+        return descriptor;
+    }
+
+    @Override
+    public final ComponentDescriptor model() {
+        return descriptor;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -351,7 +361,7 @@ public abstract class AbstractOldComponentConfiguration extends AbstractComponen
 
     /** {@inheritDoc} */
     @Override
-    public AbstractOldComponentConfiguration setDescription(String description) {
+    public PackedComponentContext setDescription(String description) {
         requireNonNull(description, "description is null");
         checkConfigurable();
         this.description = description;
@@ -360,7 +370,7 @@ public abstract class AbstractOldComponentConfiguration extends AbstractComponen
 
     /** {@inheritDoc} */
     @Override
-    public AbstractOldComponentConfiguration setName(String name) {
+    public PackedComponentContext setName(String name) {
         // First lets check the name is valid
         ContainerNameWirelet.checkName(name);
         switch (state.oldState) {

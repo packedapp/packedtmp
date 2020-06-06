@@ -29,10 +29,33 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import packed.internal.config.ConfigSiteSupport;
 
-/**
- *
- */
-public abstract class AbstractComponentConfiguration {
+/** An abstract implementation of ComponentConfiguration that can be extended by extensions. */
+
+// Vil ikke afvise at vi dropper interface ComponentConfiguration...
+// Og omdoeber denne til ComponentConfiguration
+
+// Tror det vil vaere rart i forbindelse f.eks. med at StackWalker...
+// At vi altid ved den er ComponentConfiguration...
+
+// Grunde til vi ikke har lyst til det....
+
+// F.eks. hvis vi gerne vil lave en immutable version...
+// Kunne have en clone()... som returnere en ny instans med en ny context...
+// Som fejler ved checkConfigurable....
+
+// Saa vi kun har en type...
+
+// Lad mig spoerge paa en anden maade.. Kan vi paa nogen maade forstille os at der kommer til at 
+// vaere flere implementation af en specific component configuration type...??? 
+// Det tror jeg ikke...
+
+// Men det er jo det samme med image... Det der er rart er jo at vi kan gemme implementeringen vaek
+// Men taenker dem der laver noget har den knyttet til en Extension??? som kan kalde en package
+// private constructor... Kan ikke forstille mig folk laver typer udenom en Extension
+// Eller vi har jo nok ComponentModel<Factory> -> ComponentModel<SingletonConfiguration>
+
+// model.newConfiguration(ComponentContainerContext ccc) -> return new SingletonCC(ccc);
+public abstract class AbstractComponentConfiguration implements ComponentConfiguration {
 
     /** A stack walker used from {@link #captureStackFrame(String)}. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
@@ -67,6 +90,8 @@ public abstract class AbstractComponentConfiguration {
         // API-NOTE This method is not available on ExtensionContext to encourage capturing of stack frames to be limited
         // to the extension class in order to simplify the filtering mechanism.
 
+        // Vi kan spoerge "if context.captureStackFrame() ...."
+
         if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
             return ConfigSite.UNKNOWN;
         }
@@ -80,6 +105,7 @@ public abstract class AbstractComponentConfiguration {
      * @return whether or not to filter the frame
      */
     private final boolean captureStackFrameIgnoreFilter(StackFrame frame) {
+
         Class<?> c = frame.getDeclaringClass();
         // Det virker ikke skide godt, hvis man f.eks. er en metode on a abstract bundle der override configure()...
         // Syntes bare vi filtrer app.packed.base modulet fra...
@@ -95,48 +121,70 @@ public abstract class AbstractComponentConfiguration {
                 || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && ArtifactSource.class.isAssignableFrom(c));
     }
 
+    /** {@inheritDoc} */
+    @Override
     public void checkConfigurable() {
         context.checkConfigurable();
     }
 
+    /** {@inheritDoc} */
+    @Override
     public ConfigSite configSite() {
         return context.configSite();
     }
 
+    /** {@inheritDoc} */
+    @Override
     public Optional<Class<? extends Extension>> extension() {
         return context.extension();
     }
 
+    /** {@inheritDoc} */
+    @Override
     public FeatureMap features() {
         return context.features();
     }
 
+    /** {@inheritDoc} */
+    @Override
     @Nullable
     public String getDescription() {
         return context.getDescription();
     }
 
+    /** {@inheritDoc} */
+    @Override
     public String getName() {
         return context.getName();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public ComponentDescriptor model() {
+        return context.model();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void onNamed(Consumer<? super ComponentConfiguration> action) {
         context.onNamed(action);
     }
 
+    /** {@inheritDoc} */
+    @Override
     public ComponentPath path() {
         return context.path();
     }
 
+    /** {@inheritDoc} */
+    @Override
     public ComponentConfiguration setDescription(String description) {
         return context.setDescription(description);
     }
 
+    /** {@inheritDoc} */
+    @Override
     public ComponentConfiguration setName(String name) {
         return context.setName(name);
-    }
-
-    public ComponentDescriptor type() {
-        return context.type();
     }
 }

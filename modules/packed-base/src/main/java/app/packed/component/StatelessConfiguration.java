@@ -37,7 +37,7 @@ public interface StatelessConfiguration extends ComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    default ComponentDescriptor type() {
+    default ComponentDescriptor model() {
         return ComponentDescriptor.STATELESS;
     }
 }
