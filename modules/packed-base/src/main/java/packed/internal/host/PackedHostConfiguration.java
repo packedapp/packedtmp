@@ -24,8 +24,6 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
 import packed.internal.artifact.PackedArtifactImage;
-import packed.internal.artifact.PackedInstantiationContext;
-import packed.internal.component.BaseComponent;
 import packed.internal.component.AbstractComponentConfiguration;
 import packed.internal.host.api.HostConfigurationContext;
 
@@ -68,12 +66,6 @@ public final class PackedHostConfiguration extends AbstractComponentConfiguratio
     protected String initializeNameDefaultName() {
         // Vi burde kunne extract AppHost fra <T>
         return "Host"; // Host for now, But if we have host driver...
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected BaseComponent instantiate(BaseComponent parent, PackedInstantiationContext ic) {
-        return new BaseComponent(parent, this, ic, ComponentDescriptor.COMPONENT_INSTANCE);
     }
 
     /** {@inheritDoc} */

@@ -341,7 +341,9 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
 
     protected abstract String initializeNameDefaultName();
 
-    protected abstract BaseComponent instantiate(BaseComponent parent, PackedInstantiationContext ic);
+    protected BaseComponent instantiate(BaseComponent parent, PackedInstantiationContext ic) {
+        return new BaseComponent(parent, this, ic);
+    }
 
     public boolean isInSameContainer(AbstractComponentConfiguration other) {
         return containerX() == other.containerX();

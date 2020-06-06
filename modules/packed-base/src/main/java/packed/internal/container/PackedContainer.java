@@ -54,7 +54,7 @@ public final class PackedContainer extends BaseComponent {
      *            the instantiation context of the container
      */
     PackedContainer(@Nullable BaseComponent parent, PackedContainerConfiguration pcc, PackedInstantiationContext instantiationContext) {
-        super(parent, pcc, instantiationContext, ComponentDescriptor.CONTAINER);
+        super(parent, pcc, instantiationContext);
         Injector i = instantiationContext.get(pcc, PackedInjector.class);
         if (i == null) {
             i = new PackedInjector(pcc.configSite(), pcc.getDescription(), new LinkedHashMap<>());

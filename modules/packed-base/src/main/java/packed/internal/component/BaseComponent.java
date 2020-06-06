@@ -88,8 +88,7 @@ public class BaseComponent implements Component {
      * @param configuration
      *            the configuration used for creating this component
      */
-    public BaseComponent(@Nullable BaseComponent parent, AbstractComponentConfiguration configuration, PackedInstantiationContext ic,
-            app.packed.component.ComponentDescriptor model) {
+    public BaseComponent(@Nullable BaseComponent parent, AbstractComponentConfiguration configuration, PackedInstantiationContext ic) {
         this.parent = parent;
         this.configSite = requireNonNull(configuration.configSite());
         this.description = configuration.getDescription();
@@ -109,7 +108,7 @@ public class BaseComponent implements Component {
         } else {
             this.name = requireNonNull(configuration.name);
         }
-        this.model = requireNonNull(model);
+        this.model = requireNonNull(configuration.descritor());
     }
 
     /** {@inheritDoc} */

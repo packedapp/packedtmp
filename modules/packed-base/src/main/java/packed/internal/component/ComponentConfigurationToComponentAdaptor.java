@@ -41,11 +41,6 @@ import packed.internal.host.PackedGuestConfiguration;
  */
 public final class ComponentConfigurationToComponentAdaptor implements Component {
 
-    @Override
-    public ComponentDescriptor model() {
-        return componentConfiguration.descritor();
-    }
-
     /** A cached, lazy initialized list of all children. */
     private volatile Map<String, ComponentConfigurationToComponentAdaptor> children;
 
@@ -113,6 +108,11 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
     public final FeatureMap features() {
         // TODO we need to be able to freeze this for images
         return componentConfiguration.features();
+    }
+
+    @Override
+    public ComponentDescriptor model() {
+        return componentConfiguration.descritor();
     }
 
     /** {@inheritDoc} */

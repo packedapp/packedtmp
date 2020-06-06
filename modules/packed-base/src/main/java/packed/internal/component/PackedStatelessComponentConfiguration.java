@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import app.packed.component.ComponentDescriptor;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
-import packed.internal.artifact.PackedInstantiationContext;
 
 /** The default implementation of {@link StatelessConfiguration}. */
 public final class PackedStatelessComponentConfiguration extends AbstractComponentConfiguration implements StatelessConfiguration {
@@ -35,12 +34,6 @@ public final class PackedStatelessComponentConfiguration extends AbstractCompone
     @Override
     protected String initializeNameDefaultName() {
         return componentModel.defaultPrefix();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BaseComponent instantiate(BaseComponent parent, PackedInstantiationContext paic) {
-        return new BaseComponent(parent, this, paic, ComponentDescriptor.STATELESS);
     }
 
     public PackedStatelessComponentConfiguration runHooks(Object source) {

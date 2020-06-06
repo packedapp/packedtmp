@@ -23,7 +23,6 @@ import app.packed.base.Nullable;
 import app.packed.component.ComponentDescriptor;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
-import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
 
@@ -63,12 +62,6 @@ public final class PackedSingletonConfiguration<T> extends AbstractComponentConf
     @Override
     protected String initializeNameDefaultName() {
         return componentModel.defaultPrefix();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BaseComponent instantiate(BaseComponent parent, PackedInstantiationContext paic) {
-        return new BaseComponent(parent, this, paic, ComponentDescriptor.COMPONENT_INSTANCE);
     }
 
     public PackedSingletonConfiguration<T> runHooks(Object source) {
