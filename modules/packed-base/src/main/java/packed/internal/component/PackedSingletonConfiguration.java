@@ -67,8 +67,8 @@ public final class PackedSingletonConfiguration<T> extends AbstractComponentConf
 
     /** {@inheritDoc} */
     @Override
-    public AbstractComponent instantiate(AbstractComponent parent, PackedInstantiationContext paic) {
-        return new AbstractComponent(parent, this, paic, ComponentDescriptor.COMPONENT_INSTANCE);
+    public BaseComponent instantiate(BaseComponent parent, PackedInstantiationContext paic) {
+        return new BaseComponent(parent, this, paic, ComponentDescriptor.COMPONENT_INSTANCE);
     }
 
     public PackedSingletonConfiguration<T> runHooks(Object source) {
@@ -88,5 +88,11 @@ public final class PackedSingletonConfiguration<T> extends AbstractComponentConf
     public PackedSingletonConfiguration<T> setName(String name) {
         super.setName(name);
         return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentDescriptor descritor() {
+        return ComponentDescriptor.COMPONENT_INSTANCE;
     }
 }

@@ -15,8 +15,6 @@
  */
 package app.packed.component;
 
-import app.packed.service.Injector;
-
 /**
  * A component context can be injected into what every I call it...
  */
@@ -25,7 +23,7 @@ import app.packed.service.Injector;
 // Hvis vi skal have noget some helst kontrol...
 // Boer vi ikke extende component, da vi risikiere
 // At returnere en instand i ComponentStream.
-public interface SingletonContext extends Component {
+public interface SingletonContext {
     // PrototypeContext
 
     // install(); <- installs child
@@ -90,14 +88,4 @@ public interface SingletonContext extends Component {
     // We kind of swap the type...
 
     // We have a special component implementation for that...
-
-    /**
-     * Returns the private injector of this component.
-     *
-     * @return the private injector of this component
-     */
-    // Privatesss?????Syntes skal hedde det samme, Bliver maaske lazy initialiseret efter startup
-    // Maaske skal vi bare extende Injector.....
-
-    Injector injector();// sidecar???
 }

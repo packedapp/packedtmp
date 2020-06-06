@@ -27,13 +27,10 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.component.Component;
-import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDescriptor;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.component.FeatureMap;
-import app.packed.component.Singleton;
-import app.packed.component.Stateless;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import packed.internal.container.PackedContainerConfiguration;
@@ -42,7 +39,12 @@ import packed.internal.host.PackedGuestConfiguration;
 /**
  *
  */
-public abstract class ComponentConfigurationToComponentAdaptor implements Component {
+public final class ComponentConfigurationToComponentAdaptor implements Component {
+
+    @Override
+    public ComponentDescriptor model() {
+        return componentConfiguration.descritor();
+    }
 
     /** A cached, lazy initialized list of all children. */
     private volatile Map<String, ComponentConfigurationToComponentAdaptor> children;
@@ -160,13 +162,13 @@ public abstract class ComponentConfigurationToComponentAdaptor implements Compon
         return of0(pcc, List.of());
     }
 
-    private static ComponentConfigurationToComponentAdaptor of0(ComponentConfiguration bcc, List<PackedGuestConfiguration> pgc) {
+    private static ComponentConfigurationToComponentAdaptor of0(AbstractComponentConfiguration bcc, List<PackedGuestConfiguration> pgc) {
         if (bcc instanceof PackedContainerConfiguration) {
-            return new ContainerAdaptor((PackedContainerConfiguration) bcc, pgc);
+            return new ComponentConfigurationToComponentAdaptor(bcc, pgc);
         } else if (bcc instanceof PackedStatelessComponentConfiguration) {
-            return new StatelessAdaptor((PackedStatelessComponentConfiguration) bcc, pgc);
+            return new ComponentConfigurationToComponentAdaptor(bcc, pgc);
         } else if (bcc instanceof PackedSingletonConfiguration) {
-            return new SingleAdaptor((PackedSingletonConfiguration<?>) bcc, pgc);
+            return new ComponentConfigurationToComponentAdaptor(bcc, pgc);
         }
 //        else if (bcc instanceof PackedHostConfiguration) {
 //            return new HostAdaptor((PackedHostConfiguration) bcc, pgc);
@@ -176,39 +178,11 @@ public abstract class ComponentConfigurationToComponentAdaptor implements Compon
             PackedGuestConfiguration pgcc = (PackedGuestConfiguration) bcc;
             LinkedList<PackedGuestConfiguration> al = new LinkedList<>(pgc);
             al.addFirst(pgcc);
-            return new ContainerAdaptor(pgcc.delegate, List.copyOf(al));
+            return new ComponentConfigurationToComponentAdaptor(pgcc.delegate, List.copyOf(al));
         } else {
             // TODO add host, when we get a configuration class
             throw new IllegalArgumentException("Unknown configuration type, type = " + bcc);
         }
-    }
-
-    private final static class ContainerAdaptor extends ComponentConfigurationToComponentAdaptor {
-
-        public ContainerAdaptor(PackedContainerConfiguration pcc, List<PackedGuestConfiguration> pgc) {
-            super(pcc, pgc);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentDescriptor model() {
-            return ComponentDescriptor.CONTAINER;
-        }
-    }
-
-    private final static class SingleAdaptor extends ComponentConfigurationToComponentAdaptor implements Singleton {
-
-        public SingleAdaptor(PackedSingletonConfiguration<?> conf, List<PackedGuestConfiguration> pgc) {
-            super(conf, pgc);
-        }
-    }
-
-    private final static class StatelessAdaptor extends ComponentConfigurationToComponentAdaptor implements Stateless {
-
-        public StatelessAdaptor(PackedStatelessComponentConfiguration conf, List<PackedGuestConfiguration> pgc) {
-            super(conf, pgc);
-        }
-
     }
 
 }

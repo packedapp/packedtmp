@@ -19,8 +19,8 @@ import java.util.concurrent.CompletableFuture;
 
 import app.packed.base.Key;
 import app.packed.component.Component;
-import app.packed.component.SingletonContext;
 import app.packed.lifecycleold.StopOption;
+import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
 
 /**
@@ -36,7 +36,7 @@ import app.packed.service.ServiceExtension;
  *          which would prohibit subclassing except by explicitly permitted types.
  */
 // ArtifactContext extends ContainerContext???
-public interface ArtifactContext extends SingletonContext {
+public interface ArtifactContext extends Component {
 
     // Optional<?>??? Maybe a ResultClass
     default Object result() {
@@ -52,6 +52,8 @@ public interface ArtifactContext extends SingletonContext {
         //// En anden slags entry point annotering...
         return void.class;
     }
+
+    Injector injector();// sidecar???
 
     default void start() {}
 

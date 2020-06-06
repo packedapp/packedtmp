@@ -39,8 +39,8 @@ public final class PackedStatelessComponentConfiguration extends AbstractCompone
 
     /** {@inheritDoc} */
     @Override
-    public AbstractComponent instantiate(AbstractComponent parent, PackedInstantiationContext paic) {
-        return new AbstractComponent(parent, this, paic, ComponentDescriptor.STATELESS);
+    public BaseComponent instantiate(BaseComponent parent, PackedInstantiationContext paic) {
+        return new BaseComponent(parent, this, paic, ComponentDescriptor.STATELESS);
     }
 
     public PackedStatelessComponentConfiguration runHooks(Object source) {
@@ -66,5 +66,11 @@ public final class PackedStatelessComponentConfiguration extends AbstractCompone
     @Override
     public Class<?> definition() {
         return componentModel.type();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentDescriptor descritor() {
+        return ComponentDescriptor.STATELESS;
     }
 }

@@ -16,7 +16,6 @@
 package packed.internal.host;
 
 import app.packed.base.ContractSet;
-import app.packed.component.Component;
 import app.packed.component.ComponentDescriptor;
 
 /**
@@ -34,7 +33,7 @@ import app.packed.component.ComponentDescriptor;
 // 1 Type, Many Types... AppHost, GenericHost...
 
 //HostComponent???
-public interface Host extends Component {
+public interface Host {
 
     /**
      * All contracts
@@ -43,8 +42,6 @@ public interface Host extends Component {
      */
     ContractSet contracts();
 
-    /** {@inheritDoc} */
-    @Override
     default ComponentDescriptor model() {
         return ComponentDescriptor.COMPONENT_INSTANCE;
     }

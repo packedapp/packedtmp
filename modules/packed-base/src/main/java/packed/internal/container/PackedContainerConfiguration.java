@@ -35,6 +35,7 @@ import app.packed.artifact.ArtifactImage;
 import app.packed.artifact.HostConfiguration;
 import app.packed.artifact.HostDriver;
 import app.packed.base.Nullable;
+import app.packed.component.ComponentDescriptor;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
@@ -47,7 +48,7 @@ import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedInstantiationContext;
-import packed.internal.component.AbstractComponent;
+import packed.internal.component.BaseComponent;
 import packed.internal.component.AbstractComponentConfiguration;
 import packed.internal.component.ComponentModel;
 import packed.internal.component.PackedSingletonConfiguration;
@@ -373,7 +374,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     /** {@inheritDoc} */
     @Override
-    public PackedContainer instantiate(AbstractComponent parent, PackedInstantiationContext ic) {
+    public PackedContainer instantiate(BaseComponent parent, PackedInstantiationContext ic) {
         return new PackedContainer(parent, this, ic);
     }
 
@@ -437,10 +438,10 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private void methodHandlePassing0(AbstractComponent ac, PackedInstantiationContext ic) {
+    private void methodHandlePassing0(BaseComponent ac, PackedInstantiationContext ic) {
         if (children != null) {
             for (AbstractComponentConfiguration cc : children.values()) {
-                AbstractComponent child = ac.children.get(cc.name);
+                BaseComponent child = ac.children.get(cc.name);
                 if (cc instanceof PackedContainerConfiguration) {
                     ((PackedContainerConfiguration) cc).methodHandlePassing0(child, ic);
                 }
@@ -590,6 +591,12 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     public static PackedContainerConfiguration of(AssembleOutput output, Object source, Wirelet... wirelets) {
         ConfigSite cs = ConfigSiteUtil.captureStackFrame(InjectConfigSiteOperations.INJECTOR_OF);
         return new PackedContainerConfiguration(cs, output, source, wirelets);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentDescriptor descritor() {
+        return ComponentDescriptor.CONTAINER;
     }
 }
 // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent

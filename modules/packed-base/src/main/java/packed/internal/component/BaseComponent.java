@@ -34,17 +34,17 @@ import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.component.FeatureMap;
 import app.packed.config.ConfigSite;
-import app.packed.container.Container;
 import app.packed.container.Extension;
 import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.container.ContainerWirelet.ContainerNameWirelet;
+import packed.internal.container.PackedContainer;
 
 /** An abstract base implementation of {@link Component}. */
-public class AbstractComponent implements Component {
+public class BaseComponent implements Component {
 
     /** Any child components this component might have. Is null if we know the component will never have any children. */
     @Nullable
-    public final Map<String, AbstractComponent> children;
+    public final Map<String, BaseComponent> children;
 
     /** The configuration site of the component. */
     private final ConfigSite configSite;
@@ -75,9 +75,10 @@ public class AbstractComponent implements Component {
     //// Auch I think we need to maintain some of that naming state for images....
     /// For example, whether or not naming is free...
     private final String name;
+
     /** The parent component, iff this component has a parent. */
     @Nullable
-    final AbstractComponent parent;
+    final BaseComponent parent;
 
     /**
      * Creates a new abstract component.
@@ -87,7 +88,7 @@ public class AbstractComponent implements Component {
      * @param configuration
      *            the configuration used for creating this component
      */
-    public AbstractComponent(@Nullable AbstractComponent parent, AbstractComponentConfiguration configuration, PackedInstantiationContext ic,
+    public BaseComponent(@Nullable BaseComponent parent, AbstractComponentConfiguration configuration, PackedInstantiationContext ic,
             app.packed.component.ComponentDescriptor model) {
         this.parent = parent;
         this.configSite = requireNonNull(configuration.configSite());
@@ -114,7 +115,7 @@ public class AbstractComponent implements Component {
     /** {@inheritDoc} */
     @Override
     public final Collection<Component> children() {
-        Map<String, AbstractComponent> c = children;
+        Map<String, BaseComponent> c = children;
         if (c == null) {
             return Collections.emptySet();
         }
@@ -156,7 +157,7 @@ public class AbstractComponent implements Component {
         return findComponent(path.toString());
     }
 
-    private AbstractComponent findComponent(String path) {
+    private BaseComponent findComponent(String path) {
         if (path.length() == 0) {
             throw new IllegalArgumentException("Cannot specify an empty (\"\") path");
         }
@@ -169,17 +170,17 @@ public class AbstractComponent implements Component {
 
         // TODO fix for non-absolute paths....
         //
-        AbstractComponent c = children.get(path);
+        BaseComponent c = children.get(path);
         if (c == null) {
             String p = path.toString();
             String[] splits = p.split("/");
-            Map<String, AbstractComponent> chi = children;
+            Map<String, BaseComponent> chi = children;
             for (int i = 1; i < splits.length; i++) {
                 if (chi == null) {
                     return null;
                 }
                 String ch = splits[i];
-                AbstractComponent ac = chi.get(ch);
+                BaseComponent ac = chi.get(ch);
                 if (ac == null) {
                     return null;
                 }
@@ -192,16 +193,16 @@ public class AbstractComponent implements Component {
         return c;
     }
 
-    public boolean isInSameContainer(AbstractComponent other) {
+    public boolean isInSameContainer(BaseComponent other) {
         return isInSameContainer0() == other.isInSameContainer0();
     }
 
-    private Container isInSameContainer0() {
-        AbstractComponent c = this;
-        while (!(c instanceof Container)) {
+    private PackedContainer isInSameContainer0() {
+        BaseComponent c = this;
+        while (!(c instanceof PackedContainer)) {
             c = c.parent;
         }
-        return (Container) c;
+        return (PackedContainer) c;
     }
 
     @Override
@@ -227,9 +228,9 @@ public class AbstractComponent implements Component {
         return new PackedComponentStream(stream0(this, true, PackedComponentStreamOption.of(options)));
     }
 
-    private final Stream<Component> stream0(AbstractComponent origin, boolean isRoot, PackedComponentStreamOption option) {
+    private final Stream<Component> stream0(BaseComponent origin, boolean isRoot, PackedComponentStreamOption option) {
         // Also fix in ComponentConfigurationToComponentAdaptor when changing stuff here
-        Map<String, AbstractComponent> c = children;
+        Map<String, BaseComponent> c = children;
         if (c != null && !c.isEmpty()) {
             if (option.processThisDeeper(origin, this)) {
                 Stream<Component> s = c.values().stream().flatMap(co -> co.stream0(origin, false, option));
@@ -244,7 +245,7 @@ public class AbstractComponent implements Component {
     /** {@inheritDoc} */
     @Override
     public void traverse(Consumer<? super Component> action) {
-        Map<String, AbstractComponent> c = children;
+        Map<String, BaseComponent> c = children;
         if (c != null) {
             c.values().forEach(action);
         }

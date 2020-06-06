@@ -31,16 +31,15 @@ import app.packed.component.ComponentStream;
 import app.packed.component.ComponentStream.Option;
 import app.packed.component.FeatureMap;
 import app.packed.config.ConfigSite;
-import app.packed.container.Container;
 import app.packed.container.Extension;
 import app.packed.lifecycleold.StopOption;
 import app.packed.service.Injector;
 import packed.internal.artifact.PackedInstantiationContext;
-import packed.internal.component.AbstractComponent;
+import packed.internal.component.BaseComponent;
 import packed.internal.service.runtime.PackedInjector;
 
-/** The default implementation of {@link Container}. */
-public final class PackedContainer extends AbstractComponent implements Container {
+/** The default container implementation. */
+public final class PackedContainer extends BaseComponent {
 
     private final Injector injector;
 
@@ -54,7 +53,7 @@ public final class PackedContainer extends AbstractComponent implements Containe
      * @param instantiationContext
      *            the instantiation context of the container
      */
-    PackedContainer(@Nullable AbstractComponent parent, PackedContainerConfiguration pcc, PackedInstantiationContext instantiationContext) {
+    PackedContainer(@Nullable BaseComponent parent, PackedContainerConfiguration pcc, PackedInstantiationContext instantiationContext) {
         super(parent, pcc, instantiationContext, ComponentDescriptor.CONTAINER);
         Injector i = instantiationContext.get(pcc, PackedInjector.class);
         if (i == null) {

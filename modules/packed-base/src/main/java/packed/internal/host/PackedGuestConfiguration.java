@@ -21,7 +21,7 @@ import app.packed.artifact.ArtifactImage;
 import app.packed.component.ComponentDescriptor;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedInstantiationContext;
-import packed.internal.component.AbstractComponent;
+import packed.internal.component.BaseComponent;
 import packed.internal.component.AbstractComponentConfiguration;
 import packed.internal.container.PackedContainerConfiguration;
 
@@ -54,7 +54,7 @@ public class PackedGuestConfiguration extends AbstractComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    protected AbstractComponent instantiate(AbstractComponent parent, PackedInstantiationContext ic) {
+    protected BaseComponent instantiate(BaseComponent parent, PackedInstantiationContext ic) {
         return delegate.instantiate(parent, ic);
         // Maaske, kan vi tilgaengeaeld nogen gange instantiered en PackedContainer direkte herfra...
 
@@ -66,5 +66,11 @@ public class PackedGuestConfiguration extends AbstractComponentConfiguration {
     @Override
     public ComponentDescriptor type() {
         return delegate.type();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentDescriptor descritor() {
+        throw new UnsupportedOperationException();
     }
 }

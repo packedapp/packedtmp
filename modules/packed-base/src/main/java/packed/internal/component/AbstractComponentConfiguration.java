@@ -29,6 +29,7 @@ import java.util.Optional;
 import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentDescriptor;
 import app.packed.component.ComponentPath;
 import app.packed.component.FeatureMap;
 import app.packed.config.ConfigSite;
@@ -288,15 +289,15 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
         return initializeName(State.GET_NAME_INVOKED, null);
     }
 
-    final Map<String, AbstractComponent> initializeChildren(AbstractComponent parent, PackedInstantiationContext ic) {
+    final Map<String, BaseComponent> initializeChildren(BaseComponent parent, PackedInstantiationContext ic) {
         if (children == null) {
             return null;
         }
         // Hmm, we should probably used LinkedHashMap to retain order.
         // It just uses so much memory...
-        HashMap<String, AbstractComponent> result = new HashMap<>(children.size());
+        HashMap<String, BaseComponent> result = new HashMap<>(children.size());
         for (AbstractComponentConfiguration acc : children.values()) {
-            AbstractComponent ac = acc.instantiate(parent, ic);
+            BaseComponent ac = acc.instantiate(parent, ic);
             result.put(ac.name(), ac);
         }
         return Map.copyOf(result);
@@ -340,11 +341,13 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
 
     protected abstract String initializeNameDefaultName();
 
-    protected abstract AbstractComponent instantiate(AbstractComponent parent, PackedInstantiationContext ic);
+    protected abstract BaseComponent instantiate(BaseComponent parent, PackedInstantiationContext ic);
 
     public boolean isInSameContainer(AbstractComponentConfiguration other) {
         return containerX() == other.containerX();
     }
+
+    public abstract ComponentDescriptor descritor();
 
     /** {@inheritDoc} */
     @Override
