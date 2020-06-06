@@ -20,17 +20,17 @@ package app.packed.component;
  */
 
 // Til noedt kan vi kalde den BuildinComponentType
-public enum ComponentDescriptor {
+public class ComponentDescriptor {
 
     // A single Method...
     // All Other methods are ignored...
     // Also Annotations et
-    FUNCTION,
+    public static final ComponentDescriptor FUNCTION = new ComponentDescriptor();
 
-    COMPONENT_INSTANCE,
+    public static final ComponentDescriptor COMPONENT_INSTANCE = new ComponentDescriptor();
 
     /** A container holds other components and provide strong boundaries between different containers. */
-    CONTAINER,
+    public static final ComponentDescriptor CONTAINER = new ComponentDescriptor();
 //
 //    /**
 //     * A host allows for dynamic wiring between a host and a guest container. Unlike the static wiring available via, for
@@ -38,7 +38,9 @@ public enum ComponentDescriptor {
 //     */
 //    HOST,
 
-    STATELESS;
+    public static final ComponentDescriptor STATELESS = new ComponentDescriptor();
+
+    ComponentDescriptor() {}
 }
 
 //Sealed type....
