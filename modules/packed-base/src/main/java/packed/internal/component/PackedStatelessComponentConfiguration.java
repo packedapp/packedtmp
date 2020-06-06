@@ -22,11 +22,11 @@ import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 
 /** The default implementation of {@link StatelessConfiguration}. */
-public final class PackedStatelessComponentConfiguration extends AbstractComponentConfiguration implements StatelessConfiguration {
+public final class PackedStatelessComponentConfiguration extends AbstractOldComponentConfiguration implements StatelessConfiguration {
 
     private final ComponentModel componentModel;
 
-    public PackedStatelessComponentConfiguration(ConfigSite configSite, AbstractComponentConfiguration parent, ComponentModel componentModel) {
+    public PackedStatelessComponentConfiguration(ConfigSite configSite, AbstractOldComponentConfiguration parent, ComponentModel componentModel) {
         super(configSite, parent);
         this.componentModel = requireNonNull(componentModel);
     }

@@ -17,18 +17,16 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.StackWalker.Option;
-import java.lang.StackWalker.StackFrame;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
+import app.packed.component.AbstractComponentConfiguration;
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDescriptor;
 import app.packed.component.ComponentPath;
 import app.packed.component.FeatureMap;
@@ -39,7 +37,6 @@ import app.packed.container.Extension;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedAssembleContext;
 import packed.internal.artifact.PackedInstantiationContext;
-import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ContainerWirelet.ContainerNameWirelet;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.PackedExtensionContext;
@@ -47,17 +44,15 @@ import packed.internal.hook.applicator.DelayedAccessor;
 import packed.internal.host.PackedHostConfiguration;
 
 /** A common superclass for all component configuration classes. */
-public abstract class AbstractComponentConfiguration implements ComponentHolder, ComponentConfiguration {
-
-    /** A stack walker used from {@link #captureStackFrame(String)}. */
-    private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
+public abstract class AbstractOldComponentConfiguration extends AbstractComponentConfiguration
+        implements ComponentHolder, ComponentConfiguration, ComponentConfigurationContext {
 
     /** The artifact this component is a part of. */
     private final PackedAssembleContext artifact;
 
     /** Any children of this component (lazily initialized), in order of insertion. */
     @Nullable
-    protected LinkedHashMap<String, AbstractComponentConfiguration> children;
+    protected LinkedHashMap<String, AbstractOldComponentConfiguration> children;
 
     /** The configuration site of this component. */
     private final ConfigSite configSite;
@@ -89,17 +84,11 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
 
     /** The parent of this component, or null for a root container. */
     @Nullable
-    public final AbstractComponentConfiguration parent;
+    public final AbstractOldComponentConfiguration parent;
 
     /** The state of this configuration. */
     // Maaske er det en special GuestConfigurationAdaptor som er rod paa runtime.
     protected ComponentConfigurationState state = new ComponentConfigurationState();
-
-//    @Nullable
-//    public PackedContainerConfiguration parentContainer() {
-//        PackedContainerConfiguration pcc = container();
-//        return pcc == null ? null : pcc.container();
-//    }
 
     /**
      * Creates a new abstract component configuration
@@ -109,7 +98,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
      * @param parent
      *            the parent of the component
      */
-    protected AbstractComponentConfiguration(ConfigSite configSite, AbstractComponentConfiguration parent) {
+    protected AbstractOldComponentConfiguration(ConfigSite configSite, AbstractOldComponentConfiguration parent) {
         this.configSite = requireNonNull(configSite);
         this.parent = requireNonNull(parent);
         this.depth = parent.depth() + 1;
@@ -127,7 +116,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
      * @param output
      *            the output of the build process
      */
-    protected AbstractComponentConfiguration(ConfigSite configSite, AssembleOutput output) {
+    protected AbstractOldComponentConfiguration(ConfigSite configSite, AssembleOutput output) {
         this.configSite = requireNonNull(configSite);
         this.parent = null;
         this.container = null;
@@ -136,7 +125,8 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
         this.artifact = new PackedAssembleContext((PackedContainerConfiguration) this, output);
     }
 
-    protected AbstractComponentConfiguration(ConfigSite configSite, PackedHostConfiguration parent, PackedContainerConfiguration pcc, AssembleOutput output) {
+    protected AbstractOldComponentConfiguration(ConfigSite configSite, PackedHostConfiguration parent, PackedContainerConfiguration pcc,
+            AssembleOutput output) {
         this.configSite = requireNonNull(configSite);
         this.parent = requireNonNull(parent);
         this.container = null;
@@ -151,9 +141,9 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
      * @param child
      *            the child to add
      */
-    protected final void addChild(AbstractComponentConfiguration child) {
+    protected final void addChild(AbstractOldComponentConfiguration child) {
         requireNonNull(child.name);
-        LinkedHashMap<String, AbstractComponentConfiguration> c = children;
+        LinkedHashMap<String, AbstractOldComponentConfiguration> c = children;
         if (c == null) {
             c = children = new LinkedHashMap<>();
         }
@@ -168,53 +158,54 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
     public final PackedAssembleContext artifact() {
         return artifact;
     }
-
-    /**
-     * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
-     * not located on any subclasses of {@link Extension} or any class that implements {@link ArtifactSource}.
-     * <p>
-     * Invoking this method typically takes in the order of 1-2 microseconds.
-     * <p>
-     * If capturing of stack-frame-based config sites has been disable via, for example, fooo. This method returns
-     * {@link ConfigSite#UNKNOWN}.
-     * 
-     * @param operation
-     *            the operation
-     * @return a stack frame capturing config site, or {@link ConfigSite#UNKNOWN} if stack frame capturing has been disabled
-     * @see StackWalker
-     */
-    // TODO add stuff about we also ignore non-concrete container sources...
-    protected final ConfigSite captureStackFrame(String operation) {
-        // API-NOTE This method is not available on ExtensionContext to encourage capturing of stack frames to be limited
-        // to the extension class in order to simplify the filtering mechanism.
-
-        if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
-            return ConfigSite.UNKNOWN;
-        }
-        Optional<StackFrame> sf = STACK_WALKER.walk(e -> e.filter(f -> !captureStackFrameIgnoreFilter(f)).findFirst());
-        return sf.isPresent() ? configSite().thenStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
-    }
-
-    /**
-     * @param frame
-     *            the frame to filter
-     * @return whether or not to filter the frame
-     */
-    private final boolean captureStackFrameIgnoreFilter(StackFrame frame) {
-        Class<?> c = frame.getDeclaringClass();
-        // Det virker ikke skide godt, hvis man f.eks. er en metode on a abstract bundle der override configure()...
-        // Syntes bare vi filtrer app.packed.base modulet fra...
-        // Kan vi ikke checke om imod vores container source.
-
-        // ((PackedExtensionContext) context()).container().source
-        // Nah hvis man koere fra config er det jo fint....
-        // Fra config() paa en bundle er det fint...
-        // Fra alt andet ikke...
-
-        // Dvs ourContainerSource
-        return Extension.class.isAssignableFrom(c)
-                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && ArtifactSource.class.isAssignableFrom(c));
-    }
+//
+//    /**
+//     * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
+//     * not located on any subclasses of {@link Extension} or any class that implements {@link ArtifactSource}.
+//     * <p>
+//     * Invoking this method typically takes in the order of 1-2 microseconds.
+//     * <p>
+//     * If capturing of stack-frame-based config sites has been disable via, for example, fooo. This method returns
+//     * {@link ConfigSite#UNKNOWN}.
+//     * 
+//     * @param operation
+//     *            the operation
+//     * @return a stack frame capturing config site, or {@link ConfigSite#UNKNOWN} if stack frame capturing has been disabled
+//     * @see StackWalker
+//     */
+//    // TODO add stuff about we also ignore non-concrete container sources...
+//    @Override
+//    protected final ConfigSite captureStackFrame(String operation) {
+//        // API-NOTE This method is not available on ExtensionContext to encourage capturing of stack frames to be limited
+//        // to the extension class in order to simplify the filtering mechanism.
+//
+//        if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
+//            return ConfigSite.UNKNOWN;
+//        }
+//        Optional<StackFrame> sf = STACK_WALKER.walk(e -> e.filter(f -> !captureStackFrameIgnoreFilter(f)).findFirst());
+//        return sf.isPresent() ? configSite().thenStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
+//    }
+//
+//    /**
+//     * @param frame
+//     *            the frame to filter
+//     * @return whether or not to filter the frame
+//     */
+//    private final boolean captureStackFrameIgnoreFilter(StackFrame frame) {
+//        Class<?> c = frame.getDeclaringClass();
+//        // Det virker ikke skide godt, hvis man f.eks. er en metode on a abstract bundle der override configure()...
+//        // Syntes bare vi filtrer app.packed.base modulet fra...
+//        // Kan vi ikke checke om imod vores container source.
+//
+//        // ((PackedExtensionContext) context()).container().source
+//        // Nah hvis man koere fra config er det jo fint....
+//        // Fra config() paa en bundle er det fint...
+//        // Fra alt andet ikke...
+//
+//        // Dvs ourContainerSource
+//        return Extension.class.isAssignableFrom(c)
+//                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && ArtifactSource.class.isAssignableFrom(c));
+//    }
 
     /** {@inheritDoc} */
     @Override
@@ -241,7 +232,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
     }
 
     PackedContainerConfiguration containerX() {
-        AbstractComponentConfiguration c = this;
+        AbstractOldComponentConfiguration c = this;
         while (!(c instanceof PackedContainerConfiguration)) {
             c = c.parent;
         }
@@ -262,7 +253,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
 
     protected void extensionsPrepareInstantiation(PackedInstantiationContext ic) {
         if (children != null) {
-            for (AbstractComponentConfiguration acc : children.values()) {
+            for (AbstractOldComponentConfiguration acc : children.values()) {
                 if (artifact == acc.artifact) {
                     acc.extensionsPrepareInstantiation(ic);
                 }
@@ -296,7 +287,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
         // Hmm, we should probably used LinkedHashMap to retain order.
         // It just uses so much memory...
         HashMap<String, BaseComponent> result = new HashMap<>(children.size());
-        for (AbstractComponentConfiguration acc : children.values()) {
+        for (AbstractOldComponentConfiguration acc : children.values()) {
             BaseComponent ac = acc.instantiate(parent, ic);
             result.put(ac.name(), ac);
         }
@@ -345,7 +336,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
         return new BaseComponent(parent, this, ic);
     }
 
-    public boolean isInSameContainer(AbstractComponentConfiguration other) {
+    public boolean isInSameContainer(AbstractOldComponentConfiguration other) {
         return containerX() == other.containerX();
     }
 
@@ -360,7 +351,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
 
     /** {@inheritDoc} */
     @Override
-    public AbstractComponentConfiguration setDescription(String description) {
+    public AbstractOldComponentConfiguration setDescription(String description) {
         requireNonNull(description, "description is null");
         checkConfigurable();
         this.description = description;
@@ -369,7 +360,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
 
     /** {@inheritDoc} */
     @Override
-    public AbstractComponentConfiguration setName(String name) {
+    public AbstractOldComponentConfiguration setName(String name) {
         // First lets check the name is valid
         ContainerNameWirelet.checkName(name);
         switch (state.oldState) {

@@ -29,7 +29,7 @@ import packed.internal.inject.factory.FactoryHandle;
 /**
  *
  */
-public final class PackedSingletonConfiguration<T> extends AbstractComponentConfiguration implements SingletonConfiguration<T> {
+public final class PackedSingletonConfiguration<T> extends AbstractOldComponentConfiguration implements SingletonConfiguration<T> {
 
     public final ComponentModel componentModel;
 
@@ -39,14 +39,14 @@ public final class PackedSingletonConfiguration<T> extends AbstractComponentConf
     @Nullable
     public final T instance;
 
-    public PackedSingletonConfiguration(ConfigSite configSite, AbstractComponentConfiguration parent, ComponentModel componentModel, BaseFactory<T> factory) {
+    public PackedSingletonConfiguration(ConfigSite configSite, AbstractOldComponentConfiguration parent, ComponentModel componentModel, BaseFactory<T> factory) {
         super(configSite, parent);
         this.componentModel = requireNonNull(componentModel);
         this.factory = requireNonNull(factory);
         this.instance = null;
     }
 
-    public PackedSingletonConfiguration(ConfigSite configSite, AbstractComponentConfiguration parent, ComponentModel componentModel, T instance) {
+    public PackedSingletonConfiguration(ConfigSite configSite, AbstractOldComponentConfiguration parent, ComponentModel componentModel, T instance) {
         super(configSite, parent);
         this.componentModel = requireNonNull(componentModel);
         this.factory = null;

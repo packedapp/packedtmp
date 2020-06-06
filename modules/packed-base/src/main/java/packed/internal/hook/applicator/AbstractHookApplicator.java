@@ -19,7 +19,7 @@ import java.util.function.BiConsumer;
 
 import app.packed.component.SingletonConfiguration;
 import app.packed.hook.HookApplicator;
-import packed.internal.component.AbstractComponentConfiguration;
+import packed.internal.component.AbstractOldComponentConfiguration;
 
 /**
  *
@@ -37,7 +37,7 @@ abstract class AbstractHookApplicator<T> implements HookApplicator<T> {
         /// I think we actually need to check this this way
 
         // TODO check instance component if instance field...
-        AbstractComponentConfiguration pcc = (AbstractComponentConfiguration) cc;
+        AbstractOldComponentConfiguration pcc = (AbstractOldComponentConfiguration) cc;
         pcc.checkConfigurable();
         pcc.del.add(newAccessor(sidecarType, consumer));
     }

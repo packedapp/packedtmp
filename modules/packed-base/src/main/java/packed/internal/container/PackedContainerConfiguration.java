@@ -49,7 +49,7 @@ import app.packed.service.ServiceExtension;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.component.BaseComponent;
-import packed.internal.component.AbstractComponentConfiguration;
+import packed.internal.component.AbstractOldComponentConfiguration;
 import packed.internal.component.ComponentModel;
 import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.component.PackedStatelessComponentConfiguration;
@@ -65,7 +65,7 @@ import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.service.runtime.PackedInjector;
 
 /** The default implementation of {@link BundleContext}. */
-public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements BundleContext {
+public final class PackedContainerConfiguration extends AbstractOldComponentConfiguration implements BundleContext {
 
     private static final int LS_0_MAINL = 0;
 
@@ -85,7 +85,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     /** The component that was last installed. */
     @Nullable
-    private AbstractComponentConfiguration currentComponent;
+    private AbstractOldComponentConfiguration currentComponent;
 
     /** All used extensions, in order of registration. */
     private final LinkedHashMap<Class<? extends Extension>, PackedExtensionContext> extensions = new LinkedHashMap<>();
@@ -119,7 +119,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * @param wirelets
      *            any wirelets specified by the user
      */
-    private PackedContainerConfiguration(AbstractComponentConfiguration parent, Bundle bundle, Wirelet... wirelets) {
+    private PackedContainerConfiguration(AbstractOldComponentConfiguration parent, Bundle bundle, Wirelet... wirelets) {
         super(ConfigSiteUtil.captureStackFrame(parent.configSite(), InjectConfigSiteOperations.INJECTOR_OF), parent);
         this.source = requireNonNull(bundle, "bundle is null");
         this.lookup = this.model = ContainerModel.of(bundle.getClass());
@@ -192,7 +192,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
         if (realState == LS_1_LINKING && newState > LS_1_LINKING) {
             if (children != null) {
-                for (AbstractComponentConfiguration acc : children.values()) {
+                for (AbstractOldComponentConfiguration acc : children.values()) {
                     if (acc instanceof PackedContainerConfiguration) {
                         ((PackedContainerConfiguration) acc).assembleExtensions();
                     }
@@ -440,7 +440,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private void methodHandlePassing0(BaseComponent ac, PackedInstantiationContext ic) {
         if (children != null) {
-            for (AbstractComponentConfiguration cc : children.values()) {
+            for (AbstractOldComponentConfiguration cc : children.values()) {
                 BaseComponent child = ac.children.get(cc.name);
                 if (cc instanceof PackedContainerConfiguration) {
                     ((PackedContainerConfiguration) cc).methodHandlePassing0(child, ic);
@@ -567,7 +567,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             wop = wireletContext.getWireletOrPipeline(type);
         }
         if (wop == null && inherited) {
-            AbstractComponentConfiguration acc = parent;
+            AbstractOldComponentConfiguration acc = parent;
             while (acc != null) {
                 if (acc instanceof PackedContainerConfiguration) {
                     PackedContainerConfiguration pcc = (PackedContainerConfiguration) acc;

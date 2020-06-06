@@ -118,19 +118,3 @@ interface XCC2<T> {
         throw new UnsupportedOperationException();
     }
 }
-/**
- * Returns an injector configurator for this component. This configurator can be used to provide service specifically to
- * the underlying component instance or any of its mixins.
- * 
- * injector is responsible for any dependency injection needed for this component. For example, for instantiating the
- * component instance or any of its mixins. The injector can accessed via {@link Component#injector()} at runtime.
- * 
- * @return a the component's injector
- * @see Component#injector()
- */
-// Or privateInjector
-// Do example, with listener, on instance annotation
-// injectorInheritable()... an injector that is inherited by all
-// Nu er vi taet knyttet til services....
-// Maasske Hellere end Service.private(ComponentConfiguration cc).bind(dddd);
-// InjectorConfigurator injector();
