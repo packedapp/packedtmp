@@ -18,14 +18,14 @@ package packed.internal.host.prototype;
 import app.packed.artifact.ArtifactDriver;
 import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
-import packed.internal.host.api.HostDriver;
+import packed.internal.host.api.OldHostDriver;
 
 /**
  *
  */
 public interface PrototypeHost<A> {
 
-    static <A> HostDriver<PrototypeHostConfiguration<A>, PrototypeHost<A>, A> driver(ArtifactDriver<A> driver, Bundle bundle, Wirelet... wirelets) {
+    static <A> OldHostDriver<PrototypeHostConfiguration<A>, PrototypeHost<A>, A> driver(ArtifactDriver<A> driver, Bundle bundle, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 }

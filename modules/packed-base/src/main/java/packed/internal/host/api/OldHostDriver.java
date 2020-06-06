@@ -39,9 +39,13 @@ import packed.internal.host.HostContext;
 // addHost(AppHost.driver()).
 
 // Paa den anden side... A er lidt ligegyldig for brugere...
-public abstract class HostDriver<C, H, A> {
 
-    protected HostDriver(Option... options) {}
+// C -> Configurations typen
+// H -> Host typen
+
+public abstract class OldHostDriver<C, H, A> {
+
+    protected OldHostDriver(Option... options) {}
     // protected abstract H newMultiHost(MultiHostContext context);
 
     protected abstract H newHost(HostContext<A> context);

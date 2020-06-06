@@ -30,6 +30,11 @@ import app.packed.container.Wirelet;
 // Men taenker det her lifecycle er rimligt generisk...
 
 // StopOptions is Wirelets at stop time...
+// GuestStopOption????
+
+// Flags.. Minder lidt om wirelets...
+// Og list stop options
+// https://twitter.github.io/util/docs/com/twitter/app/App.html
 public interface StopOption {
 
     static StopOption erroneous(Throwable cause) {

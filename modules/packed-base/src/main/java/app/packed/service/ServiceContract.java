@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import app.packed.analysis.BundleDescriptor;
-import app.packed.artifact.SystemImage;
+import app.packed.artifact.ArtifactImage;
 import app.packed.base.Contract;
 import app.packed.base.Key;
 import app.packed.container.Bundle;
@@ -238,7 +238,7 @@ public final class ServiceContract extends Contract {
     // ofElseEmpty();
     // I Think optional, jeg kunne godt forstille mig en contract som ikke har noget der svarer til empty.
     // Men det er ogsaa fint.. Det her gaelder kun for ServiceContract...
-    public static ServiceContract of(SystemImage image) {
+    public static ServiceContract of(ArtifactImage image) {
         return image.descriptor().contracts().use(ServiceContract.class);
     }
 

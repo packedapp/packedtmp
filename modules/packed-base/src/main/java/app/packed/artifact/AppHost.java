@@ -15,22 +15,29 @@
  */
 package app.packed.artifact;
 
+import app.packed.component.ConfiguredBy;
 import app.packed.container.Bundle;
 
 /**
- * A source for creating new systems. For example, via {@link App#start(SystemSource, app.packed.container.Wirelet...)}.
- * <p>
- * There An source is used to create an artifact. Currently the following types of sources are supported:
- * 
- * Bundle
- * 
- * SystemImage -> Can be repeatable
- * 
- * This is typically either a subclass of {@link Bundle} or a pre assembled {@link SystemImage system image}.
- * <p>
- * TODO maybe list all the s
- * 
- * @apiNote In the future, if the Java language permits, {@link SystemSource} may become a {@code sealed} interface,
- *          which would prohibit subclassing except by explicitly permitted types.
+ *
  */
-public interface SystemSource {}
+
+//extends ConfiguredVia<AppHostConfiguration>  <--- skal have en statisk metode der hedder driver...
+public interface AppHost extends ConfiguredBy<AppHostConfiguration> {
+
+    long size();
+
+    // Eller skal den vaere paa configurationen???
+    static HostDriver<AppHostConfiguration> driver() {
+        return AppHostConfiguration.DRIVER;
+    }
+}
+
+class FooBar extends Bundle {
+
+    /** {@inheritDoc} */
+    @Override
+    protected void compose() {
+        add(AppHost.class); // <- must have a static driver method... and be open to packed... (and readable to bundle)
+    }
+}

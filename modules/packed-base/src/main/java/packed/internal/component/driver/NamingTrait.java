@@ -13,24 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
-
-import app.packed.component.ComponentType;
-import app.packed.component.Singleton;
-import packed.internal.artifact.PackedInstantiationContext;
+package packed.internal.component.driver;
 
 /**
  *
  */
-final class PackedSingleton extends AbstractComponent implements Singleton {
 
-    PackedSingleton(AbstractComponent parent, PackedSingletonConfiguration<?> configuration, PackedInstantiationContext ic) {
-        super(parent, configuration, ic);
-    }
+// Smart nok, men totalt grimt...
+public interface NamingTrait<T extends NamingTrait<T>> {
 
-    /** {@inheritDoc} */
-    @Override
-    public ComponentType type() {
-        return ComponentType.COMPONENT_INSTANCE;
+    @SuppressWarnings("unchecked")
+    default T setName(String name) {
+        ((AbstractFoo) this).setName(name);
+        return (T) this;
     }
 }

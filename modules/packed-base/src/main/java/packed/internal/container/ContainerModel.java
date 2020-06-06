@@ -20,15 +20,15 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
-import app.packed.artifact.SystemSource;
+import app.packed.artifact.ArtifactSource;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Nullable;
 import app.packed.container.Bundle;
-import app.packed.container.ContainerConfiguration;
+import app.packed.container.BundleContext;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import packed.internal.component.ComponentModel;
-import packed.internal.container.packlet.PackletSystemModel;
+import packed.internal.container.packlet.PackletMotherShip;
 import packed.internal.hook.OnHookModel;
 import packed.internal.inject.factory.ExecutableFactoryHandle;
 import packed.internal.inject.factory.FactoryHandle;
@@ -39,16 +39,16 @@ import packed.internal.util.LookupValue;
 import packed.internal.util.UncheckedThrowableFactory;
 
 /** A model of a container, typically a subclass of {@link Bundle}. */
-public final class ContainerOldModel extends Model implements ComponentLookup {
+public final class ContainerModel extends Model implements ComponentLookup {
 
     /** A cache of model. */
-    private static final ClassValue<ContainerOldModel> MODEL_CACHE = new ClassValue<>() {
+    private static final ClassValue<ContainerModel> MODEL_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
         @Override
-        protected ContainerOldModel computeValue(Class<?> type) {
-            return new ContainerOldModel((Class<? extends SystemSource>) type);
+        protected ContainerModel computeValue(Class<?> type) {
+            return new ContainerModel((Class<? extends ArtifactSource>) type);
         }
     };
 
@@ -61,7 +61,7 @@ public final class ContainerOldModel extends Model implements ComponentLookup {
 
         @Override
         protected ComponentModel computeValue(Class<?> type) {
-            return ComponentModel.newInstance(ContainerOldModel.this, ContainerOldModel.this.newClassProcessor(type, true));
+            return ComponentModel.newInstance(ContainerModel.this, ContainerModel.this.newClassProcessor(type, true));
         }
     };
 
@@ -73,7 +73,7 @@ public final class ContainerOldModel extends Model implements ComponentLookup {
 
         @Override
         protected PerLookup computeValue(Lookup lookup) {
-            return new PerLookup(ContainerOldModel.this, lookup);
+            return new PerLookup(ContainerModel.this, lookup);
         }
     };
 
@@ -81,7 +81,7 @@ public final class ContainerOldModel extends Model implements ComponentLookup {
     @Nullable
     private final OnHookModel onHookModel;
 
-    final PackletSystemModel psm;
+    final PackletMotherShip psm;
 
     /**
      * Creates a new container source model.
@@ -89,16 +89,16 @@ public final class ContainerOldModel extends Model implements ComponentLookup {
      * @param sourceType
      *            the source type
      */
-    private ContainerOldModel(Class<? extends SystemSource> sourceType) {
+    private ContainerModel(Class<? extends ArtifactSource> sourceType) {
         super(sourceType);
         if (Hook.class.isAssignableFrom(sourceType)) {
             throw new InvalidDeclarationException(sourceType + " must not implement/extend " + Hook.class);
         }
 
-        psm = PackletSystemModel.of(sourceType);
+        psm = PackletMotherShip.of(sourceType);
 
         this.onHookModel = OnHookModel.newModel(new OpenClass(MethodHandles.lookup(), sourceType, true), false,
-                UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
+                UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, BundleContext.class);
         this.activatorMap = LazyExtensionActivationMap.of(sourceType);
         // this.dependenciesTotalOrder = ExtensionUseModel2.totalOrder(sourceType);
     }
@@ -165,7 +165,7 @@ public final class ContainerOldModel extends Model implements ComponentLookup {
      *            the container source type
      * @return a container source model for the specified type
      */
-    public static ContainerOldModel of(Class<?> sourceType) {
+    public static ContainerModel of(Class<?> sourceType) {
         return MODEL_CACHE.get(sourceType);
     }
 
@@ -186,9 +186,9 @@ public final class ContainerOldModel extends Model implements ComponentLookup {
         /** The actual lookup object we are wrapping. */
         private final Lookup lookup;
 
-        private final ContainerOldModel parent;
+        private final ContainerModel parent;
 
-        private PerLookup(ContainerOldModel parent, Lookup lookup) {
+        private PerLookup(ContainerModel parent, Lookup lookup) {
             this.parent = requireNonNull(parent);
             this.lookup = requireNonNull(lookup);
         }

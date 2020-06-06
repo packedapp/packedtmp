@@ -15,24 +15,28 @@
  */
 package app.packed.component;
 
-import app.packed.container.Bundle;
-import app.packed.container.Wirelet;
-
 /**
  * The different types of components that are supported in Packed.
  */
-public enum ComponentType {
+
+// Til noedt kan vi kalde den BuildinComponentType
+public enum ComponentDescriptor {
+
+    // A single Method...
+    // All Other methods are ignored...
+    // Also Annotations et
+    FUNCTION,
 
     COMPONENT_INSTANCE,
 
     /** A container holds other components and provide strong boundaries between different containers. */
     CONTAINER,
-
-    /**
-     * A host allows for dynamic wiring between a host and a guest container. Unlike the static wiring available via, for
-     * example, via {@link Bundle#link(Bundle, Wirelet...)}.
-     */
-    HOST,
+//
+//    /**
+//     * A host allows for dynamic wiring between a host and a guest container. Unlike the static wiring available via, for
+//     * example, via {@link Bundle#link(Bundle, Wirelet...)}.
+//     */
+//    HOST,
 
     STATELESS;
 }
@@ -56,3 +60,5 @@ public enum ComponentType {
 // configuration tyoe
 // runtime tyoe
 // context type
+
+// Task <------

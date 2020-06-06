@@ -33,12 +33,13 @@ import app.packed.container.Wirelet;
 
 // Taenker det er noget man kan teste for ArchCheck.check(new DooBundle());
 
+// ComponentWirelet???
 public abstract class ContainerWirelet implements Wirelet {
 
     abstract void process(WireletPack c);
 
-    /** A wirelet that will set the name of the container. Used by {@link Wirelet#rename(String)}. */
-    public static final class ContainerSetNameWirelet extends ContainerWirelet {
+    /** A wirelet that will set the name of the container. Used by {@link Wirelet#name(String)}. */
+    public static final class ContainerNameWirelet extends ContainerWirelet {
 
         /** The (checked) name to override with. */
         public final String name;
@@ -49,7 +50,7 @@ public abstract class ContainerWirelet implements Wirelet {
          * @param name
          *            the name to override any existing container name with
          */
-        public ContainerSetNameWirelet(String name) {
+        public ContainerNameWirelet(String name) {
             this.name = checkName(name);
         }
 

@@ -27,13 +27,13 @@ import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.component.Component;
-import app.packed.container.ContainerConfiguration;
-import app.packed.container.ExtensionLinked;
-import app.packed.container.ExtensionSidecar;
+import app.packed.container.BundleContext;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
-import app.packed.container.MemberOfExtension;
+import app.packed.container.ExtensionLinked;
+import app.packed.container.ExtensionSidecar;
 import app.packed.container.InternalExtensionException;
+import app.packed.container.MemberOfExtension;
 import app.packed.container.WireletFind;
 import app.packed.hook.OnHook;
 import app.packed.lifecycle.LifecycleContext;
@@ -276,6 +276,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         public static final SidecarTypeMeta STM = new SidecarTypeMeta(ExtensionSidecar.class, LifecycleDefinition.of(ExtensionSidecar.INSTANTIATING,
                 ExtensionSidecar.NORMAL_USAGE, ExtensionSidecar.CHILD_LINKING, ExtensionSidecar.GUESTS_DEFINITIONS));
 
+        // Whether or not it is only children... Or all ancestors
         private boolean callbackOnlyDirectChildren;
 
         /** A list of dependencies on other extensions. */
@@ -347,7 +348,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
             addExtensionContextElements(mhbConstructor, 0);
 
             OpenClass cp = prep(mhbConstructor);
-            this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
+            this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, BundleContext.class);
 
             if (linked != null) {
                 // ancestor extension, descendant extension context, descendant extension

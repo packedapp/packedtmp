@@ -74,5 +74,12 @@ public class AppConstructionMicro {
     public App fiveComponentsFromImage() {
         return App.start(VariousBundles.FIVE_CONTAINER_IMAGE);
     }
-
 }
+// 18 may 2020
+//AppConstructionMicro.emptyApp                 avgt    5   398.362 ±  7.269  ns/op
+//AppConstructionMicro.emptyAppFromImage        avgt    5   175.729 ±  2.586  ns/op
+//AppConstructionMicro.fiveComponents           avgt    5  1607.786 ± 68.266  ns/op
+//AppConstructionMicro.fiveComponentsFromImage  avgt    5   844.006 ± 25.447  ns/op
+//AppConstructionMicro.oneComponent             avgt    5   707.705 ±  3.619  ns/op
+//AppConstructionMicro.oneComponentFromImage    avgt    5   369.801 ± 10.975  ns/op
+//AppConstructionMicro.oneContainer             avgt    5   921.648 ± 48.019  ns/op

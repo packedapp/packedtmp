@@ -105,10 +105,12 @@ public class MH1 extends AbstractMH {
     }
 
     public static void filterArguments() throws Throwable {
-        // The thing to notice is that the supplied filter(s). Are always unary functions.
+        // The thing to notice is that the supplied filter(s) must always be an unary functions.
         // one parameter and one return type (which cannot be void)
         // filterType.parameterCount() == 1 && filterType.returnType() == targetType.parameterType(pos)
         // result.arity == input.arity always
+        // I virkeligheden er der mere tale om en slags mappere
+
         System.out.println(PRINTLN.type());
         System.out.println(LENGTH.type());
         MethodHandle p = MethodHandles.filterArguments(PRINTLN, 0, FROMINT);

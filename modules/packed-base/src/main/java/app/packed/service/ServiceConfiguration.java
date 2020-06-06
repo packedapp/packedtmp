@@ -89,6 +89,10 @@ public interface ServiceConfiguration<T> /* extends Taggable */ {
      * @see #getDescription()
      */
     ServiceConfiguration<T> setDescription(@Nullable String description);
+
+    // :< Can't really have both named and setName
+    // ServiceConfiguration<T> named(String name);//put a Named qualifier
+
 }
 
 /// **

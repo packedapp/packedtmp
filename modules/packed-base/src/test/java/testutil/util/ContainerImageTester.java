@@ -18,7 +18,7 @@ package testutil.util;
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import app.packed.artifact.SystemImage;
+import app.packed.artifact.ArtifactImage;
 import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
 
@@ -27,17 +27,17 @@ import app.packed.container.Wirelet;
  */
 public class ContainerImageTester {
 
-    private final SystemImage image;
+    private final ArtifactImage image;
 
     public ContainerImageTester(Bundle source, Wirelet... wirelets) {
-        this(SystemImage.of(source, wirelets));
+        this(ArtifactImage.of(source, wirelets));
     }
 
     public AppTester newApp(Wirelet... wirelets) {
         return new AppTester(image, wirelets);
     }
 
-    public ContainerImageTester(SystemImage image) {
+    public ContainerImageTester(ArtifactImage image) {
         this.image = requireNonNull(image);
     }
 

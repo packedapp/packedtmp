@@ -17,8 +17,8 @@ package packed.internal.host;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.artifact.SystemImage;
-import app.packed.component.ComponentType;
+import app.packed.artifact.ArtifactImage;
+import app.packed.component.ComponentDescriptor;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.component.AbstractComponent;
@@ -37,7 +37,7 @@ public class PackedGuestConfiguration extends AbstractComponentConfiguration {
 
     public final PackedContainerConfiguration delegate;
 
-    PackedGuestConfiguration(PackedHostConfiguration host, PackedContainerConfiguration pcc, SystemImage image) {
+    PackedGuestConfiguration(PackedHostConfiguration host, PackedContainerConfiguration pcc, ArtifactImage image) {
         super(pcc.configSite(), host, pcc, AssembleOutput.image());
         this.delegate = requireNonNull(pcc);
         this.description = pcc.getDescription();
@@ -64,7 +64,7 @@ public class PackedGuestConfiguration extends AbstractComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public ComponentType type() {
+    public ComponentDescriptor type() {
         return delegate.type();
     }
 }

@@ -17,6 +17,11 @@ import app.packed.lifecycleold.StopOption;
 /** The default implementation of {@link App}. */
 final class PackedApp implements App {
 
+    // With constant ClassValue we can probably do
+    // ArtifactDriver.start(PackedApp.class, ArtifactSource source, Wirelet... wirelets);
+
+    // driver = AD.of(PackedApp.class) <-- uses DI
+
     /** An artifact driver for creating {@link App} instances. */
     static final ArtifactDriver<App> DRIVER = new ArtifactDriver<>() {
 

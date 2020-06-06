@@ -50,7 +50,7 @@ public interface Guest<A> {
      * 
      * @return the artifact
      */
-    Optional<GuestInstance<A>> artifact();
+    Optional<GuestInstance<A>> artifact(); // current...
 
     /**
      * Returns this guest's artifact type.

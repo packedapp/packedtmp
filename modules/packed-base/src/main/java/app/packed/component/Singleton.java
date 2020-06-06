@@ -22,7 +22,7 @@ public interface Singleton extends Component {
 
     /** {@inheritDoc} */
     @Override
-    default ComponentType type() {
-        return ComponentType.COMPONENT_INSTANCE;
+    default ComponentDescriptor model() {
+        return ComponentDescriptor.COMPONENT_INSTANCE;
     }
 }

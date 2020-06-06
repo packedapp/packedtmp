@@ -21,7 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.artifact.SystemImage;
+import app.packed.artifact.ArtifactImage;
 import packed.internal.container.WireletModel;
 
 /**
@@ -50,7 +50,7 @@ public @interface WireletSidecar {
 
     /**
      * Returns whether or not the wirelet is needed at assembly time. In which in cannot used together with a
-     * {@link SystemImage} that have already been constructed. However, it can be used when constructing the image.
+     * {@link ArtifactImage} that have already been constructed. However, it can be used when constructing the image.
      * 
      * @return stuff
      */

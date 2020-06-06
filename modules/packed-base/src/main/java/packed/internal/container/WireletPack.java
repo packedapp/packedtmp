@@ -24,7 +24,7 @@ import java.util.Map.Entry;
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
-import packed.internal.container.ContainerWirelet.ContainerSetNameWirelet;
+import packed.internal.container.ContainerWirelet.ContainerNameWirelet;
 
 /**
  * A container of wirelets and wirelet pipelines.
@@ -39,7 +39,7 @@ public final class WireletPack {
 
     // We might at some point, allow the setting of a default name...
     // In which we need to different between not-set and set to null
-    ContainerSetNameWirelet newName; // kan komme i map... og saa saetter vi et flag istedet for...
+    ContainerNameWirelet newName; // kan komme i map... og saa saetter vi et flag istedet for...
 
     /** An optional parent. */
     @Nullable
@@ -142,7 +142,7 @@ public final class WireletPack {
         return pcc.name;
     }
 
-    public ContainerSetNameWirelet nameWirelet() {
+    public ContainerNameWirelet nameWirelet() {
         WireletPack wc = this;
         while (wc != null) {
             if (wc.newName != null) {
@@ -189,8 +189,9 @@ public final class WireletPack {
                     PackedExtensionContext pec = pcc.getExtensionContext(memberOfExtension);
                     if (pec == null) {
                         wc.extensionFailed(pcc);
+                    } else {
+                        wpc.instantiate(pec.extension());
                     }
-                    wpc.instantiate(pec.extension());
                 }
             }
         }

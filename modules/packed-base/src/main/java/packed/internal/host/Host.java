@@ -17,7 +17,7 @@ package packed.internal.host;
 
 import app.packed.base.ContractSet;
 import app.packed.component.Component;
-import app.packed.component.ComponentType;
+import app.packed.component.ComponentDescriptor;
 
 /**
  * The runtime representation of a host.
@@ -45,8 +45,8 @@ public interface Host extends Component {
 
     /** {@inheritDoc} */
     @Override
-    default ComponentType type() {
-        return ComponentType.HOST;
+    default ComponentDescriptor model() {
+        return ComponentDescriptor.COMPONENT_INSTANCE;
     }
 }
 // Vi vil gerne af med GuestInstance

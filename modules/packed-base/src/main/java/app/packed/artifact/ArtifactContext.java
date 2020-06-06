@@ -24,14 +24,13 @@ import app.packed.lifecycleold.StopOption;
 import app.packed.service.ServiceExtension;
 
 /**
- * An artifact context provides control over a single (top level) container. Instances of this interface are normally
- * never exposed to end users. Instead it is wrapped in thin facade objects, such as {@link App}. This facade object
- * than delegates all calls to an instance of this context.
+ * An artifact context provides control over a single container. Instances of this interface are normally never exposed
+ * to end users. Instead it is wrapped in thin facade objects, such as {@link App}. This facade object than delegates
+ * all calls to an instance of this context.
  * <p>
  * An instance of this interface is normally acquired via {@link ArtifactDriver#newArtifact(ArtifactContext)}.
  * <p>
  * Unless otherwise specified, implementations of this interface are safe for use by multiple concurrent threads.
- * 
  * 
  * @apiNote In the future, if the Java language permits, {@link ArtifactContext} may become a {@code sealed} interface,
  *          which would prohibit subclassing except by explicitly permitted types.
@@ -96,6 +95,10 @@ public interface ArtifactContext extends SingletonContext {
      */
     // If the artifact has an execution phase this method will block while starting.
     // It can safely be invoked after a container has been shutdown...
+
+    // Det her er ting der er tilgaengelig til componenten med en ren noegle...
+    // Det ser ud som om det er containeren der forspoerger??? Eller udefra???
+    /// Maaske 2 metoder...
     <T> T use(Key<T> key);
 
     Component useComponent(CharSequence path);

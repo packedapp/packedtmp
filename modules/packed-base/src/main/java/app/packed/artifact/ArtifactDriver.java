@@ -21,12 +21,12 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.container.ContainerConfiguration;
+import app.packed.container.BundleContext;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.service.Injector;
 import packed.internal.artifact.AssembleOutput;
-import packed.internal.artifact.PackedSystemImage;
+import packed.internal.artifact.PackedArtifactImage;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.WireletPack;
 import packed.internal.moduleaccess.AppPackedArtifactAccess;
@@ -50,6 +50,14 @@ import packed.internal.reflect.typevariable.TypeVariableExtractor;
  *            The type of artifact this driver creates.
  * @see App#driver()
  */
+
+// Tror ikke artifacts kan bruge annoteringer???
+// Altsaa maaske paa surragates???
+
+// Ville maaske vaere fedt nok bare at kunne sige
+// @OnShutdown()
+// sysout "FooBar was removed"
+
 // Support of injection of the artifact into the Container...
 // We do not generally support this, as people are free to any artifact they may like.
 
@@ -122,7 +130,7 @@ public abstract class ArtifactDriver<A> {
      * @throws RuntimeException
      *             if the artifact could not be created
      */
-    public final A instantiate(SystemSource source, Wirelet... wirelets) {
+    public final A instantiate(ArtifactSource source, Wirelet... wirelets) {
         return newArtifact(create(source, wirelets));
     }
 
@@ -137,18 +145,24 @@ public abstract class ArtifactDriver<A> {
      * @throws UnsupportedOperationException
      *             if the driver does not produce an artifact with an execution phase
      */
-    public final A start(SystemSource source, Wirelet... wirelets) {
+    public final A start(ArtifactSource source, Wirelet... wirelets) {
         ArtifactContext context = create(source, wirelets);
         context.start();
         return newArtifact(context);
     }
 
-    private ArtifactContext create(SystemSource source, Wirelet... wirelets) {
+    static <A> A start(Class<A> artifactType, ArtifactSource source, Wirelet... wirelets) {
+        // The only thing we save is defining a driver..
+        // But we need the driver via App#driver... so not much saved
+        throw new UnsupportedOperationException();
+    }
+
+    private ArtifactContext create(ArtifactSource source, Wirelet... wirelets) {
         PackedContainerConfiguration pcc;
         WireletPack wc;
         // Either we create from an image, or from a bundle
-        if (source instanceof PackedSystemImage) {
-            PackedSystemImage pai = (PackedSystemImage) source;
+        if (source instanceof PackedArtifactImage) {
+            PackedArtifactImage pai = (PackedArtifactImage) source;
             pcc = pai.configuration();
             wc = WireletPack.fromImage(pcc, pai.wirelets(), wirelets);
         } else { // assert Bundle?
@@ -162,7 +176,7 @@ public abstract class ArtifactDriver<A> {
     // <T, R> // AppDriver<App, Void>
 
     // Kan take restart wirelets...\
-    public final Object execute(SystemSource source, Wirelet... wirelets) {
+    public final Object execute(ArtifactSource source, Wirelet... wirelets) {
         ArtifactContext context = create(source, wirelets);
         context.start();
         return null;
@@ -178,7 +192,7 @@ public abstract class ArtifactDriver<A> {
         return hasExecutionPhase;
     }
 
-    Supplier<A> startingProvider(SystemSource a, Wirelet... wirelets) {
+    Supplier<A> startingProvider(ArtifactSource a, Wirelet... wirelets) {
         // Kunne ogsaa lave den paa image...
         // Men altsaa taenker vi godt vil have noget wirelets med...
         // <A> Supplier<A> ArtifactImage.supplier(ArtifactDriver<A> driver);
@@ -188,8 +202,8 @@ public abstract class ArtifactDriver<A> {
     /**
      * Create a new artifact by wrapping an artifact context.
      * <p>
-     * This method is invoked by the runtime via calls such as {@link #instantiate(SystemSource, Wirelet...)} and
-     * {@link #start(SystemSource, Wirelet...)}.
+     * This method is invoked by the runtime via calls such as {@link #instantiate(ArtifactSource, Wirelet...)} and
+     * {@link #start(ArtifactSource, Wirelet...)}.
      * <p>
      * The implementation of this method must be safe for use by multiple concurrent threads.
      * 
@@ -200,7 +214,7 @@ public abstract class ArtifactDriver<A> {
     protected abstract A newArtifact(ArtifactContext context);
 
     // Hmmm
-    public final <C> A configure(Function<ContainerConfiguration, C> factory, Consumer<C> consumer, Wirelet... wirelets) {
+    public final <C> A configure(Function<BundleContext, C> factory, Consumer<C> consumer, Wirelet... wirelets) {
         PackedContainerConfiguration pcc = PackedContainerConfiguration.of(AssembleOutput.artifact(this), consumer, wirelets);
         C c = factory.apply(pcc);
         consumer.accept(c);

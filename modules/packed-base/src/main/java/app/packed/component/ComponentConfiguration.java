@@ -139,5 +139,5 @@ public interface ComponentConfiguration {
      * 
      * @return the type of component this configuration creates
      */
-    ComponentType type();
+    ComponentDescriptor type();
 }

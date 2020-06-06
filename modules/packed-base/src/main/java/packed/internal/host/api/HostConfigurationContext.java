@@ -18,7 +18,7 @@ package packed.internal.host.api;
 import java.util.Optional;
 
 import app.packed.artifact.ArtifactDriver;
-import app.packed.artifact.SystemSource;
+import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
@@ -61,7 +61,7 @@ public interface HostConfigurationContext {
     // Kunne ogsaa godt bruge noget fra Bundle.link
 
     // Will be made available from guests
-    void deploy(SystemSource source, ArtifactDriver<?> driver, Wirelet... wirelets);
+    void deploy(ArtifactSource source, ArtifactDriver<?> driver, Wirelet... wirelets);
 
     /**
      * If this component has been installed from an extension, returns the extension. Otherwise returns empty.

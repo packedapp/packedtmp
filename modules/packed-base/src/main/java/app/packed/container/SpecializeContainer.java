@@ -26,6 +26,8 @@ import java.lang.annotation.Target;
  */
 // Should also be a meta annotation
 // And not only containers I think
+
+// @SpecializeContainer(allowHost = true)???
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited

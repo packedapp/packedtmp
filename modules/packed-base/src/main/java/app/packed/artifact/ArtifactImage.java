@@ -22,9 +22,9 @@ import app.packed.component.Component;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
-import app.packed.container.ContainerConfiguration;
+import app.packed.container.BundleContext;
 import app.packed.container.Wirelet;
-import packed.internal.artifact.PackedSystemImage;
+import packed.internal.artifact.PackedArtifactImage;
 
 /**
  * Artifact images are immutable ahead-of-time configured artifacts. By configuring an artifact ahead of time, the
@@ -44,16 +44,16 @@ import packed.internal.artifact.PackedSystemImage;
  * 
  * <p>
  * An image can be used to create new instances of {@link app.packed.artifact.App}, {@link BundleDescriptor} or other
- * artifact images. It can not be used with {@link Bundle#link(Bundle, Wirelet...)}.
+ * artifact images. Artifact images can not be used as a part of other containers, for example, via
+ * {@link Bundle#link(Bundle, Wirelet...)}.
  * 
- * @apiNote In the future, if the Java language permits, {@link SystemImage} may become a {@code sealed} interface,
+ * @apiNote In the future, if the Java language permits, {@link ArtifactImage} may become a {@code sealed} interface,
  *          which would prohibit subclassing except by explicitly permitted types.
  * 
  */
-
 // Hvad hvis man kan lave image af andre ting....????
-
-public interface SystemImage extends SystemSource {
+// ArtifactPrefab
+public interface ArtifactImage extends ArtifactSource {
 
     /**
      * Returns the configuration site of this image.
@@ -68,7 +68,7 @@ public interface SystemImage extends SystemSource {
      * The returned description is always identical to the description of the root container.
      * 
      * @return any description that has been set for the image
-     * @see ContainerConfiguration#setDescription(String)
+     * @see BundleContext#setDescription(String)
      * @see Bundle#setDescription(String)
      */
     Optional<String> description();
@@ -134,7 +134,7 @@ public interface SystemImage extends SystemSource {
     // f.eks. applyPartialConfiguration(SomeConf)... Vi aendrer schemaet..
     // withFixedConf(app.threads = 123)... withDefaultConf(app.threads = 123)
     // Vi fejler hvis det ikke kan bruges??? Pure static solution...
-    SystemImage with(Wirelet... wirelets);
+    ArtifactImage with(Wirelet... wirelets);
 
     /**
      * Creates a new image from the specified bundle.
@@ -147,7 +147,7 @@ public interface SystemImage extends SystemSource {
      * @throws RuntimeException
      *             if the image could not be constructed
      */
-    static SystemImage of(Bundle bundle, Wirelet... wirelets) {
-        return PackedSystemImage.of(bundle, wirelets);
+    static ArtifactImage of(Bundle bundle, Wirelet... wirelets) {
+        return PackedArtifactImage.of(bundle, wirelets);
     }
 }

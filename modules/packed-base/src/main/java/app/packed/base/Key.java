@@ -266,6 +266,18 @@ public abstract class Key<T> {
     }
 
     /**
+     * Calling this method will replace any existing qualifier.
+     * 
+     * @param name
+     *            the qualifier name
+     * @return the new key
+     */
+    public final Key<T> withName(String name) {
+        requireNonNull(name, "name is null");
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * Returns a new key retaining its original type but with a qualifier of the specified type iff the specified qualifier
      * type has default values for every attribute.
      *

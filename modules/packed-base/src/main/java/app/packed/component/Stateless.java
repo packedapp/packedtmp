@@ -20,16 +20,9 @@ package app.packed.component;
  */
 public interface Stateless extends Component {
 
-    /**
-     * Yup
-     * 
-     * @return yup
-     */
-    Class<?> definition();
-
     /** {@inheritDoc} */
     @Override
-    default ComponentType type() {
-        return ComponentType.STATELESS;
+    default ComponentDescriptor model() {
+        return ComponentDescriptor.STATELESS;
     }
 }

@@ -30,6 +30,16 @@ import java.lang.annotation.Target;
 // Er den generisk?? Hvad med runtime??? Vi skal jo paa en eller anden maade have fat i en webserver...
 
 // Maaske en WebServerExtensionRuntime kan have baade en for configuration time and start time...
+
+//@Connect @ConnectWith, @OnConnected, @OnWired 
+
+//Linking->Static...
+// @ExtensionWired
+
+// ComponentWiring (How the two components are related)
+// In this case the two containers that are linked
+
+// Distance/Strong/Weakly linked
 public @interface ExtensionLinked {
 
     // Only children not anything farther removed...

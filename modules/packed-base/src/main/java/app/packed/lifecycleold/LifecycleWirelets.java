@@ -22,13 +22,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import app.packed.artifact.App;
-import app.packed.artifact.SystemSource;
+import app.packed.artifact.ArtifactSource;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 
 /**
  * Wirelets that can be used when creating an {@link App} instance. For example, via
- * {@link App#start(SystemSource, Wirelet...)} or {@link App#execute(SystemSource, Wirelet...)}.
+ * {@link App#start(ArtifactSource, Wirelet...)} or {@link App#execute(ArtifactSource, Wirelet...)}.
  */
 // InvalidWireletApplicationException -> Thrown when trying to apply a wirelet in a situation where it cannot be used
 

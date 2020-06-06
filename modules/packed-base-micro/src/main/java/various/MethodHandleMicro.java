@@ -53,7 +53,7 @@ public class MethodHandleMicro {
         }
     }
 
-    /** Takes around 80 ns. */
+    /** Takes around 70 ns on Java15. */
     @Benchmark
     public MethodHandle bindMethodHandle() {
         return mh.bindTo(o);

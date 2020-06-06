@@ -21,7 +21,7 @@ import java.util.Optional;
 
 import app.packed.base.Nullable;
 import app.packed.component.ComponentPath;
-import app.packed.component.ComponentType;
+import app.packed.component.ComponentDescriptor;
 import app.packed.component.FeatureMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
@@ -83,7 +83,7 @@ public abstract class AbstractHostConfiguration {
         return this;
     }
 
-    public final ComponentType type() {
-        return ComponentType.HOST;
+    public final ComponentDescriptor type() {
+        return ComponentDescriptor.COMPONENT_INSTANCE;
     }
 }

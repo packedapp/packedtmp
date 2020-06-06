@@ -21,14 +21,15 @@ import java.lang.invoke.VarHandle;
 import java.util.Optional;
 import java.util.Set;
 
+import app.packed.artifact.HostConfiguration;
+import app.packed.artifact.HostDriver;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentType;
+import app.packed.component.ComponentDescriptor;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
-import packed.internal.host.api.HostDriver;
 
 /**
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
@@ -36,7 +37,9 @@ import packed.internal.host.api.HostDriver;
  */
 // Was named Composer, idk why
 // BundleContext....
-public interface ContainerConfiguration extends ComponentConfiguration {
+
+// Bundles
+public interface BundleContext extends ComponentConfiguration {
 
 //    /**
 //     * Installs a host and returns the configuration of it.
@@ -49,7 +52,7 @@ public interface ContainerConfiguration extends ComponentConfiguration {
 //     */
 ////    <T extends HostConfiguration> T addHost(Class<T> type);
 
-    <A, H, C> C addHost(HostDriver<A, H, C> driver);
+    <C extends HostConfiguration<?>> C addHost(HostDriver<C> driver);
 
     /**
      * Returns an unmodifiable view of the extensions that are currently being used.
@@ -149,11 +152,11 @@ public interface ContainerConfiguration extends ComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    ContainerConfiguration setDescription(String description);
+    BundleContext setDescription(String description);
 
     /** {@inheritDoc} */
     @Override
-    ContainerConfiguration setName(String name);
+    BundleContext setName(String name);
 
     /**
      * Returns the class that defines the container.
@@ -164,8 +167,8 @@ public interface ContainerConfiguration extends ComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    default ComponentType type() {
-        return ComponentType.CONTAINER;
+    default ComponentDescriptor type() {
+        return ComponentDescriptor.CONTAINER;
     }
 
     /**

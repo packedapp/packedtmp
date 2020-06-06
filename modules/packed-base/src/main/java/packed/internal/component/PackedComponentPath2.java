@@ -27,6 +27,9 @@ import app.packed.component.ComponentPath;
 // Pga af descriptors som har en path... alternativ skal
 // vi smide componenten med istedet... Men hmm det ved jeg ikke
 // om vi har lyst til...
+// Burde virkelig have 2 forskellige... en uden component reference
+// og en med...
+// Maaske find ud af use casen....
 public final class PackedComponentPath2 implements ComponentPath {
 
     /** The parent of this path. */

@@ -83,6 +83,8 @@ public interface Component {
      */
     Optional<Class<? extends Extension>> extension();
 
+    // SystemView/Descriptor
+    // Contracts...
     FeatureMap features();
 
     /**
@@ -145,7 +147,7 @@ public interface Component {
      * 
      * @return the type of component
      */
-    ComponentType type();
+    ComponentDescriptor model();
 }
 
 //// Hmm, hvis vi nu skal bruge container side car'en... eller artifact side'caren.

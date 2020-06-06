@@ -26,15 +26,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import app.packed.artifact.App;
-import app.packed.artifact.SystemImage;
+import app.packed.artifact.ArtifactImage;
 import app.packed.container.Bundle;
-import app.packed.container.Container;
 import app.packed.container.Extension;
 import packed.internal.component.PackedComponentStreamOption;
 
 /**
  * A specialization of the {@link Stream} interface that deals with streams of {@link Component components}. An instance
- * of this class is normally acquired by {@link App#stream(Option...)} or {@link SystemImage#stream(Option...)}.
+ * of this class is normally acquired by {@link App#stream(Option...)} or {@link ArtifactImage#stream(Option...)}.
  *
  * <pre>
  * App app  = ...
@@ -70,12 +69,12 @@ import packed.internal.component.PackedComponentStreamOption;
 public interface ComponentStream extends Stream<Component> {
 
     /**
-     * Returns a stream that only contains {@link Container containers}.
+     * Returns a stream that only contains containers.
      * 
      * @return a stream that only contains containers
      */
     default ComponentStream containers() {
-        return filterOnType(ComponentType.CONTAINER);
+        return filterOnType(ComponentDescriptor.CONTAINER);
     }
 
     default <A> Stream<A> feature(Class<A> faetures) {
@@ -102,9 +101,9 @@ public interface ComponentStream extends Stream<Component> {
     // });
     // }
 
-    default ComponentStream filterOnType(ComponentType type) {
+    default ComponentStream filterOnType(ComponentDescriptor type) {
         requireNonNull(type, "type is null");
-        return filter(e -> e.type() == type);
+        return filter(e -> e.model() == type);
     }
 
     // /**
@@ -208,10 +207,10 @@ public interface ComponentStream extends Stream<Component> {
      * @param bundle
      *            the bundle to return a stream for
      * @return a component the stream
-     * @see SystemImage#stream(Option...)
+     * @see ArtifactImage#stream(Option...)
      */
     static ComponentStream of(Bundle bundle, Option... options) {
-        return SystemImage.of(bundle).stream(options);
+        return ArtifactImage.of(bundle).stream(options);
     }
 
     /**
@@ -226,7 +225,7 @@ public interface ComponentStream extends Stream<Component> {
      * 
      * @see Component#stream(Option...)
      * @see App#stream(Option...)
-     * @see SystemImage#stream(Option...)
+     * @see ArtifactImage#stream(Option...)
      */
     // hideOrigin?
     // showExtensions

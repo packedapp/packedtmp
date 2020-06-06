@@ -13,11 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle2;
+package app.packed.inject2;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
- *
+ * 
  */
+public enum InjectionScope {
+
+    /** Typically an annotation. {@link Field}, {@link Method} or {@link Constructor}. */
+    FUNCTION, CLASS, CONTAINER;
+
+    // , ARTIFACT,
+
+    /** The service is available */
+    // SYSTEM;
+}
+
+// Fixed position er altid en annotation, eller en function type...
+
+// Ohhh, f.eks. hvis man bruger caching... Saa kan man lave en function der goer det???
+// Som folk saa bruger istedet for den oprindelige... men de er der begge 2. Maaske
+// Er den oprindelige endda gemt..
+
+// Foo.caching(Interface<C> d) {} Og saa lave vi noget metode til function mapning...
+// Altsaa der er fucking mange muligheder...
 
 // Function instead of Member. And then Variable???
 // F.eks. fixed position injection...
@@ -39,19 +62,3 @@ package app.packed.lifecycle2;
 // S
 
 // @Inject[Field]   
-
-public enum InjectionScope {
-    FUNCTION, CLASS, CONTAINER, ARTIFACT,
-
-    /** The service is available */
-    SYSTEM;
-}
-
-// Fixed position er altid en annotation, eller en function type...
-
-// Ohhh, f.eks. hvis man bruger caching... Saa kan man lave en function der goer det???
-// Som folk saa bruger istedet for den oprindelige... men de er der begge 2. Maaske
-// Er den oprindelige endda gemt..
-
-// Foo.caching(Interface<C> d) {} Og saa lave vi noget metode til function mapning...
-// Altsaa der er fucking mange muligheder...

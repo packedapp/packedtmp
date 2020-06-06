@@ -15,7 +15,6 @@
  */
 package packed.internal.host.prototype;
 
-import app.packed.artifact.App;
 import app.packed.container.BaseBundle;
 
 /**
@@ -25,9 +24,5 @@ public class Stuff extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
-    protected void compose() {
-        addHost(PrototypeHost.driver(App.driver(), new Stuff()));
-
-    }
-
+    protected void compose() {}
 }

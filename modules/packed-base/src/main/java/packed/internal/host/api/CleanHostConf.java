@@ -16,6 +16,7 @@
 package packed.internal.host.api;
 
 import app.packed.artifact.ArtifactDriver;
+import app.packed.base.Key;
 import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
 
@@ -46,11 +47,16 @@ public interface CleanHostConf {
     // Taenker du kun laver et image, hvis det skal bruges flere gange...
     // Det giver simpelthen ikke mening andet taenker.
     // Saa lad os kalde det
+
+    // IDK
+    void newImage(Key<?> key, Bundle bundle, Wirelet... wirelets);
+
     GuestImage newImage(Bundle bundle, Wirelet... wirelets);
 
     GuestImage newImage(Bundle bundle, ArtifactDriver<?> driver, Wirelet... wirelets);
 }
 
+// Will not Extend ArtifactImage.. Is it an artifact???
 interface GuestImage {
 
 }

@@ -16,7 +16,7 @@
 package packed.internal.moduleaccess;
 
 import app.packed.container.Bundle;
-import app.packed.container.ContainerConfiguration;
+import app.packed.container.BundleContext;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 import app.packed.container.WireletPipeline;
@@ -33,7 +33,7 @@ public interface AppPackedContainerAccess extends SecretAccess {
      * @param configuration
      *            the configuration of the container
      */
-    void bundleConfigure(Bundle bundle, ContainerConfiguration configuration);
+    void bundleConfigure(Bundle bundle, BundleContext configuration);
 
     /**
      * Initializes the extension.

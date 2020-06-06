@@ -16,7 +16,7 @@
 package app.packed.container;
 
 import app.packed.component.Component;
-import app.packed.component.ComponentType;
+import app.packed.component.ComponentDescriptor;
 
 /**
  *
@@ -28,7 +28,7 @@ public interface Container extends Component {
 
     /** {@inheritDoc} */
     @Override
-    default ComponentType type() {
-        return ComponentType.CONTAINER;
+    default ComponentDescriptor model() {
+        return ComponentDescriptor.CONTAINER;
     }
 }

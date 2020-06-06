@@ -41,3 +41,7 @@ public @interface DynamicVariable {}
 // >=2 Dynamic variable anntoations fail
 // = 1 Dynamic variable ok
 // = 0 ordinary service
+
+//@DynVar(positional = 0, -1)
+
+//@DynVar(@HtttpParamGet)

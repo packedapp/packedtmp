@@ -31,13 +31,15 @@ import java.util.function.Consumer;
 
 import app.packed.analysis.BundleDescriptor;
 import app.packed.artifact.ArtifactContext;
-import app.packed.artifact.SystemImage;
+import app.packed.artifact.ArtifactImage;
+import app.packed.artifact.HostConfiguration;
+import app.packed.artifact.HostDriver;
 import app.packed.base.Nullable;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
-import app.packed.container.ContainerConfiguration;
+import app.packed.container.BundleContext;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
@@ -55,15 +57,14 @@ import packed.internal.hook.applicator.DelayedAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarFieldDelayerAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarMethodDelayerAccessor;
 import packed.internal.host.api.HostConfigurationContext;
-import packed.internal.host.api.HostDriver;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.service.runtime.PackedInjector;
 
-/** The default implementation of {@link ContainerConfiguration}. */
-public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
+/** The default implementation of {@link BundleContext}. */
+public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements BundleContext {
 
     private static final int LS_0_MAINL = 0;
 
@@ -96,7 +97,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     private ComponentLookup lookup;
 
     /** A container model. */
-    private final ContainerOldModel model;
+    private final ContainerModel model;
 
     int realState;
 
@@ -120,7 +121,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     private PackedContainerConfiguration(AbstractComponentConfiguration parent, Bundle bundle, Wirelet... wirelets) {
         super(ConfigSiteUtil.captureStackFrame(parent.configSite(), InjectConfigSiteOperations.INJECTOR_OF), parent);
         this.source = requireNonNull(bundle, "bundle is null");
-        this.lookup = this.model = ContainerOldModel.of(bundle.getClass());
+        this.lookup = this.model = ContainerModel.of(bundle.getClass());
         this.wireletContext = WireletPack.fromLink(this, wirelets);
     }
 
@@ -132,20 +133,21 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * @param output
      *            the build output
      * @param source
-     *            the source of the container. Either a {@link Bundle}, {@link SystemImage} or a {@link Consumer}.
+     *            the source of the container. Either a {@link Bundle}, {@link ArtifactImage} or a {@link Consumer}.
      * @param wirelets
      *            any wirelets specified by the user
      */
     private PackedContainerConfiguration(ConfigSite cs, AssembleOutput output, Object source, Wirelet... wirelets) {
         super(cs, output);
         this.source = requireNonNull(source);
-        this.lookup = this.model = ContainerOldModel.of(source.getClass());
+        this.lookup = this.model = ContainerModel.of(source.getClass());
         this.wireletContext = WireletPack.fromRoot(this, wirelets);
     }
 
+    /** {@inheritDoc} */
     @Override
-    public <A, H, C> C addHost(HostDriver<A, H, C> driver) {
-        return null;
+    public <C extends HostConfiguration<?>> C addHost(HostDriver<C> driver) {
+        throw new UnsupportedOperationException();
     }
 
 //    private HostConfigurationContext addHost() {
@@ -167,6 +169,11 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 //        } catch (Throwable e) {
 //            throw new RuntimeException(e);
 //        }
+//    }
+
+//    @Override
+//    public <A, H, C> C addHost(OldHostDriver<A, H, C> driver) {
+//        return null;
 //    }
 
     private void advanceTo(int newState) {
@@ -207,6 +214,17 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     private void assembleExtensions() {
         installPrepare(State.GET_NAME_INVOKED);
         advanceTo(LS_3_FINISHED);
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public <W extends Wirelet> Optional<W> assemblyWirelet(Class<W> type) {
+        WireletModel wm = WireletModel.of(type);
+        if (!wm.requireAssemblyTime) {
+            throw new IllegalStateException("Wirelet of type " + type + " does not have assemblytime = true");
+        }
+        return wireletContext == null ? Optional.empty() : Optional.ofNullable((W) wireletContext.getWireletOrPipeline(type));
     }
 
     public void buildDescriptor(BundleDescriptor.Builder builder) {
@@ -537,17 +555,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             extensions.put(extensionType, pec = PackedExtensionContext.of(this, extensionType));
         }
         return pec;
-    }
-
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    public <W extends Wirelet> Optional<W> assemblyWirelet(Class<W> type) {
-        WireletModel wm = WireletModel.of(type);
-        if (!wm.requireAssemblyTime) {
-            throw new IllegalStateException("Wirelet of type " + type + " does not have assemblytime = true");
-        }
-        return wireletContext == null ? Optional.empty() : Optional.ofNullable((W) wireletContext.getWireletOrPipeline(type));
     }
 
     @SuppressWarnings("unchecked")

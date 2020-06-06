@@ -16,7 +16,7 @@
 package packed.internal.container;
 
 import app.packed.artifact.App;
-import app.packed.artifact.SystemImage;
+import app.packed.artifact.ArtifactImage;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
@@ -34,14 +34,14 @@ import app.packed.service.ServiceWirelets;
  */
 public class TI extends BaseBundle {
 
-    public static void main(String[] args) {
+    public static void mains(String[] args) {
         App.of(new TI(), new MyTestWirelet("fofoof XXXXXXXXXX"));
 //        long currentTime = System.currentTimeMillis();
 //        long vmStartTime = ManagementFactory.getRuntimeMXBean().getStartTime();
 //        System.out.println("STARTED Application started: " + (currentTime - vmStartTime));
     }
 
-    public static void maindd(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         long start = System.nanoTime();
         App.of(new TI(), new MyTestWirelet("fofoof XXXXXXXXXX"));
         long stop = System.nanoTime();
@@ -54,7 +54,11 @@ public class TI extends BaseBundle {
         long stop3 = System.nanoTime();
         System.out.println(((stop3 - stop2) / 1000) + " us");
 
-        SystemImage si = SystemImage.of(new TI(), new MyTestWirelet("fofoof XXXXXXXXXX"));
+        ArtifactImage si = ArtifactImage.of(new TI(), new MyTestWirelet("fofoof XXXXXXXXXX"));
+        for (int i = 0; i < 1000; i++) {
+            App.of(si, new MyTestWirelet("fofoof XXXXXXXXXX"));
+        }
+        Thread.sleep(50);
         stop3 = System.nanoTime();
         App.of(si, new MyTestWirelet("fofoof XXXXXXXXXX"));
         long stop4 = System.nanoTime();

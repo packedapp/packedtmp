@@ -20,7 +20,7 @@ import java.lang.StackWalker.StackFrame;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 
-import app.packed.artifact.SystemSource;
+import app.packed.artifact.ArtifactSource;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
@@ -34,7 +34,7 @@ import packed.internal.config.ConfigSiteSupport;
  * Extensions form the basis, extensible model
  * <p>
  * constructor visibility is ignored. As long as user has class visibility. They can can use an extension via, for
- * example, {@link Bundle#use(Class)} or {@link ContainerConfiguration#use(Class)}.
+ * example, {@link Bundle#use(Class)} or {@link BundleContext#use(Class)}.
  * 
  * <p>
  * Any packages where extension implementations, custom hooks or extension wirelet pipelines are located must be open to
@@ -42,7 +42,7 @@ import packed.internal.config.ConfigSiteSupport;
  * <p>
  * Every extension implementations must provide either an empty constructor, or a constructor taking a single parameter
  * of type {@link ExtensionContext}. The constructor should have package private accessibility to make sure users do not
- * try an manually instantiate it, but instead use {@link ContainerConfiguration#use(Class)}. It is also recommended
+ * try an manually instantiate it, but instead use {@link BundleContext#use(Class)}. It is also recommended
  * that the extension itself is declared final.
  */
 
@@ -79,7 +79,7 @@ public abstract class Extension {
 
     /**
      * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
-     * not located on any subclasses of {@link Extension} or any class that implements {@link SystemSource}.
+     * not located on any subclasses of {@link Extension} or any class that implements {@link ArtifactSource}.
      * <p>
      * Invoking this method typically takes in the order of 1-2 microseconds.
      * <p>
@@ -124,7 +124,7 @@ public abstract class Extension {
 
         // Dvs ourContainerSource
         return Extension.class.isAssignableFrom(c)
-                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && SystemSource.class.isAssignableFrom(c));
+                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && ArtifactSource.class.isAssignableFrom(c));
     }
 
     /**
@@ -171,7 +171,7 @@ public abstract class Extension {
      * @param instance
      *            the instance to install
      * @return the configuration of the component
-     * @see ContainerConfiguration#installInstance(Object)
+     * @see BundleContext#installInstance(Object)
      */
     protected final <T> SingletonConfiguration<T> installInstance(T instance) {
         return context().installInstance(instance);
@@ -183,7 +183,7 @@ public abstract class Extension {
      * Only extension types that have been explicitly registered using {@link ExtensionSidecar#dependencies()} or
      * {@link ExtensionSidecar#optionalDependencies()} may be specified as arguments to this method.
      * <p>
-     * Invoking this method is similar to calling {@link ContainerConfiguration#use(Class)}. However, this method also keeps
+     * Invoking this method is similar to calling {@link BundleContext#use(Class)}. However, this method also keeps
      * track of which extensions uses other extensions. And forming any kind of circle in the dependency graph will fail
      * with a runtime exception.
      * 

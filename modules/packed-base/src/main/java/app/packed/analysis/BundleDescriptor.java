@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.artifact.SystemImage;
+import app.packed.artifact.ArtifactImage;
 import app.packed.base.Contract;
 import app.packed.base.ContractSet;
 import app.packed.base.Key;
@@ -244,7 +244,7 @@ public class BundleDescriptor {
      *            the bundle to create a descriptor for
      * @return a descriptor for the specified bundle
      * 
-     * @see SystemImage#descriptor()
+     * @see ArtifactImage#descriptor()
      */
     public static BundleDescriptor of(Bundle bundle) {
         requireNonNull(bundle, "bundle is null");

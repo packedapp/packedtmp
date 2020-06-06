@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Nullable;
+import app.packed.component.ComponentDescriptor;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import packed.internal.artifact.PackedInstantiationContext;
@@ -67,7 +68,7 @@ public final class PackedSingletonConfiguration<T> extends AbstractComponentConf
     /** {@inheritDoc} */
     @Override
     public AbstractComponent instantiate(AbstractComponent parent, PackedInstantiationContext paic) {
-        return new PackedSingleton(parent, this, paic);
+        return new AbstractComponent(parent, this, paic, ComponentDescriptor.COMPONENT_INSTANCE);
     }
 
     public PackedSingletonConfiguration<T> runHooks(Object source) {

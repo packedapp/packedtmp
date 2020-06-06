@@ -85,10 +85,28 @@ public final class ServiceExtension extends Extension {
         this.node = new ServiceExtensionNode(context);
     }
 
-    <S, U> void breakCycle(Class<S> key1, Class<U> key2, BiConsumer<S, U> consumer) {
+    // Maaske er det her mere injection then service
+    <S, U> void cycleBreaker(Class<S> keyProducer, Class<U> key2) {
+        // keyProducer will have a Consumer<U> injected in its constructor.
+        // In which case it must call it exactly once with a valid instance of U.
+        // U will then be field/method inject, initialization und so weither as normally.
+        // But to the outside it will not that S depends on U.
+
+        // Den der tager en biconsumer supportere ikke at de kan vaere final fields af hinanden...
+
+        // Det kan ogsaa vaere en klasse CycleBreaker.. som tager ContainerConfiguration
+        // Bundle, Service Extension, ExtensionContext ect...
+
+        // DE her virker kun indefor samme container...
+    }
+
+    <S, U> void cycleBreaker(Class<S> key1, Class<U> key2, BiConsumer<S, U> consumer) {
+
         // Taenker om vi skal checke at key2 depender on key1...
         // Jeg taenker ja, fordi saa saa kan vi visuelleciere det...
         // Og vi fejler hvis der ikke er en actuel dependency
+
+        // Maaske bare warn istedet for at fejle. Men syntes ikke folk skal have en masse af dem liggende...
 
 //        Break circular references...
 //        runOnInitialize(ST2<Xcomp, YComp>(xComp.setY(yComp){});
@@ -98,6 +116,8 @@ public final class ServiceExtension extends Extension {
         // Maaske har vi endda en eksplicit i ServiceManager...
         // breakCycle, breakDependencyCycle
         // cyclicBreak(Op2(X, Y) -> x.setY(y)
+
+        // Alternativt vil vi godt sige at X laver en ny Y component (ikke bare en service)
 
         // Will probably validate if there is an actual cycle...
 

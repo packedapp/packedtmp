@@ -25,10 +25,10 @@ import app.packed.artifact.ArtifactContext;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.Component;
+import app.packed.component.ComponentDescriptor;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.component.ComponentStream.Option;
-import app.packed.component.ComponentType;
 import app.packed.component.FeatureMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.Container;
@@ -55,7 +55,7 @@ public final class PackedContainer extends AbstractComponent implements Containe
      *            the instantiation context of the container
      */
     PackedContainer(@Nullable AbstractComponent parent, PackedContainerConfiguration pcc, PackedInstantiationContext instantiationContext) {
-        super(parent, pcc, instantiationContext);
+        super(parent, pcc, instantiationContext, ComponentDescriptor.CONTAINER);
         Injector i = instantiationContext.get(pcc, PackedInjector.class);
         if (i == null) {
             i = new PackedInjector(pcc.configSite(), pcc.getDescription(), new LinkedHashMap<>());
@@ -145,8 +145,8 @@ public final class PackedContainer extends AbstractComponent implements Containe
 
         /** {@inheritDoc} */
         @Override
-        public ComponentType type() {
-            return PackedContainer.this.type();
+        public ComponentDescriptor model() {
+            return PackedContainer.this.model();
         }
 
         /** {@inheritDoc} */

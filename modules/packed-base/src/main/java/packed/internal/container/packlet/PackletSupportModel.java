@@ -15,19 +15,38 @@
  */
 package packed.internal.container.packlet;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.util.Map;
+
+import app.packed.base.Nullable;
 
 /**
  * A packlet support model can be added to container configurations (via an annotation on a bundle) or component
  * configuration (via an annotation on the actual component)
  */
-public class PackletSupportModel {
+
+// Altsaa ved ikke om vi bare skal smide den ind i mothership???
+
+// Evt have en subclass... istedet for
+// Hvor forClassAnnotation kigger i et local map, foernd vi kalder super classen... 
+class PackletSupportModel {
 
     /** All entries. */
     final Map<Class<?>, Entry> entries = null;
 
     PackletSupportModel(Builder builder) {
 
+    }
+
+    @Nullable
+    AnnoExecutable forMethodAnnotation(Method method, Annotation annotation) {
+        return null;
+    }
+
+    @Nullable
+    AnnoClass forClassAnnotation(Class<?> declaringClass, Annotation annotation) {
+        return null;
     }
 
     // En annoteringer kan pege på flere packlets og/eller sidecars

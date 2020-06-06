@@ -107,9 +107,8 @@ public final class ServiceExtensionNode {
     }
 
     public void buildTree() {
-        System.out.println("Root = " + (parent == null));
         if (parent == null) {
-            TreePrinter.print(this, n -> n.children, "", n -> n.context.containerPath().toString());
+//            TreePrinter.print(this, n -> n.children, "", n -> n.context.containerPath().toString());
         }
         // System.out.println("Childre " + children);
         HashMap<Key<?>, BuildEntry<?>> resolvedServices = provider().resolve();

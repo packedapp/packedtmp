@@ -26,21 +26,18 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import app.packed.base.ContractSet;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentDescriptor;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.component.FeatureMap;
 import app.packed.component.Singleton;
 import app.packed.component.Stateless;
 import app.packed.config.ConfigSite;
-import app.packed.container.Container;
 import app.packed.container.Extension;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.host.Host;
 import packed.internal.host.PackedGuestConfiguration;
-import packed.internal.host.PackedHostConfiguration;
 
 /**
  *
@@ -159,8 +156,8 @@ public abstract class ComponentConfigurationToComponentAdaptor implements Compon
         throw new UnsupportedOperationException();
     }
 
-    public static Container of(PackedContainerConfiguration pcc) {
-        return (Container) of0(pcc, List.of());
+    public static Component of(PackedContainerConfiguration pcc) {
+        return of0(pcc, List.of());
     }
 
     private static ComponentConfigurationToComponentAdaptor of0(ComponentConfiguration bcc, List<PackedGuestConfiguration> pgc) {
@@ -170,9 +167,11 @@ public abstract class ComponentConfigurationToComponentAdaptor implements Compon
             return new StatelessAdaptor((PackedStatelessComponentConfiguration) bcc, pgc);
         } else if (bcc instanceof PackedSingletonConfiguration) {
             return new SingleAdaptor((PackedSingletonConfiguration<?>) bcc, pgc);
-        } else if (bcc instanceof PackedHostConfiguration) {
-            return new HostAdaptor((PackedHostConfiguration) bcc, pgc);
-        } else if (bcc instanceof PackedGuestConfiguration) {
+        }
+//        else if (bcc instanceof PackedHostConfiguration) {
+//            return new HostAdaptor((PackedHostConfiguration) bcc, pgc);
+//        } 
+        else if (bcc instanceof PackedGuestConfiguration) {
             // Need to figure out hosts on hosts..
             PackedGuestConfiguration pgcc = (PackedGuestConfiguration) bcc;
             LinkedList<PackedGuestConfiguration> al = new LinkedList<>(pgc);
@@ -184,23 +183,16 @@ public abstract class ComponentConfigurationToComponentAdaptor implements Compon
         }
     }
 
-    private final static class ContainerAdaptor extends ComponentConfigurationToComponentAdaptor implements Container {
+    private final static class ContainerAdaptor extends ComponentConfigurationToComponentAdaptor {
 
         public ContainerAdaptor(PackedContainerConfiguration pcc, List<PackedGuestConfiguration> pgc) {
             super(pcc, pgc);
         }
-    }
-
-    private final static class HostAdaptor extends ComponentConfigurationToComponentAdaptor implements Host {
-
-        public HostAdaptor(PackedHostConfiguration conf, List<PackedGuestConfiguration> pgc) {
-            super(conf, pgc);
-        }
 
         /** {@inheritDoc} */
         @Override
-        public ContractSet contracts() {
-            return ContractSet.EMPTY;
+        public ComponentDescriptor model() {
+            return ComponentDescriptor.CONTAINER;
         }
     }
 
@@ -217,11 +209,6 @@ public abstract class ComponentConfigurationToComponentAdaptor implements Compon
             super(conf, pgc);
         }
 
-        /** {@inheritDoc} */
-        @Override
-        public Class<?> definition() {
-            return ((PackedStatelessComponentConfiguration) super.componentConfiguration).definition();
-        }
     }
 
 }

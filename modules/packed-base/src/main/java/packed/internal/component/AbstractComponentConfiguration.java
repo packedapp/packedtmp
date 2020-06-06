@@ -26,20 +26,20 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import app.packed.artifact.SystemSource;
+import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.component.FeatureMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
-import app.packed.container.ContainerConfiguration;
+import app.packed.container.BundleContext;
 import app.packed.container.Extension;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedAssembleContext;
 import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.container.ContainerWirelet.ContainerSetNameWirelet;
+import packed.internal.container.ContainerWirelet.ContainerNameWirelet;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.PackedExtensionContext;
 import packed.internal.hook.applicator.DelayedAccessor;
@@ -86,7 +86,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
     @Nullable
     public String name;
 
-    /** The parent of this component, or null for the top level container. */
+    /** The parent of this component, or null for a root container. */
     @Nullable
     public final AbstractComponentConfiguration parent;
 
@@ -151,7 +151,6 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
      *            the child to add
      */
     protected final void addChild(AbstractComponentConfiguration child) {
-        // System.err.println("----> Adding " + child.name);
         requireNonNull(child.name);
         LinkedHashMap<String, AbstractComponentConfiguration> c = children;
         if (c == null) {
@@ -171,7 +170,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
 
     /**
      * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
-     * not located on any subclasses of {@link Extension} or any class that implements {@link SystemSource}.
+     * not located on any subclasses of {@link Extension} or any class that implements {@link ArtifactSource}.
      * <p>
      * Invoking this method typically takes in the order of 1-2 microseconds.
      * <p>
@@ -213,7 +212,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
 
         // Dvs ourContainerSource
         return Extension.class.isAssignableFrom(c)
-                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && SystemSource.class.isAssignableFrom(c));
+                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && ArtifactSource.class.isAssignableFrom(c));
     }
 
     /** {@inheritDoc} */
@@ -367,7 +366,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
     @Override
     public AbstractComponentConfiguration setName(String name) {
         // First lets check the name is valid
-        ContainerSetNameWirelet.checkName(name);
+        ContainerNameWirelet.checkName(name);
         switch (state.oldState) {
         case INITIAL:
             initializeName(State.SET_NAME_INVOKED, name);
@@ -408,7 +407,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
         /** One of the install component methods has been invoked. */
         INSTALL_INVOKED,
 
-        /** {@link ContainerConfiguration#link(Bundle, app.packed.container.Wirelet...)} has been invoked. */
+        /** {@link BundleContext#link(Bundle, app.packed.container.Wirelet...)} has been invoked. */
         LINK_INVOKED,
 
         /** One of the install component methods has been invoked. */

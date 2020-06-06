@@ -34,46 +34,57 @@ import app.packed.container.SpecializeContainer;
 // @AddOn <- but we can 
 
 // Two modes... either default or specialized
-public class PackletSystemModel {
+public class PackletMotherShip {
 
-    /** The default non-customized model. */
-    public static final PackletSystemModel DEFAULT = new PackletSystemModel();
+    /** The default non-customized instance. */
+    public static final PackletMotherShip DEFAULT = new PackletMotherShip();
+
+    PackletSupportModel psm;
 
     // clazz itself can contain annotations...
     public PackletMethod scanFunction(Function<?, ?> f) {
         // Hvis vi registrere en function i en container...
         // Skal vi ogsaa understoette f.eks. Logger injection
         // Hvis containeren har specializeret sig i det...
+        // Ja...
         throw new UnsupportedOperationException();
     }
 
     public PackletClass scan(Class<?> clazz) {
-        // Uses descriptors
-        throw new UnsupportedOperationException();
+        return PackletClass.of(psm, clazz, null);
     }
 
     // Bliver kun kaldt en gang per modelXclass. Og saa cached andet steds
     // We could allow null, or test it against PSM.class.getModule() to see if user
     public PackletClass scan(Class<?> clazz, MethodHandles.Lookup lookup) {
-        throw new UnsupportedOperationException();
+        return PackletClass.of(psm, clazz, lookup);
     }
 
-    public static PackletSystemModel of(Class<?> source) {
-        return DEFAULT;
-    }
-
-    public PackletSystemModel customize(Class<?> source) {
-        // Maybe we want it static... so people don't go customize(containerClass).customize(componentClass).scan()
-
-        // In
+    public static PackletMotherShip of(Class<?> source) {
         SpecializeContainer sc = source.getAnnotation(SpecializeContainer.class);
         if (sc == null) {
-            return this;
+            return DEFAULT;
         }
-        throw new UnsupportedOperationException("Specialized containers not supported");
+        throw new UnsupportedOperationException("Specialized containers not supported yet");
     }
 
 }
+
+// Denne kunne vaere interesant hvis vi supportere arbitreaere niveaur...
+// Men det goer vi bare ikke. Vi har container og vi har component.
+
+//public PackletMotherShip customize(Class<?> source) {
+//    // Altsaa vi supportere ikke mere end 2 niveau'er goer vi????
+//
+//    // Maybe we want it static... so people don't go customize(containerClass).customize(componentClass).scan()
+//
+//    // In
+//    SpecializeContainer sc = source.getAnnotation(SpecializeContainer.class);
+//    if (sc == null) {
+//        return this;
+//    }
+//    throw new UnsupportedOperationException("Specialized containers not supported");
+//}
 
 // Tager en klasse. og kommer ud med et eller andet???
 

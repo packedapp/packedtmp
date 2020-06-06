@@ -19,7 +19,7 @@ import java.util.function.Predicate;
 
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
-import packed.internal.container.ContainerWirelet.ContainerSetNameWirelet;
+import packed.internal.container.ContainerWirelet.ContainerNameWirelet;
 import packed.internal.container.WireletList;
 
 /**
@@ -46,24 +46,12 @@ import packed.internal.container.WireletList;
  * <p>
  * Wirelet implementations must be immutable and safe to access by multiple concurrent threads.
  * 
- * @apiNote User-code should never extend this class directly. Future versions of this class may make use of sealed
- *          types if they become available.
- * 
  * @see WireletPipeline
  */
 public interface Wirelet {
 
-    /**
-     * Creates a wiring operation by composing a sequence of zero or more wiring operations.
-     * 
-     * @param wirelet
-     *            stuff
-     * @param others
-     *            stuff
-     * @return stuff
-     */
-    static Wirelet combine(Wirelet wirelet, Wirelet... others) {
-        return WireletList.of(wirelet, others);
+    static Wirelet combine(Wirelet... wirelets) {
+        return WireletList.of(wirelets);
     }
 
     /**
@@ -79,11 +67,21 @@ public interface Wirelet {
      * @return a composed {@code WiringOperation} that performs in sequence this operation followed by the {@code after}
      *         operation
      */
-    // Maaske flyt dem til en statisk metode...
-    // Altsaa hvor tit skal de bruges???
-    // Wirelet.combine(Wirelet w1, Wirelet w2)
     static Wirelet combine(Wirelet w1, Wirelet w2) {
         return WireletList.of(w1, w2);
+    }
+
+    /**
+     * Creates a wiring operation by composing a sequence of zero or more wiring operations.
+     * 
+     * @param wirelet
+     *            stuff
+     * @param others
+     *            stuff
+     * @return stuff
+     */
+    static Wirelet combine(Wirelet wirelet, Wirelet[] others) {
+        return WireletList.of(wirelet, others);
     }
 
     /**
@@ -96,8 +94,8 @@ public interface Wirelet {
      *            the name of the container
      * @return a wirelet that can be used to set the name of the container
      */
-    static Wirelet rename(String name) {// If we get describe I think we should use name()
-        return new ContainerSetNameWirelet(name);
+    static Wirelet name(String name) {
+        return new ContainerNameWirelet(name);
     }
 
     // static Wirelet[] from(Collection<? extends Wirelet> wirelets)

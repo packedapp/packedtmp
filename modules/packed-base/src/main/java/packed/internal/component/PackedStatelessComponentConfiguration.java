@@ -17,6 +17,7 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.component.ComponentDescriptor;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 import packed.internal.artifact.PackedInstantiationContext;
@@ -39,7 +40,7 @@ public final class PackedStatelessComponentConfiguration extends AbstractCompone
     /** {@inheritDoc} */
     @Override
     public AbstractComponent instantiate(AbstractComponent parent, PackedInstantiationContext paic) {
-        return new PackedStatelessComponent(parent, this, paic);
+        return new AbstractComponent(parent, this, paic, ComponentDescriptor.STATELESS);
     }
 
     public PackedStatelessComponentConfiguration runHooks(Object source) {

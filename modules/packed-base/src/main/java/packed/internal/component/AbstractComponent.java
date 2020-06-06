@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 
 import app.packed.base.Nullable;
 import app.packed.component.Component;
+import app.packed.component.ComponentDescriptor;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.component.FeatureMap;
@@ -36,10 +37,10 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Container;
 import app.packed.container.Extension;
 import packed.internal.artifact.PackedInstantiationContext;
-import packed.internal.container.ContainerWirelet.ContainerSetNameWirelet;
+import packed.internal.container.ContainerWirelet.ContainerNameWirelet;
 
 /** An abstract base implementation of {@link Component}. */
-public abstract class AbstractComponent implements Component {
+public class AbstractComponent implements Component {
 
     /** Any child components this component might have. Is null if we know the component will never have any children. */
     @Nullable
@@ -64,6 +65,8 @@ public abstract class AbstractComponent implements Component {
 
     final ReentrantLock lock = new ReentrantLock();
 
+    final app.packed.component.ComponentDescriptor model;
+
     /** The name of the component. The name is guaranteed to be unique between siblings. */
     // TODO I think we need to remove final. Problem is with Host. Where we putIfAbsent.
     // There is a small window where it might have been overridden....
@@ -72,7 +75,6 @@ public abstract class AbstractComponent implements Component {
     //// Auch I think we need to maintain some of that naming state for images....
     /// For example, whether or not naming is free...
     private final String name;
-
     /** The parent component, iff this component has a parent. */
     @Nullable
     final AbstractComponent parent;
@@ -85,7 +87,8 @@ public abstract class AbstractComponent implements Component {
      * @param configuration
      *            the configuration used for creating this component
      */
-    protected AbstractComponent(@Nullable AbstractComponent parent, AbstractComponentConfiguration configuration, PackedInstantiationContext ic) {
+    public AbstractComponent(@Nullable AbstractComponent parent, AbstractComponentConfiguration configuration, PackedInstantiationContext ic,
+            app.packed.component.ComponentDescriptor model) {
         this.parent = parent;
         this.configSite = requireNonNull(configuration.configSite());
         this.description = configuration.getDescription();
@@ -94,7 +97,7 @@ public abstract class AbstractComponent implements Component {
         this.extension = configuration.extension();
         if (parent == null) {
             String n = configuration.name;
-            ContainerSetNameWirelet ol = ic.wirelets() == null ? null : ic.wirelets().nameWirelet();
+            ContainerNameWirelet ol = ic.wirelets() == null ? null : ic.wirelets().nameWirelet();
             if (ol != null) {
                 n = ol.name;
                 if (n.endsWith("?")) {
@@ -105,6 +108,7 @@ public abstract class AbstractComponent implements Component {
         } else {
             this.name = requireNonNull(configuration.name);
         }
+        this.model = requireNonNull(model);
     }
 
     /** {@inheritDoc} */
@@ -122,18 +126,6 @@ public abstract class AbstractComponent implements Component {
     @Override
     public final ConfigSite configSite() {
         return configSite;
-    }
-
-    Container container() {
-        AbstractComponent c = this;
-        while (!(c instanceof Container)) {
-            c = c.parent;
-        }
-        return (Container) c;
-    }
-
-    public boolean isInSameContainer(AbstractComponent other) {
-        return container() == other.container();
     }
 
     /** {@inheritDoc} */
@@ -198,6 +190,23 @@ public abstract class AbstractComponent implements Component {
             }
         }
         return c;
+    }
+
+    public boolean isInSameContainer(AbstractComponent other) {
+        return isInSameContainer0() == other.isInSameContainer0();
+    }
+
+    private Container isInSameContainer0() {
+        AbstractComponent c = this;
+        while (!(c instanceof Container)) {
+            c = c.parent;
+        }
+        return (Container) c;
+    }
+
+    @Override
+    public final ComponentDescriptor model() {
+        return model;
     }
 
     /** {@inheritDoc} */

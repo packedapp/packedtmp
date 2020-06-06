@@ -15,7 +15,7 @@
  */
 package packed.internal.base.reflectM1;
 
-import app.packed.artifact.SystemImage;
+import app.packed.artifact.ArtifactImage;
 import app.packed.container.BaseBundle;
 import app.packed.container.Wirelet;
 
@@ -40,7 +40,7 @@ public class Dddd extends BaseBundle {
         installConstant("sdfsdf");
         installConstant("sdfsdf");
         if (depth > 0) {
-            link(new Dddd(depth - 1), Wirelet.rename("X123123XXX"));
+            link(new Dddd(depth - 1), Wirelet.name("X123123XXX"));
             link(new Dddd(depth - 1));
             link(new Dddd(depth - 1));
         }
@@ -48,10 +48,10 @@ public class Dddd extends BaseBundle {
 
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        SystemImage img = SystemImage.of(new Dddd(10));
+        ArtifactImage img = ArtifactImage.of(new Dddd(10));
         System.out.println(System.currentTimeMillis() - start);
         start = System.currentTimeMillis();
-        img = SystemImage.of(new Dddd(10));
+        img = ArtifactImage.of(new Dddd(10));
         System.out.println(System.currentTimeMillis() - start);
         // BundleValidator.assertValid(new Dddd(4));
 

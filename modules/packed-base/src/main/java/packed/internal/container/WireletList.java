@@ -28,13 +28,18 @@ import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
 
 /**
- * An immutable list of wirelets.
+ * An immutable list of wirelets. Typically used for combining multiple wirelets into one.
  * 
+ * @see Wirelet#combine(Wirelet...)
+ * @see Wirelet#combine(Wirelet, Wirelet)
+ * @see Wirelet#combine(Wirelet, Wirelet[])
  */
+// See hvor den bliver brugt fra ServiceExtension...
+// Maaske den skal vaere public alligevel...
 public final class WireletList implements Wirelet {
 
     /** An empty wirelet list. */
-    static final WireletList EMPTY = new WireletList();
+    private static final WireletList EMPTY = new WireletList();
 
     /** The wirelets we are wrapping. */
     public final Wirelet[] wirelets;
@@ -194,6 +199,14 @@ public final class WireletList implements Wirelet {
         return sb.toString();
     }
 
+    public static WireletList of(Wirelet... wirelets) {
+        requireNonNull(wirelets, "wirelets is null");
+        if (wirelets.length == 0) {
+            return EMPTY;
+        }
+        return new WireletList(wirelets);
+    }
+
     /**
      * Returns a wirelet list containing the specified element.
      * <p>
@@ -207,7 +220,7 @@ public final class WireletList implements Wirelet {
         return new WireletList(w1, w2);
     }
 
-    public static WireletList of(Wirelet w1, Wirelet... wirelets) {
+    public static WireletList of(Wirelet w1, Wirelet[] wirelets) {
         requireNonNull(wirelets, "wirelets is null");
         ArrayList<Wirelet> l = new ArrayList<>();
         // Maaden vi rekursiv processere them betyder at jeg ikke tror vi behoever at pakke dem ud....
@@ -218,13 +231,5 @@ public final class WireletList implements Wirelet {
         }
         l.addAll(List.of(wirelets));
         return WireletList.of(l.toArray(i -> new Wirelet[i]));
-    }
-
-    public static WireletList of(Wirelet... wirelets) {
-        requireNonNull(wirelets, "wirelets is null");
-        if (wirelets.length == 0) {
-            return EMPTY;
-        }
-        return new WireletList(wirelets);
     }
 }

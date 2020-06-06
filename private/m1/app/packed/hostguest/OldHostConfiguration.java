@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.host;
+package app.packed.hostguest;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentType;
+import app.packed.component.ComponentDescriptor;
 
 /**
  * The configuration of a host.
@@ -25,20 +25,20 @@ import app.packed.component.ComponentType;
 
 // Syntes vi laver den tilbage til abstract klasse....
 // Saa maa vi loese provide problemet...
-public interface HostConfiguration extends ComponentConfiguration {
+public interface OldHostConfiguration extends ComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    HostConfiguration setDescription(String description);
+    OldHostConfiguration setDescription(String description);
 
     /** {@inheritDoc} */
     @Override
-    HostConfiguration setName(String name);
+    OldHostConfiguration setName(String name);
 
     /** {@inheritDoc} */
     @Override
-    default ComponentType type() {
-        return ComponentType.HOST;
+    default ComponentDescriptor type() {
+        return ComponentDescriptor.COMPONENT_INSTANCE;
     }
 
     // BlackListed/Whitelisted extensions...

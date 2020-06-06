@@ -15,6 +15,6 @@
  */
 
 /**
- * Provides the dependency injection model that is used throughout the framework.
+ * Provides the dependency injection model that is used throughout Packed.
  */
 package app.packed.inject;

@@ -24,24 +24,25 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
-import app.packed.artifact.SystemSource;
-import app.packed.base.Key;
+import app.packed.artifact.ArtifactSource;
+import app.packed.artifact.HostConfiguration;
+import app.packed.artifact.HostDriver;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentPath;
+import app.packed.component.ConfiguredBy;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
 import packed.internal.container.WireletPipelineContext;
-import packed.internal.host.api.HostDriver;
 import packed.internal.moduleaccess.AppPackedContainerAccess;
 import packed.internal.moduleaccess.ModuleAccess;
 
 /**
  * Bundles are the main source of configuration for containers and artifacts. Basically a bundle is just a thin wrapper
- * around {@link ContainerConfiguration}. Delegating every invokation in the class to an instance of
- * {@link ContainerConfiguration} available via {@link #configuration()}.
+ * around {@link BundleContext}. Delegating every invokation in the class to an instance of
+ * {@link BundleContext} available via {@link #configuration()}.
  * <p>
  * Once consumed a bundle cannot be used...
  * 
@@ -62,14 +63,14 @@ import packed.internal.moduleaccess.ModuleAccess;
 // Bundle: States-> Ready -> Assembling|Composing -> Consumed|Composed... Ready | Using | Used... Usable | Using | Used
 
 // Trying to use a bundle multiple types will result in an ISE
-public abstract class Bundle implements SystemSource {
+public abstract class Bundle implements ArtifactSource {
 
     static {
         ModuleAccess.initialize(AppPackedContainerAccess.class, new AppPackedContainerAccess() {
 
             /** {@inheritDoc} */
             @Override
-            public void bundleConfigure(Bundle bundle, ContainerConfiguration configuration) {
+            public void bundleConfigure(Bundle bundle, BundleContext configuration) {
                 bundle.doCompose(configuration);
             }
 
@@ -89,20 +90,17 @@ public abstract class Bundle implements SystemSource {
     }
 
     /** The configuration of the container. Should only be read via {@link #configuration}. */
-    private ContainerConfiguration configuration;
+    private BundleContext configuration;
 
     /** The state of the bundle. 0 not-initialized, 1 in-progress, 2 completed. */
     private final AtomicInteger state = new AtomicInteger();
 
-    protected final <A, H, C> C addHost(HostDriver<A, H, C> driver) {
-        return configuration().addHost(driver);
+    protected final <C> C add(Class<? extends ConfiguredBy<C>> type) {
+        throw new UnsupportedOperationException();
     }
 
-    protected final <A, H, C> C provideHost(HostDriver<A, H, C> driver) {
-        return configuration().addHost(driver);
-    }
-
-    protected final <A, H, C> C provideHost(HostDriver<A, H, C> driver, Key<? super A> key) {
+    // Do we need a provide host also????
+    protected final <C extends HostConfiguration<?>> C addHost(HostDriver<C> driver) {
         return configuration().addHost(driver);
     }
 
@@ -112,7 +110,7 @@ public abstract class Bundle implements SystemSource {
      * 
      * @throws IllegalStateException
      *             if {@link #compose()} has been invoked
-     * @see ContainerConfiguration#checkConfigurable()
+     * @see BundleContext#checkConfigurable()
      */
     protected final void checkConfigurable() {
         configuration().checkConfigurable();
@@ -129,7 +127,7 @@ public abstract class Bundle implements SystemSource {
      * Returns the configuration site of this bundle.
      * 
      * @return the configuration site of this bundle
-     * @see ContainerConfiguration#configSite()
+     * @see BundleContext#configSite()
      */
     protected final ConfigSite configSite() {
         return configuration().configSite();
@@ -142,8 +140,8 @@ public abstract class Bundle implements SystemSource {
      * @throws IllegalStateException
      *             if called from outside of {@link #compose()}
      */
-    protected final ContainerConfiguration configuration() {
-        ContainerConfiguration c = configuration;
+    protected final BundleContext configuration() {
+        BundleContext c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
         }
@@ -158,7 +156,7 @@ public abstract class Bundle implements SystemSource {
      * @throws IllegalStateException
      *             if the bundle is in use, or has previously been used
      */
-    private void doCompose(ContainerConfiguration configuration) {
+    private void doCompose(BundleContext configuration) {
         int s = state.compareAndExchange(0, 1);
         if (s == 1) {
             throw new IllegalStateException("This bundle is being used elsewhere, bundleType = " + getClass());
@@ -188,7 +186,7 @@ public abstract class Bundle implements SystemSource {
      * Returns an unmodifiable view of the extensions that have been used.
      * 
      * @return an unmodifiable view of the extensions that have been used
-     * @see ContainerConfiguration#extensions()
+     * @see BundleContext#extensions()
      * @see #use(Class)
      */
     protected final Set<Class<? extends Extension>> extensions() {
@@ -200,7 +198,7 @@ public abstract class Bundle implements SystemSource {
      * 
      * @return any description that has been set
      * @see #setDescription(String)
-     * @see ContainerConfiguration#getDescription()
+     * @see BundleContext#getDescription()
      */
     @Nullable
     protected final String getDescription() {
@@ -216,7 +214,7 @@ public abstract class Bundle implements SystemSource {
      * 
      * @return the name of the container
      * @see #setName(String)
-     * @see ContainerConfiguration#setName(String)
+     * @see BundleContext#setName(String)
      */
     protected final String getName() {
         return configuration().getName();
@@ -315,7 +313,7 @@ public abstract class Bundle implements SystemSource {
      * Returns whether or not this bundle will configure the top container in an artifact.
      * 
      * @return whether or not this bundle will configure the top container in an artifact
-     * @see ContainerConfiguration#isArtifactRoot()
+     * @see BundleContext#isArtifactRoot()
      */
     protected final boolean isTopContainer() {
         return configuration().isArtifactRoot();
@@ -328,7 +326,7 @@ public abstract class Bundle implements SystemSource {
      *            the bundle to link
      * @param wirelets
      *            an optional array of wirelets
-     * @see ContainerConfiguration#link(Bundle, Wirelet...)
+     * @see BundleContext#link(Bundle, Wirelet...)
      */
     protected final void link(Bundle bundle, Wirelet... wirelets) {
         configuration().link(bundle, wirelets);
@@ -340,7 +338,7 @@ public abstract class Bundle implements SystemSource {
      * 
      * @param lookup
      *            the lookup object
-     * @see ContainerConfiguration#lookup(Lookup)
+     * @see BundleContext#lookup(Lookup)
      */
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
@@ -362,18 +360,26 @@ public abstract class Bundle implements SystemSource {
      * Returns the full path of the container that this bundle creates.
      * 
      * @return the full path of the container that this bundle creates
-     * @see ContainerConfiguration#path()
+     * @see BundleContext#path()
      */
     protected final ComponentPath path() {
         return configuration().path();
     }
+//
+//    protected final <A, H, C> C provideHost(OldHostDriver<A, H, C> driver) {
+//        return configuration().addHost(driver);
+//    }
+//
+//    protected final <A, H, C> C provideHost(OldHostDriver<A, H, C> driver, Key<? super A> key) {
+//        return configuration().addHost(driver);
+//    }
 
     /**
      * Sets the description of the container.
      * 
      * @param description
      *            the description to set
-     * @see ContainerConfiguration#setDescription(String)
+     * @see BundleContext#setDescription(String)
      * @see #getDescription()
      */
     protected final void setDescription(String description) {
@@ -392,7 +398,7 @@ public abstract class Bundle implements SystemSource {
      * @param name
      *            the name of the container
      * @see #getName()
-     * @see ContainerConfiguration#setName(String)
+     * @see BundleContext#setName(String)
      * @throws IllegalArgumentException
      *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
      *             characters and '_', '-' or '.'
@@ -414,12 +420,14 @@ public abstract class Bundle implements SystemSource {
      * @return an extension of the specified type
      * @throws IllegalStateException
      *             if called from outside {@link #compose()}
-     * @see ContainerConfiguration#use(Class)
+     * @see BundleContext#use(Class)
      */
     protected final <T extends Extension> T use(Class<T> extensionType) {
         return configuration().use(extensionType);
     }
 
+    // Must be a assembly type wirelet
+    // useWirelet()
     protected final <W extends Wirelet> Optional<W> wirelet(Class<W> type) {
         return configuration().assemblyWirelet(type);
     }

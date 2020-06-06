@@ -36,8 +36,8 @@ public interface SingletonConfiguration<T> extends ComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    default ComponentType type() {
-        return ComponentType.COMPONENT_INSTANCE;
+    default ComponentDescriptor type() {
+        return ComponentDescriptor.COMPONENT_INSTANCE;
     }
 
     // The component can be removed at runtime, separately from its container.
