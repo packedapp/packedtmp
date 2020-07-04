@@ -13,25 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package app.packed.artifact.hostguest;
 
 /**
  *
  */
 
-// HostDriver bestemmer hvad host componenten for injected...
-// Som minimum en HostContext
+// Ved ikke hvor meget vi skal have her....
+// Problemet er actors... Vi skal ikke configure en
+// actor hver eneste gang
 
-public abstract class HostDriver<C extends HostConfiguration<?>> {
+// Saa vi vil hellere ligge det i driveren...
+public interface HostConfigurationContext {
 
-    protected abstract C newConfiguration(HostConfigurationContext context);
-
-    public static class Option {
-
-        Option() {}
-    }
-
-    protected static Option addInstanceManager() {
-        throw new UnsupportedOperationException();
-    }
 }

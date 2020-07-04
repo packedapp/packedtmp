@@ -24,6 +24,9 @@ import app.packed.inject.Factory;
  * <p>
  * It it also possible to install components at runtime via {@link Component}.
  */
+
+// SingletonConfiguration -> Noget der laver en single instance der kan bruges af andre.
+// Maaske endda registereres som service
 public interface SingletonConfiguration<T> extends ComponentConfiguration {
 
     /** {@inheritDoc} */
@@ -33,12 +36,6 @@ public interface SingletonConfiguration<T> extends ComponentConfiguration {
     /** {@inheritDoc} */
     @Override
     SingletonConfiguration<T> setName(String name);
-
-    /** {@inheritDoc} */
-    @Override
-    default ComponentDescriptor model() {
-        return ComponentDescriptor.COMPONENT_INSTANCE;
-    }
 
     // The component can be removed at runtime, separately from its container.
     // But again its not supported now...

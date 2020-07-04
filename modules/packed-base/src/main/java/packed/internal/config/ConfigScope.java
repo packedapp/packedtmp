@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
-
-import static java.util.Objects.requireNonNull;
+package packed.internal.config;
 
 /**
  *
  */
-// Ideen er at folk let kan implementere app..
-// Og smide nogle annoteringer paa..
-// PackedApp behoever ikke extende den...
-abstract class AbstractApp implements App {
+public enum ConfigScope {
 
-    protected final ArtifactContext context;
+    // static <--- with grall
 
-    protected AbstractApp(ArtifactContext context) {
-        this.context = requireNonNull(context);
-    }
+    // normal <---
+
+    // runtime <---
+
+    // default = Static + normal + runtime
+
+    // Kan vi have noget der kun er runtime???
+    // Og som man kan ikke kan saette paa cmd line???
 }

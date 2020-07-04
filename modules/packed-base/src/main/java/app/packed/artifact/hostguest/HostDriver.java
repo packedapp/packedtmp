@@ -13,17 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package app.packed.artifact.hostguest;
 
 /**
  *
  */
 
-//Available to all guests... The top level component only though...
-// And I think stereotypes can remove it for their surragate objects.   
-// Can remove itself...
-// shutdown itself
-// replace itself / restart itself
-public interface GuestContext {
+// HostDriver bestemmer hvad host componenten for injected...
+// Som minimum en HostContext
 
+public abstract class HostDriver<C extends HostConfiguration<?>> {
+
+    protected abstract C newConfiguration(HostConfigurationContext context);
+
+    public static class Option {
+        Option() {}
+    }
+
+    protected static Option addInstanceManager() {
+        throw new UnsupportedOperationException();
+    }
 }

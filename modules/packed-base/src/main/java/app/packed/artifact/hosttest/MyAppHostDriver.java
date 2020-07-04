@@ -15,9 +15,9 @@
  */
 package app.packed.artifact.hosttest;
 
-import app.packed.artifact.HostConfiguration;
-import app.packed.artifact.HostConfigurationContext;
-import app.packed.artifact.HostDriver;
+import app.packed.artifact.hostguest.HostConfiguration;
+import app.packed.artifact.hostguest.HostConfigurationContext;
+import app.packed.artifact.hostguest.HostDriver;
 
 /**
  *

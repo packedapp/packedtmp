@@ -282,15 +282,15 @@ public abstract class PackedComponentContext extends AbstractComponentConfigurat
         return initializeName(State.GET_NAME_INVOKED, null);
     }
 
-    final Map<String, BaseComponent> initializeChildren(BaseComponent parent, PackedInstantiationContext ic) {
+    final Map<String, PackedComponent> initializeChildren(PackedComponent parent, PackedInstantiationContext ic) {
         if (children == null) {
             return null;
         }
         // Hmm, we should probably used LinkedHashMap to retain order.
         // It just uses so much memory...
-        HashMap<String, BaseComponent> result = new HashMap<>(children.size());
+        HashMap<String, PackedComponent> result = new HashMap<>(children.size());
         for (PackedComponentContext acc : children.values()) {
-            BaseComponent ac = acc.instantiate(parent, ic);
+            PackedComponent ac = acc.instantiate(parent, ic);
             result.put(ac.name(), ac);
         }
         return Map.copyOf(result);
@@ -332,11 +332,12 @@ public abstract class PackedComponentContext extends AbstractComponentConfigurat
         return this.name = n;
     }
 
+    @Override
     @Deprecated
     protected abstract String initializeNameDefaultName();
 
-    protected BaseComponent instantiate(BaseComponent parent, PackedInstantiationContext ic) {
-        return new BaseComponent(parent, this, ic);
+    protected PackedComponent instantiate(PackedComponent parent, PackedInstantiationContext ic) {
+        return new PackedComponent(parent, this, ic);
     }
 
     public boolean isInSameContainer(PackedComponentContext other) {
@@ -361,7 +362,7 @@ public abstract class PackedComponentContext extends AbstractComponentConfigurat
 
     /** {@inheritDoc} */
     @Override
-    public PackedComponentContext setDescription(String description) {
+    public ComponentConfiguration setDescription(String description) {
         requireNonNull(description, "description is null");
         checkConfigurable();
         this.description = description;
@@ -370,7 +371,7 @@ public abstract class PackedComponentContext extends AbstractComponentConfigurat
 
     /** {@inheritDoc} */
     @Override
-    public PackedComponentContext setName(String name) {
+    public ComponentConfiguration setName(String name) {
         // First lets check the name is valid
         ContainerNameWirelet.checkName(name);
         switch (state.oldState) {

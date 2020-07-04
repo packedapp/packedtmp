@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.host.api2.use.it;
-
-import app.packed.artifact.hostguest.AppHost;
-import app.packed.container.Bundle;
+package app.packed.artifact.hostguest;
 
 /**
  *
  */
-public class Stuff extends Bundle {
 
-    /** {@inheritDoc} */
-    @Override
-    protected void compose() {
-        addHost(AppHost.driver()).setName("SuperCool Host");
-    }
+//HostArtifactManager, HostArtifactController
+public interface HostLine<T> {
+
 }
+
+//
+
+// AppHost
+// A host can define a mesh network....
+// lazy vs removable

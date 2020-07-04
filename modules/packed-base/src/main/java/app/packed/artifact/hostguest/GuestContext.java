@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.config;
-
-import app.packed.container.Extension;
+package app.packed.artifact.hostguest;
 
 /**
  *
  */
-final class ConfigExtension extends Extension {
 
-    // Stuff...
+//Available to all guests... The top level component only though...
+// And I think stereotypes can remove it for their surragate objects.   
+// Can remove itself...
+// shutdown itself
+// replace itself / restart itself
+public interface GuestContext {
+
 }

@@ -25,8 +25,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
 import app.packed.artifact.ArtifactSource;
-import app.packed.artifact.HostConfiguration;
-import app.packed.artifact.HostDriver;
+import app.packed.artifact.hostguest.HostConfiguration;
+import app.packed.artifact.hostguest.HostDriver;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentPath;
 import app.packed.component.ConfiguredBy;

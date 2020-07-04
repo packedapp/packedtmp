@@ -64,21 +64,20 @@ public final class PackedSingletonConfiguration<T> extends PackedComponentContex
         return componentModel.defaultPrefix();
     }
 
-    public PackedSingletonConfiguration<T> runHooks(Object source) {
+    public void runHooks(Object source) {
         componentModel.invokeOnHookOnInstall(source, this);
-        return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public PackedSingletonConfiguration<T> setDescription(String description) {
+    public SingletonConfiguration<T> setDescription(String description) {
         super.setDescription(description);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public PackedSingletonConfiguration<T> setName(String name) {
+    public SingletonConfiguration<T> setName(String name) {
         super.setName(name);
         return this;
     }

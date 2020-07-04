@@ -15,7 +15,7 @@
  */
 package packed.internal.component.driver;
 
-import app.packed.artifact.AppHostConfiguration;
+import app.packed.artifact.hostguest.AppHostConfiguration;
 
 /**
  *

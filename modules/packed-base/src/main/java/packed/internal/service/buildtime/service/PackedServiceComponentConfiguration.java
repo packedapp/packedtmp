@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.component.ComponentDescriptor;
 import app.packed.component.ComponentPath;
 import app.packed.component.FeatureMap;
 import app.packed.component.SingletonConfiguration;
@@ -140,5 +141,11 @@ public final class PackedServiceComponentConfiguration<T> implements ServiceComp
     @Override
     public Optional<Class<? extends Extension>> extension() {
         return component.extension();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentDescriptor model() {
+        return component.model();
     }
 }

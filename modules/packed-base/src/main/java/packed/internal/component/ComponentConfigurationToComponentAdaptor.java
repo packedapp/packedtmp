@@ -163,25 +163,14 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
     }
 
     private static ComponentConfigurationToComponentAdaptor of0(PackedComponentContext bcc, List<PackedGuestConfiguration> pgc) {
-        if (bcc instanceof PackedContainerConfiguration) {
-            return new ComponentConfigurationToComponentAdaptor(bcc, pgc);
-        } else if (bcc instanceof PackedStatelessComponentConfiguration) {
-            return new ComponentConfigurationToComponentAdaptor(bcc, pgc);
-        } else if (bcc instanceof PackedSingletonConfiguration) {
-            return new ComponentConfigurationToComponentAdaptor(bcc, pgc);
-        }
-//        else if (bcc instanceof PackedHostConfiguration) {
-//            return new HostAdaptor((PackedHostConfiguration) bcc, pgc);
-//        } 
-        else if (bcc instanceof PackedGuestConfiguration) {
+        if (bcc instanceof PackedGuestConfiguration) {
             // Need to figure out hosts on hosts..
             PackedGuestConfiguration pgcc = (PackedGuestConfiguration) bcc;
             LinkedList<PackedGuestConfiguration> al = new LinkedList<>(pgc);
             al.addFirst(pgcc);
             return new ComponentConfigurationToComponentAdaptor(pgcc.delegate, List.copyOf(al));
         } else {
-            // TODO add host, when we get a configuration class
-            throw new IllegalArgumentException("Unknown configuration type, type = " + bcc);
+            return new ComponentConfigurationToComponentAdaptor(bcc, pgc);
         }
     }
 

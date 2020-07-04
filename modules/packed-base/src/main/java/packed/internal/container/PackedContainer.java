@@ -15,6 +15,8 @@
  */
 package packed.internal.container;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Optional;
@@ -35,11 +37,11 @@ import app.packed.container.Extension;
 import app.packed.lifecycleold.StopOption;
 import app.packed.service.Injector;
 import packed.internal.artifact.PackedInstantiationContext;
-import packed.internal.component.BaseComponent;
+import packed.internal.component.PackedComponent;
 import packed.internal.service.runtime.PackedInjector;
 
 /** The default container implementation. */
-public final class PackedContainer extends BaseComponent {
+public final class PackedContainer extends PackedComponent {
 
     private final Injector injector;
 
@@ -53,7 +55,7 @@ public final class PackedContainer extends BaseComponent {
      * @param instantiationContext
      *            the instantiation context of the container
      */
-    PackedContainer(@Nullable BaseComponent parent, PackedContainerConfiguration pcc, PackedInstantiationContext instantiationContext) {
+    PackedContainer(@Nullable PackedComponent parent, PackedContainerConfiguration pcc, PackedInstantiationContext instantiationContext) {
         super(parent, pcc, instantiationContext);
         Injector i = instantiationContext.get(pcc, PackedInjector.class);
         if (i == null) {
@@ -64,64 +66,70 @@ public final class PackedContainer extends BaseComponent {
     }
 
     public ArtifactContext toArtifactContext() {
-        return new PackedArtifactContext();
+        return new PackedArtifactContext(this);
     }
 
     /** Used to expose a container as an ArtifactContext. */
-    public final class PackedArtifactContext implements ArtifactContext {
+    public static final class PackedArtifactContext implements ArtifactContext {
+
+        private final PackedContainer container;
+
+        PackedArtifactContext(PackedContainer container) {
+            this.container = requireNonNull(container);
+        }
 
         /** {@inheritDoc} */
         @Override
         public Collection<Component> children() {
-            return PackedContainer.this.children();
+            return container.children();
         }
 
         /** {@inheritDoc} */
         @Override
         public ConfigSite configSite() {
-            return PackedContainer.this.configSite();
+            return container.configSite();
         }
 
         /** {@inheritDoc} */
         @Override
         public int depth() {
-            return PackedContainer.this.depth();
+            return container.depth();
         }
 
         /** {@inheritDoc} */
         @Override
         public Optional<String> description() {
-            return PackedContainer.this.description();
+            return container.description();
         }
 
         /** {@inheritDoc} */
         @Override
         public Optional<Class<? extends Extension>> extension() {
-            return PackedContainer.this.extension();
+            return container.extension();
         }
 
         /** {@inheritDoc} */
         @Override
         public FeatureMap features() {
-            return PackedContainer.this.features();
+            return container.features();
         }
 
         /** {@inheritDoc} */
         @Override
         public Injector injector() {
-            return PackedContainer.this.injector;
+            return container.injector;
         }
 
         /** {@inheritDoc} */
         @Override
         public String name() {
-            return PackedContainer.this.name();
+            return container.name();
         }
 
         /** {@inheritDoc} */
         @Override
         public ComponentPath path() {
-            return PackedContainer.this.path();
+            return container.path();
         }
 
         /** {@inheritDoc} */
@@ -139,31 +147,31 @@ public final class PackedContainer extends BaseComponent {
         /** {@inheritDoc} */
         @Override
         public ComponentStream stream(Option... options) {
-            return PackedContainer.this.stream(options);
+            return container.stream(options);
         }
 
         /** {@inheritDoc} */
         @Override
         public ComponentDescriptor model() {
-            return PackedContainer.this.model();
+            return container.model();
         }
 
         /** {@inheritDoc} */
         @Override
         public <T> T use(Key<T> key) {
-            return injector.use(key);
+            return container.injector.use(key);
         }
 
         /** {@inheritDoc} */
         @Override
         public Component useComponent(CharSequence path) {
-            return PackedContainer.this.useComponent(path);
+            return container.useComponent(path);
         }
 
         /** {@inheritDoc} */
         @Override
         public void traverse(Consumer<? super Component> action) {
-            PackedContainer.this.traverse(action);
+            container.traverse(action);
         }
     }
 }

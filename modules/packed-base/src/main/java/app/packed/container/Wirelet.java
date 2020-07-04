@@ -44,7 +44,8 @@ import packed.internal.container.WireletList;
  * 
  * Operations is order Example with rebind
  * <p>
- * Wirelet implementations must be immutable and safe to access by multiple concurrent threads.
+ * Wirelet implementations must be immutable and safe to access by multiple concurrent threads. Unless otherwise
+ * specified wirelets are reusable.
  * 
  * @see WireletPipeline
  */

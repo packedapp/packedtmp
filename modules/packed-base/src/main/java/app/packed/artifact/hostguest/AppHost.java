@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package app.packed.artifact.hostguest;
 
 import app.packed.component.ConfiguredBy;
 import app.packed.container.Bundle;
@@ -21,7 +21,6 @@ import app.packed.container.Bundle;
 /**
  *
  */
-
 //extends ConfiguredVia<AppHostConfiguration>  <--- skal have en statisk metode der hedder driver...
 public interface AppHost extends ConfiguredBy<AppHostConfiguration> {
 
@@ -38,6 +37,7 @@ class FooBar extends Bundle {
     /** {@inheritDoc} */
     @Override
     protected void compose() {
-        add(AppHost.class); // <- must have a static driver method... and be open to packed... (and readable to bundle)
+        // <- must have a static driver method... and be open to packed... (and readable to bundle)
+        add(AppHost.class);
     }
 }

@@ -13,16 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package app.packed.artifact.hostguest;
 
-/** A context object that can be injected into components that functions as hosts. */
-public interface HostContext {
+import static java.util.Objects.requireNonNull;
 
-    // Altsaa reelt set er det her jo antallet af boern...
-    // Taenker det er noget vi kan faa fra component context???
-    long guestCount(); // think int is ok... idk
+/** The default implementation of {@link AppHost}. */
+final class PackedAppHost implements AppHost {
+
+    private final HostContext context;
+
+    PackedAppHost(HostContext context) {
+        this.context = requireNonNull(context);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long size() {
+        return context.guestCount();
+    }
 }
-
-// Saa HostContext
-
-// HostLine

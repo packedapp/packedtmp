@@ -34,10 +34,4 @@ public interface StatelessConfiguration extends ComponentConfiguration {
     /** {@inheritDoc} */
     @Override
     StatelessConfiguration setName(String name);
-
-    /** {@inheritDoc} */
-    @Override
-    default ComponentDescriptor model() {
-        return ComponentDescriptor.STATELESS;
-    }
 }

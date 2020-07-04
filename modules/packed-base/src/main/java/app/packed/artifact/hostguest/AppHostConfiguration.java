@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package app.packed.artifact.hostguest;
+
+import app.packed.artifact.App;
+import app.packed.component.ComponentDescriptor;
 
 /**
  *
@@ -35,5 +38,11 @@ public final class AppHostConfiguration extends HostConfiguration<AppHost> {
      */
     AppHostConfiguration(HostConfigurationContext context) {
         super(PackedAppHost.class, context); // Maybe move it to driver... Then we have to generify the driver...
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentDescriptor model() {
+        throw new UnsupportedOperationException();
     }
 }

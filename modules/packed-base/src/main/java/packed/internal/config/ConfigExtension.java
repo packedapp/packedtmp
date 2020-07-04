@@ -20,6 +20,12 @@ import app.packed.container.Extension;
 /**
  *
  */
+
+//By default a container does not export any configuration...
+
+// Paa en eller anden maade skal man kunne exportere et skema...
+// Er ikke meget for registerSchema(SomeExtension.class, schema)...
+
 public final class ConfigExtension extends Extension {
 
     // Controls distribution to other extensions, services, ect.
@@ -34,4 +40,24 @@ public final class ConfigExtension extends Extension {
     // Deres egen container
     // Almindelige component + Extension.viaExtension(ComponentConfiguration) <- Uses the extensions LifecycleRealm
     // Container/Artifact sidecar
+
+    // Stuff...
+
+    void expose(@SuppressWarnings("unchecked") Class<? extends Extension>... extensionTypes) {
+        throw new UnsupportedOperationException();
+    }
+
+    // structural configuration items
+
+    // Graal?? Class Init vs start...
+    void readFrom(String file) { // ConfigurationOption... options???
+        // useFileExtension() <-- makes sure FileManager is available at runtime
+        // Maybe we can setup a target.... extension.read
+    }
+
+    // Will read at initialization time... (using FileExtension)
+    // readFrom(String path)
 }
+
+// Hvad hvis man egentlig specificere classes, metoder ect. (mht til JPMS)
+// Saa skal vi grabbe den der specicere det's security context

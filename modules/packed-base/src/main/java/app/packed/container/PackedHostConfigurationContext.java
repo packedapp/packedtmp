@@ -15,7 +15,7 @@
  */
 package app.packed.container;
 
-import app.packed.artifact.HostConfigurationContext;
+import app.packed.artifact.hostguest.HostConfigurationContext;
 
 /**
  *

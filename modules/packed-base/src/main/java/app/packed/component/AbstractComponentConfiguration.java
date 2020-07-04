@@ -71,6 +71,8 @@ public abstract class AbstractComponentConfiguration implements ComponentConfigu
         this.context = requireNonNull(context, "context is null");
     }
 
+    protected abstract String initializeNameDefaultName();
+
     /**
      * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
      * not located on any subclasses of {@link Extension} or any class that implements {@link ArtifactSource}.

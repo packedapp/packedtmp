@@ -32,8 +32,8 @@ import java.util.function.Consumer;
 import app.packed.analysis.BundleDescriptor;
 import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.ArtifactImage;
-import app.packed.artifact.HostConfiguration;
-import app.packed.artifact.HostDriver;
+import app.packed.artifact.hostguest.HostConfiguration;
+import app.packed.artifact.hostguest.HostDriver;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentDescriptor;
 import app.packed.component.SingletonConfiguration;
@@ -48,7 +48,7 @@ import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedInstantiationContext;
-import packed.internal.component.BaseComponent;
+import packed.internal.component.PackedComponent;
 import packed.internal.component.ComponentModel;
 import packed.internal.component.PackedComponentContext;
 import packed.internal.component.PackedSingletonConfiguration;
@@ -334,7 +334,8 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
         PackedSingletonConfiguration<T> conf = new PackedSingletonConfiguration<>(configSite, this, model, (BaseFactory<T>) factory);
         installPrepare(State.INSTALL_INVOKED);
         currentComponent = conf;
-        return conf.runHooks(source);
+        conf.runHooks(source);
+        return conf;
     }
 
     /** {@inheritDoc} */
@@ -346,7 +347,8 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
         PackedSingletonConfiguration<T> conf = new PackedSingletonConfiguration<>(configSite, this, model, instance);
         installPrepare(State.INSTALL_INVOKED);
         currentComponent = conf;
-        return conf.runHooks(source);
+        conf.runHooks(source);
+        return conf;
     }
 
     private void installPrepare(State state) {
@@ -374,7 +376,7 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
 
     /** {@inheritDoc} */
     @Override
-    public PackedContainer instantiate(BaseComponent parent, PackedInstantiationContext ic) {
+    public PackedContainer instantiate(PackedComponent parent, PackedInstantiationContext ic) {
         return new PackedContainer(parent, this, ic);
     }
 
@@ -438,10 +440,10 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private void methodHandlePassing0(BaseComponent ac, PackedInstantiationContext ic) {
+    private void methodHandlePassing0(PackedComponent ac, PackedInstantiationContext ic) {
         if (children != null) {
             for (PackedComponentContext cc : children.values()) {
-                BaseComponent child = ac.children.get(cc.name);
+                PackedComponent child = ac.children.get(cc.name);
                 if (cc instanceof PackedContainerConfiguration) {
                     ((PackedContainerConfiguration) cc).methodHandlePassing0(child, ic);
                 }

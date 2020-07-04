@@ -20,12 +20,12 @@ package app.packed.component;
  */
 
 // Til noedt kan vi kalde den BuildinComponentType
-public class ComponentDescriptor {
+public final class ComponentDescriptor {
 
     // A single Method...
     // All Other methods are ignored...
     // Also Annotations et
-    public static final ComponentDescriptor FUNCTION = new ComponentDescriptor();
+//    public static final ComponentDescriptor FUNCTION = new ComponentDescriptor();
 
     public static final ComponentDescriptor COMPONENT_INSTANCE = new ComponentDescriptor();
 
@@ -41,6 +41,10 @@ public class ComponentDescriptor {
     public static final ComponentDescriptor STATELESS = new ComponentDescriptor();
 
     ComponentDescriptor() {}
+
+    public String initializeNameDefaultName(AbstractComponentConfiguration acc) {
+        return acc.initializeNameDefaultName();
+    }
 }
 
 //Sealed type....

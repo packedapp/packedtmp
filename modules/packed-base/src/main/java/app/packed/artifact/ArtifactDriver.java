@@ -153,7 +153,7 @@ public abstract class ArtifactDriver<A> {
 
     static <A> A start(Class<A> artifactType, ArtifactSource source, Wirelet... wirelets) {
         // The only thing we save is defining a driver..
-        // But we need the driver via App#driver... so not much saved
+        // But we need the driver for App#driver... so not much saved
         throw new UnsupportedOperationException();
     }
 

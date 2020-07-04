@@ -28,6 +28,9 @@ import app.packed.base.Key;
 
 // Det der er med image... er jo at vi gerne vil supportere ikke-containere....
 // F.eks. En Actor der kan have 3 mulige guests....
+
+// Fungere ikke rigtigt med aktive 
+
 public interface ImageSet {
 
     default ArtifactImage get() {

@@ -13,19 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package app.packed.container;
 
 /**
  *
  */
-
-//HostArtifactManager, HostArtifactController
-public interface HostLine<T> {
-
+public class ExtensionOrder {
+    public static final ExtensionOrder defaultOrder = new ExtensionOrder();
 }
-
-//
-
-// AppHost
-// A host can define a mesh network....
-// lazy vs removable

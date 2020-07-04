@@ -81,6 +81,8 @@ public interface ConfigSiteVisitor {
      */
     default void visitUnknown(ConfigSite configSite) {}
 }
+// Tilfoeje nogle default formatting config sites
+
 // When we get Configuration-> rename to getLazy() or just lazyRead, lazy
 
 //// Ahhh vi gemmer ikke noedvendig informationen, skal lige have fundet ud af hvordan det fungere

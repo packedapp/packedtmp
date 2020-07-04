@@ -15,20 +15,24 @@
  */
 package app.packed.artifact;
 
-import static java.util.Objects.requireNonNull;
+import app.packed.container.Wirelet;
 
-/** The default implementation of {@link AppHost}. */
-final class PackedAppHost implements AppHost {
+/**
+ *
+ */
+// Contains
 
-    private final HostContext context;
+// Ways to initialize, start, stop, execute, ect...
+// Ways to query the image... in the same way as a Bundle...
+//// Tror dog det betyder vi skal have noget a.la. 
+// ArtifactImage -> SystemDescribable, saa metoder, f.eks.,
+// ServiceContract.from(Image|new XBundle()); -> 
+//// SystemInspector.find(iOrB, ServiceContract.class); <-- SC exposed as a contract
 
-    PackedAppHost(HostContext context) {
-        this.context = requireNonNull(context);
-    }
+//  
+public interface Image<T> {
 
-    /** {@inheritDoc} */
-    @Override
-    public long size() {
-        return context.guestCount();
-    }
+    T initialize(Wirelet... wirelets);
+
+    T start(Wirelet... wirelets);
 }

@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package packed.internal.config;
 
 /**
  *
  */
 
-// Ved ikke hvor meget vi skal have her....
-// Problemet er actors... Vi skal ikke configure en
-// actor hver eneste gang
+// Hirakisk configuration...
 
-// Saa vi vil hellere ligge det i driveren...
-public interface HostConfigurationContext {
+// Optional Schema...
+
+public class Config {
 
 }

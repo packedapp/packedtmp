@@ -21,8 +21,8 @@ import java.lang.invoke.VarHandle;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.artifact.HostConfiguration;
-import app.packed.artifact.HostDriver;
+import app.packed.artifact.hostguest.HostConfiguration;
+import app.packed.artifact.hostguest.HostDriver;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDescriptor;

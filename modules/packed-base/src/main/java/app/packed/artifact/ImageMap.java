@@ -13,29 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.v2;
-
-import java.lang.module.ModuleDescriptor.Provides;
+package app.packed.artifact;
 
 import app.packed.base.Key;
-import app.packed.base.Nullable;
+import app.packed.container.Wirelet;
 
 /**
  *
  */
-public interface Dependable extends WithDependencies {
+//MultiContainer perhaps???
+//Only needed if we have more than one image.
+//Or we want to upgrade/replace the image
+public interface ImageMap {
+
+    // im.start(App.class);
+    <T> Image<T> use(Class<T> type);
 
     /**
-     * Non-static methods or fields annotated with {@link Provides} may have a component that needs instantiating before the
-     * member can provide services.
+     * Returns the set of keys for which an image is registered.
      * 
-     * @return stuff
+     * @return the set of keys for which an image is registered
      */
-    @Nullable
-    // Hmm, en prototype @Provides kan jo ogsaa have det...
-    // Saa maaske skal den ikke vaere paa dette interface
-    // Nej det er vel mere Dependable....
-    // PackedSingletonConfiguration<?> declaringComponent();
+    Key<?> keys();
 
-    Key<?> key();
+    default <T> T start(Class<T> key, Wirelet... wirelets) {
+        return start(Key.of(key), wirelets);
+    }
+
+    <T> T start(Key<T> type, Wirelet... wirelets);
+
+    // CompFuture
+    <T> T startAsync(Class<T> type, Wirelet... wirelets);
 }

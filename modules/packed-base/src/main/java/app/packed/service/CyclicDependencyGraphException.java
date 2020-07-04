@@ -22,6 +22,9 @@ import app.packed.artifact.AssembleException;
 // CircularReferenceException
 
 // Hmm, men vi smider den jo ikke...
+
+// Hvis vi vaelger at smide den. Saa syntes jeg vi skal have.
+// datastructuren i selve exceptionen saa man kan explore den.
 public class CyclicDependencyGraphException extends AssembleException {
 
     /** <code>serialVersionUID</code>. */
