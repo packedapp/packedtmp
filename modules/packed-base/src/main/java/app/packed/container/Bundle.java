@@ -41,8 +41,8 @@ import packed.internal.moduleaccess.ModuleAccess;
 
 /**
  * Bundles are the main source of configuration for containers and artifacts. Basically a bundle is just a thin wrapper
- * around {@link BundleContext}. Delegating every invokation in the class to an instance of
- * {@link BundleContext} available via {@link #configuration()}.
+ * around {@link BundleConfiguration}. Delegating every invokation in the class to an instance of
+ * {@link BundleConfiguration} available via {@link #configuration()}.
  * <p>
  * Once consumed a bundle cannot be used...
  * 
@@ -70,7 +70,7 @@ public abstract class Bundle implements ArtifactSource {
 
             /** {@inheritDoc} */
             @Override
-            public void bundleConfigure(Bundle bundle, BundleContext configuration) {
+            public void bundleConfigure(Bundle bundle, BundleConfiguration configuration) {
                 bundle.doCompose(configuration);
             }
 
@@ -90,7 +90,7 @@ public abstract class Bundle implements ArtifactSource {
     }
 
     /** The configuration of the container. Should only be read via {@link #configuration}. */
-    private BundleContext configuration;
+    private BundleConfiguration configuration;
 
     /** The state of the bundle. 0 not-initialized, 1 in-progress, 2 completed. */
     private final AtomicInteger state = new AtomicInteger();
@@ -110,7 +110,7 @@ public abstract class Bundle implements ArtifactSource {
      * 
      * @throws IllegalStateException
      *             if {@link #compose()} has been invoked
-     * @see BundleContext#checkConfigurable()
+     * @see BundleConfiguration#checkConfigurable()
      */
     protected final void checkConfigurable() {
         configuration().checkConfigurable();
@@ -127,7 +127,7 @@ public abstract class Bundle implements ArtifactSource {
      * Returns the configuration site of this bundle.
      * 
      * @return the configuration site of this bundle
-     * @see BundleContext#configSite()
+     * @see BundleConfiguration#configSite()
      */
     protected final ConfigSite configSite() {
         return configuration().configSite();
@@ -140,8 +140,8 @@ public abstract class Bundle implements ArtifactSource {
      * @throws IllegalStateException
      *             if called from outside of {@link #compose()}
      */
-    protected final BundleContext configuration() {
-        BundleContext c = configuration;
+    protected final BundleConfiguration configuration() {
+        BundleConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
         }
@@ -156,7 +156,7 @@ public abstract class Bundle implements ArtifactSource {
      * @throws IllegalStateException
      *             if the bundle is in use, or has previously been used
      */
-    private void doCompose(BundleContext configuration) {
+    private void doCompose(BundleConfiguration configuration) {
         int s = state.compareAndExchange(0, 1);
         if (s == 1) {
             throw new IllegalStateException("This bundle is being used elsewhere, bundleType = " + getClass());
@@ -186,7 +186,7 @@ public abstract class Bundle implements ArtifactSource {
      * Returns an unmodifiable view of the extensions that have been used.
      * 
      * @return an unmodifiable view of the extensions that have been used
-     * @see BundleContext#extensions()
+     * @see BundleConfiguration#extensions()
      * @see #use(Class)
      */
     protected final Set<Class<? extends Extension>> extensions() {
@@ -198,7 +198,7 @@ public abstract class Bundle implements ArtifactSource {
      * 
      * @return any description that has been set
      * @see #setDescription(String)
-     * @see BundleContext#getDescription()
+     * @see BundleConfiguration#getDescription()
      */
     @Nullable
     protected final String getDescription() {
@@ -214,7 +214,7 @@ public abstract class Bundle implements ArtifactSource {
      * 
      * @return the name of the container
      * @see #setName(String)
-     * @see BundleContext#setName(String)
+     * @see BundleConfiguration#setName(String)
      */
     protected final String getName() {
         return configuration().getName();
@@ -313,7 +313,7 @@ public abstract class Bundle implements ArtifactSource {
      * Returns whether or not this bundle will configure the top container in an artifact.
      * 
      * @return whether or not this bundle will configure the top container in an artifact
-     * @see BundleContext#isArtifactRoot()
+     * @see BundleConfiguration#isArtifactRoot()
      */
     protected final boolean isTopContainer() {
         return configuration().isArtifactRoot();
@@ -326,7 +326,7 @@ public abstract class Bundle implements ArtifactSource {
      *            the bundle to link
      * @param wirelets
      *            an optional array of wirelets
-     * @see BundleContext#link(Bundle, Wirelet...)
+     * @see BundleConfiguration#link(Bundle, Wirelet...)
      */
     protected final void link(Bundle bundle, Wirelet... wirelets) {
         configuration().link(bundle, wirelets);
@@ -338,7 +338,7 @@ public abstract class Bundle implements ArtifactSource {
      * 
      * @param lookup
      *            the lookup object
-     * @see BundleContext#lookup(Lookup)
+     * @see BundleConfiguration#lookup(Lookup)
      */
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
@@ -360,7 +360,7 @@ public abstract class Bundle implements ArtifactSource {
      * Returns the full path of the container that this bundle creates.
      * 
      * @return the full path of the container that this bundle creates
-     * @see BundleContext#path()
+     * @see BundleConfiguration#path()
      */
     protected final ComponentPath path() {
         return configuration().path();
@@ -379,7 +379,7 @@ public abstract class Bundle implements ArtifactSource {
      * 
      * @param description
      *            the description to set
-     * @see BundleContext#setDescription(String)
+     * @see BundleConfiguration#setDescription(String)
      * @see #getDescription()
      */
     protected final void setDescription(String description) {
@@ -398,7 +398,7 @@ public abstract class Bundle implements ArtifactSource {
      * @param name
      *            the name of the container
      * @see #getName()
-     * @see BundleContext#setName(String)
+     * @see BundleConfiguration#setName(String)
      * @throws IllegalArgumentException
      *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
      *             characters and '_', '-' or '.'
@@ -420,7 +420,7 @@ public abstract class Bundle implements ArtifactSource {
      * @return an extension of the specified type
      * @throws IllegalStateException
      *             if called from outside {@link #compose()}
-     * @see BundleContext#use(Class)
+     * @see BundleConfiguration#use(Class)
      */
     protected final <T extends Extension> T use(Class<T> extensionType) {
         return configuration().use(extensionType);

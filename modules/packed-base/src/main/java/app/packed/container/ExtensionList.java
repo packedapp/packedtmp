@@ -34,7 +34,9 @@ import java.util.stream.Stream;
 // relationships at runtime.
 
 // specials --> ExtensionX before ExtensionY
-public interface ExtensionSet {
+
+// ExtensionList because well we have an order...
+public interface ExtensionList {
 
     /**
      * Returns whether or not this set contains the specified extension type.
@@ -61,7 +63,7 @@ public interface ExtensionSet {
      */
     int size();
 
-    static ExtensionSet empty() {
+    static ExtensionList empty() {
         throw new UnsupportedOperationException();
     }
 }

@@ -24,7 +24,7 @@ import app.packed.artifact.ArtifactSource;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Nullable;
 import app.packed.container.Bundle;
-import app.packed.container.BundleContext;
+import app.packed.container.BundleConfiguration;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import packed.internal.component.ComponentModel;
@@ -98,7 +98,7 @@ public final class ContainerModel extends Model implements ComponentLookup {
         psm = PackletMotherShip.of(sourceType);
 
         this.onHookModel = OnHookModel.newModel(new OpenClass(MethodHandles.lookup(), sourceType, true), false,
-                UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, BundleContext.class);
+                UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, BundleConfiguration.class);
         this.activatorMap = LazyExtensionActivationMap.of(sourceType);
         // this.dependenciesTotalOrder = ExtensionUseModel2.totalOrder(sourceType);
     }

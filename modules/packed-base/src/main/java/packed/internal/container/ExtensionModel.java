@@ -27,7 +27,7 @@ import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.component.Component;
-import app.packed.container.BundleContext;
+import app.packed.container.BundleConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionLinked;
@@ -348,7 +348,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
             addExtensionContextElements(mhbConstructor, 0);
 
             OpenClass cp = prep(mhbConstructor);
-            this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, BundleContext.class);
+            this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, BundleConfiguration.class);
 
             if (linked != null) {
                 // ancestor extension, descendant extension context, descendant extension

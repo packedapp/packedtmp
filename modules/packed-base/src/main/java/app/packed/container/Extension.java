@@ -34,16 +34,16 @@ import packed.internal.config.ConfigSiteSupport;
  * Extensions form the basis, extensible model
  * <p>
  * constructor visibility is ignored. As long as user has class visibility. They can can use an extension via, for
- * example, {@link Bundle#use(Class)} or {@link BundleContext#use(Class)}.
+ * example, {@link Bundle#use(Class)} or {@link BundleConfiguration#use(Class)}.
  * 
  * <p>
  * Any packages where extension implementations, custom hooks or extension wirelet pipelines are located must be open to
  * 'app.packed.base'
  * <p>
  * Every extension implementations must provide either an empty constructor, or a constructor taking a single parameter
- * of type {@link ExtensionConfiguration}. The constructor should have package private accessibility to make sure users do not
- * try an manually instantiate it, but instead use {@link BundleContext#use(Class)}. It is also recommended that the
- * extension itself is declared final.
+ * of type {@link ExtensionConfiguration}. The constructor should have package private accessibility to make sure users
+ * do not try an manually instantiate it, but instead use {@link BundleConfiguration#use(Class)}. It is also recommended
+ * that the extension itself is declared final.
  */
 
 // Step1
@@ -72,7 +72,7 @@ public abstract class Extension {
     /** A stack walker used by {@link #captureStackFrame(String)}. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
-    /** The extension context. This field should never be read directly, but only accessed via {@link #configuration()}. */
+    /** The configuration of this extension. Should never be read directly, but accessed via {@link #configuration()}. */
     // I think we should have a value representing configured. In this way people can store the extension
     // or keep it at runtime or whatever they want to do....
     ExtensionConfiguration configuration; // = PEC.CONFIGURED
@@ -140,13 +140,13 @@ public abstract class Extension {
     }
 
     /**
-     * Returns this extension's context.
+     * Returns this extension's configuration.
      * <p>
      * This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension.
      * 
      * @throws IllegalArgumentException
      *             if invoked from the constructor of the extension
-     * @return an extension context object
+     * @return an extension configuration object
      * 
      * @apiNote Original this method was protected. But extension is really the only sidecar that works this way. So to
      *          streamline with other sidecars we only allow it to be dependency injected into subclasses.
@@ -172,7 +172,7 @@ public abstract class Extension {
      * @param instance
      *            the instance to install
      * @return the configuration of the component
-     * @see BundleContext#installInstance(Object)
+     * @see BundleConfiguration#installInstance(Object)
      */
     protected final <T> SingletonConfiguration<T> installInstance(T instance) {
         return configuration().installInstance(instance);
@@ -184,9 +184,9 @@ public abstract class Extension {
      * Only extension types that have been explicitly registered using {@link ExtensionSidecar#dependencies()} or
      * {@link ExtensionSidecar#optionalDependencies()} may be specified as arguments to this method.
      * <p>
-     * Invoking this method is similar to calling {@link BundleContext#use(Class)}. However, this method also keeps track of
-     * which extensions uses other extensions. And forming any kind of circle in the dependency graph will fail with a
-     * runtime exception.
+     * Invoking this method is similar to calling {@link BundleConfiguration#use(Class)}. However, this method also keeps
+     * track of which extensions uses other extensions. And forming any kind of circle in the dependency graph will fail
+     * with a runtime exception.
      * 
      * @param <E>
      *            the type of extension to return

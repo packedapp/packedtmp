@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.container.BundleContext;
+import app.packed.container.BundleConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.service.Injector;
@@ -212,7 +212,7 @@ public abstract class ArtifactDriver<A> {
     protected abstract A newArtifact(ArtifactContext context);
 
     // Hmmm
-    public final <C> A configure(Function<BundleContext, C> factory, Consumer<C> consumer, Wirelet... wirelets) {
+    public final <C> A configure(Function<BundleConfiguration, C> factory, Consumer<C> consumer, Wirelet... wirelets) {
         PackedContainerConfiguration pcc = PackedContainerConfiguration.of(AssembleOutput.artifact(this), consumer, wirelets);
         C c = factory.apply(pcc);
         consumer.accept(c);

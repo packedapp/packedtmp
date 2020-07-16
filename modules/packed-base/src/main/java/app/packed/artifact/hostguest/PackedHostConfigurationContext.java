@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
-
-import app.packed.artifact.hostguest.HostConfigurationContext;
+package app.packed.artifact.hostguest;
 
 /**
  *

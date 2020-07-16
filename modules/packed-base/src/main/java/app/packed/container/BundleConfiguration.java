@@ -39,7 +39,7 @@ import app.packed.service.ServiceExtension;
 // BundleContext....
 
 // Bundles
-public interface BundleContext extends ComponentConfiguration {
+public interface BundleConfiguration extends ComponentConfiguration {
 
 //    /**
 //     * Installs a host and returns the configuration of it.
@@ -152,11 +152,11 @@ public interface BundleContext extends ComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    BundleContext setDescription(String description);
+    BundleConfiguration setDescription(String description);
 
     /** {@inheritDoc} */
     @Override
-    BundleContext setName(String name);
+    BundleConfiguration setName(String name);
 
     /**
      * Returns the class that defines the container.

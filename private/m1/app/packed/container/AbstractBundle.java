@@ -17,6 +17,8 @@ package app.packed.container;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import app.packed.container.BundleConfiguration;
+
 /**
  *
  */
@@ -38,9 +40,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 // En extension skal vel heller ikke kunne installere en X, hvis brugeren
 // ikke kan...
 // Container can only contain actors surragates/stereotypes...
+
+// Kan ikke se hvordan hvordan vi kan holder container configurations vaek fra subclasses.
+// Som en protected metode -> all subclasses kan kalde den... Vi kan override den...
+// Og saa smide en UOE?
+// Hvis configurationen kommer ind gennem constructoren saa faar subklasses den jo...
+
 abstract class AbstractBundle {
 
-    AbstractBundle(ContextProvider<BundleContext> cp) {
+    AbstractBundle(ContextProvider<BundleConfiguration> cp) {
 
     }
 
@@ -59,13 +67,13 @@ abstract class AbstractBundle {
     // @Inline
 
     static class F extends AbstractBundle {
-        final ContextProvider<BundleContext> cp;
+        final ContextProvider<BundleConfiguration> cp;
 
         F() {
-            this(new ContextProvider<BundleContext>());
+            this(new ContextProvider<BundleConfiguration>());
         }
 
-        private F(ContextProvider<BundleContext> cp) {
+        private F(ContextProvider<BundleConfiguration> cp) {
             super(cp);
             this.cp = cp;
         }

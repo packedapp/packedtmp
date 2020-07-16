@@ -32,7 +32,7 @@ import app.packed.component.ComponentPath;
 import app.packed.component.FeatureMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
-import app.packed.container.BundleContext;
+import app.packed.container.BundleConfiguration;
 import app.packed.container.Extension;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedAssembleContext;
