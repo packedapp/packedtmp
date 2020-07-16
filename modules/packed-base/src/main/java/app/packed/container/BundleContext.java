@@ -197,7 +197,7 @@ public interface BundleContext extends ComponentConfiguration {
      *            the type of wirelet
      * @return an optional containing the wirelet if defined otherwise empty.
      * @throws IllegalArgumentException
-     *             if the specified wirelet type does not have {@link WireletSidecar#failOnExpand()} set to true
+     *             if the specified wirelet type does not have {@link WireletSidecar#failOnImage()} set to true
      */
     <W extends Wirelet> Optional<W> assemblyWirelet(Class<W> type); // Should assembly be the default????
 }

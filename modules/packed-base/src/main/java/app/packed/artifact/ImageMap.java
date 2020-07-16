@@ -24,8 +24,17 @@ import app.packed.container.Wirelet;
 //MultiContainer perhaps???
 //Only needed if we have more than one image.
 //Or we want to upgrade/replace the image
+// All images are stored as image children of the host...
+// With a key...
+
+//Maybe this is just part of Host Context instead of its own interface
+// imageKeys();
+// imageStart();
+// DefaultKey? Type + image name???
 public interface ImageMap {
 
+    // if execution context will start
+    // otherwise just create
     // im.start(App.class);
     <T> Image<T> use(Class<T> type);
 

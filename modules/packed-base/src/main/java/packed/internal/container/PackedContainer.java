@@ -70,7 +70,7 @@ public final class PackedContainer extends PackedComponent {
     }
 
     /** Used to expose a container as an ArtifactContext. */
-    public static final class PackedArtifactContext implements ArtifactContext {
+    public static final class PackedArtifactContext implements ArtifactContext, Component {
 
         private final PackedContainer container;
 

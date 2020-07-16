@@ -38,6 +38,7 @@ public interface HostContext {
     // Taenker det er noget vi kan faa fra component context???
     long guestCount(); // think int is ok... idk
 
+    // embed this...
     ImageSet images();
 }
 

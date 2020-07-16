@@ -23,7 +23,7 @@ package app.packed.container;
 
 // Er der 2-3 Saa smider vi dem paa context, ellers
 
-public interface ExtensionTreeNode<E extends Extension> extends ExtensionContext {
+public interface ExtensionTreeNode<E extends Extension> extends ExtensionConfiguration {
 
     E extension();
 }

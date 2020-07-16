@@ -15,8 +15,10 @@
  */
 package app.packed.container;
 
+import java.util.function.Function;
 import java.util.function.Predicate;
 
+import app.packed.base.Nullable;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
 import packed.internal.container.ContainerWirelet.ContainerNameWirelet;
@@ -99,6 +101,10 @@ public interface Wirelet {
         return new ContainerNameWirelet(name);
     }
 
+    // If the function returns null. The wirelet will not be processed
+    static Wirelet computeWithName(Function<? super String, @Nullable ? extends Wirelet> function) {
+        return Wirelet.computeWithName(n -> Wirelet.computeWithName(n2 -> Wirelet.name(n2)));
+    }
     // static Wirelet[] from(Collection<? extends Wirelet> wirelets)
 }
 
@@ -175,6 +181,17 @@ class XBadIdea {
     interface Environment {
 
     }
+
+    // Hvor Object er en eller anden context...
+    // Men hmmm, vi kender jo ikke navnet.
+
+    // Ville vaere rart hvis vi f.eks. kunne sige
+    // Key.of(String.class).withName("$ContainerName$");
+    /// Nah saa maa folk selv saette navnet via Wirelet.name();
+
+//    static Wirelet context(Function<Object, Wirelet> contextMapper) {
+//
+//    }
 }
 // Okay... hvordan klare vi det her med Bundle.lookup()
 // Maaske i foerste omgang ved ikke at supportere det.

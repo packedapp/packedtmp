@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import app.packed.container.MemberOfExtension;
 import app.packed.container.WireletPipeline;
 import app.packed.service.ServiceExtension;
-import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 
 /** The default wirelet pipeline for */
@@ -31,6 +30,6 @@ public final class ServiceWireletPipeline extends WireletPipeline<ServiceWirelet
     final ServiceExtensionNode node;
 
     ServiceWireletPipeline(ServiceExtension extension) {
-        this.node = requireNonNull(ModuleAccess.service().extensionToNode(extension));
+        this.node = requireNonNull(ServiceExtensionNode.fromExtension(extension));
     }
 }

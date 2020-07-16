@@ -13,19 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package packed.internal.service.buildtime;
+
+import app.packed.artifact.App;
+import app.packed.container.BaseBundle;
 
 /**
  *
  */
-public interface ServiceSelector<T> {
+public class Doo extends BaseBundle {
 
-    /**
-     * Returns a service selector that will select every service.
-     * 
-     * @return a service selector that will select every service
-     */
-    static ServiceSelector<Object> all() {
-        throw new UnsupportedOperationException();
+    /** {@inheritDoc} */
+    @Override
+    protected void compose() {
+        provideConstant("FooBar");
+    }
+
+    public static void main(String[] args) {
+        App.of(new Doo());
+        System.out.println("Bye");
     }
 }

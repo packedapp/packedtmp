@@ -18,7 +18,7 @@ package packed.internal.moduleaccess;
 import app.packed.container.Bundle;
 import app.packed.container.BundleContext;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionContext;
+import app.packed.container.ExtensionConfiguration;
 import app.packed.container.WireletPipeline;
 import packed.internal.container.WireletPipelineContext;
 
@@ -41,7 +41,7 @@ public interface AppPackedContainerAccess extends SecretAccess {
      * @param context
      *            the extension context containing the extension
      */
-    void extensionSetContext(Extension extension, ExtensionContext context);
+    void extensionSetContext(Extension extension, ExtensionConfiguration context);
 
     void pipelineInitialize(WireletPipeline<?, ?> pipeline, WireletPipelineContext context);
 }

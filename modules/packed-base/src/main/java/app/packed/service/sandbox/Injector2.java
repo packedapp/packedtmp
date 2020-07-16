@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.service.sandbox;
+
+import java.util.function.Consumer;
+
+import app.packed.service.ServiceSelector;
+import app.packed.service.ServiceSet;
+import app.packed.service.ServiceTransformer;
 
 /**
  *
  */
-public interface ServiceSelector<T> {
+public interface Injector2 {
 
-    /**
-     * Returns a service selector that will select every service.
-     * 
-     * @return a service selector that will select every service
-     */
-    static ServiceSelector<Object> all() {
-        throw new UnsupportedOperationException();
-    }
+    Injector2 transform(Consumer<? super ServiceTransformer> transformer);
+
+    <T> ServiceSet<T> select(ServiceSelector<T> selector);
 }

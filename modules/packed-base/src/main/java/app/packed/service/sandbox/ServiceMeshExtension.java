@@ -13,19 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.service.sandbox;
 
 /**
  *
  */
-public interface ServiceSelector<T> {
+public class ServiceMeshExtension {
 
-    /**
-     * Returns a service selector that will select every service.
-     * 
-     * @return a service selector that will select every service
-     */
-    static ServiceSelector<Object> all() {
-        throw new UnsupportedOperationException();
-    }
 }

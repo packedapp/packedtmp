@@ -21,6 +21,14 @@ package app.packed.hook;
 // Like BundleDescriptor...
 // Altsaa har vi maaske en generics 
 // ArtifactView.... ContainerView??? Altsaa jeg App er vel fin...
+
+// app.descriptor();
+
+// AppDescriptor AppDescriptor.of(image);
+// AppDescriptor AppDescriptor.of(bundle);
+
+// ArtifactDescriptor???? Jeg ved ikke hvad den har specielt....
+
 interface AppDescriptor {
 
 }

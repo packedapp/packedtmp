@@ -36,5 +36,4 @@ class SomeBundle extends Bundle {
     /** {@inheritDoc} */
     @Override
     protected void compose() {}
-
 }

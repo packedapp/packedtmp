@@ -41,7 +41,7 @@ import packed.internal.config.ConfigSiteSupport;
  * 'app.packed.base'
  * <p>
  * Every extension implementations must provide either an empty constructor, or a constructor taking a single parameter
- * of type {@link ExtensionContext}. The constructor should have package private accessibility to make sure users do not
+ * of type {@link ExtensionConfiguration}. The constructor should have package private accessibility to make sure users do not
  * try an manually instantiate it, but instead use {@link BundleContext#use(Class)}. It is also recommended that the
  * extension itself is declared final.
  */
@@ -72,10 +72,10 @@ public abstract class Extension {
     /** A stack walker used by {@link #captureStackFrame(String)}. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
-    /** The extension context. This field should never be read directly, but only accessed via {@link #context()}. */
+    /** The extension context. This field should never be read directly, but only accessed via {@link #configuration()}. */
     // I think we should have a value representing configured. In this way people can store the extension
     // or keep it at runtime or whatever they want to do....
-    ExtensionContext context; // = PEC.CONFIGURED
+    ExtensionConfiguration configuration; // = PEC.CONFIGURED
 
     /**
      * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
@@ -103,7 +103,7 @@ public abstract class Extension {
             return ConfigSite.UNKNOWN;
         }
         Optional<StackFrame> sf = STACK_WALKER.walk(e -> e.filter(f -> !captureStackFrameIgnoreFilter(f)).findFirst());
-        return sf.isPresent() ? context().containerConfigSite().thenStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
+        return sf.isPresent() ? configuration().containerConfigSite().thenStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
     }
 
     /**
@@ -130,13 +130,13 @@ public abstract class Extension {
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
-     * This method delegate all calls to {@link ExtensionContext#checkConfigurable()}.
+     * This method delegate all calls to {@link ExtensionConfiguration#checkConfigurable()}.
      * 
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
     protected final void checkConfigurable() {
-        context().checkConfigurable();
+        configuration().checkConfigurable();
     }
 
     /**
@@ -152,8 +152,8 @@ public abstract class Extension {
      *          streamline with other sidecars we only allow it to be dependency injected into subclasses.
      */
     // should be final???
-    protected final ExtensionContext context() {
-        ExtensionContext c = context;
+    protected final ExtensionConfiguration configuration() {
+        ExtensionConfiguration c = configuration;
         if (c == null) {
             // TODO fix with actual annotation type
             throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension." + " As an alternative "
@@ -163,7 +163,7 @@ public abstract class Extension {
     }
 
     protected final <T> SingletonConfiguration<T> install(Factory<T> factory) {
-        return context().install(factory);
+        return configuration().install(factory);
     }
 
     /**
@@ -175,7 +175,7 @@ public abstract class Extension {
      * @see BundleContext#installInstance(Object)
      */
     protected final <T> SingletonConfiguration<T> installInstance(T instance) {
-        return context().installInstance(instance);
+        return configuration().installInstance(instance);
     }
 
     /**
@@ -198,10 +198,10 @@ public abstract class Extension {
      *             configurable and an extension of the specified type has not already been installed
      * @throws UnsupportedOperationException
      *             if the specified extension type has not been specified via {@link ExtensionSidecar}
-     * @see ExtensionContext#use(Class)
+     * @see ExtensionConfiguration#use(Class)
      */
     protected final <E extends Extension> E use(Class<E> extensionType) {
-        return context().use(extensionType);
+        return configuration().use(extensionType);
     }
 }
 

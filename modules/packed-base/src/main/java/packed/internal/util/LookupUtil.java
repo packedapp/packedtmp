@@ -19,6 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
+import java.lang.invoke.VarHandle;
 
 /** A utility class dealing with {@link Lookup} and {@link MethodHandle}. */
 public final class LookupUtil {
@@ -102,6 +103,15 @@ public final class LookupUtil {
         try {
             return caller.findStatic(refc, name, type);
         } catch (ReflectiveOperationException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
+    public static VarHandle initPrivateVarHandle(MethodHandles.Lookup lookup, Class<?> recv, String name, Class<?> type) {
+        try {
+            MethodHandles.Lookup l = MethodHandles.privateLookupIn(recv, lookup);
+            return l.findVarHandle(recv, name, type);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new ExceptionInInitializerError(e);
         }
     }

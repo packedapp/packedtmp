@@ -17,6 +17,8 @@ package packed.internal.service.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -27,9 +29,10 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.container.ExtensionContext;
+import app.packed.container.ExtensionConfiguration;
 import app.packed.inject.Inject;
 import app.packed.service.ServiceContract;
+import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceMode;
 import packed.internal.container.WireletPack;
 import packed.internal.container.WireletPipelineContext;
@@ -45,6 +48,7 @@ import packed.internal.service.buildtime.wirelets.ServiceWireletPipeline;
 import packed.internal.service.runtime.ConstantInjectorEntry;
 import packed.internal.service.runtime.InjectorEntry;
 import packed.internal.service.runtime.PackedInjector;
+import packed.internal.util.LookupUtil;
 
 /**
  * Since the logic for the service extension is quite complex. Especially with cross-container integration. We have put
@@ -52,11 +56,15 @@ import packed.internal.service.runtime.PackedInjector;
  */
 public final class ServiceExtensionNode {
 
+    /** A varhandle that can extract a ServiceExtensionNode from {@link ServiceExtension}. */
+    private static final VarHandle EXTENSION_TO_NODE = LookupUtil.initPrivateVarHandle(MethodHandles.lookup(), ServiceExtension.class, "node",
+            ServiceExtensionNode.class);
+
     /** Any children of the extension. */
     @Nullable
     ArrayList<ServiceExtensionNode> children;
 
-    private final ExtensionContext context;
+    private final ExtensionConfiguration context;
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
     public DependencyManager dependencies;
@@ -86,7 +94,7 @@ public final class ServiceExtensionNode {
      * @param context
      *            the context
      */
-    public ServiceExtensionNode(ExtensionContext context) {
+    public ServiceExtensionNode(ExtensionConfiguration context) {
         this.context = requireNonNull(context, "context is null");
 
     }
@@ -104,6 +112,14 @@ public final class ServiceExtensionNode {
         // Let's run some quick tests before we start with linking..
         // We might even
         // System.out.println("First " + (parent == null));
+    }
+
+    public void buildDescriptor(BundleDescriptor.Builder builder) {
+        // need to have resolved successfully
+        // TODO we should only have build entries here...
+        for (BuildEntry<?> n : resolvedEntries.values()) {
+            builder.addServiceDescriptor(((BuildEntry<?>) n).toDescriptor());
+        }
     }
 
     public void buildTree() {
@@ -125,20 +141,12 @@ public final class ServiceExtensionNode {
 
     }
 
-    public void buildDescriptor(BundleDescriptor.Builder builder) {
-        // need to have resolved successfully
-        // TODO we should only have build entries here...
-        for (BuildEntry<?> n : resolvedEntries.values()) {
-            builder.addServiceDescriptor(((BuildEntry<?>) n).toDescriptor());
-        }
-    }
-
     public void checkExportConfigurable() {
         // when processing wirelets
         // We should make sure some stuff is no longer configurable...
     }
 
-    public final ExtensionContext context() {
+    public final ExtensionConfiguration context() {
         return context;
     }
 
@@ -265,5 +273,16 @@ public final class ServiceExtensionNode {
             p = provider = new ServiceProvidingManager(this);
         }
         return p;
+    }
+
+    /**
+     * Extracts the service node from a service extension.
+     * 
+     * @param extension
+     *            the extension to extract from
+     * @return the service node
+     */
+    public static ServiceExtensionNode fromExtension(ServiceExtension extension) {
+        return (ServiceExtensionNode) EXTENSION_TO_NODE.get(extension);
     }
 }

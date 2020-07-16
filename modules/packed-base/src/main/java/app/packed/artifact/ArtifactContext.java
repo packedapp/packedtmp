@@ -15,10 +15,16 @@
  */
 package app.packed.artifact;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import app.packed.base.Key;
 import app.packed.component.Component;
+import app.packed.component.ComponentPath;
+import app.packed.component.ComponentStream;
+import app.packed.component.ComponentStream.Option;
+import app.packed.config.ConfigSite;
+import app.packed.container.ExtensionSet;
 import app.packed.lifecycleold.StopOption;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
@@ -36,29 +42,55 @@ import app.packed.service.ServiceExtension;
  *          which would prohibit subclassing except by explicitly permitted types.
  */
 // ArtifactContext extends ContainerContext???
-public interface ArtifactContext extends Component {
+// Nej der er stadig ting som en artifact ikke har adgang til...
+public interface ArtifactContext {
 
-    // Optional<?>??? Maybe a ResultClass
-    default Object result() {
-        // awaitResult()...
-        // awaitResultUninterruptable()...
-        // Ideen er lidt at vi kan vente paa det...
-        return null;
+    /**
+     * Returns the config site of this artifact.
+     * 
+     * @return the config site of this artifact
+     */
+    default ConfigSite configSite() {
+        return top().configSite();
     }
 
-    // TypeLiteral??? Maaske returnere execute() et object...
-    default Class<?> resultType() {
-        // Ideen er her taenkt at vi kan bruge den samme med Job...
-        //// En anden slags entry point annotering...
-        return void.class;
+    Optional<String> description();
+
+    /**
+     * Returns a set of all the extension that are available to the top component. If the top component is a container it is
+     * all the extensions that are registered with container when it is assembled. If it is not a container. The set
+     * contains all extensions that are registered with the container to which the top container belongs to.
+     * 
+     * @return the extensions that are used
+     */
+    default ExtensionSet extensions() {
+        return ExtensionSet.empty();
     }
 
-    Injector injector();// sidecar???
+    /**
+     * Returns an injector with any services that the underlying container has exported. If the underlying does not export
+     * any services or not does not use the {@link ServiceExtension} at all. The injector will be empty.
+     * 
+     * @return an injector for the underlying container
+     */
+    Injector injector();
 
-    default void start() {}
+    /**
+     * Returns the name of the top component of this artifact.
+     * 
+     * @return the name of the top component of this artifact
+     */
+    default String name() {
+        return top().name();
+    }
 
-    default <T> CompletableFuture<T> startAsync(T result) {
-        throw new UnsupportedOperationException();
+    /**
+     * Returns the path of the top component of this artifact.
+     * 
+     * @return the path of the top component of this artifact
+     */
+    default ComponentPath path() {
+        return top().path();
     }
 
     // start() osv smider UnsupportedOperationException hvis LifeycleExtension ikke er installeret???
@@ -76,15 +108,55 @@ public interface ArtifactContext extends Component {
 
     // Noget med entrypoint?? Nej tror ikke vi har behov for at expose dett..
 
+    // Optional<?>??? Maybe a ResultClass
+    default Object result() {
+        // awaitResult()...
+        // awaitResultUninterruptable()...
+        // Ideen er lidt at vi kan vente paa det...
+        return null;
+    }
+
+    // TypeLiteral??? Maaske returnere execute() et object...
+    default Class<?> resultType() {
+        // Ideen er her taenkt at vi kan bruge den samme med Job...
+        //// En anden slags entry point annotering...
+        return void.class;
+    }
+
+    default void start() {}
+
+    default <T> CompletableFuture<T> startAsync(T result) {
+        throw new UnsupportedOperationException();
+    }
+
     void stop(StopOption... options);
 
     <T> CompletableFuture<T> stopAsync(T result, StopOption... options);
 
+    default ComponentStream stream(Option... options) {
+        return top().stream(options);
+    }
+
     /**
-     * Returns a service that is registered with the specified key, if it exists. Otherwise, fails by throwing
+     * Returns the top component of this artifact.
+     * 
+     * @return the top component of this artifact
+     */
+    // component(), root()
+    default Component top() {
+        throw new UnsupportedOperationException();
+    }
+
+    default <T> T use(Class<T> key) {
+        return injector().use(key);
+    }
+
+    /**
+     * Returns a service registered with the specified key, if it exists. Otherwise, fails by throwing
      * {@link UnsupportedOperationException}.
      * <p>
-     * If the application is not already running.
+     * If the underlying container has not already been started. Invoking this method will first invoke {@link #start()} and
+     * wait.
      * 
      * @param <T>
      *            the type of service to return
@@ -94,6 +166,7 @@ public interface ArtifactContext extends Component {
      * @throws UnsupportedOperationException
      *             if a service with the specified key does not exist. Or if the application does not use
      *             {@link ServiceExtension}.
+     * @see #injector()
      */
     // If the artifact has an execution phase this method will block while starting.
     // It can safely be invoked after a container has been shutdown...
@@ -101,8 +174,11 @@ public interface ArtifactContext extends Component {
     // Det her er ting der er tilgaengelig til componenten med en ren noegle...
     // Det ser ud som om det er containeren der forspoerger??? Eller udefra???
     /// Maaske 2 metoder...
-    <T> T use(Key<T> key);
+    default <T> T use(Key<T> key) {
+        return injector().use(key);
+    }
 
+    // Usecase???
     Component useComponent(CharSequence path);
 }
 //// Det er jo i virkeligheden ContainerContext uden lifecycle... + lidt ekstra
@@ -117,16 +193,6 @@ public interface ArtifactContext extends Component {
 //default boolean isExtensionPresent(Class<? extends Extension> extensionType) {
 //  // Hmmmm.. if (isExtensionPresent(ServiceExtension.class) ( use(Stuff.class))
 //  return false;
-//}
-
-///// De her skal doe
-///**
-//* @throws UnsupportedOperationException
-//*             if the artifact is not executable
-//*/
-//default void execute() {
-//  // Spoergmaalet er hvor kommer den vaerdi fra????
-//  // return null;
 //}
 
 // has start/run/stop

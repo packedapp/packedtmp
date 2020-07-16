@@ -30,6 +30,9 @@ import app.packed.lifecycle.Leaving;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 //app.packed.state.... Also ExtensionSidecar.STATE2_MAIN, ExtensionSidecar.STATE3_LINKING, ExtensionSidecar.STATE4_HOSTING
+
+// dependencies = Class<? extends SubExtension>...
+// implementation default Extension.class <-- must be fillout if extension is interface (extends Extension)... 
 public @interface ExtensionSidecar {
 
     /**
@@ -62,7 +65,7 @@ public @interface ExtensionSidecar {
     /**
      * Other extensions that an extension may use (but do not have to). This need not include transitive dependencies
      * (dependencies of dependencies). Only extensions that are directly used, for example, via
-     * {@link ExtensionContext#use(Class)}.
+     * {@link ExtensionConfiguration#use(Class)}.
      * 
      * @return extensions that the extension may use
      */

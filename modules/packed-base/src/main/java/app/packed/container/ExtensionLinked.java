@@ -45,6 +45,9 @@ public @interface ExtensionLinked {
     // Only children not anything farther removed...
     // If not only direct children. Only the closest ancestor will have its
     // method invoked.
+
+    // onlyDirectAccenden
+    // onlyChild
     boolean onlyDirectLink() default false;// onlyDirectLink
     // boolean crossArtifacts default ???
 }

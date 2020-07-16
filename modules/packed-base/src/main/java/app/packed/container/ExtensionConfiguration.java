@@ -21,18 +21,18 @@ import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 
 /**
- * An instance of this interface is available via {@link Extension#context()} or via constructor injection into an
+ * An instance of this interface is available via {@link Extension#configuration()} or via constructor injection into an
  * extension. Since the extension itself defines most methods in this interface via protected final methods. This
  * interface is typically used to be able to provide these methods to code that is not located on the extension
  * implementation or in the same package as the extension itself.
  * <p>
  * Instances of this class should never be exposed to end-users.
  * 
- * @apiNote In the future, if the Java language permits, {@link ExtensionContext} may become a {@code sealed} interface,
+ * @apiNote In the future, if the Java language permits, {@link ExtensionConfiguration} may become a {@code sealed} interface,
  *          which would prohibit subclassing except by explicitly permitted types.
  * 
  */
-public interface ExtensionContext {
+public interface ExtensionConfiguration {
 
     // What we are generating...
     // This can be tricky, For example, if we create an image.

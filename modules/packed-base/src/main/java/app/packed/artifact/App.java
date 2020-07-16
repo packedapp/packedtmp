@@ -172,11 +172,11 @@ public interface App extends AutoCloseable {
      * @return a component with the specified path
      */
     // TODO throw UnknownPathException();;
-    //
+    // componentAt
     Component useComponent(CharSequence path);
 
     /**
-     * Returns a driver for producing {@link App} instances.
+     * Returns an artifact driver that can produce {@link App} instances.
      * <p>
      * This method is mainly used by advanced users.
      * 

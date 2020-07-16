@@ -64,7 +64,10 @@ public @interface WireletSidecar {
     // Navnet er daarligt syntes jeg.. Syntes det hurtigt begyndet at bliver kompliceret hvis vi bruger expand.
     // AssemblyTime.. Ikke grund til at introduce expand....
     // require
-    boolean failOnExpand() default false;
+
+    // Fails if the annotated wirelet is used on an existing image
+    // failForImage
+    boolean failOnImage() default false;
 }
 // failIfExtensionUnavailable default true();
 // ArtifactWirelets... Wirelets that cannot be used for linkage...

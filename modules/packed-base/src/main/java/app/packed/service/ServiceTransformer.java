@@ -13,20 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject2;
+package app.packed.service;
+
+import java.util.Set;
 
 /**
  *
  */
-// Ved ikke om vi skal have en enum...
-public enum InjectionStyle {
+// Altsaa størstedelen af wirelets kan jo bare wrappe saadan en....
 
-    /** By position, for example, event handler. */
-    POSITIONAL,
+public interface ServiceTransformer {
 
-    /** By an annotation on the variable. */
-    ANNOTATION,
+    //
+    ServiceDescriptor rekey(Class<?> from, Class<?> to);
 
-    /** Class, something without Type Variables, Optional qualifiers... */
-    KEY;
+    /**
+     * Returns all services that can be transformed.
+     * 
+     * @return all services that can be transformed
+     */
+    Set<ServiceDescriptor> descriptors();
 }

@@ -13,19 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.inject.sandbox;
 
 /**
  *
  */
-public interface ServiceSelector<T> {
+// Den her kan bliver injected ind i metoder...
+// Hvis man naar saa langt, som at have en instance
+// Den kan injectes... Et InjectionSite kan ikke...
+public interface InjectionContext extends InjectionSite {
 
-    /**
-     * Returns a service selector that will select every service.
-     * 
-     * @return a service selector that will select every service
-     */
-    static ServiceSelector<Object> all() {
-        throw new UnsupportedOperationException();
-    }
 }

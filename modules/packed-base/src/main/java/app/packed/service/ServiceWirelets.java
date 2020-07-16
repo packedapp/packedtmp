@@ -106,6 +106,7 @@ public final class ServiceWirelets {
      *            the action to perform for each service descriptor
      * @return a peeking wirelet
      */
+    // I think it should be a set or some kind instead of a consumer
     public static Wirelet peekFrom(Consumer<? super ServiceDescriptor> action) {
         return new PackedUpstreamInjectionWirelet.PeekFrom(action);
     }

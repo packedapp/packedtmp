@@ -62,7 +62,7 @@ public class WireletModel extends Model {
         WireletSidecar ws = type.getAnnotation(WireletSidecar.class);
         if (ws != null) {
             this.inherited = ws.inherited();
-            this.requireAssemblyTime = ws.failOnExpand();
+            this.requireAssemblyTime = ws.failOnImage();
 
             // Find any pipeline this wirelet is part of
             Class<? extends WireletPipeline<?, ?>> p = ws.pipeline();

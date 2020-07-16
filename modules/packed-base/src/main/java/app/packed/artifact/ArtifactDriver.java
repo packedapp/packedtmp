@@ -40,9 +40,9 @@ import packed.internal.reflect.typevariable.TypeVariableExtractor;
  * {@link Injector} are not sufficient. In fact, the default implementations of both {@link App} and {@link Injector}
  * are just thin facade that delegates all calls to an {@link ArtifactContext} instance.
  * <p>
- * Normally, you should never instantiate more then a single instance of any driver implementations.
+ * Normally, you would never instantiate more then a single instance of any driver implementations.
  * <p>
- * Iff the artifact type being created by this driver has an execution phase it must implement {@link AutoCloseable}.
+ * Iff a driver creates artifacts with an execution phase. The artifact must implement {@link AutoCloseable}.
  * <p>
  * Implementations of this class must be safe for access by multiple threads concurrently.
  * 

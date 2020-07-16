@@ -13,14 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject2;
+package app.packed.service.sandbox;
+
+import app.packed.container.Bundle;
 
 /**
  *
  */
-// Den her kan bliver injected ind i metoder...
-// Hvis man naar saa langt, som at have en instance
-// Den kan injectes... Et InjectionSite kan ikke...
-public interface InjectionContext extends InjectionSite {
 
+// Ideen er egentlig lidt at InjectorAssembler og friends.
+// Bliver wrappet i saadan en her faetter....
+
+// Maaske Bare Assembled
+final class AssemblerBundle extends Bundle {
+
+    /** {@inheritDoc} */
+    @Override
+    protected void compose() {
+        throw new UnsupportedOperationException();
+    }
 }

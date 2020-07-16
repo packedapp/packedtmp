@@ -34,7 +34,7 @@ import java.util.stream.Stream;
 import app.packed.base.Nullable;
 import app.packed.container.Bundle;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionContext;
+import app.packed.container.ExtensionConfiguration;
 import app.packed.container.InternalExtensionException;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
@@ -389,7 +389,7 @@ final class OnHookModelBuilder {
                 if (Extension.class.isAssignableFrom(onType)) {
                     // Hack
                     try {
-                        constructor = onType.getDeclaredConstructor(ExtensionContext.class);
+                        constructor = onType.getDeclaredConstructor(ExtensionConfiguration.class);
                     } catch (NoSuchMethodException ignore) {} // Already on failure path
                 }
                 if (constructor == null) {

@@ -40,6 +40,10 @@ import app.packed.inject.Factory;
  */
 public interface ServiceComponentConfiguration<T> extends ServiceConfiguration<T>, SingletonConfiguration<T> {
 
+    //// Can be used to set separately tags, descriptions, ect...
+    // SingletonConfiguration<T> componentConfiguration();
+    // ServiceConfiguration<T> serviceConfiguration();
+
     /**
      * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
      * null, any existing binding is removed.

@@ -15,10 +15,6 @@
  */
 package app.packed.service;
 
-import packed.internal.moduleaccess.AppPackedServiceAccess;
-import packed.internal.moduleaccess.ModuleAccess;
-import packed.internal.service.buildtime.ServiceExtensionNode;
-
 /**
  * The instantiation mode of a service.
  */
@@ -34,6 +30,8 @@ import packed.internal.service.buildtime.ServiceExtensionNode;
 
 // ServiceMode
 
+// Maybe we should more think of it as whether or not it is cachable....
+// This also more or less makes eager singleton + lazy singleton identical
 public enum ServiceMode {
 
     /**
@@ -51,16 +49,6 @@ public enum ServiceMode {
 
     /** A new instance of the service is created every time the service is requested. */
     PROTOTYPE;
-
-    static {
-        ModuleAccess.initialize(AppPackedServiceAccess.class, new AppPackedServiceAccess() {
-
-            @Override
-            public ServiceExtensionNode extensionToNode(ServiceExtension e) {
-                return e.node;
-            }
-        });
-    }
 }
 
 // /**

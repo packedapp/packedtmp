@@ -28,5 +28,6 @@ public interface AppPackedServiceAccess extends SecretAccess {
      *            the extension to extract from
      * @return the service node
      */
+    @Deprecated
     ServiceExtensionNode extensionToNode(ServiceExtension extension);
 }

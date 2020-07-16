@@ -199,6 +199,7 @@ public final class ServiceContract extends Contract {
      * 
      * @return a new service contract builder
      */
+    // or just builder();
     public static ServiceContract.Builder newContract() {
         return new ServiceContract.Builder();
     }

@@ -13,14 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.service.sandbox;
 
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import app.packed.base.Key;
+import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
+import app.packed.service.Injector;
+import app.packed.service.InjectorAssembler;
+import app.packed.service.ServiceContract;
+import app.packed.service.ServiceDescriptor;
+import app.packed.service.ServiceTransformer;
 
 /**
  *
@@ -37,6 +45,22 @@ import app.packed.inject.Factory;
 // Mangler support for Contracts
 // Mangler support for at kunne specificere providePrototype ect....
 public class ServicePackletCandidates {
+
+    public static void main(String[] args) {
+        computeWithContract(sc -> removeTo(sc.services().iterator().next()));
+    }
+
+    // AV AV. Maaske skal vi kun tillade ServiceWirelets....
+    // Problemet er f.eks. ComputeWithContract(c->Wirelet.name("foobar");
+    // Det er et ordering problem...
+    static Wirelet computeWithContract(Function<? super ServiceContract, @Nullable ? extends Wirelet> function) {
+        throw new UnsupportedOperationException();
+    }
+
+    // May map to null
+    public static Wirelet delayed(Function<Set<ServiceDescriptor>, Wirelet> mapper) {
+        throw new UnsupportedOperationException();
+    }
 
     // provideTo -> Keeps original
     // provideFrom -> Keeps original
@@ -82,6 +106,10 @@ public class ServicePackletCandidates {
     }
 
     public static Wirelet provideTo(Factory<?> mapper) {
+        throw new UnsupportedOperationException();
+    }
+
+    static Wirelet transformTo(Consumer<? extends ServiceTransformer> transformer) {
         throw new UnsupportedOperationException();
     }
 }

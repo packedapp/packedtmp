@@ -76,8 +76,8 @@ public abstract class Bundle implements ArtifactSource {
 
             /** {@inheritDoc} */
             @Override
-            public void extensionSetContext(Extension extension, ExtensionContext context) {
-                extension.context = context;
+            public void extensionSetContext(Extension extension, ExtensionConfiguration context) {
+                extension.configuration = context;
             }
 
             /** {@inheritDoc} */
@@ -228,7 +228,7 @@ public abstract class Bundle implements ArtifactSource {
      * @param predicate
      * @return stuff
      * @throws IllegalArgumentException
-     *             if the specified wirelet type does not have {@link WireletSidecar#failOnExpand()} set to true
+     *             if the specified wirelet type does not have {@link WireletSidecar#failOnImage()} set to true
      */
     // Should we add wirelet(Type, consumer) or Optional<Wirelet>
     final <W extends Wirelet> boolean ifWirelet(Class<W> wireletType, Predicate<? super W> predicate) {
@@ -245,7 +245,7 @@ public abstract class Bundle implements ArtifactSource {
         // settings such as WebExtension.defaultPort(); <- but that's runtime
         // I mean for
         // The runtime then...
-        @WireletSidecar(failOnExpand = true)
+        @WireletSidecar(failOnImage = true)
         class MyWirelet implements Wirelet {}
         return false;
     }

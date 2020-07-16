@@ -17,7 +17,7 @@ package packed.internal.inject2;
 
 import java.util.Map;
 
-import app.packed.inject2.InjectionSite;
+import app.packed.inject.sandbox.InjectionSite;
 
 /**
  *

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject2;
+package app.packed.inject.sandbox;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;

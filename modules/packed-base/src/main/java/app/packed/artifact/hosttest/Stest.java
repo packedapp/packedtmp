@@ -32,7 +32,7 @@ public class Stest extends Bundle {
     protected void compose() {
         use(WebExtension.class).get("/functional", "Hello Functional!");
         install(SomeComponent.class);
-        super.extensions().forEach(e -> System.out.println(e));
+        extensions().forEach(e -> System.out.println(e));
     }
 
     public static void main(String[] args) {

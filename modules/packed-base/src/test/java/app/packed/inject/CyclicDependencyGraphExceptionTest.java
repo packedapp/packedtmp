@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.service.CyclicDependencyGraphException;
+import app.packed.service.sandbox.CyclicDependencyGraphException;
 import testutil.stubs.Throwables.Exception1;
 
 /** Tests {@link CyclicDependencyGraphException}. */

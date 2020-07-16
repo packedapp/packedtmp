@@ -15,7 +15,7 @@
  */
 package packed.internal.inject2;
 
-import app.packed.inject2.InjectionSite;
+import app.packed.inject.sandbox.InjectionSite;
 import app.packed.service.ServiceExtension;
 
 /**

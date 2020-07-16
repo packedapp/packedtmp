@@ -25,7 +25,7 @@ import app.packed.base.Key.Qualifier;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionContext;
+import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionLinked;
 import app.packed.container.ExtensionSidecar;
 import app.packed.container.Wirelet;
@@ -81,9 +81,14 @@ public final class ServiceExtension extends Extension {
     final ServiceExtensionNode node;
 
     /** Should never be initialized by users. */
-    ServiceExtension(ExtensionContext context) {
+    ServiceExtension(ExtensionConfiguration context) {
         this.node = new ServiceExtensionNode(context);
     }
+
+    // Skal vi ogsaa supportere noget paa tvaers af bundles???
+    // Det er vel en slags Wirelet
+    // CycleBreaker(SE, ...);
+    // CycleBreaker(SE, ...);
 
     // Maaske er det her mere injection then service
     <S, U> void cycleBreaker(Class<S> keyProducer, Class<U> key2) {
@@ -254,6 +259,7 @@ public final class ServiceExtension extends Extension {
     /**
      * 
      */
+    // Will never export services that are requirements...
     public void exportAll() {
         checkConfigurable();
         node.exports().exportAll(captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));

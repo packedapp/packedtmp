@@ -13,15 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.service.sandbox;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
+import app.packed.service.ServiceDescriptor;
+import app.packed.service.ServiceSelector;
 import packed.internal.service.buildtime.wirelets.PackedDownstreamInjectionWirelet;
 import packed.internal.service.buildtime.wirelets.PackedUpstreamInjectionWirelet;
 
@@ -42,6 +45,15 @@ public class ServicePacklets {
     }
 
     public static Wirelet mapFrom(Key<?> originalKey, Key<?> newKey) {
+        throw new UnsupportedOperationException();
+    }
+
+    // Kan maaske have noget a.la. CHM.compute
+    // computeFrom(Func<SD, Key>
+    // new key -> Remap
+    // null -> remove
+    // same key = do nothing
+    public static Wirelet mapFromAll(ServiceSelector<?> selector, Function<ServiceDescriptor, Key<?>> mapper) {
         throw new UnsupportedOperationException();
     }
 

@@ -18,6 +18,7 @@ package app.packed.service;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -134,11 +135,11 @@ public interface Injector {
     }
 
     /**
-     * Returns {@code true} if a service matching the specified type exists. Otherwise {@code false}.
+     * Returns {@code true} if a service with the specified key exists. Otherwise {@code false}.
      *
      * @param key
      *            the type of service
-     * @return true if a service matching the specified type exists. Otherwise false.
+     * @return true if a service with the specified key exists. Otherwise false.
      * @see #contains(Class)
      */
     boolean contains(Key<?> key); // We do not call get here, as it might create a value
@@ -216,6 +217,11 @@ public interface Injector {
      * @return a unordered {@code Stream} of all services that this injector provides
      */
     // services().service(s();
+
+    default Set<ServiceDescriptor> descriptors() {
+        throw new UnsupportedOperationException();
+    }
+
     Stream<ServiceDescriptor> services();
 
     /**

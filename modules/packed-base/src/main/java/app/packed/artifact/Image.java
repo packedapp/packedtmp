@@ -29,10 +29,15 @@ import app.packed.container.Wirelet;
 // ServiceContract.from(Image|new XBundle()); -> 
 //// SystemInspector.find(iOrB, ServiceContract.class); <-- SC exposed as a contract
 
-//  
+// Image<App> app = App.image(new MyApp());
+// Image app = Image.of(new MyApp());
+
+// App.driver().image(Bundle b);
 public interface Image<T> {
 
     T initialize(Wirelet... wirelets);
 
     T start(Wirelet... wirelets);
 }
+// Problemet med Image er guest images..
+// Og om en envelope for en artifact.

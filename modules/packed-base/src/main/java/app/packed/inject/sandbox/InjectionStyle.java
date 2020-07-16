@@ -13,22 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
-
-import app.packed.container.Bundle;
+package app.packed.inject.sandbox;
 
 /**
  *
  */
+// Ved ikke om vi skal have en enum...
+public enum InjectionStyle {
 
-// Ideen er egentlig lidt at InjectorAssembler og friends.
-// Bliver wrappet i saadan en her faetter....
+    /** By position, for example, event handler. */
+    POSITIONAL,
 
-final class AssemblerBundle extends Bundle {
+    /** By an annotation on the variable. */
+    ANNOTATION,
 
-    /** {@inheritDoc} */
-    @Override
-    protected void compose() {
-        throw new UnsupportedOperationException();
-    }
+    /** Class, something without Type Variables, Optional qualifiers... */
+    KEY;
 }

@@ -48,8 +48,8 @@ import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedInstantiationContext;
-import packed.internal.component.PackedComponent;
 import packed.internal.component.ComponentModel;
+import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedComponentContext;
 import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.component.PackedStatelessComponentConfiguration;
@@ -62,6 +62,7 @@ import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.inject.util.InjectConfigSiteOperations;
 import packed.internal.moduleaccess.ModuleAccess;
+import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.runtime.PackedInjector;
 
 /** The default implementation of {@link BundleContext}. */
@@ -261,7 +262,7 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
     protected void extensionsPrepareInstantiation(PackedInstantiationContext ic) {
         PackedExtensionContext ee = extensions.get(ServiceExtension.class);
         if (ee != null) {
-            PackedInjector di = ModuleAccess.service().extensionToNode(((ServiceExtension) ee.extension())).onInstantiate(ic.wirelets);
+            PackedInjector di = ServiceExtensionNode.fromExtension(((ServiceExtension) ee.extension())).onInstantiate(ic.wirelets);
             ic.put(this, di);
         }
         super.extensionsPrepareInstantiation(ic);
