@@ -414,7 +414,7 @@ public abstract class PackedComponentContext extends AbstractComponentConfigurat
         /** One of the install component methods has been invoked. */
         INSTALL_INVOKED,
 
-        /** {@link BundleContext#link(Bundle, app.packed.container.Wirelet...)} has been invoked. */
+        /** {@link BundleConfiguration#link(Bundle, app.packed.container.Wirelet...)} has been invoked. */
         LINK_INVOKED,
 
         /** One of the install component methods has been invoked. */

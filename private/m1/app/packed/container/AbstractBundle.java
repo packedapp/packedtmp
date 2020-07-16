@@ -17,8 +17,6 @@ package app.packed.container;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import app.packed.container.BundleConfiguration;
-
 /**
  *
  */
