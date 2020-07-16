@@ -49,6 +49,7 @@ public enum ServiceMode {
 
     /** A new instance of the service is created every time the service is requested. */
     PROTOTYPE;
+
 }
 
 // /**

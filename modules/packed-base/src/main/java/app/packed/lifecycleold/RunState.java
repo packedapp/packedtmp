@@ -15,9 +15,6 @@
  */
 package app.packed.lifecycleold;
 
-import packed.internal.moduleaccess.AppPackedLifecycleAccess;
-import packed.internal.moduleaccess.ModuleAccess;
-
 /**
  * An enum containing all valid run states.
  *
@@ -105,7 +102,4 @@ public enum RunState {
         return this == STOPPING || this == TERMINATED;
     }
 
-    static {
-        ModuleAccess.initialize(AppPackedLifecycleAccess.class, new AppPackedLifecycleAccess() {});
-    }
 }

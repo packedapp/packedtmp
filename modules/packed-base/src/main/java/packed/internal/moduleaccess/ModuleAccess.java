@@ -17,12 +17,9 @@ package packed.internal.moduleaccess;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import app.packed.artifact.ArtifactDriver;
 import app.packed.base.TypeLiteral;
 import app.packed.container.Bundle;
 import app.packed.hook.AnnotatedFieldHook;
-import app.packed.lifecycleold.RunState;
-import app.packed.service.ServiceMode;
 
 /** A mechanism for calling package private methods in public packages without using reflection. */
 // Rename to ModuleAccess.
@@ -34,14 +31,14 @@ public final class ModuleAccess {
     /** Never instantiate. */
     private ModuleAccess() {}
 
-    /**
-     * Returns an access object that can access methods in app.packed.artifact.
-     * 
-     * @return an access object that can access methods in app.packed.artifact
-     */
-    public static AppPackedArtifactAccess artifact() {
-        return ArtifactSingletonHolder.INSTANCE;
-    }
+//    /**
+//     * Returns an access object that can access methods in app.packed.artifact.
+//     * 
+//     * @return an access object that can access methods in app.packed.artifact
+//     */
+//    public static AppPackedArtifactAccess artifact() {
+//        return ArtifactSingletonHolder.INSTANCE;
+//    }
 
     /**
      * Returns an access object for app.packed.container.
@@ -80,23 +77,23 @@ public final class ModuleAccess {
         }
     }
 
-    /**
-     * Returns an access object for app.packed.lifecycle.
-     * 
-     * @return an access object for app.packed.lifecycle
-     */
-    public static AppPackedLifecycleAccess lifecycle() {
-        return LifecycleSingletonHolder.INSTANCE;
-    }
+//    /**
+//     * Returns an access object for app.packed.lifecycle.
+//     * 
+//     * @return an access object for app.packed.lifecycle
+//     */
+//    public static AppPackedLifecycleAccess lifecycle() {
+//        return LifecycleSingletonHolder.INSTANCE;
+//    }
 
-    /**
-     * Returns an access object for app.packed.service.
-     * 
-     * @return an access object for app.packed.service
-     */
-    public static AppPackedServiceAccess service() {
-        return ServiceSingletonHolder.INSTANCE;
-    }
+//    /**
+//     * Returns an access object for app.packed.service.
+//     * 
+//     * @return an access object for app.packed.service
+//     */
+//    public static AppPackedServiceAccess service() {
+//        return ServiceSingletonHolder.INSTANCE;
+//    }
 
 //    public static AppPackedInjectAccess inject() {
 //        return InjectSingletonHolder.INSTANCE;
@@ -125,13 +122,13 @@ public final class ModuleAccess {
     public static AppPackedBaseAccess base() {
         return BaseSingletonHolder.INSTANCE;
     }
-
-    /** Singleton holder for {@link AppPackedArtifactAccess}. */
-    private static class ArtifactSingletonHolder {
-
-        /** The singleton instance. */
-        private static final AppPackedArtifactAccess INSTANCE = singleton(AppPackedArtifactAccess.class, ArtifactDriver.class);
-    }
+//
+//    /** Singleton holder for {@link AppPackedArtifactAccess}. */
+//    private static class ArtifactSingletonHolder {
+//
+//        /** The singleton instance. */
+//        private static final AppPackedArtifactAccess INSTANCE = singleton(AppPackedArtifactAccess.class, ArtifactDriver.class);
+//    }
 
     /** Holder of the {@link AppPackedContainerAccess} singleton. */
     private static class ContainerSingletonHolder {
@@ -147,19 +144,19 @@ public final class ModuleAccess {
         private static final AppPackedHookAccess INSTANCE = singleton(AppPackedHookAccess.class, AnnotatedFieldHook.class);
     }
 
-    /** Holder of the {@link AppPackedLifecycleAccess} singleton. */
-    private static class LifecycleSingletonHolder {
-
-        /** The singleton instance. */
-        private static final AppPackedLifecycleAccess INSTANCE = singleton(AppPackedLifecycleAccess.class, RunState.class);
-    }
-
-    /** Holder of the {@link AppPackedServiceAccess} singleton. */
-    private static class ServiceSingletonHolder {
-
-        /** The singleton instance. */
-        private static final AppPackedServiceAccess INSTANCE = singleton(AppPackedServiceAccess.class, ServiceMode.class);
-    }
+//    /** Holder of the {@link AppPackedLifecycleAccess} singleton. */
+//    private static class LifecycleSingletonHolder {
+//
+//        /** The singleton instance. */
+//        private static final AppPackedLifecycleAccess INSTANCE = singleton(AppPackedLifecycleAccess.class, RunState.class);
+//    }
+//
+//    /** Holder of the {@link AppPackedServiceAccess} singleton. */
+//    private static class ServiceSingletonHolder {
+//
+//        /** The singleton instance. */
+//        private static final AppPackedServiceAccess INSTANCE = singleton(AppPackedServiceAccess.class, ServiceMode.class);
+//    }
 
 //    /** Holder of the {@link AppPackedInjectAccess} singleton. */
 //    private static class InjectSingletonHolder {

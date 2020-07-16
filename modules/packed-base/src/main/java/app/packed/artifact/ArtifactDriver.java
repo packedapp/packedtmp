@@ -29,8 +29,6 @@ import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedArtifactImage;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.WireletPack;
-import packed.internal.moduleaccess.AppPackedArtifactAccess;
-import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 
 /**
@@ -71,16 +69,16 @@ public abstract class ArtifactDriver<A> {
     /** A type variable extractor to find the type of artifacts this driver creates. */
     private static final TypeVariableExtractor ARTIFACT_DRIVER_TV_EXTRACTOR = TypeVariableExtractor.of(ArtifactDriver.class);
 
-    static {
-        ModuleAccess.initialize(AppPackedArtifactAccess.class, new AppPackedArtifactAccess() {
-
-            /** {@inheritDoc} */
-            @Override
-            public <T> T newArtifact(ArtifactDriver<T> driver, ArtifactContext context) {
-                return driver.newArtifact(context);
-            }
-        });
-    }
+//    static {
+//        ModuleAccess.initialize(AppPackedArtifactAccess.class, new AppPackedArtifactAccess() {
+//
+//            /** {@inheritDoc} */
+//            @Override
+//            public <T> T newArtifact(ArtifactDriver<T> driver, ArtifactContext context) {
+//                return driver.newArtifact(context);
+//            }
+//        });
+//    }
 
     /** The type of artifact this driver produces. */
     private final Class<A> artifactType;
