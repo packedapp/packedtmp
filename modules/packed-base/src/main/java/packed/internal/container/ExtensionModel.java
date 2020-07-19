@@ -27,9 +27,9 @@ import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.component.Component;
-import app.packed.container.BundleConfiguration;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionConfiguration;
+import app.packed.container.ExtensionContext;
 import app.packed.container.ExtensionLinked;
 import app.packed.container.ExtensionSidecar;
 import app.packed.container.InternalExtensionException;
@@ -318,7 +318,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         }
 
         protected void addExtensionContextElements(MethodHandleBuilder builder, int index) {
-            builder.addKey(ExtensionConfiguration.class, index);
+            builder.addKey(ExtensionContext.class, index);
             builder.addKey(LifecycleContext.class, PackedExtensionContext.MH_LIFECYCLE_CONTEXT, index);
             builder.addAnnoClassMapper(WireletFind.class, PackedExtensionContext.MH_FIND_WIRELET, index);
         }
@@ -348,7 +348,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
             addExtensionContextElements(mhbConstructor, 0);
 
             OpenClass cp = prep(mhbConstructor);
-            this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, BundleConfiguration.class);
+            this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
 
             if (linked != null) {
                 // ancestor extension, descendant extension context, descendant extension

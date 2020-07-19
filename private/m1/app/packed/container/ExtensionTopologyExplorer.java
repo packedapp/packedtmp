@@ -35,11 +35,11 @@ import java.util.Optional;
 // Baade i selve extensionen men ogsaa alle dens members...
 public interface ExtensionTopologyExplorer<E extends Extension> {
 
-    Optional<E> findAncestor(ExtensionConfiguration ec);
+    Optional<E> findAncestor(ExtensionContext ec);
 
-    Optional<E> parent(ExtensionConfiguration ec);
+    Optional<E> parent(ExtensionContext ec);
 
-    List<E> children(ExtensionConfiguration ec);
+    List<E> children(ExtensionContext ec);
 
     // TreeView decendents...
 

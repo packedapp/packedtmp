@@ -46,7 +46,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 abstract class AbstractBundle {
 
-    AbstractBundle(ContextProvider<BundleConfiguration> cp) {
+    AbstractBundle(ContextProvider<ContainerConfiguration> cp) {
 
     }
 
@@ -65,13 +65,13 @@ abstract class AbstractBundle {
     // @Inline
 
     static class F extends AbstractBundle {
-        final ContextProvider<BundleConfiguration> cp;
+        final ContextProvider<ContainerConfiguration> cp;
 
         F() {
-            this(new ContextProvider<BundleConfiguration>());
+            this(new ContextProvider<ContainerConfiguration>());
         }
 
-        private F(ContextProvider<BundleConfiguration> cp) {
+        private F(ContextProvider<ContainerConfiguration> cp) {
             super(cp);
             this.cp = cp;
         }

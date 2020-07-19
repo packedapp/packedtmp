@@ -15,18 +15,14 @@
  */
 package app.packed.service.sandbox;
 
-import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 import app.packed.base.Key;
-import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
-import app.packed.service.ServiceContract;
 import app.packed.service.ServiceDescriptor;
 import app.packed.service.ServiceTransformer;
 
@@ -36,8 +32,10 @@ import app.packed.service.ServiceTransformer;
 // 4 basic types of operation
 
 // Provide
-// Map will take services and remove existing and output a new one
-// Filter
+// Transform [takes one or more services]
+// * Transform
+// ** Map will take services and remove existing and output a new one
+// ** Filter/Remove
 // Peek
 
 // Map, Provide -> (Singleton if all singleton, otherwise... Men ville masske vaere rart at kunne styre
@@ -47,25 +45,13 @@ import app.packed.service.ServiceTransformer;
 public class ServicePackletCandidates {
 
     public static void main(String[] args) {
-        computeWithContract(sc -> removeTo(sc.services().iterator().next()));
-    }
-
-    // AV AV. Maaske skal vi kun tillade ServiceWirelets....
-    // Problemet er f.eks. ComputeWithContract(c->Wirelet.name("foobar");
-    // Det er et ordering problem...
-    static Wirelet computeWithContract(Function<? super ServiceContract, @Nullable ? extends Wirelet> function) {
-        throw new UnsupportedOperationException();
+        // computeWithContract(sc -> removeTo(sc.services().iterator().next()));
     }
 
     // May map to null
-    public static Wirelet delayed(Function<Set<ServiceDescriptor>, Wirelet> mapper) {
-        throw new UnsupportedOperationException();
-    }
 
     // provideTo -> Keeps original
     // provideFrom -> Keeps original
-
-    // provideInstanceTo
 
     // filterTo (Keys.., Classes
     // filterFrom

@@ -25,9 +25,10 @@ import app.packed.base.Key.Qualifier;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionConfiguration;
+import app.packed.container.ExtensionContext;
 import app.packed.container.ExtensionLinked;
 import app.packed.container.ExtensionSidecar;
+import app.packed.container.Subtension;
 import app.packed.container.Wirelet;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
@@ -81,7 +82,7 @@ public final class ServiceExtension extends Extension {
     final ServiceExtensionNode node;
 
     /** Should never be initialized by users. */
-    ServiceExtension(ExtensionConfiguration context) {
+    ServiceExtension(ExtensionContext context) {
         this.node = new ServiceExtensionNode(context);
     }
 
@@ -470,5 +471,20 @@ public final class ServiceExtension extends Extension {
     @ExtensionLinked(onlyDirectLink = true)
     private void linkChild(ServiceExtension childExtension /* , @WireletSupply Optional<ServiceWireletPipeline> wirelets */) {
         node.link(childExtension.node);
+    }
+
+    public final class Sub extends Subtension {
+
+        // Require???
+        // export???
+
+        // I don't think extensions should be able to export things.
+        // So export annotation should not work on extension services
+
+        Sub() {}
+
+        public void exportd() {
+            export(extension());
+        }
     }
 }

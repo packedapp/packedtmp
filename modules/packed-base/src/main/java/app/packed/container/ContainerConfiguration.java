@@ -37,9 +37,8 @@ import app.packed.service.ServiceExtension;
  */
 // Was named Composer, idk why
 // BundleContext....
-
 // Bundles
-public interface BundleConfiguration extends ComponentConfiguration {
+public interface ContainerConfiguration extends ComponentConfiguration {
 
 //    /**
 //     * Installs a host and returns the configuration of it.
@@ -152,11 +151,11 @@ public interface BundleConfiguration extends ComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    BundleConfiguration setDescription(String description);
+    ContainerConfiguration setDescription(String description);
 
     /** {@inheritDoc} */
     @Override
-    BundleConfiguration setName(String name);
+    ContainerConfiguration setName(String name);
 
     /**
      * Returns the class that defines the container.
@@ -200,6 +199,11 @@ public interface BundleConfiguration extends ComponentConfiguration {
      *             if the specified wirelet type does not have {@link WireletSidecar#failOnImage()} set to true
      */
     <W extends Wirelet> Optional<W> assemblyWirelet(Class<W> type); // Should assembly be the default????
+
+    // I think ContainerConfiguration is better
+    // Ideen er lidt at man kan lave sine egne
+    // ContainerConfiguration.of(Lookup); <--- of(lookup, lookup.lookupClass)
+    // ContainerConfiguration.of(Lookup, Class sourceType);
 }
 ///**
 //* Creates a new layer.

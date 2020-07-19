@@ -40,7 +40,7 @@ import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
-import app.packed.container.BundleConfiguration;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
@@ -65,8 +65,8 @@ import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.runtime.PackedInjector;
 
-/** The default implementation of {@link BundleConfiguration}. */
-public final class PackedContainerConfiguration extends PackedComponentContext implements BundleConfiguration {
+/** The default implementation of {@link ContainerConfiguration}. */
+public final class PackedContainerConfiguration extends PackedComponentContext implements ContainerConfiguration {
 
     private static final int LS_0_MAINL = 0;
 

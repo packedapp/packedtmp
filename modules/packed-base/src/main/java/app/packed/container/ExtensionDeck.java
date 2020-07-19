@@ -19,18 +19,21 @@ package app.packed.container;
  *
  */
 
-// I sidste ende kommer det nok an paa hvor mange metoder der er...
+// 3 users
 
-// Er der 2-3 Saa smider vi dem paa context, ellers
+// Den extension der laver den
+// Folk der bruger den extension
+// Extensions der bruger Subtension
 
-public interface ExtensionTreeNode<E extends Extension> extends ExtensionContext {
+public interface ExtensionDeck<T> {
 
-    E extension();
+    ExtensionList extensions(); // Any extensions that have been used
+
+    // I think it should fail if the extension has not been registered
+    void addBefore(Class<? extends Extension> extensionType);
 }
 
-////// With Node
-// + No need to have Extension<E extension Extension>
+interface ExtensionCon {
 
-// On ExtensionContext
-// + One less class
-// -
+    <T> ExtensionDeck<T> newDecoratedChain(Class<T> type);
+}

@@ -28,11 +28,11 @@ import app.packed.inject.Factory;
  * <p>
  * Instances of this class should never be exposed to end-users.
  * 
- * @apiNote In the future, if the Java language permits, {@link ExtensionConfiguration} may become a {@code sealed} interface,
+ * @apiNote In the future, if the Java language permits, {@link ExtensionContext} may become a {@code sealed} interface,
  *          which would prohibit subclassing except by explicitly permitted types.
  * 
  */
-public interface ExtensionConfiguration {
+public interface ExtensionContext {
 
     // What we are generating...
     // This can be tricky, For example, if we create an image.
@@ -79,7 +79,7 @@ public interface ExtensionConfiguration {
      * @param instance
      *            the instance to install
      * @return the configuration of the component
-     * @see BundleConfiguration#installInstance(Object)
+     * @see ContainerConfiguration#installInstance(Object)
      */
     <T> SingletonConfiguration<T> installInstance(T instance);
 
@@ -87,7 +87,7 @@ public interface ExtensionConfiguration {
      * Returns an extension of the specified type. The specified type must be among the extension's dependencies as
      * specified via.... Otherwise an {@link InternalExtensionException} is thrown.
      * <p>
-     * This method works similar to {@link BundleConfiguration#use(Class)}. However, this method checks that only
+     * This method works similar to {@link ContainerConfiguration#use(Class)}. However, this method checks that only
      * extensions that have been declared as dependencies via {@link ExtensionSidecar#dependencies()} are specified. This is
      * done in order to make sure that no extensions ever depend on each other.
      * 
@@ -102,7 +102,7 @@ public interface ExtensionConfiguration {
      * @throws UnsupportedOperationException
      *             if the specified extension type is not specified via {@link ExtensionSidecar} on this extension.
      * 
-     * @see BundleConfiguration#use(Class)
+     * @see ContainerConfiguration#use(Class)
      */
     <E extends Extension> E use(Class<E> extensionType);
 

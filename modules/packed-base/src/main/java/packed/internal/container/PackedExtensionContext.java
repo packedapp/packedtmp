@@ -32,7 +32,7 @@ import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionConfiguration;
+import app.packed.container.ExtensionContext;
 import app.packed.container.ExtensionSidecar;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
@@ -42,11 +42,11 @@ import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
-/** The default implementation of {@link ExtensionConfiguration} with addition methods only available in app.packed.base. */
-public final class PackedExtensionContext implements ExtensionConfiguration, Comparable<PackedExtensionContext> {
+/** The default implementation of {@link ExtensionContext} with addition methods only available in app.packed.base. */
+public final class PackedExtensionContext implements ExtensionContext, Comparable<PackedExtensionContext> {
 
     // Indicates that a bundle has already been configured...
-    public static final ExtensionConfiguration CONFIGURED = new PackedExtensionContext();
+    public static final ExtensionContext CONFIGURED = new PackedExtensionContext();
 
     static final MethodHandle MH_FIND_WIRELET = LookupUtil.findVirtualEIIE(MethodHandles.lookup(), "findWirelet",
             MethodType.methodType(Object.class, Class.class));

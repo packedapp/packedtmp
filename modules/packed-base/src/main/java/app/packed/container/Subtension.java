@@ -19,18 +19,15 @@ package app.packed.container;
  *
  */
 
-// I sidste ende kommer det nok an paa hvor mange metoder der er...
+// Maaske lazy set istedet for at kraeve en constructor 
+public abstract class Subtension {
 
-// Er der 2-3 Saa smider vi dem paa context, ellers
+    Class<? extends Extension> extension;
 
-public interface ExtensionTreeNode<E extends Extension> extends ExtensionContext {
-
-    E extension();
+    protected final Class<? extends Extension> extension() {
+        if (extension == null) {
+            throw new InternalExtensionException("Cannot call this method from the constructor of " + getClass().getSimpleName());
+        }
+        return extension;
+    }
 }
-
-////// With Node
-// + No need to have Extension<E extension Extension>
-
-// On ExtensionContext
-// + One less class
-// -

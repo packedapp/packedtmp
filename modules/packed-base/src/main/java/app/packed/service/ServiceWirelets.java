@@ -107,6 +107,9 @@ public final class ServiceWirelets {
      * @return a peeking wirelet
      */
     // I think it should be a set or some kind instead of a consumer
+
+    // An immutable thingy of some kind...
+    // Taenker vi godt vil foresporge om nogle ting
     public static Wirelet peekFrom(Consumer<? super ServiceDescriptor> action) {
         return new PackedUpstreamInjectionWirelet.PeekFrom(action);
     }
@@ -161,6 +164,7 @@ public final class ServiceWirelets {
         throw new UnsupportedOperationException();
     }
 
+    // Do
     public Wirelet rekey(Class<?> from, Class<?> to) {
         // Changes the key of an entry (String -> @Left String
         throw new UnsupportedOperationException();

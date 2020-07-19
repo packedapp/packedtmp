@@ -18,19 +18,14 @@ package app.packed.container;
 /**
  *
  */
+/// Do we need this??? Or can we just say that Class<? extends Extension>
+// can be injected...
+interface SubtensionContext {
 
-// I sidste ende kommer det nok an paa hvor mange metoder der er...
-
-// Er der 2-3 Saa smider vi dem paa context, ellers
-
-public interface ExtensionTreeNode<E extends Extension> extends ExtensionContext {
-
-    E extension();
+    /**
+     * The extension for which the subtension was created.
+     * 
+     * @return extension for which the subtension was created
+     */
+    Class<? extends Extension> extension();
 }
-
-////// With Node
-// + No need to have Extension<E extension Extension>
-
-// On ExtensionContext
-// + One less class
-// -

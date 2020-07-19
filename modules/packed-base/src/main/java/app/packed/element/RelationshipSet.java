@@ -13,24 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.element;
+
+import java.util.Set;
 
 /**
  *
  */
+public interface RelationshipSet {
 
-// I sidste ende kommer det nok an paa hvor mange metoder der er...
-
-// Er der 2-3 Saa smider vi dem paa context, ellers
-
-public interface ExtensionTreeNode<E extends Extension> extends ExtensionContext {
-
-    E extension();
+    Set<RelationshipKey> types();
 }
 
-////// With Node
-// + No need to have Extension<E extension Extension>
+// PropertyKey<Extension, Type, Key>
 
-// On ExtensionContext
-// + One less class
-// -
+// Attribute<TypeLiteral, Optional<Class<? extends Extension>, String>
+
+// Alle an lave attributer. Men kun extensions selv kan returnere dem...

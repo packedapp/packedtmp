@@ -13,24 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.service;
 
 /**
  *
  */
+public interface ServiceDescriptorSet extends Iterable<ServiceDescriptor> {
 
-// I sidste ende kommer det nok an paa hvor mange metoder der er...
-
-// Er der 2-3 Saa smider vi dem paa context, ellers
-
-public interface ExtensionTreeNode<E extends Extension> extends ExtensionContext {
-
-    E extension();
 }
-
-////// With Node
-// + No need to have Extension<E extension Extension>
-
-// On ExtensionContext
-// + One less class
-// -
