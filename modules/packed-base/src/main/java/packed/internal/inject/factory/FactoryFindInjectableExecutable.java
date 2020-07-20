@@ -3,7 +3,7 @@ package packed.internal.inject.factory;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.base.TypeLiteral;
-import app.packed.base.reflect.ExecutableDescriptor;
+import app.packed.introspection.ExecutableDescriptor;
 import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.inject.ServiceDependency;
 

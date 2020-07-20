@@ -23,10 +23,10 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 import app.packed.base.Nullable;
-import app.packed.base.reflect.FieldDescriptor;
-import app.packed.base.reflect.MethodDescriptor;
 import app.packed.config.ConfigSite;
 import app.packed.config.ConfigSiteVisitor;
+import app.packed.introspection.FieldDescriptor;
+import app.packed.introspection.MethodDescriptor;
 
 /** The various implements of {@link ConfigSite}. */
 public interface ConfigSiteSupport {

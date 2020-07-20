@@ -19,10 +19,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import app.packed.base.reflect.ConstructorDescriptor;
-import app.packed.base.reflect.FieldDescriptor;
-import app.packed.base.reflect.MethodDescriptor;
 import app.packed.component.Component;
+import app.packed.introspection.ConstructorDescriptor;
+import app.packed.introspection.FieldDescriptor;
+import app.packed.introspection.MethodDescriptor;
 import app.packed.service.ServiceDescriptor;
 
 // RuntimeEnviroment != BuildEnvironment

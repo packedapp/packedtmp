@@ -36,9 +36,9 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 import app.packed.base.TypeLiteral.CanonicalizedTypeLiteral;
-import app.packed.base.reflect.FieldDescriptor;
-import app.packed.base.reflect.MethodDescriptor;
-import app.packed.base.reflect.ParameterDescriptor;
+import app.packed.introspection.FieldDescriptor;
+import app.packed.introspection.MethodDescriptor;
+import app.packed.introspection.ParameterDescriptor;
 import packed.internal.base.reflect.PackedMethodDescriptor;
 import packed.internal.inject.util.QualifierHelper;
 import packed.internal.util.AnnotationUtil;

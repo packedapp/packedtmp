@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 
-import app.packed.base.reflect.MethodDescriptor;
+import app.packed.introspection.MethodDescriptor;
 
 /**
  * A wrapper for a {@link Method} and a {@link Lookup} object.

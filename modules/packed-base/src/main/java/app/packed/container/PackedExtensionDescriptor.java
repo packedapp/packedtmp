@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Set;
 
 import app.packed.base.Contract;
-import app.packed.base.reflect.ExecutableDescriptor;
+import app.packed.introspection.ExecutableDescriptor;
 import packed.internal.container.ExtensionModel;
 
 /**

@@ -36,7 +36,7 @@ import java.util.OptionalLong;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
-import app.packed.base.reflect.MethodDescriptor;
+import app.packed.introspection.MethodDescriptor;
 import testutil.stubs.annotation.AnnotationInstances;
 import testutil.stubs.annotation.CharQualifier;
 import testutil.stubs.annotation.IntQualifier;

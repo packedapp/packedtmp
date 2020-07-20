@@ -3,7 +3,7 @@ module app.packed.base {
     exports app.packed.artifact;
     exports app.packed.base; // then have @Preview @DeprecatedWithReason
     exports app.packed.base.invoke;
-    exports app.packed.base.reflect;
+    exports app.packed.introspection;
     exports app.packed.component;
     exports app.packed.config;
     exports app.packed.container;

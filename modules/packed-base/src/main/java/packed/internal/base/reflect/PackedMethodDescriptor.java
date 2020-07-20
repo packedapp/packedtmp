@@ -27,7 +27,7 @@ import java.util.Arrays;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
-import app.packed.base.reflect.MethodDescriptor;
+import app.packed.introspection.MethodDescriptor;
 import packed.internal.util.StringFormatter;
 
 /**

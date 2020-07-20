@@ -26,9 +26,9 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import app.packed.base.reflect.FieldDescriptor;
-import app.packed.base.reflect.MethodDescriptor;
-import app.packed.base.reflect.ParameterDescriptor;
+import app.packed.introspection.FieldDescriptor;
+import app.packed.introspection.MethodDescriptor;
+import app.packed.introspection.ParameterDescriptor;
 import packed.internal.moduleaccess.AppPackedBaseAccess;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;

@@ -22,9 +22,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import app.packed.base.Key;
-import app.packed.base.reflect.MethodDescriptor;
 import app.packed.config.ConfigSite;
 import app.packed.config.ConfigSiteVisitor;
+import app.packed.introspection.MethodDescriptor;
 import packed.internal.config.ConfigSiteJoiner;
 import packed.internal.service.buildtime.export.ExportedBuildEntry;
 import packed.internal.util.StringFormatter;

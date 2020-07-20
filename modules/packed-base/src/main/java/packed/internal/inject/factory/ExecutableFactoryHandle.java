@@ -21,9 +21,9 @@ import java.lang.reflect.Modifier;
 
 import app.packed.base.TypeLiteral;
 import app.packed.base.invoke.InaccessibleMemberException;
-import app.packed.base.reflect.ExecutableDescriptor;
-import app.packed.base.reflect.MethodDescriptor;
 import app.packed.inject.Factory;
+import app.packed.introspection.ExecutableDescriptor;
+import app.packed.introspection.MethodDescriptor;
 
 /** The backing class of {@link Factory}. */
 public final class ExecutableFactoryHandle<T> extends FactoryHandle<T> {

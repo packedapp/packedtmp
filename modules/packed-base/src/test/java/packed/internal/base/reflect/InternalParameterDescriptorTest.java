@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
-import app.packed.base.reflect.ParameterDescriptor;
+import app.packed.introspection.ParameterDescriptor;
 import app.packed.service.Injector;
 
 /** Tests {@link ParameterDescriptor}. */

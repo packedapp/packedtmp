@@ -21,9 +21,9 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.base.reflect.MemberDescriptor;
-import app.packed.base.reflect.VariableDescriptor;
 import app.packed.component.Component;
+import app.packed.introspection.MemberDescriptor;
+import app.packed.introspection.VariableDescriptor;
 import app.packed.service.Injector;
 import app.packed.service.ProvideContext;
 

@@ -23,10 +23,10 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
-import app.packed.base.reflect.FieldDescriptor;
-import app.packed.base.reflect.MemberDescriptor;
-import app.packed.base.reflect.MethodDescriptor;
 import app.packed.container.Wirelet;
+import app.packed.introspection.FieldDescriptor;
+import app.packed.introspection.MemberDescriptor;
+import app.packed.introspection.MethodDescriptor;
 import packed.internal.config.ConfigSiteJoiner;
 import packed.internal.config.ConfigSiteSupport;
 

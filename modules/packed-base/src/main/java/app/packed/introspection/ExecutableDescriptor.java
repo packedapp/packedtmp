@@ -1,4 +1,4 @@
-package app.packed.base.reflect;
+package app.packed.introspection;
 
 import static java.util.Objects.requireNonNull;
 

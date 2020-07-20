@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Key.Qualifier;
-import app.packed.base.reflect.MethodDescriptor;
+import app.packed.introspection.MethodDescriptor;
 
 /**
  *

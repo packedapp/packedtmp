@@ -25,7 +25,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
 import app.packed.base.invoke.InaccessibleMemberException;
-import app.packed.base.reflect.VariableDescriptor;
+import app.packed.introspection.VariableDescriptor;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.util.BaseSupport;
 

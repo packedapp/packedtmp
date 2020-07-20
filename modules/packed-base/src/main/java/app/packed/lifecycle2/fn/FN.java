@@ -18,7 +18,7 @@ package app.packed.lifecycle2.fn;
 import java.util.List;
 
 import app.packed.base.Nullable;
-import app.packed.base.reflect.VariableDescriptor;
+import app.packed.introspection.VariableDescriptor;
 
 /**
  *

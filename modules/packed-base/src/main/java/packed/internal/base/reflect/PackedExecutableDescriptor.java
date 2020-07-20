@@ -21,8 +21,8 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Parameter;
 
-import app.packed.base.reflect.ExecutableDescriptor;
-import app.packed.base.reflect.ParameterDescriptor;
+import app.packed.introspection.ExecutableDescriptor;
+import app.packed.introspection.ParameterDescriptor;
 
 /** The default implementation of {@link ExecutableDescriptor}. */
 public abstract class PackedExecutableDescriptor implements ExecutableDescriptor {

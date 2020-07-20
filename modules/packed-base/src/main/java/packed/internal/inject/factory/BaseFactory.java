@@ -29,11 +29,11 @@ import java.util.function.Supplier;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
-import app.packed.base.reflect.VariableDescriptor;
 import app.packed.inject.Factory;
 import app.packed.inject.Factory0;
 import app.packed.inject.Factory1;
 import app.packed.inject.Factory2;
+import app.packed.introspection.VariableDescriptor;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 

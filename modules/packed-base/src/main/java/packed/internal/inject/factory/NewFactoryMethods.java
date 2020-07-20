@@ -22,10 +22,10 @@ import java.lang.reflect.Method;
 
 import app.packed.base.Key;
 import app.packed.base.TypeLiteral;
-import app.packed.base.reflect.ConstructorDescriptor;
-import app.packed.base.reflect.MethodDescriptor;
 import app.packed.inject.Factory;
 import app.packed.inject.Inject;
+import app.packed.introspection.ConstructorDescriptor;
+import app.packed.introspection.MethodDescriptor;
 
 /**
  *

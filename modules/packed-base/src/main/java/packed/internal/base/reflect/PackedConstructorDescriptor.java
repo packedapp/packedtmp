@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 
-import app.packed.base.reflect.ConstructorDescriptor;
+import app.packed.introspection.ConstructorDescriptor;
 import packed.internal.util.InternalErrorException;
 
 /** The default implementation of {@link ConstructorDescriptor}. */

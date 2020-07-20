@@ -1,4 +1,4 @@
-package app.packed.base.reflect;
+package app.packed.introspection;
 
 import java.lang.reflect.Parameter;
 

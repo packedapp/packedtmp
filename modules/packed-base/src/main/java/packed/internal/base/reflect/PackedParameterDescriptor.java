@@ -26,11 +26,11 @@ import java.lang.reflect.Type;
 
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
-import app.packed.base.reflect.ConstructorDescriptor;
-import app.packed.base.reflect.ExecutableDescriptor;
-import app.packed.base.reflect.MethodDescriptor;
-import app.packed.base.reflect.ParameterDescriptor;
-import app.packed.base.reflect.VariableDescriptor;
+import app.packed.introspection.ConstructorDescriptor;
+import app.packed.introspection.ExecutableDescriptor;
+import app.packed.introspection.MethodDescriptor;
+import app.packed.introspection.ParameterDescriptor;
+import app.packed.introspection.VariableDescriptor;
 import packed.internal.util.InternalErrorException;
 
 /**

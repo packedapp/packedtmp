@@ -23,6 +23,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Nullable;
+import app.packed.introspection.ParameterDescriptor;
 import packed.internal.base.reflect.InternalParameterDescriptorTest;
 
 /** Tests {@link ParameterDescriptor}, most of the test are in {@link InternalParameterDescriptorTest}. */

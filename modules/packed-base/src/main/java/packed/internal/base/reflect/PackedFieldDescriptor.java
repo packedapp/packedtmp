@@ -28,7 +28,7 @@ import java.lang.reflect.Type;
 
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
-import app.packed.base.reflect.FieldDescriptor;
+import app.packed.introspection.FieldDescriptor;
 
 /** The default implementation of {@link FieldDescriptor}. */
 public final class PackedFieldDescriptor implements FieldDescriptor {

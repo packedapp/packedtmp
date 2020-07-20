@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 
-import app.packed.base.reflect.FieldDescriptor;
+import app.packed.introspection.FieldDescriptor;
 
 /**
  * A wrapper for a {@link Field} and a {@link Lookup} object.

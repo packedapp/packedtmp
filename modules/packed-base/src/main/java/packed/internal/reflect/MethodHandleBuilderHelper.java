@@ -30,9 +30,9 @@ import java.util.Set;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.base.reflect.ParameterDescriptor;
 import app.packed.inject.InjectionContext;
 import app.packed.inject.UnsatisfiableDependencyException;
+import app.packed.introspection.ParameterDescriptor;
 import packed.internal.inject.PackedInjectionContext;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.reflect.MethodHandleBuilder.Entry;

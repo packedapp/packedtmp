@@ -26,7 +26,7 @@ import java.lang.reflect.Modifier;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Nullable;
 import app.packed.base.invoke.InaccessibleMemberException;
-import app.packed.base.reflect.MethodDescriptor;
+import app.packed.introspection.MethodDescriptor;
 import packed.internal.hook.MemberUnreflector;
 import packed.internal.hook.applicator.MethodOperator;
 import packed.internal.hook.applicator.PackedMethodHookApplicator;

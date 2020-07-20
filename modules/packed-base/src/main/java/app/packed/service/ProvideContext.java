@@ -18,13 +18,13 @@ package app.packed.service;
 import java.util.Optional;
 
 import app.packed.base.InvalidDeclarationException;
-import app.packed.base.reflect.ConstructorDescriptor;
-import app.packed.base.reflect.FieldDescriptor;
-import app.packed.base.reflect.MemberDescriptor;
-import app.packed.base.reflect.MethodDescriptor;
-import app.packed.base.reflect.ParameterDescriptor;
-import app.packed.base.reflect.VariableDescriptor;
 import app.packed.component.Component;
+import app.packed.introspection.ConstructorDescriptor;
+import app.packed.introspection.FieldDescriptor;
+import app.packed.introspection.MemberDescriptor;
+import app.packed.introspection.MethodDescriptor;
+import app.packed.introspection.ParameterDescriptor;
+import app.packed.introspection.VariableDescriptor;
 
 /**
  * An instance of this interface can be injected into methods annotated with {@link Provide}.
