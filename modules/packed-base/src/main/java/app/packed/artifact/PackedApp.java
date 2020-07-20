@@ -20,8 +20,6 @@ final class PackedApp implements App {
     // With constant ClassValue we can probably do
     // ArtifactDriver.start(PackedApp.class, ArtifactSource source, Wirelet... wirelets);
 
-    // driver = AD.of(PackedApp.class) <-- uses DI
-
     /** An artifact driver for creating {@link App} instances. */
     static final ArtifactDriver<App> DRIVER = new ArtifactDriver<>() {
 
@@ -31,6 +29,9 @@ final class PackedApp implements App {
             return new PackedApp(context);
         }
     };
+
+    // lookup must have access to PackedApp...
+    // static final ArtifactDriver<App> DRIVER2 = ArtifactDriver.of(MethodHandles.lookup(), App.class, PackedApp.class);
 
     /** The artifact context we are wrapping. */
     private final ArtifactContext context;

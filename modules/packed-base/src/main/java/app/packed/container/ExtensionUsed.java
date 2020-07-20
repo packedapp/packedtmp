@@ -13,22 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle2;
+package app.packed.container;
 
+import app.packed.container.ExtensionUsed.Mode;
 import app.packed.service.ServiceExtension;
 
 /**
  *
  */
+public @interface ExtensionUsed {
 
-// TraceContext to be consistent...????
-// Og dog.. taenker ikke det er noget vi har lyst til at gemme????
-// Eller hva... En ting er serial... noget andet er parallelt
+    Mode value() default Mode.THIS;
 
-// Maaske supportere vi ogsaa noget command line -Dapp.packed.[base?].trace initialization.FooBundle
-public class Trace {
-
-    public void foo(ServiceExtension e) {
-
+    enum Mode {
+        THIS, CHILD, FIRST_ANCESTOR;
     }
+}
+
+interface ContainerDescriptor {}
+
+interface ContainerRelation {
+    int distance();
+
+    ContainerDescriptor from();
+
+    ContainerDescriptor to();
+}
+
+class FooBar {
+
+    @ExtensionUsed
+    public void foo(ServiceExtension se) {}
+
+    @ExtensionUsed(Mode.CHILD)
+    public void foox(ServiceExtension se) {}
+
+    @ExtensionUsed(Mode.FIRST_ANCESTOR)
+    public void foof(ServiceExtension se) {}
 }

@@ -28,10 +28,8 @@ import app.packed.base.Contract;
  * @apiNote In the future, if the Java language permits, {@link ExtensionDescriptor} may become a {@code sealed}
  *          interface, which would prohibit subclassing except by explicitly permitted types.
  */
-// Lad os lige se om den er noget vaerd... Altsaa dependencies kan man jo se paa Javadoc...
-// Og taenker vi linker til alle contracts fra Javadoc
-// 
-public interface ExtensionDescriptor {
+// depth <-- Er det et concept??? skal vi expose this
+public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
 
     /**
      * Returns all the different types of contracts the extension exposes.
@@ -83,3 +81,8 @@ public interface ExtensionDescriptor {
     }
 }
 // requiresExecution() // usesResources // ResourceUser
+//
+//default Set<Class<? extends Extension>> dependenciesWithTransitiveDependencies() {
+//    dependencies().stream().map(ExtensionDescriptor::of).flatMap(ExtensionDescriptor::dependenciesWithTransitiveDependencies);
+//    return null;
+//}

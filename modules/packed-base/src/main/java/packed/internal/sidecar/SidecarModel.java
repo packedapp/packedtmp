@@ -26,10 +26,10 @@ import java.util.Map;
 
 import app.packed.base.Contract;
 import app.packed.container.InternalExtensionException;
-import app.packed.lifecycle.Leaving;
-import app.packed.lifecycle.StateTransition;
 import app.packed.lifecycle2.DefaultLifecycleTransition;
 import app.packed.sidecar.Expose;
+import app.packed.statemachine.Leaving;
+import app.packed.statemachine.StateTransition;
 import packed.internal.reflect.MethodHandleBuilder;
 import packed.internal.reflect.OpenClass;
 import packed.internal.util.ThrowableUtil;

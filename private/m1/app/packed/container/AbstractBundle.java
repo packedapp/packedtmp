@@ -44,6 +44,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 // Og saa smide en UOE?
 // Hvis configurationen kommer ind gennem constructoren saa faar subklasses den jo...
 
+// Igen syntes hellere vi skal lave analyser bagefter...
+
+// Maaske kan vi lave noget med at giver et VarHandle til Packed fra MyActorBundle???
+// Saa kan packed initialisere feltet... som saa vil vaere private... 
 abstract class AbstractBundle {
 
     AbstractBundle(ContextProvider<ContainerConfiguration> cp) {

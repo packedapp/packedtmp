@@ -15,6 +15,13 @@
  */
 package app.packed.container;
 
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+
+import app.packed.base.TypeLiteral;
+import app.packed.inject.Factory;
+
 /**
  *
  */
@@ -25,15 +32,90 @@ package app.packed.container;
 // Folk der bruger den extension
 // Extensions der bruger Subtension
 
+//ExtensionList
+
+// Skal vi have en Builder???
+
+//remove, swap, bla, bla
 public interface ExtensionDeck<T> {
 
-    ExtensionList extensions(); // Any extensions that have been used
+    Class<? extends Extension> owner();
+
+    // The specified extensionType must be a direct dependency of owner.
+    //// The specified Factory must be related to the specified extensionType
+
+    // in some way??? Nah vi kan vel have nogle statiske.
+
+    // Alternativ har vi
+    // ExtensionContext
+    // Signed<T> sign(T);
+
+    // Signed.signedBy
+
+    // Ide'en er at den bruges fra en Subtension
+    void add(Class<? extends Extension> extensionType, T value);
+
+    void addAfter(Class<? extends Extension> extensionType, T value);
 
     // I think it should fail if the extension has not been registered
-    void addBefore(Class<? extends Extension> extensionType);
+    void addBefore(Class<? extends Extension> extensionType, T value);
+
+    // Add before any extension
+    // invoking addFirst("A") -> ["A"], addFirst("B") ->["B", "A"]
+    void addFirst(T value);
+
+    void addLast(T value);
+
+    /**
+     * Returns a stream containing all the entries in this deck.
+     * 
+     * @return a stream containing all the entries in this deck
+     */
+    Stream<Entry<T>> entries();
+
+    ExtensionOrdering extensions(); // Any extensions that have been used
+
+    boolean isEmpty();
+
+    default Stream<T> values() {
+        return entries().map(e -> e.value());
+    }
+
+    interface Entry<T> {
+
+        Optional<Class<? extends Extension>> extension();
+
+        T value();
+    }
+
+    interface Builder<T> {
+
+        // Taenker ogsaa brugeren
+        Builder<T> onAdd(Consumer<? super Entry<? super T>> action);
+
+        ExtensionDeck<T> build();
+    }
 }
 
-interface ExtensionCon {
+// Ved ikke rigtig om vi kan lave en generisk lists....
+/// Maaske Bare en DecoratorConfiguration + Builder;
+/// Skal ogsaa kunne specificere
+// Hmmm
+interface ExtensionXontext {
 
-    <T> ExtensionDeck<T> newDecoratedChain(Class<T> type);
+    // ret spe
+
+    // Skal kunne specificere en eller anden form for isolator???
+
+    <T> ExtensionDeck<Factory<T>> newDecoratedChain(Class<T> type);
+
+    <T> DecoratorBuilder<T> newDecorator(Class<T> type);
+
+    <T> DecoratorBuilder<T> newDecorator(TypeLiteral<T> type);
+
+    <T> ExtensionDeck.Builder<T> newDeckBuilder(Class<T> type);
+
+    interface DecoratorBuilder<T> {
+        ExtensionDeck<Factory<T>> build();
+    }
 }

@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.container.Extension;
 import app.packed.container.ExtensionSidecar;
-import app.packed.lifecycle.Leaving;
+import app.packed.statemachine.Leaving;
 import testutil.util.AbstractArtifactTest;
 
 /**

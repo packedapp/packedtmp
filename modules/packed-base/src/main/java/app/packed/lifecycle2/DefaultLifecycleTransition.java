@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
-import app.packed.lifecycle.StateTransition;
+import app.packed.statemachine.StateTransition;
 
 public final class DefaultLifecycleTransition implements StateTransition {
 

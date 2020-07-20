@@ -29,6 +29,7 @@ import packed.internal.container.ExtensionModel;
  * @implNote ExtensionModel implements Comparable which we do not want to expose. So we have this thin wrapper. Well we
  *           expose the context which implements {@link Comparable}... So should probably fix that as well.
  **/
+// Well just added Comparator to ED... Maybe we can just use ExtensionModel directly now (see implNote)
 final class PackedExtensionDescriptor implements ExtensionDescriptor {
 
     /** The extension model we wrap. */
@@ -37,6 +38,12 @@ final class PackedExtensionDescriptor implements ExtensionDescriptor {
     /** No public instantiation. */
     private PackedExtensionDescriptor(ExtensionModel model) {
         this.model = requireNonNull(model);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int compareTo(ExtensionDescriptor o) {
+        return model.compareTo(((PackedExtensionDescriptor) o).model);
     }
 
     /** {@inheritDoc} */

@@ -31,6 +31,7 @@ import app.packed.base.Nullable;
 import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
+import app.packed.container.Bundle;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 import app.packed.container.ExtensionSidecar;
@@ -348,5 +349,11 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
             pcc.activeExtension = existing;
         }
         return pec; // Return extension to users
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void link(Bundle bundle, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
     }
 }

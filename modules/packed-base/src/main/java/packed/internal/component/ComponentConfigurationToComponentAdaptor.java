@@ -45,7 +45,7 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
     private volatile Map<String, ComponentConfigurationToComponentAdaptor> children;
 
     /** The component configuration to wrap. */
-    private final PackedComponentContext componentConfiguration;
+    public final PackedComponentContext componentConfiguration;
 
     // Need to main any guest ancestor. As images must resolve in relation to it.
     private final List<PackedGuestConfiguration> pgc;

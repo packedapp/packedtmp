@@ -19,7 +19,7 @@ import app.packed.artifact.App;
 import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
 import app.packed.container.ExtensionSidecar;
-import app.packed.lifecycle.Leaving;
+import app.packed.statemachine.Leaving;
 
 /**
  *

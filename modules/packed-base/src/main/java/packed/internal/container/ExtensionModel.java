@@ -173,7 +173,19 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         // id < #baseExtension return id-id;
         // otherwise non base extension
         int d = depth - m.depth;
-        return d == 0 ? nameUsedForSorting.compareTo(m.nameUsedForSorting) : d;
+        if (d == 0) {
+            int c = nameUsedForSorting.compareTo(m.nameUsedForSorting);
+            if (c == 0) {
+                // Cannot use two extension with the same name. But loaded via two different
+                // classloaders
+                /// Hmmmm har nogen gange hvor dette er
+                // throw new IllegalStateException();
+            }
+            return c;
+        } else {
+            return d;
+        }
+//        return d == 0 ? nameUsedForSorting.compareTo(m.nameUsedForSorting) : d;
     }
 
     /**
@@ -383,4 +395,17 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
             }
         }
     }
+
+//    static class ExtensionComparator implements Comparator<ExtensionModel> {
+//
+//        /** {@inheritDoc} */
+//        @Override
+//        public int compare(ExtensionModel m1, ExtensionModel m2) {
+//            if (m1.depth == m2.depth) {
+//                int c = m1.
+//            }
+//            return m1.depth - m2.depth;
+//        }
+//
+//    }
 }

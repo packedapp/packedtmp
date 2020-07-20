@@ -20,7 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.lifecycle.Leaving;
+import app.packed.statemachine.Leaving;
 
 /**
  * An annotation that can be used on subclasses of {@link Extension}. Classes that extend {@link Extension} are implicit

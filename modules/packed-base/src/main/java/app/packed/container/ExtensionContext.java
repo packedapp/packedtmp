@@ -15,10 +15,20 @@
  */
 package app.packed.container;
 
+import static java.util.Objects.requireNonNull;
+
+import java.lang.invoke.MethodHandles;
+import java.util.Optional;
+
+import app.packed.base.Nullable;
+import app.packed.component.Component;
 import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
+import packed.internal.component.ComponentConfigurationToComponentAdaptor;
+import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.container.PackedExtensionContext;
 
 /**
  * An instance of this interface is available via {@link Extension#configuration()} or via constructor injection into an
@@ -71,6 +81,13 @@ public interface ExtensionContext {
      */
     ComponentPath containerPath();
 
+    /**
+     * Returns the type of extension this context wraps.
+     * 
+     * @return the type of extension this context wraps
+     */
+    Class<? extends Extension> extensionType(); // replace with descriptor???
+
     <T> SingletonConfiguration<T> install(Factory<T> factory);
 
     /**
@@ -82,6 +99,17 @@ public interface ExtensionContext {
      * @see ContainerConfiguration#installInstance(Object)
      */
     <T> SingletonConfiguration<T> installInstance(T instance);
+
+    /**
+     * Creates a new container with this extensions container as its parent by linking the specified bundle. The new
+     * container will have this extension as owner. Thus will be hidden from normal view
+     * 
+     * @param bundle
+     *            the bundle to link
+     * @param wirelets
+     *            any wirelets
+     */
+    void link(Bundle bundle, Wirelet... wirelets);
 
     /**
      * Returns an extension of the specified type. The specified type must be among the extension's dependencies as
@@ -106,25 +134,72 @@ public interface ExtensionContext {
      */
     <E extends Extension> E use(Class<E> extensionType);
 
-    /**
-     * Returns the type of extension this context wraps.
-     * 
-     * @return the type of extension this context wraps
-     */
-    Class<? extends Extension> extensionType(); // replace with descriptor???
+//    /**
+//     * The specified extension type must be located in the same module as the module that extension this context is related
+//     * to.
+//     * 
+//     * @param <T>
+//     *            the type of extensions to return
+//     * @param extensionType
+//     * @return a list of all extensions of the particular type in child containers within the same artifact
+//     * @throws IllegalStateException
+//     *             if invoked before the child gathering phase has finished
+//     * @implNote the implementation will gather extensions and create a new list on every invocation. So cache the result if
+//     *           you need to, instead of calling this method multiple times with the same argument.
+//     */
+    // The type must also be a dependency of this type as returned by #descriptor.dependencies();
+
+    // Returns empty if the extension is not available
+
+    // Hmm maaske vi flytter den ud af extension... Syntes ikke den skal dukke op under metoder...
+    // Maaske paa ExtensionContext istedet for...
+
+    // Skal ogsaa have en version der tager en Bundle???
+    static Optional<ExtensionContext> privateAccess(MethodHandles.Lookup lookup, Component c) {
+        return Optional.ofNullable(pa(lookup, c));
+    }
 
     /**
-     * The specified extension type must be located in the same module as the module that extension this context is related
-     * to.
-     * 
      * @param <T>
-     *            the type of extensions to return
+     *            the type of extension to return
+     * @param lookup
+     *            a lookup object that must have full ac
      * @param extensionType
-     * @return a list of all extensions of the particular type in child containers within the same artifact
-     * @throws IllegalStateException
-     *             if invoked before the child gathering phase has finished
-     * @implNote the implementation will gather extensions and create a new list on every invocation. So cache the result if
-     *           you need to, instead of calling this method multiple times with the same argument.
+     *            the type of extension to return
+     * @param c
+     *            the component
+     * @return stuff
+     * 
      */
-    // The type must also be a dependency of this type as returned by #descriptor.dependencies();
+    @SuppressWarnings("unchecked")
+    static <T extends Extension> Optional<T> privateAccessExtension(MethodHandles.Lookup lookup, Class<T> extensionType, Component c) {
+        requireNonNull(lookup, "lookup is null");
+        if (lookup.lookupClass() != extensionType) {
+            throw new IllegalArgumentException("The specified lookup object must have " + extensionType + " as lookupClass()");
+        }
+        @Nullable
+        PackedExtensionContext pec = pa(lookup, c);
+        return pec == null ? Optional.empty() : Optional.of((T) pec.extension());
+    }
+
+    private static PackedExtensionContext pa(MethodHandles.Lookup lookup, Component c) {
+        requireNonNull(lookup, "lookup is null");
+        if (lookup.lookupClass() == Extension.class || !Extension.class.isAssignableFrom(lookup.lookupClass())) {
+            throw new IllegalArgumentException("The specified lookup object must have a subclass of " + Extension.class.getCanonicalName()
+                    + " as lookupClass(), was " + lookup.lookupClass());
+        }
+        @SuppressWarnings("unchecked")
+        Class<? extends Extension> extensionType = (Class<? extends Extension>) lookup.lookupClass();
+
+        if (!lookup.hasPrivateAccess()) {
+            throw new IllegalArgumentException("The specified lookup object must have full access to " + extensionType
+                    + ", try creating a new lookup object using MethodHandle.privateLookupIn(lookup, " + extensionType.getSimpleName() + ".class)");
+        } else if (!(c instanceof ComponentConfigurationToComponentAdaptor)) {
+            throw new IllegalStateException("This method cannot be called on a at runtime of a container");
+        }
+
+        ComponentConfigurationToComponentAdaptor cc = (ComponentConfigurationToComponentAdaptor) c;
+        PackedContainerConfiguration pcc = cc.componentConfiguration.actualContainer();
+        return pcc.getExtensionContext(extensionType);
+    }
 }

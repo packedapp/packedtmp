@@ -25,9 +25,9 @@ import app.packed.container.ExtensionSidecar;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletFind;
 import app.packed.inject.InjectionContext;
-import app.packed.lifecycle.Leaving;
 import app.packed.lifecycle.LifecycleContext;
 import app.packed.service.ServiceWirelets;
+import app.packed.statemachine.Leaving;
 
 /**
  *

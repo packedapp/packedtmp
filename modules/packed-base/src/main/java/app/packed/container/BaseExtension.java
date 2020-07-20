@@ -13,22 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle2;
-
-import app.packed.service.ServiceExtension;
+package app.packed.container;
 
 /**
  *
  */
+// Tror ikke vi behoever en klasse...
+//
+class BaseExtension {
+    // Hmm vi har ikke
+    // public static final BaseExtension defaultOrder = new BaseExtension();
 
-// TraceContext to be consistent...????
-// Og dog.. taenker ikke det er noget vi har lyst til at gemme????
-// Eller hva... En ting er serial... noget andet er parallelt
+    // onExtensionAdded()// printStackTrace()
 
-// Maaske supportere vi ogsaa noget command line -Dapp.packed.[base?].trace initialization.FooBundle
-public class Trace {
-
-    public void foo(ServiceExtension e) {
-
+    /**
+     * Returns all the extensions that are currently in use.
+     * 
+     * @return all the extensions that are currently in use
+     */
+    ExtensionOrdering extensions() {
+        throw new UnsupportedOperationException();
     }
+
+    // introduce order between(e1, e2)
+    // (only works if there is not a dependency between them
 }

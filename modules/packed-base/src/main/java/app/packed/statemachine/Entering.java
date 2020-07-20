@@ -13,22 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle2;
-
-import app.packed.service.ServiceExtension;
+package app.packed.statemachine;
 
 /**
  *
  */
 
-// TraceContext to be consistent...????
-// Og dog.. taenker ikke det er noget vi har lyst til at gemme????
-// Eller hva... En ting er serial... noget andet er parallelt
-
-// Maaske supportere vi ogsaa noget command line -Dapp.packed.[base?].trace initialization.FooBundle
-public class Trace {
-
-    public void foo(ServiceExtension e) {
-
-    }
-}
+// Paa en eller anden maade.
+// Skal vi forklare frameworks, at de skal lade være at release ting mens de her entering og leaving koere (hvis muligt)...
+@interface Entering {}

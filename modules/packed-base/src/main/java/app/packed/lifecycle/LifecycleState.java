@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.lifecycle;
 
 /**
  *
  */
-public class ExtensionOrder {
-    public static final ExtensionOrder defaultOrder = new ExtensionOrder();
+public enum LifecycleState {
+    START;
 }

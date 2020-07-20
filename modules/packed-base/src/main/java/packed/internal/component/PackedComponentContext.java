@@ -58,6 +58,7 @@ public abstract class PackedComponentContext extends AbstractComponentConfigurat
 
     /** The container this component belongs to, or null for a root container. */
     @Nullable
+    // BelongsToContainer
     private final PackedContainerConfiguration container;
 
     /** Ugly stuff. */
@@ -108,6 +109,13 @@ public abstract class PackedComponentContext extends AbstractComponentConfigurat
         this.container = parent instanceof PackedContainerConfiguration ? (PackedContainerConfiguration) parent : parent.container;
         this.extension = container.activeExtension;
         this.descriptor = requireNonNull(descriptor);
+    }
+
+    public PackedContainerConfiguration actualContainer() {
+        if (this instanceof PackedContainerConfiguration) {
+            return (PackedContainerConfiguration) this;
+        }
+        return container;
     }
 
     /**

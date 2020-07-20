@@ -13,12 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle;
+package app.packed.container;
 
 /**
  *
  */
 
-// Paa en eller anden maade.
-// Skal vi forklare frameworks, at de skal lade være at release ting mens de her entering og leaving koere (hvis muligt)...
-@interface Entering {}
+// Ideen er at extension kan signe en "besked"...
+// Som ingen kan emulere...
+interface Signed<T> {
+    T value();
+
+    // ShouldBeAlist
+    Class<?> extension();
+
+    Signed<T> coSign(EContext ec);
+}
+
+interface EContext {
+    <T> Signed<T> signed(T t);
+}

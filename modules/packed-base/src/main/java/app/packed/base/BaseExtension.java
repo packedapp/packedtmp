@@ -13,22 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle2;
+package app.packed.base;
 
-import app.packed.service.ServiceExtension;
+import app.packed.container.Extension;
 
 /**
  *
  */
-
-// TraceContext to be consistent...????
-// Og dog.. taenker ikke det er noget vi har lyst til at gemme????
-// Eller hva... En ting er serial... noget andet er parallelt
-
-// Maaske supportere vi ogsaa noget command line -Dapp.packed.[base?].trace initialization.FooBundle
-public class Trace {
-
-    public void foo(ServiceExtension e) {
-
-    }
+// ContainerExtension
+public final class BaseExtension extends Extension {
+    BaseExtension() {}
 }

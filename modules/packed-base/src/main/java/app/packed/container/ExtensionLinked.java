@@ -48,6 +48,7 @@ public @interface ExtensionLinked {
 
     // onlyDirectAccenden
     // onlyChild
+    // immediateChildOnly
     boolean onlyDirectLink() default false;// onlyDirectLink
     // boolean crossArtifacts default ???
 }
@@ -57,6 +58,7 @@ public @interface ExtensionLinked {
 // So @WireletSupply will override what the actual parent does...
 
 // Det kan ogsaa vaere vi laver noget generisk her..
+// I virkeligheden er det jo bare en ContainerRelation
 interface ExtensionLinkedContext {
 
     default boolean isChild() {

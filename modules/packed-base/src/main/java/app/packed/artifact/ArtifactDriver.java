@@ -17,6 +17,7 @@ package app.packed.artifact;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -24,6 +25,7 @@ import java.util.function.Supplier;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
+import app.packed.inject.Factory;
 import app.packed.service.Injector;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedArtifactImage;
@@ -219,6 +221,18 @@ public abstract class ArtifactDriver<A> {
         pcc.assemble();
         ArtifactContext pac = pcc.instantiateArtifact(pcc.wireletContext);
         return newArtifact(pac);
+    }
+
+    public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, Factory<? extends A> implementation) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, Class<? extends A> implementation) {
+
+        // ArtifactContext + All public servervices are available...
+
+        throw new UnsupportedOperationException();
+        // of(App.class, PackedApp.class);
     }
 
     final ArtifactDriver<A> withOptions(Option... options) {
