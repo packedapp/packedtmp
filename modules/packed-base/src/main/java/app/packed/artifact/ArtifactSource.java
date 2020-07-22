@@ -15,7 +15,7 @@
  */
 package app.packed.artifact;
 
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 
 /**
  * A source for creating artifacts. For example, via {@link App#start(ArtifactSource, app.packed.container.Wirelet...)}.
@@ -26,7 +26,7 @@ import app.packed.container.Bundle;
  * 
  * ArtifactSource -> Can be repeatable
  * 
- * This is typically either a subclass of {@link Bundle} or a pre assembled {@link ArtifactImage system image}.
+ * This is typically either a subclass of {@link ContainerBundle} or a pre assembled {@link ArtifactImage system image}.
  * <p>
  * TODO maybe list all the s
  * 

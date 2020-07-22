@@ -18,7 +18,7 @@ package app.packed.inject.sandbox;
 import java.util.Collection;
 import java.util.Map;
 
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 
 /**
  * A place where Packed can perform injection accordingly to its rules.
@@ -72,7 +72,7 @@ public interface InjectionSite {
         throw new UnsupportedOperationException();
     }
 
-    static Collection<InjectionSite> findAll(Class<? extends Bundle> bundleType, Class<?> componentType) {
+    static Collection<InjectionSite> findAll(Class<? extends ContainerBundle> bundleType, Class<?> componentType) {
         throw new UnsupportedOperationException();
     }
 
@@ -80,7 +80,7 @@ public interface InjectionSite {
         throw new UnsupportedOperationException();
     }
 
-    static InjectionSite findInitializer(Class<? extends Bundle> bundleType, Class<?> componentType) {
+    static InjectionSite findInitializer(Class<? extends ContainerBundle> bundleType, Class<?> componentType) {
         throw new UnsupportedOperationException();
     }
 

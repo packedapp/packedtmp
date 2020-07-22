@@ -34,14 +34,14 @@ import packed.internal.config.ConfigSiteSupport;
  * Extensions form the basis, extensible model
  * <p>
  * constructor visibility is ignored. As long as user has class visibility. They can can use an extension via, for
- * example, {@link Bundle#use(Class)} or {@link ContainerConfiguration#use(Class)}.
+ * example, {@link ContainerBundle#use(Class)} or {@link ContainerConfiguration#use(Class)}.
  * 
  * <p>
  * Any packages where extension implementations, custom hooks or extension wirelet pipelines are located must be open to
  * 'app.packed.base'
  * <p>
  * Every extension implementations must provide either an empty constructor, or a constructor taking a single parameter
- * of type {@link ExtensionContext}. The constructor should have package private accessibility to make sure users do not
+ * of type {@link ExtensionConfiguration}. The constructor should have package private accessibility to make sure users do not
  * try an manually instantiate it, but instead use {@link ContainerConfiguration#use(Class)}. It is also recommended
  * that the extension itself is declared final.
  */
@@ -75,7 +75,7 @@ public abstract class Extension {
     /** The configuration of this extension. Should never be read directly, but accessed via {@link #configuration()}. */
     // I think we should have a value representing configured. In this way people can store the extension
     // or keep it at runtime or whatever they want to do....
-    ExtensionContext configuration; // = PEC.CONFIGURED
+    ExtensionConfiguration configuration; // = PEC.CONFIGURED
 
     /**
      * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
@@ -130,7 +130,7 @@ public abstract class Extension {
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
-     * This method delegate all calls to {@link ExtensionContext#checkConfigurable()}.
+     * This method delegate all calls to {@link ExtensionConfiguration#checkConfigurable()}.
      * 
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
@@ -152,8 +152,8 @@ public abstract class Extension {
      *          streamline with other sidecars we only allow it to be dependency injected into subclasses.
      */
     // should be final???
-    protected final ExtensionContext configuration() {
-        ExtensionContext c = configuration;
+    protected final ExtensionConfiguration configuration() {
+        ExtensionConfiguration c = configuration;
         if (c == null) {
             // TODO fix with actual annotation type
             throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension." + " As an alternative "
@@ -198,7 +198,7 @@ public abstract class Extension {
      *             configurable and an extension of the specified type has not already been installed
      * @throws UnsupportedOperationException
      *             if the specified extension type has not been specified via {@link ExtensionSidecar}
-     * @see ExtensionContext#use(Class)
+     * @see ExtensionConfiguration#use(Class)
      */
     protected final <E extends Extension> E use(Class<E> extensionType) {
         return configuration().use(extensionType);

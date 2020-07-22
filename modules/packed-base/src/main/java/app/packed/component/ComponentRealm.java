@@ -13,24 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.buildtime;
-
-import app.packed.artifact.App;
-import app.packed.container.BaseBundle;
+package app.packed.component;
 
 /**
  *
  */
-public class Doo extends BaseBundle {
 
-    /** {@inheritDoc} */
-    @Override
-    protected void configure() {
-        provideConstant("FooBar");
-    }
+// Bundle...
+
+// Remove Component.extension().
+
+//Class<? extends ComponentRealm> component.realm();
+
+//Bundles and Extensions are build-time constructs.
+//Neither is available at runtime.
+//Once a subsystem transitions to initialized state. They are no longer referenced.
+
+//But whatabout images... But they are never 
+
+// @Deprecated
+@Deprecated
+public interface ComponentRealm {
 
     public static void main(String[] args) {
-        App.of(new Doo());
-        System.out.println("Bye");
+        // System.out.println(MethodHandles.lookup().hasFullPrivilegeAccess());
     }
 }
+
+// Not sure it can contain anything...
+// Use
+// BundleDescriptor
+// Or
+// ExtensionDescriptor
+interface ComponentRealmDescriptor {}

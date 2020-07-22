@@ -15,7 +15,7 @@
  */
 package packed.internal.host;
 
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 
 /**
  *
@@ -53,6 +53,6 @@ public interface GuestInstance<A> {
 
     Guest<A> guest();
 
-    Class<? extends Bundle> sourceType();
+    Class<? extends ContainerBundle> sourceType();
 }
 // Twin ->

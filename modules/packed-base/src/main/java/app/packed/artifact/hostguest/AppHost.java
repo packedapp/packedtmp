@@ -16,7 +16,7 @@
 package app.packed.artifact.hostguest;
 
 import app.packed.component.ConfiguredBy;
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 
 /**
  *
@@ -32,11 +32,11 @@ public interface AppHost extends ConfiguredBy<AppHostConfiguration> {
     }
 }
 
-class FooBar extends Bundle {
+class FooBar extends ContainerBundle {
 
     /** {@inheritDoc} */
     @Override
-    protected void compose() {
+    protected void configure() {
         // <- must have a static driver method... and be open to packed... (and readable to bundle)
         add(AppHost.class);
     }

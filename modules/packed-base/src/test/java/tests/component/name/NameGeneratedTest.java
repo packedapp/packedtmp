@@ -37,7 +37,7 @@ public class NameGeneratedTest extends AbstractArtifactTest {
         check(f -> new HelloWorldBundle(f), "HelloWorld");
     }
 
-    private static void check(Function<Consumer<? super ContainerConfigurationTester>, ? extends app.packed.container.Bundle> cs, String defaultName) {
+    private static void check(Function<Consumer<? super ContainerConfigurationTester>, ? extends app.packed.container.ContainerBundle> cs, String defaultName) {
         appOf(cs.apply(c -> {})).nameIs(defaultName);
         appOf(cs.apply(c -> {})).nameIs(defaultName);
         // We can override default name

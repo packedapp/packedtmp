@@ -51,7 +51,7 @@ public class BTest {
     public static class MyBundle extends BaseBundle {
 
         @Override
-        protected void compose() {
+        protected void configure() {
             super.lookup(MethodHandles.lookup());
             provide(Private.class);
             provide(PrivateImplementation.class);
@@ -61,7 +61,7 @@ public class BTest {
     public static class MyBundle4 extends BaseBundle {
 
         @Override
-        protected void compose() {
+        protected void configure() {
             lookup(MethodHandles.lookup());
             provideConstant(123L);
         }

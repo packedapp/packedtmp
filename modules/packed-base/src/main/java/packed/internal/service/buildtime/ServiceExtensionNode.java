@@ -29,7 +29,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.container.ExtensionContext;
+import app.packed.container.ExtensionConfiguration;
 import app.packed.inject.Inject;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
@@ -64,7 +64,7 @@ public final class ServiceExtensionNode {
     @Nullable
     ArrayList<ServiceExtensionNode> children;
 
-    private final ExtensionContext context;
+    private final ExtensionConfiguration context;
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
     public DependencyManager dependencies;
@@ -94,7 +94,7 @@ public final class ServiceExtensionNode {
      * @param context
      *            the context
      */
-    public ServiceExtensionNode(ExtensionContext context) {
+    public ServiceExtensionNode(ExtensionConfiguration context) {
         this.context = requireNonNull(context, "context is null");
 
     }
@@ -146,7 +146,7 @@ public final class ServiceExtensionNode {
         // We should make sure some stuff is no longer configurable...
     }
 
-    public final ExtensionContext context() {
+    public final ExtensionConfiguration context() {
         return context;
     }
 

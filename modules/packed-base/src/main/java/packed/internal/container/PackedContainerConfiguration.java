@@ -39,7 +39,7 @@ import app.packed.component.ComponentDescriptor;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
@@ -111,23 +111,6 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
     public final WireletPack wireletContext;
 
     /**
-     * Creates a new configuration via {@link #link(Bundle, Wirelet...)}.
-     * 
-     * @param parent
-     *            the parent component (always a container for now)
-     * @param bundle
-     *            the bundle that was linked
-     * @param wirelets
-     *            any wirelets specified by the user
-     */
-    private PackedContainerConfiguration(PackedComponentContext parent, Bundle bundle, Wirelet... wirelets) {
-        super(ComponentDescriptor.CONTAINER, ConfigSiteUtil.captureStackFrame(parent.configSite(), InjectConfigSiteOperations.INJECTOR_OF), parent);
-        this.source = requireNonNull(bundle, "bundle is null");
-        this.lookup = this.model = ContainerModel.of(bundle.getClass());
-        this.wireletContext = WireletPack.fromLink(this, wirelets);
-    }
-
-    /**
      * Creates a new root configuration.
      * 
      * @param cs
@@ -135,7 +118,7 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
      * @param output
      *            the build output
      * @param source
-     *            the source of the container. Either a {@link Bundle}, {@link ArtifactImage} or a {@link Consumer}.
+     *            the source of the container. Either a {@link ContainerBundle}, {@link ArtifactImage} or a {@link Consumer}.
      * @param wirelets
      *            any wirelets specified by the user
      */
@@ -144,6 +127,23 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
         this.source = requireNonNull(source);
         this.lookup = this.model = ContainerModel.of(source.getClass());
         this.wireletContext = WireletPack.fromRoot(this, wirelets);
+    }
+
+    /**
+     * Creates a new configuration via {@link #link(ContainerBundle, Wirelet...)}.
+     * 
+     * @param parent
+     *            the parent component (always a container for now)
+     * @param bundle
+     *            the bundle that was linked
+     * @param wirelets
+     *            any wirelets specified by the user
+     */
+    private PackedContainerConfiguration(PackedComponentContext parent, ContainerBundle bundle, Wirelet... wirelets) {
+        super(ComponentDescriptor.CONTAINER, ConfigSiteUtil.captureStackFrame(parent.configSite(), InjectConfigSiteOperations.INJECTOR_OF), parent);
+        this.source = requireNonNull(bundle, "bundle is null");
+        this.lookup = this.model = ContainerModel.of(bundle.getClass());
+        this.wireletContext = WireletPack.fromLink(this, wirelets);
     }
 
     /** {@inheritDoc} */
@@ -243,8 +243,8 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
      */
     private void configure() {
         // If it is an image it has already been assembled
-        if (source instanceof Bundle) {
-            ModuleAccess.container().bundleConfigure((Bundle) source, this);
+        if (source instanceof ContainerBundle) {
+            ModuleAccess.container().bundleConfigure((ContainerBundle) source, this);
         }
         // Initializes the name of the container, and sets the state to State.FINAL
         initializeName(State.FINAL, null);
@@ -300,7 +300,7 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
         // I think try and move some of this to ComponentNameWirelet
         @Nullable
         Class<?> source = this.sourceType();
-        if (Bundle.class.isAssignableFrom(source)) {
+        if (ContainerBundle.class.isAssignableFrom(source)) {
             String nnn = source.getSimpleName();
             if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
                 nnn = nnn.substring(0, nnn.length() - 6);
@@ -397,9 +397,21 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
         return parent == null || parent instanceof HostConfigurationContext; // TODO change when we have hosts.
     }
 
+    /**
+     * Returns whether or not the specified extension type has been used.
+     * 
+     * @param extensionType
+     *            the extension type to test.
+     * @return whether or not the extension has been used
+     */
+    boolean isExtensionUsed(Class<? extends Extension> extensionType) {
+        requireNonNull(extensionType, "extensionType is null");
+        return extensions.containsKey(extensionType);
+    }
+
     /** {@inheritDoc} */
     @Override
-    public void link(Bundle bundle, Wirelet... wirelets) {
+    public void link(ContainerBundle bundle, Wirelet... wirelets) {
         PackedContainerConfiguration child = new PackedContainerConfiguration(this, bundle, wirelets);
 
         // IDK do we want to progress to next stage just in case...

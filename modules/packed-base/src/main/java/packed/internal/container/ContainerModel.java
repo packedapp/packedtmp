@@ -23,7 +23,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import app.packed.artifact.ArtifactSource;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Nullable;
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
@@ -38,7 +38,7 @@ import packed.internal.util.LookupUtil;
 import packed.internal.util.LookupValue;
 import packed.internal.util.UncheckedThrowableFactory;
 
-/** A model of a container, typically a subclass of {@link Bundle}. */
+/** A model of a container, typically a subclass of {@link ContainerBundle}. */
 public final class ContainerModel extends Model implements ComponentLookup {
 
     /** A cache of model. */

@@ -19,17 +19,17 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.artifact.App;
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.Extension;
 
 /**
  *
  */
-public class Stest extends Bundle {
+public class Stest extends ContainerBundle {
 
     /** {@inheritDoc} */
     @Override
-    protected void compose() {
+    protected void configure() {
         use(WebExtension.class).get("/functional", "Hello Functional!");
         install(SomeComponent.class);
         extensions().forEach(e -> System.out.println(e));

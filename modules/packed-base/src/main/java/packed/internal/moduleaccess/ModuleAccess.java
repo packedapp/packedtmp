@@ -18,7 +18,7 @@ package packed.internal.moduleaccess;
 import java.util.concurrent.ConcurrentHashMap;
 
 import app.packed.base.TypeLiteral;
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 import app.packed.hook.AnnotatedFieldHook;
 
 /** A mechanism for calling package private methods in public packages without using reflection. */
@@ -134,7 +134,7 @@ public final class ModuleAccess {
     private static class ContainerSingletonHolder {
 
         /** The singleton instance. */
-        private static final AppPackedContainerAccess INSTANCE = singleton(AppPackedContainerAccess.class, Bundle.class);
+        private static final AppPackedContainerAccess INSTANCE = singleton(AppPackedContainerAccess.class, ContainerBundle.class);
     }
 
     /** Holder of the {@link AppPackedHookAccess} singleton. */

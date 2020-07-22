@@ -25,7 +25,7 @@ import app.packed.base.Key.Qualifier;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionContext;
+import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionLinked;
 import app.packed.container.ExtensionSidecar;
 import app.packed.container.Subtension;
@@ -82,7 +82,7 @@ public final class ServiceExtension extends Extension {
     final ServiceExtensionNode node;
 
     /** Should never be initialized by users. */
-    ServiceExtension(ExtensionContext context) {
+    ServiceExtension(ExtensionConfiguration context) {
         this.node = new ServiceExtensionNode(context);
     }
 

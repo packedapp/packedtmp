@@ -24,6 +24,8 @@ package app.packed.component;
 
 //Men vi kan f.eks. stoppe med at acceptere nye forbindelser i en Stop_PreOrder
 // Og saa cleanup og await i en postOrder...
+
+//TreeTraversel...
 public enum ComponentTraversalOrder {
     PRE_ORDER, POST_ORDER;
 }

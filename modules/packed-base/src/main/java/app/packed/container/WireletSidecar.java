@@ -33,6 +33,8 @@ import packed.internal.container.WireletModel;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited // see for example ServiceWirelet, should be enough just to have a test for it...
 // If this is inherited. I think all sidecar annotations should be inherited...
+
+// ExtensionWireletMeta
 public @interface WireletSidecar {
 
     /**

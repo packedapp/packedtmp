@@ -43,7 +43,7 @@ public class ServicesTest {
         ContractSet c = ContractSet.contractsOf(new BaseBundle() {
 
             @Override
-            protected void compose() {
+            protected void configure() {
                 use(ServiceExtension.class);
             }
         });
@@ -61,7 +61,7 @@ public class ServicesTest {
         ContractSet c = ContractSet.contractsOf(new BaseBundle() {
 
             @Override
-            protected void compose() {
+            protected void configure() {
                 lookup(MethodHandles.lookup());
                 provide(A.class);
                 provide(B.class);
@@ -80,7 +80,7 @@ public class ServicesTest {
         ContractSet c = ContractSet.contractsOf(new BaseBundle() {
 
             @Override
-            protected void compose() {
+            protected void configure() {
                 lookup(MethodHandles.lookup());
                 provide(NeedsA.class);
                 provide(B.class);
@@ -98,7 +98,7 @@ public class ServicesTest {
         ContractSet c = ContractSet.contractsOf(new BaseBundle() {
 
             @Override
-            protected void compose() {
+            protected void configure() {
                 lookup(MethodHandles.lookup());
                 provide(NeedsAOptional.class);
                 provide(B.class);
@@ -117,7 +117,7 @@ public class ServicesTest {
         ContractSet c = ContractSet.contractsOf(new BaseBundle() {
 
             @Override
-            protected void compose() {
+            protected void configure() {
                 lookup(MethodHandles.lookup());
                 provide(NeedsA.class);
                 provide(NeedsAOptional.class);
@@ -136,7 +136,7 @@ public class ServicesTest {
         ContractSet c = ContractSet.contractsOf(new BaseBundle() {
 
             @Override
-            protected void compose() {
+            protected void configure() {
                 lookup(MethodHandles.lookup());
                 provide(NeedsAOptional.class);
                 provide(NeedsB.class);

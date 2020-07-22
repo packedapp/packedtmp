@@ -25,7 +25,7 @@ import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.Wirelet;
 import packed.internal.component.ComponentConfigurationToComponentAdaptor;
 import packed.internal.container.PackedContainerConfiguration;
@@ -99,8 +99,8 @@ public final class PackedArtifactImage implements ArtifactImage {
     /** {@inheritDoc} */
     @Override
     @SuppressWarnings("unchecked")
-    public Class<? extends Bundle> sourceType() {
-        return (Class<? extends Bundle>) pcc.sourceType(); // images can only be created from bundles
+    public Class<? extends ContainerBundle> sourceType() {
+        return (Class<? extends ContainerBundle>) pcc.sourceType(); // images can only be created from bundles
     }
 
     /** {@inheritDoc} */
@@ -122,7 +122,7 @@ public final class PackedArtifactImage implements ArtifactImage {
 
     /**
      * If the specified source is an image returns the image with any specified wirelets applied. If the specified source is
-     * a {@link Bundle} creates and returns a new image from the specified bundle.
+     * a {@link ContainerBundle} creates and returns a new image from the specified bundle.
      * 
      * @param source
      *            the artifact source
@@ -135,7 +135,7 @@ public final class PackedArtifactImage implements ArtifactImage {
             PackedArtifactImage pai = (PackedArtifactImage) source;
             return pai.with(wirelets);
         } else {
-            return of((Bundle) source, wirelets);
+            return of((ContainerBundle) source, wirelets);
         }
     }
 
@@ -151,7 +151,7 @@ public final class PackedArtifactImage implements ArtifactImage {
      * @throws RuntimeException
      *             if the image could not be constructed
      */
-    public static PackedArtifactImage of(Bundle bundle, Wirelet... wirelets) {
+    public static PackedArtifactImage of(ContainerBundle bundle, Wirelet... wirelets) {
         PackedContainerConfiguration pcc = PackedContainerConfiguration.of(AssembleOutput.image(), bundle, wirelets);
         return new PackedArtifactImage(pcc.assemble(), pcc.wireletContext);
     }

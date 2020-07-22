@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.artifact.App;
@@ -27,6 +26,7 @@ import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactSource;
 import app.packed.base.Key;
+import app.packed.component.CustomConfigurator;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Wirelet;
@@ -322,7 +322,7 @@ public interface Injector {
     // or maybe Injector.configure() instead
     // interface ArtifactConfigurator() {}
     // configure()
-    static Injector configure(Consumer<? super InjectorAssembler> configurator, Wirelet... wirelets) {
+    static Injector configure(CustomConfigurator<? super InjectorAssembler> configurator, Wirelet... wirelets) {
         return driver().configure(c -> new InjectorAssembler(c), configurator, wirelets);
     }
 

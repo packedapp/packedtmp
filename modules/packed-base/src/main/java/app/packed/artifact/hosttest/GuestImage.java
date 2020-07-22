@@ -15,7 +15,7 @@
  */
 package app.packed.artifact.hosttest;
 
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 
 /**
  *
@@ -27,7 +27,7 @@ public interface GuestImage extends SomeGuest {
 
     // Altsaa den laver vel et image per use site.
     // Det er jo meningen den er statisk...
-    static GuestImage composeOnFirstUse(Bundle b) {
+    static GuestImage composeOnFirstUse(ContainerBundle b) {
         throw new UnsupportedOperationException();
     }
 }

@@ -35,7 +35,7 @@ import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
 import app.packed.component.Packlet;
 import app.packed.component.SingletonConfiguration;
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.Extension;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
@@ -52,26 +52,26 @@ import app.packed.hook.OnHook;
 @State(Scope.Benchmark)
 public class FromImage {
 
-    static final ArtifactImage EMPTY = ArtifactImage.of(new Bundle() {
+    static final ArtifactImage EMPTY = ArtifactImage.of(new ContainerBundle() {
         @Override
-        protected void compose() {}
+        protected void configure() {}
     });
 
-    static final ArtifactImage USE_EXTENSION = ArtifactImage.of(new Bundle() {
+    static final ArtifactImage USE_EXTENSION = ArtifactImage.of(new ContainerBundle() {
         @Override
-        public void compose() {
+        public void configure() {
             use(MyExtension.class);
         }
     });
-    static final ArtifactImage INSTALL = ArtifactImage.of(new Bundle() {
+    static final ArtifactImage INSTALL = ArtifactImage.of(new ContainerBundle() {
         @Override
-        public void compose() {
+        public void configure() {
             installConstant("foo");
         }
     });
-    static final ArtifactImage INSTALL_AUTO_ACTIVATE = ArtifactImage.of(new Bundle() {
+    static final ArtifactImage INSTALL_AUTO_ACTIVATE = ArtifactImage.of(new ContainerBundle() {
         @Override
-        public void compose() {
+        public void configure() {
             installConstant(new MyStuff());
         }
     });

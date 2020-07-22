@@ -31,7 +31,7 @@ public class WFreePipelinex extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
-    protected void compose() {
+    protected void configure() {
         lookup(MethodHandles.lookup());
         provide(MyComp.class);
     }

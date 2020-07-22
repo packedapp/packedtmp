@@ -13,20 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.host.prototype;
+package app.packed.element;
 
-import app.packed.artifact.ArtifactDriver;
-import app.packed.container.ContainerBundle;
-import app.packed.container.Wirelet;
-import packed.internal.host.api.OldHostDriver;
+import java.util.stream.Stream;
 
 /**
  *
  */
-public interface PrototypeHost<A> {
+public interface ElementStream<T> extends Stream<T> {
 
-    static <A> OldHostDriver<PrototypeHostConfiguration<A>, PrototypeHost<A>, A> driver(ArtifactDriver<A> driver, ContainerBundle bundle, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
 }
-// Noget 

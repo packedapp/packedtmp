@@ -31,9 +31,9 @@ import app.packed.base.Nullable;
 import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionContext;
+import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionSidecar;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
@@ -43,11 +43,11 @@ import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
-/** The default implementation of {@link ExtensionContext} with addition methods only available in app.packed.base. */
-public final class PackedExtensionContext implements ExtensionContext, Comparable<PackedExtensionContext> {
+/** The default implementation of {@link ExtensionConfiguration} with addition methods only available in app.packed.base. */
+public final class PackedExtensionContext implements ExtensionConfiguration, Comparable<PackedExtensionContext> {
 
     // Indicates that a bundle has already been configured...
-    public static final ExtensionContext CONFIGURED = new PackedExtensionContext();
+    public static final ExtensionConfiguration CONFIGURED = new PackedExtensionContext();
 
     static final MethodHandle MH_FIND_WIRELET = LookupUtil.findVirtualEIIE(MethodHandles.lookup(), "findWirelet",
             MethodType.methodType(Object.class, Class.class));
@@ -134,6 +134,14 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
         }
     }
 
+    private void checkState(String expected) {
+        String current = lifecycle().current();
+        if (!current.equals(expected)) {
+            throw new IllegalStateException("Expected " + expected + ", was " + current);
+        }
+
+    }
+
     /** {@inheritDoc} */
     @Override
     public int compareTo(PackedExtensionContext c) {
@@ -206,6 +214,12 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
         return pcc.installInstance(instance);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean isUsed(Class<? extends Extension> extensionType) {
+        return pcc.isExtensionUsed(extensionType);
+    }
+
     /**
      * Returns a lifecycle context for the extension. Used by {@link #MH_LIFECYCLE_CONTEXT}.
      * 
@@ -227,6 +241,12 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
         };
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void link(ContainerBundle bundle, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
     /** Invoked by the container configuration, whenever the extension is configured. */
     void onChildrenConfigured() {
         checkState(ExtensionSidecar.CHILD_LINKING);
@@ -239,14 +259,6 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
         model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_1_MAIN, extension, this);
         isConfigured = true;
         checkState(ExtensionSidecar.CHILD_LINKING);
-    }
-
-    private void checkState(String expected) {
-        String current = lifecycle().current();
-        if (!current.equals(expected)) {
-            throw new IllegalStateException("Expected " + expected + ", was " + current);
-        }
-
     }
 
     /**
@@ -349,11 +361,5 @@ public final class PackedExtensionContext implements ExtensionContext, Comparabl
             pcc.activeExtension = existing;
         }
         return pec; // Return extension to users
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void link(Bundle bundle, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
     }
 }

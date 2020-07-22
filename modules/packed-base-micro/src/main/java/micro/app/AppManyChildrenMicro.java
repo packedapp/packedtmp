@@ -29,7 +29,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.artifact.App;
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 
 /**
  *
@@ -47,9 +47,9 @@ public class AppManyChildrenMicro {
 
     @Benchmark
     public App manyChildren() {
-        return App.start(new Bundle() {
+        return App.start(new ContainerBundle() {
             @Override
-            protected void compose() {
+            protected void configure() {
                 for (int i = 0; i < size; i++) {
                     link(new TBundle(Integer.toString(i)));
                 }
@@ -57,7 +57,7 @@ public class AppManyChildrenMicro {
         });
     }
 
-    static class TBundle extends Bundle {
+    static class TBundle extends ContainerBundle {
 
         final String name;
 
@@ -66,7 +66,7 @@ public class AppManyChildrenMicro {
         }
 
         @Override
-        protected void compose() {
+        protected void configure() {
             setName(name);
         }
     }

@@ -19,7 +19,7 @@ import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionContext;
+import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionLinked;
 import app.packed.container.ExtensionSidecar;
 import app.packed.container.Wirelet;
@@ -68,7 +68,7 @@ public class TI extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
-    protected void compose() {
+    protected void configure() {
 
         provideConstant(123L);
         use(MyExte.class).foo = "Gondor";
@@ -80,7 +80,7 @@ public class TI extends BaseBundle {
 
         /** {@inheritDoc} */
         @Override
-        protected void compose() {
+        protected void configure() {
             provideConstant("HejHej");
             link(new FFFFFF(), ServiceWirelets.provide("const"));
         }
@@ -91,7 +91,7 @@ public class TI extends BaseBundle {
 
         /** {@inheritDoc} */
         @Override
-        protected void compose() {
+        protected void configure() {
             provideConstant("HejHej");
             // System.out.println(use(MyExte.class).foo);
         }
@@ -128,7 +128,7 @@ public class TI extends BaseBundle {
         }
 
         @Leaving(state = ExtensionSidecar.NORMAL_USAGE)
-        protected void foo(ExtensionContext ec) {
+        protected void foo(ExtensionConfiguration ec) {
             // System.out.println(ec.containerPath());
             // System.out.println("State now " + lc.current());
             // System.out.println(lc);

@@ -29,9 +29,8 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDescriptor;
 import app.packed.component.ComponentPath;
-import app.packed.component.FeatureMap;
 import app.packed.config.ConfigSite;
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import packed.internal.artifact.AssembleOutput;
@@ -74,9 +73,6 @@ public abstract class PackedComponentContext extends AbstractComponentConfigurat
     /** Any extension this component belongs to. */
     @Nullable
     private final PackedExtensionContext extension;
-
-    /** Annoying features. */
-    private final FeatureMap features = new FeatureMap();
 
     /** The name of the component. */
     @Nullable
@@ -273,12 +269,6 @@ public abstract class PackedComponentContext extends AbstractComponentConfigurat
 
     /** {@inheritDoc} */
     @Override
-    public final FeatureMap features() {
-        return features;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     @Nullable
     public final String getDescription() {
         return description;
@@ -422,7 +412,7 @@ public abstract class PackedComponentContext extends AbstractComponentConfigurat
         /** One of the install component methods has been invoked. */
         INSTALL_INVOKED,
 
-        /** {@link ContainerConfiguration#link(Bundle, app.packed.container.Wirelet...)} has been invoked. */
+        /** {@link ContainerConfiguration#link(ContainerBundle, app.packed.container.Wirelet...)} has been invoked. */
         LINK_INVOKED,
 
         /** One of the install component methods has been invoked. */

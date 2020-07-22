@@ -30,7 +30,6 @@ import app.packed.component.Component;
 import app.packed.component.ComponentDescriptor;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
-import app.packed.component.FeatureMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import packed.internal.container.PackedContainerConfiguration;
@@ -101,13 +100,6 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
     @Override
     public final Optional<Class<? extends Extension>> extension() {
         return componentConfiguration.extension();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final FeatureMap features() {
-        // TODO we need to be able to freeze this for images
-        return componentConfiguration.features();
     }
 
     @Override

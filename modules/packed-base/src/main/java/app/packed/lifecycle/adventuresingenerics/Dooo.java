@@ -82,7 +82,7 @@ public class Dooo extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
-    protected void compose() {
+    protected void configure() {
         install(() -> 3);
 
         install(Integer.class, () -> 3);

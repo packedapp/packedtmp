@@ -22,7 +22,7 @@ import java.util.Optional;
 import app.packed.artifact.ArtifactImage;
 import app.packed.component.Component;
 import app.packed.container.BaseBundle;
-import app.packed.container.ExtensionContext;
+import app.packed.container.ExtensionConfiguration;
 
 /**
  *
@@ -31,7 +31,7 @@ public class FooBar extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
-    protected void compose() {
+    protected void configure() {
         provideConstant("HejHEj");
     }
 
@@ -41,7 +41,7 @@ public class FooBar extends BaseBundle {
         Lookup ll = MethodHandles.privateLookupIn(ServiceExtension.class, MethodHandles.lookup());
 
         Optional<Component> oc = i.stream().findFirst();
-        Optional<ServiceExtension> os = ExtensionContext.privateAccessExtension(ll, ServiceExtension.class, oc.get());
+        Optional<ServiceExtension> os = ExtensionConfiguration.privateAccessExtension(ll, ServiceExtension.class, oc.get());
 
         System.out.println(os);
     }

@@ -115,4 +115,12 @@ public final class LookupUtil {
             throw new ExceptionInInitializerError(e);
         }
     }
+
+    public static VarHandle initVarHandle(MethodHandles.Lookup lookup, Class<?> recv, String name, Class<?> type) {
+        try {
+            return lookup.findVarHandle(recv, name, type);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 }

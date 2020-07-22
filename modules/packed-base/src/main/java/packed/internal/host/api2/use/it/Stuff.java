@@ -16,16 +16,16 @@
 package packed.internal.host.api2.use.it;
 
 import app.packed.artifact.hostguest.AppHost;
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 
 /**
  *
  */
-public class Stuff extends Bundle {
+public class Stuff extends ContainerBundle {
 
     /** {@inheritDoc} */
     @Override
-    protected void compose() {
+    protected void configure() {
         addHost(AppHost.driver()).setName("SuperCool Host");
     }
 }

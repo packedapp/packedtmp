@@ -33,7 +33,7 @@ import app.packed.service.ServiceExtension;
 
 /**
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
- * extending {@link Bundle} or {@link BaseBundle}.
+ * extending {@link ContainerBundle} or {@link BaseBundle}.
  */
 // Was named Composer, idk why
 // BundleContext....
@@ -59,7 +59,7 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      * @return an unmodifiable view of the extensions that are currently being used
      * 
      * @see #use(Class)
-     * @see Bundle#extensions()
+     * @see ContainerBundle#extensions()
      */
     Set<Class<? extends Extension>> extensions();
 
@@ -90,7 +90,7 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      * @param factory
      *            the factory to install
      * @return the configuration of the component
-     * @see Bundle#install(Factory)
+     * @see ContainerBundle#install(Factory)
      */
     <T> SingletonConfiguration<T> install(Factory<T> factory);
 
@@ -100,7 +100,7 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      * @param instance
      *            the instance to install
      * @return the configuration of the component
-     * @see Bundle#installConstant(Object)
+     * @see ContainerBundle#installConstant(Object)
      */
     <T> SingletonConfiguration<T> installInstance(T instance);
 
@@ -130,7 +130,7 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      * @param wirelets
      *            any wirelets
      */
-    void link(Bundle bundle, Wirelet... wirelets);
+    void link(ContainerBundle bundle, Wirelet... wirelets);
 
     /**
      * Registers a {@link Lookup} object that will be used for accessing members on components that are registered with the

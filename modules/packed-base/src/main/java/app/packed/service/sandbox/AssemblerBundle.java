@@ -15,7 +15,7 @@
  */
 package app.packed.service.sandbox;
 
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 
 /**
  *
@@ -25,11 +25,11 @@ import app.packed.container.Bundle;
 // Bliver wrappet i saadan en her faetter....
 
 // Maaske Bare Assembled
-final class AssemblerBundle extends Bundle {
+final class AssemblerBundle extends ContainerBundle {
 
     /** {@inheritDoc} */
     @Override
-    protected void compose() {
+    protected void configure() {
         throw new UnsupportedOperationException();
     }
 }

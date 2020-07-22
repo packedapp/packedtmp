@@ -15,7 +15,7 @@
  */
 package app.packed.artifact.hosttest;
 
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 
 /**
  *
@@ -31,9 +31,9 @@ public final class MyExport {
     }
 }
 
-class SomeBundle extends Bundle {
+class SomeBundle extends ContainerBundle {
 
     /** {@inheritDoc} */
     @Override
-    protected void compose() {}
+    protected void configure() {}
 }

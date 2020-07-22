@@ -22,7 +22,6 @@ import java.util.Optional;
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
 import app.packed.component.ComponentPath;
-import app.packed.component.FeatureMap;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
@@ -56,11 +55,6 @@ public abstract class HostConfiguration<T> implements SingletonConfiguration<T> 
 
     @Override
     public Optional<Class<? extends Extension>> extension() {
-        return null;
-    }
-
-    @Override
-    public FeatureMap features() {
         return null;
     }
 

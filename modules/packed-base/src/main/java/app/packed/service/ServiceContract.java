@@ -29,7 +29,7 @@ import app.packed.analysis.BundleDescriptor;
 import app.packed.artifact.ArtifactImage;
 import app.packed.base.Contract;
 import app.packed.base.Key;
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 
 /**
  * A service contract details of a contractee.
@@ -243,7 +243,7 @@ public final class ServiceContract extends Contract {
         return image.descriptor().contracts().use(ServiceContract.class);
     }
 
-    public static ServiceContract of(Bundle bundle) {
+    public static ServiceContract of(ContainerBundle bundle) {
         Optional<ServiceContract> o = Contract.get(BundleDescriptor.of(bundle).contracts(), ServiceContract.class);
         return o.orElse(ServiceContract.EMPTY);
     }

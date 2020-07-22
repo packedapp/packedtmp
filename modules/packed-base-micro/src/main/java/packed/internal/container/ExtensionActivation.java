@@ -34,7 +34,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import app.packed.artifact.ArtifactImage;
 import app.packed.component.Packlet;
 import app.packed.component.SingletonConfiguration;
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.Extension;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
@@ -53,18 +53,18 @@ public class ExtensionActivation {
 
     @Benchmark
     public ArtifactImage empty() {
-        Bundle b = new Bundle() {
+        ContainerBundle b = new ContainerBundle() {
             @Override
-            protected void compose() {}
+            protected void configure() {}
         };
         return ArtifactImage.of(b);
     }
 
     @Benchmark
     public ArtifactImage useExtension() {
-        Bundle b = new Bundle() {
+        ContainerBundle b = new ContainerBundle() {
             @Override
-            public void compose() {
+            public void configure() {
                 use(MyExtension.class);
             }
         };
@@ -73,9 +73,9 @@ public class ExtensionActivation {
 
     @Benchmark
     public ArtifactImage install() {
-        Bundle b = new Bundle() {
+        ContainerBundle b = new ContainerBundle() {
             @Override
-            public void compose() {
+            public void configure() {
                 installConstant("foo");
             }
         };
@@ -84,9 +84,9 @@ public class ExtensionActivation {
 
     @Benchmark
     public ArtifactImage newExtensionUseInstall() {
-        Bundle b = new Bundle() {
+        ContainerBundle b = new ContainerBundle() {
             @Override
-            public void compose() {
+            public void configure() {
                 use(MyExtension.class);
                 installConstant("foo");
             }
@@ -96,9 +96,9 @@ public class ExtensionActivation {
 
     @Benchmark
     public ArtifactImage newExtensionAutoActivate() {
-        Bundle b = new Bundle() {
+        ContainerBundle b = new ContainerBundle() {
             @Override
-            public void compose() {
+            public void configure() {
                 installConstant(new MyStuff());
             }
         };

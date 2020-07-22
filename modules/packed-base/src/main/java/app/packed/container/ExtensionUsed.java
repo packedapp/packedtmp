@@ -32,12 +32,26 @@ public @interface ExtensionUsed {
 
 interface ContainerDescriptor {}
 
-interface ContainerRelation {
+/**
+ * A container relation desc
+ */
+interface ContainerRelationDescriptor {
     int distance();
 
     ContainerDescriptor from();
 
     ContainerDescriptor to();
+}
+
+/// Okay hvad maa jeg faa at vide??????
+/// Er det maaske mere en Path?????
+interface PathDescriptor<T> extends Iterable<T> {
+
+    int distance(); // the
+
+    T from();
+
+    T to();
 }
 
 class FooBar {

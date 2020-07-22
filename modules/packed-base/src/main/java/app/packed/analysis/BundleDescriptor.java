@@ -34,7 +34,7 @@ import app.packed.base.Contract;
 import app.packed.base.ContractSet;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.Extension;
 import app.packed.service.ServiceDescriptor;
 import packed.internal.artifact.AssembleOutput;
@@ -90,7 +90,7 @@ import packed.internal.container.PackedContainerConfiguration;
 public class BundleDescriptor {
 
     /** The type of the bundle. */
-    private final Class<? extends Bundle> bundleType;
+    private final Class<? extends ContainerBundle> bundleType;
 
     private final ContractSet contracts;
 
@@ -139,11 +139,11 @@ public class BundleDescriptor {
     // Hvis det er en tom skal, der tager en Builder???
 
     /**
-     * Returns any description that has been set for the bundle via {@link Bundle#setDescription(String)}.
+     * Returns any description that has been set for the bundle via {@link ContainerBundle#setDescription(String)}.
      * 
      * @return a optional description of the bundle
      * 
-     * @see Bundle#setDescription(String)
+     * @see ContainerBundle#setDescription(String)
      */
     public final Optional<String> description() {
         return Optional.ofNullable(description);
@@ -191,7 +191,7 @@ public class BundleDescriptor {
      *
      * @return the type of the bundle
      */
-    public final Class<? extends Bundle> sourceType() {
+    public final Class<? extends ContainerBundle> sourceType() {
         return bundleType;
     }
 
@@ -246,7 +246,7 @@ public class BundleDescriptor {
      * 
      * @see ArtifactImage#descriptor()
      */
-    public static BundleDescriptor of(Bundle bundle) {
+    public static BundleDescriptor of(ContainerBundle bundle) {
         requireNonNull(bundle, "bundle is null");
         PackedContainerConfiguration pcc = PackedContainerConfiguration.of(AssembleOutput.descriptor(BundleDescriptor.class), bundle);
         pcc.assemble();
@@ -268,7 +268,7 @@ public class BundleDescriptor {
         private String bundleDescription;
 
         /** The bundleType */
-        private final Class<? extends Bundle> bundleType;
+        private final Class<? extends ContainerBundle> bundleType;
 
         private IdentityHashMap<Class<? extends Contract>, Contract> contracts = new IdentityHashMap<>();
 
@@ -278,7 +278,7 @@ public class BundleDescriptor {
 
         private Map<Key<?>, ServiceDescriptor> services;
 
-        public Builder(Class<? extends Bundle> bundleType) {
+        public Builder(Class<? extends ContainerBundle> bundleType) {
             this.bundleType = requireNonNull(bundleType, "bundleType is null");
         }
 
@@ -306,7 +306,7 @@ public class BundleDescriptor {
         /**
          * @return the bundleType
          */
-        public final Class<? extends Bundle> bundleType() {
+        public final Class<? extends ContainerBundle> bundleType() {
             return bundleType;
         }
 

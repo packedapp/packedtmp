@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.host.prototype;
-
-import app.packed.artifact.ArtifactDriver;
-import app.packed.container.ContainerBundle;
-import app.packed.container.Wirelet;
-import packed.internal.host.api.OldHostDriver;
+package app.packed.introspection;
 
 /**
  *
  */
-public interface PrototypeHost<A> {
+public interface FunctionDescriptor {
+    // interface
+    // implementation
 
-    static <A> OldHostDriver<PrototypeHostConfiguration<A>, PrototypeHost<A>, A> driver(ArtifactDriver<A> driver, ContainerBundle bundle, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
+    // Type Literals
+
+    // Can we have captured annotations....
+
+    // In some situations. But I think we need to make a special wrapper
+
+    // new ConsumerToken<@Foobar String>(Consumer c){};
 }
-// Noget 

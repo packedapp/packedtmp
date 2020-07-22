@@ -26,6 +26,7 @@ import app.packed.container.Extension;
  * A component is the basic entity in Packed. Much like everything is a is one of the defining features of Unix, and its
  * derivatives. In packed everything is a component.
  */
+// ComponentDescriptor??
 public interface Component {
 
     default ComponentPath artifactPath() {
@@ -47,12 +48,22 @@ public interface Component {
      */
     ConfigSite configSite();
 
+    // returns it self if its a container
+    // container().parent().container() <-- returns parent container
+    // ComponentDescriptor container();
+
     // Alternative have en Container extends Component....
     // Maaske ikke extends Component.... Saa vi kan have
     // container aggregates
     // container().path()
     // Vi vil gerne kunne give en component, uden at give adgang til dens container..
-    // same with artifact
+    // same with artifac
+
+    default Optional<Class<?>> realm() {
+        // Wirelets, Artifacts does not have
+        throw new UnsupportedOperationException();
+    }
+
     default ComponentPath containerPath() {
         // also on ComponentConfiguration
         throw new UnsupportedOperationException();
@@ -85,7 +96,6 @@ public interface Component {
 
     // SystemView/Descriptor
     // Contracts...
-    FeatureMap features();
 
     /**
      * Returns the name of this component.

@@ -38,11 +38,11 @@ import packed.internal.container.PackedExtensionContext;
  * <p>
  * Instances of this class should never be exposed to end-users.
  * 
- * @apiNote In the future, if the Java language permits, {@link ExtensionContext} may become a {@code sealed} interface,
- *          which would prohibit subclassing except by explicitly permitted types.
+ * @apiNote In the future, if the Java language permits, {@link ExtensionConfiguration} may become a {@code sealed}
+ *          interface, which would prohibit subclassing except by explicitly permitted types.
  * 
  */
-public interface ExtensionContext {
+public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
 
     // What we are generating...
     // This can be tricky, For example, if we create an image.
@@ -72,7 +72,7 @@ public interface ExtensionContext {
      * 
      * @return the config site of the container the extension is registered with
      */
-    ConfigSite containerConfigSite();
+    ConfigSite containerConfigSite(); // parent.configSite
 
     /**
      * Returns the path of the container the extension is registered with.
@@ -109,7 +109,7 @@ public interface ExtensionContext {
      * @param wirelets
      *            any wirelets
      */
-    void link(Bundle bundle, Wirelet... wirelets);
+    void link(ContainerBundle bundle, Wirelet... wirelets);
 
     /**
      * Returns an extension of the specified type. The specified type must be among the extension's dependencies as
@@ -134,6 +134,20 @@ public interface ExtensionContext {
      */
     <E extends Extension> E use(Class<E> extensionType);
 
+    /**
+     * Returns whether or not the specified extension type has been used.
+     * 
+     * @param extensionType
+     *            the extension type to test.
+     * @return whether or not the extension has been used
+     */
+    // Forklar noget om hvornaar man kan vaere 100% sikker paa den ikke er brugt
+    // Tillader vi alle extensions??? ogsaa dem vi ikke depender paa
+
+    // Og man kan misforstaa den som om at det er om denne extension bruger den.
+
+    boolean isUsed(Class<? extends Extension> extensionType);
+
 //    /**
 //     * The specified extension type must be located in the same module as the module that extension this context is related
 //     * to.
@@ -155,7 +169,7 @@ public interface ExtensionContext {
     // Maaske paa ExtensionContext istedet for...
 
     // Skal ogsaa have en version der tager en Bundle???
-    static Optional<ExtensionContext> privateAccess(MethodHandles.Lookup lookup, Component c) {
+    static Optional<ExtensionConfiguration> privateAccess(MethodHandles.Lookup lookup, Component c) {
         return Optional.ofNullable(pa(lookup, c));
     }
 
@@ -182,6 +196,7 @@ public interface ExtensionContext {
         return pec == null ? Optional.empty() : Optional.of((T) pec.extension());
     }
 
+    @SuppressWarnings("deprecation")
     private static PackedExtensionContext pa(MethodHandles.Lookup lookup, Component c) {
         requireNonNull(lookup, "lookup is null");
         if (lookup.lookupClass() == Extension.class || !Extension.class.isAssignableFrom(lookup.lookupClass())) {

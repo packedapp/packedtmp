@@ -17,14 +17,14 @@ package packed.internal.container;
 
 import app.packed.artifact.App;
 import app.packed.container.BaseBundle;
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.ExtensionSidecar;
 import app.packed.statemachine.Leaving;
 
 /**
  *
  */
-public class TestOrder extends Bundle {
+public class TestOrder extends ContainerBundle {
 
     public static class SomeExtension extends app.packed.container.Extension {
 
@@ -63,7 +63,7 @@ public class TestOrder extends Bundle {
 
     /** {@inheritDoc} */
     @Override
-    protected void compose() {
+    protected void configure() {
         use(E3.class);
         use(E1.class);
         use(E2.class);
@@ -78,7 +78,7 @@ public class TestOrder extends Bundle {
 
         /** {@inheritDoc} */
         @Override
-        protected void compose() {
+        protected void configure() {
             System.out.println("Composed");
         }
     }

@@ -21,7 +21,7 @@ import app.packed.analysis.BundleDescriptor;
 import app.packed.component.Component;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import packed.internal.artifact.PackedArtifactImage;
@@ -45,7 +45,7 @@ import packed.internal.artifact.PackedArtifactImage;
  * <p>
  * An image can be used to create new instances of {@link app.packed.artifact.App}, {@link BundleDescriptor} or other
  * artifact images. Artifact images can not be used as a part of other containers, for example, via
- * {@link Bundle#link(Bundle, Wirelet...)}.
+ * {@link ContainerBundle#link(ContainerBundle, Wirelet...)}.
  * 
  * @apiNote In the future, if the Java language permits, {@link ArtifactImage} may become a {@code sealed} interface,
  *          which would prohibit subclassing except by explicitly permitted types.
@@ -69,7 +69,7 @@ public interface ArtifactImage extends ArtifactSource {
      * 
      * @return any description that has been set for the image
      * @see ContainerConfiguration#setDescription(String)
-     * @see Bundle#setDescription(String)
+     * @see ContainerBundle#setDescription(String)
      */
     Optional<String> description();
 
@@ -78,7 +78,7 @@ public interface ArtifactImage extends ArtifactSource {
      * 
      * @return the bundle descriptor
      * 
-     * @see BundleDescriptor#of(Bundle)
+     * @see BundleDescriptor#of(ContainerBundle)
      */
     // ImageDescriptor with all wirelets????? Eller bare med i BundleDescriptor???
     // Vi har jo feks anderledes contract... Og kan vi se alt???
@@ -110,7 +110,7 @@ public interface ArtifactImage extends ArtifactSource {
      * @return the type of bundle that was used to create this image
      */
     // bundleType()?
-    Class<? extends Bundle> sourceType();
+    Class<? extends ContainerBundle> sourceType();
 
     /**
      * Returns a component stream consisting of all the components in this image.
@@ -147,7 +147,7 @@ public interface ArtifactImage extends ArtifactSource {
      * @throws RuntimeException
      *             if the image could not be constructed
      */
-    static ArtifactImage of(Bundle bundle, Wirelet... wirelets) {
+    static ArtifactImage of(ContainerBundle bundle, Wirelet... wirelets) {
         return PackedArtifactImage.of(bundle, wirelets);
     }
 }

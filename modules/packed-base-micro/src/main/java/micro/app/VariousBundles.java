@@ -16,7 +16,7 @@
 package micro.app;
 
 import app.packed.artifact.ArtifactImage;
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 
 /**
  *
@@ -28,28 +28,28 @@ public class VariousBundles {
     public static final ArtifactImage FIVE_CONTAINER_IMAGE = ArtifactImage.of(fiveComponents());
     public static final ArtifactImage ONE_CONTAINER_IMAGE = ArtifactImage.of(oneContainer());
 
-    public static Bundle empty() {
-        return new Bundle() {
+    public static ContainerBundle empty() {
+        return new ContainerBundle() {
             @Override
-            protected void compose() {}
+            protected void configure() {}
         };
     }
 
-    public static Bundle oneComponent() {
-        return new Bundle() {
+    public static ContainerBundle oneComponent() {
+        return new ContainerBundle() {
 
             @Override
-            public void compose() {
+            public void configure() {
                 installConstant("foo");
             }
         };
     }
 
-    public static Bundle fiveComponents() {
-        return new Bundle() {
+    public static ContainerBundle fiveComponents() {
+        return new ContainerBundle() {
 
             @Override
-            public void compose() {
+            public void configure() {
                 installConstant("foo").setName("1");
                 installConstant("foo").setName("2");
                 installConstant("foo").setName("3");
@@ -59,14 +59,14 @@ public class VariousBundles {
         };
     }
 
-    public static Bundle oneContainer() {
-        return new Bundle() {
+    public static ContainerBundle oneContainer() {
+        return new ContainerBundle() {
 
             @Override
-            public void compose() {
-                link(new Bundle() {
+            public void configure() {
+                link(new ContainerBundle() {
                     @Override
-                    protected void compose() {}
+                    protected void configure() {}
                 });
             }
         };

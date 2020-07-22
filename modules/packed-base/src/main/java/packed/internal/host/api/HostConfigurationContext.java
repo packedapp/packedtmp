@@ -23,7 +23,6 @@ import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
-import app.packed.component.FeatureMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
@@ -69,8 +68,6 @@ public interface HostConfigurationContext {
      * @return any extension this component belongs to
      */
     Optional<Class<? extends Extension>> extension();
-
-    FeatureMap features();
 
     /**
      * Returns the description of this component. Or null if the description has not been set.

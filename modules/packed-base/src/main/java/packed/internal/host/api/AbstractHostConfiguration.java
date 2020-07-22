@@ -20,9 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
-import app.packed.component.ComponentPath;
 import app.packed.component.ComponentDescriptor;
-import app.packed.component.FeatureMap;
+import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 
@@ -54,10 +53,6 @@ public abstract class AbstractHostConfiguration {
 
     public final Optional<Class<? extends Extension>> extension() {
         return context.extension();
-    }
-
-    public final FeatureMap features() {
-        return context.features();
     }
 
     @Nullable

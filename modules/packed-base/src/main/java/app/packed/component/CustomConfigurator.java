@@ -13,20 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.host.prototype;
-
-import app.packed.artifact.ArtifactDriver;
-import app.packed.container.ContainerBundle;
-import app.packed.container.Wirelet;
-import packed.internal.host.api.OldHostDriver;
+package app.packed.component;
 
 /**
  *
  */
-public interface PrototypeHost<A> {
-
-    static <A> OldHostDriver<PrototypeHostConfiguration<A>, PrototypeHost<A>, A> driver(ArtifactDriver<A> driver, ContainerBundle bundle, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
+public interface CustomConfigurator<T> {
+    void configure(T stuff);
 }
-// Noget 

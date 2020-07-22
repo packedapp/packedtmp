@@ -29,7 +29,7 @@ import app.packed.service.ServiceConfiguration;
 import app.packed.service.ServiceExtension;
 
 /**
- * A convenience extension of {@link Bundle} which contains shortcut access to common functionality defined by the
+ * A convenience extension of {@link ContainerBundle} which contains shortcut access to common functionality defined by the
  * various extension available in this module.
  * <p>
  * For example, instead of doing use(ServiceExtension.class).provide(Foo.class) you can just use
@@ -59,7 +59,7 @@ import app.packed.service.ServiceExtension;
  * @apiNote We never return, for example, Bundle or BaseBundle. As this would make extending the class difficult unless
  *          we defined all methods as non-final.
  */
-public abstract class BaseBundle extends Bundle {
+public abstract class BaseBundle extends ContainerBundle {
 
     /**
      * Exposes an internal service outside of this bundle, equivalent to calling {@code expose(Key.of(key))}. A typical use
@@ -215,11 +215,11 @@ public abstract class BaseBundle extends Bundle {
      * @param bundle
      *            the bundle to print the contract for
      */
-    protected static void printContract(Bundle bundle) {
+    protected static void printContract(ContainerBundle bundle) {
         // BaseBundleContract.of(bundle).print();
     }
 
-    protected static void printDescriptor(Bundle bundle) {
+    protected static void printDescriptor(ContainerBundle bundle) {
         BundleDescriptor.of(bundle).print();
     }
 }

@@ -91,7 +91,7 @@ public interface Wirelet {
      * Returns a wirelet that will set the name container to the specified value.
      * <p>
      * Overriding any default naming scheme, or any name that might already have been set, for example, via
-     * {@link Bundle#setName(String)}.
+     * {@link ContainerBundle#setName(String)}.
      * 
      * @param name
      *            the name of the container

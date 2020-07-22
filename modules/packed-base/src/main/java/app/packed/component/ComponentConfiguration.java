@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.Extension;
 
 /**
@@ -31,7 +31,7 @@ public interface ComponentConfiguration {
     /**
      * Checks that the component is still configurable or throws an {@link IllegalStateException}.
      * <p>
-     * A component is typically only configurable inside of {@link Bundle#compose()}.
+     * A component is typically only configurable inside of {@link ContainerBundle#configure()}.
      * 
      * @throws IllegalStateException
      *             if the component is no long configurable.
@@ -51,8 +51,6 @@ public interface ComponentConfiguration {
      * @return any extension this component belongs to
      */
     Optional<Class<? extends Extension>> extension();
-
-    FeatureMap features();
 
     /**
      * Returns the description of this component. Or null if the description has not been set.
@@ -75,6 +73,13 @@ public interface ComponentConfiguration {
      * @see #setName(String)
      */
     String getName();
+
+    /**
+     * Returns the type of component this configuration creates.
+     * 
+     * @return the type of component this configuration creates
+     */
+    ComponentDescriptor model();
 
     /**
      * Registers an action that will be performed whenever a name is assigned to the component.
@@ -133,11 +138,4 @@ public interface ComponentConfiguration {
      * @see Component#name()
      */
     ComponentConfiguration setName(String name);
-
-    /**
-     * Returns the type of component this configuration creates.
-     * 
-     * @return the type of component this configuration creates
-     */
-    ComponentDescriptor model();
 }

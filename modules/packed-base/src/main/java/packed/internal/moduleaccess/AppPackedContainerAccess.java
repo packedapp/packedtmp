@@ -15,10 +15,10 @@
  */
 package packed.internal.moduleaccess;
 
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionContext;
+import app.packed.container.ExtensionConfiguration;
 import app.packed.container.WireletPipeline;
 import packed.internal.container.WireletPipelineContext;
 
@@ -26,14 +26,14 @@ import packed.internal.container.WireletPipelineContext;
 public interface AppPackedContainerAccess extends SecretAccess {
 
     /**
-     * Calls the doConfigure method in {@link Bundle}.
+     * Calls the doConfigure method in {@link ContainerBundle}.
      * 
      * @param bundle
      *            the bundle to configure
      * @param configuration
      *            the configuration of the container
      */
-    void bundleConfigure(Bundle bundle, ContainerConfiguration configuration);
+    void bundleConfigure(ContainerBundle bundle, ContainerConfiguration configuration);
 
     /**
      * Initializes the extension.
@@ -41,7 +41,7 @@ public interface AppPackedContainerAccess extends SecretAccess {
      * @param context
      *            the extension context containing the extension
      */
-    void extensionSetContext(Extension extension, ExtensionContext context);
+    void extensionSetContext(Extension extension, ExtensionConfiguration context);
 
     void pipelineInitialize(WireletPipeline<?, ?> pipeline, WireletPipelineContext context);
 }

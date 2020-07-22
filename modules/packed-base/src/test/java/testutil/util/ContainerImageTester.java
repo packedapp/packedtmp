@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import app.packed.artifact.ArtifactImage;
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.Wirelet;
 
 /**
@@ -29,7 +29,7 @@ public class ContainerImageTester {
 
     private final ArtifactImage image;
 
-    public ContainerImageTester(Bundle source, Wirelet... wirelets) {
+    public ContainerImageTester(ContainerBundle source, Wirelet... wirelets) {
         this(ArtifactImage.of(source, wirelets));
     }
 

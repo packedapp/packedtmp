@@ -31,7 +31,6 @@ import app.packed.component.ComponentDescriptor;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.component.ComponentStream.Option;
-import app.packed.component.FeatureMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.lifecycleold.StopOption;
@@ -106,12 +105,6 @@ public final class PackedContainer extends PackedComponent {
         @Override
         public Optional<Class<? extends Extension>> extension() {
             return container.extension();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public FeatureMap features() {
-            return container.features();
         }
 
         /** {@inheritDoc} */

@@ -24,5 +24,5 @@ public class Stuff extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
-    protected void compose() {}
+    protected void configure() {}
 }

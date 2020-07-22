@@ -52,7 +52,7 @@ public @interface ExtensionSidecar {
 
     /**
      * Any child containers located in the same artifact will be has been defined. Typically using
-     * {@link Bundle#link(Bundle, app.packed.container.Wirelet...)}. The next event will be {@link #GUESTS_DEFINITIONS}.
+     * {@link ContainerBundle#link(ContainerBundle, app.packed.container.Wirelet...)}. The next event will be {@link #GUESTS_DEFINITIONS}.
      */
     String CHILD_LINKING = "ChildLinking";
 
@@ -65,7 +65,7 @@ public @interface ExtensionSidecar {
     /**
      * Other extensions that an extension may use (but do not have to). This need not include transitive dependencies
      * (dependencies of dependencies). Only extensions that are directly used, for example, via
-     * {@link ExtensionContext#use(Class)}.
+     * {@link ExtensionConfiguration#use(Class)}.
      * 
      * @return extensions that the extension may use
      */

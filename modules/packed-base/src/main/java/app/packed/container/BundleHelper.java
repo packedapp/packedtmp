@@ -13,20 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.host.prototype;
+package app.packed.container;
 
-import app.packed.artifact.ArtifactDriver;
-import app.packed.container.ContainerBundle;
-import app.packed.container.Wirelet;
-import packed.internal.host.api.OldHostDriver;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
+
+import app.packed.service.ServiceExtension;
+import packed.internal.util.LookupUtil;
 
 /**
  *
  */
-public interface PrototypeHost<A> {
+public class BundleHelper {
+    public static String IN_PROGRESS = "IN_PROGRESS";
 
-    static <A> OldHostDriver<PrototypeHostConfiguration<A>, PrototypeHost<A>, A> driver(ArtifactDriver<A> driver, ContainerBundle bundle, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
+    public static String CONSUMED = "CONSUMED";
+
+    /** A varhandle that can extract a ServiceExtensionNode from {@link ServiceExtension}. */
+    private static final VarHandle CONFIGURATION = LookupUtil.initPrivateVarHandle(MethodHandles.lookup(), ContainerBundle.class, "configuration",
+            Object.class);
 }
-// Noget 

@@ -18,10 +18,10 @@ package app.packed.artifact;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import app.packed.component.CustomConfigurator;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
@@ -214,10 +214,10 @@ public abstract class ArtifactDriver<A> {
     protected abstract A newArtifact(ArtifactContext context);
 
     // Hmmm
-    public final <C> A configure(Function<ContainerConfiguration, C> factory, Consumer<C> consumer, Wirelet... wirelets) {
+    public final <C> A configure(Function<ContainerConfiguration, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
         PackedContainerConfiguration pcc = PackedContainerConfiguration.of(AssembleOutput.artifact(this), consumer, wirelets);
         C c = factory.apply(pcc);
-        consumer.accept(c);
+        consumer.configure(c);
         pcc.assemble();
         ArtifactContext pac = pcc.instantiateArtifact(pcc.wireletContext);
         return newArtifact(pac);

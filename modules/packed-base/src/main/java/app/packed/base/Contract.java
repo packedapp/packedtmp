@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 
 import app.packed.analysis.BundleDescriptor;
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.container.PackedContainerConfiguration;
 
@@ -93,7 +93,7 @@ public abstract class Contract {
         return t;
     }
 
-    public static <T extends Contract> Optional<T> of(Bundle bundle, Class<T> contractType) {
+    public static <T extends Contract> Optional<T> of(ContainerBundle bundle, Class<T> contractType) {
         requireNonNull(bundle, "bundle is null");
         PackedContainerConfiguration conf = PackedContainerConfiguration.of(AssembleOutput.descriptor(BundleDescriptor.class), bundle);
         conf.assemble();

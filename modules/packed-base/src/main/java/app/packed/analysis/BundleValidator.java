@@ -2,7 +2,7 @@ package app.packed.analysis;
 
 import java.util.List;
 
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 
 /**
  * This class can be used to verify that a bundle can be successfully. For example, doing testing.
@@ -60,7 +60,7 @@ public interface BundleValidator {
      * @throws AssertionError
      *             if the bundle is not valid
      */
-    static void assertValid(Bundle bundle) {
+    static void assertValid(ContainerBundle bundle) {
         throw new UnsupportedOperationException();
     }
 
@@ -71,11 +71,11 @@ public interface BundleValidator {
      *            the bundle to validate
      * @return whether or not the specified bundle is valid
      */
-    static boolean isValid(Bundle bundle) {
+    static boolean isValid(ContainerBundle bundle) {
         throw new UnsupportedOperationException();
     }
 
-    static BundleValidator validate(Bundle bundle) {
+    static BundleValidator validate(ContainerBundle bundle) {
         throw new UnsupportedOperationException();
     }
 
@@ -89,7 +89,7 @@ public interface BundleValidator {
 
         // failWith(MethodHandles.Lookup lookup, Class<? extends Exception>);
 
-        BundleValidator verify(Bundle b);
+        BundleValidator verify(ContainerBundle b);
     }
     // Can throw AssertionException (Maybe its the default)
     // Maybe write stuff to a file

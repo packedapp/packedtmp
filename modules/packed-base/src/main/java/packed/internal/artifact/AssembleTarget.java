@@ -4,7 +4,7 @@ import app.packed.analysis.BundleDescriptor;
 import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
 import app.packed.base.Contract;
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 
 /**
  * The various types of build process goals available in Packed.
@@ -47,7 +47,7 @@ public enum AssembleTarget {
     // Artifact_Initializing Artifact_Executing...
     // Managed Artifact, Unmanaged Artifact....
 
-    /** Create a new {@link ArtifactImage} from a {@link Bundle} (or an existing image). */
+    /** Create a new {@link ArtifactImage} from a {@link ContainerBundle} (or an existing image). */
     IMAGE;
 
 }

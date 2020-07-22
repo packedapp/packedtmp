@@ -23,7 +23,6 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentDescriptor;
 import app.packed.component.ComponentPath;
-import app.packed.component.FeatureMap;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
@@ -71,12 +70,6 @@ public final class PackedServiceComponentConfiguration<T> implements ServiceComp
     @Override
     public ConfigSite configSite() {
         return buildEntry.configSite();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public FeatureMap features() {
-        return component.features();
     }
 
     /** {@inheritDoc} */

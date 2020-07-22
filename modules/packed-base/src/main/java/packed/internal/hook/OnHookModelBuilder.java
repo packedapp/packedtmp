@@ -32,9 +32,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import app.packed.base.Nullable;
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionContext;
+import app.packed.container.ExtensionConfiguration;
 import app.packed.container.InternalExtensionException;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
@@ -307,7 +307,7 @@ final class OnHookModelBuilder {
 
         /**
          * Creates a node for a container that does not have a builder defined. This is, for example, the case for both
-         * {@link Bundle} and {@link Extension} which is instantiated elsewhere then the hook subsystem.
+         * {@link ContainerBundle} and {@link Extension} which is instantiated elsewhere then the hook subsystem.
          * 
          * @param cp
          *            the class processor for the node
@@ -389,7 +389,7 @@ final class OnHookModelBuilder {
                 if (Extension.class.isAssignableFrom(onType)) {
                     // Hack
                     try {
-                        constructor = onType.getDeclaredConstructor(ExtensionContext.class);
+                        constructor = onType.getDeclaredConstructor(ExtensionConfiguration.class);
                     } catch (NoSuchMethodException ignore) {} // Already on failure path
                 }
                 if (constructor == null) {

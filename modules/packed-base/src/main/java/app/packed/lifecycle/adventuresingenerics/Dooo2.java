@@ -55,7 +55,7 @@ public class Dooo2 extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
-    protected void compose() {
+    protected void configure() {
         install(() -> 3L);
         install((@Nullable Wirelet i) -> 3);
         install(new Factory1<>((Integer i) -> 3) {});

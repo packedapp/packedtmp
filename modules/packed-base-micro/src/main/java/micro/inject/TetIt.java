@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 import app.packed.inject.Factory;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
@@ -48,11 +48,11 @@ public class TetIt {
         NeedsString(String s) {}
     }
 
-    public static class MyContainer extends Bundle {
+    public static class MyContainer extends ContainerBundle {
 
         /** {@inheritDoc} */
         @Override
-        protected void compose() {
+        protected void configure() {
             ServiceExtension e = use(ServiceExtension.class);
             e.provide(Factory.fromInstance("Root"));
             e.provide(Factory.fromInstance("Child1"));

@@ -143,12 +143,6 @@ public abstract class AbstractComponentConfiguration implements ComponentConfigu
 
     /** {@inheritDoc} */
     @Override
-    public FeatureMap features() {
-        return context.features();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     @Nullable
     public String getDescription() {
         return context.getDescription();

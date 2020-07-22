@@ -21,7 +21,7 @@ import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactSource;
 import app.packed.component.ComponentDescriptor;
 import app.packed.config.ConfigSite;
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.Wirelet;
 import packed.internal.artifact.PackedArtifactImage;
 import packed.internal.component.PackedComponentContext;
@@ -52,7 +52,7 @@ public final class PackedHostConfiguration extends PackedComponentContext implem
         if (source instanceof PackedArtifactImage) {
             img = ((PackedArtifactImage) source).with(wirelets);
         } else {
-            img = PackedArtifactImage.of((Bundle) source, wirelets);
+            img = PackedArtifactImage.of((ContainerBundle) source, wirelets);
         }
 
         PackedGuestConfiguration pgc = new PackedGuestConfiguration(this, img.configuration(), img);

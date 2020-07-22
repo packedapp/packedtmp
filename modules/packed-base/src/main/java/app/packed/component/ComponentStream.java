@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 
 import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.Extension;
 import packed.internal.component.PackedComponentStreamOption;
 
@@ -209,7 +209,7 @@ public interface ComponentStream extends Stream<Component> {
      * @return a component the stream
      * @see ArtifactImage#stream(Option...)
      */
-    static ComponentStream of(Bundle bundle, Option... options) {
+    static ComponentStream of(ContainerBundle bundle, Option... options) {
         return ArtifactImage.of(bundle).stream(options);
     }
 

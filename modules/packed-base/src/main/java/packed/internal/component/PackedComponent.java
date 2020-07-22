@@ -146,12 +146,6 @@ public class PackedComponent implements Component {
         return extension;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public final FeatureMap features() {
-        return features;
-    }
-
     public final Component findComponent(CharSequence path) {
         return findComponent(path.toString());
     }

@@ -22,7 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.Extension;
 
 /**
@@ -39,8 +39,8 @@ import app.packed.container.Extension;
  * ComponentType??? Ja det er jo saadan hvad InstanceOf
  * 
  * <p>
- * This annotation cannot be used on subclasses of {@link Bundle} as we want to avoid situations where some extensions
- * are added via class annotations and others via {@link Bundle#compose()}. Giving the false impression to users that
+ * This annotation cannot be used on subclasses of {@link ContainerBundle} as we want to avoid situations where some extensions
+ * are added via class annotations and others via {@link ContainerBundle#configure()}. Giving the false impression to users that
  * only annotations added via this annotation is used
  */
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
