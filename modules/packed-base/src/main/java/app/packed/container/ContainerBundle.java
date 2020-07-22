@@ -23,13 +23,13 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
 import app.packed.artifact.ArtifactSource;
 import app.packed.artifact.hostguest.HostConfiguration;
 import app.packed.artifact.hostguest.HostDriver;
 import app.packed.base.Nullable;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.component.ConfiguredBy;
 import app.packed.component.SingletonConfiguration;
@@ -69,8 +69,7 @@ import packed.internal.util.LookupUtil;
 public abstract class ContainerBundle implements ArtifactSource {
 
     /** A varhandle that can extract a ServiceExtensionNode from {@link ServiceExtension}. */
-    private static final VarHandle CONFIGURATION = LookupUtil.initPrivateVarHandle(MethodHandles.lookup(), ContainerBundle.class, "configuration",
-            Object.class);
+    private static final VarHandle CONFIGURATION = LookupUtil.initVarHandle(MethodHandles.lookup(), "configuration", Object.class);
 
     static {
         ModuleAccess.initialize(AppPackedContainerAccess.class, new AppPackedContainerAccess() {
@@ -98,9 +97,6 @@ public abstract class ContainerBundle implements ArtifactSource {
 
     /** The configuration of the container. Should only be read via {@link #configuration}. */
     private Object configuration;
-
-    /** The state of the bundle. 0 not-initialized, 1 in-progress, 2 completed. */
-    private final AtomicInteger state = new AtomicInteger();
 
     protected final <C> C add(Class<? extends ConfiguredBy<C>> type) {
         throw new UnsupportedOperationException();
@@ -164,21 +160,33 @@ public abstract class ContainerBundle implements ArtifactSource {
      *             if the bundle is in use, or has previously been used
      */
     private void doConfigure(ContainerConfiguration configuration) {
-
-        int s = state.compareAndExchange(0, 1);
-        if (s == 1) {
+        requireNonNull(configuration, "configuration is null");
+        Object prev = CONFIGURATION.compareAndExchange(this, null, configuration);
+        if (prev == null) {
+            try {
+                configure();
+            } finally {
+                CONFIGURATION.setVolatile(this, BundleHelper.CONSUMED);
+            }
+        } else if (prev instanceof ComponentConfiguration) {
             throw new IllegalStateException("This bundle is being used elsewhere, bundleType = " + getClass());
-        } else if (s == 2) {
+        } else {
             throw new IllegalStateException("This bundle has already been used, bundleType = " + getClass());
         }
-
-        this.configuration = configuration;
-        try {
-            configure();
-        } finally {
-            state.set(2);
-            this.configuration = null;
-        }
+//        int s = state.compareAndExchange(0, 1);
+//        if (s == 1) {
+//            throw new IllegalStateException("This bundle is being used elsewhere, bundleType = " + getClass());
+//        } else if (s == 2) {
+//            throw new IllegalStateException("This bundle has already been used, bundleType = " + getClass());
+//        }
+//
+//        this.configuration = configuration;
+//        try {
+//            configure();
+//        } finally {
+//            state.set(2);
+//            this.configuration = null;
+//        }
 
         // Do we want to cache exceptions?
         // Do we want better error messages, for example, This bundle has already been used to create an artifactImage
