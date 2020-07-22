@@ -13,11 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package packed.internal.container;
+
+import app.packed.artifact.App;
+import app.packed.container.BaseBundle;
 
 /**
  *
  */
-public class TestIt {
+public class TestIt extends BaseBundle {
 
+    /** {@inheritDoc} */
+    @Override
+    protected void configure() {
+        provideConstant("Hejhej");
+        new Exception().printStackTrace();
+    }
+
+    public static void main(String[] args) {
+        App.of(new TestIt());
+    }
 }

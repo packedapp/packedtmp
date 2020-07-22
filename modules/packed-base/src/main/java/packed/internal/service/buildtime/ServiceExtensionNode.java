@@ -57,7 +57,7 @@ import packed.internal.util.LookupUtil;
 public final class ServiceExtensionNode {
 
     /** A varhandle that can extract a ServiceExtensionNode from {@link ServiceExtension}. */
-    private static final VarHandle EXTENSION_TO_NODE = LookupUtil.initPrivateVarHandle(MethodHandles.lookup(), ServiceExtension.class, "node",
+    private static final VarHandle EXTENSION_TO_NODE = LookupUtil.initPrivateVH(MethodHandles.lookup(), ServiceExtension.class, "node",
             ServiceExtensionNode.class);
 
     /** Any children of the extension. */

@@ -29,5 +29,5 @@ public class BundleHelper {
 
     // I'm not sure I need to read this...
     /** A varhandle that can extract a ServiceExtensionNode from {@link ServiceExtension}. */
-    static final VarHandle CONFIGURATION = LookupUtil.initPrivateVarHandle(MethodHandles.lookup(), ContainerBundle.class, "configuration", Object.class);
+    static final VarHandle CONFIGURATION = LookupUtil.initPrivateVH(MethodHandles.lookup(), ContainerBundle.class, "configuration", Object.class);
 }

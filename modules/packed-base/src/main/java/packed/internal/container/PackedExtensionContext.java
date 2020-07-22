@@ -315,7 +315,7 @@ public final class PackedExtensionContext implements ExtensionConfiguration, Com
         pec.checkState(ExtensionSidecar.INSTANTIATING);
         Extension e = pec.extension = model.newInstance(pec); // Creates a new [XX]Extension instance
         pec.checkState(ExtensionSidecar.NORMAL_USAGE);
-        ModuleAccess.container().extensionSetContext(e, pec);
+        ModuleAccess.container().extensionSetConfiguration(e, pec);
 
         // Run the following 3 steps before the extension is handed back to the user.
         PackedExtensionContext existing = pcc.activeExtension;

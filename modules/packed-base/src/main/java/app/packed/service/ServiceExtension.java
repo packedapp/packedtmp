@@ -28,7 +28,6 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionLinked;
 import app.packed.container.ExtensionSidecar;
-import app.packed.container.Subtension;
 import app.packed.container.Wirelet;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
@@ -81,9 +80,14 @@ public final class ServiceExtension extends Extension {
     /** The service node that does most of the actual work. */
     final ServiceExtensionNode node;
 
-    /** Should never be initialized by users. */
-    ServiceExtension(ExtensionConfiguration context) {
-        this.node = new ServiceExtensionNode(context);
+    /**
+     * Should never be initialized by users.
+     * 
+     * @param configuration
+     *            the configuration of the extension
+     */
+    /* package-private */ ServiceExtension(ExtensionConfiguration configuration) {
+        this.node = new ServiceExtensionNode(configuration);
     }
 
     // Skal vi ogsaa supportere noget paa tvaers af bundles???
@@ -482,6 +486,7 @@ public final class ServiceExtension extends Extension {
         node.link(childExtension.node);
     }
 
+    /** A subtension that can used by other extensions. */
     public final class Sub extends Subtension {
 
         // Require???
@@ -490,10 +495,10 @@ public final class ServiceExtension extends Extension {
         // I don't think extensions should be able to export things.
         // So export annotation should not work on extension services
 
-        Sub() {}
+        /* package-private */ Sub() {}
 
         public void exportd() {
-            export(extension());
+            export(user());
         }
     }
 }

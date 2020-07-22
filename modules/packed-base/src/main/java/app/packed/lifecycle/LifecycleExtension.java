@@ -16,7 +16,6 @@
 package app.packed.lifecycle;
 
 import app.packed.container.Extension;
-import app.packed.container.Subtension;
 
 /**
  *
@@ -34,18 +33,6 @@ public final class LifecycleExtension extends Extension {
 
     // wirelets callbacks er det foerend extension callbacks????
 
-    public class Sub extends Subtension {
-        Sub() {}
-
-        void onEnteringPreDependencies() {
-
-        }
-
-        void onEnteringPostDependencies() {
-
-        }
-    }
-
     // on(...)
     // on(..., Strategy strategy)
     public class Strategy {
@@ -55,6 +42,18 @@ public final class LifecycleExtension extends Extension {
         // after Extension
         // before user code
         // after user code
+    }
+
+    public class Sub extends Subtension {
+        Sub() {}
+
+        void onEnteringPostDependencies() {
+
+        }
+
+        void onEnteringPreDependencies() {
+
+        }
     }
 
     // OnStart <---- will run in a virtual thread

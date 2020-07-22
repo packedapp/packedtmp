@@ -41,9 +41,9 @@ import packed.internal.config.ConfigSiteSupport;
  * 'app.packed.base'
  * <p>
  * Every extension implementations must provide either an empty constructor, or a constructor taking a single parameter
- * of type {@link ExtensionConfiguration}. The constructor should have package private accessibility to make sure users do not
- * try an manually instantiate it, but instead use {@link ContainerConfiguration#use(Class)}. It is also recommended
- * that the extension itself is declared final.
+ * of type {@link ExtensionConfiguration}. The constructor should have package private accessibility to make sure users
+ * do not try an manually instantiate it, but instead use {@link ContainerConfiguration#use(Class)}. It is also
+ * recommended that the extension itself is declared final.
  */
 
 // Step1
@@ -75,6 +75,7 @@ public abstract class Extension {
     /** The configuration of this extension. Should never be read directly, but accessed via {@link #configuration()}. */
     // I think we should have a value representing configured. In this way people can store the extension
     // or keep it at runtime or whatever they want to do....
+    // Samme problem som Bundle vel...
     ExtensionConfiguration configuration; // = PEC.CONFIGURED
 
     /**
@@ -140,27 +141,37 @@ public abstract class Extension {
     }
 
     /**
-     * Returns this extension's configuration.
+     * Returns the configuration of this extension.
      * <p>
-     * This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension.
+     * This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension. If you
+     * need access to {@link ExtensionConfiguration} you can have it dependency injected into the constructor instead.
      * 
-     * @throws IllegalArgumentException
+     * @throws IllegalStateException
      *             if invoked from the constructor of the extension
      * @return an extension configuration object
-     * 
-     * @apiNote Original this method was protected. But extension is really the only sidecar that works this way. So to
-     *          streamline with other sidecars we only allow it to be dependency injected into subclasses.
      */
-    // should be final???
     protected final ExtensionConfiguration configuration() {
         ExtensionConfiguration c = configuration;
         if (c == null) {
+            throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension. If you need to perform "
+                    + "initialization before returning the extension to the user, override " + Extension.class.getSimpleName() + "#initialize()");
+//            * 
+//            * @apiNote Original this method was protected. But extension is really the only sidecar that works this way. So to
+//            *          streamline with other sidecars we only allow it to be dependency injected into subclasses.
             // TODO fix with actual annotation type
-            throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension." + " As an alternative "
-                    + Extension.class.getSimpleName() + "#onAdd(action) can used to perform initialization");
+//            throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension. As an alternative "
+//                    + Extension.class.getSimpleName() + "#onAdd(action) can used to perform initialization");
+            // Er lidt tilhaenger af initialize()... istedet for annoteringer
+            // Annoteringer er gode for ikke abstract basis klasser
         }
         return c;
     }
+
+    /**
+     * Invoked by the runtime immediately after the constructor has returned, Unlike the constructor, {@link #configuration}
+     * can be invoked from this method.
+     */
+    protected void initialize() {}
 
     protected final <T> SingletonConfiguration<T> install(Factory<T> factory) {
         return configuration().install(factory);
@@ -200,6 +211,7 @@ public abstract class Extension {
      *             if the specified extension type has not been specified via {@link ExtensionSidecar}
      * @see ExtensionConfiguration#use(Class)
      */
+    // This will be removed..
     protected final <E extends Extension> E use(Class<E> extensionType) {
         return configuration().use(extensionType);
     }
@@ -207,6 +219,27 @@ public abstract class Extension {
     protected final <E extends Subtension> E useSub(Class<E> extensionType) {
         throw new UnsupportedOperationException();
     }
+
+    public abstract class Subtension {
+
+        // User...
+        Class<? extends Extension> user;
+
+        protected void initialize() {}
+
+        protected final Class<? extends Extension> user() {
+            if (user == null) {
+                // ISE exception...
+                throw new InternalExtensionException("Cannot call this method from the constructor of " + getClass().getSimpleName());
+            }
+            return user;
+        }
+
+        // realm() <--- public final????
+        // Vi kan sagtens lave nogle ting final paa sub extensions...
+        // Det er jo bare andre extensions der kalde den.
+    }
+
 }
 
 //

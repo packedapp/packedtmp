@@ -18,7 +18,10 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodType;
+import java.lang.invoke.VarHandle;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,10 +38,12 @@ import app.packed.artifact.ArtifactImage;
 import app.packed.artifact.hostguest.HostConfiguration;
 import app.packed.artifact.hostguest.HostDriver;
 import app.packed.base.Nullable;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDescriptor;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
+import app.packed.container.BundleHelper;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
@@ -61,12 +66,21 @@ import packed.internal.host.api.HostConfigurationContext;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.inject.util.InjectConfigSiteOperations;
-import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.runtime.PackedInjector;
+import packed.internal.util.LookupUtil;
+import packed.internal.util.ThrowableUtil;
 
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class PackedContainerConfiguration extends PackedComponentContext implements ContainerConfiguration {
+
+    /** A VarHandle that can access ContainerBundle#configuration. */
+    private static final VarHandle BUNDLE_CONFIGURATION = LookupUtil.initPrivateVH(MethodHandles.lookup(), ContainerBundle.class, "configuration",
+            Object.class);
+
+    /** A MethodHandle that can invoke ContainerBundle#configure. */
+    private static final MethodHandle BUNDLE_CONFIGURE = LookupUtil.initVirtualMH(MethodHandles.lookup(), ContainerBundle.class, "configure",
+            MethodType.methodType(void.class));
 
     private static final int LS_0_MAINL = 0;
 
@@ -74,15 +88,15 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
 
     private static final int LS_2_HOSTING = 2;
 
+//    /** Any child containers of this component (lazily initialized), in order of insertion. */
+//    @Nullable
+//    ArrayList<PackedContainerConfiguration> containers;
+
     private static final int LS_3_FINISHED = 3;
 
     /** Any extension that is active. */
     @Nullable
     public PackedExtensionContext activeExtension;
-
-//    /** Any child containers of this component (lazily initialized), in order of insertion. */
-//    @Nullable
-//    ArrayList<PackedContainerConfiguration> containers;
 
     /** The component that was last installed. */
     @Nullable
@@ -118,7 +132,8 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
      * @param output
      *            the build output
      * @param source
-     *            the source of the container. Either a {@link ContainerBundle}, {@link ArtifactImage} or a {@link Consumer}.
+     *            the source of the container. Either a {@link ContainerBundle}, {@link ArtifactImage} or a
+     *            {@link Consumer}.
      * @param wirelets
      *            any wirelets specified by the user
      */
@@ -127,29 +142,6 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
         this.source = requireNonNull(source);
         this.lookup = this.model = ContainerModel.of(source.getClass());
         this.wireletContext = WireletPack.fromRoot(this, wirelets);
-    }
-
-    /**
-     * Creates a new configuration via {@link #link(ContainerBundle, Wirelet...)}.
-     * 
-     * @param parent
-     *            the parent component (always a container for now)
-     * @param bundle
-     *            the bundle that was linked
-     * @param wirelets
-     *            any wirelets specified by the user
-     */
-    private PackedContainerConfiguration(PackedComponentContext parent, ContainerBundle bundle, Wirelet... wirelets) {
-        super(ComponentDescriptor.CONTAINER, ConfigSiteUtil.captureStackFrame(parent.configSite(), InjectConfigSiteOperations.INJECTOR_OF), parent);
-        this.source = requireNonNull(bundle, "bundle is null");
-        this.lookup = this.model = ContainerModel.of(bundle.getClass());
-        this.wireletContext = WireletPack.fromLink(this, wirelets);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <C extends HostConfiguration<?>> C addHost(HostDriver<C> driver) {
-        throw new UnsupportedOperationException();
     }
 
 //    private HostConfigurationContext addHost() {
@@ -177,6 +169,29 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
 //    public <A, H, C> C addHost(OldHostDriver<A, H, C> driver) {
 //        return null;
 //    }
+
+    /**
+     * Creates a new configuration via {@link #link(ContainerBundle, Wirelet...)}.
+     * 
+     * @param parent
+     *            the parent component (always a container for now)
+     * @param bundle
+     *            the bundle that was linked
+     * @param wirelets
+     *            any wirelets specified by the user
+     */
+    private PackedContainerConfiguration(PackedComponentContext parent, ContainerBundle bundle, Wirelet... wirelets) {
+        super(ComponentDescriptor.CONTAINER, ConfigSiteUtil.captureStackFrame(parent.configSite(), InjectConfigSiteOperations.INJECTOR_OF), parent);
+        this.source = requireNonNull(bundle, "bundle is null");
+        this.lookup = this.model = ContainerModel.of(bundle.getClass());
+        this.wireletContext = WireletPack.fromLink(this, wirelets);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <C extends HostConfiguration<?>> C addHost(HostDriver<C> driver) {
+        throw new UnsupportedOperationException();
+    }
 
     private void advanceTo(int newState) {
         if (realState == 0) {
@@ -244,7 +259,40 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
     private void configure() {
         // If it is an image it has already been assembled
         if (source instanceof ContainerBundle) {
-            ModuleAccess.container().bundleConfigure((ContainerBundle) source, this);
+            ContainerBundle cb = (ContainerBundle) source;
+            /// Taenker vi smider ContainerBundle#doConfigure(ContainerConfiguration) logikken ind her...
+
+            // We perform a compare and exchange with configuration. Guarding against
+            // concurrent usage of this bundle.
+            Object prev = BUNDLE_CONFIGURATION.compareAndExchange(cb, null, this);
+            if (prev == null) {
+                try {
+                    try {
+                        BUNDLE_CONFIGURE.invoke(cb);
+                    } catch (Throwable e) {
+                        throw ThrowableUtil.easyThrow(e);
+                    }
+                } finally {
+                    BUNDLE_CONFIGURATION.setVolatile(cb, BundleHelper.POST_CONFIGURE);
+                }
+            } else if (prev instanceof ComponentConfiguration) {
+                // Can be this thread or another thread that is already using the bundle.
+                throw new IllegalStateException("This bundle is being used elsewhere, bundleType = " + getClass());
+            } else {
+                // Bundle has already been used succesfullly or unsuccesfully
+                throw new IllegalStateException("This bundle has already been used, bundleType = " + getClass());
+            }
+
+            // Do we want to cache exceptions?
+            // Do we want better error messages, for example, This bundle has already been used to create an artifactImage
+            // Do we want to store the calling thread in case of recursive linking..
+
+            // We should have some way to mark it failed????
+            // If configure() fails. The ContainerConfiguration still works...
+            /// Well we should probably catch the exception from where ever we call his method
+
+            // Old logic
+            // ModuleAccess.container().bundleConfigure((ContainerBundle) source, this);
         }
         // Initializes the name of the container, and sets the state to State.FINAL
         initializeName(State.FINAL, null);

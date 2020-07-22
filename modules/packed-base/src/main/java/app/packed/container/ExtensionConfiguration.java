@@ -59,6 +59,7 @@ public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
+    // onConfigured-> configure...
     void checkConfigurable();
 
     default void checkPreemble() {
@@ -79,6 +80,7 @@ public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
      * 
      * @return the path of the container the extension is registered with
      */
+    // maaske bare path... og saa kan man kalde path().parent.get();
     ComponentPath containerPath();
 
     /**

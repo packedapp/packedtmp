@@ -41,7 +41,7 @@ public interface AppPackedContainerAccess extends SecretAccess {
      * @param context
      *            the extension context containing the extension
      */
-    void extensionSetContext(Extension extension, ExtensionConfiguration context);
+    void extensionSetConfiguration(Extension extension, ExtensionConfiguration context);
 
     void pipelineInitialize(WireletPipeline<?, ?> pipeline, WireletPipelineContext context);
 }

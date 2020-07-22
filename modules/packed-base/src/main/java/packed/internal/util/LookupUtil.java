@@ -107,11 +107,20 @@ public final class LookupUtil {
         }
     }
 
-    public static VarHandle initPrivateVarHandle(MethodHandles.Lookup lookup, Class<?> recv, String name, Class<?> type) {
+    public static VarHandle initPrivateVH(MethodHandles.Lookup lookup, Class<?> recv, String name, Class<?> type) {
         try {
             MethodHandles.Lookup l = MethodHandles.privateLookupIn(recv, lookup);
             return l.findVarHandle(recv, name, type);
         } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
+    public static MethodHandle initVirtualMH(MethodHandles.Lookup lookup, Class<?> refc, String name, MethodType type) {
+        try {
+            MethodHandles.Lookup l = MethodHandles.privateLookupIn(refc, lookup);
+            return l.findVirtual(refc, name, type);
+        } catch (ReflectiveOperationException e) {
             throw new ExceptionInInitializerError(e);
         }
     }

@@ -47,14 +47,13 @@ import packed.internal.util.LookupUtil;
  * around {@link ContainerConfiguration}. Delegating every invokation in the class to an instance of
  * {@link ContainerConfiguration} available via {@link #configuration()}.
  * <p>
- * Once consumed a bundle cannot be used...
+ * A bundle instance can be used ({@link #configure()}) exactly once. Attempting to use it multiple times will fail with
+ * an {@link IllegalStateException}.
  * 
  * A generic bundle. Normally you would extend {@link BaseBundle}
  */
-// Bundles and reusability, mulighed
-// Ingen
-// Repeatable, men ikke concurrently <--- Nej
-// Concurrent
+
+// Nej der er ingen grund til at lave den concurrent. Som regel er det en ny instans...
 
 // Maybe introduce ContainerBundle()... Det jeg taenker er at introduce noget der f.eks. kan bruges i kotlin
 // saa man kan noget der minder om https://ktor.io
@@ -65,7 +64,8 @@ import packed.internal.util.LookupUtil;
 
 // Bundle: States-> Ready -> Assembling|Composing -> Consumed|Composed... Ready | Using | Used... Usable | Using | Used
 
-// Trying to use a bundle multiple types will result in an ISE
+// Unconfigured/Configuring/Configured (Failed??? well et can't bee Configured if it's failed)
+
 public abstract class ContainerBundle extends Bundle<ContainerConfiguration> implements ArtifactSource {
 
     /** A varhandle that can extract a ServiceExtensionNode from {@link ServiceExtension}. */
@@ -84,7 +84,7 @@ public abstract class ContainerBundle extends Bundle<ContainerConfiguration> imp
 
             /** {@inheritDoc} */
             @Override
-            public void extensionSetContext(Extension extension, ExtensionConfiguration context) {
+            public void extensionSetConfiguration(Extension extension, ExtensionConfiguration context) {
                 extension.configuration = context;
             }
 
@@ -169,6 +169,9 @@ public abstract class ContainerBundle extends Bundle<ContainerConfiguration> imp
      */
     private void doConfigure(ContainerConfiguration configuration) {
         requireNonNull(configuration, "configuration is null");
+
+        // We perform a compare and exchange with configuration. Guarding against
+        // concurrent usage of this bundle.
         Object prev = CONFIGURATION.compareAndExchange(this, null, configuration);
         if (prev == null) {
             try {
@@ -177,8 +180,10 @@ public abstract class ContainerBundle extends Bundle<ContainerConfiguration> imp
                 CONFIGURATION.setVolatile(this, BundleHelper.POST_CONFIGURE);
             }
         } else if (prev instanceof ComponentConfiguration) {
+            // Can be this thread or another thread that is already using the bundle.
             throw new IllegalStateException("This bundle is being used elsewhere, bundleType = " + getClass());
         } else {
+            // Bundle has already been used succesfullly or unsuccesfully
             throw new IllegalStateException("This bundle has already been used, bundleType = " + getClass());
         }
 
