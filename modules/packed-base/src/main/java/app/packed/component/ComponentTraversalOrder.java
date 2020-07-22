@@ -26,6 +26,8 @@ package app.packed.component;
 // Og saa cleanup og await i en postOrder...
 
 //TreeTraversel...
+
+// Er den noedvending med ComponentStream.Option??????
 public enum ComponentTraversalOrder {
     PRE_ORDER, POST_ORDER;
 }

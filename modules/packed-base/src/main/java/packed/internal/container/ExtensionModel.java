@@ -145,6 +145,9 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
     /** An optional containing the extension type. To avoid excessive creation of them for {@link Component#extension()}. */
     public final Optional<Class<? extends Extension>> optional; // can go away with Valhalla
 
+    /** The default component name of the extension. */
+    final String componentName;
+
     /**
      * Creates a new extension model from the specified builder.
      * 
@@ -160,6 +163,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         this.optional = Optional.of(extensionType()); // No need to create an optional every time we need this
         this.nameUsedForSorting = requireNonNull(extensionType().getCanonicalName());
 
+        this.componentName = "." + extensionType().getSimpleName();
         this.extensionLinkedToAncestorExtension = builder.li;
         this.extensionLinkedDirectChildrenOnly = builder.callbackOnlyDirectChildren;
 

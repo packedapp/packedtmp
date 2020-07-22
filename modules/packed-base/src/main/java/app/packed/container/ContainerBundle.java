@@ -31,9 +31,9 @@ import app.packed.artifact.hostguest.HostDriver;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
-import app.packed.component.ConfiguredBy;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
+import app.packed.component.sandhox.ConfiguredBy;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
@@ -66,10 +66,12 @@ import packed.internal.util.LookupUtil;
 // Bundle: States-> Ready -> Assembling|Composing -> Consumed|Composed... Ready | Using | Used... Usable | Using | Used
 
 // Trying to use a bundle multiple types will result in an ISE
-public abstract class ContainerBundle implements ArtifactSource {
+public abstract class ContainerBundle extends Bundle<ContainerConfiguration> implements ArtifactSource {
 
     /** A varhandle that can extract a ServiceExtensionNode from {@link ServiceExtension}. */
     private static final VarHandle CONFIGURATION = LookupUtil.initVarHandle(MethodHandles.lookup(), "configuration", Object.class);
+
+    static final Object SUCCESS = "Success"; // failure can store the Throwable...
 
     static {
         ModuleAccess.initialize(AppPackedContainerAccess.class, new AppPackedContainerAccess() {
@@ -95,7 +97,13 @@ public abstract class ContainerBundle implements ArtifactSource {
         });
     }
 
-    /** The configuration of the container. Should only be read via {@link #configuration}. */
+    /**
+     * The configuration of the container. Is initial null ({@link #doConfigure(ContainerConfiguration)} has not yet been
+     * called. Then it is initialized which a {@link ContainerConfiguration}. Finally before returning from
+     * {@link #doConfigure(ContainerConfiguration)}. The configuration is replaced with xxx.
+     * <p>
+     * 
+     */
     private Object configuration;
 
     protected final <C> C add(Class<? extends ConfiguredBy<C>> type) {
@@ -166,33 +174,18 @@ public abstract class ContainerBundle implements ArtifactSource {
             try {
                 configure();
             } finally {
-                CONFIGURATION.setVolatile(this, BundleHelper.CONSUMED);
+                CONFIGURATION.setVolatile(this, BundleHelper.POST_CONFIGURE);
             }
         } else if (prev instanceof ComponentConfiguration) {
             throw new IllegalStateException("This bundle is being used elsewhere, bundleType = " + getClass());
         } else {
             throw new IllegalStateException("This bundle has already been used, bundleType = " + getClass());
         }
-//        int s = state.compareAndExchange(0, 1);
-//        if (s == 1) {
-//            throw new IllegalStateException("This bundle is being used elsewhere, bundleType = " + getClass());
-//        } else if (s == 2) {
-//            throw new IllegalStateException("This bundle has already been used, bundleType = " + getClass());
-//        }
-//
-//        this.configuration = configuration;
-//        try {
-//            configure();
-//        } finally {
-//            state.set(2);
-//            this.configuration = null;
-//        }
 
         // Do we want to cache exceptions?
         // Do we want better error messages, for example, This bundle has already been used to create an artifactImage
         // Do we want to store the calling thread in case of recursive linking..
 
-        // Im not sure we want to null it out...
         // We should have some way to mark it failed????
         // If configure() fails. The ContainerConfiguration still works...
         /// Well we should probably catch the exception from where ever we call his method
@@ -428,8 +421,10 @@ public abstract class ContainerBundle implements ArtifactSource {
     }
 
     /**
-     * Returns an extension of the specified type. Instantiating and registering one for subsequent calls, if one has not
-     * already been registered.
+     * Returns an extension of the specified type.
+     * <p>
+     * If this is first time this method has been called with the specified extension type. This method will instantiate an
+     * extension of the specified type and retain it for future invocation.
      * 
      * @param <T>
      *            the type of extension to return

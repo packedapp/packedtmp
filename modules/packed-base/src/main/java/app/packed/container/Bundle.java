@@ -15,9 +15,45 @@
  */
 package app.packed.container;
 
+import app.packed.component.ComponentConfiguration;
+
 /**
- *
+ * A bundle encapsulates {@link ComponentConfiguration configuration} of a component.
  */
-public abstract class Bundle<T> {
+public abstract class Bundle<T extends ComponentConfiguration> {
+
+    // Maaske hedder det ikke en bundle som root???
+
+    // Bundle, protected final
+    // realm <-- protected metoder
+
+    // Assembly, public
+    // realm() <-- public metode
 
 }
+
+//A bundle encapsulates configuration of a component.
+//Possible enhancing it with options.
+//
+//Captures a realm as well.
+//
+//Controls precisely what is exposed to users of the Bundle
+//(Is typically provided to other users)
+//
+//Can be used exactly once.
+//
+//-----
+//I want them to be part of the container
+//and then replaced at runtime...
+//
+//Sounds strange that Extension is part of the container.
+//But ContainerBundle is not
+//
+//Extensions are removed... possible replaced with an instance component
+//----
+//
+//Always extended
+//
+//ActorBundle {
+//
+//}

@@ -13,22 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.component.sandhox;
 
 /**
  *
  */
-
-// Maaske lazy set istedet for at kraeve en constructor
-
-public abstract class Subtension {
-
-    Class<? extends Extension> extension;
-
-    protected final Class<? extends Extension> extension() {
-        if (extension == null) {
-            throw new InternalExtensionException("Cannot call this method from the constructor of " + getClass().getSimpleName());
-        }
-        return extension;
-    }
-}
+public interface ConfiguredBy<C> {}

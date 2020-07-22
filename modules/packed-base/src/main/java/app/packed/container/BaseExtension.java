@@ -20,7 +20,9 @@ package app.packed.container;
  */
 // Tror ikke vi behoever en klasse...
 //
-class BaseExtension {
+class BaseExtension extends Extension {
+
+    BaseExtension() {}
     // Hmm vi har ikke
     // public static final BaseExtension defaultOrder = new BaseExtension();
 

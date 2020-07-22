@@ -29,6 +29,7 @@ public final class LifecycleExtension extends Extension {
 
     LifecycleExtension() {}
 
+    public void foo() {}
     // Vi skal jo saaden set supportere det samme som wirelets...
 
     // wirelets callbacks er det foerend extension callbacks????

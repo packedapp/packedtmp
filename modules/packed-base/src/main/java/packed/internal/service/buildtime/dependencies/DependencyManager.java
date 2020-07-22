@@ -157,7 +157,7 @@ public final class DependencyManager {
                                             PackedExtensionContext e = ((PackedExtensionContext) node.context()).container().getExtensionContext(cc);
                                             resolveTo = extensionEntries.computeIfAbsent(e.extensionType(),
                                                     kk -> new RuntimeAdaptorEntry(node, new ConstantInjectorEntry<Extension>(ConfigSite.UNKNOWN,
-                                                            (Key) Key.of(e.extensionType()), null, e.extension())));
+                                                            (Key) Key.of(e.extensionType()), null, e.instance())));
 
                                         }
                                     }

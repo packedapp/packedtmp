@@ -1,4 +1,4 @@
-package app.packed.component;
+package app.packed.component.sandhox;
 
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;

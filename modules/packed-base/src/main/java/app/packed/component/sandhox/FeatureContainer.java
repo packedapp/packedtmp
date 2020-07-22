@@ -1,4 +1,4 @@
-package app.packed.component;
+package app.packed.component.sandhox;
 
 import java.util.List;
 import java.util.Map;

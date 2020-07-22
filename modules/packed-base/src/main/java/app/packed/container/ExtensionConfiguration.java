@@ -193,7 +193,7 @@ public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
         }
         @Nullable
         PackedExtensionContext pec = pa(lookup, c);
-        return pec == null ? Optional.empty() : Optional.of((T) pec.extension());
+        return pec == null ? Optional.empty() : Optional.of((T) pec.instance());
     }
 
     @SuppressWarnings("deprecation")

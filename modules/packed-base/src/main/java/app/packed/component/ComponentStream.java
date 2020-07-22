@@ -153,9 +153,9 @@ public interface ComponentStream extends Stream<Component> {
     // Forstaaet paa den maade at vi bliver noedt til at kalde en metode paa sidecaren..
     // Og se om der faktisk er nogen elementer i den liste der kommer tilbage...
     // Men ja igen... Det er jo ikke performance orienteret.
-    default ComponentStream withFeatures(@SuppressWarnings("unchecked") Class<? extends Feature>... featureTypes) {
-        throw new UnsupportedOperationException();
-    }
+//    default ComponentStream withFeatures(@SuppressWarnings("unchecked") Class<? extends Feature>... featureTypes) {
+//        throw new UnsupportedOperationException();
+//    }
 
     /********** Overridden to provide ComponentStream as a return value. **********/
 

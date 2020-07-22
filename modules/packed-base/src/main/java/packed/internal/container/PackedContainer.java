@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 import app.packed.artifact.ArtifactContext;
 import app.packed.base.Key;
@@ -163,8 +162,8 @@ public final class PackedContainer extends PackedComponent {
 
         /** {@inheritDoc} */
         @Override
-        public void traverse(Consumer<? super Component> action) {
-            container.traverse(action);
+        public Optional<Component> parent() {
+            return container.parent();
         }
     }
 }

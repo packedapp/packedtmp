@@ -147,6 +147,8 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      */
     // If you are creating resulable stuff, you should remember to null the lookup object out.
     // So child modules do not have the power of the lookup object.
+
+    // Class<?> realm(Lookup);
     void lookup(@Nullable Lookup lookup);
 
     /** {@inheritDoc} */

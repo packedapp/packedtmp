@@ -17,7 +17,6 @@ package app.packed.component;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
@@ -27,12 +26,15 @@ import app.packed.container.Extension;
  * derivatives. In packed everything is a component.
  */
 // ComponentDescriptor??
-public interface Component {
 
-    default ComponentPath artifactPath() {
-        // also on
-        throw new UnsupportedOperationException();
-    }
+// add
+// type...implementation
+// relationTo()... Vi vil gerne have noget der er immutable....
+// Altsaa strengt taget, behover vi ikke from and to...
+// F.eks.
+
+// walk 
+public interface Component {
 
     /**
      * Returns an unmodifiable view of all of this component's children.
@@ -59,20 +61,12 @@ public interface Component {
     // Vi vil gerne kunne give en component, uden at give adgang til dens container..
     // same with artifac
 
-    default Optional<Class<?>> realm() {
-        // Wirelets, Artifacts does not have
-        throw new UnsupportedOperationException();
-    }
-
-    default ComponentPath containerPath() {
-        // also on ComponentConfiguration
-        throw new UnsupportedOperationException();
-    }
+    Optional<Component> parent();
 
     /**
-     * Returns the depth of the component in a tree of components.
+     * Returns the depth of the component in the system.
      * 
-     * @return the depth of the component in a tree of components
+     * @return the depth of the component in the system
      */
     int depth();
 
@@ -92,10 +86,20 @@ public interface Component {
      * 
      * @return any extension this component belongs to
      */
+    // Don't really like this... It strongly ties a container to a component.
+    // As extensions are children of containers always...
+
+    // But then again ComponentStream.Option contains stuff about containers ect.
+
+    // Maybe model it as an attribute
     Optional<Class<? extends Extension>> extension();
 
-    // SystemView/Descriptor
-    // Contracts...
+    /**
+     * Returns the type of component.
+     * 
+     * @return the type of component
+     */
+    ComponentDescriptor model();
 
     /**
      * Returns the name of this component.
@@ -116,15 +120,10 @@ public interface Component {
      */
     ComponentPath path();
 
-    /**
-     * Returns a component stream consisting of this component and all of its descendants in any order.
-     *
-     * @param options
-     *            specifying which components will be included in the stream
-     * 
-     * @return a component stream consisting of this component and all of its descendants in any order
-     */
-    ComponentStream stream(ComponentStream.Option... options);
+    default Optional<Class<?>> realm() {
+        // Wirelets, Artifacts does not have
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * 
@@ -140,7 +139,7 @@ public interface Component {
     // Well it is more or less the same options....
     // Tror vi laver options om til en klasse. Og saa har to metoder.
     // Og dropper varargs..
-    void traverse(Consumer<? super Component> action);
+    // void traverse(Consumer<? super Component> action);
 
     // Naah feature er vel readonly...
     // use kan komme paa ComponentContext og maaske ComponentConfiguration?
@@ -153,12 +152,18 @@ public interface Component {
     //// En ComponentContext.use(XXXX class)
 
     /**
-     * Returns the type of component.
+     * Returns a component stream consisting of this component and all of its descendants in any order.
+     *
+     * @param options
+     *            specifying which components will be included in the stream
      * 
-     * @return the type of component
+     * @return a component stream consisting of this component and all of its descendants in any order
      */
-    ComponentDescriptor model();
+    ComponentStream stream(ComponentStream.Option... options);
 }
+
+// SystemView/Descriptor
+// Contracts...
 
 //// Hmm, hvis vi nu skal bruge container side car'en... eller artifact side'caren.
 /// Maaske det med at soege op i attribute map traet. Indtil man finder en venlig

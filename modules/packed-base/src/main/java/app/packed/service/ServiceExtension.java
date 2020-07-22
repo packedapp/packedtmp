@@ -278,11 +278,18 @@ public final class ServiceExtension extends Extension {
     // Ser ingen grund til baade at support
     // ManualRequirements management..
     // AutoExport with regards to contract???
+
+    // Drop Management?
+    // Skal vi istedet for bare specificere en Contract????
     public void manualRequirementsManagement() {
         // explicitRequirementsManagement
         checkConfigurable();
         node.dependencies().manualRequirementsManagement();
+
+        // useContract vs supportContract
     }
+
+    // autoExport
 
     /**
      * Invoked by the runtime for each component using {@link Provide}.
@@ -470,6 +477,8 @@ public final class ServiceExtension extends Extension {
 
     @ExtensionLinked(onlyDirectLink = true)
     private void linkChild(ServiceExtension childExtension /* , @WireletSupply Optional<ServiceWireletPipeline> wirelets */) {
+        childExtension.configuration();
+        // if(configuration.isStronglyAttachedTo(childExtension.configuation())
         node.link(childExtension.node);
     }
 

@@ -114,7 +114,7 @@ public final class WireletPack {
         // See if we have installed a pipeline
         WireletPipelineContext wpc = (WireletPipelineContext) extensions.get(pec.extensionType());
         if (wpc != null) {
-            wpc.instantiate(pec.extension());
+            wpc.instantiate(pec.instance());
         }
     }
 
@@ -190,7 +190,7 @@ public final class WireletPack {
                     if (pec == null) {
                         wc.extensionFailed(pcc);
                     } else {
-                        wpc.instantiate(pec.extension());
+                        wpc.instantiate(pec.instance());
                     }
                 }
             }

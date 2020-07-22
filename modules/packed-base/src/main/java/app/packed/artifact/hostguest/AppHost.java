@@ -15,7 +15,7 @@
  */
 package app.packed.artifact.hostguest;
 
-import app.packed.component.ConfiguredBy;
+import app.packed.component.sandhox.ConfiguredBy;
 import app.packed.container.ContainerBundle;
 
 /**

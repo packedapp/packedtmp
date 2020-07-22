@@ -23,7 +23,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.component.Component;
@@ -144,12 +143,6 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public final void traverse(Consumer<? super Component> action) {
-        throw new UnsupportedOperationException();
-    }
-
     public static Component of(PackedContainerConfiguration pcc) {
         return of0(pcc, List.of());
     }
@@ -164,6 +157,12 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
         } else {
             return new ComponentConfigurationToComponentAdaptor(bcc, pgc);
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<Component> parent() {
+        throw new UnsupportedOperationException();
     }
 
 }

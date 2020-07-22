@@ -262,7 +262,7 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
     protected void extensionsPrepareInstantiation(PackedInstantiationContext ic) {
         PackedExtensionContext ee = extensions.get(ServiceExtension.class);
         if (ee != null) {
-            PackedInjector di = ServiceExtensionNode.fromExtension(((ServiceExtension) ee.extension())).onInstantiate(ic.wirelets);
+            PackedInjector di = ServiceExtensionNode.fromExtension(((ServiceExtension) ee.instance())).onInstantiate(ic.wirelets);
             ic.put(this, di);
         }
         super.extensionsPrepareInstantiation(ic);
@@ -533,7 +533,7 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Extension> T use(Class<T> extensionType) {
-        return (T) useExtension(extensionType, null).extension();
+        return (T) useExtension(extensionType, null).instance();
     }
 
     /**

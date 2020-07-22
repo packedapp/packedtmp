@@ -127,10 +127,10 @@ public final class PackedExtensionContext implements ExtensionConfiguration, Com
     @Override
     public void checkConfigurable() {
         if (container().realState != 0) {
-            throw new IllegalStateException("This extension (" + extension().getClass().getSimpleName() + ") is no longer configurable");
+            throw new IllegalStateException("This extension (" + instance().getClass().getSimpleName() + ") is no longer configurable");
         }
         if (isConfigured) {
-            throw new IllegalStateException("This extension (" + extension().getClass().getSimpleName() + ") is no longer configurable");
+            throw new IllegalStateException("This extension (" + instance().getClass().getSimpleName() + ") is no longer configurable");
         }
     }
 
@@ -176,7 +176,7 @@ public final class PackedExtensionContext implements ExtensionConfiguration, Com
      * @throws IllegalStateException
      *             if trying to call this method from the constructor of the extension
      */
-    public Extension extension() {
+    public Extension instance() {
         Extension e = extension;
         if (e == null) {
             throw new IllegalStateException("Cannot call this method from the constructor of the extension");
@@ -288,7 +288,7 @@ public final class PackedExtensionContext implements ExtensionConfiguration, Com
 
         if (!model.directDependencies().contains(extensionType)) {
             // We allow an extension to use itself, alternative would be to throw an exception, but for what reason?
-            if (extensionType == extension().getClass()) { // extension() checks for constructor
+            if (extensionType == instance().getClass()) { // extension() checks for constructor
                 return (T) extension;
             }
 

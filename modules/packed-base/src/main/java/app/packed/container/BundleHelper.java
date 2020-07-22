@@ -25,11 +25,9 @@ import packed.internal.util.LookupUtil;
  *
  */
 public class BundleHelper {
-    public static String IN_PROGRESS = "IN_PROGRESS";
+    public static String POST_CONFIGURE = "CONSUMED";
 
-    public static String CONSUMED = "CONSUMED";
-
+    // I'm not sure I need to read this...
     /** A varhandle that can extract a ServiceExtensionNode from {@link ServiceExtension}. */
-    private static final VarHandle CONFIGURATION = LookupUtil.initPrivateVarHandle(MethodHandles.lookup(), ContainerBundle.class, "configuration",
-            Object.class);
+    static final VarHandle CONFIGURATION = LookupUtil.initPrivateVarHandle(MethodHandles.lookup(), ContainerBundle.class, "configuration", Object.class);
 }

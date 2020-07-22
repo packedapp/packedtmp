@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,7 +31,6 @@ import app.packed.component.Component;
 import app.packed.component.ComponentDescriptor;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
-import app.packed.component.FeatureMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import packed.internal.artifact.PackedInstantiationContext;
@@ -59,9 +57,6 @@ public class PackedComponent implements Component {
 
     /** Any extension the component belongs to. */ // Generic Extension Table?
     private final Optional<Class<? extends Extension>> extension;
-
-    // Ligger vel i modelen????
-    final FeatureMap features = new FeatureMap();
 
     final ReentrantLock lock = new ReentrantLock();
 
@@ -235,15 +230,6 @@ public class PackedComponent implements Component {
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void traverse(Consumer<? super Component> action) {
-        Map<String, PackedComponent> c = children;
-        if (c != null) {
-            c.values().forEach(action);
-        }
-    }
-
     /**
      * @param path
      */
@@ -255,5 +241,11 @@ public class PackedComponent implements Component {
             throw new IllegalArgumentException("Could not find component with path: " + path + " avilable components:" + list);
         }
         return c;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<Component> parent() {
+        return Optional.ofNullable(parent);
     }
 }
