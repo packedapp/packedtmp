@@ -140,9 +140,7 @@ public interface App extends AutoCloseable {
      * @throws UnsupportedOperationException
      *             if a service with the specified key exist. Or if the application does not use {@link ServiceExtension}.
      */
-    default <T> T use(Class<T> key) {
-        return use(Key.of(key));
-    }
+    <T> T use(Class<T> key);
 
     /**
      * Returns a service with the specified key, if it exists. Otherwise, fails by throwing

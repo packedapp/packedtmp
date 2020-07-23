@@ -103,6 +103,12 @@ final class PackedApp implements App {
 
     /** {@inheritDoc} */
     @Override
+    public <T> T use(Class<T> key) {
+        return context.use(key);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public <T> T use(Key<T> key) {
         return context.use(key);
     }

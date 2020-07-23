@@ -17,6 +17,7 @@ package packed.internal.container;
 
 import app.packed.artifact.App;
 import app.packed.container.DefaultBundle;
+import app.packed.service.Injector;
 
 /**
  *
@@ -27,10 +28,12 @@ public class TestIt extends DefaultBundle {
     @Override
     protected void configure() {
         provideConstant("Hejhej");
-        new Exception().printStackTrace();
     }
 
     public static void main(String[] args) {
-        App.of(new TestIt());
+        try (App app = App.of(new TestIt())) {
+            System.out.println(app.use(Injector.class));
+            System.out.println(app.use(String.class));
+        }
     }
 }
