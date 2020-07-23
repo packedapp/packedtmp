@@ -15,28 +15,45 @@
  */
 package app.packed.container;
 
+import static java.util.Objects.requireNonNull;
+
+import packed.internal.container.PackedContainerConfiguration;
+
 /**
- *
+ * An extension that is always automatically added whenever a new container is configured. Even while the
+ * 
+ * <p>
+ * It is an error to depend on this via {@link ExtensionSidecar#dependencies()}. Not sure you can with subtensions and
+ * stuff.
  */
-// Tror ikke vi behoever en klasse...
-//
-class BaseExtension extends Extension {
+public final class BaseExtension extends Extension {
 
-    BaseExtension() {}
-    // Hmm vi har ikke
-    // public static final BaseExtension defaultOrder = new BaseExtension();
-
-    // onExtensionAdded()// printStackTrace()
+    /** The container configuration. This extension is the only extension that can use it. */
+    private final PackedContainerConfiguration pcc;
 
     /**
-     * Returns all the extensions that are currently in use.
+     * Creates a new extension.
+     * 
+     * @param pcc
+     *            the configuration of the container in which the extension is used.
+     */
+    /* package-private */ BaseExtension(PackedContainerConfiguration pcc) {
+        this.pcc = requireNonNull(pcc, "pcc is null");
+    }
+
+    /**
+     * Returns all the extensions that are currently in use. This (BaseExtension) extension is never included.
      * 
      * @return all the extensions that are currently in use
      */
-    ExtensionOrdering extensions() {
-        throw new UnsupportedOperationException();
+    public ExtensionOrdering extensions() {
+        return ExtensionOrdering.of(pcc.extensions()); // view/not-view?
     }
-
-    // introduce order between(e1, e2)
-    // (only works if there is not a dependency between them
 }
+// Hmm vi har ikke
+// public static final BaseExtension defaultOrder = new BaseExtension();
+
+// onExtensionAdded()// printStackTrace()
+
+// introduce order between(e1, e2)
+// (only works if there is not a dependency between them

@@ -18,9 +18,7 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.VarHandle;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -29,7 +27,6 @@ import app.packed.artifact.ArtifactSource;
 import app.packed.artifact.hostguest.HostConfiguration;
 import app.packed.artifact.hostguest.HostDriver;
 import app.packed.base.Nullable;
-import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
@@ -40,7 +37,6 @@ import app.packed.service.ServiceExtension;
 import packed.internal.container.WireletPipelineContext;
 import packed.internal.moduleaccess.AppPackedContainerAccess;
 import packed.internal.moduleaccess.ModuleAccess;
-import packed.internal.util.LookupUtil;
 
 /**
  * Bundles are the main source of configuration for containers and artifacts. Basically a bundle is just a thin wrapper
@@ -68,19 +64,8 @@ import packed.internal.util.LookupUtil;
 
 public abstract class ContainerBundle extends Bundle<ContainerConfiguration> implements ArtifactSource {
 
-    /** A varhandle that can extract a ServiceExtensionNode from {@link ServiceExtension}. */
-    private static final VarHandle CONFIGURATION = LookupUtil.initVarHandle(MethodHandles.lookup(), "configuration", Object.class);
-
-    static final Object SUCCESS = "Success"; // failure can store the Throwable...
-
     static {
         ModuleAccess.initialize(AppPackedContainerAccess.class, new AppPackedContainerAccess() {
-
-            /** {@inheritDoc} */
-            @Override
-            public void bundleConfigure(ContainerBundle bundle, ContainerConfiguration configuration) {
-                bundle.doConfigure(configuration);
-            }
 
             /** {@inheritDoc} */
             @Override
@@ -98,12 +83,11 @@ public abstract class ContainerBundle extends Bundle<ContainerConfiguration> imp
     }
 
     /**
-     * The configuration of the container. Is initial null ({@link #doConfigure(ContainerConfiguration)} has not yet been
-     * called. Then it is initialized which a {@link ContainerConfiguration}. Finally before returning from
-     * {@link #doConfigure(ContainerConfiguration)}. The configuration is replaced with xxx.
+     * The configuration of the container. Is initial null configure has not yet been called. Then it is initialized which a
+     * {@link ContainerConfiguration}. Finally before returning from configure. The configuration is replaced with xxx.
      * <p>
-     * 
      */
+    // This fields can contain 4 different types. All updated in PackedContainerConfiguration#configure.
     private Object configuration;
 
     protected final <C> C add(Class<? extends ConfiguredBy<C>> type) {
@@ -155,46 +139,9 @@ public abstract class ContainerBundle extends Bundle<ContainerConfiguration> imp
     /**
      * Configures the bundle using the various methods that are available.
      * <p>
-     * This method is intended to be invoked by the runtime. Users should normally <b>never</b> invoke this method directly.
+     * This method should never be invoked by anyone but the runtime.
      */
     protected abstract void configure();
-
-    /**
-     * Invoked by the runtime to start the configuration process.
-     * 
-     * @param configuration
-     *            the configuration to wrap
-     * @throws IllegalStateException
-     *             if the bundle is in use, or has previously been used
-     */
-    private void doConfigure(ContainerConfiguration configuration) {
-        requireNonNull(configuration, "configuration is null");
-
-        // We perform a compare and exchange with configuration. Guarding against
-        // concurrent usage of this bundle.
-        Object prev = CONFIGURATION.compareAndExchange(this, null, configuration);
-        if (prev == null) {
-            try {
-                configure();
-            } finally {
-                CONFIGURATION.setVolatile(this, BundleHelper.POST_CONFIGURE);
-            }
-        } else if (prev instanceof ComponentConfiguration) {
-            // Can be this thread or another thread that is already using the bundle.
-            throw new IllegalStateException("This bundle is being used elsewhere, bundleType = " + getClass());
-        } else {
-            // Bundle has already been used succesfullly or unsuccesfully
-            throw new IllegalStateException("This bundle has already been used, bundleType = " + getClass());
-        }
-
-        // Do we want to cache exceptions?
-        // Do we want better error messages, for example, This bundle has already been used to create an artifactImage
-        // Do we want to store the calling thread in case of recursive linking..
-
-        // We should have some way to mark it failed????
-        // If configure() fails. The ContainerConfiguration still works...
-        /// Well we should probably catch the exception from where ever we call his method
-    }
 
     /**
      * Returns an unmodifiable view of the extensions that have been used.
@@ -450,3 +397,40 @@ public abstract class ContainerBundle extends Bundle<ContainerConfiguration> imp
         return configuration().assemblyWirelet(type);
     }
 }
+
+///**
+//* Invoked by the runtime to start the configuration process.
+//* 
+//* @param configuration
+//*            the configuration to wrap
+//* @throws IllegalStateException
+//*             if the bundle is in use, or has previously been used
+//*/
+//private void doConfigure(ContainerConfiguration configuration) {
+//  requireNonNull(configuration, "configuration is null");
+//
+//  // We perform a compare and exchange with configuration. Guarding against
+//  // concurrent usage of this bundle.
+//  Object prev = CONFIGURATION.compareAndExchange(this, null, configuration);
+//  if (prev == null) {
+//      try {
+//          configure();
+//      } finally {
+//          CONFIGURATION.setVolatile(this, BundleHelper.POST_CONFIGURE);
+//      }
+//  } else if (prev instanceof ComponentConfiguration) {
+//      // Can be this thread or another thread that is already using the bundle.
+//      throw new IllegalStateException("This bundle is being used elsewhere, bundleType = " + getClass());
+//  } else {
+//      // Bundle has already been used succesfullly or unsuccesfully
+//      throw new IllegalStateException("This bundle has already been used, bundleType = " + getClass());
+//  }
+//
+//  // Do we want to cache exceptions?
+//  // Do we want better error messages, for example, This bundle has already been used to create an artifactImage
+//  // Do we want to store the calling thread in case of recursive linking..
+//
+//  // We should have some way to mark it failed????
+//  // If configure() fails. The ContainerConfiguration still works...
+//  /// Well we should probably catch the exception from where ever we call his method
+//}

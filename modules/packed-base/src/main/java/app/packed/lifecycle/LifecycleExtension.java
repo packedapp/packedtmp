@@ -26,7 +26,7 @@ import app.packed.container.Extension;
 
 public final class LifecycleExtension extends Extension {
 
-    LifecycleExtension() {}
+    /* package-private */ LifecycleExtension() {}
 
     public void foo() {}
     // Vi skal jo saaden set supportere det samme som wirelets...
@@ -45,7 +45,7 @@ public final class LifecycleExtension extends Extension {
     }
 
     public class Sub extends Subtension {
-        Sub() {}
+        /* package-private */ Sub() {}
 
         void onEnteringPostDependencies() {
 

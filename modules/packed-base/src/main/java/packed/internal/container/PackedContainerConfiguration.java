@@ -260,27 +260,24 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
         // If it is an image it has already been assembled
         if (source instanceof ContainerBundle) {
             ContainerBundle cb = (ContainerBundle) source;
-            /// Taenker vi smider ContainerBundle#doConfigure(ContainerConfiguration) logikken ind her...
 
             // We perform a compare and exchange with configuration. Guarding against
             // concurrent usage of this bundle.
-            Object prev = BUNDLE_CONFIGURATION.compareAndExchange(cb, null, this);
-            if (prev == null) {
+            Object existing = BUNDLE_CONFIGURATION.compareAndExchange(cb, null, this);
+            if (existing == null) {
                 try {
-                    try {
-                        BUNDLE_CONFIGURE.invoke(cb);
-                    } catch (Throwable e) {
-                        throw ThrowableUtil.easyThrow(e);
-                    }
+                    BUNDLE_CONFIGURE.invoke(cb);
+                } catch (Throwable e) {
+                    throw ThrowableUtil.easyThrow(e);
                 } finally {
                     BUNDLE_CONFIGURATION.setVolatile(cb, BundleHelper.POST_CONFIGURE);
                 }
-            } else if (prev instanceof ComponentConfiguration) {
+            } else if (existing instanceof ComponentConfiguration) {
                 // Can be this thread or another thread that is already using the bundle.
-                throw new IllegalStateException("This bundle is being used elsewhere, bundleType = " + getClass());
+                throw new IllegalStateException("This bundle is already being used elsewhere, type = " + cb.getClass());
             } else {
                 // Bundle has already been used succesfullly or unsuccesfully
-                throw new IllegalStateException("This bundle has already been used, bundleType = " + getClass());
+                throw new IllegalStateException("This bundle has already been used, type = " + cb.getClass());
             }
 
             // Do we want to cache exceptions?
@@ -290,9 +287,6 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
             // We should have some way to mark it failed????
             // If configure() fails. The ContainerConfiguration still works...
             /// Well we should probably catch the exception from where ever we call his method
-
-            // Old logic
-            // ModuleAccess.container().bundleConfigure((ContainerBundle) source, this);
         }
         // Initializes the name of the container, and sets the state to State.FINAL
         initializeName(State.FINAL, null);
