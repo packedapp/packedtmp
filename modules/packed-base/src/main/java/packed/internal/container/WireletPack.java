@@ -110,7 +110,7 @@ public final class WireletPack {
         System.out.println(m);
     }
 
-    public void extensionInitialized(PackedExtensionContext pec) {
+    public void extensionInitialized(PackedExtensionConfiguration pec) {
         // See if we have installed a pipeline
         WireletPipelineContext wpc = (WireletPipelineContext) extensions.get(pec.extensionType());
         if (wpc != null) {
@@ -186,7 +186,7 @@ public final class WireletPack {
                 if (memberOfExtension == null) {
                     wpc.instantiate(null);
                 } else if (existing != null) {
-                    PackedExtensionContext pec = pcc.getExtensionContext(memberOfExtension);
+                    PackedExtensionConfiguration pec = pcc.getExtensionContext(memberOfExtension);
                     if (pec == null) {
                         wc.extensionFailed(pcc);
                     } else {

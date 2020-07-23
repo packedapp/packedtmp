@@ -96,16 +96,16 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
 
     /** Any extension that is active. */
     @Nullable
-    public PackedExtensionContext activeExtension;
+    public PackedExtensionConfiguration activeExtension;
 
     /** The component that was last installed. */
     @Nullable
     private PackedComponentContext currentComponent;
 
     /** All used extensions, in order of registration. */
-    private final LinkedHashMap<Class<? extends Extension>, PackedExtensionContext> extensions = new LinkedHashMap<>();
+    private final LinkedHashMap<Class<? extends Extension>, PackedExtensionConfiguration> extensions = new LinkedHashMap<>();
 
-    private TreeSet<PackedExtensionContext> extensionsOrdered;
+    private TreeSet<PackedExtensionConfiguration> extensionsOrdered;
 
     private HashMap<String, PackedContainerLayer> layers;
 
@@ -198,7 +198,7 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
             // We need to sort all extensions that are used. To make sure
             // they progress in their lifecycle in the right order.
             extensionsOrdered = new TreeSet<>(extensions.values());
-            for (PackedExtensionContext pec : extensionsOrdered) {
+            for (PackedExtensionConfiguration pec : extensionsOrdered) {
                 activeExtension = pec;
                 pec.onConfigured();
             }
@@ -215,7 +215,7 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
                 }
             }
 
-            for (PackedExtensionContext pec : extensionsOrdered) {
+            for (PackedExtensionConfiguration pec : extensionsOrdered) {
                 activeExtension = pec;
                 pec.onChildrenConfigured();
             }
@@ -247,7 +247,7 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
     public void buildDescriptor(BundleDescriptor.Builder builder) {
         builder.setBundleDescription(getDescription());
         builder.setName(getName());
-        for (PackedExtensionContext e : extensions.values()) {
+        for (PackedExtensionConfiguration e : extensions.values()) {
             e.buildDescriptor(builder);
         }
         builder.extensions.addAll(extensions.keySet());
@@ -302,7 +302,7 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
     /** {@inheritDoc} */
     @Override
     protected void extensionsPrepareInstantiation(PackedInstantiationContext ic) {
-        PackedExtensionContext ee = extensions.get(ServiceExtension.class);
+        PackedExtensionConfiguration ee = extensions.get(ServiceExtension.class);
         if (ee != null) {
             PackedInjector di = ServiceExtensionNode.fromExtension(((ServiceExtension) ee.instance())).onInstantiate(ic.wirelets);
             ic.put(this, di);
@@ -329,10 +329,10 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
      *            the type of extension to return a context for
      * @return an extension's context, iff the specified extension type has already been added
      * @see #use(Class)
-     * @see #useExtension(Class, PackedExtensionContext)
+     * @see #useExtension(Class, PackedExtensionConfiguration)
      */
     @Nullable
-    public PackedExtensionContext getExtensionContext(Class<? extends Extension> extensionType) {
+    public PackedExtensionConfiguration getExtensionContext(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         return extensions.get(extensionType);
     }
@@ -592,9 +592,9 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
      * @throws InternalExtensionException
      *             if the
      */
-    PackedExtensionContext useExtension(Class<? extends Extension> extensionType, @Nullable PackedExtensionContext caller) {
+    PackedExtensionConfiguration useExtension(Class<? extends Extension> extensionType, @Nullable PackedExtensionConfiguration caller) {
         requireNonNull(extensionType, "extensionType is null");
-        PackedExtensionContext pec = extensions.get(extensionType);
+        PackedExtensionConfiguration pec = extensions.get(extensionType);
 
         // We do not use #computeIfAbsent, because extensions might install other extensions via Extension#onAdded.
         // Which will fail with ConcurrentModificationException (see ExtensionDependenciesTest)
@@ -610,7 +610,7 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
                 caller.checkConfigurable();
             }
             initializeName(State.EXTENSION_USED, null); // initializes name of container, if not already set
-            extensions.put(extensionType, pec = PackedExtensionContext.of(this, extensionType));
+            extensions.put(extensionType, pec = PackedExtensionConfiguration.of(this, extensionType));
         }
         return pec;
     }

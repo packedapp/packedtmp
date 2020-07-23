@@ -218,7 +218,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
      *            the extension context that can be constructor injected into the extension
      * @return a new instance of the extension
      */
-    Extension newInstance(PackedExtensionContext context) {
+    Extension newInstance(PackedExtensionConfiguration context) {
         try {
             return (Extension) constructor.invokeExact(context);
         } catch (Throwable e) {
@@ -335,8 +335,8 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
 
         protected void addExtensionContextElements(MethodHandleBuilder builder, int index) {
             builder.addKey(ExtensionConfiguration.class, index);
-            builder.addKey(LifecycleContext.class, PackedExtensionContext.MH_LIFECYCLE_CONTEXT, index);
-            builder.addAnnoClassMapper(WireletFind.class, PackedExtensionContext.MH_FIND_WIRELET, index);
+            builder.addKey(LifecycleContext.class, PackedExtensionConfiguration.MH_LIFECYCLE_CONTEXT, index);
+            builder.addAnnoClassMapper(WireletFind.class, PackedExtensionConfiguration.MH_FIND_WIRELET, index);
         }
 
         /**
@@ -360,7 +360,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
 
             // I Would love to get rid of CONV
 
-            MethodHandleBuilder mhbConstructor = MethodHandleBuilder.of(Extension.class, PackedExtensionContext.class);
+            MethodHandleBuilder mhbConstructor = MethodHandleBuilder.of(Extension.class, PackedExtensionConfiguration.class);
             addExtensionContextElements(mhbConstructor, 0);
 
             OpenClass cp = prep(mhbConstructor);
@@ -368,7 +368,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
 
             if (linked != null) {
                 // ancestor extension, descendant extension context, descendant extension
-                MethodHandleBuilder iss = MethodHandleBuilder.of(void.class, Extension.class, PackedExtensionContext.class, Extension.class);
+                MethodHandleBuilder iss = MethodHandleBuilder.of(void.class, Extension.class, PackedExtensionConfiguration.class, Extension.class);
 
                 // From the child's extension context
                 addExtensionContextElements(iss, 1);

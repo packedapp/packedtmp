@@ -38,7 +38,7 @@ import packed.internal.artifact.PackedAssembleContext;
 import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.container.ContainerWirelet.ContainerNameWirelet;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.container.PackedExtensionContext;
+import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.hook.applicator.DelayedAccessor;
 import packed.internal.host.PackedHostConfiguration;
 
@@ -72,7 +72,7 @@ public abstract class PackedComponentContext extends AbstractComponentConfigurat
 
     /** Any extension this component belongs to. */
     @Nullable
-    private final PackedExtensionContext extension;
+    private final PackedExtensionConfiguration extension;
 
     /** The name of the component. */
     @Nullable

@@ -37,7 +37,7 @@ import app.packed.introspection.ParameterDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
-import packed.internal.container.PackedExtensionContext;
+import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.container.WireletPipelineModel;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.BuildEntry;
@@ -154,7 +154,7 @@ public final class DependencyManager {
                                     if (op.isPresent()) {
                                         Class<? extends Extension> cc = op.get();
                                         if (cc == k.typeLiteral().type()) {
-                                            PackedExtensionContext e = ((PackedExtensionContext) node.context()).container().getExtensionContext(cc);
+                                            PackedExtensionConfiguration e = ((PackedExtensionConfiguration) node.context()).container().getExtensionContext(cc);
                                             resolveTo = extensionEntries.computeIfAbsent(e.extensionType(),
                                                     kk -> new RuntimeAdaptorEntry(node, new ConstantInjectorEntry<Extension>(ConfigSite.UNKNOWN,
                                                             (Key) Key.of(e.extensionType()), null, e.instance())));

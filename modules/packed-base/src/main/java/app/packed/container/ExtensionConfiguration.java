@@ -28,7 +28,7 @@ import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentConfigurationToComponentAdaptor;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.container.PackedExtensionContext;
+import packed.internal.container.PackedExtensionConfiguration;
 
 /**
  * An instance of this interface is available via {@link Extension#configuration()} or via constructor injection into an
@@ -194,12 +194,12 @@ public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
             throw new IllegalArgumentException("The specified lookup object must have " + extensionType + " as lookupClass()");
         }
         @Nullable
-        PackedExtensionContext pec = pa(lookup, c);
+        PackedExtensionConfiguration pec = pa(lookup, c);
         return pec == null ? Optional.empty() : Optional.of((T) pec.instance());
     }
 
     @SuppressWarnings("deprecation")
-    private static PackedExtensionContext pa(MethodHandles.Lookup lookup, Component c) {
+    private static PackedExtensionConfiguration pa(MethodHandles.Lookup lookup, Component c) {
         requireNonNull(lookup, "lookup is null");
         if (lookup.lookupClass() == Extension.class || !Extension.class.isAssignableFrom(lookup.lookupClass())) {
             throw new IllegalArgumentException("The specified lookup object must have a subclass of " + Extension.class.getCanonicalName()

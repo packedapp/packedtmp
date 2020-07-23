@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.lang.invoke.VarHandle;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -39,15 +40,11 @@ import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.lifecycle.LifecycleContext;
 import packed.internal.lifecycle.LifecycleContextHelper;
-import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
-/** The default implementation of {@link ExtensionConfiguration} with addition methods only available in app.packed.base. */
-public final class PackedExtensionContext implements ExtensionConfiguration, Comparable<PackedExtensionContext> {
-
-    // Indicates that a bundle has already been configured...
-    public static final ExtensionConfiguration CONFIGURED = new PackedExtensionContext();
+/** Implementation of {@link ExtensionConfiguration}. */
+public final class PackedExtensionConfiguration implements ExtensionConfiguration, Comparable<PackedExtensionConfiguration> {
 
     static final MethodHandle MH_FIND_WIRELET = LookupUtil.findVirtualEIIE(MethodHandles.lookup(), "findWirelet",
             MethodType.methodType(Object.class, Class.class));
@@ -56,33 +53,32 @@ public final class PackedExtensionContext implements ExtensionConfiguration, Com
     public static final MethodHandle MH_LIFECYCLE_CONTEXT = LookupUtil.findVirtualEIIE(MethodHandles.lookup(), "lifecycle",
             MethodType.methodType(LifecycleContext.class));
 
-    /** The extension instance this context wraps, initialized in {@link #of(PackedContainerConfiguration, Class)}. */
+    /** A VarHandle used by {@link #of(PackedContainerConfiguration, Class)} to access the field Extension#configuration. */
+    private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.initPrivateVH(MethodHandles.lookup(), Extension.class, "configuration",
+            ExtensionConfiguration.class);
+
+    /** The extension instance this configuration wraps, initialized in {@link #of(PackedContainerConfiguration, Class)}. */
     @Nullable
-    private Extension extension;
+    private Extension instance;
 
     /** Whether or not the extension has been configured. */
     private boolean isConfigured;
 
     /** The sidecar model of the extension. */
-    final ExtensionModel model;
+    private final ExtensionModel model;
 
-    /** The configuration of the container the extension is registered in. */
+    /** The configuration of the container that uses the extension. */
     private final PackedContainerConfiguration pcc;
 
-    private PackedExtensionContext() {
-        this.pcc = null;
-        this.model = null;
-    }
-
     /**
-     * Creates a new extension context.
+     * Creates a new configuration.
      * 
      * @param pcc
-     *            the configuration of the container the extension is registered in
+     *            the configuration of the container that uses the extension
      * @param model
      *            a model of the extension.
      */
-    private PackedExtensionContext(PackedContainerConfiguration pcc, ExtensionModel model) {
+    private PackedExtensionConfiguration(PackedContainerConfiguration pcc, ExtensionModel model) {
         this.pcc = requireNonNull(pcc);
         this.model = requireNonNull(model);
     }
@@ -92,7 +88,7 @@ public final class PackedExtensionContext implements ExtensionConfiguration, Com
         MethodHandle mha = model.bundleBuilderMethod;
         if (mha != null) {
             try {
-                mha.invoke(extension, builder);
+                mha.invoke(instance, builder);
             } catch (Throwable e1) {
                 throw new UndeclaredThrowableException(e1);
             }
@@ -102,17 +98,17 @@ public final class PackedExtensionContext implements ExtensionConfiguration, Com
             // TODO need a context
             Contract con;
             if (s instanceof Function) {
-                con = (Contract) ((Function) s).apply(extension);
+                con = (Contract) ((Function) s).apply(instance);
             } else if (s instanceof BiFunction) {
-                con = (Contract) ((BiFunction) s).apply(extension, null);
+                con = (Contract) ((BiFunction) s).apply(instance, null);
             } else {
                 // MethodHandle...
                 try {
                     MethodHandle mh = (MethodHandle) s;
                     if (mh.type().parameterCount() == 0) {
-                        con = (Contract) mh.invoke(extension);
+                        con = (Contract) mh.invoke(instance);
                     } else {
-                        con = (Contract) mh.invoke(extension, null);
+                        con = (Contract) mh.invoke(instance, null);
                     }
                 } catch (Throwable e1) {
                     throw new UndeclaredThrowableException(e1);
@@ -144,7 +140,7 @@ public final class PackedExtensionContext implements ExtensionConfiguration, Com
 
     /** {@inheritDoc} */
     @Override
-    public int compareTo(PackedExtensionContext c) {
+    public int compareTo(PackedExtensionConfiguration c) {
         return -model.compareTo(c.model);
     }
 
@@ -167,21 +163,6 @@ public final class PackedExtensionContext implements ExtensionConfiguration, Com
     @Override
     public ComponentPath containerPath() {
         return pcc.path();
-    }
-
-    /**
-     * Returns the extension instance this context wraps.
-     * 
-     * @return the extension instance this context wraps
-     * @throws IllegalStateException
-     *             if trying to call this method from the constructor of the extension
-     */
-    public Extension instance() {
-        Extension e = extension;
-        if (e == null) {
-            throw new IllegalStateException("Cannot call this method from the constructor of the extension");
-        }
-        return e;
     }
 
     /** {@inheritDoc} */
@@ -214,6 +195,21 @@ public final class PackedExtensionContext implements ExtensionConfiguration, Com
         return pcc.installInstance(instance);
     }
 
+    /**
+     * Returns the extension instance this configuration wraps.
+     * 
+     * @return the extension instance this configuration wraps
+     * @throws IllegalStateException
+     *             if trying to call this method from the constructor of the extension
+     */
+    public Extension instance() {
+        Extension e = instance;
+        if (e == null) {
+            throw new IllegalStateException("Cannot call this method from the constructor of the extension");
+        }
+        return e;
+    }
+
     /** {@inheritDoc} */
     @Override
     public boolean isUsed(Class<? extends Extension> extensionType) {
@@ -230,7 +226,7 @@ public final class PackedExtensionContext implements ExtensionConfiguration, Com
 
             @Override
             protected int state() {
-                if (extension == null) {
+                if (instance == null) {
                     return 0;
                 } else if (isConfigured == false) {
                     return 1;
@@ -250,13 +246,13 @@ public final class PackedExtensionContext implements ExtensionConfiguration, Com
     /** Invoked by the container configuration, whenever the extension is configured. */
     void onChildrenConfigured() {
         checkState(ExtensionSidecar.CHILD_LINKING);
-        model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_2_CHILDREN_DONE, extension, this);
+        model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_2_CHILDREN_DONE, instance, this);
     }
 
     /** Invoked by the container configuration, whenever the extension is configured. */
     void onConfigured() {
         checkState(ExtensionSidecar.NORMAL_USAGE);
-        model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_1_MAIN, extension, this);
+        model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_1_MAIN, instance, this);
         isConfigured = true;
         checkState(ExtensionSidecar.CHILD_LINKING);
     }
@@ -289,13 +285,13 @@ public final class PackedExtensionContext implements ExtensionConfiguration, Com
         if (!model.directDependencies().contains(extensionType)) {
             // We allow an extension to use itself, alternative would be to throw an exception, but for what reason?
             if (extensionType == instance().getClass()) { // extension() checks for constructor
-                return (T) extension;
+                return (T) instance;
             }
 
             throw new UnsupportedOperationException("The specified extension type is not among " + model.extensionType().getSimpleName()
                     + " dependencies, extensionType = " + extensionType + ", valid dependencies = " + model.directDependencies());
         }
-        return (T) pcc.useExtension(extensionType, this).extension;
+        return (T) pcc.useExtension(extensionType, this).instance;
     }
 
     /**
@@ -307,18 +303,20 @@ public final class PackedExtensionContext implements ExtensionConfiguration, Com
      *            the type of extension to initialize
      * @return the new extension context
      */
-    static PackedExtensionContext of(PackedContainerConfiguration pcc, Class<? extends Extension> extensionType) {
+    static PackedExtensionConfiguration of(PackedContainerConfiguration pcc, Class<? extends Extension> extensionType) {
         // I think move to the constructor of this context??? Then extension can be final...
         // Create extension context and instantiate extension
         ExtensionModel model = ExtensionModel.of(extensionType);
-        PackedExtensionContext pec = new PackedExtensionContext(pcc, model);
+        PackedExtensionConfiguration pec = new PackedExtensionConfiguration(pcc, model);
         pec.checkState(ExtensionSidecar.INSTANTIATING);
-        Extension e = pec.extension = model.newInstance(pec); // Creates a new [XX]Extension instance
+        Extension e = pec.instance = model.newInstance(pec); // Creates a new XXExtension instance
         pec.checkState(ExtensionSidecar.NORMAL_USAGE);
-        ModuleAccess.container().extensionSetConfiguration(e, pec);
+
+        // Sets Extension.configuration = pec
+        VH_EXTENSION_CONFIGURATION.set(e, pec); // field is package-private in a public package
 
         // Run the following 3 steps before the extension is handed back to the user.
-        PackedExtensionContext existing = pcc.activeExtension;
+        PackedExtensionConfiguration existing = pcc.activeExtension;
         try {
             pcc.activeExtension = pec;
             // 1. The first step we take is seeing if there are parent or ancestors that needs to be notified
@@ -327,7 +325,7 @@ public final class PackedExtensionContext implements ExtensionConfiguration, Com
 
             // Should we also set the active extension in the parent???
             if (model.extensionLinkedToAncestorExtension != null) {
-                PackedExtensionContext parentExtension = null;
+                PackedExtensionConfiguration parentExtension = null;
                 PackedContainerConfiguration parent = pcc.container();
                 if (!model.extensionLinkedDirectChildrenOnly) {
                     while (parentExtension == null && parent != null) {
@@ -342,9 +340,8 @@ public final class PackedExtensionContext implements ExtensionConfiguration, Com
                 // If not just parent link keep checking up until root/
                 if (parentExtension != null) {
                     try {
-                        model.extensionLinkedToAncestorExtension.invokeExact(parentExtension.extension, pec, e);
+                        model.extensionLinkedToAncestorExtension.invokeExact(parentExtension.instance, pec, e);
                     } catch (Throwable e1) {
-                        System.out.println(e.getClass());
                         throw ThrowableUtil.easyThrow(e1);
                     }
                 }
