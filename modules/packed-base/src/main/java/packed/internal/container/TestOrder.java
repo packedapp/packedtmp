@@ -16,7 +16,7 @@
 package packed.internal.container;
 
 import app.packed.artifact.App;
-import app.packed.container.BaseBundle;
+import app.packed.container.DefaultBundle;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ExtensionSidecar;
 import app.packed.statemachine.Leaving;
@@ -74,7 +74,7 @@ public class TestOrder extends ContainerBundle {
         App.of(new TestOrder());
     }
 
-    public static class SomeBundle extends BaseBundle {
+    public static class SomeBundle extends DefaultBundle {
 
         /** {@inheritDoc} */
         @Override

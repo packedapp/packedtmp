@@ -122,7 +122,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     /** {@inheritDoc} */
     @Override
     public void checkConfigurable() {
-        if (container().realState != 0) {
+        if (pcc.realState != 0) {
             throw new IllegalStateException("This extension (" + instance().getClass().getSimpleName() + ") is no longer configurable");
         }
         if (isConfigured) {
@@ -180,7 +180,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
      */
     @Nullable
     Object findWirelet(Class<? extends Wirelet> wireletType) {
-        return container().wireletAny(wireletType).orElse(null);
+        return pcc.wireletAny(wireletType).orElse(null);
     }
 
     /** {@inheritDoc} */

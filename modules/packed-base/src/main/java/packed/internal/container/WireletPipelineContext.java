@@ -17,6 +17,9 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -25,10 +28,15 @@ import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletPipeline;
-import packed.internal.moduleaccess.ModuleAccess;
+import packed.internal.util.LookupUtil;
+import packed.internal.util.ThrowableUtil;
 
 /** A context for each {@link WireletPipeline} instance. */
 public final class WireletPipelineContext {
+
+    /** A MethodHandle that can invoke ContainerBundle#configure. */
+    private static final MethodHandle MH_WIRELET_PIPELINE_INITIALIZE = LookupUtil.initVirtualMH(MethodHandles.lookup(), WireletPipeline.class, "initialize",
+            MethodType.methodType(void.class, WireletPipelineContext.class));
 
     /** The pipeline instance that can be injected. */
     public WireletPipeline<?, ?> instance;
@@ -65,7 +73,12 @@ public final class WireletPipelineContext {
 
     void instantiate(@Nullable Extension extension) {
         instance = model.newPipeline(extension);
-        ModuleAccess.container().pipelineInitialize(instance, this);
+
+        try {
+            MH_WIRELET_PIPELINE_INITIALIZE.invoke(instance, this);
+        } catch (Throwable e) {
+            throw ThrowableUtil.easyThrow(e);
+        }
     }
 
     /**

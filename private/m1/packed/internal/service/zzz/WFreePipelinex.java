@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 
 import app.packed.artifact.App;
-import app.packed.container.BaseBundle;
+import app.packed.container.DefaultBundle;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletPipeline;
 import app.packed.container.WireletSidecar;
@@ -27,7 +27,7 @@ import app.packed.container.WireletSidecar;
 /**
  *
  */
-public class WFreePipelinex extends BaseBundle {
+public class WFreePipelinex extends DefaultBundle {
 
     /** {@inheritDoc} */
     @Override

@@ -17,7 +17,7 @@ package packed.internal.container;
 
 import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
-import app.packed.container.BaseBundle;
+import app.packed.container.DefaultBundle;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionLinked;
@@ -32,7 +32,7 @@ import app.packed.statemachine.Leaving;
 /**
  *
  */
-public class TI extends BaseBundle {
+public class TI extends DefaultBundle {
 
     public static void mains(String[] args) {
         App.of(new TI(), new MyTestWirelet("fofoof XXXXXXXXXX"));
@@ -76,7 +76,7 @@ public class TI extends BaseBundle {
         link(new FFF(), ServiceWirelets.provide("const"));
     }
 
-    static class FFF extends BaseBundle {
+    static class FFF extends DefaultBundle {
 
         /** {@inheritDoc} */
         @Override
@@ -87,7 +87,7 @@ public class TI extends BaseBundle {
 
     }
 
-    static class FFFFFF extends BaseBundle {
+    static class FFFFFF extends DefaultBundle {
 
         /** {@inheritDoc} */
         @Override

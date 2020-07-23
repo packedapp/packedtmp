@@ -16,12 +16,12 @@
 package packed.internal.service.buildtime;
 
 import app.packed.artifact.App;
-import app.packed.container.BaseBundle;
+import app.packed.container.DefaultBundle;
 
 /**
  *
  */
-public class Doo extends BaseBundle {
+public class Doo extends DefaultBundle {
 
     /** {@inheritDoc} */
     @Override

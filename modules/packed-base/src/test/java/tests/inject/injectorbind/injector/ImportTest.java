@@ -23,7 +23,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import app.packed.base.Key;
-import app.packed.container.BaseBundle;
+import app.packed.container.DefaultBundle;
 import app.packed.inject.Factory1;
 import app.packed.service.Injector;
 
@@ -44,7 +44,7 @@ public class ImportTest {
         System.out.println(i);
     }
 
-    public static final class I extends BaseBundle {
+    public static final class I extends DefaultBundle {
 
         /** {@inheritDoc} */
         @Override
@@ -54,7 +54,7 @@ public class ImportTest {
         }
     }
 
-    public static final class London extends BaseBundle {
+    public static final class London extends DefaultBundle {
 
         /** {@inheritDoc} */
         @Override
@@ -64,7 +64,7 @@ public class ImportTest {
         }
     }
 
-    public static final class Berlin extends BaseBundle {
+    public static final class Berlin extends DefaultBundle {
 
         /** {@inheritDoc} */
         @Override

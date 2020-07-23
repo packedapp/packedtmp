@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.container.BaseBundle;
+import app.packed.container.DefaultBundle;
 import app.packed.container.ContainerConfiguration;
 
 /** Tests {@link App#start(app.packed.container.ContainerBundle, app.packed.container.Wirelet...)} */
@@ -32,7 +32,7 @@ public class AppOfTest {
     @Test
     public void emptyApp() {
         AtomicReference<ContainerConfiguration> ar = new AtomicReference<>();
-        App app = App.start(new BaseBundle() {
+        App app = App.start(new DefaultBundle() {
             @Override
             public void configure() {
                 ar.set(configuration());

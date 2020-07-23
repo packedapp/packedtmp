@@ -43,7 +43,8 @@ public final class ConfigExtension extends Extension {
 
     // Stuff...
 
-    void expose(@SuppressWarnings("unchecked") Class<? extends Extension>... extensionTypes) {
+    @SuppressWarnings("unchecked")
+    void expose(Class<? extends Extension>... extensionTypes) {
         throw new UnsupportedOperationException();
     }
 

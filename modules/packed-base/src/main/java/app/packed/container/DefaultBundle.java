@@ -20,6 +20,7 @@ import app.packed.base.Key;
 import app.packed.base.Key.Qualifier;
 import app.packed.component.SingletonConfiguration;
 import app.packed.inject.Factory;
+import app.packed.lifecycle.LifecycleExtension;
 import app.packed.lifecycleold.OnStart;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
@@ -29,8 +30,8 @@ import app.packed.service.ServiceConfiguration;
 import app.packed.service.ServiceExtension;
 
 /**
- * A convenience extension of {@link ContainerBundle} which contains shortcut access to common functionality defined by the
- * various extension available in this module.
+ * A convenience extension of {@link ContainerBundle} which contains shortcut access to common functionality defined by
+ * the various extension available in this module.
  * <p>
  * For example, instead of doing use(ServiceExtension.class).provide(Foo.class) you can just use
  * service().provide(Foo.class) or even just provide(Foo.class).
@@ -49,9 +50,9 @@ import app.packed.service.ServiceExtension;
  * <p>
  * There are currently two types of bundles available:
  * <ul>
- * <li><b>{@link BaseBundle}</b> which bundles information about services, and creates {@link Injector} instances using
- * .</li>
- * <li><b>{@link BaseBundle}</b> which bundles information about both services and components, and creates container
+ * <li><b>{@link DefaultBundle}</b> which bundles information about services, and creates {@link Injector} instances
+ * using .</li>
+ * <li><b>{@link DefaultBundle}</b> which bundles information about both services and components, and creates container
  * instances using .</li>
  * </ul>
  * 
@@ -59,7 +60,16 @@ import app.packed.service.ServiceExtension;
  * @apiNote We never return, for example, Bundle or BaseBundle. As this would make extending the class difficult unless
  *          we defined all methods as non-final.
  */
-public abstract class BaseBundle extends ContainerBundle {
+public abstract class DefaultBundle extends ContainerBundle {
+
+    /**
+     * Returns a {@link BaseExtension} instance.
+     * 
+     * @return a base extension instance
+     */
+    protected final BaseExtension base() {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Exposes an internal service outside of this bundle, equivalent to calling {@code expose(Key.of(key))}. A typical use
@@ -91,11 +101,7 @@ public abstract class BaseBundle extends ContainerBundle {
      * @see #export(Key)
      */
     protected final <T> ServiceConfiguration<T> export(Class<T> key) {
-        return service().export(key);
-    }
-
-    protected final <T> ServiceConfiguration<T> export(ServiceComponentConfiguration<T> configuration) {
-        return service().export(configuration);
+        return services().export(key);
     }
 
     /**
@@ -121,11 +127,11 @@ public abstract class BaseBundle extends ContainerBundle {
      * @see #export(Key)
      */
     protected final <T> ServiceConfiguration<T> export(Key<T> key) {
-        return service().export(key);
+        return services().export(key);
     }
 
-    protected final void exportAll() {
-        service().exportAll();
+    protected final <T> ServiceConfiguration<T> export(ServiceComponentConfiguration<T> configuration) {
+        return services().export(configuration);
     }
 
 //    /**
@@ -136,6 +142,14 @@ public abstract class BaseBundle extends ContainerBundle {
 //    protected final EntryPointExtension lifecycle() {
 //        return use(EntryPointExtension.class);
 //    }
+
+    protected final void exportAll() {
+        services().exportAll();
+    }
+
+    protected final LifecycleExtension lifecycle() {
+        return use(LifecycleExtension.class);
+    }
 
     /**
      * Binds the specified implementation as a new service. The runtime will use {@link Factory#find(Class)} to find a valid
@@ -153,11 +167,7 @@ public abstract class BaseBundle extends ContainerBundle {
      */
     protected final <T> ServiceComponentConfiguration<T> provide(Class<T> implementation) {
         // Provide er i virkeligheden... install() followed by service().provide(Singleton or Static)
-        return service().provide(implementation);
-    }
-
-    protected final <T> ServiceComponentConfiguration<T> provide(SingletonConfiguration<T> configuration) {
-        throw new UnsupportedOperationException();
+        return services().provide(implementation);
     }
 
     /**
@@ -172,40 +182,43 @@ public abstract class BaseBundle extends ContainerBundle {
      * @return the configuration of the component that was installed
      */
     protected final <T> ServiceComponentConfiguration<T> provide(Factory<T> factory) {
-        return service().provide(factory);
+        return services().provide(factory);
+    }
+
+    protected final <T> ServiceComponentConfiguration<T> provide(SingletonConfiguration<T> configuration) {
+        throw new UnsupportedOperationException();
     }
 
     protected final void provideAll(Injector injector, Wirelet... wirelets) {
-        service().provideAll(injector, wirelets);
+        services().provideAll(injector, wirelets);
     }
 
     protected final <T> ServiceComponentConfiguration<T> provideConstant(T instance) {
-        return service().provideConstant(instance);
+        return services().provideConstant(instance);
     }
 
     protected final void require(Class<?> key) {
-        service().require(Key.of(key));
+        services().require(Key.of(key));
     }
 
     protected final void require(Key<?>... keys) {
-        service().require(keys);
+        services().require(keys);
     }
 
     protected final void requireOptionally(Class<?> key) {
-        service().requireOptionally(Key.of(key));
+        services().requireOptionally(Key.of(key));
     }
 
     protected final void requireOptionally(Key<?>... keys) {
-        service().requireOptionally(keys);
+        services().requireOptionally(keys);
     }
 
     /**
-     * Returns a service extension instance, installing it if it has not already been installed.
+     * Returns a {@link ServiceExtension} instance.
      * 
      * @return a service extension instance
      */
-    // rename to services?, lifecycles? Nah heller lifecycle()
-    protected final ServiceExtension service() {
+    protected final ServiceExtension services() {
         return use(ServiceExtension.class);
     }
 

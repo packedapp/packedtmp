@@ -18,7 +18,6 @@ package packed.internal.moduleaccess;
 import java.util.concurrent.ConcurrentHashMap;
 
 import app.packed.base.TypeLiteral;
-import app.packed.container.ContainerBundle;
 import app.packed.hook.AnnotatedFieldHook;
 
 /** A mechanism for calling package private methods in public packages without using reflection. */
@@ -40,14 +39,14 @@ public final class ModuleAccess {
 //        return ArtifactSingletonHolder.INSTANCE;
 //    }
 
-    /**
-     * Returns an access object for app.packed.container.
-     * 
-     * @return an access object for app.packed.container
-     */
-    public static AppPackedContainerAccess container() {
-        return ContainerSingletonHolder.INSTANCE;
-    }
+//    /**
+//     * Returns an access object for app.packed.container.
+//     * 
+//     * @return an access object for app.packed.container
+//     */
+//    public static AppPackedContainerAccess container() {
+//        return ContainerSingletonHolder.INSTANCE;
+//    }
 
     /**
      * Returns an access object for app.packed.container.
@@ -130,12 +129,12 @@ public final class ModuleAccess {
 //        private static final AppPackedArtifactAccess INSTANCE = singleton(AppPackedArtifactAccess.class, ArtifactDriver.class);
 //    }
 
-    /** Holder of the {@link AppPackedContainerAccess} singleton. */
-    private static class ContainerSingletonHolder {
-
-        /** The singleton instance. */
-        private static final AppPackedContainerAccess INSTANCE = singleton(AppPackedContainerAccess.class, ContainerBundle.class);
-    }
+//    /** Holder of the {@link AppPackedContainerAccess} singleton. */
+//    private static class ContainerSingletonHolder {
+//
+//        /** The singleton instance. */
+//        private static final AppPackedContainerAccess INSTANCE = singleton(AppPackedContainerAccess.class, ContainerBundle.class);
+//    }
 
     /** Holder of the {@link AppPackedHookAccess} singleton. */
     private static class HookSingletonHolder {

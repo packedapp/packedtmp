@@ -16,14 +16,14 @@
 package app.packed.component.feature;
 
 import app.packed.artifact.App;
-import app.packed.container.BaseBundle;
+import app.packed.container.DefaultBundle;
 import app.packed.service.Injector;
 import app.packed.service.Provide;
 
 /**
  *
  */
-class ProvTest extends BaseBundle {
+class ProvTest extends DefaultBundle {
 
     @Override
     protected void configure() {

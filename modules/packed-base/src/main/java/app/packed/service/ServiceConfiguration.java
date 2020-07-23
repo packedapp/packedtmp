@@ -18,11 +18,11 @@ package app.packed.service;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
-import app.packed.container.BaseBundle;
+import app.packed.container.DefaultBundle;
 
 /**
  * A configuration object for a service. An instance of this interface is usually obtained by calling the various
- * provide or export methods located on {@link ServiceExtension}, {@link InjectorAssembler} or {@link BaseBundle}.
+ * provide or export methods located on {@link ServiceExtension}, {@link InjectorAssembler} or {@link DefaultBundle}.
  */
 public interface ServiceConfiguration<T> /* extends Taggable */ {
 

@@ -116,6 +116,11 @@ public abstract class WireletPipeline<P extends WireletPipeline<P, W>, W extends
         return false;
     }
 
+    void initialize(WireletPipelineContext context) {
+        this.context = context;
+        verify();
+    }
+
     /** Invoked by the runtime immediately after the pipeline has been constructed. */
     protected void verify() {} // expand
 

@@ -33,7 +33,7 @@ import app.packed.service.ServiceExtension;
 
 /**
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
- * extending {@link ContainerBundle} or {@link BaseBundle}.
+ * extending {@link ContainerBundle} or {@link DefaultBundle}.
  */
 // Was named Composer, idk why
 // BundleContext....

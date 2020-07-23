@@ -19,13 +19,13 @@ import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 
 import app.packed.artifact.App;
-import app.packed.container.BaseBundle;
+import app.packed.container.DefaultBundle;
 import app.packed.container.Wirelet;
 
 /**
  *
  */
-public class WFree extends BaseBundle {
+public class WFree extends DefaultBundle {
 
     /** {@inheritDoc} */
     @Override

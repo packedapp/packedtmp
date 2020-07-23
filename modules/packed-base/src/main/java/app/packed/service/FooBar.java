@@ -21,13 +21,13 @@ import java.util.Optional;
 
 import app.packed.artifact.ArtifactImage;
 import app.packed.component.Component;
-import app.packed.container.BaseBundle;
+import app.packed.container.DefaultBundle;
 import app.packed.container.ExtensionConfiguration;
 
 /**
  *
  */
-public class FooBar extends BaseBundle {
+public class FooBar extends DefaultBundle {
 
     /** {@inheritDoc} */
     @Override

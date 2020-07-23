@@ -15,12 +15,12 @@
  */
 package packed.internal.host.prototype;
 
-import app.packed.container.BaseBundle;
+import app.packed.container.DefaultBundle;
 
 /**
  *
  */
-public class Stuff extends BaseBundle {
+public class Stuff extends DefaultBundle {
 
     /** {@inheritDoc} */
     @Override

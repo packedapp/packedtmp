@@ -19,14 +19,14 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
-import app.packed.container.BaseBundle;
+import app.packed.container.DefaultBundle;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory1;
 
 /**
  *
  */
-public class Dooo2 extends BaseBundle {
+public class Dooo2 extends DefaultBundle {
 
     void install(Supplier<?> s) {
 

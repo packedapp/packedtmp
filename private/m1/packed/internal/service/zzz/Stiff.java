@@ -16,14 +16,14 @@
 package packed.internal.service.zzz;
 
 import app.packed.artifact.App;
-import app.packed.container.BaseBundle;
+import app.packed.container.DefaultBundle;
 import app.packed.service.Provide;
 import app.packed.service.ServiceWirelets;
 
 /**
  *
  */
-public class Stiff extends BaseBundle {
+public class Stiff extends DefaultBundle {
 
     /** {@inheritDoc} */
     @Override

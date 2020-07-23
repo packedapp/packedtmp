@@ -16,13 +16,13 @@
 package packed.internal.base.reflectM1;
 
 import app.packed.artifact.ArtifactImage;
-import app.packed.container.BaseBundle;
+import app.packed.container.DefaultBundle;
 import app.packed.container.Wirelet;
 
 /**
  *
  */
-public class Dddd extends BaseBundle {
+public class Dddd extends DefaultBundle {
 
     int depth;
 

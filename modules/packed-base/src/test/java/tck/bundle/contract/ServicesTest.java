@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.ContractSet;
 import app.packed.base.Key;
-import app.packed.container.BaseBundle;
+import app.packed.container.DefaultBundle;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import testutil.stubs.Letters.A;
@@ -40,7 +40,7 @@ public class ServicesTest {
 
     @Test
     public void empty() {
-        ContractSet c = ContractSet.contractsOf(new BaseBundle() {
+        ContractSet c = ContractSet.contractsOf(new DefaultBundle() {
 
             @Override
             protected void configure() {
@@ -58,7 +58,7 @@ public class ServicesTest {
 
     @Test
     public void provides() {
-        ContractSet c = ContractSet.contractsOf(new BaseBundle() {
+        ContractSet c = ContractSet.contractsOf(new DefaultBundle() {
 
             @Override
             protected void configure() {
@@ -77,7 +77,7 @@ public class ServicesTest {
 
     @Test
     public void requires() {
-        ContractSet c = ContractSet.contractsOf(new BaseBundle() {
+        ContractSet c = ContractSet.contractsOf(new DefaultBundle() {
 
             @Override
             protected void configure() {
@@ -95,7 +95,7 @@ public class ServicesTest {
 
     @Test
     public void optional() {
-        ContractSet c = ContractSet.contractsOf(new BaseBundle() {
+        ContractSet c = ContractSet.contractsOf(new DefaultBundle() {
 
             @Override
             protected void configure() {
@@ -114,7 +114,7 @@ public class ServicesTest {
     /** A service will never be both requires and optional. */
     @Test
     public void requiresOverrideOptional() {
-        ContractSet c = ContractSet.contractsOf(new BaseBundle() {
+        ContractSet c = ContractSet.contractsOf(new DefaultBundle() {
 
             @Override
             protected void configure() {
@@ -133,7 +133,7 @@ public class ServicesTest {
 
     @Test
     public void all() {
-        ContractSet c = ContractSet.contractsOf(new BaseBundle() {
+        ContractSet c = ContractSet.contractsOf(new DefaultBundle() {
 
             @Override
             protected void configure() {

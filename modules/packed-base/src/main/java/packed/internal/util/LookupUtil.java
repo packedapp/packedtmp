@@ -50,11 +50,6 @@ public final class LookupUtil {
         }
     }
 
-    public static void main(String[] args) {
-        // Maaske behoever vi slet ikke tests previous... fordi lookup mode aendrer sig..
-        System.out.println(isLookupDefault(MethodHandles.lookup().in(Global.class)));
-    }
-
     /**
      * Tests whether or not the specified lookup is
      * 

@@ -51,20 +51,21 @@ import packed.internal.service.runtime.PackedInjector;
 import packed.internal.util.LookupUtil;
 
 /**
- * Since the logic for the service extension is quite complex. Especially with cross-container integration. We have put
- * most logic in this separate class.
+ * Since the logic for the service extension is quite complex. Especially with cross-container integration. We spread it
+ * over multiple classes. With this class being the main one.
  */
 public final class ServiceExtensionNode {
 
-    /** A varhandle that can extract a ServiceExtensionNode from {@link ServiceExtension}. */
-    private static final VarHandle EXTENSION_TO_NODE = LookupUtil.initPrivateVH(MethodHandles.lookup(), ServiceExtension.class, "node",
+    /** A VarHandle that can access ServiceExtension#node. */
+    private static final VarHandle VH_SERVICE_EXTENSION_NODE = LookupUtil.initPrivateVH(MethodHandles.lookup(), ServiceExtension.class, "node",
             ServiceExtensionNode.class);
 
     /** Any children of the extension. */
     @Nullable
     ArrayList<ServiceExtensionNode> children;
 
-    private final ExtensionConfiguration context;
+    /** The configuration of the extension. */
+    private final ExtensionConfiguration configuration;
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
     public DependencyManager dependencies;
@@ -75,7 +76,7 @@ public final class ServiceExtensionNode {
 
     private boolean hasFailed;
 
-    /** Any parent of the extension. */
+    /** Any parent of the node. */
     @Nullable
     ServiceExtensionNode parent;
 
@@ -95,7 +96,7 @@ public final class ServiceExtensionNode {
      *            the context
      */
     public ServiceExtensionNode(ExtensionConfiguration context) {
-        this.context = requireNonNull(context, "context is null");
+        this.configuration = requireNonNull(context, "context is null");
 
     }
 
@@ -147,7 +148,7 @@ public final class ServiceExtensionNode {
     }
 
     public final ExtensionConfiguration context() {
-        return context;
+        return configuration;
     }
 
     /**
@@ -283,6 +284,6 @@ public final class ServiceExtensionNode {
      * @return the service node
      */
     public static ServiceExtensionNode fromExtension(ServiceExtension extension) {
-        return (ServiceExtensionNode) EXTENSION_TO_NODE.get(extension);
+        return (ServiceExtensionNode) VH_SERVICE_EXTENSION_NODE.get(extension);
     }
 }

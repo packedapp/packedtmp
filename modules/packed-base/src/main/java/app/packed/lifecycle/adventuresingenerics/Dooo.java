@@ -18,7 +18,7 @@ package app.packed.lifecycle.adventuresingenerics;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.container.BaseBundle;
+import app.packed.container.DefaultBundle;
 import app.packed.inject.Composite;
 import app.packed.inject.Factory;
 import app.packed.inject.Factory0;
@@ -29,7 +29,7 @@ import packed.internal.reflect.typevariable.TypeVariableExtractor;
 /**
  *
  */
-public class Dooo extends BaseBundle {
+public class Dooo extends DefaultBundle {
 
     <T> void install(Class<T> type, Supplier<T> s) {
 

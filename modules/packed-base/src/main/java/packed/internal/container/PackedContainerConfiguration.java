@@ -74,10 +74,6 @@ import packed.internal.util.ThrowableUtil;
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class PackedContainerConfiguration extends PackedComponentContext implements ContainerConfiguration {
 
-    /** A VarHandle that can access ContainerBundle#configuration. */
-    private static final VarHandle BUNDLE_CONFIGURATION = LookupUtil.initPrivateVH(MethodHandles.lookup(), ContainerBundle.class, "configuration",
-            Object.class);
-
     /** A MethodHandle that can invoke ContainerBundle#configure. */
     private static final MethodHandle BUNDLE_CONFIGURE = LookupUtil.initVirtualMH(MethodHandles.lookup(), ContainerBundle.class, "configure",
             MethodType.methodType(void.class));
@@ -88,11 +84,15 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
 
     private static final int LS_2_HOSTING = 2;
 
+    private static final int LS_3_FINISHED = 3;
+
 //    /** Any child containers of this component (lazily initialized), in order of insertion. */
 //    @Nullable
 //    ArrayList<PackedContainerConfiguration> containers;
 
-    private static final int LS_3_FINISHED = 3;
+    /** A VarHandle that can access ContainerBundle#configuration. */
+    private static final VarHandle VH_CONTAINER_BUNDLE_CONFIGURATION = LookupUtil.initPrivateVH(MethodHandles.lookup(), ContainerBundle.class, "configuration",
+            Object.class);
 
     /** Any extension that is active. */
     @Nullable
@@ -263,14 +263,14 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
 
             // We perform a compare and exchange with configuration. Guarding against
             // concurrent usage of this bundle.
-            Object existing = BUNDLE_CONFIGURATION.compareAndExchange(cb, null, this);
+            Object existing = VH_CONTAINER_BUNDLE_CONFIGURATION.compareAndExchange(cb, null, this);
             if (existing == null) {
                 try {
                     BUNDLE_CONFIGURE.invoke(cb);
                 } catch (Throwable e) {
                     throw ThrowableUtil.easyThrow(e);
                 } finally {
-                    BUNDLE_CONFIGURATION.setVolatile(cb, BundleHelper.POST_CONFIGURE);
+                    VH_CONTAINER_BUNDLE_CONFIGURATION.setVolatile(cb, BundleHelper.POST_CONFIGURE);
                 }
             } else if (existing instanceof ComponentConfiguration) {
                 // Can be this thread or another thread that is already using the bundle.

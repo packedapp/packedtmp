@@ -34,9 +34,6 @@ import app.packed.component.sandhox.ConfiguredBy;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
-import packed.internal.container.WireletPipelineContext;
-import packed.internal.moduleaccess.AppPackedContainerAccess;
-import packed.internal.moduleaccess.ModuleAccess;
 
 /**
  * Bundles are the main source of configuration for containers and artifacts. Basically a bundle is just a thin wrapper
@@ -46,7 +43,7 @@ import packed.internal.moduleaccess.ModuleAccess;
  * A bundle instance can be used ({@link #configure()}) exactly once. Attempting to use it multiple times will fail with
  * an {@link IllegalStateException}.
  * 
- * A generic bundle. Normally you would extend {@link BaseBundle}
+ * A generic bundle. Normally you would extend {@link DefaultBundle}
  */
 
 // Nej der er ingen grund til at lave den concurrent. Som regel er det en ny instans...
@@ -63,24 +60,6 @@ import packed.internal.moduleaccess.ModuleAccess;
 // Unconfigured/Configuring/Configured (Failed??? well et can't bee Configured if it's failed)
 
 public abstract class ContainerBundle extends Bundle<ContainerConfiguration> implements ArtifactSource {
-
-    static {
-        ModuleAccess.initialize(AppPackedContainerAccess.class, new AppPackedContainerAccess() {
-
-            /** {@inheritDoc} */
-            @Override
-            public void extensionSetConfiguration(Extension extension, ExtensionConfiguration context) {
-                extension.configuration = context;
-            }
-
-            /** {@inheritDoc} */
-            @Override
-            public void pipelineInitialize(WireletPipeline<?, ?> pipeline, WireletPipelineContext context) {
-                pipeline.context = context;
-                pipeline.verify();
-            }
-        });
-    }
 
     /**
      * The configuration of the container. Is initial null configure has not yet been called. Then it is initialized which a
@@ -242,7 +221,7 @@ public abstract class ContainerBundle extends Bundle<ContainerConfiguration> imp
      * @param factory
      *            the factory to install
      * @return the configuration of the component
-     * @see BaseBundle#install(Factory)
+     * @see DefaultBundle#install(Factory)
      */
     protected final <T> SingletonConfiguration<T> install(Factory<T> factory) {
         return configuration().install(factory);

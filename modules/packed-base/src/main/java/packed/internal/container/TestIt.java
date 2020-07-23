@@ -16,12 +16,12 @@
 package packed.internal.container;
 
 import app.packed.artifact.App;
-import app.packed.container.BaseBundle;
+import app.packed.container.DefaultBundle;
 
 /**
  *
  */
-public class TestIt extends BaseBundle {
+public class TestIt extends DefaultBundle {
 
     /** {@inheritDoc} */
     @Override
