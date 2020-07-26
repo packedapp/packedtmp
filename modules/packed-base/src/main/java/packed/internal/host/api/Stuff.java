@@ -13,27 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.host.api;
 
-import app.packed.artifact.App;
-import app.packed.container.DefaultBundle;
-import app.packed.service.Injector;
+import app.packed.container.ContainerBundle;
+import sandbox.artifact.hostguest.AppHost;
 
 /**
  *
  */
-public class TestIt extends DefaultBundle {
+public class Stuff extends ContainerBundle {
 
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-        provideConstant("Hejhej");
-    }
-
-    public static void main(String[] args) {
-        try (App app = App.of(new TestIt())) {
-            System.out.println(app.use(Injector.class));
-            System.out.println(app.use(String.class));
-        }
+        addHost(AppHost.driver()).setName("SuperCool Host");
     }
 }

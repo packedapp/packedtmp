@@ -42,9 +42,9 @@ import app.packed.introspection.MethodDescriptor;
 import app.packed.introspection.ParameterDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import packed.internal.errorhandling.ErrorMessageBuilder;
-import packed.internal.inject.util.QualifierHelper;
 import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
+import packed.internal.util.QualifierHelper;
 import packed.internal.util.TypeUtil;
 
 /**

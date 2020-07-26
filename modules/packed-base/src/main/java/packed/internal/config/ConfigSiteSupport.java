@@ -17,6 +17,7 @@ package packed.internal.config;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
 import java.lang.annotation.Annotation;
 import java.util.Optional;
@@ -35,6 +36,27 @@ public interface ConfigSiteSupport {
             && !f.getClassName().startsWith("java.");
 
     public boolean STACK_FRAME_CAPTURING_DIABLED = true;
+
+    // TODO maybe people need to implement this them self???
+    public static ConfigSite captureStackFrame(ConfigSite previous, String operation) {
+        if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
+            return ConfigSite.UNKNOWN;
+        }
+        Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(ConfigSiteSupport.FILTER).findFirst());
+        return sf.isPresent() ? new ConfigSiteSupport.StackFrameConfigSite(previous, operation, sf.get()) : ConfigSite.UNKNOWN;
+    }
+
+    public static ConfigSite captureStackFrame(String operation) {
+        // capture stack frame vs capture stack
+        // Det eneste er egentlig, om vi vil have en settings saa man kan capture mere end kun en frame..
+        // Men saa skal vi ogsaa rette visitoren.
+        /// Maaske have en captureStackExtended
+        if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
+            return ConfigSite.UNKNOWN;
+        }
+        Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(ConfigSiteSupport.FILTER).findFirst());
+        return sf.isPresent() ? new ConfigSiteSupport.StackFrameConfigSite(null, operation, sf.get()) : ConfigSite.UNKNOWN;
+    }
 
     /** A configuration site originating from an annotated method. */
     public static final class AnnotatedFieldConfigSite implements ConfigSite {

@@ -40,8 +40,8 @@ import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.MethodDescriptor;
 import app.packed.introspection.ParameterDescriptor;
 import packed.internal.base.reflect.PackedMethodDescriptor;
-import packed.internal.inject.util.QualifierHelper;
 import packed.internal.util.AnnotationUtil;
+import packed.internal.util.QualifierHelper;
 import packed.internal.util.TypeUtil;
 
 /**

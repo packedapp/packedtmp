@@ -13,19 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.host.api2.use.it;
-
-import app.packed.container.ContainerBundle;
-import sandbox.artifact.hostguest.AppHost;
+package app.packed.inject.sandbox;
 
 /**
  *
  */
-public class Stuff extends ContainerBundle {
+// Den her kan bliver injected ind i metoder...
+// Hvis man naar saa langt, som at have en instance
+// Den kan injectes... Et InjectionSite kan ikke...
+public interface NewInjectionContext extends InjectionSite {
 
-    /** {@inheritDoc} */
-    @Override
-    protected void configure() {
-        addHost(AppHost.driver()).setName("SuperCool Host");
-    }
 }

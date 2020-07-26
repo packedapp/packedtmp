@@ -54,14 +54,14 @@ import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedComponentContext;
 import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.component.PackedStatelessComponentConfiguration;
-import packed.internal.config.ConfigSiteUtil;
+import packed.internal.config.ConfigSiteSupport;
 import packed.internal.hook.applicator.DelayedAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarFieldDelayerAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarMethodDelayerAccessor;
 import packed.internal.host.api.HostConfigurationContext;
+import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
-import packed.internal.inject.util.ConfigSiteInjectOperations;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.runtime.PackedInjector;
 import packed.internal.util.LookupUtil;
@@ -178,7 +178,7 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
      *            any wirelets specified by the user
      */
     private PackedContainerConfiguration(PackedComponentContext parent, ContainerBundle bundle, Wirelet... wirelets) {
-        super(ComponentDescriptor.CONTAINER, ConfigSiteUtil.captureStackFrame(parent.configSite(), ConfigSiteInjectOperations.INJECTOR_OF), parent);
+        super(ComponentDescriptor.CONTAINER, ConfigSiteSupport.captureStackFrame(parent.configSite(), ConfigSiteInjectOperations.INJECTOR_OF), parent);
         this.source = requireNonNull(bundle, "bundle is null");
         this.lookup = this.model = ContainerModel.of(bundle.getClass());
         this.wireletContext = WireletPack.fromLink(this, wirelets);
@@ -645,7 +645,7 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
     }
 
     public static PackedContainerConfiguration of(AssembleOutput output, Object source, Wirelet... wirelets) {
-        ConfigSite cs = ConfigSiteUtil.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
+        ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
         return new PackedContainerConfiguration(cs, output, source, wirelets);
     }
 }
