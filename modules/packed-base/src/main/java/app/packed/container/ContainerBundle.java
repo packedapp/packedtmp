@@ -37,7 +37,7 @@ import sandbox.component.ConfiguredBy;
 
 /**
  * Bundles are the main source of configuration for containers and artifacts. Basically a bundle is just a thin wrapper
- * around {@link ContainerConfiguration}. Delegating every invokation in the class to an instance of
+ * around {@link ContainerConfiguration}. Delegating every invocation in the class to an instance of
  * {@link ContainerConfiguration} available via {@link #configuration()}.
  * <p>
  * A bundle instance can be used ({@link #configure()}) exactly once. Attempting to use it multiple times will fail with

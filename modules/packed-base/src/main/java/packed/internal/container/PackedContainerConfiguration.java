@@ -58,7 +58,6 @@ import packed.internal.config.ConfigSiteSupport;
 import packed.internal.hook.applicator.DelayedAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarFieldDelayerAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarMethodDelayerAccessor;
-import packed.internal.host.api.HostConfigurationContext;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
@@ -435,7 +434,7 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
     /** {@inheritDoc} */
     @Override
     public boolean isArtifactRoot() {
-        return parent == null || parent instanceof HostConfigurationContext; // TODO change when we have hosts.
+        return parent == null; // TODO change when we have hosts.
     }
 
     /**
