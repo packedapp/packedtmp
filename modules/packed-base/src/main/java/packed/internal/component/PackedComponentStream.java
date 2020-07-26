@@ -27,8 +27,6 @@ import packed.internal.util.AbstractDelegatingStream;
 /** The default implementation of {@link ComponentStream}. */
 final class PackedComponentStream extends AbstractDelegatingStream<Component> implements ComponentStream {
 
-    // final PackedComponentStreamOption option;
-
     /**
      * Creates a new internal component stream.
      *

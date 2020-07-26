@@ -37,7 +37,7 @@ import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.inject.PackedInjectionContext;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.reflect.MethodHandleBuilder.Entry;
-import packed.internal.sidecar.MethodHandleUtil;
+import packed.internal.util.MethodHandleUtil;
 
 /**
  *
