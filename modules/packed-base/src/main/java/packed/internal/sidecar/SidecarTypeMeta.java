@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 
-import packed.internal.lifecycle2.LifecycleDefinition;
+import packed.internal.lifecycle.LifecycleDefinition;
 
 /**
  *

@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.Set;
 
 import app.packed.lifecycle.LifecycleContext;
-import packed.internal.lifecycle2.LifecycleDefinition;
 
 /**
  *

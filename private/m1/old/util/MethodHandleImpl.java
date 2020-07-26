@@ -1,4 +1,4 @@
-package app.packed.lifecycle2;
+package old.util;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;

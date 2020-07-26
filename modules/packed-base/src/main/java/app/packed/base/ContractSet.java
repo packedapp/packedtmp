@@ -22,7 +22,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.StreamSupport;
 
-import app.packed.analysis.BundleDescriptor;
+import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerBundle;
 
 /**

@@ -15,7 +15,6 @@
  */
 package app.packed.container;
 
-import app.packed.analysis.BundleDescriptor;
 import app.packed.base.Key;
 import app.packed.base.Key.Qualifier;
 import app.packed.component.SingletonConfiguration;

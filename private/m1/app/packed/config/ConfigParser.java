@@ -17,7 +17,7 @@ package app.packed.config;
 
 import java.io.InputStream;
 
-import app.packed.lifecycle2.Trace;
+import app.packed.lifecyclenext.Trace;
 
 /**
  *

@@ -24,11 +24,11 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import app.packed.analysis.BundleDescriptor;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
+import app.packed.container.BundleDescriptor;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.inject.Inject;
 import app.packed.service.ServiceContract;

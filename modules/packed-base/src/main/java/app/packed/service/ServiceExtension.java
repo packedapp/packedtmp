@@ -19,11 +19,11 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.BiConsumer;
 
-import app.packed.analysis.BundleDescriptor;
 import app.packed.base.Key;
 import app.packed.base.Key.Qualifier;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
+import app.packed.container.BundleDescriptor;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionLinked;
@@ -39,7 +39,7 @@ import app.packed.statemachine.Leaving;
 import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.container.WireletList;
 import packed.internal.inject.ServiceDependency;
-import packed.internal.inject.util.InjectConfigSiteOperations;
+import packed.internal.inject.util.ConfigSiteInjectOperations;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.service.AtProvidesHook;
 import packed.internal.service.buildtime.wirelets.ServiceWireletPipeline;
@@ -198,7 +198,7 @@ public final class ServiceExtension extends Extension {
     public <T> ServiceConfiguration<T> export(Class<T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        return node.exports().export(Key.of(key), captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
+        return node.exports().export(Key.of(key), captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 
     /**
@@ -228,7 +228,7 @@ public final class ServiceExtension extends Extension {
     public <T> ServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        return node.exports().export(key, captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
+        return node.exports().export(key, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 
     /**
@@ -265,7 +265,7 @@ public final class ServiceExtension extends Extension {
     public <T> ServiceConfiguration<T> export(ServiceComponentConfiguration<T> configuration) {
         requireNonNull(configuration, "configuration is null");
         checkConfigurable();
-        return node.exports().export(configuration, captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
+        return node.exports().export(configuration, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 
     /**
@@ -274,7 +274,7 @@ public final class ServiceExtension extends Extension {
     // Will never export services that are requirements...
     public void exportAll() {
         checkConfigurable();
-        node.exports().exportAll(captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
+        node.exports().exportAll(captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 
     /**
@@ -383,7 +383,7 @@ public final class ServiceExtension extends Extension {
                     "Custom implementations of Injector are currently not supported, injector type = " + injector.getClass().getName());
         }
         checkConfigurable();
-        node.provider().provideAll((AbstractInjector) injector, captureStackFrame(InjectConfigSiteOperations.INJECTOR_PROVIDE_ALL), WireletList.of(wirelets));
+        node.provider().provideAll((AbstractInjector) injector, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL), WireletList.of(wirelets));
     }
 
     /**
@@ -407,7 +407,7 @@ public final class ServiceExtension extends Extension {
 
     public void require(Class<?>... keys) {
         checkConfigurable();
-        ConfigSite cs = captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE);
+        ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Class<?> key : keys) {
             node.dependencies().require(ServiceDependency.of(key), cs);
         }
@@ -432,7 +432,7 @@ public final class ServiceExtension extends Extension {
      */
     public void require(Key<?>... keys) {
         checkConfigurable();
-        ConfigSite cs = captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE);
+        ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Key<?> key : keys) {
             node.dependencies().require(ServiceDependency.of(key), cs);
         }
@@ -450,7 +450,7 @@ public final class ServiceExtension extends Extension {
      */
     public void requireOptionally(Key<?>... keys) {
         checkConfigurable();
-        ConfigSite cs = captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE_OPTIONAL);
+        ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
         for (Key<?> key : keys) {
             node.dependencies().require(ServiceDependency.ofOptional(key), cs);
         }

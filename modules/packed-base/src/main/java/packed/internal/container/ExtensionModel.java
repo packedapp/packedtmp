@@ -40,7 +40,7 @@ import app.packed.lifecycle.LifecycleContext;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
-import packed.internal.lifecycle2.LifecycleDefinition;
+import packed.internal.lifecycle.LifecycleDefinition;
 import packed.internal.reflect.MethodHandleBuilder;
 import packed.internal.reflect.OpenClass;
 import packed.internal.sidecar.SidecarModel;

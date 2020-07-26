@@ -18,7 +18,7 @@ package tests.injector;
 import java.lang.invoke.MethodHandles;
 import java.util.stream.Collectors;
 
-import app.packed.analysis.BundleDescriptor;
+import app.packed.container.BundleDescriptor;
 import app.packed.container.DefaultBundle;
 import app.packed.service.Injector;
 import app.packed.service.ServiceDescriptor;

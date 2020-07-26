@@ -25,12 +25,12 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import app.packed.analysis.BundleDescriptor;
 import app.packed.base.Contract;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
+import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerBundle;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;

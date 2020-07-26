@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
-import app.packed.analysis.BundleDescriptor;
+import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerBundle;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.container.PackedContainerConfiguration;

@@ -17,10 +17,10 @@ package app.packed.artifact;
 
 import java.util.Optional;
 
-import app.packed.analysis.BundleDescriptor;
 import app.packed.component.Component;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
+import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;

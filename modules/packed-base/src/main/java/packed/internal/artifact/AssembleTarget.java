@@ -1,9 +1,9 @@
 package packed.internal.artifact;
 
-import app.packed.analysis.BundleDescriptor;
 import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
 import app.packed.base.Contract;
+import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerBundle;
 
 /**

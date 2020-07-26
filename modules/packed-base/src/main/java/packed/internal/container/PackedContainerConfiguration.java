@@ -31,7 +31,6 @@ import java.util.TreeSet;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import app.packed.analysis.BundleDescriptor;
 import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.ArtifactImage;
 import app.packed.artifact.hostguest.HostConfiguration;
@@ -42,6 +41,7 @@ import app.packed.component.ComponentDescriptor;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
+import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
@@ -63,7 +63,7 @@ import packed.internal.hook.applicator.DelayedAccessor.SidecarMethodDelayerAcces
 import packed.internal.host.api.HostConfigurationContext;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
-import packed.internal.inject.util.InjectConfigSiteOperations;
+import packed.internal.inject.util.ConfigSiteInjectOperations;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.runtime.PackedInjector;
 import packed.internal.util.LookupUtil;
@@ -178,7 +178,7 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
      *            any wirelets specified by the user
      */
     private PackedContainerConfiguration(PackedComponentContext parent, ContainerBundle bundle, Wirelet... wirelets) {
-        super(ComponentDescriptor.CONTAINER, ConfigSiteUtil.captureStackFrame(parent.configSite(), InjectConfigSiteOperations.INJECTOR_OF), parent);
+        super(ComponentDescriptor.CONTAINER, ConfigSiteUtil.captureStackFrame(parent.configSite(), ConfigSiteInjectOperations.INJECTOR_OF), parent);
         this.source = requireNonNull(bundle, "bundle is null");
         this.lookup = this.model = ContainerModel.of(bundle.getClass());
         this.wireletContext = WireletPack.fromLink(this, wirelets);
@@ -372,7 +372,7 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
     public <T> SingletonConfiguration<T> install(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
         ComponentModel model = lookup.componentModelOf(factory.rawType());
-        ConfigSite configSite = captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL);
+        ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         PackedSingletonConfiguration<T> conf = new PackedSingletonConfiguration<>(configSite, this, model, (BaseFactory<T>) factory);
         installPrepare(State.INSTALL_INVOKED);
         currentComponent = conf;
@@ -385,7 +385,7 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
     public <T> SingletonConfiguration<T> installInstance(T instance) {
         requireNonNull(instance, "instance is null");
         ComponentModel model = lookup.componentModelOf(instance.getClass());
-        ConfigSite configSite = captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL);
+        ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         PackedSingletonConfiguration<T> conf = new PackedSingletonConfiguration<>(configSite, this, model, instance);
         installPrepare(State.INSTALL_INVOKED);
         currentComponent = conf;
@@ -409,7 +409,7 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
     public StatelessConfiguration installStateless(Class<?> implementation) {
         requireNonNull(implementation, "implementation is null");
         ComponentModel model = lookup.componentModelOf(implementation);
-        ConfigSite configSite = captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL);
+        ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         PackedStatelessComponentConfiguration conf = new PackedStatelessComponentConfiguration(configSite, this, model);
         installPrepare(State.INSTALL_INVOKED);
         currentComponent = conf;
@@ -645,7 +645,7 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
     }
 
     public static PackedContainerConfiguration of(AssembleOutput output, Object source, Wirelet... wirelets) {
-        ConfigSite cs = ConfigSiteUtil.captureStackFrame(InjectConfigSiteOperations.INJECTOR_OF);
+        ConfigSite cs = ConfigSiteUtil.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
         return new PackedContainerConfiguration(cs, output, source, wirelets);
     }
 }

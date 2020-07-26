@@ -16,7 +16,7 @@
 package packed.internal.sidecar;
 
 import app.packed.sidecar.FieldSidecar;
-import packed.internal.lifecycle2.LifecycleDefinition;
+import packed.internal.lifecycle.LifecycleDefinition;
 
 /** A model of {@link FieldSidecar}. */
 public final class FieldSidecarModel extends SidecarModel {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle2;
+package app.packed.lifecyclenext;
 
 import app.packed.service.ServiceExtension;
 

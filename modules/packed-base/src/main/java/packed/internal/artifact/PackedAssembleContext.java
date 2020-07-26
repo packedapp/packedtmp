@@ -74,18 +74,3 @@ public final class PackedAssembleContext implements AssembleContext {
         return topContainerConfiguration.sourceType();
     }
 }
-
-///**
-//* Registers the specified extension type for first use. This method is invoked the first time an extension is used for
-//* in every container.
-//* 
-//* @param pec
-//*            the context of the extension that was used.
-//*/
-//public void usesExtension(PackedExtensionContext pec) {
-//  extensions.extensions.add(pec.model());
-//}
-//
-//public void forEachExtension() {
-//
-//}

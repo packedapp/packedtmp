@@ -16,7 +16,7 @@
 package packed.internal.sidecar;
 
 import app.packed.sidecar.MethodSidecar;
-import packed.internal.lifecycle2.LifecycleDefinition;
+import packed.internal.lifecycle.LifecycleDefinition;
 
 /**
  *

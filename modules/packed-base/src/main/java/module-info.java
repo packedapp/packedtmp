@@ -1,5 +1,4 @@
 module app.packed.base {
-    exports app.packed.analysis;
     exports app.packed.artifact;
     exports app.packed.base; // then have @Preview @DeprecatedWithReason
     exports app.packed.base.invoke;
@@ -15,6 +14,7 @@ module app.packed.base {
 
     // Temporary...
     exports packed.internal.reflect to app.packed.banana;
+
     requires java.management;
 }
 

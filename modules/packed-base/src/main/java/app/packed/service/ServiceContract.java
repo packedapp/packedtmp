@@ -25,10 +25,10 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import app.packed.analysis.BundleDescriptor;
 import app.packed.artifact.ArtifactImage;
 import app.packed.base.Contract;
 import app.packed.base.Key;
+import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerBundle;
 
 /**

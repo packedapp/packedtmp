@@ -40,7 +40,7 @@ import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.container.WireletList;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.inject.factory.BaseFactory;
-import packed.internal.inject.util.InjectConfigSiteOperations;
+import packed.internal.inject.util.ConfigSiteInjectOperations;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ErrorMessages;
 import packed.internal.service.buildtime.ServiceExtensionNode;
@@ -112,7 +112,7 @@ public final class ServiceProvidingManager {
 
         // Add each @Provide as children of the parent node
         for (AtProvides atProvides : hook.members) {
-            ConfigSite configSite = parentNode.configSite().thenAnnotatedMember(InjectConfigSiteOperations.INJECTOR_PROVIDE, atProvides.provides,
+            ConfigSite configSite = parentNode.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, atProvides.provides,
                     atProvides.member);
             ComponentFactoryBuildEntry<?> node = new ComponentFactoryBuildEntry<>(configSite, atProvides, atProvides.methodHandle, parentNode);
             node.as((Key) atProvides.key);

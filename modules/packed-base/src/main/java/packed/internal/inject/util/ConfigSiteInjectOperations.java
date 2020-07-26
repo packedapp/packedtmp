@@ -16,7 +16,7 @@
 package packed.internal.inject.util;
 
 /** The names of the various config site operations for the inject extension. */
-public final class InjectConfigSiteOperations {
+public final class ConfigSiteInjectOperations {
 
     public static final String COMPONENT_INSTALL = "Component.install";
 

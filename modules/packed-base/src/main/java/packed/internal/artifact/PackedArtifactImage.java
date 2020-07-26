@@ -19,12 +19,12 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
-import app.packed.analysis.BundleDescriptor;
 import app.packed.artifact.ArtifactImage;
 import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
+import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerBundle;
 import app.packed.container.Wirelet;
 import packed.internal.component.ComponentConfigurationToComponentAdaptor;
