@@ -29,8 +29,8 @@ import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.MethodDescriptor;
 import app.packed.service.Provide;
+import packed.internal.errorhandling.ErrorMessageBuilder;
 import packed.internal.inject.ServiceDependency;
-import packed.internal.util.ErrorMessageBuilder;
 
 /** Information about fields and methods annotated with {@link Provide}. */
 public final class AtProvidesHook implements Hook {

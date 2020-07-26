@@ -27,7 +27,6 @@ import app.packed.base.TypeLiteral;
 import app.packed.base.invoke.InaccessibleMemberException;
 import app.packed.introspection.VariableDescriptor;
 import packed.internal.inject.factory.BaseFactory;
-import packed.internal.util.BaseSupport;
 
 /**
  * An object that creates other objects. factory is an immutable that creates this
@@ -189,7 +188,6 @@ public interface Factory<T> {
      * its own lookup object.
      * <p>
      * If you have split-module class hierarchies with an abstract class in one module a concrete class in another module.
-     * You can use a {@link BaseSupport} class to register a method handle with the abstract class.
      * 
      * Remember to register the support class via the standard service loading mechanism as outlined in ....
      * 

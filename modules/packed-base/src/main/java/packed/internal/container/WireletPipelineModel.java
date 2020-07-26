@@ -88,7 +88,7 @@ public final class WireletPipelineModel extends Model {
         try {
             return (WireletPipeline<?, ?>) constructor.invokeExact(extension);
         } catch (Throwable e) {
-            throw ThrowableUtil.easyThrow(e);// Probably different whether or not we are member of an extension...
+            throw ThrowableUtil.orUndeclared(e);// Probably different whether or not we are member of an extension...
         }
     }
 

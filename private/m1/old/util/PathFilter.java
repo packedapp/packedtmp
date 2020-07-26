@@ -13,24 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util;
+package old.util;
+
+import java.util.function.Predicate;
 
 /**
  *
  */
-enum SupportedLanguage {
-    JAVA;
-}
+public final class PathFilter implements Predicate<CharSequence> {
 
-class MyInjectorContractorBuilder {
-
-    // Could also auto detect the platform... via a service loader....
-    // But lets say we are running java, but using a kotlin library...
-
-    public String toBuilderString(SupportedLanguage language) {
-        throw new UnsupportedOperationException();
+    /** {@inheritDoc} */
+    @Override
+    public boolean test(CharSequence t) {
+        // TODO Auto-generated method stub
+        return false;
     }
 
-    // Outputs
-    // InjectorContract.of(->);
+    public PathFilter of(String expression) {
+        // Simpler language
+
+        // **//*
+        return null;
+    }
+
+    // Probably needs to evaluate all...
+    public PathFilter ofRegexp(String expression) {
+        return null;
+    }
 }

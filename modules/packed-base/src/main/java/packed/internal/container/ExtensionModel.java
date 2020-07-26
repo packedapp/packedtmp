@@ -37,6 +37,7 @@ import app.packed.container.MemberOfExtension;
 import app.packed.container.WireletFind;
 import app.packed.hook.OnHook;
 import app.packed.lifecycle.LifecycleContext;
+import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
 import packed.internal.lifecycle2.LifecycleDefinition;
@@ -46,7 +47,6 @@ import packed.internal.sidecar.SidecarModel;
 import packed.internal.sidecar.SidecarTypeMeta;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
-import packed.internal.util.UncheckedThrowableFactory;
 
 /** A model of an Extension (sidecar). */
 public final class ExtensionModel extends SidecarModel implements Comparable<ExtensionModel> {

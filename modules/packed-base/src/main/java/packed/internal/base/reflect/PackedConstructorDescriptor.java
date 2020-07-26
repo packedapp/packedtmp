@@ -23,7 +23,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 
 import app.packed.introspection.ConstructorDescriptor;
-import packed.internal.util.InternalErrorException;
 
 /** The default implementation of {@link ConstructorDescriptor}. */
 public final class PackedConstructorDescriptor<T> extends PackedExecutableDescriptor implements ConstructorDescriptor<T> {
@@ -69,21 +68,21 @@ public final class PackedConstructorDescriptor<T> extends PackedExecutableDescri
     public int hashCode() {
         return constructor.hashCode();
     }
-
-    /**
-     * Returns a new constructor.
-     *
-     * @return a new constructor
-     */
-    @SuppressWarnings("unchecked")
-    Constructor<T> newConstructor() {
-        Class<?> declaringClass = constructor.getDeclaringClass();
-        try {
-            return (Constructor<T>) declaringClass.getConstructor(parameterTypes);
-        } catch (NoSuchMethodException e) {
-            throw new InternalErrorException("constructor", constructor, e);// We should never get to here
-        }
-    }
+//
+//    /**
+//     * Returns a new constructor.
+//     *
+//     * @return a new constructor
+//     */
+//    @SuppressWarnings("unchecked")
+//    Constructor<T> newConstructor() {
+//        Class<?> declaringClass = constructor.getDeclaringClass();
+//        try {
+//            return (Constructor<T>) declaringClass.getConstructor(parameterTypes);
+//        } catch (NoSuchMethodException e) {
+//            throw new InternalErrorException("constructor", constructor, e);// We should never get to here
+//        }
+//    }
 
     /** {@inheritDoc} */
     @Override

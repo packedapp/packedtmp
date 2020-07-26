@@ -32,10 +32,10 @@ import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
+import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.OnHookModelBuilder.Node;
 import packed.internal.reflect.OpenClass;
 import packed.internal.util.TinyPair;
-import packed.internal.util.UncheckedThrowableFactory;
 
 /** A model of a container with {@link OnHook} methods. */
 public final class OnHookModel {

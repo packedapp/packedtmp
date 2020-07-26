@@ -18,7 +18,6 @@ package packed.internal.hook.applicator;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.reflect.UndeclaredThrowableException;
 
 import packed.internal.util.ThrowableUtil;
 
@@ -65,8 +64,7 @@ public abstract class MethodOperator<T> {
             try {
                 return (T) mh.invoke();
             } catch (Throwable e) {
-                ThrowableUtil.throwIfUnchecked(e);
-                throw new UndeclaredThrowableException(e);
+                throw ThrowableUtil.orUndeclared(e);
             }
         }
     }
@@ -96,8 +94,7 @@ public abstract class MethodOperator<T> {
             try {
                 mh.invoke();
             } catch (Throwable e) {
-                ThrowableUtil.throwIfUnchecked(e);
-                throw new UndeclaredThrowableException(e);
+                throw ThrowableUtil.orUndeclared(e);
             }
         }
     }

@@ -29,10 +29,10 @@ import java.lang.reflect.Modifier;
 
 import app.packed.base.NativeImage;
 import app.packed.base.invoke.InaccessibleMemberException;
+import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableConsumer;
-import packed.internal.util.UncheckedThrowableFactory;
 
 /**
  * An open class is a thin wrapper for a single class and a {@link Lookup} object.

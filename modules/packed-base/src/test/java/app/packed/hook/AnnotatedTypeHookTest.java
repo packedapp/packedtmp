@@ -21,9 +21,9 @@ import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
 
+import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.MemberUnreflector;
 import packed.internal.reflect.OpenClass;
-import packed.internal.util.UncheckedThrowableFactory;
 import testutil.stubs.annotation.AnnotationInstances;
 import testutil.stubs.annotation.Left;
 

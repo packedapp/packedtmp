@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util;
+package old.util;
 
 /** An exception thrown whenever an internal error of some kind occurs. */
 public final class InternalErrorException extends RuntimeException {

@@ -30,9 +30,9 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.container.InternalExtensionException;
 import app.packed.introspection.FieldDescriptor;
+import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.MemberUnreflector;
 import packed.internal.reflect.OpenClass;
-import packed.internal.util.UncheckedThrowableFactory;
 import testutil.stubs.annotation.AnnotationInstances;
 import testutil.stubs.annotation.Left;
 

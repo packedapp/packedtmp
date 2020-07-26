@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util;
+package packed.internal.errorhandling;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
 import app.packed.container.InternalExtensionException;
+import packed.internal.util.ThrowableUtil;
 
 /**
  *
@@ -55,6 +56,7 @@ public abstract class UncheckedThrowableFactory<T extends RuntimeException> {
     protected abstract T newThrowable0(String message);
 
     public final void fail(String message) {
+        // Kan vel bare bruge onUndeclared()...
         ThrowableUtil.throwAny(newThrowable(message, 1));
     }
 

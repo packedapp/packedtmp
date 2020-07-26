@@ -30,10 +30,10 @@ import app.packed.lifecycle2.DefaultLifecycleTransition;
 import app.packed.sidecar.Expose;
 import app.packed.statemachine.Leaving;
 import app.packed.statemachine.StateTransition;
+import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.reflect.MethodHandleBuilder;
 import packed.internal.reflect.OpenClass;
 import packed.internal.util.ThrowableUtil;
-import packed.internal.util.UncheckedThrowableFactory;
 
 /**
  * A model of a sidecar.
@@ -76,7 +76,7 @@ public abstract class SidecarModel extends Model {
             try {
                 mh.invokeExact(sidecar, context);
             } catch (Throwable e) {
-                throw ThrowableUtil.easyThrow(e);
+                throw ThrowableUtil.orUndeclared(e);
             }
         }
     }

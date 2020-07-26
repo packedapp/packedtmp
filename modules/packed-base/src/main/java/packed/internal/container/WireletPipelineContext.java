@@ -76,7 +76,7 @@ public final class WireletPipelineContext {
         try {
             MH_WIRELET_PIPELINE_INITIALIZE.invoke(instance, this);
         } catch (Throwable e) {
-            throw ThrowableUtil.easyThrow(e);
+            throw ThrowableUtil.orUndeclared(e);
         }
     }
 

@@ -15,14 +15,9 @@
  */
 package packed.internal.util;
 
-import java.io.IOException;
-
-import packed.internal.reflect.typevariable.TypeVariableExtractor;
-
-/**
- *
- */
+/** A consumable interface that throws. */
 public interface ThrowableConsumer<E, T extends Throwable> {
+
     /**
      * Performs this operation on the given argument.
      *
@@ -30,40 +25,4 @@ public interface ThrowableConsumer<E, T extends Throwable> {
      *            the input argument
      */
     void accept(E t) throws T;
-
-    public static void main(String[] args) throws Exception {
-        App2.executeThrowing(c -> {
-            if (c == "123") {
-                throw new IOException();
-            } else {
-                throw new InterruptedException();
-            }
-        });
-    }
-}
-
-class App2 {
-
-    public static <T extends Throwable> void executeThrowing(ThrowableConsumer<String, T> c) throws T {
-        try {
-            // Den virker ikke med interfaces....
-            TypeVariableExtractor tve = TypeVariableExtractor.of(ThrowableConsumer.class, 1);
-            System.out.println(tve.extract(c.getClass()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-}
-
-class Stuff {
-
-    void foo() throws Exception {
-        App2.executeThrowing(c -> {
-            if (c == "123") {
-                throw new IOException();
-            } else {
-                throw new InterruptedException();
-            }
-        });
-    }
 }

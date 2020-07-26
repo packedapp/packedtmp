@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -88,8 +87,7 @@ public abstract class VarOperator<T> {
             try {
                 return (T) mh.invoke();
             } catch (Throwable e) {
-                ThrowableUtil.throwIfUnchecked(e);
-                throw new UndeclaredThrowableException(e);
+                throw ThrowableUtil.orUndeclared(e);
             }
         }
 
@@ -124,8 +122,7 @@ public abstract class VarOperator<T> {
             try {
                 return (T) mh.invoke();
             } catch (Throwable e) {
-                ThrowableUtil.throwIfUnchecked(e);
-                throw new UndeclaredThrowableException(e);
+                throw ThrowableUtil.orUndeclared(e);
             }
         }
 

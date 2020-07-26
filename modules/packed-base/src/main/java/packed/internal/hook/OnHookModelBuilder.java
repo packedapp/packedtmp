@@ -42,6 +42,7 @@ import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
+import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.reflect.OpenClass;
 import packed.internal.thirdparty.guice.GTypeLiteral;
 import packed.internal.util.AnnotationUtil;
@@ -49,7 +50,6 @@ import packed.internal.util.StringFormatter;
 import packed.internal.util.Tiny;
 import packed.internal.util.TinyPair;
 import packed.internal.util.TypeUtil;
-import packed.internal.util.UncheckedThrowableFactory;
 
 /** A builder for classes that may contain methods annotated with {@link OnHook}. */
 final class OnHookModelBuilder {

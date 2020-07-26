@@ -18,15 +18,14 @@ package app.packed.hook;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.reflect.UndeclaredThrowableException;
 
 import app.packed.base.Nullable;
+import packed.internal.errorhandling.UncheckedThrowableFactory.AssertionErrorRuntimeException;
 import packed.internal.hook.HookRequestBuilder;
 import packed.internal.hook.MemberUnreflector;
 import packed.internal.hook.OnHookModel;
 import packed.internal.reflect.OpenClass;
 import packed.internal.util.ThrowableUtil;
-import packed.internal.util.UncheckedThrowableFactory.AssertionErrorRuntimeException;
 
 /**
  * A marker interface
@@ -107,8 +106,7 @@ public interface Hook {
             } catch (AssertionErrorRuntimeException ee) {
                 throw ee.convert();
             } catch (Throwable t) {
-                ThrowableUtil.throwIfUnchecked(t);
-                throw new UndeclaredThrowableException(t);
+                throw ThrowableUtil.orUndeclared(t);
             }
         }
     }

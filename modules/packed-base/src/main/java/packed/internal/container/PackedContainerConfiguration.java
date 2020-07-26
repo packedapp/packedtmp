@@ -267,7 +267,7 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
                 try {
                     BUNDLE_CONFIGURE.invoke(cb);
                 } catch (Throwable e) {
-                    throw ThrowableUtil.easyThrow(e);
+                    throw ThrowableUtil.orUndeclared(e);
                 } finally {
                     VH_CONTAINER_BUNDLE_CONFIGURATION.setVolatile(cb, POST_CONFIGURE);
                 }

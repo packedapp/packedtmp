@@ -23,8 +23,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.reflect.OpenClass;
-import packed.internal.util.UncheckedThrowableFactory;
 
 /**
  * A single one of these is created by class that is analyzed. Is used to make sure that no instance

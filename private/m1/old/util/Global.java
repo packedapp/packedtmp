@@ -13,35 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util;
-
-import java.util.ServiceLoader;
-
-import app.packed.container.ContainerBundle;
+package old.util;
 
 /**
  *
  */
-public class BaseSupportLoader {
+// Folk kommer til at have global state...
+// Saa vi kan ligesaa godt forberede os paa det
+// Ville maaske ogsaa vaere rar med en loesning. Hvor man kan opt in.
+// Uhh skal ogsaa noget class loaders here
+final class Global {
 
-    public static void main(String[] args) {
-        for (BaseSupport bs : ServiceLoader.load(BaseSupport.class, BaseSupportLoader.class.getClassLoader())) {
-            System.out.println(bs);
+    // WeakReference<Global> <- caller must hang on to it?
+    // Or call here every time???
+    // Maybe have both
 
-        }
-    }
-}
-
-class DefaultBS extends BaseSupport {
-
-    /** {@inheritDoc} */
-    @Override
-    protected void configure() {
-        this.scanBundle(new ContainerBundle() {
-
-            @Override
-            protected void configure() {}
-        });
-    }
-
+    // Support for cleaner
+    // public static Global create(MethodHandles.Lookup caller) {
+    // throw new UnsupportedOperationException();
+    // }
 }

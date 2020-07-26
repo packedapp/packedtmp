@@ -18,7 +18,6 @@ package packed.internal.lifecycle;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Set;
 
 import app.packed.lifecycle.LifecycleContext;
@@ -80,7 +79,7 @@ public final class LinearLifecycleModel {
             try {
                 return (int) mh.invokeExact();
             } catch (Throwable e) {
-                throw new UndeclaredThrowableException(ThrowableUtil.throwIfUnchecked(e));
+                throw ThrowableUtil.orUndeclared(e);
             }
         }
 

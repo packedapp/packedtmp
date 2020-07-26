@@ -31,7 +31,6 @@ import app.packed.introspection.ExecutableDescriptor;
 import app.packed.introspection.MethodDescriptor;
 import app.packed.introspection.ParameterDescriptor;
 import app.packed.introspection.VariableDescriptor;
-import packed.internal.util.InternalErrorException;
 
 /**
  * A parameter descriptor.
@@ -232,7 +231,7 @@ public final class PackedParameterDescriptor implements VariableDescriptor, Para
                 }
             }
         }
-        throw new InternalErrorException("parameter", parameter);// We should never get to here
+        throw new IllegalStateException("Could not find parameter " + parameter);// We should never get to here
     }
 }
 //

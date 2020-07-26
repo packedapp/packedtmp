@@ -341,7 +341,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
                     try {
                         model.extensionLinkedToAncestorExtension.invokeExact(parentExtension.instance, pec, e);
                     } catch (Throwable e1) {
-                        throw ThrowableUtil.easyThrow(e1);
+                        throw ThrowableUtil.orUndeclared(e1);
                     }
                 }
             }

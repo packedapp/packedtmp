@@ -20,7 +20,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
-/** Various {@link Exception} and {@link Throwable} utility methods. */
+/** Various {@link Throwable} utility methods. */
 public final class ThrowableUtil {
 
     /** Cannot instantiate. */
@@ -68,16 +68,7 @@ public final class ThrowableUtil {
         return throwable;
     }
 
-    public static UndeclaredThrowableException rethrowAsUndeclared(Throwable throwable) {
-        if (throwable instanceof RuntimeException) {
-            throw (RuntimeException) throwable;
-        } else if (throwable instanceof Error) {
-            throw (Error) throwable;
-        }
-        return new UndeclaredThrowableException(throwable);
-    }
-
-    public static UndeclaredThrowableException easyThrow(Throwable throwable) {
+    public static UndeclaredThrowableException orUndeclared(Throwable throwable) {
         if (throwable instanceof RuntimeException) {
             throw (RuntimeException) throwable;
         } else if (throwable instanceof Error) {

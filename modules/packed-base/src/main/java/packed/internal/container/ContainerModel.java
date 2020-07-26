@@ -29,6 +29,7 @@ import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import packed.internal.component.ComponentModel;
 import packed.internal.container.packlet.PackletMotherShip;
+import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.OnHookModel;
 import packed.internal.inject.factory.ExecutableFactoryHandle;
 import packed.internal.inject.factory.FactoryHandle;
@@ -36,7 +37,6 @@ import packed.internal.reflect.OpenClass;
 import packed.internal.sidecar.Model;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.LookupValue;
-import packed.internal.util.UncheckedThrowableFactory;
 
 /** A model of a container, typically a subclass of {@link ContainerBundle}. */
 public final class ContainerModel extends Model implements ComponentLookup {

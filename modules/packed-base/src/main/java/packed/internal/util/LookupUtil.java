@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
 
-/** A utility class with helper methods for working with {@link Lookup}, {@link MethodHandle} and {@link VarHandle}. */
+/** Various {@link Lookup} utility methods. */
 public final class LookupUtil {
 
     private static final int DEFAULT_LOOKUP_MODES = MethodHandles.lookup().lookupModes();
@@ -110,7 +110,7 @@ public final class LookupUtil {
         try {
             return (Class<?>) PREVIOUS_LOOKUP_CLASS.invokeExact(lookup);
         } catch (Throwable e) {
-            throw ThrowableUtil.rethrowAsUndeclared(e);
+            throw ThrowableUtil.orUndeclared(e);
         }
     }
 

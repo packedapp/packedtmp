@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Optional;
 
 import app.packed.inject.Provider;
@@ -66,7 +65,7 @@ final class MethodHandleBuilderStatics {
             try {
                 return (T) mh.invokeExact();
             } catch (Throwable e) {
-                throw new UndeclaredThrowableException(ThrowableUtil.throwIfUnchecked(e));
+                throw ThrowableUtil.orUndeclared(e);
             }
         }
     }

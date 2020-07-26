@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Set;
@@ -31,13 +30,13 @@ import app.packed.hook.OnHook;
 import packed.internal.container.ContainerModel;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.LazyExtensionActivationMap;
+import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.HookRequest;
 import packed.internal.hook.HookRequestBuilder;
 import packed.internal.hook.MemberUnreflector;
 import packed.internal.reflect.OpenClass;
 import packed.internal.sidecar.Model;
 import packed.internal.util.ThrowableUtil;
-import packed.internal.util.UncheckedThrowableFactory;
 
 /**
  * A model of a container, a cached instance of this class is acquired via
@@ -68,8 +67,7 @@ public final class ComponentModel extends Model {
         try {
             this.sourceHook = builder.csb == null ? null : builder.csb.build();
         } catch (Throwable ee) {
-            ThrowableUtil.throwIfUnchecked(ee);
-            throw new UndeclaredThrowableException(ee);
+            throw ThrowableUtil.orUndeclared(ee);
         }
 
         // There should probably be some order we call extensions in....
@@ -83,8 +81,7 @@ public final class ComponentModel extends Model {
             try {
                 r = e.getValue().build();
             } catch (Throwable ee) {
-                ThrowableUtil.throwIfUnchecked(ee);
-                throw new UndeclaredThrowableException(ee);
+                throw ThrowableUtil.orUndeclared(ee);
             }
             return new ExtensionRequestPair(e.getKey(), r);
         }).toArray(i -> new ExtensionRequestPair[i]);
@@ -119,8 +116,7 @@ public final class ComponentModel extends Model {
                 he.request.invoke(extension, acc);
             }
         } catch (Throwable t) {
-            ThrowableUtil.throwIfUnchecked(t);
-            throw new UndeclaredThrowableException(t);
+            throw ThrowableUtil.orUndeclared(t);
         }
         return acc;
     }
@@ -179,8 +175,7 @@ public final class ComponentModel extends Model {
                 // Inherited annotations???
                 cp.findMethodsAndFields(method -> findAnnotatedMethods(htp, activatorMap, method), field -> findAnnotatedFields(htp, activatorMap, field));
             } catch (Throwable e) {
-                ThrowableUtil.throwIfUnchecked(e);
-                throw new UndeclaredThrowableException(e);
+                throw ThrowableUtil.orUndeclared(e);
             }
             return new ComponentModel(this);
         }
