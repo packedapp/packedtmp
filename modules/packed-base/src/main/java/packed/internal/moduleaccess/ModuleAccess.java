@@ -25,28 +25,10 @@ import app.packed.hook.AnnotatedFieldHook;
 public final class ModuleAccess {
 
     /** All secrets, we never remove them to make sure we never add anything twice. */
-    private final static ConcurrentHashMap<Class<? extends SecretAccess>, SecretAccess> TMP = new ConcurrentHashMap<>();
+    private final static ConcurrentHashMap<Class<?>, Object> TMP = new ConcurrentHashMap<>();
 
     /** Never instantiate. */
     private ModuleAccess() {}
-
-//    /**
-//     * Returns an access object that can access methods in app.packed.artifact.
-//     * 
-//     * @return an access object that can access methods in app.packed.artifact
-//     */
-//    public static AppPackedArtifactAccess artifact() {
-//        return ArtifactSingletonHolder.INSTANCE;
-//    }
-
-//    /**
-//     * Returns an access object for app.packed.container.
-//     * 
-//     * @return an access object for app.packed.container
-//     */
-//    public static AppPackedContainerAccess container() {
-//        return ContainerSingletonHolder.INSTANCE;
-//    }
 
     /**
      * Returns an access object for app.packed.container.
@@ -67,7 +49,7 @@ public final class ModuleAccess {
      * @param access
      *            the access object
      */
-    public static <T extends SecretAccess> void initialize(Class<T> accessType, T access) {
+    public static <T> void initialize(Class<T> accessType, T access) {
         // check instanceof
         // check same module
         // access.getInterface()
@@ -76,29 +58,7 @@ public final class ModuleAccess {
         }
     }
 
-//    /**
-//     * Returns an access object for app.packed.lifecycle.
-//     * 
-//     * @return an access object for app.packed.lifecycle
-//     */
-//    public static AppPackedLifecycleAccess lifecycle() {
-//        return LifecycleSingletonHolder.INSTANCE;
-//    }
-
-//    /**
-//     * Returns an access object for app.packed.service.
-//     * 
-//     * @return an access object for app.packed.service
-//     */
-//    public static AppPackedServiceAccess service() {
-//        return ServiceSingletonHolder.INSTANCE;
-//    }
-
-//    public static AppPackedInjectAccess inject() {
-//        return InjectSingletonHolder.INSTANCE;
-//    }
-
-    private static <T extends SecretAccess> T singleton(Class<T> accessType, Class<?> initalizeClass) {
+    private static <T> T singleton(Class<T> accessType, Class<?> initalizeClass) {
         // Start by making sure the class is initialized
         try {
             Class.forName(initalizeClass.getName(), true, initalizeClass.getClassLoader());
@@ -106,7 +66,7 @@ public final class ModuleAccess {
             throw new ExceptionInInitializerError(e); // Should never happen
         }
 
-        SecretAccess access = TMP.remove(accessType);
+        Object access = TMP.remove(accessType);
         if (access == null) {
             throw new ExceptionInInitializerError("An instance of " + accessType + " has not been set");
         }
@@ -121,20 +81,6 @@ public final class ModuleAccess {
     public static AppPackedBaseAccess base() {
         return BaseSingletonHolder.INSTANCE;
     }
-//
-//    /** Singleton holder for {@link AppPackedArtifactAccess}. */
-//    private static class ArtifactSingletonHolder {
-//
-//        /** The singleton instance. */
-//        private static final AppPackedArtifactAccess INSTANCE = singleton(AppPackedArtifactAccess.class, ArtifactDriver.class);
-//    }
-
-//    /** Holder of the {@link AppPackedContainerAccess} singleton. */
-//    private static class ContainerSingletonHolder {
-//
-//        /** The singleton instance. */
-//        private static final AppPackedContainerAccess INSTANCE = singleton(AppPackedContainerAccess.class, ContainerBundle.class);
-//    }
 
     /** Holder of the {@link AppPackedHookAccess} singleton. */
     private static class HookSingletonHolder {
@@ -142,27 +88,6 @@ public final class ModuleAccess {
         /** The singleton instance. */
         private static final AppPackedHookAccess INSTANCE = singleton(AppPackedHookAccess.class, AnnotatedFieldHook.class);
     }
-
-//    /** Holder of the {@link AppPackedLifecycleAccess} singleton. */
-//    private static class LifecycleSingletonHolder {
-//
-//        /** The singleton instance. */
-//        private static final AppPackedLifecycleAccess INSTANCE = singleton(AppPackedLifecycleAccess.class, RunState.class);
-//    }
-//
-//    /** Holder of the {@link AppPackedServiceAccess} singleton. */
-//    private static class ServiceSingletonHolder {
-//
-//        /** The singleton instance. */
-//        private static final AppPackedServiceAccess INSTANCE = singleton(AppPackedServiceAccess.class, ServiceMode.class);
-//    }
-
-//    /** Holder of the {@link AppPackedInjectAccess} singleton. */
-//    private static class InjectSingletonHolder {
-//
-//        /** The singleton instance. */
-//        private static final AppPackedInjectAccess INSTANCE = singleton(AppPackedInjectAccess.class, ServiceMode.class);
-//    }
 
     /** Holder of the {@link AppPackedBaseAccess} singleton. */
     private static class BaseSingletonHolder {

@@ -23,7 +23,7 @@ import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
 
 /** A support class for calling package private methods in the app.packed.base package. */
-public interface AppPackedBaseAccess extends SecretAccess {
+public interface AppPackedBaseAccess {
 
     boolean isCanonicalized(TypeLiteral<?> typeLiteral);
 

@@ -26,7 +26,7 @@ import app.packed.hook.AssignableToHook;
 import packed.internal.hook.MemberUnreflector;
 
 /** An access class for accessing package private members in app.packed.hook. */
-public interface AppPackedHookAccess extends SecretAccess {
+public interface AppPackedHookAccess {
 
     /**
      * Creates a new instance of {@link AnnotatedFieldHook}.

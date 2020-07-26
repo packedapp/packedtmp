@@ -32,7 +32,6 @@ import app.packed.container.Wirelet;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
 import app.packed.inject.Factory;
-import app.packed.lifecycle2.fn.OP2;
 import app.packed.lifecycleold.OnStart;
 import app.packed.sidecar.Expose;
 import app.packed.statemachine.Leaving;
@@ -172,12 +171,12 @@ public final class ServiceExtension extends Extension {
         throw new UnsupportedOperationException();
     }
 
-    <S, U> void breakCycle(OP2<S, U> op) {
-        // Denne kraever at vi paa en eller anden maade kan bruge OP2...
-        // MethodHandle op.invoker() <--- Saa maaske er det bare ikke hemmeligt mere.
-        // Eller kan bruge det...
-        throw new UnsupportedOperationException();
-    }
+//    <S, U> void breakCycle(OP2<S, U> op) {
+//        // Denne kraever at vi paa en eller anden maade kan bruge OP2...
+//        // MethodHandle op.invoker() <--- Saa maaske er det bare ikke hemmeligt mere.
+//        // Eller kan bruge det...
+//        throw new UnsupportedOperationException();
+//    }
 
     <T> ServiceConfiguration<T> addOptional(Class<T> optional) {
         // @Inject is allowed, but other annotations, types und so weiter is not...
