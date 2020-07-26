@@ -29,8 +29,7 @@ import packed.internal.util.LookupUtil;
 public final class MappingFactoryHandle<T, R> extends FactoryHandle<R> {
 
     /** A method handle for {@link Function#apply(Object)}. */
-    private static final MethodHandle APPLY = LookupUtil.findVirtualEIIE(MethodHandles.lookup(), Function.class, "apply",
-            MethodType.methodType(Object.class, Object.class));
+    private static final MethodHandle APPLY = LookupUtil.mhVirtualPublic(Function.class, "apply", Object.class, Object.class);
 
     /** The function we map the result from. */
     final FactoryHandle<T> mapFrom;

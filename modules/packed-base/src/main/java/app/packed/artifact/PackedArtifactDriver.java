@@ -13,21 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
-
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
-
-import app.packed.service.ServiceExtension;
-import packed.internal.util.LookupUtil;
+package app.packed.artifact;
 
 /**
  *
  */
-public class BundleHelper {
-    public static String POST_CONFIGURE = "CONSUMED";
+class PackedArtifactDriver<A> extends ArtifactDriver<A> {
 
-    // I'm not sure I need to read this...
-    /** A varhandle that can extract a ServiceExtensionNode from {@link ServiceExtension}. */
-    static final VarHandle CONFIGURATION = LookupUtil.initPrivateVH(MethodHandles.lookup(), ContainerBundle.class, "configuration", Object.class);
+    /** {@inheritDoc} */
+    @Override
+    protected A newArtifact(ArtifactContext context) {
+        return null;
+    }
+
 }

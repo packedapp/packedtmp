@@ -20,10 +20,15 @@ import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 import java.util.UUID;
 
+import packed.internal.util.LookupUtil;
+
 /**
  *
  */
 public class MH1 extends AbstractMH {
+    static final MethodHandle OPTIONAL_OF_NULLABLE = LookupUtil.mhStaticPublic(Optional.class, "ofNullable", Optional.class, Object.class);
+
+    static final MethodHandle OPTIONAL_OF = LookupUtil.mhStaticPublic(Optional.class, "of", Optional.class, Object.class);
 
     public static final MethodHandle UPPER_CASE = mhOf(MH1.class, "uppercase", String.class);
 
@@ -99,7 +104,7 @@ public class MH1 extends AbstractMH {
             return;
         }
         System.out.println();
-        MethodHandle filtered = MethodHandles.filterArguments(PRINTLN_OPTIONAL, 0, Support.OPTIONAL_OF_NULLABLE);
+        MethodHandle filtered = MethodHandles.filterArguments(PRINTLN_OPTIONAL, 0, OPTIONAL_OF_NULLABLE);
         System.out.println(filtered.type());
         filtered.invokeExact((Object) "Hej");
     }

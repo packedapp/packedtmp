@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Optional;
@@ -46,15 +45,14 @@ import packed.internal.util.ThrowableUtil;
 /** Implementation of {@link ExtensionConfiguration}. */
 public final class PackedExtensionConfiguration implements ExtensionConfiguration, Comparable<PackedExtensionConfiguration> {
 
-    static final MethodHandle MH_FIND_WIRELET = LookupUtil.findVirtualEIIE(MethodHandles.lookup(), "findWirelet",
-            MethodType.methodType(Object.class, Class.class));
+    /** A MethodHandle for invoking {@link #findWirelet(Class)} used by {@link ExtensionModel}. */
+    static final MethodHandle MH_FIND_WIRELET = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "findWirelet", Object.class, Class.class);
 
-    /** A MethodHandle for {@link #lifecycle()}. */
-    public static final MethodHandle MH_LIFECYCLE_CONTEXT = LookupUtil.findVirtualEIIE(MethodHandles.lookup(), "lifecycle",
-            MethodType.methodType(LifecycleContext.class));
+    /** A MethodHandle for invoking {@link #lifecycle()} used by {@link ExtensionModel}. */
+    static final MethodHandle MH_LIFECYCLE_CONTEXT = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "lifecycle", LifecycleContext.class);
 
     /** A VarHandle used by {@link #of(PackedContainerConfiguration, Class)} to access the field Extension#configuration. */
-    private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.initPrivateVH(MethodHandles.lookup(), Extension.class, "configuration",
+    private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
     /** The extension instance this configuration wraps, initialized in {@link #of(PackedContainerConfiguration, Class)}. */
@@ -161,12 +159,6 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
 
     /** {@inheritDoc} */
     @Override
-    public ComponentPath containerPath() {
-        return pcc.path();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public Class<? extends Extension> extensionType() {
         return model.extensionType();
     }
@@ -264,6 +256,13 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
      */
     public Optional<Class<? extends Extension>> optional() {
         return model.optional;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath path() {
+        // TODO return path of this component.
+        return pcc.path();
     }
 
     /** {@inheritDoc} */

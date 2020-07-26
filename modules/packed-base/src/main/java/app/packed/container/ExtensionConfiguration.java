@@ -31,25 +31,17 @@ import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.PackedExtensionConfiguration;
 
 /**
- * An instance of this interface is available via {@link Extension#configuration()} or via constructor injection into an
- * extension. Since the extension itself defines most methods in this interface via protected final methods. This
- * interface is typically used to be able to provide these methods to code that is not located on the extension
- * implementation or in the same package as the extension itself.
+ * An instance of this interface is available via {@link Extension#configuration()} or via constructor injection into
+ * any subclass of {@link Extension}. Since the extension itself defines most methods in this interface via protected
+ * final methods. This interface is typically used to be able to provide these methods to code that is not located on
+ * the extension implementation or in the same package as the extension itself.
  * <p>
  * Instances of this class should never be exposed to end-users.
  * 
  * @apiNote In the future, if the Java language permits, {@link ExtensionConfiguration} may become a {@code sealed}
  *          interface, which would prohibit subclassing except by explicitly permitted types.
- * 
  */
 public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
-
-    // What we are generating...
-    // This can be tricky, For example, if we create an image.
-    // This method will always return image,
-//    default AssembleTarget buildTarget() {
-//        throw new UnsupportedOperationException();
-//    }
 
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
@@ -81,7 +73,7 @@ public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
      * @return the path of the container the extension is registered with
      */
     // maaske bare path... og saa kan man kalde path().parent.get();
-    ComponentPath containerPath();
+    ComponentPath path();
 
     /**
      * Returns the type of extension this context wraps.
@@ -220,3 +212,10 @@ public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
         return pcc.getExtensionContext(extensionType);
     }
 }
+
+// What we are generating...
+// This can be tricky, For example, if we create an image.
+// This method will always return image,
+//default AssembleTarget buildTarget() {
+//    throw new UnsupportedOperationException();
+//}

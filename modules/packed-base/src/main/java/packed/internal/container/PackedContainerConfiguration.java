@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
@@ -43,7 +42,6 @@ import app.packed.component.ComponentDescriptor;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.container.BundleHelper;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
@@ -75,8 +73,7 @@ import packed.internal.util.ThrowableUtil;
 public final class PackedContainerConfiguration extends PackedComponentContext implements ContainerConfiguration {
 
     /** A MethodHandle that can invoke ContainerBundle#configure. */
-    private static final MethodHandle BUNDLE_CONFIGURE = LookupUtil.initVirtualMH(MethodHandles.lookup(), ContainerBundle.class, "configure",
-            MethodType.methodType(void.class));
+    private static final MethodHandle BUNDLE_CONFIGURE = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), ContainerBundle.class, "configure", void.class);
 
     private static final int LS_0_MAINL = 0;
 
@@ -91,7 +88,7 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
 //    ArrayList<PackedContainerConfiguration> containers;
 
     /** A VarHandle that can access ContainerBundle#configuration. */
-    private static final VarHandle VH_CONTAINER_BUNDLE_CONFIGURATION = LookupUtil.initPrivateVH(MethodHandles.lookup(), ContainerBundle.class, "configuration",
+    private static final VarHandle VH_CONTAINER_BUNDLE_CONFIGURATION = LookupUtil.vhPrivateOther(MethodHandles.lookup(), ContainerBundle.class, "configuration",
             Object.class);
 
     /** Any extension that is active. */
@@ -253,6 +250,8 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
         builder.extensions.addAll(extensions.keySet());
     }
 
+    static String POST_CONFIGURE = "CONSUMED";
+
     /**
      * Configures the configuration.
      */
@@ -270,7 +269,7 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
                 } catch (Throwable e) {
                     throw ThrowableUtil.easyThrow(e);
                 } finally {
-                    VH_CONTAINER_BUNDLE_CONFIGURATION.setVolatile(cb, BundleHelper.POST_CONFIGURE);
+                    VH_CONTAINER_BUNDLE_CONFIGURATION.setVolatile(cb, POST_CONFIGURE);
                 }
             } else if (existing instanceof ComponentConfiguration) {
                 // Can be this thread or another thread that is already using the bundle.

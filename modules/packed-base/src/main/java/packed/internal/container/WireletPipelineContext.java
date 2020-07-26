@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -35,8 +34,8 @@ import packed.internal.util.ThrowableUtil;
 public final class WireletPipelineContext {
 
     /** A MethodHandle that can invoke ContainerBundle#configure. */
-    private static final MethodHandle MH_WIRELET_PIPELINE_INITIALIZE = LookupUtil.initVirtualMH(MethodHandles.lookup(), WireletPipeline.class, "initialize",
-            MethodType.methodType(void.class, WireletPipelineContext.class));
+    private static final MethodHandle MH_WIRELET_PIPELINE_INITIALIZE = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), WireletPipeline.class, "initialize",
+            void.class, WireletPipelineContext.class);
 
     /** The pipeline instance that can be injected. */
     public WireletPipeline<?, ?> instance;

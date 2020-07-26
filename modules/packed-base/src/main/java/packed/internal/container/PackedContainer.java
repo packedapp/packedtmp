@@ -114,8 +114,20 @@ public final class PackedContainer extends PackedComponent {
 
         /** {@inheritDoc} */
         @Override
+        public ComponentDescriptor model() {
+            return container.model();
+        }
+
+        /** {@inheritDoc} */
+        @Override
         public String name() {
             return container.name();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Optional<Component> parent() {
+            return container.parent();
         }
 
         /** {@inheritDoc} */
@@ -144,12 +156,6 @@ public final class PackedContainer extends PackedComponent {
 
         /** {@inheritDoc} */
         @Override
-        public ComponentDescriptor model() {
-            return container.model();
-        }
-
-        /** {@inheritDoc} */
-        @Override
         public <T> T use(Key<T> key) {
             return container.injector.use(key);
         }
@@ -158,12 +164,6 @@ public final class PackedContainer extends PackedComponent {
         @Override
         public Component useComponent(CharSequence path) {
             return container.useComponent(path);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Optional<Component> parent() {
-            return container.parent();
         }
     }
 }

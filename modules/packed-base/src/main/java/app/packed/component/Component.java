@@ -26,13 +26,11 @@ import app.packed.container.Extension;
  * derivatives. In packed everything is a component.
  */
 // ComponentDescriptor??
-
 // add
 // type...implementation
 // relationTo()... Vi vil gerne have noget der er immutable....
 // Altsaa strengt taget, behover vi ikke from and to...
 // F.eks.
-
 // walk 
 public interface Component {
 
@@ -50,56 +48,19 @@ public interface Component {
      */
     ConfigSite configSite();
 
-    // returns it self if its a container
-    // container().parent().container() <-- returns parent container
-    // ComponentDescriptor container();
-
-    // Alternative have en Container extends Component....
-    // Maaske ikke extends Component.... Saa vi kan have
-    // container aggregates
-    // container().path()
-    // Vi vil gerne kunne give en component, uden at give adgang til dens container..
-    // same with artifac
-
+    /**
+     * Returns the parent component of this component. Or empty if this component has no parent.
+     * 
+     * @return the parent component of this component. Or empty if this component has no parent
+     */
     Optional<Component> parent();
 
     /**
-     * Returns the depth of the component in the system.
+     * Returns the depth of the component in the system. The root component having depth 0.
      * 
      * @return the depth of the component in the system
      */
     int depth();
-
-    /**
-     * Returns the description of this component. Or an empty optional if no description was set when configuring the
-     * component.
-     *
-     * @return the description of this component. Or an empty optional if no description was set when configuring the
-     *         component
-     *
-     * @see SingletonConfiguration#setDescription(String)
-     */
-    Optional<String> description();
-
-    /**
-     * If this component is a part of extension, returns the extension. Otherwise returns empty.
-     * 
-     * @return any extension this component belongs to
-     */
-    // Don't really like this... It strongly ties a container to a component.
-    // As extensions are children of containers always...
-
-    // But then again ComponentStream.Option contains stuff about containers ect.
-
-    // Maybe model it as an attribute
-    Optional<Class<? extends Extension>> extension();
-
-    /**
-     * Returns the type of component.
-     * 
-     * @return the type of component
-     */
-    ComponentDescriptor model();
 
     /**
      * Returns the name of this component.
@@ -160,17 +121,53 @@ public interface Component {
      * @return a component stream consisting of this component and all of its descendants in any order
      */
     ComponentStream stream(ComponentStream.Option... options);
+
+    // returns it self if its a container
+    // container().parent().container() <-- returns parent container
+    // ComponentDescriptor container();
+
+    // Alternative have en Container extends Component....
+    // Maaske ikke extends Component.... Saa vi kan have
+    // container aggregates
+    // container().path()
+    // Vi vil gerne kunne give en component, uden at give adgang til dens container..
+    // same with artifac
+
+    /**
+     * Returns the description of this component. Or an empty optional if no description was set when configuring the
+     * component.
+     *
+     * @return the description of this component. Or an empty optional if no description was set when configuring the
+     *         component
+     *
+     * @see SingletonConfiguration#setDescription(String)
+     */
+    Optional<String> description();
+
+    /**
+     * If this component is a part of extension, returns the extension. Otherwise returns empty.
+     * 
+     * @return any extension this component belongs to
+     */
+    // Don't really like this... It strongly ties a container to a component.
+    // As extensions are children of containers always...
+
+    // But then again ComponentStream.Option contains stuff about containers ect.
+
+    // Maybe model it as an attribute
+    Optional<Class<? extends Extension>> extension();
+
+    /**
+     * Returns the type of component.
+     * 
+     * @return the type of component
+     */
+    ComponentDescriptor model();
 }
 
 // SystemView/Descriptor
 // Contracts...
 
-//// Hmm, hvis vi nu skal bruge container side car'en... eller artifact side'caren.
-/// Maaske det med at soege op i attribute map traet. Indtil man finder en venlig
-/// instance
-//default <T> T use(AFeature<T, ?> feature) {
-//    throw new UnsupportedOperationException();
-//}
 // {
 // Problemet med features er at vi har nogle vi gerne vil list som vaere der. Og andre ikke.
 // F.eks. All dependencies for a component... Is this really a feature??
@@ -183,8 +180,3 @@ public interface Component {
 //// /Foo/AnotherComponent
 
 ///// Dvs ogsaa scheduled jobs bliver lagt paa som meta data, som en feature
-
-// Ideen er f.eks. at kunne returnere alle services en component exposer, men ikke give adgang til det...
-// How does it relate to AttributeMap?
-// throw new UnsupportedOperationException();
-// }

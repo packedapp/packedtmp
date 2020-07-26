@@ -77,8 +77,8 @@ import packed.internal.service.runtime.AbstractInjector;
 // Ellers selvfoelgelig hvis man bruger provide/@Provides\
 public final class ServiceExtension extends Extension {
 
-    /** The service node that does most of the actual work. */
-    final ServiceExtensionNode node;
+    /** The service extension node that does all the hard work. */
+    private final ServiceExtensionNode node;
 
     /**
      * Should never be initialized by users.
@@ -96,6 +96,9 @@ public final class ServiceExtension extends Extension {
     // CycleBreaker(SE, ...);
 
     // Maaske er det her mere injection then service
+
+    // Det er jo i virkeligheden bare en @RunOnInjection klasse
+    // LifecycleExtension-> BreakCycle(X,Y) ->
     <S, U> void cycleBreaker(Class<S> keyProducer, Class<U> key2) {
         // keyProducer will have a Consumer<U> injected in its constructor.
         // In which case it must call it exactly once with a valid instance of U.
@@ -108,6 +111,10 @@ public final class ServiceExtension extends Extension {
         // Bundle, Service Extension, ExtensionContext ect...
 
         // DE her virker kun indefor samme container...
+
+        // Syntes i virkeligheden consumer versionen er bedre....
+        // Den er meget mere explicit.
+        // Den her skal jo pakke initialisering af U ind i en consumer
     }
 
     <S, U> void cycleBreaker(Class<S> key1, Class<U> key2, BiConsumer<S, U> consumer) {
@@ -486,7 +493,7 @@ public final class ServiceExtension extends Extension {
         node.link(childExtension.node);
     }
 
-    /** A subtension that can used by other extensions. */
+    /** A subtension useable from other extensions. */
     public final class Sub extends Subtension {
 
         // Require???
@@ -495,7 +502,18 @@ public final class ServiceExtension extends Extension {
         // I don't think extensions should be able to export things.
         // So export annotation should not work on extension services
 
-        /* package-private */ Sub() {}
+        /** The other extension type. */
+        final Class<? extends Extension> extensionType;
+
+        /**
+         * sdsd.
+         * 
+         * @param extensionType
+         *            the type this is a sub extension for
+         */
+        /* package-private */ Sub(Class<? extends Extension> extensionType) {
+            this.extensionType = requireNonNull(extensionType, "extensionType is null");
+        }
 
         public void exportd() {
             export(user());

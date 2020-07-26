@@ -18,8 +18,6 @@ package packed.internal.inject.factory;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.List;
 import java.util.Map.Entry;
@@ -34,8 +32,7 @@ import packed.internal.util.LookupUtil;
 public final class Factory1FactoryHandle<T, R> extends FactoryHandle<R> {
 
     /** A method handle for {@link Function#apply(Object)}. */
-    private static final MethodHandle APPLY = LookupUtil.findVirtualEIIE(MethodHandles.lookup(), Function.class, "apply",
-            MethodType.methodType(Object.class, Object.class));
+    private static final MethodHandle APPLY = LookupUtil.mhVirtualPublic(Function.class, "apply", Object.class, Object.class);
 
     /** The function that creates the actual objects. */
     private final Function<? super T, ? extends R> function;

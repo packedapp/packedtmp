@@ -23,16 +23,17 @@ import java.lang.invoke.MethodHandles.Lookup;
 import app.packed.base.Key.Qualifier;
 import app.packed.base.Nullable;
 import app.packed.component.CustomConfigurator;
-import app.packed.container.DefaultBundle;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.DefaultBundle;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via
  * {@link Injector#configure(CustomConfigurator, Wirelet...)}. This is thought of a alternative to using a
- * {@link DefaultBundle}. Unlike bundles all services are automatically exported once defined. For example useful in tests.
+ * {@link DefaultBundle}. Unlike bundles all services are automatically exported once defined. For example useful in
+ * tests.
  * 
  * <p>
  * The main difference compared to bundles is that there is no concept of encapsulation. All services are exported by
@@ -231,6 +232,10 @@ public final class InjectorAssembler {
      *            the instance to bind
      * @return a service configuration for the service
      */
+    // Rename to instant
+    // All annotations will be processed like provide() except that constructors will not be processed
+    // Ohh we need to analyze them differently, because we should ignore all constructors.
+    // Should not fail if we fx have two public constructors of equal lenght
     public <T> ServiceComponentConfiguration<T> provideConstant(T instance) {
         return extension().provideConstant(instance);
     }

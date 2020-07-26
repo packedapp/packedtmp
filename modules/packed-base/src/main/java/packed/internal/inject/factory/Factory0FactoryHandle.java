@@ -18,8 +18,6 @@ package packed.internal.inject.factory;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -47,7 +45,7 @@ public final class Factory0FactoryHandle<T> extends FactoryHandle<T> {
     };
 
     /** A method handle for {@link Supplier#get()}. */
-    private static final MethodHandle GET = LookupUtil.findVirtualEIIE(MethodHandles.lookup(), Supplier.class, "get", MethodType.methodType(Object.class));
+    private static final MethodHandle GET = LookupUtil.mhVirtualPublic(Supplier.class, "get", Object.class);
 
     /** The supplier that creates the actual objects. */
     private final Supplier<? extends T> supplier;
