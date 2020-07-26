@@ -13,11 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package sandbox.artifact.hostguest;
 
-/**
- *
- */
-class PackedArtifactDriver<A> {
+import static java.util.Objects.requireNonNull;
 
+/** The default implementation of {@link AppHost}. */
+final class PackedAppHost implements AppHost {
+
+    private final HostContext context;
+
+    PackedAppHost(HostContext context) {
+        this.context = requireNonNull(context);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long size() {
+        return context.guestCount();
+    }
 }

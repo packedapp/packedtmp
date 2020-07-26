@@ -13,24 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component.driver;
+package sandbox.artifact.hosttest;
 
-import sandbox.artifact.hostguest.AppHostConfiguration;
+import app.packed.artifact.ArtifactDriver;
 
 /**
  *
  */
-public class AppHostDriver extends ComponentDriver<AppHostConfiguration> {
 
-    static final AppHostDriver DRIVER = new AppHostDriver();
+// En host er fuldstaendig udafhandig af ejeren...
 
-    private AppHostDriver() {
-        super(Option.hosting());
+// A host is not a component type it is a property of a component
+
+// Configuring a component as a host. Will make available one or more services available to be injected into the host component.
+// But also what is available to be injected into the guest...
+public class HostDriver2 {
+
+    public static HostDriver2 singleLine(ArtifactDriver<?> driver) {
+        throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected AppHostConfiguration create(ComponentDriverContext context) {
+    public HostDriver2 withLine() {
+        // man bygger ovenpaa...
         throw new UnsupportedOperationException();
     }
 }
+
+// Her sporgsmaalet om alle

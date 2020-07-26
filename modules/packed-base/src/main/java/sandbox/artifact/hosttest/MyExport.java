@@ -13,11 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package sandbox.artifact.hosttest;
+
+import app.packed.container.ContainerBundle;
 
 /**
  *
  */
-class PackedArtifactDriver<A> {
+// Det her en host type
+public final class MyExport {
+    static final GuestImage gi = GuestImage.composeOnFirstUse(new SomeBundle());
 
+    // @ScheduleWithFixedRate(20 min) Altsaa man vil gerne have lov til at saette properties.... clear(comp.prop<123),
+    // trimTo
+    MyExport(/* line, line.clear() */) {
+
+    }
+}
+
+class SomeBundle extends ContainerBundle {
+
+    /** {@inheritDoc} */
+    @Override
+    protected void configure() {}
 }

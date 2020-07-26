@@ -13,11 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package sandbox.artifact.hosttest;
+
+import app.packed.container.ContainerBundle;
 
 /**
  *
  */
-class PackedArtifactDriver<A> {
 
+// Altsaa vi vil jo teknisk set ogsaa gerne kunne bruge dette distribuerede....
+
+public interface GuestImage extends SomeGuest {
+
+    // Altsaa den laver vel et image per use site.
+    // Det er jo meningen den er statisk...
+    static GuestImage composeOnFirstUse(ContainerBundle b) {
+        throw new UnsupportedOperationException();
+    }
 }

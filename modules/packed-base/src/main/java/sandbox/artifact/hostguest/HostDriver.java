@@ -13,11 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package sandbox.artifact.hostguest;
 
 /**
  *
  */
-class PackedArtifactDriver<A> {
 
+// HostDriver bestemmer hvad host componenten for injected...
+// Som minimum en HostContext
+
+public abstract class HostDriver<C extends HostConfiguration<?>> {
+
+    protected abstract C newConfiguration(HostConfigurationContext context);
+
+    public static class Option {
+        Option() {}
+    }
+
+    protected static Option addInstanceManager() {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -355,6 +355,9 @@ final class InjectorArtifactDriver extends ArtifactDriver<Injector> {
     /** The single instance. */
     static final InjectorArtifactDriver INSTANCE = new InjectorArtifactDriver();
 
+//    static final ArtifactDriver<Injector> INSTANCE_NG = ArtifactDriver.of(MethodHandles.lookup(), Injector.class,
+//            new Factory1<ArtifactContext, Injector>(c -> ((PackedArtifactContext) c).injector()) {});
+
     /** Singleton */
     private InjectorArtifactDriver() {}
 

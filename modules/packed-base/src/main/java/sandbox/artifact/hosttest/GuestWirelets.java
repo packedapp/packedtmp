@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package sandbox.artifact.hosttest;
 
 /**
  *
  */
-class PackedArtifactDriver<A> {
+public class GuestWirelets {
 
+    // Vi laver dem for at vi ikke skal faa en eksplosion af metoder...
+    // Hver gang der kommer en ny dimension. Saa fordobler vi let antallet af metoder
+
+    // lazyCreate
 }

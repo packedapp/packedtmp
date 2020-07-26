@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package sandbox.component;
 
 /**
  *
  */
-class PackedArtifactDriver<A> {
-
-}
+public interface ConfiguredBy<C> {}

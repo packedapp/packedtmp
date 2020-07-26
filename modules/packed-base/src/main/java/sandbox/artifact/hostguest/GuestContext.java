@@ -13,11 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package sandbox.artifact.hostguest;
 
 /**
  *
  */
-class PackedArtifactDriver<A> {
+
+//Available to all guests... The top level component only though...
+// And I think stereotypes can remove it for their surragate objects.   
+// Can remove itself...
+// shutdown itself
+// replace itself / restart itself
+public interface GuestContext {
 
 }

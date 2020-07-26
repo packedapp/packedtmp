@@ -33,8 +33,6 @@ import java.util.function.Consumer;
 
 import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.ArtifactImage;
-import app.packed.artifact.hostguest.HostConfiguration;
-import app.packed.artifact.hostguest.HostDriver;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDescriptor;
@@ -68,6 +66,8 @@ import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.runtime.PackedInjector;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
+import sandbox.artifact.hostguest.HostConfiguration;
+import sandbox.artifact.hostguest.HostDriver;
 
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class PackedContainerConfiguration extends PackedComponentContext implements ContainerConfiguration {

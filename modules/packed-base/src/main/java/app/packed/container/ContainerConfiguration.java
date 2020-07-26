@@ -21,8 +21,6 @@ import java.lang.invoke.VarHandle;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.artifact.hostguest.HostConfiguration;
-import app.packed.artifact.hostguest.HostDriver;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDescriptor;
@@ -30,6 +28,8 @@ import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
+import sandbox.artifact.hostguest.HostConfiguration;
+import sandbox.artifact.hostguest.HostDriver;
 
 /**
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by

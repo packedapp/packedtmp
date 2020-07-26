@@ -15,8 +15,7 @@
  */
 package app.packed.artifact;
 
-import static java.util.Objects.requireNonNull;
-
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -71,17 +70,6 @@ public abstract class ArtifactDriver<A> {
     /** A type variable extractor to find the type of artifacts this driver creates. */
     private static final TypeVariableExtractor ARTIFACT_DRIVER_TV_EXTRACTOR = TypeVariableExtractor.of(ArtifactDriver.class);
 
-//    static {
-//        ModuleAccess.initialize(AppPackedArtifactAccess.class, new AppPackedArtifactAccess() {
-//
-//            /** {@inheritDoc} */
-//            @Override
-//            public <T> T newArtifact(ArtifactDriver<T> driver, ArtifactContext context) {
-//                return driver.newArtifact(context);
-//            }
-//        });
-//    }
-
     /** The type of artifact this driver produces. */
     private final Class<A> artifactType;
 
@@ -100,20 +88,20 @@ public abstract class ArtifactDriver<A> {
         this.hasExecutionPhase = AutoCloseable.class.isAssignableFrom(artifactType);
     }
 
-    /** Creates a new driver. */
-    private ArtifactDriver(ArtifactDriver<A> existing) {
-        this.artifactType = existing.artifactType;
-        this.hasExecutionPhase = existing.hasExecutionPhase;
-    }
+//    /** Creates a new driver. */
+//    private ArtifactDriver(ArtifactDriver<A> existing) {
+//        this.artifactType = existing.artifactType;
+//        this.hasExecutionPhase = existing.hasExecutionPhase;
+//    }
 
     /**
-     * Returns the type of artifact this driver produce.
+     * Returns the raw type of artifacts this driver produces.
      * 
-     * @return the type of artifact this driver produce
+     * @return the raw type of artifacts this driver produces
      */
-    // RawType? Should we have a TypeLiteral???
-    // For example, I create BigMap<String, Long>
-    public final Class<A> artifactType() {
+    public final Class<A> rawType() {
+        // Should we have a TypeLiteral as well???
+        // For example, if we create BigMap<String, Long>
         return artifactType;
     }
 
@@ -173,8 +161,6 @@ public abstract class ArtifactDriver<A> {
         return pcc.instantiateArtifact(wc);
     }
 
-    // <T, R> // AppDriver<App, Void>
-
     // Kan take restart wirelets...\
     public final Object execute(ArtifactSource source, Wirelet... wirelets) {
         ArtifactContext context = create(source, wirelets);
@@ -222,6 +208,19 @@ public abstract class ArtifactDriver<A> {
         ArtifactContext pac = pcc.instantiateArtifact(pcc.wireletContext);
         return newArtifact(pac);
     }
+    // Ja den er faktisk fin nok syntes jeg...
+
+    final <E extends A> ArtifactDriver<A> mapTo(Class<E> decoratingType, Function<A, E> decorator) {
+        // Ideen er egentlig at f.eks. kunne wrappe App, og tilfoeje en metode...
+        // Men altsaa, maaske er det bare at kalde metoderne direkte i context...
+        // PackedApp kalder jo bare direkte igennem
+        throw new UnsupportedOperationException();
+    }
+
+    // A method handle that takes an ArtifactContext and produces something that is compatible with A
+    public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh) {
+        throw new UnsupportedOperationException();
+    }
 
     public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, Factory<? extends A> implementation) {
         throw new UnsupportedOperationException();
@@ -235,37 +234,37 @@ public abstract class ArtifactDriver<A> {
         // of(App.class, PackedApp.class);
     }
 
-    final ArtifactDriver<A> withOptions(Option... options) {
-        return new WithOptionDriver<>(this);
-//        ArtifactDriver<App> ad = App.driver().withOptions(Option.blacklistExtensions(ServiceExtension.class));
-//        ad.instantiate(new Bundle() {
+//    final ArtifactDriver<A> withOptions(Option... options) {
+//        return new WithOptionDriver<>(this);
+////        ArtifactDriver<App> ad = App.driver().withOptions(Option.blacklistExtensions(ServiceExtension.class));
+////        ad.instantiate(new Bundle() {
+////
+////            @Override
+////            protected void compose() {}
+////        });
+////
+////        throw new UnsupportedOperationException();
+//    }
 //
-//            @Override
-//            protected void compose() {}
-//        });
+//    /** A special driver used for {@link #withOptions(Option...)}. */
+//    private static class WithOptionDriver<T> extends ArtifactDriver<T> {
 //
-//        throw new UnsupportedOperationException();
-    }
+//        /** The existing driver to wrap. */
+//        final ArtifactDriver<T> existing;
+//
+//        WithOptionDriver(ArtifactDriver<T> existing) {
+//            super(existing);
+//            this.existing = requireNonNull(existing);
+//        }
+//
+//        /** {@inheritDoc} */
+//        @Override
+//        protected T newArtifact(ArtifactContext context) {
+//            return existing.newArtifact(context);
+//        }
+//    }
 
-    /** A special driver used for {@link #withOptions(Option...)}. */
-    private static class WithOptionDriver<T> extends ArtifactDriver<T> {
-
-        /** The existing driver to wrap. */
-        final ArtifactDriver<T> existing;
-
-        WithOptionDriver(ArtifactDriver<T> existing) {
-            super(existing);
-            this.existing = requireNonNull(existing);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        protected T newArtifact(ArtifactContext context) {
-            return existing.newArtifact(context);
-        }
-    }
-
-    /** Options that can be specified when creating a new driver or via {@link #withOptions(Option...)}. */
+//    /** Options that can be specified when creating a new driver or via {@link #withOptions(Option...)}. */
 
     // Ideen er lidt at vi koerer ArchUnit igennem here....
     // Altsaa Skal vi have en BaseEnvironment.. hvor vi kan specificere nogle options for alle
@@ -335,92 +334,37 @@ public abstract class ArtifactDriver<A> {
         static Option postfixWirelets(Wirelet... wirelets) {
             throw new UnsupportedOperationException();
         }
+
+        // non execution -> Create...
+
+        // Ideen var man skulle kunne angive nogle prefix wirelets naar man lavede en artifact...
+        // Men det er nu lavet om til options pre and post wirelets
+        // executing -> Create (and initialize), start, startAsync, Execute, executeAsync
+        // StartExecutor ?
+        // final T create(Assembly source, Wirelet... artifactWirelets) {
+        //
+//         // Ideen er lidt at Artifact Implementering, kan kalde med dens egen wirelets...
+//         // ala
+//         // Maaske er det en option.. .. ellers andThen... eller have en Wirelet customWirelets(Assemble)..
+        //
+//         // start(Assembly, Wirelet... wirelets) {
+//         // create(Assembly, wirelets, ArtifactWirelets.startSynchronous());
+//         // create(Assembly, wirelets, ArtifactWirelets.startAsynchronous());
+//         // }
+//         // What about execute....
+//         throw new UnsupportedOperationException();
+        // }
     }
 
     // Ideen er lidt at vi har en OptionList som aggregere alle options
     // Det er en public klasse i packedapp.internal.artifact.OptionAggregate
     // Den har en PackedContainerConfiguration saa adgang til. og f.eks. kalder
     // aggregate.addExtension(Class<? extends Extension>) <- may throw....
-    static class ArtifactOptionAggregate {
-        ArtifactOptionAggregate(Option[] options) {}
-
-        ArtifactOptionAggregate with(Option[] options) {
-            throw new UnsupportedOperationException();
-        }
-    }
+//    static class ArtifactOptionAggregate {
+//        ArtifactOptionAggregate(Option[] options) {}
+//
+//        ArtifactOptionAggregate with(Option[] options) {
+//            throw new UnsupportedOperationException();
+//        }
+//    }
 }
-
-class XextVersion<T> {
-
-    // Ja den er faktisk fin nok syntes jeg...
-
-    final <E extends T> ArtifactDriver<T> mapTo(Class<E> decoratingType, Function<T, E> decorator) {
-        // Ideen er egentlig at f.eks. kunne wrappe App, og tilfoeje en metode...
-        // Men altsaa, maaske er det bare at kalde metoderne direkte i context...
-        // PackedApp kalder jo bare direkte igennem
-        throw new UnsupportedOperationException();
-    }
-}
-
-// Droppet for Option....
-// Taget som en ArtifactDriver(Option... options)
-// Ja vi dropper configure.... Og saa bliver den en blanding af option objekter
-// Og saa evt. metoder der kan overskrives...
-// ArchUnit...
-//protected void configure() {
-//    // Default Constraints....
-//
-//    // Kan vi bruge noget af det samme som ComponentExtension...
-//    // De regler kan vel bruges paa baadde
-//    // extension nivuea, ArtifactNiveau, Bundle Niveau
-//
-//    // configuration
-//    //// forbidden extensions (lifecycle primarily)
-//    //// Allow injection of ArtifactInstance (for example, App).
-//    //// In which case it will be injectable into any component...
-//
-//    // Alternativ
-//    // @ArtifactDriver.Limitations(forbiddenExtensions(LifecycleExtension.class)
-//
-//    // Hvordan sikre vi os at configure er koert?????
-//    // Bruger instantitere den jo selv...
-//
-//    // Taenker vi godt kan kalde den fra constructeren....
-//
-//    // Either a configure() class
-//    // For example, supports lifecycle... if not-> Lifecycle cycle methods on
-//    // PackedContainer (Artifact?) throws Unsupported
-//
-//    // Needs Lifecycle
-//}
-
-//// Lav en constructor baade med og uden Alt
-//// ArtifactDriver(boolean isRunning)
-//// ArtifactDriver(boolean isRunning, Settings settings)
-//static abstract class Settings {
-//  protected abstract void configure();
-//
-//  protected final void disableExtensions() {
-//
-//  }
-//}
-
-// non execution -> Create...
-
-// Ideen var man skulle kunne angive nogle prefix wirelets naar man lavede en artifact...
-// Men det er nu lavet om til options pre and post wirelets
-// executing -> Create (and initialize), start, startAsync, Execute, executeAsync
-// StartExecutor ?
-//final T create(Assembly source, Wirelet... artifactWirelets) {
-//
-//    // Ideen er lidt at Artifact Implementering, kan kalde med dens egen wirelets...
-//    // ala
-//    // Maaske er det en option.. .. ellers andThen... eller have en Wirelet customWirelets(Assemble)..
-//
-//    // start(Assembly, Wirelet... wirelets) {
-//    // create(Assembly, wirelets, ArtifactWirelets.startSynchronous());
-//    // create(Assembly, wirelets, ArtifactWirelets.startAsynchronous());
-//    // }
-//    // What about execute....
-//    throw new UnsupportedOperationException();
-//}

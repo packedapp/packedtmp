@@ -13,19 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.host.api2.use.it;
+package sandbox.artifact.hostguest;
 
 import app.packed.container.ContainerBundle;
-import sandbox.artifact.hostguest.AppHost;
+import sandbox.component.ConfiguredBy;
 
 /**
  *
  */
-public class Stuff extends ContainerBundle {
+//extends ConfiguredVia<AppHostConfiguration>  <--- skal have en statisk metode der hedder driver...
+public interface AppHost extends ConfiguredBy<AppHostConfiguration> {
+
+    long size();
+
+    // Eller skal den vaere paa configurationen???
+    static HostDriver<AppHostConfiguration> driver() {
+        return AppHostConfiguration.DRIVER;
+    }
+}
+
+class FooBar extends ContainerBundle {
 
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-        addHost(AppHost.driver()).setName("SuperCool Host");
+        // <- must have a static driver method... and be open to packed... (and readable to bundle)
+        add(AppHost.class);
     }
 }

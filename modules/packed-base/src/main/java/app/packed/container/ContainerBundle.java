@@ -24,16 +24,16 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 import app.packed.artifact.ArtifactSource;
-import app.packed.artifact.hostguest.HostConfiguration;
-import app.packed.artifact.hostguest.HostDriver;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
-import app.packed.component.sandhox.ConfiguredBy;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
+import sandbox.artifact.hostguest.HostConfiguration;
+import sandbox.artifact.hostguest.HostDriver;
+import sandbox.component.ConfiguredBy;
 
 /**
  * Bundles are the main source of configuration for containers and artifacts. Basically a bundle is just a thin wrapper

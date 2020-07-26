@@ -13,11 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package sandbox.artifact.hosttest;
+
+import sandbox.artifact.hostguest.HostConfiguration;
+import sandbox.artifact.hostguest.HostConfigurationContext;
+import sandbox.artifact.hostguest.HostDriver;
 
 /**
  *
  */
-class PackedArtifactDriver<A> {
+public class MyAppHostDriver<C extends HostConfiguration<?>> extends HostDriver<C> {
+
+    /** {@inheritDoc} */
+    @Override
+    protected C newConfiguration(HostConfigurationContext context) {
+        return null;
+    }
 
 }
