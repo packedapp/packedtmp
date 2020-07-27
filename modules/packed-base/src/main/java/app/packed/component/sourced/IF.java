@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.component.sourced;
 
 /**
  *
@@ -39,6 +39,7 @@ class DD {
         throw new UnsupportedOperationException();
     }
 
+    @SuppressWarnings("unused")
     void dfoo() {
         MyC<String> instant = instant(foo(), "hejhej");
 

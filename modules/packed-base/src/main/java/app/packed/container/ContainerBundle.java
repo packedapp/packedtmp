@@ -62,11 +62,10 @@ public abstract class ContainerBundle extends Bundle<ContainerConfiguration> imp
 
     /** Creates a new ContainerBundle */
     protected ContainerBundle() {
-        super(ComponentDriver.container());
+        this(ComponentDriver.container());
     }
 
-    // Hmmmmmmmmmmm CD.container.withNamingScheme( -> );
-    ContainerBundle(ComponentDriver<? extends ContainerConfiguration> driver) {
+    protected ContainerBundle(ComponentDriver<? extends ContainerConfiguration> driver) {
         super(driver);
     }
 
