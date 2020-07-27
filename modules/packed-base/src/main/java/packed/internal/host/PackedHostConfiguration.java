@@ -81,5 +81,4 @@ public final class PackedHostConfiguration extends PackedComponentContext implem
         super.setName(name);
         return this;
     }
-
 }

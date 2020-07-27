@@ -55,10 +55,10 @@ import app.packed.service.ServiceExtension;
  * instances using .</li>
  * </ul>
  * 
- * 
  * @apiNote We never return, for example, Bundle or BaseBundle. As this would make extending the class difficult unless
  *          we defined all methods as non-final.
  */
+// Rename to BaseBundle
 public abstract class DefaultBundle extends ContainerBundle {
 
     /**

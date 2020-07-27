@@ -45,7 +45,7 @@ public class ExtensionModelTest {
     // TODO fix exact exception types..
     public void fails() {
         // abstract class
-        AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> ExtensionModel.of(AbstractExtension.class).newInstance(null));
+        AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> ExtensionModel.of(AbstractTestExtension.class).newInstance(null));
         a.isExactlyInstanceOf(InternalExtensionException.class);
         // TODO test messages
 
@@ -71,7 +71,7 @@ public class ExtensionModelTest {
         // And unnamed, automatic modules...
     }
 
-    public abstract class AbstractExtension extends Extension {}
+    public abstract class AbstractTestExtension extends Extension {}
 
     public class InnerClassExtension extends Extension {}
 
