@@ -85,7 +85,7 @@ import packed.internal.container.PackedContainerConfiguration;
 // More Like ContainerDescriptor????
 // Because we can also create from a ContainerImage
 /// Yes but that image is created from a bundle of some kind.
-public class BundleDescriptor {
+public class ContainerBundleDescriptor {
 
     /** The type of the bundle. */
     private final Class<? extends ContainerBundle> bundleType;
@@ -109,7 +109,7 @@ public class BundleDescriptor {
      * @param builder
      *            a builder object
      */
-    protected BundleDescriptor(BundleDescriptor.Builder builder) {
+    protected ContainerBundleDescriptor(ContainerBundleDescriptor.Builder builder) {
         requireNonNull(builder, "builder is null");
         this.contracts = ContractSet.of(builder.contracts.values());
         this.bundleType = builder.bundleType();
@@ -119,7 +119,7 @@ public class BundleDescriptor {
     }
 
     // De er vel named.... Saa Map<String, Descriptor...
-    public List<BundleDescriptor> children() {
+    public List<ContainerBundleDescriptor> children() {
         // Saa skal vi vel ogsaa have navne...
         // Maaske kan vi have Container? <- Indicating that it will be created with Container and then some postfix
         throw new UnsupportedOperationException();
@@ -244,11 +244,11 @@ public class BundleDescriptor {
      * 
      * @see ArtifactImage#descriptor()
      */
-    public static BundleDescriptor of(ContainerBundle bundle) {
+    public static ContainerBundleDescriptor of(ContainerBundle bundle) {
         requireNonNull(bundle, "bundle is null");
-        PackedContainerConfiguration pcc = PackedContainerConfiguration.of(AssembleOutput.descriptor(BundleDescriptor.class), bundle);
+        PackedContainerConfiguration pcc = PackedContainerConfiguration.of(AssembleOutput.descriptor(ContainerBundleDescriptor.class), bundle);
         pcc.assemble();
-        BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
+        ContainerBundleDescriptor.Builder builder = new ContainerBundleDescriptor.Builder(bundle.getClass());
         pcc.buildDescriptor(builder);
         return builder.build();
     }
@@ -297,8 +297,8 @@ public class BundleDescriptor {
             return this;
         }
 
-        public BundleDescriptor build() {
-            return new BundleDescriptor(this);
+        public ContainerBundleDescriptor build() {
+            return new ContainerBundleDescriptor(this);
         }
 
         /**

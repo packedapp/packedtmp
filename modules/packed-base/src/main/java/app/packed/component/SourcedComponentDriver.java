@@ -13,24 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component.driver;
+package app.packed.component;
 
-import sandbox.artifact.hostguest.AppHostConfiguration;
+import app.packed.inject.Factory;
 
 /**
  *
  */
-public class AppHostDriver extends OldComponentDriver<AppHostConfiguration> {
+// X extends SourcedComponentConfiguration<T>
+public interface SourcedComponentDriver<T, X extends ComponentConfiguration> {
 
-    static final AppHostDriver DRIVER = new AppHostDriver();
+    static <T> SourcedComponentDriver<T, SingletonConfiguration<T>> singleton() {
+        throw new UnsupportedOperationException();
+    }
+}
 
-    private AppHostDriver() {
-        super(Option.hosting());
+class StringBundle extends Bundle<SingletonConfiguration<String>> {
+
+    protected StringBundle(String foo) {
+        super(SourcedComponentDriver.singleton(), foo);
+    }
+
+    protected StringBundle(Factory<String> factory) {
+        super(SourcedComponentDriver.singleton(), factory);
     }
 
     /** {@inheritDoc} */
     @Override
-    protected AppHostConfiguration create(ComponentDriverContext context) {
-        throw new UnsupportedOperationException();
-    }
+    protected void configure() {}
+
 }

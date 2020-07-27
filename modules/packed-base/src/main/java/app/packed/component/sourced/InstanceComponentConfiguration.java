@@ -13,13 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.host;
+package app.packed.component.sourced;
 
-import app.packed.component.ComponentConfiguration;
+import app.packed.base.Key;
+import app.packed.component.SourcedComponentConfiguration;
 
 /**
  *
  */
-public interface ComponentDriver<C extends ComponentConfiguration> {
+public interface InstanceComponentConfiguration<T> extends SourcedComponentConfiguration<T> {
 
+    static <T> SourcedComponentDriver<T, InstanceComponentConfiguration<T>> driver() {
+        throw new UnsupportedOperationException();
+    }
+
+    default InstanceComponentConfiguration<T> as(Key<? super T> key) {
+        throw new UnsupportedOperationException();
+    }
 }

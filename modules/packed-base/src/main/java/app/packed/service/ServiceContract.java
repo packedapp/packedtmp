@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 import app.packed.artifact.ArtifactImage;
 import app.packed.base.Contract;
 import app.packed.base.Key;
-import app.packed.container.BundleDescriptor;
+import app.packed.container.ContainerBundleDescriptor;
 import app.packed.container.ContainerBundle;
 
 /**
@@ -244,7 +244,7 @@ public final class ServiceContract extends Contract {
     }
 
     public static ServiceContract of(ContainerBundle bundle) {
-        Optional<ServiceContract> o = Contract.get(BundleDescriptor.of(bundle).contracts(), ServiceContract.class);
+        Optional<ServiceContract> o = Contract.get(ContainerBundleDescriptor.of(bundle).contracts(), ServiceContract.class);
         return o.orElse(ServiceContract.EMPTY);
     }
 

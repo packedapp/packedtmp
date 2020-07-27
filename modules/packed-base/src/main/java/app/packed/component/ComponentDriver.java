@@ -15,6 +15,7 @@
  */
 package app.packed.component;
 
+import app.packed.base.Nullable;
 import app.packed.container.ContainerConfiguration;
 
 /**
@@ -25,8 +26,21 @@ public interface ComponentDriver<T extends ComponentConfiguration> {
     static ComponentDriver<ContainerConfiguration> container() {
         return new PackedContainerDriver();
     }
+
+    // Teanker ikke den skal vaere offentlig...
+    default T newConfiguration(@Nullable AbstractComponentConfiguration parent) {
+        throw new UnsupportedOperationException();
+    }
 }
 
-class PackedContainerDriver implements ComponentDriver<ContainerConfiguration> {
+interface InstanceDriver<T> extends ComponentDriver<SingletonConfiguration<T>> {
 
 }
+
+class PackedContainerDriver implements ComponentDriver<ContainerConfiguration> {}
+
+interface SourcingComponentDriver<X, T extends SourcedComponentConfiguration<X>> {
+
+}
+
+//interface InstanDriver<T, C>

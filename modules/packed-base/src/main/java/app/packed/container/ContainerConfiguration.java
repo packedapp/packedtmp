@@ -24,6 +24,7 @@ import java.util.Set;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDescriptor;
+import app.packed.component.ComponentDriver;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.inject.Factory;
@@ -35,9 +36,6 @@ import sandbox.artifact.hostguest.HostDriver;
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
  * extending {@link ContainerBundle} or {@link DefaultBundle}.
  */
-// Was named Composer, idk why
-// BundleContext....
-// Bundles
 public interface ContainerConfiguration extends ComponentConfiguration {
 
 //    /**
@@ -54,9 +52,9 @@ public interface ContainerConfiguration extends ComponentConfiguration {
     <C extends HostConfiguration<?>> C addHost(HostDriver<C> driver);
 
     /**
-     * Returns an unmodifiable view of the extensions that are currently being used.
+     * Returns an unmodifiable view of the extensions that have been configured so far.
      * 
-     * @return an unmodifiable view of the extensions that are currently being used
+     * @return an unmodifiable view of the extensions that have been configured so far
      * 
      * @see #use(Class)
      * @see ContainerBundle#extensions()
@@ -149,6 +147,8 @@ public interface ContainerConfiguration extends ComponentConfiguration {
     // So child modules do not have the power of the lookup object.
 
     // Class<?> realm(Lookup);
+
+    // Bliver brugt til boern.. og ikke en selv...
     void lookup(@Nullable Lookup lookup);
 
     /** {@inheritDoc} */
@@ -202,11 +202,18 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      */
     <W extends Wirelet> Optional<W> assemblyWirelet(Class<W> type); // Should assembly be the default????
 
-    // I think ContainerConfiguration is better
-    // Ideen er lidt at man kan lave sine egne
-    // ContainerConfiguration.of(Lookup); <--- of(lookup, lookup.lookupClass)
-    // ContainerConfiguration.of(Lookup, Class sourceType);
+    static ComponentDriver<ContainerConfiguration> driver() {
+        return new PackedContainerDriver();
+    }
+
 }
+
+class PackedContainerDriver implements ComponentDriver<ContainerConfiguration> {}
+
+// I think ContainerConfiguration is better
+// Ideen er lidt at man kan lave sine egne
+// ContainerConfiguration.of(Lookup); <--- of(lookup, lookup.lookupClass)
+// ContainerConfiguration.of(Lookup, Class sourceType);
 ///**
 //* Creates a new layer.
 //* 

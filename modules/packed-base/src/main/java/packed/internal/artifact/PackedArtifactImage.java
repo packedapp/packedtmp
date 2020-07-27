@@ -24,7 +24,7 @@ import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
-import app.packed.container.BundleDescriptor;
+import app.packed.container.ContainerBundleDescriptor;
 import app.packed.container.ContainerBundle;
 import app.packed.container.Wirelet;
 import packed.internal.component.ComponentConfigurationToComponentAdaptor;
@@ -80,9 +80,9 @@ public final class PackedArtifactImage implements ArtifactImage {
 
     /** {@inheritDoc} */
     @Override
-    public BundleDescriptor descriptor() {
+    public ContainerBundleDescriptor descriptor() {
         // Need to support wirelet context...
-        BundleDescriptor.Builder builder = new BundleDescriptor.Builder(sourceType());
+        ContainerBundleDescriptor.Builder builder = new ContainerBundleDescriptor.Builder(sourceType());
         pcc.buildDescriptor(builder);
         return builder.build();
     }

@@ -27,7 +27,7 @@ import app.packed.inject.Factory;
 
 // SingletonConfiguration -> Noget der laver en single instance der kan bruges af andre.
 // Maaske endda registereres som service
-public interface SingletonConfiguration<T> extends ComponentConfiguration {
+public interface SingletonConfiguration<T> extends SourcedComponentConfiguration<T> {
 
     /** {@inheritDoc} */
     @Override

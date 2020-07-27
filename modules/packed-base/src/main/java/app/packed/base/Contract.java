@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
-import app.packed.container.BundleDescriptor;
+import app.packed.container.ContainerBundleDescriptor;
 import app.packed.container.ContainerBundle;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.container.PackedContainerConfiguration;
@@ -95,9 +95,9 @@ public abstract class Contract {
 
     public static <T extends Contract> Optional<T> of(ContainerBundle bundle, Class<T> contractType) {
         requireNonNull(bundle, "bundle is null");
-        PackedContainerConfiguration conf = PackedContainerConfiguration.of(AssembleOutput.descriptor(BundleDescriptor.class), bundle);
+        PackedContainerConfiguration conf = PackedContainerConfiguration.of(AssembleOutput.descriptor(ContainerBundleDescriptor.class), bundle);
         conf.assemble();
-        BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
+        ContainerBundleDescriptor.Builder builder = new ContainerBundleDescriptor.Builder(bundle.getClass());
         conf.buildDescriptor(builder);
         // BundleDescriptor d = builder.build();
         throw new UnsupportedOperationException();

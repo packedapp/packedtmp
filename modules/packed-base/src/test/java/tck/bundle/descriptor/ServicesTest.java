@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.container.BundleDescriptor;
+import app.packed.container.ContainerBundleDescriptor;
 import app.packed.container.DefaultBundle;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
@@ -35,7 +35,7 @@ public class ServicesTest {
     /** A service will never be both requires and optional. */
     @Test
     public void requiresOverrideOptional() {
-        BundleDescriptor d = BundleDescriptor.of(new DefaultBundle() {
+        ContainerBundleDescriptor d = ContainerBundleDescriptor.of(new DefaultBundle() {
 
             @Override
             protected void configure() {

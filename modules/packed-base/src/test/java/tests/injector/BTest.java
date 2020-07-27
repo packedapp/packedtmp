@@ -18,7 +18,7 @@ package tests.injector;
 import java.lang.invoke.MethodHandles;
 import java.util.stream.Collectors;
 
-import app.packed.container.BundleDescriptor;
+import app.packed.container.ContainerBundleDescriptor;
 import app.packed.container.DefaultBundle;
 import app.packed.service.Injector;
 import app.packed.service.ServiceDescriptor;
@@ -33,7 +33,7 @@ public class BTest {
 
         i.getDescriptor(PrivateImplementation.class).get().configSite().print();
 
-        System.out.println(BundleDescriptor.of(new MyBundle()));
+        System.out.println(ContainerBundleDescriptor.of(new MyBundle()));
         System.out.println(String.class.getModule().getDescriptor());
 
         i = Injector.configure(c -> {

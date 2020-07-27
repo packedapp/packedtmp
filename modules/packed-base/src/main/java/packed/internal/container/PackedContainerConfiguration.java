@@ -34,13 +34,14 @@ import java.util.function.Consumer;
 import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.ArtifactImage;
 import app.packed.base.Nullable;
+import app.packed.component.Bundle;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDescriptor;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerBundle;
+import app.packed.container.ContainerBundleDescriptor;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
@@ -71,8 +72,8 @@ import sandbox.artifact.hostguest.HostDriver;
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class PackedContainerConfiguration extends PackedComponentContext implements ContainerConfiguration {
 
-    /** A MethodHandle that can invoke ContainerBundle#configure. */
-    private static final MethodHandle BUNDLE_CONFIGURE = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), ContainerBundle.class, "configure", void.class);
+    /** A MethodHandle that can invoke Bundle#configure. */
+    private static final MethodHandle BUNDLE_CONFIGURE = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), Bundle.class, "configure", void.class);
 
     private static final int LS_0_MAINL = 0;
 
@@ -86,9 +87,8 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
 //    @Nullable
 //    ArrayList<PackedContainerConfiguration> containers;
 
-    /** A VarHandle that can access ContainerBundle#configuration. */
-    private static final VarHandle VH_CONTAINER_BUNDLE_CONFIGURATION = LookupUtil.vhPrivateOther(MethodHandles.lookup(), ContainerBundle.class, "configuration",
-            Object.class);
+    /** A VarHandle that can access Bundle#configuration. */
+    private static final VarHandle VH_BUNDLE_CONFIGURATION = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Bundle.class, "configuration", Object.class);
 
     /** Any extension that is active. */
     @Nullable
@@ -240,7 +240,7 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
         return wireletContext == null ? Optional.empty() : Optional.ofNullable((W) wireletContext.getWireletOrPipeline(type));
     }
 
-    public void buildDescriptor(BundleDescriptor.Builder builder) {
+    public void buildDescriptor(ContainerBundleDescriptor.Builder builder) {
         builder.setBundleDescription(getDescription());
         builder.setName(getName());
         for (PackedExtensionConfiguration e : extensions.values()) {
@@ -261,14 +261,14 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
 
             // We perform a compare and exchange with configuration. Guarding against
             // concurrent usage of this bundle.
-            Object existing = VH_CONTAINER_BUNDLE_CONFIGURATION.compareAndExchange(cb, null, this);
+            Object existing = VH_BUNDLE_CONFIGURATION.compareAndExchange(cb, null, this);
             if (existing == null) {
                 try {
                     BUNDLE_CONFIGURE.invoke(cb);
                 } catch (Throwable e) {
                     throw ThrowableUtil.orUndeclared(e);
                 } finally {
-                    VH_CONTAINER_BUNDLE_CONFIGURATION.setVolatile(cb, POST_CONFIGURE);
+                    VH_BUNDLE_CONFIGURATION.setVolatile(cb, POST_CONFIGURE);
                 }
             } else if (existing instanceof ComponentConfiguration) {
                 // Can be this thread or another thread that is already using the bundle.

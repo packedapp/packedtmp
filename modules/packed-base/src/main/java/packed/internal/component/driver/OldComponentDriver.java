@@ -32,9 +32,9 @@ package packed.internal.component.driver;
 
 // Altsaa er det her maaden at lave prototype service paa???
 
-public abstract class ComponentDriver<C> {
+public abstract class OldComponentDriver<C> {
 
-    protected ComponentDriver(Option... options) {
+    protected OldComponentDriver(Option... options) {
 
     }
 

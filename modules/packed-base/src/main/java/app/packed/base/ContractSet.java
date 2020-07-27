@@ -22,7 +22,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.StreamSupport;
 
-import app.packed.container.BundleDescriptor;
+import app.packed.container.ContainerBundleDescriptor;
 import app.packed.container.ContainerBundle;
 
 /**
@@ -107,6 +107,6 @@ public final class ContractSet extends Contract implements Iterable<Contract> {
     }
 
     public static ContractSet contractsOf(ContainerBundle bundle) {
-        return BundleDescriptor.of(bundle).contracts();
+        return ContainerBundleDescriptor.of(bundle).contracts();
     }
 }

@@ -13,24 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component.driver;
-
-import sandbox.artifact.hostguest.AppHostConfiguration;
+package app.packed.component;
 
 /**
  *
  */
-public class AppHostDriver extends OldComponentDriver<AppHostConfiguration> {
+public interface SourcedComponentConfiguration<T> extends ComponentConfiguration {
 
-    static final AppHostDriver DRIVER = new AppHostDriver();
-
-    private AppHostDriver() {
-        super(Option.hosting());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected AppHostConfiguration create(ComponentDriverContext context) {
-        throw new UnsupportedOperationException();
-    }
 }
