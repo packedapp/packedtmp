@@ -64,6 +64,7 @@ public abstract class AbstractComponentConfiguration implements ComponentConfigu
     protected final ComponentConfigurationContext context;
 
     protected AbstractComponentConfiguration() {
+        // Virker ikke skide smart da brugere saa kan caste den...
         context = (ComponentConfigurationContext) this;
     }
 

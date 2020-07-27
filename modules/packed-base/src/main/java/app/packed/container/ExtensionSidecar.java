@@ -32,7 +32,10 @@ import app.packed.statemachine.Leaving;
 //app.packed.state.... Also ExtensionSidecar.STATE2_MAIN, ExtensionSidecar.STATE3_LINKING, ExtensionSidecar.STATE4_HOSTING
 
 // dependencies = Class<? extends SubExtension>...
-// implementation default Extension.class <-- must be fillout if extension is interface (extends Extension)... 
+// implementation default Extension.class <-- must be fillout if extension is interface (extends Extension)...
+
+// Skal vi dele dem op i mandatory og optional og optionalNamed
+// Er mest taenkt for descriptors. F.eks. kan man se om en given extension er optional
 public @interface ExtensionSidecar {
 
     /**
@@ -52,7 +55,8 @@ public @interface ExtensionSidecar {
 
     /**
      * Any child containers located in the same artifact will be has been defined. Typically using
-     * {@link ContainerBundle#link(ContainerBundle, app.packed.container.Wirelet...)}. The next event will be {@link #GUESTS_DEFINITIONS}.
+     * {@link ContainerBundle#link(ContainerBundle, app.packed.container.Wirelet...)}. The next event will be
+     * {@link #GUESTS_DEFINITIONS}.
      */
     String CHILD_LINKING = "ChildLinking";
 

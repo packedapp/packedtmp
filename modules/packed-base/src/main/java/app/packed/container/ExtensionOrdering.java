@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import app.packed.component.Component;
 import packed.internal.container.ExtensionModel;
 
 /**
@@ -92,4 +93,10 @@ public interface ExtensionOrdering extends Iterable<Class<? extends Extension>> 
         List<?> l = extensions.stream().map(c -> ExtensionModel.of(c)).sorted().map(m -> m.type()).collect(Collectors.toList());
         return new PackedExtensionOrdering((List<Class<? extends Extension>>) l);
     }
+
+    static ExtensionOrdering findAll(Component c) {
+        // Recursive
+        throw new UnsupportedOperationException();
+    }
+
 }

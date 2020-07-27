@@ -17,6 +17,7 @@ package app.packed.container;
 
 import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 
@@ -165,6 +166,11 @@ public abstract class Extension {
             // Annoteringer er gode for ikke abstract basis klasser
         }
         return c;
+    }
+
+    protected void lookup(Lookup l) {
+        // Den fungere ligesom Bundle.lookup()
+        // Her har vi selve extension'en som
     }
 
     /**

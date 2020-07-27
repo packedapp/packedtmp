@@ -13,15 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.component;
 
-import app.packed.component.ComponentConfiguration;
+import static java.util.Objects.requireNonNull;
 
 /**
  * A bundle encapsulates {@link ComponentConfiguration configuration} of a component.
  */
 public abstract class Bundle<T extends ComponentConfiguration> {
 
+    final ComponentDriver<? extends T> driver;
+
+    protected Bundle(ComponentDriver<? extends T> driver) {
+        this.driver = requireNonNull(driver);
+    }
     // Maaske hedder det ikke en bundle som root???
 
     // Bundle, protected final

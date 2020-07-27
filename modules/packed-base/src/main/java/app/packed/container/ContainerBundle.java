@@ -25,6 +25,8 @@ import java.util.function.Predicate;
 
 import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
+import app.packed.component.Bundle;
+import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
@@ -60,6 +62,11 @@ import sandbox.component.ConfiguredBy;
 // Unconfigured/Configuring/Configured (Failed??? well et can't bee Configured if it's failed)
 
 public abstract class ContainerBundle extends Bundle<ContainerConfiguration> implements ArtifactSource {
+
+    /** Creates a new ContainerBundle */
+    protected ContainerBundle() {
+        super(ComponentDriver.container());
+    }
 
     /**
      * The configuration of the container. Is initial null configure has not yet been called. Then it is initialized which a
