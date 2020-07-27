@@ -256,8 +256,8 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
      */
     private void configure() {
         // If it is an image it has already been assembled
-        if (source instanceof ContainerBundle) {
-            ContainerBundle cb = (ContainerBundle) source;
+        if (source instanceof Bundle) {
+            Bundle<?> cb = (Bundle<?>) source;
 
             // We perform a compare and exchange with configuration. Guarding against
             // concurrent usage of this bundle.

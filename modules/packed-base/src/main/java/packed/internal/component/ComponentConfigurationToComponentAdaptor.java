@@ -58,8 +58,28 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
     @Override
     public final Collection<Component> children() {
         Map<String, ComponentConfigurationToComponentAdaptor> c = children;
+
+        // TODO fix this shit
+//        return new AbstractCollection<Component>() {
+//
+//            @Override
+//            public Iterator<Component> iterator() {
+//                Map<String, ComponentConfigurationToComponentAdaptor> c = children;
+//                // TODO make view instead
+//                return c == null ? List.<Component>of().iterator() : null;
+//            }
+//
+//            @Override
+//            public int size() {
+//                Map<String, ComponentConfigurationToComponentAdaptor> c = children;
+//                return c == null ? 0 : c.size();
+//            }
+//        };
+
         if (c == null) {
             if (componentConfiguration.children == null) {
+                // It is not really a view...
+                // return new AbstractCollection<>(); <--- cache it,
                 c = Map.of();
             } else {
                 LinkedHashMap<String, ComponentConfigurationToComponentAdaptor> m = new LinkedHashMap<>();
