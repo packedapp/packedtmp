@@ -88,7 +88,6 @@ public class PackedComponent implements Component {
         this.configSite = requireNonNull(configuration.configSite());
         this.description = configuration.getDescription();
         this.depth = parent == null ? 0 : parent.depth + 1; // If configuration is from image, depth will not match
-        this.children = configuration.initializeChildren(this, ic);
         this.extension = configuration.extension();
         if (parent == null) {
             String n = configuration.name;
@@ -104,6 +103,9 @@ public class PackedComponent implements Component {
             this.name = requireNonNull(configuration.name);
         }
         this.model = requireNonNull(configuration.descritor());
+
+        // Last but least, initialize all children...
+        this.children = configuration.initializeChildren(this, ic);
     }
 
     /** {@inheritDoc} */
