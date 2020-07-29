@@ -136,8 +136,8 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
         this.descriptor = requireNonNull(descriptor);
     }
 
-    protected PackedComponentConfigurationContext(ComponentDescriptor descriptor, ConfigSite configSite, PackedHostConfigurationContext parent, PackedContainerConfigurationContext pcc,
-            AssembleOutput output) {
+    protected PackedComponentConfigurationContext(ComponentDescriptor descriptor, ConfigSite configSite, PackedHostConfigurationContext parent,
+            PackedContainerConfigurationContext pcc, AssembleOutput output) {
         this.configSite = requireNonNull(configSite);
         this.parent = requireNonNull(parent);
         this.container = null;
@@ -416,7 +416,7 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
 
     /** {@inheritDoc} */
     @Override
-    public ComponentConfiguration setDescription(String description) {
+    public PackedComponentConfigurationContext setDescription(String description) {
         requireNonNull(description, "description is null");
         checkConfigurable();
         this.description = description;
@@ -425,7 +425,7 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
 
     /** {@inheritDoc} */
     @Override
-    public ComponentConfiguration setName(String name) {
+    public PackedComponentConfigurationContext setName(String name) {
         // First lets check the name is valid
         ContainerNameWirelet.checkName(name);
         switch (state.oldState) {

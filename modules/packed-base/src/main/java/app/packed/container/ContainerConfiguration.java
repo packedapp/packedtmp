@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Nullable;
-import app.packed.component.ComponentConfigurationContext;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDescriptor;
 import app.packed.component.ComponentDriver;
 import app.packed.component.SingletonConfiguration;
@@ -36,7 +36,7 @@ import sandbox.artifact.hostguest.HostDriver;
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
  * extending {@link ContainerBundle} or {@link DefaultBundle}.
  */
-public interface ContainerConfiguration extends ComponentConfigurationContext {
+public interface ContainerConfiguration extends ComponentConfiguration {
 
     <C extends HostConfiguration<?>> C addHost(HostDriver<C> driver);
 

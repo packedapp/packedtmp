@@ -176,12 +176,14 @@ public abstract class AbstractComponentConfiguration implements ComponentConfigu
     /** {@inheritDoc} */
     @Override
     public ComponentConfiguration setDescription(String description) {
-        return context.setDescription(description);
+        context.setDescription(description);
+        return this;
     }
 
     /** {@inheritDoc} */
     @Override
     public ComponentConfiguration setName(String name) {
-        return context.setName(name);
+        context.setName(name);
+        return this;
     }
 }
