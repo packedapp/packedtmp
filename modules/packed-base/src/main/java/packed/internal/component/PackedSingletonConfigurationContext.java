@@ -39,7 +39,8 @@ public final class PackedSingletonConfigurationContext<T> extends PackedComponen
     @Nullable
     public final T instance;
 
-    public PackedSingletonConfigurationContext(ConfigSite configSite, PackedComponentConfigurationContext parent, ComponentModel componentModel, BaseFactory<T> factory) {
+    public PackedSingletonConfigurationContext(ConfigSite configSite, PackedComponentConfigurationContext parent, ComponentModel componentModel,
+            BaseFactory<T> factory) {
         super(ComponentDescriptor.COMPONENT_INSTANCE, configSite, parent);
         this.componentModel = requireNonNull(componentModel);
         this.factory = requireNonNull(factory);
@@ -70,14 +71,14 @@ public final class PackedSingletonConfigurationContext<T> extends PackedComponen
 
     /** {@inheritDoc} */
     @Override
-    public SingletonConfiguration<T> setDescription(String description) {
+    public PackedSingletonConfigurationContext<T> setDescription(String description) {
         super.setDescription(description);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public SingletonConfiguration<T> setName(String name) {
+    public PackedSingletonConfigurationContext<T> setName(String name) {
         super.setName(name);
         return this;
     }

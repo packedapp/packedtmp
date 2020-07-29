@@ -92,16 +92,15 @@ public final class ServiceProvidingManager {
      *            the configuration of the annotated component
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void addProvidesHook(AtProvidesHook hook, SingletonConfiguration cc) {
+    public void addProvidesHook(AtProvidesHook hook, PackedSingletonConfigurationContext cc) {
         // The parent node is not added until #provideFactory or #provideInstance
         AbstractComponentBuildEntry parentNode;
-        PackedSingletonConfigurationContext psc = (PackedSingletonConfigurationContext) cc;
-        if (psc.instance != null) {
-            parentNode = new ComponentConstantBuildEntry<>(node, cc.configSite(), cc, psc.instance);
+        if (cc.instance != null) {
+            parentNode = new ComponentConstantBuildEntry<>(node, cc.configSite(), cc, cc.instance);
         } else {
-            BaseFactory<?> factory = psc.factory;
+            BaseFactory<?> factory = cc.factory;
             List<ServiceDependency> dependencies = factory.factory.dependencies;
-            parentNode = new ComponentFactoryBuildEntry<>(node, cc, ServiceMode.SINGLETON, psc.fromFactory(), dependencies);
+            parentNode = new ComponentFactoryBuildEntry<>(node, cc, ServiceMode.SINGLETON, cc.fromFactory(), dependencies);
         }
 
         // If any of the @Provide methods are instance members the parent node needs special treatment.

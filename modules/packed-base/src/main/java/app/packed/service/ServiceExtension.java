@@ -29,7 +29,6 @@ import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionLinked;
 import app.packed.container.ExtensionSidecar;
 import app.packed.container.Wirelet;
-import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
 import app.packed.inject.Factory;
 import app.packed.lifecycleold.OnStart;
@@ -310,14 +309,14 @@ public final class ServiceExtension extends Extension {
      *            the configuration of the component that uses the annotation
      */
     @OnHook
-    void onHook(AtProvidesHook hook, SingletonConfiguration<?> cc) {
+    void onHook(AtProvidesHook hook, PackedSingletonConfigurationContext<?> cc) {
         node.provider().addProvidesHook(hook, cc);
     }
 
-    @OnHook
-    void onHook(AnnotatedMethodHook<Provide> hook, SingletonConfiguration<?> cc) {
-        // System.out.println("INVOKED " + hook.method());
-    }
+//    @OnHook
+//    void onHook(AnnotatedMethodHook<Provide> hook, SingletonConfiguration<?> cc) {
+//        // System.out.println("INVOKED " + hook.method());
+//    }
 
     /**
      * @param <T>
