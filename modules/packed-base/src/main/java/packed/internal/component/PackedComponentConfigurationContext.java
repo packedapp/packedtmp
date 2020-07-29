@@ -47,14 +47,14 @@ import packed.internal.hook.applicator.DelayedAccessor;
 import packed.internal.host.PackedHostConfiguration;
 
 /** A common superclass for all component configuration classes. */
-public abstract class PackedComponentContext implements ComponentConfigurationContext {
+public abstract class PackedComponentConfigurationContext implements ComponentConfigurationContext {
 
     /** The artifact this component is a part of. */
     private final PackedAssembleContext artifact;
 
     /** Any children of this component (lazily initialized), in order of insertion. */
     @Nullable
-    protected LinkedHashMap<String, PackedComponentContext> children;
+    protected LinkedHashMap<String, PackedComponentConfigurationContext> children;
 
     /** The configuration site of this component. */
     private final ConfigSite configSite;
@@ -84,7 +84,7 @@ public abstract class PackedComponentContext implements ComponentConfigurationCo
 
     /** The parent of this component, or null for a root container. */
     @Nullable
-    public final PackedComponentContext parent;
+    public final PackedComponentConfigurationContext parent;
 
     /** The state of this configuration. */
     // Maaske er det en special GuestConfigurationAdaptor som er rod paa runtime.
@@ -100,7 +100,7 @@ public abstract class PackedComponentContext implements ComponentConfigurationCo
      * @param parent
      *            the parent of the component
      */
-    protected PackedComponentContext(ComponentDescriptor descriptor, ConfigSite configSite, PackedComponentContext parent) {
+    protected PackedComponentConfigurationContext(ComponentDescriptor descriptor, ConfigSite configSite, PackedComponentConfigurationContext parent) {
         this.configSite = requireNonNull(configSite);
         this.parent = requireNonNull(parent);
         this.depth = parent.depth() + 1;
@@ -126,7 +126,7 @@ public abstract class PackedComponentContext implements ComponentConfigurationCo
      * @param output
      *            the output of the build process
      */
-    protected PackedComponentContext(ComponentDescriptor descriptor, ConfigSite configSite, AssembleOutput output) {
+    protected PackedComponentConfigurationContext(ComponentDescriptor descriptor, ConfigSite configSite, AssembleOutput output) {
         this.configSite = requireNonNull(configSite);
         this.parent = null;
         this.container = null;
@@ -136,7 +136,7 @@ public abstract class PackedComponentContext implements ComponentConfigurationCo
         this.descriptor = requireNonNull(descriptor);
     }
 
-    protected PackedComponentContext(ComponentDescriptor descriptor, ConfigSite configSite, PackedHostConfiguration parent, PackedContainerConfiguration pcc,
+    protected PackedComponentConfigurationContext(ComponentDescriptor descriptor, ConfigSite configSite, PackedHostConfiguration parent, PackedContainerConfiguration pcc,
             AssembleOutput output) {
         this.configSite = requireNonNull(configSite);
         this.parent = requireNonNull(parent);
@@ -206,9 +206,9 @@ public abstract class PackedComponentContext implements ComponentConfigurationCo
      * @param child
      *            the child to add
      */
-    protected final void addChild(PackedComponentContext child) {
+    protected final void addChild(PackedComponentConfigurationContext child) {
         requireNonNull(child.name);
-        LinkedHashMap<String, PackedComponentContext> c = children;
+        LinkedHashMap<String, PackedComponentConfigurationContext> c = children;
         if (c == null) {
             c = children = new LinkedHashMap<>();
         }
@@ -297,7 +297,7 @@ public abstract class PackedComponentContext implements ComponentConfigurationCo
     }
 
     PackedContainerConfiguration containerX() {
-        PackedComponentContext c = this;
+        PackedComponentConfigurationContext c = this;
         while (!(c instanceof PackedContainerConfiguration)) {
             c = c.parent;
         }
@@ -316,7 +316,7 @@ public abstract class PackedComponentContext implements ComponentConfigurationCo
 
     protected void extensionsPrepareInstantiation(PackedInstantiationContext ic) {
         if (children != null) {
-            for (PackedComponentContext acc : children.values()) {
+            for (PackedComponentConfigurationContext acc : children.values()) {
                 if (artifact == acc.artifact) {
                     acc.extensionsPrepareInstantiation(ic);
                 }
@@ -344,7 +344,7 @@ public abstract class PackedComponentContext implements ComponentConfigurationCo
         // Hmm, we should probably used LinkedHashMap to retain order.
         // It just uses so much memory...
         HashMap<String, PackedComponent> result = new HashMap<>(children.size());
-        for (PackedComponentContext acc : children.values()) {
+        for (PackedComponentConfigurationContext acc : children.values()) {
             PackedComponent ac = acc.instantiate(parent, ic);
             result.put(ac.name(), ac);
         }
@@ -394,7 +394,7 @@ public abstract class PackedComponentContext implements ComponentConfigurationCo
         return new PackedComponent(parent, this, ic);
     }
 
-    public boolean isInSameContainer(PackedComponentContext other) {
+    public boolean isInSameContainer(PackedComponentConfigurationContext other) {
         return containerX() == other.containerX();
     }
 

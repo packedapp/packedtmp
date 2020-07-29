@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.artifact.ArtifactImage;
 import app.packed.component.ComponentDescriptor;
 import packed.internal.artifact.AssembleOutput;
-import packed.internal.component.PackedComponentContext;
+import packed.internal.component.PackedComponentConfigurationContext;
 import packed.internal.container.PackedContainerConfiguration;
 
 /**
@@ -31,7 +31,7 @@ import packed.internal.container.PackedContainerConfiguration;
 // Hvilke resultere i to forskellige paths.
 
 // Der er ikke nogen vej udenom
-public class PackedGuestConfiguration extends PackedComponentContext {
+public class PackedGuestConfiguration extends PackedComponentConfigurationContext {
 
     public final PackedContainerConfiguration delegate;
 

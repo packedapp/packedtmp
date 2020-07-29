@@ -29,7 +29,7 @@ import packed.internal.inject.factory.FactoryHandle;
 /**
  *
  */
-public final class PackedSingletonConfiguration<T> extends PackedComponentContext implements SingletonConfiguration<T> {
+public final class PackedSingletonConfiguration<T> extends PackedComponentConfigurationContext implements SingletonConfiguration<T> {
 
     public final ComponentModel componentModel;
 
@@ -39,14 +39,14 @@ public final class PackedSingletonConfiguration<T> extends PackedComponentContex
     @Nullable
     public final T instance;
 
-    public PackedSingletonConfiguration(ConfigSite configSite, PackedComponentContext parent, ComponentModel componentModel, BaseFactory<T> factory) {
+    public PackedSingletonConfiguration(ConfigSite configSite, PackedComponentConfigurationContext parent, ComponentModel componentModel, BaseFactory<T> factory) {
         super(ComponentDescriptor.COMPONENT_INSTANCE, configSite, parent);
         this.componentModel = requireNonNull(componentModel);
         this.factory = requireNonNull(factory);
         this.instance = null;
     }
 
-    public PackedSingletonConfiguration(ConfigSite configSite, PackedComponentContext parent, ComponentModel componentModel, T instance) {
+    public PackedSingletonConfiguration(ConfigSite configSite, PackedComponentConfigurationContext parent, ComponentModel componentModel, T instance) {
         super(ComponentDescriptor.COMPONENT_INSTANCE, configSite, parent);
         this.componentModel = requireNonNull(componentModel);
         this.factory = null;

@@ -24,7 +24,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundle;
 import app.packed.container.Wirelet;
 import packed.internal.artifact.PackedArtifactImage;
-import packed.internal.component.PackedComponentContext;
+import packed.internal.component.PackedComponentConfigurationContext;
 import packed.internal.host.api.HostConfigurationContext;
 
 /**
@@ -32,13 +32,13 @@ import packed.internal.host.api.HostConfigurationContext;
  */
 // We don't actually store the HostConfiguration in this class.
 
-public final class PackedHostConfiguration extends PackedComponentContext implements HostConfigurationContext {
+public final class PackedHostConfiguration extends PackedComponentConfigurationContext implements HostConfigurationContext {
 
     /**
      * @param configSite
      * @param parent
      */
-    public PackedHostConfiguration(ConfigSite configSite, PackedComponentContext parent) {
+    public PackedHostConfiguration(ConfigSite configSite, PackedComponentConfigurationContext parent) {
         super(ComponentDescriptor.COMPONENT_INSTANCE, configSite, parent);
     }
 

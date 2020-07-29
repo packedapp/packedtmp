@@ -22,11 +22,11 @@ import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 
 /** The default implementation of {@link StatelessConfiguration}. */
-public final class PackedStatelessComponentConfiguration extends PackedComponentContext {
+public final class PackedStatelessComponentConfigurationContext extends PackedComponentConfigurationContext {
 
     private final ComponentModel componentModel;
 
-    public PackedStatelessComponentConfiguration(ConfigSite configSite, PackedComponentContext parent, ComponentModel componentModel) {
+    public PackedStatelessComponentConfigurationContext(ConfigSite configSite, PackedComponentConfigurationContext parent, ComponentModel componentModel) {
         super(ComponentDescriptor.STATELESS, configSite, parent);
         this.componentModel = requireNonNull(componentModel);
     }
@@ -36,21 +36,21 @@ public final class PackedStatelessComponentConfiguration extends PackedComponent
         return componentModel.defaultPrefix();
     }
 
-    public PackedStatelessComponentConfiguration runHooks(Object source) {
+    public PackedStatelessComponentConfigurationContext runHooks(Object source) {
         componentModel.invokeOnHookOnInstall(source, this);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public PackedStatelessComponentConfiguration setDescription(String description) {
+    public PackedStatelessComponentConfigurationContext setDescription(String description) {
         super.setDescription(description);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public PackedStatelessComponentConfiguration setName(String name) {
+    public PackedStatelessComponentConfigurationContext setName(String name) {
         super.setName(name);
         return this;
     }

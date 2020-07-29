@@ -83,7 +83,7 @@ public class PackedComponent implements Component {
      * @param configuration
      *            the configuration used for creating this component
      */
-    public PackedComponent(@Nullable PackedComponent parent, PackedComponentContext configuration, PackedInstantiationContext ic) {
+    public PackedComponent(@Nullable PackedComponent parent, PackedComponentConfigurationContext configuration, PackedInstantiationContext ic) {
         this.parent = parent;
         this.configSite = requireNonNull(configuration.configSite());
         this.description = configuration.getDescription();
