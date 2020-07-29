@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Nullable;
+import app.packed.component.Bundle;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDescriptor;
 import app.packed.component.ComponentDriver;
@@ -127,7 +128,7 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      * @param wirelets
      *            any wirelets
      */
-    void link(ContainerBundle bundle, Wirelet... wirelets);
+    void link(Bundle<?> bundle, Wirelet... wirelets);
 
     /**
      * Registers a {@link Lookup} object that will be used for accessing members on components that are registered with the

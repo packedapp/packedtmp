@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 import app.packed.artifact.ArtifactSource;
+import app.packed.component.Bundle;
 import app.packed.component.ComponentBundle;
 import app.packed.component.ComponentDriver;
 import app.packed.component.SingletonConfiguration;
@@ -200,14 +201,9 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
      *            the bundle to link
      * @param wirelets
      *            an optional array of wirelets
-     * @see ContainerConfiguration#link(ContainerBundle, Wirelet...)
+     * @see ContainerConfiguration#link(Bundle, Wirelet...)
      */
-    // Maaske tager vi en ContainerConfiguration????
-    // configuration().link(bundle.configuration(), wirelets);
-
-    // Maaske tager vi bare Bundle<?>
-
-    protected final void link(ContainerBundle bundle, Wirelet... wirelets) {
+    protected final void link(Bundle<?> bundle, Wirelet... wirelets) {
         configuration().link(bundle, wirelets);
     }
 

@@ -27,11 +27,11 @@ import java.util.function.Function;
 
 import app.packed.base.Contract;
 import app.packed.base.Nullable;
+import app.packed.component.Bundle;
 import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerDescriptor;
-import app.packed.container.ContainerBundle;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionSidecar;
@@ -51,11 +51,17 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     /** A MethodHandle for invoking {@link #lifecycle()} used by {@link ExtensionModel}. */
     static final MethodHandle MH_LIFECYCLE_CONTEXT = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "lifecycle", LifecycleContext.class);
 
-    /** A VarHandle used by {@link #of(PackedContainerConfigurationContext, Class)} to access the field Extension#configuration. */
+    /**
+     * A VarHandle used by {@link #of(PackedContainerConfigurationContext, Class)} to access the field
+     * Extension#configuration.
+     */
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
-    /** The extension instance this configuration wraps, initialized in {@link #of(PackedContainerConfigurationContext, Class)}. */
+    /**
+     * The extension instance this configuration wraps, initialized in
+     * {@link #of(PackedContainerConfigurationContext, Class)}.
+     */
     @Nullable
     private Extension instance;
 
@@ -231,7 +237,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
 
     /** {@inheritDoc} */
     @Override
-    public void link(ContainerBundle bundle, Wirelet... wirelets) {
+    public void link(Bundle<?> bundle, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 

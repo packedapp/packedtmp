@@ -16,7 +16,6 @@
 package app.packed.component.sourced;
 
 import app.packed.base.Key;
-import app.packed.component.Bundle;
 import app.packed.component.SourcedComponentConfiguration;
 import app.packed.container.ContainerBundle;
 import app.packed.container.Wirelet;
@@ -36,10 +35,6 @@ class MBundle extends MyBundle {
  *
  */
 public abstract class MyBundle extends ContainerBundle {
-
-    public void link(Bundle<?> bundle, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
 
     public <T, X extends SourcedComponentConfiguration<T>> X link(SourcedComponentDriver<T, X> driver, T instance, Wirelet... wirelets) {
         throw new UnsupportedOperationException();

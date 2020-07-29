@@ -23,12 +23,12 @@ import java.util.Set;
 import app.packed.artifact.ArtifactContext;
 import app.packed.base.Nullable;
 import app.packed.component.AbstractComponentConfiguration;
+import app.packed.component.Bundle;
 import app.packed.component.ComponentDescriptor;
 import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerDescriptor.Builder;
 import app.packed.container.Extension;
@@ -175,7 +175,7 @@ public class PackedContainerConfiguration extends AbstractComponentConfiguration
     }
 
     @Override
-    public void link(ContainerBundle bundle, Wirelet... wirelets) {
+    public void link(Bundle<?> bundle, Wirelet... wirelets) {
         pccc.link(bundle, wirelets);
     }
 

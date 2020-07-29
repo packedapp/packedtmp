@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
+import app.packed.component.Bundle;
 import app.packed.component.Component;
 import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
@@ -103,7 +104,7 @@ public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
      * @param wirelets
      *            any wirelets
      */
-    void link(ContainerBundle bundle, Wirelet... wirelets);
+    void link(Bundle<?> bundle, Wirelet... wirelets);
 
     /**
      * Returns an extension of the specified type. The specified type must be among the extension's dependencies as

@@ -22,10 +22,11 @@ import java.util.Optional;
 import app.packed.artifact.ArtifactImage;
 import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
+import app.packed.component.Bundle;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerDescriptor;
 import app.packed.container.ContainerBundle;
+import app.packed.container.ContainerDescriptor;
 import app.packed.container.Wirelet;
 import packed.internal.component.ComponentConfigurationToComponentAdaptor;
 import packed.internal.container.PackedContainerConfigurationContext;
@@ -135,7 +136,7 @@ public final class PackedArtifactImage implements ArtifactImage {
             PackedArtifactImage pai = (PackedArtifactImage) source;
             return pai.with(wirelets);
         } else {
-            return of((ContainerBundle) source, wirelets);
+            return of((Bundle<?>) source, wirelets);
         }
     }
 
@@ -151,7 +152,7 @@ public final class PackedArtifactImage implements ArtifactImage {
      * @throws RuntimeException
      *             if the image could not be constructed
      */
-    public static PackedArtifactImage of(ContainerBundle bundle, Wirelet... wirelets) {
+    public static PackedArtifactImage of(Bundle<?> bundle, Wirelet... wirelets) {
         PackedContainerConfigurationContext pcc = PackedContainerConfigurationContext.of(AssembleOutput.image(), bundle, wirelets);
         return new PackedArtifactImage(pcc.assemble(), pcc.wireletContext);
     }

@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 
 import app.packed.artifact.ArtifactDriver;
 import app.packed.base.ContractSet;
-import app.packed.container.ContainerBundle;
+import app.packed.component.Bundle;
 import app.packed.container.Wirelet;
 
 /**
@@ -64,7 +64,7 @@ public interface HostContext<T> {
 
     // Skal vi tillade custom drivers?????
     // Maaske have en default artifact driver
-    Guest<T> instantiate(ArtifactDriver<? extends T> driver, ContainerBundle bundle, Wirelet[] userWirelets, Wirelet... hostWirelets);
+    Guest<T> instantiate(ArtifactDriver<? extends T> driver, Bundle<?> bundle, Wirelet[] userWirelets, Wirelet... hostWirelets);
 
     /**
      * Returns the number of guests that are currently deployed on the host.

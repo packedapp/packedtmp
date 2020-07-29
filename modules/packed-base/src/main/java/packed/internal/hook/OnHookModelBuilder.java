@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import app.packed.base.Nullable;
-import app.packed.container.ContainerBundle;
+import app.packed.component.Bundle;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.InternalExtensionException;
@@ -307,7 +307,7 @@ final class OnHookModelBuilder {
 
         /**
          * Creates a node for a container that does not have a builder defined. This is, for example, the case for both
-         * {@link ContainerBundle} and {@link Extension} which is instantiated elsewhere then the hook subsystem.
+         * {@link Bundle} and {@link Extension} which is instantiated elsewhere then the hook subsystem.
          * 
          * @param cp
          *            the class processor for the node
