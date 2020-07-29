@@ -20,11 +20,11 @@ import java.util.concurrent.CompletableFuture;
 
 import app.packed.base.Key;
 import app.packed.component.Component;
-import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.component.ComponentStream.Option;
 import app.packed.config.ConfigSite;
+import app.packed.container.ContainerBundle;
 import app.packed.container.Wirelet;
 import app.packed.lifecycleold.LifecycleOperations;
 import app.packed.lifecycleold.RunState;
@@ -68,7 +68,7 @@ public interface App extends AutoCloseable {
      *
      * @return the description of this application
      *
-     * @see ComponentConfiguration#setDescription(String)
+     * @see ContainerBundle#setDescription(String)
      */
     Optional<String> description();
 

@@ -18,30 +18,39 @@ package app.packed.component;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Nullable;
-import app.packed.config.ConfigSite;
-import app.packed.container.ContainerConfiguration;
-import app.packed.container.Wirelet;
+import app.packed.container.ContainerBundle;
 import app.packed.inject.Factory;
+import packed.internal.component.BundleConfiguration;
 
 /**
- * A bundle is a thin wrapper that encapsulates a {@link ComponentDriver} and {@link ComponentConfiguration
- * configuration} of a component.
+ * A bundle is a thin wrapper that encapsulates a {@link ComponentDriver} and a component's configuration. This class is
+ * primary used through one of its subclasses such as {@link ContainerBundle}.
+ * <p>
+ * This class is not meant to be extended by ordinary users. But provides means for power users to extend the basic
+ * functionality of Packed.
  */
-public abstract class Bundle<T extends ComponentConfiguration> {
+public abstract class Bundle<T> {
 
     /**
      * The configuration of the container. Is initial null configure has not yet been called. Then it is initialized which a
-     * {@link ContainerConfiguration}. Finally before returning from configure. The configuration is replaced with xxx.
+     * Configuration. Finally before returning from configure. The configuration is replaced with xxx.
      * <p>
      */
     // This fields can contain 4 different types. All updated in PackedContainerConfiguration#configure.
+    @Nullable
     private Object configuration;
 
-    /** The component driver. */
+    /** The driver of this bundle. */
     final ComponentDriver<? extends T> driver;
 
+    /**
+     * Creates a new bundle using the supplied component driver.
+     * 
+     * @param driver
+     *            the component driver to use
+     */
     protected Bundle(ComponentDriver<? extends T> driver) {
-        this.driver = requireNonNull(driver);
+        this.driver = requireNonNull(driver, "driver is null");
     }
 
     protected <X> Bundle(SourcedComponentDriver<X, ? extends T> driver, X instance) {
@@ -57,130 +66,31 @@ public abstract class Bundle<T extends ComponentConfiguration> {
     }
 
     /**
-     * Checks that the {@link #configure()} method has not already been invoked. This is typically used to make sure that
-     * users of extensions does not try to configure the extension after it has been configured.
+     * Returns the configuration object that this bundle wraps.
      * 
-     * @throws IllegalStateException
-     *             if {@link #configure()} has been invoked
-     * @see ContainerConfiguration#checkConfigurable()
-     */
-    protected final void checkConfigurable() {
-        configuration().checkConfigurable();
-    }
-
-    /**
-     * Returns the configuration site of this bundle.
-     * 
-     * @return the configuration site of this bundle
-     * @see ContainerConfiguration#configSite()
-     */
-    protected final ConfigSite configSite() {
-        return configuration().configSite();
-    }
-
-    /**
-     * Returns the configuration that this bundle wraps.
-     * 
-     * @return the configuration that this bundle wraps
+     * @return the configuration object that this bundle wraps
      * @throws IllegalStateException
      *             if called from outside of {@link #configure()}
      */
     @SuppressWarnings("unchecked")
     protected final T configuration() {
         Object c = configuration;
-        if (c instanceof ComponentConfiguration) {
+        if (c == null) {
+            throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
+        } else if (c instanceof BundleConfiguration) {
+            throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
+        } else {
             return (T) c;
         }
-        throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
     }
 
     /**
-     * Configures the bundle using the various methods that are available.
+     * Configures the bundle using the various methods that are available on subclasses.
      * <p>
-     * This method should never be invoked by anyone but the runtime.
+     * This method should only by invoked but the runtime.
      */
     protected abstract void configure();
 
-    /**
-     * Returns any description that has been set.
-     * 
-     * @return any description that has been set
-     * @see #setDescription(String)
-     * @see ContainerConfiguration#getDescription()
-     */
-    @Nullable
-    protected final String getDescription() {
-        return configuration().getDescription();
-    }
-
-    /**
-     * Returns the name of the container. If no name has previously been set via {@link #setName(String)} a name is
-     * automatically generated by the runtime as outlined in {@link #setName(String)}.
-     * <p>
-     * Trying to call {@link #setName(String)} after invoking this method will result in an {@link IllegalStateException}
-     * being thrown.
-     * 
-     * @return the name of the container
-     * @see #setName(String)
-     * @see ContainerConfiguration#setName(String)
-     */
-    protected final String getName() {
-        return configuration().getName();
-    }
-
-    /**
-     * Returns the full path of the container that this bundle creates.
-     * 
-     * @return the full path of the container that this bundle creates
-     * @see ContainerConfiguration#path()
-     */
-    protected final ComponentPath path() {
-        return configuration().path();
-    }
-
-    /**
-     * Sets the description of the container.
-     * 
-     * @param description
-     *            the description to set
-     * @see ContainerConfiguration#setDescription(String)
-     * @see #getDescription()
-     */
-    protected final void setDescription(String description) {
-        configuration().setDescription(description);
-    }
-
-    /**
-     * Sets the name of the container. The name must consists only of alphanumeric characters and '_', '-' or '.'. The name
-     * is case sensitive.
-     * <p>
-     * This method should be called as the first thing when configuring a container.
-     * <p>
-     * If no name is set using this method. A name will be assigned to the container when the container is initialized, in
-     * such a way that it will have a unique name among other sibling container.
-     *
-     * @param name
-     *            the name of the container
-     * @see #getName()
-     * @see ContainerConfiguration#setName(String)
-     * @throws IllegalArgumentException
-     *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
-     *             characters and '_', '-' or '.'
-     * @throws IllegalStateException
-     *             if called from outside {@link #configure()}
-     */
-    protected final void setName(String name) {
-        configuration().setName(name);
-    }
-
-    protected final void xLink(Bundle<?> bundle, Wirelet... wirelets) {
-        ContainerConfiguration cc = xWire(ContainerConfiguration.driver(), Wirelet.name("HejHej"));
-        cc.install(String.class);
-    }
-
-    protected final <C extends ComponentConfiguration> C xWire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
 }
 
 // Maaske hedder det ikke en bundle som root???

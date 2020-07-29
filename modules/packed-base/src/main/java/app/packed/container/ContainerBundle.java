@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 import app.packed.artifact.ArtifactSource;
-import app.packed.component.Bundle;
+import app.packed.component.ComponentBundle;
 import app.packed.component.ComponentDriver;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
@@ -58,7 +58,7 @@ import sandbox.component.ConfiguredBy;
 
 // Unconfigured/Configuring/Configured (Failed??? well et can't bee Configured if it's failed)
 
-public abstract class ContainerBundle extends Bundle<ContainerConfiguration> implements ArtifactSource {
+public abstract class ContainerBundle extends ComponentBundle<ContainerConfiguration> implements ArtifactSource {
 
     /** Creates a new ContainerBundle */
     protected ContainerBundle() {

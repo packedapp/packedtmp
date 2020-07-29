@@ -21,7 +21,7 @@ import app.packed.container.ContainerConfiguration;
 /**
  *
  */
-public interface ComponentDriver<T extends ComponentConfiguration> {
+public interface ComponentDriver<T> {
 
     static ComponentDriver<ContainerConfiguration> container() {
         return new PackedContainerDriver();

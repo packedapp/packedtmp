@@ -38,18 +38,20 @@ import sandbox.artifact.hostguest.HostDriver;
  */
 public interface ContainerConfiguration extends ComponentConfiguration {
 
-//    /**
-//     * Installs a host and returns the configuration of it.
-//     * 
-//     * @param <T>
-//     *            the type of host configuration to return
-//     * @param type
-//     *            the type of host configuration to return
-//     * @return a host configuration of the specified type
-//     */
-////    <T extends HostConfiguration> T addHost(Class<T> type);
-
     <C extends HostConfiguration<?>> C addHost(HostDriver<C> driver);
+
+    /**
+     * The specified wirelet type must have
+     * 
+     * @param <W>
+     *            the type of wirelet
+     * @param type
+     *            the type of wirelet
+     * @return an optional containing the wirelet if defined otherwise empty.
+     * @throws IllegalArgumentException
+     *             if the specified wirelet type does not have {@link WireletSidecar#failOnImage()} set to true
+     */
+    <W extends Wirelet> Optional<W> assemblyWirelet(Class<W> type); // Should assembly be the default????
 
     /**
      * Returns an unmodifiable view of the extensions that have been configured so far.
@@ -153,6 +155,12 @@ public interface ContainerConfiguration extends ComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
+    default ComponentDescriptor model() {
+        return ComponentDescriptor.CONTAINER;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     ContainerConfiguration setDescription(String description);
 
     /** {@inheritDoc} */
@@ -165,12 +173,6 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      * @return the class that defines the container
      */
     Class<?> sourceType();
-
-    /** {@inheritDoc} */
-    @Override
-    default ComponentDescriptor model() {
-        return ComponentDescriptor.CONTAINER;
-    }
 
     /**
      * Returns an extension of the specified type. If this is the first time an extension of the specified type is
@@ -190,22 +192,21 @@ public interface ContainerConfiguration extends ComponentConfiguration {
     <T extends Extension> T use(Class<T> extensionType);
 
     /**
-     * The specified wirelet type must have
+     * Returns the default driver for creating container configurations.
      * 
-     * @param <W>
-     *            the type of wirelet
-     * @param type
-     *            the type of wirelet
-     * @return an optional containing the wirelet if defined otherwise empty.
-     * @throws IllegalArgumentException
-     *             if the specified wirelet type does not have {@link WireletSidecar#failOnImage()} set to true
+     * @return the default driver for creating container configurations
      */
-    <W extends Wirelet> Optional<W> assemblyWirelet(Class<W> type); // Should assembly be the default????
+    // Skal den vaere here eller paa ComponentDriver????
+    // Syntes egentlig ikke den er tilknyttet ComponentDriver...
+    // Men hvis folk selv definere for custom defineret vil det maaske give mening.
+    // At smide dem paa configurationen... Der er jo ingen
 
+    // En anden meget positiv ting er at vi vi har 2 component drivere
+    // sourced and unsourced. People shouldn't really need to look at
+    // both of the classes two find what they need..
     static ComponentDriver<ContainerConfiguration> driver() {
         return new PackedContainerDriver();
     }
-
 }
 
 class PackedContainerDriver implements ComponentDriver<ContainerConfiguration> {}

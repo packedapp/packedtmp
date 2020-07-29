@@ -15,6 +15,8 @@
  */
 package app.packed.component;
 
+import java.util.function.Consumer;
+
 /**
  * A context object used by {@link AbstractComponentConfiguration}.
  *
@@ -23,4 +25,19 @@ package app.packed.component;
  */
 public interface ComponentConfigurationContext extends ComponentConfiguration {
 
+    /**
+     * Returns the full path of the component.
+     * <p>
+     * Once this method has been invoked, the name of the component can no longer be changed via {@link #setName(String)}.
+     * <p>
+     * If building an image, the path of the instantiated component might be prefixed with another path.
+     * <p>
+     * Returns the path of this configuration. Invoking this method will initialize the name of the component. The component
+     * path returned does not maintain any reference to this configuration object.
+     * 
+     * @return the path of this configuration.
+     * @see #onNamed(Consumer)
+     */
+    @Override
+    ComponentPath path();
 }

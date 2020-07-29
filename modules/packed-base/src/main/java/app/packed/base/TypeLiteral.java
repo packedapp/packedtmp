@@ -46,6 +46,8 @@ import packed.internal.util.TypeUtil;
  * TypeLiteral<Map<Integer, List<Integer>>> list = new TypeLiteral<>() {};}
  * </pre>
  */
+//https://www.reddit.com/r/java/comments/6b9zvl/do_you_think_we_should_have_a_typeliteral_class/
+//http://mail.openjdk.java.net/pipermail/valhalla-dev/2017-January/002150.html
 public abstract class TypeLiteral<T> {
 
     /** A cache of factories used by. */

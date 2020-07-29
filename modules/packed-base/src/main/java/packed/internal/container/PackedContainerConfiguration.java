@@ -35,7 +35,6 @@ import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.ArtifactImage;
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
-import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDescriptor;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
@@ -50,6 +49,7 @@ import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedInstantiationContext;
+import packed.internal.component.BundleConfiguration;
 import packed.internal.component.ComponentModel;
 import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedComponentContext;
@@ -249,8 +249,6 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
         builder.extensions.addAll(extensions.keySet());
     }
 
-    static String POST_CONFIGURE = "CONSUMED";
-
     /**
      * Configures the configuration.
      */
@@ -268,14 +266,14 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
                 } catch (Throwable e) {
                     throw ThrowableUtil.orUndeclared(e);
                 } finally {
-                    VH_BUNDLE_CONFIGURATION.setVolatile(cb, POST_CONFIGURE);
+                    VH_BUNDLE_CONFIGURATION.setVolatile(cb, BundleConfiguration.CONSUMED_SUCCESFULLY);
                 }
-            } else if (existing instanceof ComponentConfiguration) {
-                // Can be this thread or another thread that is already using the bundle.
-                throw new IllegalStateException("This bundle is already being used elsewhere, type = " + cb.getClass());
-            } else {
+            } else if (existing instanceof BundleConfiguration) {
                 // Bundle has already been used succesfullly or unsuccesfully
                 throw new IllegalStateException("This bundle has already been used, type = " + cb.getClass());
+            } else {
+                // Can be this thread or another thread that is already using the bundle.
+                throw new IllegalStateException("This bundle is already being used elsewhere, type = " + cb.getClass());
             }
 
             // Do we want to cache exceptions?

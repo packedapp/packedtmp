@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.container.sandbox;
 
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.base.TypeLiteral;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionOrdering;
 import app.packed.inject.Factory;
 
 /**
