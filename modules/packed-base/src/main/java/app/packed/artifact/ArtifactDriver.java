@@ -28,6 +28,7 @@ import app.packed.inject.Factory;
 import app.packed.service.Injector;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedArtifactImage;
+import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.PackedContainerConfigurationContext;
 import packed.internal.container.WireletPack;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
@@ -202,7 +203,8 @@ public abstract class ArtifactDriver<A> {
     // Hmmm
     public final <C> A configure(Function<ContainerConfiguration, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
         PackedContainerConfigurationContext pcc = PackedContainerConfigurationContext.of(AssembleOutput.artifact(this), consumer, wirelets);
-        C c = factory.apply(pcc);
+        PackedContainerConfiguration pc = new PackedContainerConfiguration(pcc);
+        C c = factory.apply(pc);
         consumer.configure(c);
         pcc.assemble();
         ArtifactContext pac = pcc.instantiateArtifact(pcc.wireletContext);

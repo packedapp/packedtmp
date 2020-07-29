@@ -50,7 +50,7 @@ import sandbox.artifact.hostguest.HostDriver;
  */
 public class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
 
-    private final PackedContainerConfigurationContext pccc;
+    public final PackedContainerConfigurationContext pccc;
 
     public PackedContainerConfiguration(PackedContainerConfigurationContext pccc) {
         super(pccc);
@@ -219,13 +219,15 @@ public class PackedContainerConfiguration extends AbstractComponentConfiguration
     }
 
     @Override
-    public PackedContainerConfigurationContext setDescription(String description) {
-        return pccc.setDescription(description);
+    public PackedContainerConfiguration setDescription(String description) {
+        pccc.setDescription(description);
+        return this;
     }
 
     @Override
-    public PackedContainerConfigurationContext setName(String name) {
-        return pccc.setName(name);
+    public PackedContainerConfiguration setName(String name) {
+        pccc.setName(name);
+        return this;
     }
 
     @Override

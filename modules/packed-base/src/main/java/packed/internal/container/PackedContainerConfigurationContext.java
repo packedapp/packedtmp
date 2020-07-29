@@ -71,7 +71,7 @@ import sandbox.artifact.hostguest.HostConfiguration;
 import sandbox.artifact.hostguest.HostDriver;
 
 /** The default implementation of {@link ContainerConfiguration}. */
-public final class PackedContainerConfigurationContext extends PackedComponentConfigurationContext implements ContainerConfiguration {
+public final class PackedContainerConfigurationContext extends PackedComponentConfigurationContext {
 
     /** A MethodHandle that can invoke Bundle#configure. */
     private static final MethodHandle BUNDLE_CONFIGURE = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), Bundle.class, "configure", void.class);
@@ -184,8 +184,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         this.wireletContext = WireletPack.fromLink(this, wirelets);
     }
 
-    /** {@inheritDoc} */
-    @Override
     public <C extends HostConfiguration<?>> C addHost(HostDriver<C> driver) {
         throw new UnsupportedOperationException();
     }
@@ -230,9 +228,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         advanceTo(LS_3_FINISHED);
     }
 
-    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
-    @Override
     public <W extends Wirelet> Optional<W> assemblyWirelet(Class<W> type) {
         WireletModel wm = WireletModel.of(type);
         if (!wm.requireAssemblyTime) {
@@ -260,7 +256,8 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
 
             // We perform a compare and exchange with configuration. Guarding against
             // concurrent usage of this bundle.
-            Object existing = VH_BUNDLE_CONFIGURATION.compareAndExchange(cb, null, this);
+            PackedContainerConfiguration pcc = new PackedContainerConfiguration(this);
+            Object existing = VH_BUNDLE_CONFIGURATION.compareAndExchange(cb, null, pcc);
             if (existing == null) {
                 try {
                     BUNDLE_CONFIGURE.invoke(cb);
@@ -290,8 +287,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         super.state.oldState = State.FINAL; // Thing is here, that initialize name returns early if name!=null
     }
 
-    /** {@inheritDoc} */
-    @Override
     public Set<Class<? extends Extension>> extensions() {
         return Collections.unmodifiableSet(extensions.keySet());
     }
@@ -357,16 +352,12 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         return "Unknown";
     }
 
-    /** {@inheritDoc} */
-    @Override
     // Flyt til AbstractComponentConfiguration????? Saa det er interfacet der styrer?
     public <T> SingletonConfiguration<T> install(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         return install(Factory.find(implementation));
     }
 
-    /** {@inheritDoc} */
-    @Override
     public <T> SingletonConfiguration<T> install(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
         ComponentModel model = lookup.componentModelOf(factory.rawType());
@@ -378,8 +369,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         return conf;
     }
 
-    /** {@inheritDoc} */
-    @Override
     public <T> SingletonConfiguration<T> installInstance(T instance) {
         requireNonNull(instance, "instance is null");
         ComponentModel model = lookup.componentModelOf(instance.getClass());
@@ -402,8 +391,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
     public StatelessConfiguration installStateless(Class<?> implementation) {
         requireNonNull(implementation, "implementation is null");
         ComponentModel model = lookup.componentModelOf(implementation);
@@ -431,8 +418,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         return pc.toArtifactContext();
     }
 
-    /** {@inheritDoc} */
-    @Override
     public boolean isArtifactRoot() {
         return parent == null; // TODO change when we have hosts.
     }
@@ -449,8 +434,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         return extensions.containsKey(extensionType);
     }
 
-    /** {@inheritDoc} */
-    @Override
     public void link(ContainerBundle bundle, Wirelet... wirelets) {
         PackedContainerConfigurationContext child = new PackedContainerConfigurationContext(this, bundle, wirelets);
 
@@ -483,8 +466,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         // Maybe in the future LinkedBundle<- (LinkableContainerSource)
     }
 
-    /** {@inheritDoc} */
-    @Override
     public void lookup(@Nullable Lookup lookup) {
         // If user specifies null, we use whatever
         // Actually I think null might be okay, then its standard module-info.java
@@ -563,15 +544,11 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         return this;
     }
 
-    /** {@inheritDoc} */
-    @Override
     public Class<?> sourceType() {
         return source.getClass();
     }
 
-    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
-    @Override
     public <T extends Extension> T use(Class<T> extensionType) {
         return (T) useExtension(extensionType, null).instance();
     }
