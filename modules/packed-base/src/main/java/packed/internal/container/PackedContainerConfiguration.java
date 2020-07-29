@@ -19,12 +19,10 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import app.packed.artifact.ArtifactContext;
 import app.packed.base.Nullable;
 import app.packed.component.AbstractComponentConfiguration;
-import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDescriptor;
 import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
@@ -207,11 +205,11 @@ public class PackedContainerConfiguration extends AbstractComponentConfiguration
     public ContainerLayer newLayer(String name, ContainerLayer... dependencies) {
         return pccc.newLayer(name, dependencies);
     }
-
-    @Override
-    public void onNamed(Consumer<? super ComponentConfiguration> action) {
-        pccc.onNamed(action);
-    }
+//
+//    @Override
+//    public void onNamed(Consumer<? super ComponentConfiguration> action) {
+//        pccc.onNamed(action);
+//    }
 
     @Override
     public final ComponentPath path() {

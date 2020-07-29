@@ -21,7 +21,6 @@ import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
@@ -161,11 +160,11 @@ public abstract class AbstractComponentConfiguration implements ComponentConfigu
         return context.model();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void onNamed(Consumer<? super ComponentConfiguration> action) {
-        context.onNamed(action);
-    }
+//    /** {@inheritDoc} */
+//    @Override
+//    public void onNamed(Consumer<? super ComponentConfiguration> action) {
+//        context.onNamed(action);
+//    }
 
     /** {@inheritDoc} */
     @Override

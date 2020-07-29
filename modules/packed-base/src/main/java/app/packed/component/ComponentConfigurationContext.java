@@ -16,7 +16,6 @@
 package app.packed.component;
 
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
@@ -84,17 +83,17 @@ public interface ComponentConfigurationContext {
      */
     ComponentDescriptor model();
 
-    /**
-     * Registers an action that will be performed whenever a name is assigned to the component.
-     * <p>
-     * This method is mainly used by extensions.
-     * 
-     * @param action
-     *            the action to be performed when the name of the component is finalized
-     */
-    default void onNamed(Consumer<? super ComponentConfiguration> action) {
-        throw new UnsupportedOperationException();
-    }
+//    /**
+//     * Registers an action that will be performed whenever a name is assigned to the component.
+//     * <p>
+//     * This method is mainly used by extensions.
+//     * 
+//     * @param action
+//     *            the action to be performed when the name of the component is finalized
+//     */
+//    default void onNamed(Consumer<? super ComponentConfiguration> action) {
+//        throw new UnsupportedOperationException();
+//    }
 
     /**
      * Returns the full path of the component.
@@ -108,7 +107,6 @@ public interface ComponentConfigurationContext {
      * path returned does not maintain any reference to this configuration object.
      * 
      * @return the path of this configuration.
-     * @see #onNamed(Consumer)
      */
     // artifactPath()???
     ComponentPath path(); // systemPath()<---
