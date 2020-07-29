@@ -62,7 +62,7 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
 
     /** Creates a new ContainerBundle */
     protected ContainerBundle() {
-        this(ComponentDriver.container());
+        this(ContainerConfiguration.driver());
     }
 
     protected ContainerBundle(ComponentDriver<? extends ContainerConfiguration> driver) {

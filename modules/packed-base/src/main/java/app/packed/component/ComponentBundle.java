@@ -26,6 +26,12 @@ import app.packed.inject.Factory;
  */
 public abstract class ComponentBundle<T extends ComponentConfiguration> extends Bundle<T> {
 
+    /**
+     * Creates a new bundle using the supplied component driver.
+     * 
+     * @param driver
+     *            the component driver to use
+     */
     protected ComponentBundle(ComponentDriver<? extends T> driver) {
         super(driver);
     }

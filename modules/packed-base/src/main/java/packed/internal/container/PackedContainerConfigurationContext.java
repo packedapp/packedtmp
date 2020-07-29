@@ -41,7 +41,6 @@ import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerBundleDescriptor;
-import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
@@ -71,7 +70,7 @@ import packed.internal.util.ThrowableUtil;
 import sandbox.artifact.hostguest.HostConfiguration;
 import sandbox.artifact.hostguest.HostDriver;
 
-/** The default implementation of {@link ContainerConfiguration}. */
+/** The default container context. */
 public final class PackedContainerConfigurationContext extends PackedComponentConfigurationContext {
 
     /** A MethodHandle that can invoke Bundle#configure. */

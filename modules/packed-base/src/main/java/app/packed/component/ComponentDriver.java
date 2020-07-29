@@ -16,31 +16,17 @@
 package app.packed.component;
 
 import app.packed.base.Nullable;
-import app.packed.container.ContainerConfiguration;
 
 /**
- *
+ * @param <C>
+ *            the type of configuration the driver uses to configure the underlying component
  */
-public interface ComponentDriver<T> {
-
-    static ComponentDriver<ContainerConfiguration> container() {
-        return new PackedContainerDriver();
-    }
+public interface ComponentDriver<C> {
 
     // Teanker ikke den skal vaere offentlig...
-    default T newConfiguration(@Nullable AbstractComponentConfiguration parent) {
+    default C newConfiguration(@Nullable AbstractComponentConfiguration parent) {
         throw new UnsupportedOperationException();
     }
-}
-
-interface InstanceDriver<T> extends ComponentDriver<SingletonConfiguration<T>> {
-
-}
-
-class PackedContainerDriver implements ComponentDriver<ContainerConfiguration> {}
-
-interface SourcingComponentDriver<X, T extends SourcedComponentConfiguration<X>> {
-
 }
 
 //interface InstanDriver<T, C>
