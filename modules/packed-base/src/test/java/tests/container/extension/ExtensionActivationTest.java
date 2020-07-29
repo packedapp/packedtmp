@@ -26,13 +26,13 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.artifact.App;
 import app.packed.component.Packlet;
-import app.packed.component.SingletonConfiguration;
 import app.packed.container.DefaultBundle;
 import app.packed.container.Extension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
+import packed.internal.component.PackedSingletonConfigurationContext;
 import testutil.util.AbstractArtifactTest;
 
 /** Tests that we can automatically activate an extension using a annotated field or method. */
@@ -145,7 +145,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
     public static final class MyExtension extends Extension {
 
         @OnHook
-        protected void set(Foo s, SingletonConfiguration<?> a) {}
+        protected void set(Foo s, PackedSingletonConfigurationContext<?> a) {}
 
     }
 

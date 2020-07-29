@@ -34,6 +34,7 @@ import app.packed.inject.Factory;
 import app.packed.lifecycleold.OnStart;
 import app.packed.sidecar.Expose;
 import app.packed.statemachine.Leaving;
+import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.component.PackedSingletonConfigurationContext;
 import packed.internal.container.WireletList;
 import packed.internal.inject.ConfigSiteInjectOperations;
@@ -313,11 +314,6 @@ public final class ServiceExtension extends Extension {
         node.provider().addProvidesHook(hook, cc);
     }
 
-//    @OnHook
-//    void onHook(AnnotatedMethodHook<Provide> hook, SingletonConfiguration<?> cc) {
-//        // System.out.println("INVOKED " + hook.method());
-//    }
-
     /**
      * @param <T>
      *            the type of service to provide
@@ -342,7 +338,7 @@ public final class ServiceExtension extends Extension {
      * @return the configuration of the component that was installed
      */
     public <T> ServiceComponentConfiguration<T> provide(Factory<T> factory) {
-        return node.provider().provideFactory((PackedSingletonConfigurationContext<T>) install(factory));
+        return node.provider().provideFactory(((PackedSingletonConfiguration<T>) install(factory)).context);
     }
 
     // Will install a ServiceStatelessConfiguration...
@@ -399,7 +395,7 @@ public final class ServiceExtension extends Extension {
      */
     public <T> ServiceComponentConfiguration<T> provideConstant(T instance) {
         // configurability is checked by ComponentExtension
-        PackedSingletonConfigurationContext<T> cc = (PackedSingletonConfigurationContext<T>) installInstance(instance);
+        PackedSingletonConfigurationContext<T> cc = ((PackedSingletonConfiguration<T>) installInstance(instance)).context;
         return node.provider().provideInstance(cc, instance);
     }
 

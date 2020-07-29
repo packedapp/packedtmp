@@ -53,6 +53,7 @@ import packed.internal.component.BundleConfiguration;
 import packed.internal.component.ComponentModel;
 import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedComponentConfigurationContext;
+import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.component.PackedSingletonConfigurationContext;
 import packed.internal.component.PackedStatelessComponentConfiguration;
 import packed.internal.component.PackedStatelessComponentConfigurationContext;
@@ -366,7 +367,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         installPrepare(State.INSTALL_INVOKED);
         currentComponent = conf;
         conf.runHooks(source);
-        return conf;
+        return new PackedSingletonConfiguration<>(conf);
     }
 
     public <T> SingletonConfiguration<T> installInstance(T instance) {
@@ -377,7 +378,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         installPrepare(State.INSTALL_INVOKED);
         currentComponent = conf;
         conf.runHooks(source);
-        return conf;
+        return new PackedSingletonConfiguration<>(conf);
     }
 
     private void installPrepare(State state) {

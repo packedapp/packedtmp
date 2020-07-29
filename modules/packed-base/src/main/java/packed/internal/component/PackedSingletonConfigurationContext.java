@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Nullable;
 import app.packed.component.ComponentDescriptor;
-import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
@@ -29,7 +28,7 @@ import packed.internal.inject.factory.FactoryHandle;
 /**
  *
  */
-public final class PackedSingletonConfigurationContext<T> extends PackedComponentConfigurationContext implements SingletonConfiguration<T> {
+public final class PackedSingletonConfigurationContext<T> extends PackedComponentConfigurationContext {
 
     public final ComponentModel componentModel;
 
