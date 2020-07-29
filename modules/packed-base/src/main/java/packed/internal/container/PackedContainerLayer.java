@@ -25,7 +25,7 @@ import app.packed.container.Wirelet;
 /** The default implementation of Layer. */
 class PackedContainerLayer implements ContainerLayer {
 
-    final PackedContainerConfiguration container;
+    final PackedContainerConfigurationContext container;
 
     /** All the dependencies of this layer. */
     private final Set<ContainerLayer> dependencies;
@@ -33,7 +33,7 @@ class PackedContainerLayer implements ContainerLayer {
     /** The name of the layer. */
     private final String name;
 
-    PackedContainerLayer(PackedContainerConfiguration container, String name, ContainerLayer... dependencies) {
+    PackedContainerLayer(PackedContainerConfigurationContext container, String name, ContainerLayer... dependencies) {
         this.container = requireNonNull(container);
         this.name = requireNonNull(name, "name is null");
         requireNonNull(dependencies, "dependencies is null");

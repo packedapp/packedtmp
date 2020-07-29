@@ -21,7 +21,7 @@ import app.packed.artifact.ArtifactImage;
 import app.packed.component.ComponentDescriptor;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.component.PackedComponentConfigurationContext;
-import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.container.PackedContainerConfigurationContext;
 
 /**
  *
@@ -33,9 +33,9 @@ import packed.internal.container.PackedContainerConfiguration;
 // Der er ikke nogen vej udenom
 public class PackedGuestConfiguration extends PackedComponentConfigurationContext {
 
-    public final PackedContainerConfiguration delegate;
+    public final PackedContainerConfigurationContext delegate;
 
-    PackedGuestConfiguration(PackedHostConfiguration host, PackedContainerConfiguration pcc, ArtifactImage image) {
+    PackedGuestConfiguration(PackedHostConfiguration host, PackedContainerConfigurationContext pcc, ArtifactImage image) {
         super(ComponentDescriptor.STATELESS, pcc.configSite(), host, pcc, AssembleOutput.image());
         this.delegate = requireNonNull(pcc);
         this.description = pcc.getDescription();

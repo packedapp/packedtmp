@@ -27,7 +27,7 @@ import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentConfigurationToComponentAdaptor;
-import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.container.PackedContainerConfigurationContext;
 import packed.internal.container.PackedExtensionConfiguration;
 
 /**
@@ -208,7 +208,7 @@ public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
         }
 
         ComponentConfigurationToComponentAdaptor cc = (ComponentConfigurationToComponentAdaptor) c;
-        PackedContainerConfiguration pcc = cc.componentConfiguration.actualContainer();
+        PackedContainerConfigurationContext pcc = cc.componentConfiguration.actualContainer();
         return pcc.getExtensionContext(extensionType);
     }
 }

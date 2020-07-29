@@ -28,7 +28,7 @@ import app.packed.inject.Factory;
 import app.packed.service.Injector;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedArtifactImage;
-import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.container.PackedContainerConfigurationContext;
 import packed.internal.container.WireletPack;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 
@@ -146,7 +146,7 @@ public abstract class ArtifactDriver<A> {
     }
 
     private ArtifactContext create(ArtifactSource source, Wirelet... wirelets) {
-        PackedContainerConfiguration pcc;
+        PackedContainerConfigurationContext pcc;
         WireletPack wc;
         // Either we create from an image, or from a bundle
         if (source instanceof PackedArtifactImage) {
@@ -154,7 +154,7 @@ public abstract class ArtifactDriver<A> {
             pcc = pai.configuration();
             wc = WireletPack.fromImage(pcc, pai.wirelets(), wirelets);
         } else { // assert Bundle?
-            pcc = PackedContainerConfiguration.of(AssembleOutput.artifact(this), source, wirelets);
+            pcc = PackedContainerConfigurationContext.of(AssembleOutput.artifact(this), source, wirelets);
             pcc.assemble();
             wc = pcc.wireletContext;
         }
@@ -201,7 +201,7 @@ public abstract class ArtifactDriver<A> {
 
     // Hmmm
     public final <C> A configure(Function<ContainerConfiguration, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
-        PackedContainerConfiguration pcc = PackedContainerConfiguration.of(AssembleOutput.artifact(this), consumer, wirelets);
+        PackedContainerConfigurationContext pcc = PackedContainerConfigurationContext.of(AssembleOutput.artifact(this), consumer, wirelets);
         C c = factory.apply(pcc);
         consumer.configure(c);
         pcc.assemble();

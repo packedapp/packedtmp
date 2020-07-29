@@ -28,14 +28,14 @@ import app.packed.container.ContainerBundleDescriptor;
 import app.packed.container.ContainerBundle;
 import app.packed.container.Wirelet;
 import packed.internal.component.ComponentConfigurationToComponentAdaptor;
-import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.container.PackedContainerConfigurationContext;
 import packed.internal.container.WireletPack;
 
 /** The default implementation of {@link ArtifactImage}. */
 public final class PackedArtifactImage implements ArtifactImage {
 
     /** The configuration of the root container. */
-    private final PackedContainerConfiguration pcc;
+    private final PackedContainerConfigurationContext pcc;
 
     /**
      * Any wirelets that have been applied to the image. Might consist of a chain of wirelet containers with repeat usage of
@@ -52,7 +52,7 @@ public final class PackedArtifactImage implements ArtifactImage {
      * @param wc
      *            any wirelets specified when creating the image or later via {@link #with(Wirelet...)}
      */
-    private PackedArtifactImage(PackedContainerConfiguration pcc, @Nullable WireletPack wc) {
+    private PackedArtifactImage(PackedContainerConfigurationContext pcc, @Nullable WireletPack wc) {
         this.pcc = requireNonNull(pcc);
         this.wc = wc;
     }
@@ -68,7 +68,7 @@ public final class PackedArtifactImage implements ArtifactImage {
      * 
      * @return the configuration of the root container
      */
-    public PackedContainerConfiguration configuration() {
+    public PackedContainerConfigurationContext configuration() {
         return pcc;
     }
 
@@ -152,7 +152,7 @@ public final class PackedArtifactImage implements ArtifactImage {
      *             if the image could not be constructed
      */
     public static PackedArtifactImage of(ContainerBundle bundle, Wirelet... wirelets) {
-        PackedContainerConfiguration pcc = PackedContainerConfiguration.of(AssembleOutput.image(), bundle, wirelets);
+        PackedContainerConfigurationContext pcc = PackedContainerConfigurationContext.of(AssembleOutput.image(), bundle, wirelets);
         return new PackedArtifactImage(pcc.assemble(), pcc.wireletContext);
     }
 }

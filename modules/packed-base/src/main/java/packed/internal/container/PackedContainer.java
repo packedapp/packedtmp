@@ -53,7 +53,7 @@ public final class PackedContainer extends PackedComponent {
      * @param instantiationContext
      *            the instantiation context of the container
      */
-    PackedContainer(@Nullable PackedComponent parent, PackedContainerConfiguration pcc, PackedInstantiationContext instantiationContext) {
+    PackedContainer(@Nullable PackedComponent parent, PackedContainerConfigurationContext pcc, PackedInstantiationContext instantiationContext) {
         super(parent, pcc, instantiationContext);
         Injector i = instantiationContext.get(pcc, PackedInjector.class);
         if (i == null) {

@@ -31,7 +31,7 @@ import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
-import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.container.PackedContainerConfigurationContext;
 import packed.internal.host.PackedGuestConfiguration;
 
 /**
@@ -163,7 +163,7 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
         }
     }
 
-    public static Component of(PackedContainerConfiguration pcc) {
+    public static Component of(PackedContainerConfigurationContext pcc) {
         return of0(pcc, List.of());
     }
 

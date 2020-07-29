@@ -21,11 +21,11 @@ import app.packed.component.StatelessConfiguration;
 /**
  *
  */
-public class DefaultStatelessConfiguration extends AbstractComponentConfiguration implements StatelessConfiguration {
+public class PackedStatelessComponentConfiguration extends AbstractComponentConfiguration implements StatelessConfiguration {
 
     private final PackedStatelessComponentConfigurationContext context;
 
-    public DefaultStatelessConfiguration(PackedStatelessComponentConfigurationContext context) {
+    public PackedStatelessComponentConfiguration(PackedStatelessComponentConfigurationContext context) {
         super(context);
         this.context = context;
     }

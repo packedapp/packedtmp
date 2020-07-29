@@ -51,7 +51,7 @@ import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.component.BundleConfiguration;
 import packed.internal.component.ComponentModel;
-import packed.internal.component.DefaultStatelessConfiguration;
+import packed.internal.component.PackedStatelessComponentConfiguration;
 import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedComponentConfigurationContext;
 import packed.internal.component.PackedSingletonConfiguration;
@@ -71,7 +71,7 @@ import sandbox.artifact.hostguest.HostConfiguration;
 import sandbox.artifact.hostguest.HostDriver;
 
 /** The default implementation of {@link ContainerConfiguration}. */
-public final class PackedContainerConfiguration extends PackedComponentConfigurationContext implements ContainerConfiguration {
+public final class PackedContainerConfigurationContext extends PackedComponentConfigurationContext implements ContainerConfiguration {
 
     /** A MethodHandle that can invoke Bundle#configure. */
     private static final MethodHandle BUNDLE_CONFIGURE = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), Bundle.class, "configure", void.class);
@@ -134,7 +134,7 @@ public final class PackedContainerConfiguration extends PackedComponentConfigura
      * @param wirelets
      *            any wirelets specified by the user
      */
-    private PackedContainerConfiguration(ConfigSite cs, AssembleOutput output, Object source, Wirelet... wirelets) {
+    private PackedContainerConfigurationContext(ConfigSite cs, AssembleOutput output, Object source, Wirelet... wirelets) {
         super(ComponentDescriptor.CONTAINER, cs, output);
         this.source = requireNonNull(source);
         this.lookup = this.model = ContainerModel.of(source.getClass());
@@ -177,7 +177,7 @@ public final class PackedContainerConfiguration extends PackedComponentConfigura
      * @param wirelets
      *            any wirelets specified by the user
      */
-    private PackedContainerConfiguration(PackedComponentConfigurationContext parent, ContainerBundle bundle, Wirelet... wirelets) {
+    private PackedContainerConfigurationContext(PackedComponentConfigurationContext parent, ContainerBundle bundle, Wirelet... wirelets) {
         super(ComponentDescriptor.CONTAINER, ConfigSiteSupport.captureStackFrame(parent.configSite(), ConfigSiteInjectOperations.INJECTOR_OF), parent);
         this.source = requireNonNull(bundle, "bundle is null");
         this.lookup = this.model = ContainerModel.of(bundle.getClass());
@@ -206,8 +206,8 @@ public final class PackedContainerConfiguration extends PackedComponentConfigura
         if (realState == LS_1_LINKING && newState > LS_1_LINKING) {
             if (children != null) {
                 for (PackedComponentConfigurationContext acc : children.values()) {
-                    if (acc instanceof PackedContainerConfiguration) {
-                        ((PackedContainerConfiguration) acc).assembleExtensions();
+                    if (acc instanceof PackedContainerConfigurationContext) {
+                        ((PackedContainerConfigurationContext) acc).assembleExtensions();
                     }
                 }
             }
@@ -219,7 +219,7 @@ public final class PackedContainerConfiguration extends PackedComponentConfigura
         }
     }
 
-    public PackedContainerConfiguration assemble() {
+    public PackedContainerConfigurationContext assemble() {
         configure();
         assembleExtensions();
         return this;
@@ -412,7 +412,7 @@ public final class PackedContainerConfiguration extends PackedComponentConfigura
         installPrepare(State.INSTALL_INVOKED);
         currentComponent = conf;
         conf.runHooks(source);
-        return new DefaultStatelessConfiguration(conf);
+        return new PackedStatelessComponentConfiguration(conf);
     }
 
     /** {@inheritDoc} */
@@ -452,7 +452,7 @@ public final class PackedContainerConfiguration extends PackedComponentConfigura
     /** {@inheritDoc} */
     @Override
     public void link(ContainerBundle bundle, Wirelet... wirelets) {
-        PackedContainerConfiguration child = new PackedContainerConfiguration(this, bundle, wirelets);
+        PackedContainerConfigurationContext child = new PackedContainerConfigurationContext(this, bundle, wirelets);
 
         // IDK do we want to progress to next stage just in case...
         if (realState == LS_0_MAINL) {
@@ -497,8 +497,8 @@ public final class PackedContainerConfiguration extends PackedComponentConfigura
         if (children != null) {
             for (PackedComponentConfigurationContext cc : children.values()) {
                 PackedComponent child = ac.children.get(cc.name);
-                if (cc instanceof PackedContainerConfiguration) {
-                    ((PackedContainerConfiguration) cc).methodHandlePassing0(child, ic);
+                if (cc instanceof PackedContainerConfigurationContext) {
+                    ((PackedContainerConfigurationContext) cc).methodHandlePassing0(child, ic);
                 }
                 if (!cc.del.isEmpty()) {
                     for (DelayedAccessor da : cc.del) {
@@ -551,14 +551,14 @@ public final class PackedContainerConfiguration extends PackedComponentConfigura
 
     /** {@inheritDoc} */
     @Override
-    public PackedContainerConfiguration setDescription(String description) {
+    public PackedContainerConfigurationContext setDescription(String description) {
         super.setDescription(description);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public PackedContainerConfiguration setName(String name) {
+    public PackedContainerConfigurationContext setName(String name) {
         super.setName(name);
         return this;
     }
@@ -624,8 +624,8 @@ public final class PackedContainerConfiguration extends PackedComponentConfigura
         if (wop == null && inherited) {
             PackedComponentConfigurationContext acc = parent;
             while (acc != null) {
-                if (acc instanceof PackedContainerConfiguration) {
-                    PackedContainerConfiguration pcc = (PackedContainerConfiguration) acc;
+                if (acc instanceof PackedContainerConfigurationContext) {
+                    PackedContainerConfigurationContext pcc = (PackedContainerConfigurationContext) acc;
                     if (pcc.wireletContext != null) {
                         wop = pcc.wireletContext.getWireletOrPipeline(type);
                         if (wop != null) {
@@ -643,9 +643,9 @@ public final class PackedContainerConfiguration extends PackedComponentConfigura
         return wop == null ? Optional.empty() : Optional.ofNullable((W) wop);
     }
 
-    public static PackedContainerConfiguration of(AssembleOutput output, Object source, Wirelet... wirelets) {
+    public static PackedContainerConfigurationContext of(AssembleOutput output, Object source, Wirelet... wirelets) {
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
-        return new PackedContainerConfiguration(cs, output, source, wirelets);
+        return new PackedContainerConfigurationContext(cs, output, source, wirelets);
     }
 }
 // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent

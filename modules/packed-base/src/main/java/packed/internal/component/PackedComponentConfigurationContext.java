@@ -41,7 +41,7 @@ import packed.internal.artifact.PackedAssembleContext;
 import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ContainerWirelet.ContainerNameWirelet;
-import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.container.PackedContainerConfigurationContext;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.hook.applicator.DelayedAccessor;
 import packed.internal.host.PackedHostConfiguration;
@@ -62,7 +62,7 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
     /** The container this component belongs to, or null for a root container. */
     @Nullable
     // BelongsToContainer
-    private final PackedContainerConfiguration container;
+    private final PackedContainerConfigurationContext container;
 
     /** Ugly stuff. */
     public ArrayList<DelayedAccessor> del = new ArrayList<>();
@@ -106,14 +106,14 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
         this.depth = parent.depth() + 1;
         this.artifact = parent.artifact;
         // Hvor tit har en container ikke en anden container som parent....????
-        this.container = parent instanceof PackedContainerConfiguration ? (PackedContainerConfiguration) parent : parent.container;
+        this.container = parent instanceof PackedContainerConfigurationContext ? (PackedContainerConfigurationContext) parent : parent.container;
         this.extension = container.activeExtension;
         this.descriptor = requireNonNull(descriptor);
     }
 
-    public PackedContainerConfiguration actualContainer() {
-        if (this instanceof PackedContainerConfiguration) {
-            return (PackedContainerConfiguration) this;
+    public PackedContainerConfigurationContext actualContainer() {
+        if (this instanceof PackedContainerConfigurationContext) {
+            return (PackedContainerConfigurationContext) this;
         }
         return container;
     }
@@ -132,11 +132,11 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
         this.container = null;
         this.depth = 0;
         this.extension = null;
-        this.artifact = new PackedAssembleContext((PackedContainerConfiguration) this, output);
+        this.artifact = new PackedAssembleContext((PackedContainerConfigurationContext) this, output);
         this.descriptor = requireNonNull(descriptor);
     }
 
-    protected PackedComponentConfigurationContext(ComponentDescriptor descriptor, ConfigSite configSite, PackedHostConfiguration parent, PackedContainerConfiguration pcc,
+    protected PackedComponentConfigurationContext(ComponentDescriptor descriptor, ConfigSite configSite, PackedHostConfiguration parent, PackedContainerConfigurationContext pcc,
             AssembleOutput output) {
         this.configSite = requireNonNull(configSite);
         this.parent = requireNonNull(parent);
@@ -292,16 +292,16 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
      * @return the container this component is a part of
      */
     @Nullable
-    public final PackedContainerConfiguration container() {
+    public final PackedContainerConfigurationContext container() {
         return container;
     }
 
-    PackedContainerConfiguration containerX() {
+    PackedContainerConfigurationContext containerX() {
         PackedComponentConfigurationContext c = this;
-        while (!(c instanceof PackedContainerConfiguration)) {
+        while (!(c instanceof PackedContainerConfigurationContext)) {
             c = c.parent;
         }
-        return (PackedContainerConfiguration) c;
+        return (PackedContainerConfigurationContext) c;
     }
 
     public final int depth() {
@@ -357,8 +357,8 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
             return n;
         }
         n = setName;
-        if (this instanceof PackedContainerConfiguration) {
-            PackedContainerConfiguration pcc = (PackedContainerConfiguration) this;
+        if (this instanceof PackedContainerConfigurationContext) {
+            PackedContainerConfigurationContext pcc = (PackedContainerConfigurationContext) this;
             if (pcc.wireletContext != null) {
                 n = pcc.wireletContext.name(pcc);
             }

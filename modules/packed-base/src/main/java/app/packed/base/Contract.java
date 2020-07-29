@@ -22,7 +22,7 @@ import java.util.Optional;
 import app.packed.container.ContainerBundleDescriptor;
 import app.packed.container.ContainerBundle;
 import packed.internal.artifact.AssembleOutput;
-import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.container.PackedContainerConfigurationContext;
 
 /**
  *
@@ -95,7 +95,7 @@ public abstract class Contract {
 
     public static <T extends Contract> Optional<T> of(ContainerBundle bundle, Class<T> contractType) {
         requireNonNull(bundle, "bundle is null");
-        PackedContainerConfiguration conf = PackedContainerConfiguration.of(AssembleOutput.descriptor(ContainerBundleDescriptor.class), bundle);
+        PackedContainerConfigurationContext conf = PackedContainerConfigurationContext.of(AssembleOutput.descriptor(ContainerBundleDescriptor.class), bundle);
         conf.assemble();
         ContainerBundleDescriptor.Builder builder = new ContainerBundleDescriptor.Builder(bundle.getClass());
         conf.buildDescriptor(builder);
