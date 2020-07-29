@@ -25,14 +25,13 @@ import app.packed.container.ContainerBundle;
 import app.packed.container.Wirelet;
 import packed.internal.artifact.PackedArtifactImage;
 import packed.internal.component.PackedComponentConfigurationContext;
-import packed.internal.host.api.HostConfigurationContext;
 
 /**
  * The defa
  */
 // We don't actually store the HostConfiguration in this class.
 
-public final class PackedHostConfiguration extends PackedComponentConfigurationContext implements HostConfigurationContext {
+public final class PackedHostConfiguration extends PackedComponentConfigurationContext {
 
     /**
      * @param configSite
@@ -42,8 +41,6 @@ public final class PackedHostConfiguration extends PackedComponentConfigurationC
         super(ComponentDescriptor.COMPONENT_INSTANCE, configSite, parent);
     }
 
-    /** {@inheritDoc} */
-    @Override
     public void deploy(ArtifactSource source, ArtifactDriver<?> driver, Wirelet... wirelets) {
         requireNonNull(source, "source is null");
         requireNonNull(driver, "driver is null");
