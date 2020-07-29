@@ -16,9 +16,11 @@
 package packed.internal.component;
 
 import app.packed.base.Nullable;
+import app.packed.component.Bundle;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.Wirelet;
 import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.container.PackedContainer;
 import packed.internal.container.PackedContainerConfigurationContext;
@@ -31,6 +33,10 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
     // boolean retainAtRuntime()
 
     public abstract PackedComponent create(@Nullable PackedComponent parent, PackedComponentConfigurationContext configuration, PackedInstantiationContext ic);
+
+    public PackedComponentConfigurationContext newConfiguration(PackedComponentConfigurationContext parent, Bundle<?> bundle, Wirelet... wirelets) {
+        return new PackedContainerConfigurationContext(this, parent, bundle, wirelets);
+    }
 
     public static DefaultComponentDriver defaultComp() {
         return new DefaultComponentDriver();

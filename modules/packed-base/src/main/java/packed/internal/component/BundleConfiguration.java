@@ -15,14 +15,32 @@
  */
 package packed.internal.component;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
+
+import app.packed.component.Bundle;
+import app.packed.component.ComponentDriver;
+import packed.internal.util.LookupUtil;
+
 /**
  *
  */
 public final class BundleConfiguration {
 
+    /** A VarHandle that can access Bundle#driver. */
+    private static final VarHandle VH_BUNDLE_DRIVER = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Bundle.class, "driver", ComponentDriver.class);
+
     public static final BundleConfiguration CONSUMED_SUCCESFULLY = new BundleConfiguration();
 
     public void configurationAccessed() {
 
+    }
+
+    public static ComponentDriver<?> driver(Bundle<?> bundle) {
+        return (ComponentDriver<?>) VH_BUNDLE_DRIVER.get(bundle);
+    }
+
+    public static PackedComponentDriver<?> pdriver(Bundle<?> bundle) {
+        return (PackedComponentDriver<?>) driver(bundle);
     }
 }

@@ -150,9 +150,9 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
      * @param wirelets
      *            any wirelets specified by the user
      */
-    private PackedContainerConfigurationContext(PackedComponentConfigurationContext parent, ContainerBundle bundle, Wirelet... wirelets) {
-        super(PackedComponentDriver.container(), ComponentDescriptor.CONTAINER,
-                ConfigSiteSupport.captureStackFrame(parent.configSite(), ConfigSiteInjectOperations.INJECTOR_OF), parent);
+    public PackedContainerConfigurationContext(PackedComponentDriver<?> driver, PackedComponentConfigurationContext parent, Bundle<?> bundle,
+            Wirelet... wirelets) {
+        super(driver, ComponentDescriptor.CONTAINER, ConfigSiteSupport.captureStackFrame(parent.configSite(), ConfigSiteInjectOperations.INJECTOR_OF), parent);
         this.source = requireNonNull(bundle, "bundle is null");
         this.lookup = this.model = ContainerModel.of(bundle.getClass());
         this.wireletContext = WireletPack.fromLink(this, wirelets);
@@ -403,10 +403,12 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
     // type.
     // Maybe in the future LinkedBundle<- (LinkableContainerSource)
     public void link(ContainerBundle bundle, Wirelet... wirelets) {
+        requireNonNull(bundle, "bundle is null");
+        PackedComponentDriver<?> d = BundleConfiguration.pdriver(bundle);
 
         // extract driveren fra bundle...
         // lav nyt barn med den...
-        PackedContainerConfigurationContext child = new PackedContainerConfigurationContext(this, bundle, wirelets);
+        PackedComponentConfigurationContext child = d.newConfiguration(this, bundle, wirelets);
 
         // IDK do we want to progress to next stage just in case...
         if (realState == LS_0_MAINL) {
@@ -421,7 +423,9 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         initializeName(State.LINK_INVOKED, null);
         installPrepare(State.LINK_INVOKED);
         currentComponent = null;// need to clear out current component...
-        child.configure();
+        if (child instanceof PackedComponentConfigurationContext) {
+            ((PackedContainerConfigurationContext) child).configure();
+        }
         addChild(child);
     }
 
