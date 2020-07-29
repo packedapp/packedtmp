@@ -22,7 +22,7 @@ import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 
 /**
- *
+ * A component bundle uses a ComponentConfiguration as the underlying configuration object.
  */
 public abstract class ComponentBundle<T extends ComponentConfiguration> extends Bundle<T> {
 

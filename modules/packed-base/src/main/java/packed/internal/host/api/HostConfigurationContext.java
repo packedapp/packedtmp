@@ -21,7 +21,6 @@ import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
 import app.packed.component.Component;
-import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
@@ -45,7 +44,6 @@ public interface HostConfigurationContext {
      * 
      * @throws IllegalStateException
      *             if the host is no long configurable.
-     * @see ComponentConfiguration#checkConfigurable()
      */
     void checkConfigurable();
 
