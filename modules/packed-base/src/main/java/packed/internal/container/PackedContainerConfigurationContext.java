@@ -53,7 +53,7 @@ import packed.internal.component.BundleConfiguration;
 import packed.internal.component.ComponentModel;
 import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedComponentConfigurationContext;
-import packed.internal.component.PackedSingletonConfiguration;
+import packed.internal.component.PackedSingletonConfigurationContext;
 import packed.internal.component.PackedStatelessComponentConfiguration;
 import packed.internal.component.PackedStatelessComponentConfigurationContext;
 import packed.internal.config.ConfigSiteSupport;
@@ -362,7 +362,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         requireNonNull(factory, "factory is null");
         ComponentModel model = lookup.componentModelOf(factory.rawType());
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
-        PackedSingletonConfiguration<T> conf = new PackedSingletonConfiguration<>(configSite, this, model, (BaseFactory<T>) factory);
+        PackedSingletonConfigurationContext<T> conf = new PackedSingletonConfigurationContext<>(configSite, this, model, (BaseFactory<T>) factory);
         installPrepare(State.INSTALL_INVOKED);
         currentComponent = conf;
         conf.runHooks(source);
@@ -373,7 +373,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         requireNonNull(instance, "instance is null");
         ComponentModel model = lookup.componentModelOf(instance.getClass());
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
-        PackedSingletonConfiguration<T> conf = new PackedSingletonConfiguration<>(configSite, this, model, instance);
+        PackedSingletonConfigurationContext<T> conf = new PackedSingletonConfigurationContext<>(configSite, this, model, instance);
         installPrepare(State.INSTALL_INVOKED);
         currentComponent = conf;
         conf.runHooks(source);
@@ -489,7 +489,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
                             SidecarFieldDelayerAccessor sda = (SidecarFieldDelayerAccessor) da;
                             MethodHandle mh = sda.pra.mh;
                             if (!Modifier.isStatic(sda.pra.field.getModifiers())) {
-                                PackedSingletonConfiguration<?> icc = ((PackedSingletonConfiguration<?>) cc);
+                                PackedSingletonConfigurationContext<?> icc = ((PackedSingletonConfigurationContext<?>) cc);
                                 mh = mh.bindTo(icc.instance);
                             }
                             ig = sda.pra.operator.invoke(mh);
@@ -497,7 +497,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
                             SidecarMethodDelayerAccessor sda = (SidecarMethodDelayerAccessor) da;
                             MethodHandle mh = sda.pra.mh;
                             if (!Modifier.isStatic(sda.pra.method.getModifiers())) {
-                                PackedSingletonConfiguration<?> icc = ((PackedSingletonConfiguration<?>) cc);
+                                PackedSingletonConfigurationContext<?> icc = ((PackedSingletonConfigurationContext<?>) cc);
                                 mh = mh.bindTo(icc.instance);
                             }
                             ig = sda.pra.operator.apply(mh);

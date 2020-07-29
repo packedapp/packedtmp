@@ -36,7 +36,7 @@ import app.packed.service.Provide;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceMode;
-import packed.internal.component.PackedSingletonConfiguration;
+import packed.internal.component.PackedSingletonConfigurationContext;
 import packed.internal.container.WireletList;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.ServiceDependency;
@@ -95,7 +95,7 @@ public final class ServiceProvidingManager {
     public void addProvidesHook(AtProvidesHook hook, SingletonConfiguration cc) {
         // The parent node is not added until #provideFactory or #provideInstance
         AbstractComponentBuildEntry parentNode;
-        PackedSingletonConfiguration psc = (PackedSingletonConfiguration) cc;
+        PackedSingletonConfigurationContext psc = (PackedSingletonConfigurationContext) cc;
         if (psc.instance != null) {
             parentNode = new ComponentConstantBuildEntry<>(node, cc.configSite(), cc, psc.instance);
         } else {
@@ -132,7 +132,7 @@ public final class ServiceProvidingManager {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> ServiceComponentConfiguration<T> provideFactory(PackedSingletonConfiguration<T> cc) {
+    public <T> ServiceComponentConfiguration<T> provideFactory(PackedSingletonConfigurationContext<T> cc) {
         BuildEntry<?> c = componentConfigurationCache.get(cc);// remove??
         if (c == null) {
             List<ServiceDependency> dependencies = cc.factory.factory.dependencies;
@@ -144,7 +144,7 @@ public final class ServiceProvidingManager {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> ServiceComponentConfiguration<T> provideInstance(PackedSingletonConfiguration cc, T instance) {
+    public <T> ServiceComponentConfiguration<T> provideInstance(PackedSingletonConfigurationContext cc, T instance) {
         // First see if we have already installed the node. This happens in #set if the component container any members
         // annotated with @Provides
         BuildEntry<?> c = componentConfigurationCache.get(cc);
