@@ -18,7 +18,7 @@ package packed.internal.artifact;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerConfiguration;
+import packed.internal.container.PackedContainerConfigurationContext;
 import packed.internal.errorhandling.ErrorMessage;
 
 /** The default implementation of {@link AssembleContext} */
@@ -28,7 +28,7 @@ public final class PackedAssembleContext implements AssembleContext {
     private final AssembleOutput output;
 
     /** The configuration of the top container. */
-    private final ContainerConfiguration topContainerConfiguration;
+    private final PackedContainerConfigurationContext topContainerConfiguration;
 
     /**
      * Creates a new build context object.
@@ -38,7 +38,7 @@ public final class PackedAssembleContext implements AssembleContext {
      * @param output
      *            the output of the build process
      */
-    public PackedAssembleContext(ContainerConfiguration topContainerConfiguration, AssembleOutput output) {
+    public PackedAssembleContext(PackedContainerConfigurationContext topContainerConfiguration, AssembleOutput output) {
         this.topContainerConfiguration = requireNonNull(topContainerConfiguration);
         this.output = requireNonNull(output);
     }
