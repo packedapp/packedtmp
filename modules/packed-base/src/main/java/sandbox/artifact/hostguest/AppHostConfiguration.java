@@ -40,8 +40,6 @@ public final class AppHostConfiguration extends HostConfiguration<AppHost> {
         super(PackedAppHost.class, context); // Maybe move it to driver... Then we have to generify the driver...
     }
 
-    /** {@inheritDoc} */
-    @Override
     public ComponentDescriptor model() {
         throw new UnsupportedOperationException();
     }

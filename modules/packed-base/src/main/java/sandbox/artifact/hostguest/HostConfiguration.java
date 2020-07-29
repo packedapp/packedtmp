@@ -29,7 +29,7 @@ import app.packed.container.Extension;
 /**
  *
  */
-public abstract class HostConfiguration<T> implements SingletonConfiguration<T> {
+public abstract class HostConfiguration<T> {
 
     /** The configuration context. */
     protected final HostConfigurationContext context;
@@ -45,25 +45,20 @@ public abstract class HostConfiguration<T> implements SingletonConfiguration<T> 
         this.context = requireNonNull(context, "context is null");
     }
 
-    @Override
     public void checkConfigurable() {}
 
-    @Override
     public ConfigSite configSite() {
         return null;
     }
 
-    @Override
     public Optional<Class<? extends Extension>> extension() {
         return null;
     }
 
-    @Override
     public @Nullable String getDescription() {
         return null;
     }
 
-    @Override
     public String getName() {
         return null;
     }
@@ -72,17 +67,14 @@ public abstract class HostConfiguration<T> implements SingletonConfiguration<T> 
         throw new UnsupportedOperationException();
     }
 
-    @Override
     public ComponentPath path() {
         return null;
     }
 
-    @Override
     public SingletonConfiguration<T> setDescription(String description) {
         return null;
     }
 
-    @Override
     public SingletonConfiguration<T> setName(String name) {
         return null;
     }
