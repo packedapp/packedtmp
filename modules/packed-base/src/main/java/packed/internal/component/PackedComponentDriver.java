@@ -32,7 +32,15 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
 
     public abstract PackedComponent create(@Nullable PackedComponent parent, PackedComponentConfigurationContext configuration, PackedInstantiationContext ic);
 
-    public class DefaultComponentDriver extends PackedComponentDriver<ComponentConfiguration> {
+    public static DefaultComponentDriver defaultComp() {
+        return new DefaultComponentDriver();
+    }
+
+    public static ContainerComponentDriver container() {
+        return new ContainerComponentDriver();
+    }
+
+    public static class DefaultComponentDriver extends PackedComponentDriver<ComponentConfiguration> {
 
         /** {@inheritDoc} */
         @Override
@@ -41,7 +49,7 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         }
     }
 
-    public class ContainerComponentDriver extends PackedComponentDriver<ContainerConfiguration> {
+    public static class ContainerComponentDriver extends PackedComponentDriver<ContainerConfiguration> {
 
         /** {@inheritDoc} */
         @Override

@@ -27,7 +27,7 @@ public final class PackedStatelessComponentConfigurationContext extends PackedCo
     private final ComponentModel componentModel;
 
     public PackedStatelessComponentConfigurationContext(ConfigSite configSite, PackedComponentConfigurationContext parent, ComponentModel componentModel) {
-        super(ComponentDescriptor.STATELESS, configSite, parent);
+        super(PackedComponentDriver.defaultComp(), ComponentDescriptor.STATELESS, configSite, parent);
         this.componentModel = requireNonNull(componentModel);
     }
 

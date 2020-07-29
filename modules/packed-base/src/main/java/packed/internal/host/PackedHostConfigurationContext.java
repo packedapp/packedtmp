@@ -25,6 +25,7 @@ import app.packed.container.ContainerBundle;
 import app.packed.container.Wirelet;
 import packed.internal.artifact.PackedArtifactImage;
 import packed.internal.component.PackedComponentConfigurationContext;
+import packed.internal.component.PackedComponentDriver;
 
 /**
  * The defa
@@ -38,7 +39,7 @@ public final class PackedHostConfigurationContext extends PackedComponentConfigu
      * @param parent
      */
     public PackedHostConfigurationContext(ConfigSite configSite, PackedComponentConfigurationContext parent) {
-        super(ComponentDescriptor.COMPONENT_INSTANCE, configSite, parent);
+        super(PackedComponentDriver.defaultComp(), ComponentDescriptor.COMPONENT_INSTANCE, configSite, parent);
     }
 
     public void deploy(ArtifactSource source, ArtifactDriver<?> driver, Wirelet... wirelets) {

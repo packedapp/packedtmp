@@ -103,7 +103,8 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
      * @param output
      *            the output of the build process
      */
-    protected PackedComponentConfigurationContext(ComponentDescriptor descriptor, ConfigSite configSite, AssembleOutput output) {
+    protected PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ComponentDescriptor descriptor, ConfigSite configSite,
+            AssembleOutput output) {
         this.descriptor = requireNonNull(descriptor);
         this.configSite = requireNonNull(configSite);
 
@@ -123,7 +124,8 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
      * @param parent
      *            the parent of the component
      */
-    protected PackedComponentConfigurationContext(ComponentDescriptor descriptor, ConfigSite configSite, PackedComponentConfigurationContext parent) {
+    protected PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ComponentDescriptor descriptor, ConfigSite configSite,
+            PackedComponentConfigurationContext parent) {
         this.descriptor = requireNonNull(descriptor);
         this.configSite = requireNonNull(configSite);
 
@@ -135,8 +137,8 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
         this.artifact = parent.artifact;
     }
 
-    protected PackedComponentConfigurationContext(ComponentDescriptor descriptor, ConfigSite configSite, PackedHostConfigurationContext parent,
-            PackedContainerConfigurationContext pcc, AssembleOutput output) {
+    protected PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ComponentDescriptor descriptor, ConfigSite configSite,
+            PackedHostConfigurationContext parent, PackedContainerConfigurationContext pcc, AssembleOutput output) {
         this.descriptor = requireNonNull(descriptor);
         this.configSite = requireNonNull(configSite);
 

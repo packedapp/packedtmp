@@ -40,14 +40,14 @@ public final class PackedSingletonConfigurationContext<T> extends PackedComponen
 
     public PackedSingletonConfigurationContext(ConfigSite configSite, PackedComponentConfigurationContext parent, ComponentModel componentModel,
             BaseFactory<T> factory) {
-        super(ComponentDescriptor.COMPONENT_INSTANCE, configSite, parent);
+        super(PackedComponentDriver.defaultComp(), ComponentDescriptor.COMPONENT_INSTANCE, configSite, parent);
         this.componentModel = requireNonNull(componentModel);
         this.factory = requireNonNull(factory);
         this.instance = null;
     }
 
     public PackedSingletonConfigurationContext(ConfigSite configSite, PackedComponentConfigurationContext parent, ComponentModel componentModel, T instance) {
-        super(ComponentDescriptor.COMPONENT_INSTANCE, configSite, parent);
+        super(PackedComponentDriver.defaultComp(), ComponentDescriptor.COMPONENT_INSTANCE, configSite, parent);
         this.componentModel = requireNonNull(componentModel);
         this.factory = null;
         this.instance = requireNonNull(instance);

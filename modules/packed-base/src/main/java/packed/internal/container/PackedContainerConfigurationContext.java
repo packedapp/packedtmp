@@ -52,6 +52,7 @@ import packed.internal.component.BundleConfiguration;
 import packed.internal.component.ComponentModel;
 import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedComponentConfigurationContext;
+import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.component.PackedSingletonConfigurationContext;
 import packed.internal.component.PackedStatelessComponentConfiguration;
@@ -135,7 +136,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
      *            any wirelets specified by the user
      */
     private PackedContainerConfigurationContext(ConfigSite cs, AssembleOutput output, Object source, Wirelet... wirelets) {
-        super(ComponentDescriptor.CONTAINER, cs, output);
+        super(PackedComponentDriver.container(), ComponentDescriptor.CONTAINER, cs, output);
         this.source = requireNonNull(source);
         this.lookup = this.model = ContainerModel.of(source.getClass());
         this.wireletContext = WireletPack.fromRoot(this, wirelets);
@@ -178,7 +179,8 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
      *            any wirelets specified by the user
      */
     private PackedContainerConfigurationContext(PackedComponentConfigurationContext parent, ContainerBundle bundle, Wirelet... wirelets) {
-        super(ComponentDescriptor.CONTAINER, ConfigSiteSupport.captureStackFrame(parent.configSite(), ConfigSiteInjectOperations.INJECTOR_OF), parent);
+        super(PackedComponentDriver.container(), ComponentDescriptor.CONTAINER,
+                ConfigSiteSupport.captureStackFrame(parent.configSite(), ConfigSiteInjectOperations.INJECTOR_OF), parent);
         this.source = requireNonNull(bundle, "bundle is null");
         this.lookup = this.model = ContainerModel.of(bundle.getClass());
         this.wireletContext = WireletPack.fromLink(this, wirelets);
