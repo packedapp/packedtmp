@@ -44,7 +44,7 @@ import packed.internal.container.ContainerWirelet.ContainerNameWirelet;
 import packed.internal.container.PackedContainerConfigurationContext;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.hook.applicator.DelayedAccessor;
-import packed.internal.host.PackedHostConfiguration;
+import packed.internal.host.PackedHostConfigurationContext;
 
 /** A common superclass for all component configuration classes. */
 public abstract class PackedComponentConfigurationContext implements ComponentConfigurationContext {
@@ -136,7 +136,7 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
         this.descriptor = requireNonNull(descriptor);
     }
 
-    protected PackedComponentConfigurationContext(ComponentDescriptor descriptor, ConfigSite configSite, PackedHostConfiguration parent, PackedContainerConfigurationContext pcc,
+    protected PackedComponentConfigurationContext(ComponentDescriptor descriptor, ConfigSite configSite, PackedHostConfigurationContext parent, PackedContainerConfigurationContext pcc,
             AssembleOutput output) {
         this.configSite = requireNonNull(configSite);
         this.parent = requireNonNull(parent);

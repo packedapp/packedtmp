@@ -32,7 +32,7 @@ import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import packed.internal.container.PackedContainerConfigurationContext;
-import packed.internal.host.PackedGuestConfiguration;
+import packed.internal.host.PackedGuestConfigurationContext;
 
 /**
  *
@@ -46,9 +46,9 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
     public final PackedComponentConfigurationContext componentConfiguration;
 
     // Need to main any guest ancestor. As images must resolve in relation to it.
-    private final List<PackedGuestConfiguration> pgc;
+    private final List<PackedGuestConfigurationContext> pgc;
 
-    private ComponentConfigurationToComponentAdaptor(PackedComponentConfigurationContext componentConfiguration, List<PackedGuestConfiguration> pgc) {
+    private ComponentConfigurationToComponentAdaptor(PackedComponentConfigurationContext componentConfiguration, List<PackedGuestConfigurationContext> pgc) {
         this.componentConfiguration = requireNonNull(componentConfiguration);
         this.pgc = pgc;
     }
@@ -103,7 +103,7 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
     @Override
     public final int depth() {
         int depth = componentConfiguration.depth();
-        for (PackedGuestConfiguration p : pgc) {
+        for (PackedGuestConfigurationContext p : pgc) {
             depth += p.depth();
         }
         return depth;
@@ -136,7 +136,7 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
     @Override
     public final ComponentPath path() {
         ComponentPath cp = componentConfiguration.path();
-        for (PackedGuestConfiguration p : pgc) {
+        for (PackedGuestConfigurationContext p : pgc) {
             cp = p.path().add(cp);
         }
         return cp;
@@ -167,11 +167,11 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
         return of0(pcc, List.of());
     }
 
-    private static ComponentConfigurationToComponentAdaptor of0(PackedComponentConfigurationContext bcc, List<PackedGuestConfiguration> pgc) {
-        if (bcc instanceof PackedGuestConfiguration) {
+    private static ComponentConfigurationToComponentAdaptor of0(PackedComponentConfigurationContext bcc, List<PackedGuestConfigurationContext> pgc) {
+        if (bcc instanceof PackedGuestConfigurationContext) {
             // Need to figure out hosts on hosts..
-            PackedGuestConfiguration pgcc = (PackedGuestConfiguration) bcc;
-            LinkedList<PackedGuestConfiguration> al = new LinkedList<>(pgc);
+            PackedGuestConfigurationContext pgcc = (PackedGuestConfigurationContext) bcc;
+            LinkedList<PackedGuestConfigurationContext> al = new LinkedList<>(pgc);
             al.addFirst(pgcc);
             return new ComponentConfigurationToComponentAdaptor(pgcc.delegate, List.copyOf(al));
         } else {

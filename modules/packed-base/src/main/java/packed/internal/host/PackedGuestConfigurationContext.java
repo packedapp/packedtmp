@@ -31,11 +31,11 @@ import packed.internal.container.PackedContainerConfigurationContext;
 // Hvilke resultere i to forskellige paths.
 
 // Der er ikke nogen vej udenom
-public class PackedGuestConfiguration extends PackedComponentConfigurationContext {
+public class PackedGuestConfigurationContext extends PackedComponentConfigurationContext {
 
     public final PackedContainerConfigurationContext delegate;
 
-    PackedGuestConfiguration(PackedHostConfiguration host, PackedContainerConfigurationContext pcc, ArtifactImage image) {
+    PackedGuestConfigurationContext(PackedHostConfigurationContext host, PackedContainerConfigurationContext pcc, ArtifactImage image) {
         super(ComponentDescriptor.STATELESS, pcc.configSite(), host, pcc, AssembleOutput.image());
         this.delegate = requireNonNull(pcc);
         this.description = pcc.getDescription();

@@ -31,13 +31,13 @@ import packed.internal.component.PackedComponentConfigurationContext;
  */
 // We don't actually store the HostConfiguration in this class.
 
-public final class PackedHostConfiguration extends PackedComponentConfigurationContext {
+public final class PackedHostConfigurationContext extends PackedComponentConfigurationContext {
 
     /**
      * @param configSite
      * @param parent
      */
-    public PackedHostConfiguration(ConfigSite configSite, PackedComponentConfigurationContext parent) {
+    public PackedHostConfigurationContext(ConfigSite configSite, PackedComponentConfigurationContext parent) {
         super(ComponentDescriptor.COMPONENT_INSTANCE, configSite, parent);
     }
 
@@ -52,7 +52,7 @@ public final class PackedHostConfiguration extends PackedComponentConfigurationC
             img = PackedArtifactImage.of((ContainerBundle) source, wirelets);
         }
 
-        PackedGuestConfiguration pgc = new PackedGuestConfiguration(this, img.configuration(), img);
+        PackedGuestConfigurationContext pgc = new PackedGuestConfigurationContext(this, img.configuration(), img);
         pgc.initializeName(State.LINK_INVOKED, null);
 
         addChild(pgc);
@@ -67,14 +67,14 @@ public final class PackedHostConfiguration extends PackedComponentConfigurationC
 
     /** {@inheritDoc} */
     @Override
-    public PackedHostConfiguration setDescription(String description) {
+    public PackedHostConfigurationContext setDescription(String description) {
         super.setDescription(description);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public PackedHostConfiguration setName(String name) {
+    public PackedHostConfigurationContext setName(String name) {
         super.setName(name);
         return this;
     }
