@@ -30,16 +30,12 @@ import app.packed.component.StatelessConfiguration;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
 import packed.internal.component.PackedComponentDriver;
-import sandbox.artifact.hostguest.HostConfiguration;
-import sandbox.artifact.hostguest.HostDriver;
 
 /**
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
  * extending {@link ContainerBundle} or {@link DefaultBundle}.
  */
 public interface ContainerConfiguration extends ComponentConfiguration {
-
-    <C extends HostConfiguration<?>> C addHost(HostDriver<C> driver);
 
     /**
      * The specified wirelet type must have

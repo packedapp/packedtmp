@@ -15,6 +15,7 @@
  */
 package sandbox.artifact.hostguest;
 
+import app.packed.component.ComponentDriver;
 import app.packed.container.ContainerBundle;
 import sandbox.component.ConfiguredBy;
 
@@ -29,6 +30,10 @@ public interface AppHost extends ConfiguredBy<AppHostConfiguration> {
     // Eller skal den vaere paa configurationen???
     static HostDriver<AppHostConfiguration> driver() {
         return AppHostConfiguration.DRIVER;
+    }
+
+    static ComponentDriver<AppHostConfiguration> driver2() {
+        throw new UnsupportedOperationException();
     }
 }
 

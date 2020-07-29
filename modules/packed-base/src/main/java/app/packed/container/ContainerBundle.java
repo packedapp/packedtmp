@@ -75,7 +75,12 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
 
     // Do we need a provide host also????
     protected final <C extends HostConfiguration<?>> C addHost(HostDriver<C> driver) {
-        return configuration().addHost(driver);
+        throw new UnsupportedOperationException();
+    }
+
+    // Do we need a provide host also????
+    protected final <C> C add(ComponentDriver<C> driver) {
+        throw new UnsupportedOperationException();
     }
 
     /**

@@ -27,5 +27,6 @@ public class Stuff extends ContainerBundle {
     @Override
     protected void configure() {
         addHost(AppHost.driver()).setName("SuperCool Host");
+        add(AppHost.driver2()).setName("SuperCool Host");
     }
 }

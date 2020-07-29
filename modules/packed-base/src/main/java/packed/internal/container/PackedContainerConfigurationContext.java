@@ -68,8 +68,6 @@ import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.runtime.PackedInjector;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
-import sandbox.artifact.hostguest.HostConfiguration;
-import sandbox.artifact.hostguest.HostDriver;
 
 /** The default container context. */
 public final class PackedContainerConfigurationContext extends PackedComponentConfigurationContext {
@@ -142,32 +140,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         this.wireletContext = WireletPack.fromRoot(this, wirelets);
     }
 
-//    private HostConfigurationContext addHost() {
-//        ConfigSite configSite = captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL);
-//        PackedHostConfiguration conf = new PackedHostConfiguration(configSite, this);
-//        installPrepare(State.INSTALL_INVOKED);
-//        currentComponent = conf;
-//        return conf;
-//    }
-//
-//    public <T extends HostConfiguration> T addHost(Class<T> hostType) {
-//        OpenClass cp = new OpenClass(MethodHandles.lookup(), hostType, true);
-//
-//        InjectableFunction aa = InjectableFunction.of(hostType, HostConfigurationContext.class);
-//        aa.addKey(HostConfigurationContext.class, 0);
-//        MethodHandle mh = cp.findConstructor(aa);
-//        try {
-//            return (T) mh.invoke(addHost());
-//        } catch (Throwable e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-
-//    @Override
-//    public <A, H, C> C addHost(OldHostDriver<A, H, C> driver) {
-//        return null;
-//    }
-
     /**
      * Creates a new configuration via {@link #link(ContainerBundle, Wirelet...)}.
      * 
@@ -184,10 +156,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         this.source = requireNonNull(bundle, "bundle is null");
         this.lookup = this.model = ContainerModel.of(bundle.getClass());
         this.wireletContext = WireletPack.fromLink(this, wirelets);
-    }
-
-    public <C extends HostConfiguration<?>> C addHost(HostDriver<C> driver) {
-        throw new UnsupportedOperationException();
     }
 
     private void advanceTo(int newState) {
@@ -616,6 +584,33 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         return new PackedContainerConfigurationContext(cs, output, source, wirelets);
     }
 }
+
+//private HostConfigurationContext addHost() {
+//  ConfigSite configSite = captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL);
+//  PackedHostConfiguration conf = new PackedHostConfiguration(configSite, this);
+//  installPrepare(State.INSTALL_INVOKED);
+//  currentComponent = conf;
+//  return conf;
+//}
+//
+//public <T extends HostConfiguration> T addHost(Class<T> hostType) {
+//  OpenClass cp = new OpenClass(MethodHandles.lookup(), hostType, true);
+//
+//  InjectableFunction aa = InjectableFunction.of(hostType, HostConfigurationContext.class);
+//  aa.addKey(HostConfigurationContext.class, 0);
+//  MethodHandle mh = cp.findConstructor(aa);
+//  try {
+//      return (T) mh.invoke(addHost());
+//  } catch (Throwable e) {
+//      throw new RuntimeException(e);
+//  }
+//}
+
+//@Override
+//public <A, H, C> C addHost(OldHostDriver<A, H, C> driver) {
+//  return null;
+//}
+
 // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
 // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
 // loop situations, for example, if a bundle recursively links itself which fails by throwing

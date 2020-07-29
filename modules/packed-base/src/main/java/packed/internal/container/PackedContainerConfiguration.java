@@ -38,8 +38,6 @@ import packed.internal.artifact.PackedAssembleContext;
 import packed.internal.component.PackedComponentConfigurationContext;
 import packed.internal.component.PackedComponentConfigurationContext.State;
 import packed.internal.inject.factory.FactoryHandle;
-import sandbox.artifact.hostguest.HostConfiguration;
-import sandbox.artifact.hostguest.HostDriver;
 
 /**
  *
@@ -55,11 +53,6 @@ public class PackedContainerConfiguration extends AbstractComponentConfiguration
 
     public PackedContainerConfigurationContext actualContainer() {
         return pccc.actualContainer();
-    }
-
-    @Override
-    public <C extends HostConfiguration<?>> C addHost(HostDriver<C> driver) {
-        return pccc.addHost(driver);
     }
 
     public final PackedAssembleContext artifact() {
