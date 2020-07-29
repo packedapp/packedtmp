@@ -19,9 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.service.ServiceMode;
+import packed.internal.component.PackedSingletonConfigurationContext;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.runtime.ConstantInjectorEntry;
@@ -45,7 +45,7 @@ public final class ComponentConstantBuildEntry<T> extends AbstractComponentBuild
      * @param instance
      *            the instance
      */
-    public ComponentConstantBuildEntry(ServiceExtensionNode ib, ConfigSite configSite, SingletonConfiguration<T> cc, T instance) {
+    public ComponentConstantBuildEntry(ServiceExtensionNode ib, ConfigSite configSite, PackedSingletonConfigurationContext<T> cc, T instance) {
         super(ib, configSite, List.of(), null, cc);
         this.instance = requireNonNull(instance, "instance is null");
     }
