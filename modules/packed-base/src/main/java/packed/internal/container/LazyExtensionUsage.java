@@ -21,14 +21,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.container.ContainerBundle;
 import app.packed.container.Extension;
 
 /**
  * Uses an extension
  * 
  * 
- * @see ContainerBundle
  * @see Extension
  * 
  */

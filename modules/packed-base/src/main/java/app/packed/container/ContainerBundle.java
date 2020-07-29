@@ -58,7 +58,6 @@ import sandbox.component.ConfiguredBy;
 // Bundle: States-> Ready -> Assembling|Composing -> Consumed|Composed... Ready | Using | Used... Usable | Using | Used
 
 // Unconfigured/Configuring/Configured (Failed??? well et can't bee Configured if it's failed)
-
 public abstract class ContainerBundle extends ComponentBundle<ContainerConfiguration> implements ArtifactSource {
 
     /** Creates a new ContainerBundle */

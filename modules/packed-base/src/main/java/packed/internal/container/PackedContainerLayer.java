@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Set;
 
-import app.packed.container.ContainerBundle;
+import app.packed.component.Bundle;
 import app.packed.container.Wirelet;
 
 /** The default implementation of Layer. */
@@ -54,7 +54,7 @@ class PackedContainerLayer implements ContainerLayer {
 
     /** {@inheritDoc} */
     @Override
-    public <T extends ContainerBundle> T link(T child, Wirelet... wirelets) {
+    public <T extends Bundle<?>> T link(T child, Wirelet... wirelets) {
         return child;
     }
 
@@ -66,7 +66,7 @@ class PackedContainerLayer implements ContainerLayer {
 
     /** {@inheritDoc} */
     @Override
-    public <T extends ContainerBundle> T linkPrivate(T child, Wirelet... wirelets) {
+    public <T extends Bundle<?>> T linkPrivate(T child, Wirelet... wirelets) {
         return child;
     }
 }

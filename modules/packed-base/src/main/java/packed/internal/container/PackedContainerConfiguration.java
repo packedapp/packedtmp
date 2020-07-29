@@ -15,12 +15,10 @@
  */
 package packed.internal.container;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.artifact.ArtifactContext;
 import app.packed.base.Nullable;
 import app.packed.component.AbstractComponentConfiguration;
 import app.packed.component.Bundle;
@@ -30,207 +28,164 @@ import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerDescriptor.Builder;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
-import packed.internal.artifact.PackedAssembleContext;
-import packed.internal.component.PackedComponentConfigurationContext;
-import packed.internal.component.PackedComponentConfigurationContext.State;
-import packed.internal.inject.factory.FactoryHandle;
 
-/**
- *
- */
+/** The default implementation of {@link ContainerConfiguration}. */
 public class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
 
-    public final PackedContainerConfigurationContext pccc;
+    /** The context to delegate all callsto. */
+    private final PackedContainerConfigurationContext context;
 
-    public PackedContainerConfiguration(PackedContainerConfigurationContext pccc) {
-        super(pccc);
-        this.pccc = pccc;
+    public PackedContainerConfiguration(PackedContainerConfigurationContext context) {
+        super(context);
+        this.context = context;
     }
 
-    public PackedContainerConfigurationContext actualContainer() {
-        return pccc.actualContainer();
-    }
-
-    public final PackedAssembleContext artifact() {
-        return pccc.artifact();
-    }
-
-    public PackedContainerConfigurationContext assemble() {
-        return pccc.assemble();
-    }
-
+    /** {@inheritDoc} */
     @Override
     public <W extends Wirelet> Optional<W> assemblyWirelet(Class<W> type) {
-        return pccc.assemblyWirelet(type);
+        return context.assemblyWirelet(type);
     }
 
-    public void buildDescriptor(Builder builder) {
-        pccc.buildDescriptor(builder);
-    }
-
+    /** {@inheritDoc} */
     @Override
     public final void checkConfigurable() {
-        pccc.checkConfigurable();
+        context.checkConfigurable();
     }
 
+    /** {@inheritDoc} */
     @Override
     public final ConfigSite configSite() {
-        return pccc.configSite();
+        return context.configSite();
     }
 
-    public final @Nullable PackedContainerConfigurationContext container() {
-        return pccc.container();
-    }
-
-    public final int depth() {
-        return pccc.depth();
-    }
-
-    public final ComponentDescriptor descritor() {
-        return pccc.descritor();
-    }
-
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        return pccc.equals(obj);
+        return context.equals(obj);
     }
 
+    /** {@inheritDoc} */
     @Override
     public final Optional<Class<? extends Extension>> extension() {
-        return pccc.extension();
+        return context.extension();
     }
 
+    /** {@inheritDoc} */
     @Override
     public Set<Class<? extends Extension>> extensions() {
-        return pccc.extensions();
+        return context.extensions();
     }
 
-    public MethodHandle fromFactoryHandle(FactoryHandle<?> handle) {
-        return pccc.fromFactoryHandle(handle);
-    }
-
+    /** {@inheritDoc} */
     @Override
     public final @Nullable String getDescription() {
-        return pccc.getDescription();
+        return context.getDescription();
     }
 
-    public @Nullable PackedExtensionConfiguration getExtensionContext(Class<? extends Extension> extensionType) {
-        return pccc.getExtensionContext(extensionType);
-    }
-
+    /** {@inheritDoc} */
     @Override
     public final String getName() {
-        return pccc.getName();
+        return context.getName();
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return pccc.hashCode();
+        return context.hashCode();
     }
 
-    public final String initializeName(State newState, String setName) {
-        return pccc.initializeName(newState, setName);
-    }
-
+    /** {@inheritDoc} */
     @Override
     public String initializeNameDefaultName() {
-        return pccc.initializeNameDefaultName();
+        return context.initializeNameDefaultName();
     }
 
+    /** {@inheritDoc} */
     @Override
     public <T> SingletonConfiguration<T> install(Class<T> implementation) {
-        return pccc.install(implementation);
+        return context.install(implementation);
     }
 
+    /** {@inheritDoc} */
     @Override
     public <T> SingletonConfiguration<T> install(Factory<T> factory) {
-        return pccc.install(factory);
+        return context.install(factory);
     }
 
+    /** {@inheritDoc} */
     @Override
     public <T> SingletonConfiguration<T> installInstance(T instance) {
-        return pccc.installInstance(instance);
+        return context.installInstance(instance);
     }
 
+    /** {@inheritDoc} */
     @Override
     public StatelessConfiguration installStateless(Class<?> implementation) {
-        return pccc.installStateless(implementation);
+        return context.installStateless(implementation);
     }
 
-    public ArtifactContext instantiateArtifact(WireletPack wc) {
-        return pccc.instantiateArtifact(wc);
-    }
-
+    /** {@inheritDoc} */
     @Override
     public boolean isArtifactRoot() {
-        return pccc.isArtifactRoot();
+        return context.isArtifactRoot();
     }
 
-    public boolean isInSameContainer(PackedComponentConfigurationContext other) {
-        return pccc.isInSameContainer(other);
-    }
-
+    /** {@inheritDoc} */
     @Override
     public void link(Bundle<?> bundle, Wirelet... wirelets) {
-        pccc.link(bundle, wirelets);
+        context.link(bundle, wirelets);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void lookup(@Nullable Lookup lookup) {
-        pccc.lookup(lookup);
+        context.lookup(lookup);
     }
 
+    /** {@inheritDoc} */
     @Override
     public final ComponentDescriptor model() {
-        return pccc.model();
+        return context.model();
     }
 
-    public ContainerLayer newLayer(String name, ContainerLayer... dependencies) {
-        return pccc.newLayer(name, dependencies);
-    }
-//
-//    @Override
-//    public void onNamed(Consumer<? super ComponentConfiguration> action) {
-//        pccc.onNamed(action);
-//    }
-
+    /** {@inheritDoc} */
     @Override
     public final ComponentPath path() {
-        return pccc.path();
+        return context.path();
     }
 
+    /** {@inheritDoc} */
     @Override
     public PackedContainerConfiguration setDescription(String description) {
-        pccc.setDescription(description);
+        context.setDescription(description);
         return this;
     }
 
+    /** {@inheritDoc} */
     @Override
     public PackedContainerConfiguration setName(String name) {
-        pccc.setName(name);
+        context.setName(name);
         return this;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Class<?> sourceType() {
-        return pccc.sourceType();
+        return context.sourceType();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
-        return pccc.toString();
+        return context.toString();
     }
 
+    /** {@inheritDoc} */
     @Override
     public <T extends Extension> T use(Class<T> extensionType) {
-        return pccc.use(extensionType);
-    }
-
-    public <W extends Wirelet> Optional<W> wireletAny(Class<W> type) {
-        return pccc.wireletAny(type);
+        return context.use(extensionType);
     }
 }

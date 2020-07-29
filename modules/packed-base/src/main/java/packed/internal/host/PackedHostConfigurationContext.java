@@ -19,9 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactSource;
+import app.packed.component.Bundle;
 import app.packed.component.ComponentDescriptor;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerBundle;
 import app.packed.container.Wirelet;
 import packed.internal.artifact.PackedArtifactImage;
 import packed.internal.component.PackedComponentConfigurationContext;
@@ -50,7 +50,7 @@ public final class PackedHostConfigurationContext extends PackedComponentConfigu
         if (source instanceof PackedArtifactImage) {
             img = ((PackedArtifactImage) source).with(wirelets);
         } else {
-            img = PackedArtifactImage.of((ContainerBundle) source, wirelets);
+            img = PackedArtifactImage.of((Bundle<?>) source, wirelets);
         }
 
         PackedGuestConfigurationContext pgc = new PackedGuestConfigurationContext(this, img.configuration(), img);

@@ -18,7 +18,7 @@ package app.packed.sidecar;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import app.packed.container.ContainerBundle;
+import app.packed.component.Bundle;
 import app.packed.container.Wirelet;
 
 /**
@@ -27,7 +27,7 @@ import app.packed.container.Wirelet;
 interface BootstrapSidecarContext {
     void singleton(Class<?> cl);
 
-    void link(Supplier<Map.Entry<ContainerBundle, Wirelet[]>> e);// ugly.. Need a delaylink
+    void link(Supplier<Map.Entry<Bundle<?>, Wirelet[]>> e);// ugly.. Need a delaylink
 }
 
 // 3 levels of runtime sidecars

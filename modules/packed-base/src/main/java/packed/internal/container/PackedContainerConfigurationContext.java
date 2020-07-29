@@ -39,7 +39,6 @@ import app.packed.component.ComponentDescriptor;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerDescriptor;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
@@ -128,8 +127,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
      * @param output
      *            the build output
      * @param source
-     *            the source of the container. Either a {@link ContainerBundle}, {@link ArtifactImage} or a
-     *            {@link Consumer}.
+     *            the source of the container. Either a {@link Bundle}, {@link ArtifactImage} or a {@link Consumer}.
      * @param wirelets
      *            any wirelets specified by the user
      */
@@ -141,7 +139,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
     }
 
     /**
-     * Creates a new configuration via {@link #link(ContainerBundle, Wirelet...)}.
+     * Creates a new configuration via {@link #link(Bundle, Wirelet...)}.
      * 
      * @param parent
      *            the parent component (always a container for now)
@@ -304,7 +302,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         // I think try and move some of this to ComponentNameWirelet
         @Nullable
         Class<?> source = this.sourceType();
-        if (ContainerBundle.class.isAssignableFrom(source)) {
+        if (Bundle.class.isAssignableFrom(source)) {
             String nnn = source.getSimpleName();
             if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
                 nnn = nnn.substring(0, nnn.length() - 6);

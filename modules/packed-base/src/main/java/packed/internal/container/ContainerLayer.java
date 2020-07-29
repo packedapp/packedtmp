@@ -17,7 +17,7 @@ package packed.internal.container;
 
 import java.util.Set;
 
-import app.packed.container.ContainerBundle;
+import app.packed.component.Bundle;
 import app.packed.container.Wirelet;
 
 /**
@@ -77,7 +77,7 @@ public interface ContainerLayer {
         return Set.of();
     }
 
-    <T extends ContainerBundle> T link(T child, Wirelet... wirelets);
+    <T extends Bundle<?>> T link(T child, Wirelet... wirelets);
 
     // Everything is private to the layer... What about dependencies???
 
@@ -85,15 +85,15 @@ public interface ContainerLayer {
     // Burde man lave en der hverken tog ind eller ud?? As in truely private?
     // Man kan stadig smide ting ind via wirelets...
     /// f.kes. linkPrivate(new HibernateBundle().loadConfFrom("/asdsad"));
-    <T extends ContainerBundle> T linkPrivate(T child, Wirelet... wirelets);
+    <T extends Bundle<?>> T linkPrivate(T child, Wirelet... wirelets);
 
-    default <T extends ContainerBundle> T linkIncoming(T child, Wirelet... wirelets) {
+    default <T extends Bundle<?>> T linkIncoming(T child, Wirelet... wirelets) {
         // Will link from any incoming layers....
         // But dependencies will never see it...
         return child;
     }
 
-    default <T extends ContainerBundle> T linkOutgoing(T child, Wirelet... wirelets) {
+    default <T extends Bundle<?>> T linkOutgoing(T child, Wirelet... wirelets) {
         return child;
     }
 
@@ -139,14 +139,14 @@ enum XXX implements ContainerLayer {
 
     /** {@inheritDoc} */
     @Override
-    public <T extends ContainerBundle> T link(T child, Wirelet... wirelets) {
+    public <T extends Bundle<?>> T link(T child, Wirelet... wirelets) {
         // TODO Auto-generated method stub
         return null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public <T extends ContainerBundle> T linkPrivate(T child, Wirelet... wirelets) {
+    public <T extends Bundle<?>> T linkPrivate(T child, Wirelet... wirelets) {
         // TODO Auto-generated method stub
         return null;
     }
