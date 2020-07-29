@@ -144,7 +144,7 @@ public final class ServiceProvidingManager {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> ServiceComponentConfiguration<T> provideInstance(SingletonConfiguration cc, T instance) {
+    public <T> ServiceComponentConfiguration<T> provideInstance(PackedSingletonConfiguration cc, T instance) {
         // First see if we have already installed the node. This happens in #set if the component container any members
         // annotated with @Provides
         BuildEntry<?> c = componentConfigurationCache.get(cc);

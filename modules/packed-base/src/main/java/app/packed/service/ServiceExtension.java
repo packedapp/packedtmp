@@ -400,7 +400,7 @@ public final class ServiceExtension extends Extension {
      */
     public <T> ServiceComponentConfiguration<T> provideConstant(T instance) {
         // configurability is checked by ComponentExtension
-        SingletonConfiguration<T> cc = installInstance(instance);
+        PackedSingletonConfiguration<T> cc = (PackedSingletonConfiguration<T>) installInstance(instance);
         return node.provider().provideInstance(cc, instance);
     }
 

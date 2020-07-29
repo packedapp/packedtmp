@@ -28,6 +28,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceMode;
+import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.service.buildtime.BuildEntry;
 
 /**
@@ -47,7 +48,7 @@ public final class PackedServiceComponentConfiguration<T> implements ServiceComp
      * @param buildEntry
      *            the build entry to wrap
      */
-    public PackedServiceComponentConfiguration(SingletonConfiguration<T> component, BuildEntry<T> buildEntry) {
+    public PackedServiceComponentConfiguration(PackedSingletonConfiguration<T> component, BuildEntry<T> buildEntry) {
         this.buildEntry = requireNonNull(buildEntry);
         this.component = component;
     }
