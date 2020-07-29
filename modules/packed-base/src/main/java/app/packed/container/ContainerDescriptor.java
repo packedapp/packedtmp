@@ -34,6 +34,7 @@ import app.packed.base.Contract;
 import app.packed.base.ContractSet;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.component.Bundle;
 import app.packed.service.ServiceDescriptor;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.container.PackedContainerConfigurationContext;
@@ -85,7 +86,7 @@ import packed.internal.container.PackedContainerConfigurationContext;
 // More Like ContainerDescriptor????
 // Because we can also create from a ContainerImage
 /// Yes but that image is created from a bundle of some kind.
-public class ContainerBundleDescriptor {
+public class ContainerDescriptor {
 
     /** The type of the bundle. */
     private final Class<? extends ContainerBundle> bundleType;
@@ -109,7 +110,7 @@ public class ContainerBundleDescriptor {
      * @param builder
      *            a builder object
      */
-    protected ContainerBundleDescriptor(ContainerBundleDescriptor.Builder builder) {
+    protected ContainerDescriptor(ContainerDescriptor.Builder builder) {
         requireNonNull(builder, "builder is null");
         this.contracts = ContractSet.of(builder.contracts.values());
         this.bundleType = builder.bundleType();
@@ -119,7 +120,7 @@ public class ContainerBundleDescriptor {
     }
 
     // De er vel named.... Saa Map<String, Descriptor...
-    public List<ContainerBundleDescriptor> children() {
+    public List<ContainerDescriptor> children() {
         // Saa skal vi vel ogsaa have navne...
         // Maaske kan vi have Container? <- Indicating that it will be created with Container and then some postfix
         throw new UnsupportedOperationException();
@@ -189,7 +190,7 @@ public class ContainerBundleDescriptor {
      *
      * @return the type of the bundle
      */
-    public final Class<? extends ContainerBundle> sourceType() {
+    public final Class<? extends Bundle<?>> sourceType() {
         return bundleType;
     }
 
@@ -244,11 +245,11 @@ public class ContainerBundleDescriptor {
      * 
      * @see ArtifactImage#descriptor()
      */
-    public static ContainerBundleDescriptor of(ContainerBundle bundle) {
+    public static ContainerDescriptor of(ContainerBundle bundle) {
         requireNonNull(bundle, "bundle is null");
-        PackedContainerConfigurationContext pcc = PackedContainerConfigurationContext.of(AssembleOutput.descriptor(ContainerBundleDescriptor.class), bundle);
+        PackedContainerConfigurationContext pcc = PackedContainerConfigurationContext.of(AssembleOutput.descriptor(ContainerDescriptor.class), bundle);
         pcc.assemble();
-        ContainerBundleDescriptor.Builder builder = new ContainerBundleDescriptor.Builder(bundle.getClass());
+        ContainerDescriptor.Builder builder = new ContainerDescriptor.Builder(bundle.getClass());
         pcc.buildDescriptor(builder);
         return builder.build();
     }
@@ -297,8 +298,8 @@ public class ContainerBundleDescriptor {
             return this;
         }
 
-        public ContainerBundleDescriptor build() {
-            return new ContainerBundleDescriptor(this);
+        public ContainerDescriptor build() {
+            return new ContainerDescriptor(this);
         }
 
         /**

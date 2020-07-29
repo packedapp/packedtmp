@@ -20,7 +20,7 @@ import java.util.Optional;
 import app.packed.component.Component;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerBundleDescriptor;
+import app.packed.container.ContainerDescriptor;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
@@ -43,7 +43,7 @@ import packed.internal.artifact.PackedArtifactImage;
  * No structural changes... Only whole artifacts
  * 
  * <p>
- * An image can be used to create new instances of {@link app.packed.artifact.App}, {@link ContainerBundleDescriptor} or other
+ * An image can be used to create new instances of {@link app.packed.artifact.App}, {@link ContainerDescriptor} or other
  * artifact images. Artifact images can not be used as a part of other containers, for example, via
  * {@link ContainerBundle#link(ContainerBundle, Wirelet...)}.
  * 
@@ -78,7 +78,7 @@ public interface ArtifactImage extends ArtifactSource {
      * 
      * @return the bundle descriptor
      * 
-     * @see ContainerBundleDescriptor#of(ContainerBundle)
+     * @see ContainerDescriptor#of(ContainerBundle)
      */
     // ImageDescriptor with all wirelets????? Eller bare med i BundleDescriptor???
     // Vi har jo feks anderledes contract... Og kan vi se alt???
@@ -86,7 +86,7 @@ public interface ArtifactImage extends ArtifactSource {
 
     // Altsaa helt sikker med contracts saa skal det jo vaere whatever der er appliet...
     /// Saa det gaelder jo saadan set ogsaa med #name()
-    ContainerBundleDescriptor descriptor();
+    ContainerDescriptor descriptor();
 
     /**
      * Returns the name of this artifact.

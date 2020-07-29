@@ -232,6 +232,6 @@ public abstract class DefaultBundle extends ContainerBundle {
     }
 
     protected static void printDescriptor(ContainerBundle bundle) {
-        ContainerBundleDescriptor.of(bundle).print();
+        ContainerDescriptor.of(bundle).print();
     }
 }

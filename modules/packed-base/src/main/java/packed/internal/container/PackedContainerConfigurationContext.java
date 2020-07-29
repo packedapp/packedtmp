@@ -40,7 +40,7 @@ import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundle;
-import app.packed.container.ContainerBundleDescriptor;
+import app.packed.container.ContainerDescriptor;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
@@ -237,7 +237,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         return wireletContext == null ? Optional.empty() : Optional.ofNullable((W) wireletContext.getWireletOrPipeline(type));
     }
 
-    public void buildDescriptor(ContainerBundleDescriptor.Builder builder) {
+    public void buildDescriptor(ContainerDescriptor.Builder builder) {
         builder.setBundleDescription(getDescription());
         builder.setName(getName());
         for (PackedExtensionConfiguration e : extensions.values()) {

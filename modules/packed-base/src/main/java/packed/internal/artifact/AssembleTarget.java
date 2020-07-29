@@ -4,7 +4,7 @@ import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
 import app.packed.base.Contract;
 import app.packed.container.ContainerBundle;
-import app.packed.container.ContainerBundleDescriptor;
+import app.packed.container.ContainerDescriptor;
 
 /**
  * The various types of build process goals available in Packed.
@@ -31,7 +31,7 @@ import app.packed.container.ContainerBundleDescriptor;
 
 public enum AssembleTarget {
 
-    /** Create a report of some kind, for example a {@link Contract} or a {@link ContainerBundleDescriptor}. */
+    /** Create a report of some kind, for example a {@link Contract} or a {@link ContainerDescriptor}. */
     // May throw exceptions
     // Will never initialize anything... What about sidecar???
     // I think we need to instantiate them, if they do some kind of initialization

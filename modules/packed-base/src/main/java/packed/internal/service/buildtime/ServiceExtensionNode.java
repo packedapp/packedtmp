@@ -27,7 +27,7 @@ import java.util.Optional;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerBundleDescriptor;
+import app.packed.container.ContainerDescriptor;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
@@ -111,7 +111,7 @@ public final class ServiceExtensionNode {
         // System.out.println("First " + (parent == null));
     }
 
-    public void buildDescriptor(ContainerBundleDescriptor.Builder builder) {
+    public void buildDescriptor(ContainerDescriptor.Builder builder) {
         // need to have resolved successfully
         // TODO we should only have build entries here...
         for (BuildEntry<?> n : resolvedEntries.values()) {

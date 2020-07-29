@@ -30,7 +30,7 @@ import app.packed.base.Nullable;
 import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerBundleDescriptor;
+import app.packed.container.ContainerDescriptor;
 import app.packed.container.ContainerBundle;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
@@ -82,7 +82,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    void buildDescriptor(ContainerBundleDescriptor.Builder builder) {
+    void buildDescriptor(ContainerDescriptor.Builder builder) {
         MethodHandle mha = model.bundleBuilderMethod;
         if (mha != null) {
             try {

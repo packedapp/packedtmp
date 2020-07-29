@@ -23,7 +23,7 @@ import app.packed.base.Key;
 import app.packed.base.Key.Qualifier;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerBundleDescriptor;
+import app.packed.container.ContainerDescriptor;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionLinked;
@@ -476,7 +476,7 @@ public final class ServiceExtension extends Extension {
 
     // Use pipeline???
     @Expose
-    void con(ContainerBundleDescriptor.Builder builder) {
+    void con(ContainerDescriptor.Builder builder) {
         node.buildDescriptor(builder);
     }
 
