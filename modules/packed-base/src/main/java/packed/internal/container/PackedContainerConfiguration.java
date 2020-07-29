@@ -29,14 +29,12 @@ import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundle;
-import app.packed.container.ContainerDescriptor.Builder;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerDescriptor.Builder;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import packed.internal.artifact.PackedAssembleContext;
-import packed.internal.artifact.PackedInstantiationContext;
-import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedComponentConfigurationContext;
 import packed.internal.component.PackedComponentConfigurationContext.State;
 import packed.internal.inject.factory.FactoryHandle;
@@ -168,10 +166,6 @@ public class PackedContainerConfiguration extends AbstractComponentConfiguration
     @Override
     public StatelessConfiguration installStateless(Class<?> implementation) {
         return pccc.installStateless(implementation);
-    }
-
-    public PackedContainer instantiate(PackedComponent parent, PackedInstantiationContext ic) {
-        return pccc.instantiate(parent, ic);
     }
 
     public ArtifactContext instantiateArtifact(WireletPack wc) {

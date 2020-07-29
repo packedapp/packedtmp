@@ -404,12 +404,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         return new PackedStatelessComponentConfiguration(conf);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public PackedContainer instantiate(PackedComponent parent, PackedInstantiationContext ic) {
-        return new PackedContainer(parent, this, ic);
-    }
-
     public ArtifactContext instantiateArtifact(WireletPack wc) {
         PackedInstantiationContext pic = new PackedInstantiationContext(wc);
         extensionsPrepareInstantiation(pic);

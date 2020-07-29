@@ -95,6 +95,8 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
     // Maaske er det en special GuestConfigurationAdaptor som er rod paa runtime.
     protected ComponentConfigurationState state = new ComponentConfigurationState();
 
+    public final PackedComponentDriver<?> driver;
+
     /**
      * A special constructor for the top level container.
      * 
@@ -105,6 +107,7 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
      */
     protected PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ComponentDescriptor descriptor, ConfigSite configSite,
             AssembleOutput output) {
+        this.driver = requireNonNull(driver);
         this.descriptor = requireNonNull(descriptor);
         this.configSite = requireNonNull(configSite);
 
@@ -126,6 +129,7 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
      */
     protected PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ComponentDescriptor descriptor, ConfigSite configSite,
             PackedComponentConfigurationContext parent) {
+        this.driver = requireNonNull(driver);
         this.descriptor = requireNonNull(descriptor);
         this.configSite = requireNonNull(configSite);
 
@@ -139,6 +143,7 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
 
     protected PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ComponentDescriptor descriptor, ConfigSite configSite,
             PackedHostConfigurationContext parent, PackedContainerConfigurationContext pcc, AssembleOutput output) {
+        this.driver = requireNonNull(driver);
         this.descriptor = requireNonNull(descriptor);
         this.configSite = requireNonNull(configSite);
 
@@ -356,7 +361,7 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
         // It just uses so much memory...
         HashMap<String, PackedComponent> result = new HashMap<>(children.size());
         for (PackedComponentConfigurationContext acc : children.values()) {
-            PackedComponent ac = acc.instantiate(parent, ic);
+            PackedComponent ac = acc.driver.create(parent, acc, ic);
             result.put(ac.name(), ac);
         }
         return Map.copyOf(result);
@@ -400,10 +405,6 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
 
     @Deprecated
     protected abstract String initializeNameDefaultName();
-
-    protected PackedComponent instantiate(PackedComponent parent, PackedInstantiationContext ic) {
-        return new PackedComponent(parent, this, ic);
-    }
 
     public boolean isInSameContainer(PackedComponentConfigurationContext other) {
         return containerX() == other.containerX();
