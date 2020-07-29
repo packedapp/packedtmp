@@ -29,6 +29,7 @@ import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
+import packed.internal.component.PackedComponentDriver;
 import sandbox.artifact.hostguest.HostConfiguration;
 import sandbox.artifact.hostguest.HostDriver;
 
@@ -205,11 +206,9 @@ public interface ContainerConfiguration extends ComponentConfiguration {
     // sourced and unsourced. People shouldn't really need to look at
     // both of the classes two find what they need..
     static ComponentDriver<ContainerConfiguration> driver() {
-        return new PackedContainerDriver();
+        return PackedComponentDriver.container();
     }
 }
-
-class PackedContainerDriver implements ComponentDriver<ContainerConfiguration> {}
 
 // I think ContainerConfiguration is better
 // Ideen er lidt at man kan lave sine egne

@@ -430,7 +430,14 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         return extensions.containsKey(extensionType);
     }
 
+    // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
+    // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return
+    // type.
+    // Maybe in the future LinkedBundle<- (LinkableContainerSource)
     public void link(ContainerBundle bundle, Wirelet... wirelets) {
+
+        // extract driveren fra bundle...
+        // lav nyt barn med den...
         PackedContainerConfigurationContext child = new PackedContainerConfigurationContext(this, bundle, wirelets);
 
         // IDK do we want to progress to next stage just in case...
@@ -448,18 +455,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         currentComponent = null;// need to clear out current component...
         child.configure();
         addChild(child);
-
-        // We have an extra list for all containers. Why? Its not used anywhere
-
-        // Tror det var brugt til at iterere over alle container boern...
-//        if (containers == null) {
-//            containers = new ArrayList<>(5);
-//        }
-//        containers.add(child);
-        // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
-        // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return
-        // type.
-        // Maybe in the future LinkedBundle<- (LinkableContainerSource)
     }
 
     public void lookup(@Nullable Lookup lookup) {
