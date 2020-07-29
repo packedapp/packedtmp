@@ -51,6 +51,7 @@ import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.component.BundleConfiguration;
 import packed.internal.component.ComponentModel;
+import packed.internal.component.DefaultStatelessConfiguration;
 import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedComponentContext;
 import packed.internal.component.PackedSingletonConfiguration;
@@ -410,7 +411,8 @@ public final class PackedContainerConfiguration extends PackedComponentContext i
         PackedStatelessComponentConfiguration conf = new PackedStatelessComponentConfiguration(configSite, this, model);
         installPrepare(State.INSTALL_INVOKED);
         currentComponent = conf;
-        return conf.runHooks(source);
+        conf.runHooks(source);
+        return new DefaultStatelessConfiguration(conf);
     }
 
     /** {@inheritDoc} */

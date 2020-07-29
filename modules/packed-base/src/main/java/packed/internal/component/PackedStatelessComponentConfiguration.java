@@ -22,7 +22,7 @@ import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 
 /** The default implementation of {@link StatelessConfiguration}. */
-public final class PackedStatelessComponentConfiguration extends PackedComponentContext implements StatelessConfiguration {
+public final class PackedStatelessComponentConfiguration extends PackedComponentContext {
 
     private final ComponentModel componentModel;
 
@@ -55,8 +55,6 @@ public final class PackedStatelessComponentConfiguration extends PackedComponent
         return this;
     }
 
-    /** {@inheritDoc} */
-    @Override
     public Class<?> definition() {
         return componentModel.type();
     }
