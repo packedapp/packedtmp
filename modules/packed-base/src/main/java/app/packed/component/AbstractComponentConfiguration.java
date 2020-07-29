@@ -57,9 +57,6 @@ import packed.internal.config.ConfigSiteSupport;
 // model.newConfiguration(ComponentContainerContext ccc) -> return new SingletonCC(ccc);
 public abstract class AbstractComponentConfiguration implements ComponentConfiguration {
 
-    /** A stack walker used from {@link #captureStackFrame(String)}. */
-    private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
-
     /** The configuration context */
     protected final ComponentConfigurationContext context;
 
@@ -71,6 +68,9 @@ public abstract class AbstractComponentConfiguration implements ComponentConfigu
     protected AbstractComponentConfiguration(ComponentConfigurationContext context) {
         this.context = requireNonNull(context, "context is null");
     }
+
+    /** A stack walker used from {@link #captureStackFrame(String)}. */
+    private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
     protected abstract String initializeNameDefaultName();
 
