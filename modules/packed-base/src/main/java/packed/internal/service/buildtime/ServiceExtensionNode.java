@@ -26,18 +26,14 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundleDescriptor;
 import app.packed.container.ExtensionConfiguration;
-import app.packed.inject.Inject;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceMode;
 import packed.internal.container.WireletPack;
 import packed.internal.container.WireletPipelineContext;
-import packed.internal.inject.AtInject;
-import packed.internal.inject.AtInjectHook;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.dependencies.DependencyManager;
 import packed.internal.service.buildtime.export.ExportManager;
@@ -197,26 +193,26 @@ public final class ServiceExtensionNode {
         });
     }
 
-    /**
-     * Invoked by the runtime when a component has members (fields or methods) that are annotated with {@link Inject}.
-     * 
-     * @param cc
-     *            the configuration of the annotated component
-     * @param group
-     *            a inject group object
-     */
-    public void onInjectGroup(SingletonConfiguration<?> cc, AtInjectHook group) {
-        // new Exception().printStackTrace();
-        // Hvis den er instans, Singlton Factory -> Saa skal det vel med i en liste
-        // Hvis det er en ManyProvide-> Saa skal vi jo egentlig bare gemme den til den bliver instantieret.
-        // Det skal ogsaa tilfoejes requires...
-        // Delt op i 2 dele...
-        // * Tilfoej det til requirements...
-        // * Scheduler at groupen skal kaldes senere ved inject...
-        for (AtInject ai : group.members) {
-            System.out.println(ai);
-        }
-    }
+//    /**
+//     * Invoked by the runtime when a component has members (fields or methods) that are annotated with {@link Inject}.
+//     * 
+//     * @param cc
+//     *            the configuration of the annotated component
+//     * @param group
+//     *            a inject group object
+//     */
+//    public void onInjectGroup(SingletonConfiguration<?> cc, AtInjectHook group) {
+//        // new Exception().printStackTrace();
+//        // Hvis den er instans, Singlton Factory -> Saa skal det vel med i en liste
+//        // Hvis det er en ManyProvide-> Saa skal vi jo egentlig bare gemme den til den bliver instantieret.
+//        // Det skal ogsaa tilfoejes requires...
+//        // Delt op i 2 dele...
+//        // * Tilfoej det til requirements...
+//        // * Scheduler at groupen skal kaldes senere ved inject...
+//        for (AtInject ai : group.members) {
+//            System.out.println(ai);
+//        }
+//    }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public PackedInjector onInstantiate(WireletPack wc) {
