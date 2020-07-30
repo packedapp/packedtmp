@@ -15,6 +15,15 @@ module app.packed.base {
     // Temporary...
     exports packed.internal.reflect to app.packed.banana, app.packed.function;
     exports packed.internal.reflect.typevariable to app.packed.banana, app.packed.function;
+    exports packed.internal.util to app.packed.configuration;
+
+    exports packed.internal.component to app.packed.errorhandling;
+    exports packed.internal.container to app.packed.errorhandling;
+    exports packed.internal.hook to app.packed.errorhandling;
+    exports packed.internal.artifact to app.packed.errorhandling;
+    exports packed.internal.errorhandling to app.packed.errorhandling;
+
+    exports packed.internal.hook.applicator to app.packed.errorhandling;
 
     requires java.management;
 }
