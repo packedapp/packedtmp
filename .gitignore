@@ -1,7 +1,5 @@
 /bin*
 /.clover/
-documentation
-cleanup
 private
 target
 .checkstyle

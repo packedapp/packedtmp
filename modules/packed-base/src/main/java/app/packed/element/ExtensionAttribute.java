@@ -18,17 +18,6 @@ package app.packed.element;
 /**
  *
  */
+public class ExtensionAttribute {
 
-// Det der taeller imod den f.eks. paa ServiceDescriptor.
-// Er at ServiceDescriptor kan definere alle de metoder den har lyst til.
-// Saa vi ikke i samme baad som component. Som
-public interface Element {
-
-    AttributeSet attributes();
-
-    /**
-     * Returns the relations of this element
-     * 
-     */
-    RelationshipSet relations();
 }

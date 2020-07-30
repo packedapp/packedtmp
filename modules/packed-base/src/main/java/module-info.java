@@ -13,7 +13,8 @@ module app.packed.base {
     exports app.packed.sidecar;
 
     // Temporary...
-    exports packed.internal.reflect to app.packed.banana;
+    exports packed.internal.reflect to app.packed.banana, app.packed.function;
+    exports packed.internal.reflect.typevariable to app.packed.banana, app.packed.function;
 
     requires java.management;
 }

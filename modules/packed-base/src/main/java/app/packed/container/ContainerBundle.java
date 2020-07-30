@@ -60,7 +60,7 @@ import sandbox.component.ConfiguredBy;
 // Unconfigured/Configuring/Configured (Failed??? well et can't bee Configured if it's failed)
 public abstract class ContainerBundle extends ComponentBundle<ContainerConfiguration> implements ArtifactSource {
 
-    /** Creates a new ContainerBundle */
+    /** Creates a new ContainerBundle. */
     protected ContainerBundle() {
         this(ContainerConfiguration.driver());
     }

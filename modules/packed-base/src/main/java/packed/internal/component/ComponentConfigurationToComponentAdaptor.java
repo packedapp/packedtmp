@@ -37,6 +37,9 @@ import packed.internal.host.PackedGuestConfigurationContext;
 /**
  *
  */
+
+// TODO maaske kan configuration implementere Component nu naar den ikke er offentlig????
+// Men det er context jo...
 public final class ComponentConfigurationToComponentAdaptor implements Component {
 
     /** A cached, lazy initialized list of all children. */

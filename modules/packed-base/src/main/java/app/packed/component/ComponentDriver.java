@@ -15,18 +15,12 @@
  */
 package app.packed.component;
 
-import app.packed.base.Nullable;
-
 /**
  * @param <C>
  *            the type of configuration the driver uses to configure the underlying component
  */
 public interface ComponentDriver<C> {
 
-    // Teanker ikke den skal vaere offentlig...
-    default C newConfiguration(@Nullable AbstractComponentConfiguration parent) {
-        throw new UnsupportedOperationException();
-    }
 }
 
 //interface InstanDriver<T, C>

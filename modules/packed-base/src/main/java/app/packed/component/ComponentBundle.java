@@ -21,16 +21,14 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 
-/**
- * A component bundle uses a ComponentConfiguration as the underlying configuration object.
- */
+/** A bundle that uses a ComponentConfiguration as the underlying configuration object. */
 public abstract class ComponentBundle<T extends ComponentConfiguration> extends Bundle<T> {
 
     /**
-     * Creates a new bundle using the supplied component driver.
+     * Creates a new bundle using the supplied driver.
      * 
      * @param driver
-     *            the component driver to use
+     *            the driver to use for constructing the bundles configuration object
      */
     protected ComponentBundle(ComponentDriver<? extends T> driver) {
         super(driver);

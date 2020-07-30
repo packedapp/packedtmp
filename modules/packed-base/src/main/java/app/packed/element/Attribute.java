@@ -16,23 +16,24 @@
 package app.packed.element;
 
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.TypeLiteral;
 
 /**
  *
  */
-
-// Maaske har vi bare en realm.... Og ikke en Extension...
-
 public interface Attribute<T> {
 
     /**
-     * Returns the name of the attribute.
+     * Returns the module the attribute belongs to. The module is always the module in which the {@link #owner()} is
+     * located.
      * 
-     * @return the name of the attribute
+     * @return the module the attribute belongs to
      */
-    String name();// simpleName???
+    default Module module() {
+        return owner().getModule();
+    }
 
     // shortname
     // DependsOn
@@ -48,9 +49,26 @@ public interface Attribute<T> {
     // Bliver der noget saa maa folk skrive det fuldt ud selv.
     // Vi kan heller ikke checke ting der er loaded med forskelling class loaders.
 
-    Class<?> rawType();
+    /**
+     * Returns the name of the attribute.
+     * 
+     * @return the name of the attribute
+     */
+    String name();// simpleName???
 
-    Class<?> realm();// From the lookup object
+    /**
+     * @return the owner of the attribute
+     * 
+     * @see Lookup#lookupClass()
+     */
+    Class<?> owner();// From the lookup object
+
+    /**
+     * Returns the raw type of this attribute.
+     * 
+     * @return the raw type of this attribute
+     */
+    Class<?> rawType();
 
     static <T> Attribute<T> of(MethodHandles.Lookup lookup, String name, Class<T> type, Option... options) {
         throw new UnsupportedOperationException();

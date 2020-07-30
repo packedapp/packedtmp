@@ -29,6 +29,10 @@ import packed.internal.component.BundleConfiguration;
  * This class is not meant to be extended by ordinary users. But provides means for power users to extend the basic
  * functionality of Packed.
  */
+// T extends RealmConfiguration...
+// We don't want any code except packed.base to receive any kind of Lookup objects
+// so Either T extends that... or we have some secret backdoor call to the underlying ComponentConfiguration...
+// so realm(Lookup) {((RealmConfig) configuration).realm(ddd);}
 public abstract class Bundle<T> {
 
     /**
@@ -44,17 +48,13 @@ public abstract class Bundle<T> {
     final ComponentDriver<? extends T> driver;
 
     /**
-     * Creates a new bundle using the supplied component driver.
+     * Creates a new bundle using the supplied driver.
      * 
      * @param driver
-     *            the component driver to use
+     *            the driver to use for constructing the bundles configuration object
      */
     protected Bundle(ComponentDriver<? extends T> driver) {
         this.driver = requireNonNull(driver, "driver is null");
-    }
-
-    protected <X> Bundle(SourcedComponentDriver<X, ? extends T> driver, X instance) {
-        this.driver = null; // Wirelet bliver ikke specificeret her.. Fordi ComponentDriver ikke bruger det.
     }
 
     protected <X> Bundle(SourcedComponentDriver<X, ? extends T> driver, Class<X> implementation) {
@@ -63,6 +63,10 @@ public abstract class Bundle<T> {
 
     protected <X> Bundle(SourcedComponentDriver<X, ? extends T> driver, Factory<X> implementation) {
         this.driver = null;
+    }
+
+    protected <X> Bundle(SourcedComponentDriver<X, ? extends T> driver, X instance) {
+        this.driver = null; // Wirelet bliver ikke specificeret her.. Fordi ComponentDriver ikke bruger det.
     }
 
     /**
@@ -84,13 +88,8 @@ public abstract class Bundle<T> {
         }
     }
 
-    /**
-     * Configures the bundle using the various methods that are available on subclasses.
-     * <p>
-     * This method should only by invoked but the runtime.
-     */
+    /** Configures the bundle. This method should never be invoked directly by the user. */
     protected abstract void configure();
-
 }
 
 // Maaske hedder det ikke en bundle som root???
