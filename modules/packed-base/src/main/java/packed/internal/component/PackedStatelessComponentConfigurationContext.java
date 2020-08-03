@@ -41,20 +41,6 @@ public final class PackedStatelessComponentConfigurationContext extends PackedCo
         return this;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public PackedStatelessComponentConfigurationContext setDescription(String description) {
-        super.setDescription(description);
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public PackedStatelessComponentConfigurationContext setName(String name) {
-        super.setName(name);
-        return this;
-    }
-
     public Class<?> definition() {
         return componentModel.type();
     }

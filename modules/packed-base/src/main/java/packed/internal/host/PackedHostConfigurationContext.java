@@ -65,17 +65,4 @@ public final class PackedHostConfigurationContext extends PackedComponentConfigu
         return "Host"; // Host for now, But if we have host driver...
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public PackedHostConfigurationContext setDescription(String description) {
-        super.setDescription(description);
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public PackedHostConfigurationContext setName(String name) {
-        super.setName(name);
-        return this;
-    }
 }

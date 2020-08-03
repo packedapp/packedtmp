@@ -378,22 +378,21 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
 
     /** {@inheritDoc} */
     @Override
-    public PackedComponentConfigurationContext setDescription(String description) {
+    public void setDescription(String description) {
         requireNonNull(description, "description is null");
         checkConfigurable();
         this.description = description;
-        return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public PackedComponentConfigurationContext setName(String name) {
+    public void setName(String name) {
         // First lets check the name is valid
         ContainerNameWirelet.checkName(name);
         switch (state.oldState) {
         case INITIAL:
             initializeName(State.SET_NAME_INVOKED, name);
-            return this;
+            return;
         case FINAL:
             checkConfigurable();
         case GET_NAME_INVOKED:

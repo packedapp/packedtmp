@@ -68,17 +68,4 @@ public final class PackedSingletonConfigurationContext<T> extends PackedComponen
         componentModel.invokeOnHookOnInstall(source, this);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public PackedSingletonConfigurationContext<T> setDescription(String description) {
-        super.setDescription(description);
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public PackedSingletonConfigurationContext<T> setName(String name) {
-        super.setName(name);
-        return this;
-    }
 }

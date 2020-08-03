@@ -106,8 +106,7 @@ public interface ComponentConfiguration {
      * 
      * @return the path of this configuration.
      */
-    // artifactPath()???
-    ComponentPath path(); // systemPath()<---
+    ComponentPath path(); // systemPath()<--- // artifactPath()???
 
     /**
      * Sets the description of this component.
@@ -138,5 +137,16 @@ public interface ComponentConfiguration {
      */
     ComponentConfiguration setName(String name);
 
+    /**
+     * Wires a new child component using the specified driver
+     * 
+     * @param <C>
+     *            the type of configuration returned by the driver
+     * @param driver
+     *            the driver to use for creating the component
+     * @param wirelets
+     *            any wirelets that should be used when creating the component
+     * @return a configuration for the component
+     */
     <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
 }

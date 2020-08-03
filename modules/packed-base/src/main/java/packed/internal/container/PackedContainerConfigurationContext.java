@@ -491,20 +491,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         return newLayer;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public PackedContainerConfigurationContext setDescription(String description) {
-        super.setDescription(description);
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public PackedContainerConfigurationContext setName(String name) {
-        super.setName(name);
-        return this;
-    }
-
     public Class<?> sourceType() {
         return source.getClass();
     }

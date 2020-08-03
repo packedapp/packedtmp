@@ -106,11 +106,10 @@ public interface ComponentConfigurationContext {
      *
      * @param description
      *            the description to set
-     * @return this configuration
      * @see #getDescription()
      * @see Component#description()
      */
-    ComponentConfigurationContext setDescription(String description);
+    void setDescription(String description);
 
     /**
      * Sets the {@link Component#name() name} of the component. The name must consists only of alphanumeric characters and
@@ -121,15 +120,25 @@ public interface ComponentConfigurationContext {
      *
      * @param name
      *            the name of the component
-     * @return this configuration
      * @throws IllegalArgumentException
      *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
      *             characters and '_', '-' or '.'
      * @see #getName()
      * @see Component#name()
      */
-    ComponentConfigurationContext setName(String name);
+    void setName(String name);
 
+    /**
+     * Wires a new child component using the specified driver
+     * 
+     * @param <C>
+     *            the type of configuration returned by the driver
+     * @param driver
+     *            the driver to use for creating the component
+     * @param wirelets
+     *            any wirelets that should be used when creating the component
+     * @return a configuration for the component
+     */
     <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
 }
 
