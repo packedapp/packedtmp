@@ -13,21 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.artifact.hosttest;
+package sandbox.artifact.hostguest;
 
-import sandbox.artifact.hostguest.HostConfiguration;
-import sandbox.artifact.hostguest.HostConfigurationContext;
-import sandbox.artifact.hostguest.HostDriver;
+import packed.internal.component.driver.ComponentDriverContext;
+import packed.internal.component.driver.OldComponentDriver;
+import sandbox.artifact.hosttest.deprecated.AppHostConfiguration;
 
 /**
  *
  */
-public class MyAppHostDriver<C extends HostConfiguration<?>> extends HostDriver<C> {
+public class AppHostDriver extends OldComponentDriver<AppHostConfiguration> {
+
+    static final AppHostDriver DRIVER = new AppHostDriver();
+
+    private AppHostDriver() {
+        super(Option.hosting());
+    }
 
     /** {@inheritDoc} */
     @Override
-    protected C newConfiguration(HostConfigurationContext context) {
-        return null;
+    protected AppHostConfiguration create(ComponentDriverContext context) {
+        throw new UnsupportedOperationException();
     }
-
 }

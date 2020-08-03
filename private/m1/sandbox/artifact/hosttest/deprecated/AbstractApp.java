@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.artifact.hostguest;
+package sandbox.artifact.hosttest.deprecated;
 
 import app.packed.artifact.App;
 import app.packed.artifact.ArtifactContext;

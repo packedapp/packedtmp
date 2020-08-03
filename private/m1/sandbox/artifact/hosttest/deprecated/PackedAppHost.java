@@ -13,11 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.artifact.hostguest;
+package sandbox.artifact.hosttest.deprecated;
 
-/**
- *
- */
-final class PackedHostConfigurationContext implements HostConfigurationContext {
+import static java.util.Objects.requireNonNull;
 
+import sandbox.artifact.hostguest.HostContext;
+
+/** The default implementation of {@link AppHost}. */
+final class PackedAppHost implements AppHost {
+
+    private final HostContext context;
+
+    PackedAppHost(HostContext context) {
+        this.context = requireNonNull(context);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long size() {
+        return context.guestCount();
+    }
 }

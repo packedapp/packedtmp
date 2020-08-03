@@ -31,9 +31,6 @@ import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
-import sandbox.artifact.hostguest.HostConfiguration;
-import sandbox.artifact.hostguest.HostDriver;
-import sandbox.component.ConfiguredBy;
 
 /**
  * Bundles are the main source of configuration for containers and artifacts. Basically a bundle is just a thin wrapper
@@ -67,15 +64,6 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
 
     protected ContainerBundle(ComponentDriver<? extends ContainerConfiguration> driver) {
         super(driver);
-    }
-
-    protected final <C> C add(Class<? extends ConfiguredBy<C>> type) {
-        throw new UnsupportedOperationException();
-    }
-
-    // Do we need a provide host also????
-    protected final <C extends HostConfiguration<?>> C addHost(HostDriver<C> driver) {
-        throw new UnsupportedOperationException();
     }
 
     // Do we need a provide host also????

@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.artifact.hostguest;
+package sandbox.artifact.hosttest.deprecated;
 
 import app.packed.artifact.App;
+import app.packed.component.ComponentDriver;
+import sandbox.artifact.hostguest.HostConfigurationContext;
 
 /**
  *
@@ -23,20 +25,13 @@ import app.packed.artifact.App;
 public final class AppHostConfiguration extends HostConfiguration<AppHost> {
 
     /** An artifact driver for creating {@link App} instances. */
-    static final HostDriver<AppHostConfiguration> DRIVER = new HostDriver<>() {
-
-        /** {@inheritDoc} */
-        @Override
-        protected AppHostConfiguration newConfiguration(HostConfigurationContext context) {
-            return new AppHostConfiguration(context);
-        }
-    };
+    static final ComponentDriver<AppHostConfiguration> DRIVER = new ComponentDriver<>() {};
 
     /**
      * @param context
      */
     AppHostConfiguration(HostConfigurationContext context) {
-        super(PackedAppHost.class, context); // Maybe move it to driver... Then we have to generify the driver...
+        super(null, null); // Maybe move it to driver... Then we have to generify the driver...
     }
 
 }

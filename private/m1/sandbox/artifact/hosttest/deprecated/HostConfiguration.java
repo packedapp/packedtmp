@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.artifact.hostguest;
+package sandbox.artifact.hosttest.deprecated;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
 import app.packed.base.Nullable;
-import app.packed.base.TypeLiteral;
 import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
+import sandbox.artifact.hostguest.HostConfigurationContext;
 
 /**
  *
@@ -61,10 +61,6 @@ public abstract class HostConfiguration<T> {
 
     public String getName() {
         return null;
-    }
-
-    public TypeLiteral<T> hostType() {
-        throw new UnsupportedOperationException();
     }
 
     public ComponentPath path() {

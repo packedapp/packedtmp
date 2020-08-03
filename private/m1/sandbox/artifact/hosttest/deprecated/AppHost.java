@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sandbox.artifact.hostguest;
+package sandbox.artifact.hosttest.deprecated;
 
 import app.packed.component.ComponentDriver;
 import app.packed.container.ContainerBundle;
-import sandbox.component.ConfiguredBy;
 
 /**
  *
@@ -28,13 +27,10 @@ public interface AppHost extends ConfiguredBy<AppHostConfiguration> {
     long size();
 
     // Eller skal den vaere paa configurationen???
-    static HostDriver<AppHostConfiguration> driver() {
+    static ComponentDriver<AppHostConfiguration> driver() {
         return AppHostConfiguration.DRIVER;
     }
 
-    static ComponentDriver<AppHostConfiguration> driver2() {
-        throw new UnsupportedOperationException();
-    }
 }
 
 class FooBar extends ContainerBundle {
@@ -43,6 +39,7 @@ class FooBar extends ContainerBundle {
     @Override
     protected void configure() {
         // <- must have a static driver method... and be open to packed... (and readable to bundle)
-        add(AppHost.class);
+        // add(AppHost.class);
+        add(AppHost.driver());
     }
 }
