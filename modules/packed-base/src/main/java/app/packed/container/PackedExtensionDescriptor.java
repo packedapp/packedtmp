@@ -60,6 +60,12 @@ final class PackedExtensionDescriptor implements ExtensionDescriptor {
 
     /** {@inheritDoc} */
     @Override
+    public int depth() {
+        return model.depth();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public Class<? extends Extension> type() {
         return model.extensionType();
     }

@@ -22,6 +22,7 @@ import packed.internal.container.PackedContainerConfigurationContext;
 /**
  * An extension that is always automatically added whenever a new container is configured. Even while the
  * 
+ * Every other extension implicitly has this extension as a mandatory dependency.
  * <p>
  * It is an error to depend on this via {@link ExtensionSidecar#dependencies()}. Not sure you can with subtensions and
  * stuff.
@@ -35,7 +36,7 @@ public final class BaseExtension extends Extension {
      * Creates a new extension.
      * 
      * @param pcc
-     *            the configuration of the container in which the extension is used.
+     *            the container's configuration context.
      */
     /* package-private */ BaseExtension(PackedContainerConfigurationContext pcc) {
         this.pcc = requireNonNull(pcc, "pcc is null");
@@ -50,10 +51,9 @@ public final class BaseExtension extends Extension {
         return ExtensionOrdering.of(pcc.extensions()); // view/not-view?
     }
 }
+
 // Hmm vi har ikke
 // public static final BaseExtension defaultOrder = new BaseExtension();
-
 // onExtensionAdded()// printStackTrace()
-
 // introduce order between(e1, e2)
 // (only works if there is not a dependency between them

@@ -32,6 +32,13 @@ import app.packed.base.Contract;
 public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
 
     /**
+     * Returns the depth of the extension.
+     * 
+     * @return the depth of the extension
+     */
+    int depth();
+
+    /**
      * Returns all the different types of contracts the extension exposes.
      * 
      * @return all the different types of contracts the extension exposes

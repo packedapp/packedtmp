@@ -25,13 +25,6 @@ import app.packed.container.Extension;
  * A component is the basic entity in Packed. Much like everything is a is one of the defining features of Unix, and its
  * derivatives. In packed everything is a component.
  */
-// ComponentDescriptor??
-// add
-// type...implementation
-// relationTo()... Vi vil gerne have noget der er immutable....
-// Altsaa strengt taget, behover vi ikke from and to...
-// F.eks.
-// walk 
 public interface Component {
 
     /**
@@ -49,18 +42,38 @@ public interface Component {
     ConfigSite configSite();
 
     /**
-     * Returns the parent component of this component. Or empty if this component has no parent.
-     * 
-     * @return the parent component of this component. Or empty if this component has no parent
-     */
-    Optional<Component> parent();
-
-    /**
      * Returns the depth of the component in the system. The root component having depth 0.
      * 
      * @return the depth of the component in the system
      */
     int depth();
+
+    /**
+     * Returns the description of this component. Or an empty optional if no description was set when configuring the
+     * component.
+     *
+     * @return the description of this component. Or an empty optional if no description was set when configuring the
+     *         component
+     */
+    Optional<String> description();
+
+    /**
+     * If this component is a part of extension, returns the extension. Otherwise returns empty.
+     * 
+     * @return any extension this component belongs to
+     */
+    // Don't really like this... It strongly ties a container to a component.
+    // As extensions are children of containers always...
+    // But then again ComponentStream.Option contains stuff about containers ect.
+    // Maybe model it as an attribute
+    Optional<Class<? extends Extension>> extension();
+
+    /**
+     * Returns the type of component.
+     * 
+     * @return the type of component
+     */
+    ComponentDescriptor model();
 
     /**
      * Returns the name of this component.
@@ -75,20 +88,6 @@ public interface Component {
     String name();
 
     /**
-     * Returns the path of this component.
-     *
-     * @return the path of this component
-     */
-    ComponentPath path();
-
-    default Optional<Class<?>> realm() {
-        // Wirelets, Artifacts does not have
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * 
-     * 
      * <p>
      * This operation does not allocate any objects internally.
      * 
@@ -112,6 +111,36 @@ public interface Component {
 
     //// En ComponentContext.use(XXXX class)
 
+//  /**
+//   * Registers an action that will be performed whenever a name is assigned to the component.
+//   * <p>
+//   * This method is mainly used by extensions.
+//   * 
+//   * @param action
+//   *            the action to be performed when the name of the component is finalized
+//   */
+//  default void onNamed(Consumer<? super ComponentConfiguration> action) {
+//      throw new UnsupportedOperationException();
+//  }
+    /**
+     * Returns the parent component of this component. Or empty if this component has no parent.
+     * 
+     * @return the parent component of this component. Or empty if this component has no parent
+     */
+    Optional<Component> parent();
+
+    /**
+     * Returns the path of this component.
+     *
+     * @return the path of this component
+     */
+    ComponentPath path();
+
+    default Optional<Class<?>> realm() {
+        // Wirelets, Artifacts does not have
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Returns a component stream consisting of this component and all of its descendants in any order.
      *
@@ -121,53 +150,10 @@ public interface Component {
      * @return a component stream consisting of this component and all of its descendants in any order
      */
     ComponentStream stream(ComponentStream.Option... options);
-
-    // returns it self if its a container
-    // container().parent().container() <-- returns parent container
-    // ComponentDescriptor container();
-
-    // Alternative have en Container extends Component....
-    // Maaske ikke extends Component.... Saa vi kan have
-    // container aggregates
-    // container().path()
-    // Vi vil gerne kunne give en component, uden at give adgang til dens container..
-    // same with artifac
-
-    /**
-     * Returns the description of this component. Or an empty optional if no description was set when configuring the
-     * component.
-     *
-     * @return the description of this component. Or an empty optional if no description was set when configuring the
-     *         component
-     *
-     * @see SingletonConfiguration#setDescription(String)
-     */
-    Optional<String> description();
-
-    /**
-     * If this component is a part of extension, returns the extension. Otherwise returns empty.
-     * 
-     * @return any extension this component belongs to
-     */
-    // Don't really like this... It strongly ties a container to a component.
-    // As extensions are children of containers always...
-
-    // But then again ComponentStream.Option contains stuff about containers ect.
-
-    // Maybe model it as an attribute
-    Optional<Class<? extends Extension>> extension();
-
-    /**
-     * Returns the type of component.
-     * 
-     * @return the type of component
-     */
-    ComponentDescriptor model();
 }
 
 // SystemView/Descriptor
 // Contracts...
-
 // {
 // Problemet med features er at vi har nogle vi gerne vil list som vaere der. Og andre ikke.
 // F.eks. All dependencies for a component... Is this really a feature??

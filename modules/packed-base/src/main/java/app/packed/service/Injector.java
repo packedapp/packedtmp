@@ -103,6 +103,9 @@ import packed.internal.container.PackedContainer.PackedArtifactContext;
 
 // Do we have an internal injector and an external injector?????
 // Or maybe an Injector and an InternalInjector (which if exportAll is the same???)
+
+// Altsaa den hoerer vel ikke til her...
+// Vi kan jo injecte andre ting en services
 public interface Injector {
 
     /**

@@ -23,25 +23,22 @@ import app.packed.container.ContainerBundle;
 import app.packed.container.Extension;
 
 /**
- * A context object used by {@link AbstractComponentConfiguration}.
- *
+ * Component configuration context objects used by {@link AbstractComponentConfiguration}.
+ * <p>
+ * This class mainly exists to allow people to create their own configuration classes.
+ * 
  * @apiNote In the future, if the Java language permits, {@link ComponentConfigurationContext} may become a
  *          {@code sealed} interface, which would prohibit subclassing except by explicitly permitted types.
  */
-
-//Vi goer det fordi vi bliver noedt til at have et extra lag.
-//Hvis folk udefra skal kunne lave deres egne configurations
-//Klasser…
-//Ellers er vi hardcore 
 public interface ComponentConfigurationContext {
 
     /**
-     * Checks that the component is still configurable or throws an {@link IllegalStateException}.
+     * Checks that the component is still configurable. Throwing an {@link IllegalStateException} if it is not.
      * <p>
      * A component is typically only configurable inside of {@link ContainerBundle#configure()}.
      * 
      * @throws IllegalStateException
-     *             if the component is no long configurable.
+     *             if the component is no longer configurable.
      */
     void checkConfigurable();
 
@@ -88,18 +85,6 @@ public interface ComponentConfigurationContext {
      */
     ComponentDescriptor model();
 
-//    /**
-//     * Registers an action that will be performed whenever a name is assigned to the component.
-//     * <p>
-//     * This method is mainly used by extensions.
-//     * 
-//     * @param action
-//     *            the action to be performed when the name of the component is finalized
-//     */
-//    default void onNamed(Consumer<? super ComponentConfiguration> action) {
-//        throw new UnsupportedOperationException();
-//    }
-
     /**
      * Returns the full path of the component.
      * <p>
@@ -113,8 +98,7 @@ public interface ComponentConfigurationContext {
      * 
      * @return the path of this configuration.
      */
-    // artifactPath()???
-    ComponentPath path(); // systemPath()<---
+    ComponentPath path(); // systemPath()<--- // artifactPath()???
 
     /**
      * Sets the description of this component.
@@ -145,3 +129,15 @@ public interface ComponentConfigurationContext {
      */
     ComponentConfigurationContext setName(String name);
 }
+
+///**
+//* Registers an action that will be performed whenever a name is assigned to the component.
+//* <p>
+//* This method is mainly used by extensions.
+//* 
+//* @param action
+//*            the action to be performed when the name of the component is finalized
+//*/
+//default void onNamed(Consumer<? super ComponentConfiguration> action) {
+//  throw new UnsupportedOperationException();
+//}

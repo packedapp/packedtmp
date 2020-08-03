@@ -168,11 +168,6 @@ public abstract class Extension {
         return c;
     }
 
-    protected void lookup(Lookup l) {
-        // Den fungere ligesom Bundle.lookup()
-        // Her har vi selve extension'en som
-    }
-
     /**
      * Invoked by the runtime immediately after the constructor has returned, Unlike the constructor, {@link #configuration}
      * can be invoked from this method.
@@ -193,6 +188,11 @@ public abstract class Extension {
      */
     protected final <T> SingletonConfiguration<T> installInstance(T instance) {
         return configuration().installInstance(instance);
+    }
+
+    protected void lookup(Lookup l) {
+        // Den fungere ligesom Bundle.lookup()
+        // Her har vi selve extension'en som
     }
 
     /**
@@ -226,7 +226,11 @@ public abstract class Extension {
         throw new UnsupportedOperationException();
     }
 
-    public abstract class Subtension {
+    // Naah, taenker vi tillader at lave inline klasser her...
+    // Saa vi gider ikke have user..
+    // Problemet er den funcking constructor...
+    // Er rimlig sikker paa at inline klasser altid er statiske...
+    public static abstract class Subtension {
 
         // User...
         Class<? extends Extension> user;

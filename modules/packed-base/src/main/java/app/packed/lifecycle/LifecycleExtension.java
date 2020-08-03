@@ -47,9 +47,7 @@ public final class LifecycleExtension extends Extension {
     public class Sub extends Subtension {
         /* package-private */ Sub() {}
 
-        void onEnteringPostDependencies() {
-
-        }
+        void onEnteringPostDependencies() {}
 
         void onEnteringPreDependencies() {
 

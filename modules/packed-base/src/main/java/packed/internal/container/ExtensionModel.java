@@ -192,6 +192,10 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
 //        return d == 0 ? nameUsedForSorting.compareTo(m.nameUsedForSorting) : d;
     }
 
+    public int depth() {
+        return depth;
+    }
+
     /**
      * Returns a set of all the direct dependencies of this extension as specified via {@link ExtensionSidecar}.
      * 

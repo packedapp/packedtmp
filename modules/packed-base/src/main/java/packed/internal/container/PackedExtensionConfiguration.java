@@ -43,7 +43,8 @@ import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** Implementation of {@link ExtensionConfiguration}. */
-public final class PackedExtensionConfiguration implements ExtensionConfiguration, Comparable<PackedExtensionConfiguration> {
+public final class PackedExtensionConfiguration /* extends AbstractComponentConfiguration */
+        implements ExtensionConfiguration, Comparable<PackedExtensionConfiguration> {
 
     /** A MethodHandle for invoking {@link #findWirelet(Class)} used by {@link ExtensionModel}. */
     static final MethodHandle MH_FIND_WIRELET = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "findWirelet", Object.class, Class.class);
@@ -72,7 +73,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     private final ExtensionModel model;
 
     /** The configuration of the container that uses the extension. */
-    private final PackedContainerConfigurationContext pcc;
+    private final PackedContainerConfigurationContext pcc; // identical to component.parent...
 
     /**
      * Creates a new configuration.

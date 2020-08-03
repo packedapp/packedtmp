@@ -18,6 +18,7 @@ package app.packed.container;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
@@ -42,17 +43,19 @@ import packed.internal.container.PackedExtensionConfiguration;
  * @apiNote In the future, if the Java language permits, {@link ExtensionConfiguration} may become a {@code sealed}
  *          interface, which would prohibit subclassing except by explicitly permitted types.
  */
+// Problemet med at extende ComponentConfiguration er hvis vi tillader at installere alle componenter..
+// saa skal de jo ikke have extensionen som parent??? Eller??
+// Det kunne jo baere vaere en pseduo parent
 public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
 
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
-     * An extension is no longer configurable after the extension's onConfigured method has been invoked by the runtime.
+     * An extension is no longer configurable after the extension's configured method has been invoked by the runtime.
      * 
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
-    // onConfigured-> configure...
     void checkConfigurable();
 
     default void checkPreemble() {
@@ -66,14 +69,15 @@ public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
      * 
      * @return the config site of the container the extension is registered with
      */
+    // Returns the config site of extension which is always identical to its container's config site
     ConfigSite containerConfigSite(); // parent.configSite
 
     /**
-     * Returns the path of the container the extension is registered with.
+     * Returns the path of the extension. The path of the container to which the extension is registered with, can be
+     * obtained by calling <code>path.parent().get()</code>.
      * 
-     * @return the path of the container the extension is registered with
+     * @return the path of the extension is registered with
      */
-    // maaske bare path... og saa kan man kalde path().parent.get();
     ComponentPath path();
 
     /**
@@ -140,32 +144,38 @@ public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
     // Tillader vi alle extensions??? ogsaa dem vi ikke depender paa
 
     // Og man kan misforstaa den som om at det er om denne extension bruger den.
-
     boolean isUsed(Class<? extends Extension> extensionType);
-
-//    /**
-//     * The specified extension type must be located in the same module as the module that extension this context is related
-//     * to.
-//     * 
-//     * @param <T>
-//     *            the type of extensions to return
-//     * @param extensionType
-//     * @return a list of all extensions of the particular type in child containers within the same artifact
-//     * @throws IllegalStateException
-//     *             if invoked before the child gathering phase has finished
-//     * @implNote the implementation will gather extensions and create a new list on every invocation. So cache the result if
-//     *           you need to, instead of calling this method multiple times with the same argument.
-//     */
-    // The type must also be a dependency of this type as returned by #descriptor.dependencies();
-
     // Returns empty if the extension is not available
 
     // Hmm maaske vi flytter den ud af extension... Syntes ikke den skal dukke op under metoder...
     // Maaske paa ExtensionContext istedet for...
 
     // Skal ogsaa have en version der tager en Bundle???
-    static Optional<ExtensionConfiguration> privateAccess(MethodHandles.Lookup lookup, Component c) {
-        return Optional.ofNullable(pa(lookup, c));
+    // Og et Image???
+
+    /**
+     * Typically used, for example, for testing.
+     * 
+     * The specified lookup must have the extension as its {@link Lookup#lookupClass()}. And
+     * {@link Lookup#hasFullPrivilegeAccess()} must return true.
+     * 
+     * <p>
+     * Calling this method at runtime will fail with {@link IllegalStateException}. As containers never retain extensions at
+     * runtime.
+     * 
+     * @param caller
+     *            a lookup for an extension subclass with full privileges
+     * @param component
+     *            the component to extract the configuration from.
+     * @return an optional containing the extension if it has been configured, otherwise empty
+     * @throws IllegalStateException
+     *             if calling this method at runtime
+     * @throws IllegalArgumentException
+     *             if the {@link Lookup#lookupClass()} of the specified caller does not extend{@link Extension}. Or if the
+     *             specified lookup object does not have full privileges
+     */
+    static Optional<ExtensionConfiguration> privateAccess(MethodHandles.Lookup caller, Component component) {
+        return Optional.ofNullable(pa(caller, component));
     }
 
     /**
@@ -184,7 +194,7 @@ public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
     static <T extends Extension> Optional<T> privateAccessExtension(MethodHandles.Lookup lookup, Class<T> extensionType, Component c) {
         requireNonNull(lookup, "lookup is null");
         if (lookup.lookupClass() != extensionType) {
-            throw new IllegalArgumentException("The specified lookup object must have " + extensionType + " as lookupClass()");
+            throw new IllegalArgumentException("The specified lookup object must match the specified extensionType " + extensionType + " as lookupClass()");
         }
         @Nullable
         PackedExtensionConfiguration pec = pa(lookup, c);
@@ -192,23 +202,31 @@ public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
     }
 
     @SuppressWarnings("deprecation")
-    private static PackedExtensionConfiguration pa(MethodHandles.Lookup lookup, Component c) {
+    @Nullable
+    private static PackedExtensionConfiguration pa(MethodHandles.Lookup lookup, Component component) {
         requireNonNull(lookup, "lookup is null");
-        if (lookup.lookupClass() == Extension.class || !Extension.class.isAssignableFrom(lookup.lookupClass())) {
-            throw new IllegalArgumentException("The specified lookup object must have a subclass of " + Extension.class.getCanonicalName()
-                    + " as lookupClass(), was " + lookup.lookupClass());
+        requireNonNull(lookup, "component is null");
+
+        // This method can only be used at buildtime
+        if (!(component instanceof ComponentConfigurationToComponentAdaptor)) {
+            throw new IllegalStateException("This method cannot be called on at runtime of a container");
         }
+
+        // lookup.lookupClass() must point to the extension that should be extracted
+        if (lookup.lookupClass() == Extension.class || !Extension.class.isAssignableFrom(lookup.lookupClass())) {
+            throw new IllegalArgumentException("The lookupClass() of the specified lookup object must be a proper subclass of "
+                    + Extension.class.getCanonicalName() + ", was " + lookup.lookupClass());
+        }
+
         @SuppressWarnings("unchecked")
         Class<? extends Extension> extensionType = (Class<? extends Extension>) lookup.lookupClass();
-
+        // Must have full access to the extension class
         if (!lookup.hasPrivateAccess()) {
             throw new IllegalArgumentException("The specified lookup object must have full access to " + extensionType
                     + ", try creating a new lookup object using MethodHandle.privateLookupIn(lookup, " + extensionType.getSimpleName() + ".class)");
-        } else if (!(c instanceof ComponentConfigurationToComponentAdaptor)) {
-            throw new IllegalStateException("This method cannot be called on a at runtime of a container");
         }
 
-        ComponentConfigurationToComponentAdaptor cc = (ComponentConfigurationToComponentAdaptor) c;
+        ComponentConfigurationToComponentAdaptor cc = (ComponentConfigurationToComponentAdaptor) component;
         PackedContainerConfigurationContext pcc = cc.componentConfiguration.actualContainer();
         return pcc.getExtensionContext(extensionType);
     }

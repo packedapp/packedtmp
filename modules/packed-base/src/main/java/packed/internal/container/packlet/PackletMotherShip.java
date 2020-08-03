@@ -18,7 +18,7 @@ package packed.internal.container.packlet;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Function;
 
-import app.packed.container.SpecializeContainer;
+import app.packed.container.sandbox.SpecializeContainer;
 
 /**
  *
