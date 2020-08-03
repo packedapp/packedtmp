@@ -57,6 +57,8 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
 
     public static class ContainerComponentDriver extends PackedComponentDriver<ContainerConfiguration> {
 
+        public static ContainerComponentDriver INSTANCE = new ContainerComponentDriver();
+
         /** {@inheritDoc} */
         @Override
         public PackedComponent create(@Nullable PackedComponent parent, PackedComponentConfigurationContext configuration, PackedInstantiationContext ic) {

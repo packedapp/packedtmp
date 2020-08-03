@@ -30,7 +30,7 @@ import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
-import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 
 /**
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
@@ -190,20 +190,12 @@ public interface ContainerConfiguration extends ComponentConfiguration {
     <T extends Extension> T use(Class<T> extensionType);
 
     /**
-     * Returns the default driver for creating container configurations.
+     * Returns a driver for creating containers and their configurations.
      * 
-     * @return the default driver for creating container configurations
+     * @return a driver for creating containers and their configurations
      */
-    // Skal den vaere here eller paa ComponentDriver????
-    // Syntes egentlig ikke den er tilknyttet ComponentDriver...
-    // Men hvis folk selv definere for custom defineret vil det maaske give mening.
-    // At smide dem paa configurationen... Der er jo ingen
-
-    // En anden meget positiv ting er at vi vi har 2 component drivere
-    // sourced and unsourced. People shouldn't really need to look at
-    // both of the classes two find what they need..
     static ComponentDriver<ContainerConfiguration> driver() {
-        return PackedComponentDriver.container();
+        return ContainerComponentDriver.INSTANCE;
     }
 }
 
@@ -221,10 +213,3 @@ public interface ContainerConfiguration extends ComponentConfiguration {
 //* @return the new layer
 //*/
 //ContainerLayer newLayer(String name, ContainerLayer... dependencies);
-
-/**
- * Returns the build context. A single build context object is shared among all containers for the same artifact.
- * 
- * @return the build context
- */
-// ArtifactBuildContext buildContext();

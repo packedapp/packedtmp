@@ -35,7 +35,7 @@ import app.packed.inject.Factory;
 /** The default implementation of {@link ContainerConfiguration}. */
 public class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
 
-    /** The context to delegate all callsto. */
+    /** The context to delegate all calls to. */
     private final PackedContainerConfigurationContext context;
 
     public PackedContainerConfiguration(PackedContainerConfigurationContext context) {

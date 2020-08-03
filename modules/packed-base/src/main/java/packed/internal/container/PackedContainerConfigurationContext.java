@@ -52,6 +52,7 @@ import packed.internal.component.ComponentModel;
 import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedComponentConfigurationContext;
 import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.component.PackedSingletonConfigurationContext;
 import packed.internal.component.PackedStatelessComponentConfiguration;
@@ -132,7 +133,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
      *            any wirelets specified by the user
      */
     private PackedContainerConfigurationContext(ConfigSite cs, AssembleOutput output, Object source, Wirelet... wirelets) {
-        super(PackedComponentDriver.container(), ComponentDescriptor.CONTAINER, cs, output);
+        super(ContainerComponentDriver.INSTANCE, ComponentDescriptor.CONTAINER, cs, output);
         this.source = requireNonNull(source);
         this.lookup = this.model = ContainerModel.of(source.getClass());
         this.wireletContext = WireletPack.fromRoot(this, wirelets);

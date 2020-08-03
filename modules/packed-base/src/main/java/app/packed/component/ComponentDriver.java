@@ -33,6 +33,16 @@ public interface ComponentDriver<C> {
     }
 }
 
+// COMPONENT_DRIVEr definere ingen drivere selv..
+// Skal den vaere here eller paa ComponentDriver????
+// Syntes egentlig ikke den er tilknyttet ComponentDriver...
+// Men hvis folk selv definere for custom defineret vil det maaske give mening.
+// At smide dem paa configurationen... Der er jo ingen
+
+// En anden meget positiv ting er at vi vi har 2 component drivere
+// sourced and unsourced. People shouldn't really need to look at
+// both of the classes two find what they need..
+
 //interface InstanDriver<T, C>
 
 interface ComponentDriverContext {
