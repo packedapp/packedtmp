@@ -31,11 +31,13 @@ import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDescriptor;
+import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
+import app.packed.container.Wirelet;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedAssembleContext;
 import packed.internal.artifact.PackedInstantiationContext;
@@ -79,6 +81,8 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
 
     final ComponentDescriptor descriptor;
 
+    public final PackedComponentDriver<?> driver;
+
     /** Any extension this component belongs to. */
     @Nullable
     private final PackedExtensionConfiguration extension;
@@ -94,8 +98,6 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
     /** The state of this configuration. */
     // Maaske er det en special GuestConfigurationAdaptor som er rod paa runtime.
     protected ComponentConfigurationState state = new ComponentConfigurationState();
-
-    public final PackedComponentDriver<?> driver;
 
     /**
      * A special constructor for the top level container.
@@ -408,6 +410,12 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
             throw new IllegalStateException("#setName(String) can only be called once");
         }
         throw new InternalError();
+    }
+
+    @Override
+    public <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
+        requireNonNull(driver, "driver is null");
+        throw new UnsupportedOperationException();
     }
 
     /** The state of the component configuration */

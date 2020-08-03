@@ -27,6 +27,10 @@ package app.packed.component;
 public interface ComponentDriver<C> {
 
     // Har man altid en source???????
+
+    default C newConfiguration() {
+        throw new UnsupportedOperationException();
+    }
 }
 
 //interface InstanDriver<T, C>

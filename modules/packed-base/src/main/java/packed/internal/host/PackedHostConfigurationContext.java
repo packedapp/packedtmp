@@ -31,7 +31,6 @@ import packed.internal.component.PackedComponentDriver;
  * The defa
  */
 // We don't actually store the HostConfiguration in this class.
-
 public final class PackedHostConfigurationContext extends PackedComponentConfigurationContext {
 
     /**

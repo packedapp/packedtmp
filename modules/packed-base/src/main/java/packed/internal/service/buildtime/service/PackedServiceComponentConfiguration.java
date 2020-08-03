@@ -22,9 +22,11 @@ import java.util.Optional;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentDescriptor;
+import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
+import app.packed.container.Wirelet;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceMode;
 import packed.internal.component.PackedSingletonConfigurationContext;
@@ -140,5 +142,11 @@ public final class PackedServiceComponentConfiguration<T> implements ServiceComp
     @Override
     public ComponentDescriptor model() {
         return component.model();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
+        return component.wire(driver, wirelets);
     }
 }

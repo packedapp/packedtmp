@@ -26,6 +26,7 @@ import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
+import app.packed.container.Wirelet;
 import packed.internal.config.ConfigSiteSupport;
 
 /** An abstract implementation of ComponentConfiguration that can be extended by extensions. */
@@ -56,22 +57,15 @@ import packed.internal.config.ConfigSiteSupport;
 // model.newConfiguration(ComponentContainerContext ccc) -> return new SingletonCC(ccc);
 public abstract class AbstractComponentConfiguration implements ComponentConfiguration {
 
+    /** A stack walker used from {@link #captureStackFrame(String)}. */
+    private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
+
     /** The configuration context */
     protected final ComponentConfigurationContext context;
-
-    protected AbstractComponentConfiguration() {
-        // Virker ikke skide smart da brugere saa kan caste den...
-        context = (ComponentConfigurationContext) this;
-    }
 
     protected AbstractComponentConfiguration(ComponentConfigurationContext context) {
         this.context = requireNonNull(context, "context is null");
     }
-
-    /** A stack walker used from {@link #captureStackFrame(String)}. */
-    private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
-
-    protected abstract String initializeNameDefaultName();
 
     /**
      * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
@@ -154,17 +148,13 @@ public abstract class AbstractComponentConfiguration implements ComponentConfigu
         return context.getName();
     }
 
+    protected abstract String initializeNameDefaultName();
+
     /** {@inheritDoc} */
     @Override
     public ComponentDescriptor model() {
         return context.model();
     }
-
-//    /** {@inheritDoc} */
-//    @Override
-//    public void onNamed(Consumer<? super ComponentConfiguration> action) {
-//        context.onNamed(action);
-//    }
 
     /** {@inheritDoc} */
     @Override
@@ -184,5 +174,10 @@ public abstract class AbstractComponentConfiguration implements ComponentConfigu
     public ComponentConfiguration setName(String name) {
         context.setName(name);
         return this;
+    }
+
+    @Override
+    public <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
+        return context.wire(driver, wirelets);
     }
 }

@@ -21,6 +21,7 @@ import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundle;
 import app.packed.container.Extension;
+import app.packed.container.Wirelet;
 
 /**
  *
@@ -136,4 +137,6 @@ public interface ComponentConfiguration {
      * @see Component#name()
      */
     ComponentConfiguration setName(String name);
+
+    <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
 }
