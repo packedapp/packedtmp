@@ -2,6 +2,7 @@ package app.packed.artifact;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -17,21 +18,8 @@ import app.packed.lifecycleold.StopOption;
 /** The default implementation of {@link App}. */
 final class PackedApp implements App {
 
-    // With constant ClassValue we can probably do
-    // ArtifactDriver.start(PackedApp.class, ArtifactSource source, Wirelet... wirelets);
-
-    /** An artifact driver for creating {@link App} instances. */
-    static final ArtifactDriver<App> DRIVER = new ArtifactDriver<>() {
-
-        /** {@inheritDoc} */
-        @Override
-        public App newArtifact(ArtifactContext context) {
-            return new PackedApp(context);
-        }
-    };
-
-    // lookup must have access to PackedApp...
-    // static final ArtifactDriver<App> DRIVER2 = ArtifactDriver.of(MethodHandles.lookup(), App.class, PackedApp.class);
+    /** An driver for creating PackedApp instances. */
+    static final ArtifactDriver<App> DRIVER = ArtifactDriver.of(MethodHandles.lookup(), App.class, PackedApp.class);
 
     /** The artifact context we are wrapping. */
     private final ArtifactContext context;

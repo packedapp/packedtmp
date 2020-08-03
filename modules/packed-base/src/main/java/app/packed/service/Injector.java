@@ -17,6 +17,8 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -31,6 +33,7 @@ import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Wirelet;
 import packed.internal.container.PackedContainer.PackedArtifactContext;
+import packed.internal.util.LookupUtil;
 
 /**
  * An injector is an immutable holder of services that can be dependency injected or looked up by their type at runtime.
@@ -361,12 +364,18 @@ final class InjectorArtifactDriver extends ArtifactDriver<Injector> {
 //    static final ArtifactDriver<Injector> INSTANCE_NG = ArtifactDriver.of(MethodHandles.lookup(), Injector.class,
 //            new Factory1<ArtifactContext, Injector>(c -> ((PackedArtifactContext) c).injector()) {});
 
+    static final MethodHandle CONV = LookupUtil.mhStaticSelf(MethodHandles.lookup(), "convert", Injector.class, ArtifactContext.class);
+
     /** Singleton */
     private InjectorArtifactDriver() {}
 
     /** {@inheritDoc} */
     @Override
     public Injector newArtifact(ArtifactContext container) {
+        return ((PackedArtifactContext) container).injector();
+    }
+
+    static Injector convert(ArtifactContext container) {
         return ((PackedArtifactContext) container).injector();
     }
 }

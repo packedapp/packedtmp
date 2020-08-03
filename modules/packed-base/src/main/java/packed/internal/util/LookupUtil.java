@@ -61,6 +61,15 @@ public final class LookupUtil {
         }
     }
 
+    public static MethodHandle mhStaticSelf(MethodHandles.Lookup caller, String name, Class<?> returnType, Class<?>... parameterTypes) {
+        MethodType mt = MethodType.methodType(returnType, parameterTypes);
+        try {
+            return caller.findStatic(caller.lookupClass(), name, mt);
+        } catch (ReflectiveOperationException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
     public static MethodHandle mhStaticPublic(Class<?> refc, String name, Class<?> returnType, Class<?>... parameterTypes) {
         MethodType mt = MethodType.methodType(returnType, parameterTypes);
         try {

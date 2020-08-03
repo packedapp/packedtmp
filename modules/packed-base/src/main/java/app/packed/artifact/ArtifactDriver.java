@@ -15,8 +15,11 @@
  */
 package app.packed.artifact;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -32,6 +35,7 @@ import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.PackedContainerConfigurationContext;
 import packed.internal.container.WireletPack;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
+import packed.internal.util.ThrowableUtil;
 
 /**
  * Artifact drivers are responsible for creating new artifacts by wrapping instances of {@link ArtifactContext}.
@@ -89,11 +93,11 @@ public abstract class ArtifactDriver<A> {
         this.hasExecutionPhase = AutoCloseable.class.isAssignableFrom(artifactType);
     }
 
-//    /** Creates a new driver. */
-//    private ArtifactDriver(ArtifactDriver<A> existing) {
-//        this.artifactType = existing.artifactType;
-//        this.hasExecutionPhase = existing.hasExecutionPhase;
-//    }
+    @SuppressWarnings("unchecked")
+    ArtifactDriver(Class<?> artifactType) {
+        this.artifactType = (Class<A>) requireNonNull(artifactType);
+        this.hasExecutionPhase = AutoCloseable.class.isAssignableFrom(artifactType);
+    }
 
     /**
      * Returns the raw type of artifacts this driver produces.
@@ -221,7 +225,8 @@ public abstract class ArtifactDriver<A> {
 
     // A method handle that takes an ArtifactContext and produces something that is compatible with A
     public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh) {
-        throw new UnsupportedOperationException();
+        // TODO validate type
+        return new MHDriver<>(artifactType, mh);
     }
 
     public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, Factory<? extends A> implementation) {
@@ -229,11 +234,12 @@ public abstract class ArtifactDriver<A> {
     }
 
     public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, Class<? extends A> implementation) {
-
-        // ArtifactContext + All public servervices are available...
-
-        throw new UnsupportedOperationException();
-        // of(App.class, PackedApp.class);
+        try {
+            MethodHandle mh = caller.findConstructor(implementation, MethodType.methodType(void.class, ArtifactContext.class));
+            return new MHDriver<>(artifactType, mh);
+        } catch (Exception e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
     }
 
 //    final ArtifactDriver<A> withOptions(Option... options) {
@@ -287,6 +293,27 @@ public abstract class ArtifactDriver<A> {
     // naar vi instantiere...
     // Saa vi kan checke ting...
     // Men ikke paavirke hvordan de bliver lavet...
+
+    static class MHDriver<A> extends ArtifactDriver<A> {
+
+        private final MethodHandle mh;
+
+        MHDriver(Class<?> artifactType, MethodHandle mh) {
+            super(artifactType);
+            this.mh = requireNonNull(mh);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        protected A newArtifact(ArtifactContext context) {
+            try {
+                return (A) mh.invoke(context);
+            } catch (Throwable e) {
+                throw ThrowableUtil.orUndeclared(e);
+            }
+        }
+
+    }
 
     static class Option {
 
