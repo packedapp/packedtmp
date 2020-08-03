@@ -16,7 +16,6 @@
 package sandbox.artifact.hostguest;
 
 import app.packed.artifact.App;
-import app.packed.component.ComponentDescriptor;
 
 /**
  *
@@ -40,7 +39,4 @@ public final class AppHostConfiguration extends HostConfiguration<AppHost> {
         super(PackedAppHost.class, context); // Maybe move it to driver... Then we have to generify the driver...
     }
 
-    public ComponentDescriptor model() {
-        throw new UnsupportedOperationException();
-    }
 }

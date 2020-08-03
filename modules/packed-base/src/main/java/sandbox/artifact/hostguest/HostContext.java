@@ -15,8 +15,6 @@
  */
 package sandbox.artifact.hostguest;
 
-import sandbox.artifact.hosttest.ImageSet;
-
 /** A context object that can be injected into components that functions as hosts. */
 
 // Altsaa det er jo ikke reelt noget en actor skal have lov til at faa???
@@ -38,8 +36,6 @@ public interface HostContext {
     // Taenker det er noget vi kan faa fra component context???
     long guestCount(); // think int is ok... idk
 
-    // embed this...
-    ImageSet images();
 }
 
 // Vi man

@@ -15,7 +15,6 @@
  */
 package sandbox.artifact.hosttest;
 
-import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
 import app.packed.base.Key;
 
@@ -48,9 +47,9 @@ public interface ImageSet {
     }
 }
 
-class Doo {
-
-    void foo(ImageSet is) {
-        App.start(is.get());
-    }
-}
+//class Doo {
+//
+//    void foo(ImageSet is) {
+//        App.start(is.get());
+//    }
+//}

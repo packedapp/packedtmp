@@ -16,11 +16,14 @@
 package packed.internal.host;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.artifact.ArtifactDriver;
+import app.packed.artifact.Image;
 import app.packed.base.ContractSet;
+import app.packed.base.Key;
 import app.packed.component.Bundle;
 import app.packed.container.Wirelet;
 
@@ -73,6 +76,12 @@ public interface HostContext<T> {
      */
     // Active, non-active
     long size();
+
+    Set<Key<?>> imageKeys();
+
+    <X> Image<X> useImage(Class<X> key);
+
+    <X> Image<X> useImage(Key<X> key);
 }
 //HostContext<T> <---?? Why not
 //Runtime HostContext....

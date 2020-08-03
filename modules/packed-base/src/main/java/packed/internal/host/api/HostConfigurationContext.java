@@ -56,7 +56,6 @@ public interface HostConfigurationContext {
 
     // Do we need an ArtifactReference???
     // Kunne ogsaa godt bruge noget fra Bundle.link
-
     // Will be made available from guests
     void deploy(ArtifactSource source, ArtifactDriver<?> driver, Wirelet... wirelets);
 
