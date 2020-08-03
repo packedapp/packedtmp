@@ -227,15 +227,15 @@ public interface ComponentStream extends Stream<Component> {
      * @see App#stream(Option...)
      * @see ArtifactImage#stream(Option...)
      */
-    // hideOrigin?
-    // showExtensions
-    // restrictSameContainer
-
-    // depth, depthContainers, depthArtifacts.
-    // The depth is always relative to the origin's depth
-
-    // Vil vel ogsaa gerne bruge den paa component.traversel
     public interface Option {
+        // hideOrigin?
+        // showExtensions
+        // restrictSameContainer
+
+        // depth, depthContainers, depthArtifacts.
+        // The depth is always relative to the origin's depth
+
+        // Vil vel ogsaa gerne bruge den paa component.traversel
 
         default ComponentStream.Option andInSameArtifact() {
             throw new UnsupportedOperationException();

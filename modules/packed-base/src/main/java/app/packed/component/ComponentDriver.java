@@ -16,11 +16,66 @@
 package app.packed.component;
 
 /**
+ * 
+ * 
  * @param <C>
- *            the type of configuration the driver uses to configure the underlying component
+ *            the type of configuration the driver expose to users for configuring the underlying component
+ * 
+ * @apiNote In the future, if the Java language permits, {@link ComponentDriver} may become a {@code sealed} interface,
+ *          which would prohibit subclassing except by explicitly permitted types.
  */
 public interface ComponentDriver<C> {
 
+    // Har man altid en source???????
 }
 
 //interface InstanDriver<T, C>
+
+interface ComponentDriverContext {
+
+}
+
+/**
+ *
+ *
+ * @param <C>
+ *            the type of configuration that will be returned to the user
+ */
+//Noget med scanning....
+
+//Det er jo fucking genialt...
+//Det betyder folk kan lave deres egne "component" systemer...
+
+//Vi supporter kun en surragate taenker jeg
+//Vi supportere ogsaa kun klasse scanning paa registrering tidspunkt.
+//Ikke frit dynamisk taenker jeg. 
+
+//Altsaa er det her maaden at lave prototype service paa???
+
+//Vi vil forresten gerne have en SingletonContext der ogsaa fungere for Funktioner med registrere...
+//Nej de har jo ikke en type....
+
+abstract class OldComponentDriver<C> {
+
+    protected OldComponentDriver(Option... options) {
+
+    }
+
+    // Er det ogsaa den her der kommer med til ComponentContext????
+    // Ja det tror jeg... Options...
+
+    // ComponentConfigurationContext???
+    // Ja med mindre det er saa kompliceret
+    protected abstract C create(ComponentDriverContext context);
+
+    static class Option {
+
+        static Option hosting() {
+            throw new UnsupportedOperationException();
+        }
+        // addHost
+        // addGuestType
+    }
+
+    // provide(InstanceDriver d)
+}

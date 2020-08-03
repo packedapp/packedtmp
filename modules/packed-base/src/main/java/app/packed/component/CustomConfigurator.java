@@ -18,6 +18,8 @@ package app.packed.component;
 /**
  *
  */
+@FunctionalInterface
 public interface CustomConfigurator<T> {
+
     void configure(T stuff);
 }
