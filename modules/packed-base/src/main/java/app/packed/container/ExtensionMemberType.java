@@ -22,33 +22,30 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that a type is a member of an extension in some way. This annotation can be applied to.
- * 
- * subclasses of {@link Wirelet}. In which case the pipeline implementation can have an instance of the extension
- * injected its constructor.
- *
+ * Indicates that a type is a member of an extension in some way. This annotation can be applied to. subclasses of
+ * {@link Wirelet}. In which case the pipeline implementation can have an instance of the extension injected its
+ * constructor.
  * <p>
- * For security reasons, types that use this annotation must always be located in the same module as the Extension they
- * reference.
+ * Types that make use of this annotation must be located in the same module as the extension itself.
  */
 @Target(ElementType.TYPE)
+// @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-@Documented
-//Was ExtensionMember
-public @interface MemberOfExtension {
+@Documented // Maybe just ExtensionMember
+public @interface ExtensionMemberType {
 
     /**
-     * Returns The extension the annotated target is a part of.
+     * Returns the extension the annotated type is a member of.
      * 
-     * @return the extension the annotated target is a part of
+     * @return the extension the annotated type is a member of
      */
     Class<? extends Extension> value();
 }
+// Was @Inherited
+// But if we have abstract classes as packlets, users subclass would have automatically become part of the extension
 
-//Was UseExtension
+//Was UseExtension and MemberOfExtension
 //try look here https://www.thesaurus.com/browse/member
 // Wirelet (non-pipelined) Will be available for injection into any extension runtime component
 // Pipelines -> The given extension must have been installed in order to use any wirelets that belong to the pipeline...
 // Packlet -> Will install the given extension if not already installed
-
-// @Inherited // Do we need this??? I removed it

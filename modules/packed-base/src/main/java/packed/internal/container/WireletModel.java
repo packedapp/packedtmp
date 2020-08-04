@@ -23,9 +23,9 @@ import app.packed.container.WireletSidecar;
 import packed.internal.sidecar.Model;
 
 /** A model of a {@link Wirelet}. This class is public because of {@link NoWireletPipeline}. */
-public class WireletModel extends Model {
+public final class WireletModel extends Model {
 
-    /** A cache of models for each pipeline implementation. */
+    /** A cache of models for {@link Wirelet} subclasses. */
     private static final ClassValue<WireletModel> MODELS = new ClassValue<>() {
 
         /** {@inheritDoc} */
@@ -49,7 +49,7 @@ public class WireletModel extends Model {
     final boolean requireAssemblyTime;
 
     /**
-     * Create a new model.
+     * Create a new wirelet model.
      * 
      * @param type
      *            the type of wirelet
@@ -69,6 +69,9 @@ public class WireletModel extends Model {
             if (p != NoWireletPipeline.class) {
                 this.pipeline = WireletPipelineModel.of(p);
                 // XXX must be assignable to YY to be a part of the pipeline
+                if (pipeline.memberOfExtension() != memberOfExtension) {
+                    System.err.println("OOPS");
+                }
             } else {
                 this.pipeline = null;
             }
@@ -89,6 +92,11 @@ public class WireletModel extends Model {
         return inherited;
     }
 
+    /**
+     * Returns any pipeline this wirelet is a part of.
+     * 
+     * @return any pipeline this wirelet is a part of
+     */
     @Nullable
     WireletPipelineModel pipeline() {
         return pipeline;

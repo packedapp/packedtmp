@@ -21,20 +21,17 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import app.packed.component.CustomConfigurator;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
-import app.packed.inject.Factory;
 import app.packed.service.Injector;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedArtifactImage;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.PackedContainerConfigurationContext;
 import packed.internal.container.WireletPack;
-import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -44,36 +41,26 @@ import packed.internal.util.ThrowableUtil;
  * {@link Injector} are not sufficient. In fact, the default implementations of both {@link App} and {@link Injector}
  * are just thin facade that delegates all calls to an {@link ArtifactContext} instance.
  * <p>
- * Normally, you would never instantiate more then a single instance of any driver implementations.
+ * Normally, you should never instantiate more then a single instance of driver for any artifact implementation.
  * <p>
  * Iff a driver creates artifacts with an execution phase. The artifact must implement {@link AutoCloseable}.
- * <p>
- * Implementations of this class must be safe for access by multiple threads concurrently.
  * 
  * @param <A>
  *            The type of artifact this driver creates.
  * @see App#driver()
  */
-
-// Tror ikke artifacts kan bruge annoteringer???
-// Altsaa maaske paa surragates???
-
+// Tror ikke artifacts kan bruge annoteringer??? Altsaa maaske paa surragates???
 // Ville maaske vaere fedt nok bare at kunne sige
 // @OnShutdown()
 // sysout "FooBar was removed"
 
 // Support of injection of the artifact into the Container...
 // We do not generally support this, as people are free to any artifact they may like.
-
-// ? Er der services man gerne kun vil have er available til f.eks. PackedApp.class. 
-// Men ikke til andre der kalder ind paa App.getServices();
+// Which would break encapsulation
 
 // Non-Executable : Initialize
 // Executable : Initialize | Start | Execute
-public abstract class ArtifactDriver<A> {
-
-    /** A type variable extractor to find the type of artifacts this driver creates. */
-    private static final TypeVariableExtractor ARTIFACT_DRIVER_TV_EXTRACTOR = TypeVariableExtractor.of(ArtifactDriver.class);
+public final class ArtifactDriver<A> {
 
     /** The type of artifact this driver produces. */
     private final Class<A> artifactType;
@@ -81,74 +68,35 @@ public abstract class ArtifactDriver<A> {
     /** Whether or not the created artifact has an execution phase. */
     private final boolean hasExecutionPhase;
 
-    /** Creates a new driver. */
-    @SuppressWarnings("unchecked")
-    protected ArtifactDriver(/* Option... options */) {
-        this.artifactType = (Class<A>) ARTIFACT_DRIVER_TV_EXTRACTOR.extract(getClass());
+    /** The method handle responsible for creating the new artifact. */
+    private final MethodHandle mh;
 
-        // Hvad hvis vi ikke vil ekspornere en close metode...
-        // F.eks. et eller andet der kun kan blive deployet paa en host...
-        // Men brugere skal ikke kunne stoppe dem... //Option to override
-        // Men okay hvad med TTL wirelets...
-        this.hasExecutionPhase = AutoCloseable.class.isAssignableFrom(artifactType);
-    }
-
+    /**
+     * Creates a new driver.
+     * 
+     * @param artifactType
+     *            the type of artifact that is created
+     * @param mh
+     *            the method handle that creates the actual artifact
+     */
     @SuppressWarnings("unchecked")
-    ArtifactDriver(Class<?> artifactType) {
+    private ArtifactDriver(Class<?> artifactType, MethodHandle mh) {
         this.artifactType = (Class<A>) requireNonNull(artifactType);
         this.hasExecutionPhase = AutoCloseable.class.isAssignableFrom(artifactType);
+        this.mh = requireNonNull(mh);
     }
 
-    /**
-     * Returns the raw type of artifacts this driver produces.
-     * 
-     * @return the raw type of artifacts this driver produces
-     */
-    public final Class<A> rawType() {
-        // Should we have a TypeLiteral as well???
-        // For example, if we create BigMap<String, Long>
-        return artifactType;
+    // Hmmm
+    public final <C> A configure(Function<ContainerConfiguration, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
+        PackedContainerConfigurationContext pcc = PackedContainerConfigurationContext.of(AssembleOutput.artifact(this), consumer, wirelets);
+        PackedContainerConfiguration pc = new PackedContainerConfiguration(pcc);
+        C c = factory.apply(pc);
+        consumer.configure(c);
+        pcc.assemble();
+        ArtifactContext pac = pcc.instantiateArtifact(pcc.wireletContext);
+        return newArtifact(pac);
     }
-
-    /**
-     * Creates and initializes a new artifact using the specified source.
-     * <p>
-     * This method will invoke {@link #newArtifact(ArtifactContext)} to create the actual artifact.
-     * 
-     * @param source
-     *            the source of the top-level container
-     * @param wirelets
-     *            any wirelets that should be used to create the artifact
-     * @return the new artifact
-     * @throws RuntimeException
-     *             if the artifact could not be created
-     */
-    public final A instantiate(ArtifactSource source, Wirelet... wirelets) {
-        return newArtifact(create(source, wirelets));
-    }
-
-    /**
-     * Create, initialize and start a new artifact using the specified source.
-     * 
-     * @param source
-     *            the source of the top-level container
-     * @param wirelets
-     *            any wirelets that should be used to create the artifact
-     * @return the new artifact
-     * @throws UnsupportedOperationException
-     *             if the driver does not produce an artifact with an execution phase
-     */
-    public final A start(ArtifactSource source, Wirelet... wirelets) {
-        ArtifactContext context = create(source, wirelets);
-        context.start();
-        return newArtifact(context);
-    }
-
-    static <A> A start(Class<A> artifactType, ArtifactSource source, Wirelet... wirelets) {
-        // The only thing we save is defining a driver..
-        // But we need the driver for App#driver... so not much saved
-        throw new UnsupportedOperationException();
-    }
+    // Ja den er faktisk fin nok syntes jeg...
 
     private ArtifactContext create(ArtifactSource source, Wirelet... wirelets) {
         PackedContainerConfigurationContext pcc;
@@ -167,7 +115,7 @@ public abstract class ArtifactDriver<A> {
     }
 
     // Kan take restart wirelets...\
-    public final Object execute(ArtifactSource source, Wirelet... wirelets) {
+    public Object execute(ArtifactSource source, Wirelet... wirelets) {
         ArtifactContext context = create(source, wirelets);
         context.start();
         return null;
@@ -179,99 +127,109 @@ public abstract class ArtifactDriver<A> {
      * 
      * @return whether or not the artifact being produced by this driver has an execution phase
      */
-    public final boolean hasExecutionPhase() {
+    public boolean hasExecutionPhase() {
         return hasExecutionPhase;
     }
 
-    Supplier<A> startingProvider(ArtifactSource a, Wirelet... wirelets) {
-        // Kunne ogsaa lave den paa image...
-        // Men altsaa taenker vi godt vil have noget wirelets med...
-        // <A> Supplier<A> ArtifactImage.supplier(ArtifactDriver<A> driver);
-        throw new UnsupportedOperationException();
+    /**
+     * Creates and initializes a new artifact using the specified source.
+     * <p>
+     * This method will invoke {@link #newArtifact(ArtifactContext)} to create the actual artifact.
+     * 
+     * @param source
+     *            the source of the top-level container
+     * @param wirelets
+     *            any wirelets that should be used to create the artifact
+     * @return the new artifact
+     * @throws RuntimeException
+     *             if the artifact could not be created
+     */
+    public A instantiate(ArtifactSource source, Wirelet... wirelets) {
+        return newArtifact(create(source, wirelets));
     }
+
+//    <E extends A> ArtifactDriver<A> mapTo(Class<E> decoratingType, Function<A, E> decorator) {
+//        // Ideen er egentlig at f.eks. kunne wrappe App, og tilfoeje en metode...
+//        // Men altsaa, maaske er det bare at kalde metoderne direkte i context...
+//        // PackedApp kalder jo bare direkte igennem
+//        throw new UnsupportedOperationException();
+//    }
 
     /**
-     * Create a new artifact by wrapping an artifact context.
-     * <p>
-     * This method is invoked by the runtime via calls such as {@link #instantiate(ArtifactSource, Wirelet...)} and
-     * {@link #start(ArtifactSource, Wirelet...)}.
-     * <p>
-     * The implementation of this method must be safe for use by multiple concurrent threads.
+     * Create a new artifact using a previously supplied method handle.
      * 
      * @param context
-     *            the artifact context to wrap
+     *            the artifact context to use for instantiating the artifact
      * @return the new artifact
      */
-    protected abstract A newArtifact(ArtifactContext context);
-
-    // Hmmm
-    public final <C> A configure(Function<ContainerConfiguration, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
-        PackedContainerConfigurationContext pcc = PackedContainerConfigurationContext.of(AssembleOutput.artifact(this), consumer, wirelets);
-        PackedContainerConfiguration pc = new PackedContainerConfiguration(pcc);
-        C c = factory.apply(pc);
-        consumer.configure(c);
-        pcc.assemble();
-        ArtifactContext pac = pcc.instantiateArtifact(pcc.wireletContext);
-        return newArtifact(pac);
-    }
-    // Ja den er faktisk fin nok syntes jeg...
-
-    final <E extends A> ArtifactDriver<A> mapTo(Class<E> decoratingType, Function<A, E> decorator) {
-        // Ideen er egentlig at f.eks. kunne wrappe App, og tilfoeje en metode...
-        // Men altsaa, maaske er det bare at kalde metoderne direkte i context...
-        // PackedApp kalder jo bare direkte igennem
-        throw new UnsupportedOperationException();
-    }
-
-    // A method handle that takes an ArtifactContext and produces something that is compatible with A
-    public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh) {
-        // TODO validate type
-        return new MHDriver<>(artifactType, mh);
-    }
-
-    public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, Factory<? extends A> implementation) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, Class<? extends A> implementation) {
+    private A newArtifact(ArtifactContext context) {
         try {
-            MethodHandle mh = caller.findConstructor(implementation, MethodType.methodType(void.class, ArtifactContext.class));
-            return new MHDriver<>(artifactType, mh);
-        } catch (Exception e) {
+            return (A) mh.invoke(context);
+        } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
     }
 
-//    final ArtifactDriver<A> withOptions(Option... options) {
-//        return new WithOptionDriver<>(this);
-////        ArtifactDriver<App> ad = App.driver().withOptions(Option.blacklistExtensions(ServiceExtension.class));
-////        ad.instantiate(new Bundle() {
-////
-////            @Override
-////            protected void compose() {}
-////        });
-////
-////        throw new UnsupportedOperationException();
-//    }
-//
-//    /** A special driver used for {@link #withOptions(Option...)}. */
-//    private static class WithOptionDriver<T> extends ArtifactDriver<T> {
-//
-//        /** The existing driver to wrap. */
-//        final ArtifactDriver<T> existing;
-//
-//        WithOptionDriver(ArtifactDriver<T> existing) {
-//            super(existing);
-//            this.existing = requireNonNull(existing);
-//        }
-//
-//        /** {@inheritDoc} */
-//        @Override
-//        protected T newArtifact(ArtifactContext context) {
-//            return existing.newArtifact(context);
-//        }
+    /**
+     * Returns the raw type of artifacts this driver produces.
+     * 
+     * @return the raw type of artifacts this driver produces
+     */
+    public Class<A> rawType() {
+        // Should we have a TypeLiteral as well???
+        // For example, if we create BigMap<String, Long>
+        return artifactType;
+    }
+
+    /**
+     * Create, initialize and start a new artifact using the specified source.
+     * 
+     * @param source
+     *            the source of the top-level container
+     * @param wirelets
+     *            any wirelets that should be used to create the artifact
+     * @return the new artifact
+     * @throws UnsupportedOperationException
+     *             if the driver does not produce an artifact with an execution phase
+     */
+    public A start(ArtifactSource source, Wirelet... wirelets) {
+        ArtifactContext context = create(source, wirelets);
+        context.start();
+        return newArtifact(context);
+    }
+
+    public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, Class<? extends A> implementation) {
+        final MethodHandle mh;
+        MethodType mt = MethodType.methodType(void.class, ArtifactContext.class);
+        try {
+            mh = caller.findConstructor(implementation, mt);
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+        return new ArtifactDriver<>(artifactType, mh);
+    }
+
+//    public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, Factory<? extends A> implementation) {
+//        throw new UnsupportedOperationException();
 //    }
 
+    // A method handle that takes an ArtifactContext and produces something that is compatible with A
+    public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh) {
+        // TODO validate type
+        return new ArtifactDriver<>(artifactType, mh);
+    }
+//
+//    static <A> A start(Class<A> artifactType, ArtifactSource source, Wirelet... wirelets) {
+//        // The only thing we save is defining a driver..
+//        // But we need the driver for App#driver... so not much saved
+//        throw new UnsupportedOperationException();
+//    }
+//  Supplier<A> startingProvider(ArtifactSource a, Wirelet... wirelets) {
+//  // Kunne ogsaa lave den paa image...
+//  // Men altsaa taenker vi godt vil have noget wirelets med...
+//  // <A> Supplier<A> ArtifactImage.supplier(ArtifactDriver<A> driver);
+//  throw new UnsupportedOperationException();
+//}
 //    /** Options that can be specified when creating a new driver or via {@link #withOptions(Option...)}. */
 
     // Ideen er lidt at vi koerer ArchUnit igennem here....
@@ -294,37 +252,15 @@ public abstract class ArtifactDriver<A> {
     // Saa vi kan checke ting...
     // Men ikke paavirke hvordan de bliver lavet...
 
-    static class MHDriver<A> extends ArtifactDriver<A> {
-
-        private final MethodHandle mh;
-
-        MHDriver(Class<?> artifactType, MethodHandle mh) {
-            super(artifactType);
-            this.mh = requireNonNull(mh);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        protected A newArtifact(ArtifactContext context) {
-            try {
-                return (A) mh.invoke(context);
-            } catch (Throwable e) {
-                throw ThrowableUtil.orUndeclared(e);
-            }
-        }
-
-    }
-
     static class Option {
 
-        // custom ServiceProvider..
-        static Option serviceProvider() {
+        // String Reason??? This extension has been blacklisted
+        @SafeVarargs
+        static Option blacklistExtensions(Class<? extends Extension>... extensions) {
             throw new UnsupportedOperationException();
         }
 
-        static Option nameProvider() {
-            // prefix???
-            // Ideen er ihvertfald at
+        static Option blacklistExtensions(String... extensions) {
             throw new UnsupportedOperationException();
         }
 
@@ -339,19 +275,13 @@ public abstract class ArtifactDriver<A> {
         //// Can only use of them
         // Altsaa det maa vaere meget taet paa ArchUnit a.la.. Hmmm
 
-        // String Reason??? This extension has been blacklisted
-        @SafeVarargs
-        static Option blacklistExtensions(Class<? extends Extension>... extensions) {
+        static Option nameProvider() {
+            // prefix???
+            // Ideen er ihvertfald at
             throw new UnsupportedOperationException();
         }
 
-        static Option blacklistExtensions(String... extensions) {
-            throw new UnsupportedOperationException();
-        }
-
-        // Hmmm... Fungere jo ikke rigtigt med image......
-        @SafeVarargs
-        static Option whitelistExtensions(Class<? extends Extension>... extensions) {
+        static Option postfixWirelets(Wirelet... wirelets) {
             throw new UnsupportedOperationException();
         }
 
@@ -360,7 +290,14 @@ public abstract class ArtifactDriver<A> {
             throw new UnsupportedOperationException();
         }
 
-        static Option postfixWirelets(Wirelet... wirelets) {
+        // custom ServiceProvider..
+        static Option serviceProvider() {
+            throw new UnsupportedOperationException();
+        }
+
+        // Hmmm... Fungere jo ikke rigtigt med image......
+        @SafeVarargs
+        static Option whitelistExtensions(Class<? extends Extension>... extensions) {
             throw new UnsupportedOperationException();
         }
 

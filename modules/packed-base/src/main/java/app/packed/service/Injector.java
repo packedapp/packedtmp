@@ -312,7 +312,7 @@ public interface Injector {
     }
 
     static ArtifactDriver<Injector> driver() {
-        return InjectorArtifactDriver.INSTANCE;
+        return InjectorArtifactHelper.DRIVER;
     }
 
     /**
@@ -356,24 +356,11 @@ public interface Injector {
 // throw new UnsupportedOperationException();
 // }
 /** An artifact driver for creating {@link App} instances. */
-final class InjectorArtifactDriver extends ArtifactDriver<Injector> {
-
-    /** The single instance. */
-    static final InjectorArtifactDriver INSTANCE = new InjectorArtifactDriver();
-
-//    static final ArtifactDriver<Injector> INSTANCE_NG = ArtifactDriver.of(MethodHandles.lookup(), Injector.class,
-//            new Factory1<ArtifactContext, Injector>(c -> ((PackedArtifactContext) c).injector()) {});
+final class InjectorArtifactHelper {
 
     static final MethodHandle CONV = LookupUtil.mhStaticSelf(MethodHandles.lookup(), "convert", Injector.class, ArtifactContext.class);
 
-    /** Singleton */
-    private InjectorArtifactDriver() {}
-
-    /** {@inheritDoc} */
-    @Override
-    public Injector newArtifact(ArtifactContext container) {
-        return ((PackedArtifactContext) container).injector();
-    }
+    static final ArtifactDriver<Injector> DRIVER = ArtifactDriver.of(MethodHandles.lookup(), Injector.class, CONV);
 
     static Injector convert(ArtifactContext container) {
         return ((PackedArtifactContext) container).injector();

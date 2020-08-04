@@ -26,9 +26,11 @@ import app.packed.artifact.ArtifactSource;
 import app.packed.container.Wirelet;
 
 /**
- * Wirelets that can be used when creating an {@link App} instance. For example, via
- * {@link App#start(ArtifactSource, Wirelet...)} or {@link App#execute(ArtifactSource, Wirelet...)}.
+ * Wirelets that can be used when wiring containers. For example, via {@link App#start(ArtifactSource, Wirelet...)} or
+ * {@link App#execute(ArtifactSource, Wirelet...)}.
  */
+
+// InvalidWireletScopeExtension extends IAE
 // InvalidWireletApplicationException -> Thrown when trying to apply a wirelet in a situation where it cannot be used
 
 // Do we allow them in Image????

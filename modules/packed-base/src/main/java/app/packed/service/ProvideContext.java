@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import app.packed.base.InvalidDeclarationException;
 import app.packed.component.Component;
+import app.packed.container.Extension;
 import app.packed.introspection.ConstructorDescriptor;
 import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.MemberDescriptor;
@@ -159,6 +160,13 @@ import app.packed.introspection.VariableDescriptor;
 //ProvisionContext (If we have InjectionContext)
 //ProvisionPrototypeContext
 public interface ProvideContext {
+
+    // Hvad hvis det ikke er en direkte extension der forsporger???
+    // Men f.eks. et eller andet inde i en Bundle som er installeret
+    // som en extension...
+    default Optional<Class<? extends Extension>> extension() {
+        return Optional.empty();
+    }
 
     // Vi tager alle annotations med...@SystemProperty(fff) @Foo String xxx
     // Includes any qualifier...

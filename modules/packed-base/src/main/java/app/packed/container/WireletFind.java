@@ -50,6 +50,13 @@ public @interface WireletFind {
     boolean consumePipeline() default false;
 }
 
+// Som udgangspunkt skal de wirelets sgu consumes...
+@interface WSicar2 {
+    boolean requireConsumtion() default false;
+
+    boolean consumptionOptional() default false;
+}
+
 // Why can this not be used on a Bundle?
 // Because we do not have access to a bundle. 
 // Until we have done bundle.lookup()

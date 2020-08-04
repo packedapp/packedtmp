@@ -22,7 +22,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.base.Key;
+import app.packed.container.ExtensionMemberType;
 import app.packed.service.ServiceDescriptor;
+import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceWirelets;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.service.ProvideAllFromOtherInjector;
@@ -38,6 +40,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ServiceWirelet {
      */
     public abstract void process(ProvideAllFromOtherInjector ii);
 
+    @ExtensionMemberType(ServiceExtension.class)
     public static class FilterOnKey extends PackedUpstreamInjectionWirelet {
 
         final Set<Key<?>> set;
@@ -63,6 +66,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ServiceWirelet {
 
     // Transform/map -> Replaces
     // Extract -> does not remove existing item..
+    @ExtensionMemberType(ServiceExtension.class)
     public static class ApplyFunctionUpstream extends PackedUpstreamInjectionWirelet {
 
         final Function<?, ?> function;
@@ -104,6 +108,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ServiceWirelet {
     }
 
     /** A wirelet for {@link ServiceWirelets#peekFrom(Consumer)}. */
+    @ExtensionMemberType(ServiceExtension.class)
     public static class PeekFrom extends PackedUpstreamInjectionWirelet {
 
         /** The peek action to execute. */

@@ -34,14 +34,14 @@ import app.packed.service.ServiceExtension;
  * to end users. Instead it is wrapped in thin facade objects, such as {@link App}. This facade object than delegates
  * all calls to an instance of this context.
  * <p>
- * An instance of this interface is normally acquired via {@link ArtifactDriver#newArtifact(ArtifactContext)}.
+ * An instance of this interface is normally acquired via stuff.
  * <p>
  * Unless otherwise specified, implementations of this interface are safe for use by multiple concurrent threads.
  * 
  * @apiNote In the future, if the Java language permits, {@link ArtifactContext} may become a {@code sealed} interface,
  *          which would prohibit subclassing except by explicitly permitted types.
  */
-// ArtifactContext extends ContainerContext???
+// ArtifactContext does not extends ContainerContext??? Fordi 
 // Nej der er stadig ting som en artifact ikke har adgang til...
 public interface ArtifactContext {
 

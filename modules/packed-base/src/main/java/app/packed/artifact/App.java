@@ -43,7 +43,7 @@ import app.packed.service.ServiceExtension;
 public interface App extends AutoCloseable {
 
     /**
-     * Closes the app (synchronously). Calling this method is equivalent to calling {@code app.stop()}, but the method is
+     * Closes the app (synchronously). Calling this method is equivalent to calling {@code app.stop()}, but this method is
      * here in order to support try-with resources via {@link AutoCloseable}.
      **/
     @Override
@@ -110,8 +110,7 @@ public interface App extends AutoCloseable {
      * @return a future that can be used to query whether the application has completed shutdown (terminated). Or is still
      *         in the process of being shut down
      */
-    // StopOption.async() //OnStop.Option (nah det her er specifikke container options)
-    CompletableFuture<App> stopAsync(StopOption... options);
+    CompletableFuture<App> stopAsync(StopOption... options); // StopOption.async() //OnStop.Option (nah det her er specifikke container options)
 
     /**
      * Returns a component stream consisting of this applications underlying container and all of its descendants in any

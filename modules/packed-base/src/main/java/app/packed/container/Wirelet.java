@@ -16,7 +16,6 @@
 package app.packed.container;
 
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import app.packed.base.Nullable;
 import app.packed.service.Injector;
@@ -108,91 +107,91 @@ public interface Wirelet {
     // static Wirelet[] from(Collection<? extends Wirelet> wirelets)
 }
 
-class XBadIdea {
-
-    // void verify();
-    protected void check() {
-        // checkApp() for Wirelet.appTimeToLive for example...
-    }
-
-    // For bedre error messages. This operation can only be used if the parent or child bundle
-    // has installed the XXX extension (As an alternative, annotated the key with
-    // @RequiresExtension(JMXExtension.class)....)
-    // Or even better the actual WiringOperation.....
-    // protected void useAttachment(Key...., Class<?> requiredExtension);
-
-    // Bootstrap classes... Classes that are only available for injection.... (Not even initialized....)
-    // bundleLink.bootstrapWith(StringArgs.of("sdsdsd");
-    // bundleLink.bootstrapWith(Configuration.read("c:/sdasdasd\'");
-    // run(new XBundle(), Configuration.read("c:/sdad"));
-
-    // force start, initialize, await start...
-    protected final void checkApp() {
-
-    }
-
-    final Wirelet ifCondition() {
-        // Or Else
-
-        // Igen Predicate<Environment> <- Skal vaere statisk
-
-        // conditional(Predicate, Wirelet alt1) //alt1 if true, else no wirelet
-        // conditional(Predicate, Wirelet alt1, Wirelet alt2). alt1 if true, otherwise alt2
-        throw new UnsupportedOperationException();
-    }
-
-    // Det er vel mere om den kun bruges i forbindelse med linkage...
-    // D.v.s.
-    /**
-     * Returns whether or not the wirelet can be used with an image
-     * 
-     * @return stuff
-     */
-    // TODO do we want to differentiate between when we use dem for an image or not???
-    // Or just whether they can be used outside link()? is only for connecting containers
-    // within the same artifact.
-
-    // Det er vel mere disable on runtime...
-
-//Wirelets 
-//Image
-//App
-//Image Expand
-//Image + App
+//class XBadIdea {
 //
-//Expand
+//    // void verify();
+//    protected void check() {
+//        // checkApp() for Wirelet.appTimeToLive for example...
+//    }
 //
-//expandables
+//    // For bedre error messages. This operation can only be used if the parent or child bundle
+//    // has installed the XXX extension (As an alternative, annotated the key with
+//    // @RequiresExtension(JMXExtension.class)....)
+//    // Or even better the actual WiringOperation.....
+//    // protected void useAttachment(Key...., Class<?> requiredExtension);
 //
-//The wirelet XX cannot be used once the image is created
+//    // Bootstrap classes... Classes that are only available for injection.... (Not even initialized....)
+//    // bundleLink.bootstrapWith(StringArgs.of("sdsdsd");
+//    // bundleLink.bootstrapWith(Configuration.read("c:/sdasdasd\'");
+//    // run(new XBundle(), Configuration.read("c:/sdad"));
 //
-//The wirelet XX cannot be used together with an image that have already been created
-
-    // Maaske skal vi kun have den paa pipeline wirelets?? Hmmm
-
-    final Wirelet onCondition(Predicate<Environment> predicate) {
-        // Et problem hvis vi laver et image...
-        // Hvor vi laver en link med saadan en faetter
-        // Den vil evaluere til en ting naar vi laver imaged og en anden ting paa runtime
-        // F.eks. en System property der kun er sat paa runtime
-        throw new UnsupportedOperationException();
-    }
-
-    interface Environment {
-
-    }
-
-    // Hvor Object er en eller anden context...
-    // Men hmmm, vi kender jo ikke navnet.
-
-    // Ville vaere rart hvis vi f.eks. kunne sige
-    // Key.of(String.class).withName("$ContainerName$");
-    /// Nah saa maa folk selv saette navnet via Wirelet.name();
-
-//    static Wirelet context(Function<Object, Wirelet> contextMapper) {
+//    // force start, initialize, await start...
+//    protected final void checkApp() {
 //
 //    }
-}
+//
+//    final Wirelet ifCondition() {
+//        // Or Else
+//
+//        // Igen Predicate<Environment> <- Skal vaere statisk
+//
+//        // conditional(Predicate, Wirelet alt1) //alt1 if true, else no wirelet
+//        // conditional(Predicate, Wirelet alt1, Wirelet alt2). alt1 if true, otherwise alt2
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    // Det er vel mere om den kun bruges i forbindelse med linkage...
+//    // D.v.s.
+//    /**
+//     * Returns whether or not the wirelet can be used with an image
+//     * 
+//     * @return stuff
+//     */
+//    // TODO do we want to differentiate between when we use dem for an image or not???
+//    // Or just whether they can be used outside link()? is only for connecting containers
+//    // within the same artifact.
+//
+//    // Det er vel mere disable on runtime...
+//
+////Wirelets 
+////Image
+////App
+////Image Expand
+////Image + App
+////
+////Expand
+////
+////expandables
+////
+////The wirelet XX cannot be used once the image is created
+////
+////The wirelet XX cannot be used together with an image that have already been created
+//
+//    // Maaske skal vi kun have den paa pipeline wirelets?? Hmmm
+//
+//    final Wirelet onCondition(Predicate<Environment> predicate) {
+//        // Et problem hvis vi laver et image...
+//        // Hvor vi laver en link med saadan en faetter
+//        // Den vil evaluere til en ting naar vi laver imaged og en anden ting paa runtime
+//        // F.eks. en System property der kun er sat paa runtime
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    interface Environment {
+//
+//    }
+//
+//    // Hvor Object er en eller anden context...
+//    // Men hmmm, vi kender jo ikke navnet.
+//
+//    // Ville vaere rart hvis vi f.eks. kunne sige
+//    // Key.of(String.class).withName("$ContainerName$");
+//    /// Nah saa maa folk selv saette navnet via Wirelet.name();
+//
+////    static Wirelet context(Function<Object, Wirelet> contextMapper) {
+////
+////    }
+//}
 // Okay... hvordan klare vi det her med Bundle.lookup()
 // Maaske i foerste omgang ved ikke at supportere det.
 // static Wirelet lookup(MethodHandles.Lookup lookup) {

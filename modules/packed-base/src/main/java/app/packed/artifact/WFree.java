@@ -15,21 +15,42 @@
  */
 package app.packed.artifact;
 
-import app.packed.container.ContainerBundle;
+import java.lang.invoke.MethodHandles;
+import java.util.Optional;
+
+import app.packed.container.DefaultBundle;
+import app.packed.container.Wirelet;
 
 /**
  *
  */
-public class Dddd extends ContainerBundle {
+public class WFree extends DefaultBundle {
 
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-        installConstant("FHEHE");
+        lookup(MethodHandles.lookup());
+        provide(MyComp.class);
     }
 
     public static void main(String[] args) {
-        App app = App.of(new Dddd());
-        System.out.println(app);
+        App.of(new WFree(), new SomeWirelet("Saturday"), new SomeWirelet("Sundday"));
+        App.of(new WFree());
+        System.out.println("Nye");
+    }
+
+    public static class MyComp {
+
+        MyComp(Optional<SomeWirelet> o) {
+            System.out.println("Hello " + o.map(s -> s.x).orElse("World"));
+        }
+    }
+
+    static class SomeWirelet implements Wirelet {
+        final String x;
+
+        SomeWirelet(String x) {
+            this.x = x;
+        }
     }
 }
