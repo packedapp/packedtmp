@@ -19,11 +19,11 @@ import java.util.Optional;
 
 import app.packed.component.Component;
 import app.packed.component.ComponentStream;
+import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerDescriptor;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.Wirelet;
 import packed.internal.artifact.PackedArtifactImage;
 
 /**

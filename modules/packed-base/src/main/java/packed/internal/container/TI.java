@@ -17,13 +17,13 @@ package packed.internal.container;
 
 import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
+import app.packed.component.ConsumeWirelet;
+import app.packed.component.Wirelet;
 import app.packed.container.DefaultBundle;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionLinked;
 import app.packed.container.ExtensionSidecar;
-import app.packed.container.Wirelet;
-import app.packed.container.WireletFind;
 import app.packed.inject.InjectionContext;
 import app.packed.lifecycle.LifecycleContext;
 import app.packed.service.ServiceWirelets;
@@ -116,7 +116,7 @@ public class TI extends DefaultBundle {
         String foo;
         final LifecycleContext lc;
 
-        MyExte(LifecycleContext lc, InjectionContext ic, @WireletFind MyTestWirelet wc) {
+        MyExte(LifecycleContext lc, InjectionContext ic, @ConsumeWirelet MyTestWirelet wc) {
             // System.out.println("State " + lc.current());
             this.lc = lc;
 

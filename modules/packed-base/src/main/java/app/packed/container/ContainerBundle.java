@@ -29,6 +29,8 @@ import app.packed.component.ComponentBundle;
 import app.packed.component.ComponentDriver;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
+import app.packed.component.Wirelet;
+import app.packed.component.WireletSidecar;
 import app.packed.component.driver.SingletonComponentDriver;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;

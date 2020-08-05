@@ -18,8 +18,8 @@ package app.packed.artifact;
 import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 
+import app.packed.component.Wirelet;
 import app.packed.container.DefaultBundle;
-import app.packed.container.Wirelet;
 
 /**
  *

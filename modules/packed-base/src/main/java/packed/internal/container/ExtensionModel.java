@@ -27,6 +27,7 @@ import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.component.Component;
+import app.packed.component.ConsumeWirelet;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
@@ -34,7 +35,6 @@ import app.packed.container.ExtensionLinked;
 import app.packed.container.ExtensionSidecar;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.ExtensionMemberType;
-import app.packed.container.WireletFind;
 import app.packed.hook.OnHook;
 import app.packed.lifecycle.LifecycleContext;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
@@ -340,7 +340,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         protected void addExtensionContextElements(MethodHandleBuilder builder, int index) {
             builder.addKey(ExtensionConfiguration.class, index);
             builder.addKey(LifecycleContext.class, PackedExtensionConfiguration.MH_LIFECYCLE_CONTEXT, index);
-            builder.addAnnoClassMapper(WireletFind.class, PackedExtensionConfiguration.MH_FIND_WIRELET, index);
+            builder.addAnnoClassMapper(ConsumeWirelet.class, PackedExtensionConfiguration.MH_FIND_WIRELET, index);
         }
 
         /**

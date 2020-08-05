@@ -26,7 +26,6 @@ import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
-import app.packed.container.Wirelet;
 import packed.internal.config.ConfigSiteSupport;
 
 /** An abstract implementation of ComponentConfiguration that can be extended by extensions. */

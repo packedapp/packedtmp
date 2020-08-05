@@ -23,7 +23,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
-import app.packed.container.Wirelet;
+import app.packed.component.Wirelet;
 import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.MethodDescriptor;

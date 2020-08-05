@@ -23,10 +23,10 @@ import java.lang.invoke.MethodHandles.Lookup;
 import app.packed.base.Key.Qualifier;
 import app.packed.base.Nullable;
 import app.packed.component.CustomConfigurator;
+import app.packed.component.Wirelet;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.DefaultBundle;
-import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 
 /**

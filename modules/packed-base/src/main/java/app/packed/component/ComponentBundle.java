@@ -18,7 +18,6 @@ package app.packed.component;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 
 /** A bundle that uses a ComponentConfiguration as the underlying configuration object. */

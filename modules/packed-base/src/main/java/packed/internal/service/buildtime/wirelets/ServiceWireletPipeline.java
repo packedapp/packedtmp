@@ -17,8 +17,8 @@ package packed.internal.service.buildtime.wirelets;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.component.WireletPipeline;
 import app.packed.container.ExtensionMemberType;
-import app.packed.container.WireletPipeline;
 import app.packed.service.ServiceExtension;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 

@@ -16,9 +16,10 @@
 package app.packed.artifact;
 
 import app.packed.component.Bundle;
+import app.packed.component.Wirelet;
 
 /**
- * A source for creating artifacts. For example, via {@link App#start(ArtifactSource, app.packed.container.Wirelet...)}.
+ * A source for creating artifacts. For example, via {@link App#start(ArtifactSource, Wirelet...)}.
  * <p>
  * There An source is used to create an artifact. Currently the following types of sources are supported:
  * 

@@ -22,8 +22,8 @@ import java.util.IdentityHashMap;
 import java.util.Map.Entry;
 
 import app.packed.base.Nullable;
+import app.packed.component.Wirelet;
 import app.packed.container.Extension;
-import app.packed.container.Wirelet;
 import packed.internal.container.ContainerWirelet.ContainerNameWirelet;
 
 /**
@@ -75,7 +75,7 @@ public final class WireletPack {
             WireletPipelineContext context = (WireletPipelineContext) map.computeIfAbsent(model.type(), k -> {
                 WireletPipelineContext pc = parent == null ? null : (WireletPipelineContext) parent.getWireletOrPipeline(model.type());
                 WireletPipelineContext wpc = new WireletPipelineContext(model, pc);
-                Class<? extends Extension> extensionType = model.memberOfExtension();
+                Class<? extends Extension> extensionType = model.extension();
                 if (extensionType != null) {
                     extensions.put(extensionType, wpc);// We need to add it as a list if we have more than one wirelet context
                 }
@@ -180,13 +180,12 @@ public final class WireletPack {
         // initialize all pipelines except for extension pipelines when existing == null
         for (Object o : wc.map.values()) {
             if (o instanceof WireletPipelineContext) {
-
                 WireletPipelineContext wpc = (WireletPipelineContext) o;
-                Class<? extends Extension> memberOfExtension = wpc.memberOfExtension();
-                if (memberOfExtension == null) {
+                Class<? extends Extension> extension = wpc.extension();
+                if (extension == null) {
                     wpc.instantiate(null);
                 } else if (existing != null) {
-                    PackedExtensionConfiguration pec = pcc.getExtensionContext(memberOfExtension);
+                    PackedExtensionConfiguration pec = pcc.getExtensionContext(extension);
                     if (pec == null) {
                         wc.extensionFailed(pcc);
                     } else {

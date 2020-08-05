@@ -30,8 +30,8 @@ import app.packed.artifact.ArtifactSource;
 import app.packed.base.Key;
 import app.packed.component.CustomConfigurator;
 import app.packed.component.SingletonConfiguration;
+import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import app.packed.container.Wirelet;
 import packed.internal.container.PackedContainer.PackedArtifactContext;
 import packed.internal.util.LookupUtil;
 

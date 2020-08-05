@@ -18,7 +18,7 @@ package packed.internal.container;
 import java.util.Set;
 
 import app.packed.component.Bundle;
-import app.packed.container.Wirelet;
+import app.packed.component.Wirelet;
 
 /**
  *

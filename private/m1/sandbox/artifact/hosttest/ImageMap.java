@@ -16,7 +16,7 @@ package sandbox.artifact.hosttest;
 
 import app.packed.artifact.Image;
 import app.packed.base.Key;
-import app.packed.container.Wirelet;
+import app.packed.component.Wirelet;
 
 /**
  *

@@ -15,7 +15,7 @@
  */
 package packed.internal.host.prototype;
 
-import app.packed.container.Wirelet;
+import app.packed.component.Wirelet;
 
 /**
  *

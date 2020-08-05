@@ -23,6 +23,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.component.SingletonConfiguration;
+import app.packed.component.Wirelet;
+import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import testutil.util.AbstractArtifactTest;
 import testutil.util.ContainerConfigurationTester;
@@ -119,7 +121,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
 
     /**
      * Test that we cannot call {@link ContainerConfiguration#setName(String)} after having linked another container via
-     * {@link ContainerConfiguration#link(app.packed.container.ContainerBundle, app.packed.container.Wirelet...)}.
+     * {@link ContainerConfiguration#link(ContainerBundle, Wirelet...)}.
      * <p>
      * We could actually allow this as long as the bundle we link did not observe the path of its components in any way.
      * However, it would be very fragile, if the child component suddenly decided to do it at some point. So better to

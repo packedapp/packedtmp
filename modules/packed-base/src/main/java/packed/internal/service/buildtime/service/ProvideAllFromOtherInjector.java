@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.LinkedHashMap;
 
 import app.packed.base.Key;
+import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import app.packed.container.Wirelet;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
 import packed.internal.container.WireletList;

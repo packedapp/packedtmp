@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.component;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -28,21 +28,18 @@ import packed.internal.container.WireletModel;
  * An annotation that can be used on subclasses of {@link Wirelet}. Classes that extend {@link Wirelet} are implicit
  * sidecars even without the use of this annotation. However, if the wirelet is part of a pipeline this must be
  * indicated by using this annotation.
+ * 
+ * @apiNote this annotatino will have Inherited removed.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Inherited // see for example ServiceWirelet, should be enough just to have a test for it...
-// If this is inherited. I think all sidecar annotations should be inherited...
 
+@Inherited
+// see for example ServiceWirelet, should be enough just to have a test for it...
+// I'm not sure this should be inherited because @ExtensionMemberType is not...
+// If this is inherited. I think all sidecar annotations should be inherited...
 // ExtensionWireletMeta
 public @interface WireletSidecar {
-
-    /**
-     * Whether or not a specified wirelet is inherited by child containers. The default value is <code>false</code>.
-     * 
-     * @return whether or not the wirelet is inherited by child containers
-     */
-    boolean inherited() default false;
 
     /**
      * 
@@ -71,6 +68,14 @@ public @interface WireletSidecar {
     // failForImage
     boolean failOnImage() default false;
 }
+
+///**
+//* Whether or not a specified wirelet is inherited by child containers. The default value is <code>false</code>.
+//* 
+//* @return whether or not the wirelet is inherited by child containers
+//*/
+//boolean inherited() default false;
+
 // failIfExtensionUnavailable default true();
 // ArtifactWirelets... Wirelets that cannot be used for linkage...
 // For example, timeToLive...

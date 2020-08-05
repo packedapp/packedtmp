@@ -26,6 +26,7 @@ import app.packed.component.Bundle;
 import app.packed.component.Component;
 import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
+import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentConfigurationToComponentAdaptor;

@@ -15,7 +15,7 @@
  */
 package app.packed.lifecycleold;
 
-import app.packed.container.Wirelet;
+import app.packed.component.Wirelet;
 
 /**
  *

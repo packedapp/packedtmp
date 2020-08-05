@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 
 import app.packed.artifact.App;
 import app.packed.artifact.ArtifactSource;
-import app.packed.container.Wirelet;
+import app.packed.component.Wirelet;
 
 /**
  * Wirelets that can be used when wiring containers. For example, via {@link App#start(ArtifactSource, Wirelet...)} or

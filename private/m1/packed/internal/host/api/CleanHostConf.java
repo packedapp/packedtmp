@@ -17,8 +17,8 @@ package packed.internal.host.api;
 
 import app.packed.artifact.ArtifactDriver;
 import app.packed.base.Key;
+import app.packed.component.Wirelet;
 import app.packed.container.ContainerBundle;
-import app.packed.container.Wirelet;
 
 /**
  *

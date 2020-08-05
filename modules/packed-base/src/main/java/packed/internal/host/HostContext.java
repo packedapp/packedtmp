@@ -25,7 +25,7 @@ import app.packed.artifact.Image;
 import app.packed.base.ContractSet;
 import app.packed.base.Key;
 import app.packed.component.Bundle;
-import app.packed.container.Wirelet;
+import app.packed.component.Wirelet;
 
 /**
  * <p>

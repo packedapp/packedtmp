@@ -22,7 +22,7 @@ import app.packed.artifact.App;
 import app.packed.artifact.ArtifactSource;
 import app.packed.component.Component;
 import app.packed.component.ComponentStream;
-import app.packed.container.Wirelet;
+import app.packed.component.Wirelet;
 
 /**
  *

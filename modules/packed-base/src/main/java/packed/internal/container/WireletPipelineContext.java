@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
+import app.packed.component.Wirelet;
+import app.packed.component.WireletPipeline;
 import app.packed.container.Extension;
-import app.packed.container.Wirelet;
-import app.packed.container.WireletPipeline;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -86,8 +86,8 @@ public final class WireletPipelineContext {
      * @return any extension this pipeline is a member of
      */
     @Nullable
-    Class<? extends Extension> memberOfExtension() {
-        return model.memberOfExtension();
+    Class<? extends Extension> extension() {
+        return model.extension();
     }
 
     /**

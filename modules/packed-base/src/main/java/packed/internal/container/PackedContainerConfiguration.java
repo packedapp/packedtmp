@@ -26,10 +26,10 @@ import app.packed.component.ComponentDescriptor;
 import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
+import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
-import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 
 /** The default implementation of {@link ContainerConfiguration}. */

@@ -18,6 +18,7 @@ package app.packed.container;
 import app.packed.base.Key;
 import app.packed.base.Key.Qualifier;
 import app.packed.component.SingletonConfiguration;
+import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.lifecycle.LifecycleExtension;
 import app.packed.lifecycleold.OnStart;

@@ -16,10 +16,12 @@
 package packed.internal.container;
 
 import app.packed.base.Nullable;
+import app.packed.component.Wirelet;
+import app.packed.component.WireletPipeline;
+import app.packed.component.WireletSidecar;
 import app.packed.container.Extension;
-import app.packed.container.Wirelet;
-import app.packed.container.WireletPipeline;
-import app.packed.container.WireletSidecar;
+import app.packed.container.ExtensionMemberType;
+import app.packed.container.InternalExtensionException;
 import packed.internal.sidecar.Model;
 
 /** A model of a {@link Wirelet}. This class is public because of {@link NoWireletPipeline}. */
@@ -38,9 +40,9 @@ public final class WireletModel extends Model {
 
     private final boolean inherited;
 
-    /** Any extension this pipeline is a member of. */
+    /** Any extension this wirelet is a member of. */
     @Nullable
-    private final Class<? extends Extension> memberOfExtension;
+    private final Class<? extends Extension> extension;
 
     /** Any pipeline the wirelet might belong to. */
     @Nullable
@@ -52,16 +54,16 @@ public final class WireletModel extends Model {
      * Create a new wirelet model.
      * 
      * @param type
-     *            the type of wirelet
+     *            the wirelet type
      */
     private WireletModel(Class<? extends Wirelet> type) {
         super(type);
-        this.memberOfExtension = ExtensionModel.findAnyExtensionMember(type);
+        this.extension = ExtensionModel.findAnyExtensionMember(type);
 
         // Let's see if the wirelet has an annotation
         WireletSidecar ws = type.getAnnotation(WireletSidecar.class);
         if (ws != null) {
-            this.inherited = ws.inherited();
+            this.inherited = false;// ws.inherited();
             this.requireAssemblyTime = ws.failOnImage();
 
             // Find any pipeline this wirelet is part of
@@ -69,8 +71,9 @@ public final class WireletModel extends Model {
             if (p != NoWireletPipeline.class) {
                 this.pipeline = WireletPipelineModel.of(p);
                 // XXX must be assignable to YY to be a part of the pipeline
-                if (pipeline.memberOfExtension() != memberOfExtension) {
-                    System.err.println("OOPS");
+                if (pipeline.extension() != extension) {
+                    throw new InternalExtensionException("The wirelet " + type + " and the pipeline " + p + " must both be annotated with @"
+                            + ExtensionMemberType.class.getSimpleName() + " and the same extension was" + extension + " and " + pipeline.extension());
                 }
             } else {
                 this.pipeline = null;
@@ -83,10 +86,10 @@ public final class WireletModel extends Model {
     }
 
     /**
-     * Returns whether or not the wirelet is inherited.
+     * Returns whether or not the wirelet is inherited. This is currently always false. See OneNote Wont Fix - Inherited
+     * Wirelets for details.
      * 
      * @return whether or not the wirelet is inherited
-     * @see WireletSidecar#inherited()
      */
     boolean inherited() {
         return inherited;

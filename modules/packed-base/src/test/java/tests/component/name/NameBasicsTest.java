@@ -17,7 +17,7 @@ package tests.component.name;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.container.Wirelet;
+import app.packed.component.Wirelet;
 import testutil.util.AbstractArtifactTest;
 
 /**

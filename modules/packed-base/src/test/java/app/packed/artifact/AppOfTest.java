@@ -22,10 +22,12 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.container.DefaultBundle;
+import app.packed.component.Wirelet;
+import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.DefaultBundle;
 
-/** Tests {@link App#start(app.packed.container.ContainerBundle, app.packed.container.Wirelet...)} */
+/** Tests {@link App#start(ContainerBundle, Wirelet...)} */
 public class AppOfTest {
 
     /** Tests an empty app. */

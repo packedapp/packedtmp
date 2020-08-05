@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.component;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -41,7 +41,7 @@ import java.lang.annotation.Target;
 
 // Ahhh for helvede optional......
 // 
-public @interface WireletFind {
+public @interface ConsumeWirelet {
 
     // Ideen var egentlig lidt at man kunne stjaele f.eks. en ServiceExtensionPipeline...
     // I constructeren...

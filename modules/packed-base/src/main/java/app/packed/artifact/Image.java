@@ -15,7 +15,7 @@
  */
 package app.packed.artifact;
 
-import app.packed.container.Wirelet;
+import app.packed.component.Wirelet;
 
 /**
  *
@@ -38,6 +38,8 @@ public interface Image<T> {
     T initialize(Wirelet... wirelets);
 
     T start(Wirelet... wirelets);
+
+    Image<T> withWirelets(Wirelet... wirelets);
 }
 // Problemet med Image er guest images..
 // Og om en envelope for en artifact.

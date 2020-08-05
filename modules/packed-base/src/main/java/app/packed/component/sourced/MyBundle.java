@@ -17,8 +17,8 @@ package app.packed.component.sourced;
 
 import app.packed.base.Key;
 import app.packed.component.SourcedComponentConfiguration;
+import app.packed.component.Wirelet;
 import app.packed.container.ContainerBundle;
-import app.packed.container.Wirelet;
 
 class MBundle extends MyBundle {
 

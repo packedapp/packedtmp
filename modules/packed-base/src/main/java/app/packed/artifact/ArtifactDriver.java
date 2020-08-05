@@ -23,9 +23,9 @@ import java.lang.invoke.MethodType;
 import java.util.function.Function;
 
 import app.packed.component.CustomConfigurator;
+import app.packed.component.Wirelet;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
-import app.packed.container.Wirelet;
 import app.packed.service.Injector;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedArtifactImage;

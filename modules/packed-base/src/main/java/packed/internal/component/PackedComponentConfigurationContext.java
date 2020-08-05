@@ -33,11 +33,11 @@ import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDescriptor;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentPath;
+import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
-import app.packed.container.Wirelet;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedAssembleContext;
 import packed.internal.artifact.PackedInstantiationContext;
@@ -435,7 +435,7 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
         /** One of the install component methods has been invoked. */
         INSTALL_INVOKED,
 
-        /** {@link ContainerConfiguration#link(ContainerBundle, app.packed.container.Wirelet...)} has been invoked. */
+        /** {@link ContainerConfiguration#link(ContainerBundle, Wirelet...)} has been invoked. */
         LINK_INVOKED,
 
         /** One of the install component methods has been invoked. */

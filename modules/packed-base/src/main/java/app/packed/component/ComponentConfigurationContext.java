@@ -21,7 +21,6 @@ import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundle;
 import app.packed.container.Extension;
-import app.packed.container.Wirelet;
 
 /**
  * Component configuration context objects used by {@link AbstractComponentConfiguration}.

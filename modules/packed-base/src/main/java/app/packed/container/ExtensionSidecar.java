@@ -20,6 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.component.Wirelet;
 import app.packed.statemachine.Leaving;
 
 /**
@@ -55,8 +56,7 @@ public @interface ExtensionSidecar {
 
     /**
      * Any child containers located in the same artifact will be has been defined. Typically using
-     * {@link ContainerBundle#link(ContainerBundle, app.packed.container.Wirelet...)}. The next event will be
-     * {@link #GUESTS_DEFINITIONS}.
+     * {@link ContainerBundle#link(ContainerBundle, Wirelet...)}. The next event will be {@link #GUESTS_DEFINITIONS}.
      */
     String CHILD_LINKING = "ChildLinking";
 

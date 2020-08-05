@@ -19,8 +19,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Nullable;
+import app.packed.component.WireletPipeline;
 import app.packed.container.Extension;
-import app.packed.container.WireletPipeline;
 import packed.internal.reflect.MethodHandleBuilder;
 import packed.internal.reflect.OpenClass;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
@@ -51,7 +51,7 @@ public final class WireletPipelineModel extends Model {
 
     /** Any extension this pipeline is a member of. */
     @Nullable
-    private final Class<? extends Extension> memberOfExtension;
+    private final Class<? extends Extension> extension;
 
     /**
      * Create a new model.
@@ -61,20 +61,20 @@ public final class WireletPipelineModel extends Model {
      */
     private WireletPipelineModel(Class<? extends WireletPipeline<?, ?>> type) {
         super(type);
-        this.memberOfExtension = ExtensionModel.findAnyExtensionMember(type);
+        this.extension = ExtensionModel.findAnyExtensionMember(type);
 
         OpenClass cp = new OpenClass(MethodHandles.lookup(), type, true);
         MethodHandleBuilder dim = MethodHandleBuilder.of(WireletPipeline.class, Extension.class);
-        if (memberOfExtension != null) {
-            dim.addKey(memberOfExtension, 0);
+        if (extension != null) {
+            dim.addKey(extension, 0);
         }
         this.constructor = cp.findConstructor(dim);
     }
 
     /** Any extension this pipeline is a member of (may be null). */
     @Nullable
-    public Class<? extends Extension> memberOfExtension() {
-        return memberOfExtension;
+    public Class<? extends Extension> extension() {
+        return extension;
     }
 
     /**

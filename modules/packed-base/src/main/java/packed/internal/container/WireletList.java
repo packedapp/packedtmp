@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
-import app.packed.container.Wirelet;
+import app.packed.component.Wirelet;
 
 /**
  * An immutable list of wirelets. Typically used for combining multiple wirelets into one.

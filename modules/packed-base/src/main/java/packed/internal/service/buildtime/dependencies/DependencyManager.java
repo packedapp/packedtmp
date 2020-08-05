@@ -26,10 +26,10 @@ import java.util.StringJoiner;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.component.Wirelet;
+import app.packed.component.WireletPipeline;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
-import app.packed.container.Wirelet;
-import app.packed.container.WireletPipeline;
 import app.packed.inject.UnsatisfiableDependencyException;
 import app.packed.introspection.ExecutableDescriptor;
 import app.packed.introspection.MethodDescriptor;
@@ -154,7 +154,8 @@ public final class DependencyManager {
                                     if (op.isPresent()) {
                                         Class<? extends Extension> cc = op.get();
                                         if (cc == k.typeLiteral().type()) {
-                                            PackedExtensionConfiguration e = ((PackedExtensionConfiguration) node.context()).container().getExtensionContext(cc);
+                                            PackedExtensionConfiguration e = ((PackedExtensionConfiguration) node.context()).container()
+                                                    .getExtensionContext(cc);
                                             resolveTo = extensionEntries.computeIfAbsent(e.extensionType(),
                                                     kk -> new RuntimeAdaptorEntry(node, new ConstantInjectorEntry<Extension>(ConfigSite.UNKNOWN,
                                                             (Key) Key.of(e.extensionType()), null, e.instance())));
@@ -165,7 +166,7 @@ public final class DependencyManager {
                             }
                             if (WireletPipeline.class.isAssignableFrom(rawType)) {
                                 WireletPipelineModel wpc = WireletPipelineModel.of((Class<? extends WireletPipeline<?, ?>>) rawType);
-                                if (wpc.memberOfExtension() == null) {
+                                if (wpc.extension() == null) {
                                     // Fail if pipelined wirelet...
                                     BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
                                             new ConstantInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "foo", "Ignore"));

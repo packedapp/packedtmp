@@ -15,8 +15,8 @@
  */
 package packed.internal.service.buildtime.wirelets;
 
-import app.packed.container.Wirelet;
-import app.packed.container.WireletSidecar;
+import app.packed.component.Wirelet;
+import app.packed.component.WireletSidecar;
 
 /**
  *

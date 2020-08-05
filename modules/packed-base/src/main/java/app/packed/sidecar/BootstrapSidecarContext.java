@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import app.packed.component.Bundle;
-import app.packed.container.Wirelet;
+import app.packed.component.Wirelet;
 
 /**
  *

@@ -17,7 +17,7 @@ package app.packed.lifecycleold;
 
 import java.util.concurrent.TimeUnit;
 
-import app.packed.container.Wirelet;
+import app.packed.component.Wirelet;
 
 /**
  *

@@ -17,7 +17,7 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.container.Wirelet;
+import app.packed.component.Wirelet;
 
 /**
  *

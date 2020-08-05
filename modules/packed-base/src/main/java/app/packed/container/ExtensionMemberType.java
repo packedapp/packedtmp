@@ -21,6 +21,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.component.Wirelet;
+
 /**
  * Indicates that a type is a member of an extension in some way. This annotation can be applied to. subclasses of
  * {@link Wirelet}. In which case the pipeline implementation can have an instance of the extension injected its

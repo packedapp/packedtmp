@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import app.packed.artifact.ArtifactImage;
+import app.packed.component.Wirelet;
 import app.packed.container.ContainerBundle;
-import app.packed.container.Wirelet;
 
 /**
  *

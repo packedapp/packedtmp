@@ -16,8 +16,8 @@
 package packed.internal.host.prototype;
 
 import app.packed.artifact.ArtifactDriver;
+import app.packed.component.Wirelet;
 import app.packed.container.ContainerBundle;
-import app.packed.container.Wirelet;
 import packed.internal.host.api.OldHostDriver;
 
 /**

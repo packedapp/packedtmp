@@ -16,8 +16,8 @@
 package packed.internal.base.reflectM1;
 
 import app.packed.artifact.ArtifactImage;
+import app.packed.component.Wirelet;
 import app.packed.container.DefaultBundle;
-import app.packed.container.Wirelet;
 
 /**
  *

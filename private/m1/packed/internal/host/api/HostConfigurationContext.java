@@ -22,9 +22,9 @@ import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.component.ComponentPath;
+import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
-import app.packed.container.Wirelet;
 
 /**
  *

@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Consumer;
 
 import app.packed.artifact.ArtifactSource;
+import app.packed.component.Wirelet;
 import app.packed.container.ContainerBundle;
-import app.packed.container.Wirelet;
 
 /** An abstract test for testing artifacts. */
 public abstract class AbstractArtifactTest {
