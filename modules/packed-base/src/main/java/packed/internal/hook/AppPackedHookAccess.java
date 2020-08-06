@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.moduleaccess;
+package packed.internal.hook;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -23,7 +23,6 @@ import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.AssignableToHook;
-import packed.internal.hook.MemberUnreflector;
 
 /** An access class for accessing package private members in app.packed.hook. */
 public interface AppPackedHookAccess {

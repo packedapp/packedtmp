@@ -34,7 +34,7 @@ import app.packed.inject.Factory0;
 import app.packed.inject.Factory1;
 import app.packed.inject.Factory2;
 import app.packed.introspection.VariableDescriptor;
-import packed.internal.moduleaccess.ModuleAccess;
+import packed.internal.hook.ModuleAccess;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 
 /**

@@ -28,7 +28,6 @@ import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.moduleaccess.ModuleAccess;
 import packed.internal.reflect.OpenClass;
 import packed.internal.util.Tiny;
 import packed.internal.util.TinyPair;

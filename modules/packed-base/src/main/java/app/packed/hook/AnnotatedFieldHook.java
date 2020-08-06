@@ -29,9 +29,9 @@ import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Nullable;
 import app.packed.base.invoke.InaccessibleMemberException;
 import app.packed.introspection.FieldDescriptor;
+import packed.internal.hook.AppPackedHookAccess;
 import packed.internal.hook.MemberUnreflector;
-import packed.internal.moduleaccess.AppPackedHookAccess;
-import packed.internal.moduleaccess.ModuleAccess;
+import packed.internal.hook.ModuleAccess;
 import packed.internal.util.StringFormatter;
 
 /**
