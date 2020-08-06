@@ -31,7 +31,6 @@ import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.component.WireletSidecar;
-import app.packed.component.driver.SingletonComponentDriver;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
 
@@ -259,17 +258,6 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
         throw new UnsupportedOperationException();
     }
 
-    protected final <C, X> C wire(SingletonComponentDriver<C, X> driver, Class<X> implementation, Wirelet... wirelets) {
-        return wire(driver.source(implementation), wirelets);
-    }
-
-    protected final <C, X> C wire(SingletonComponentDriver<C, X> driver, Factory<X> factory, Wirelet... wirelets) {
-        return wire(driver.source(factory), wirelets);
-    }
-
-    protected final <C, X> C wireInstance(SingletonComponentDriver<C, X> driver, X instance, Wirelet... wirelets) {
-        return wire(driver.sourceInstance(instance), wirelets);
-    }
 }
 
 ///**

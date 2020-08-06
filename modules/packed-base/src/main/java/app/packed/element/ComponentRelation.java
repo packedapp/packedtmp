@@ -54,15 +54,6 @@ public interface ComponentRelation extends Iterable<Component> {
     // description()? -> Same, parent, child, descendend, ancestor,
 }
 
-interface Dddd {
-
-    default void fff(Component c2, Component c3) {
-        if (c2.relationTo(c3).isStronglyBound()) {
-
-        }
-    }
-}
-
 //interface InterExtensionRelationship {
 // from, to
 // isX
