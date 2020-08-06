@@ -13,20 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.host.prototype;
-
-import app.packed.artifact.ArtifactDriver;
-import app.packed.component.Wirelet;
-import app.packed.container.ContainerBundle;
-import packed.internal.host.api.OldHostDriver;
+package app.packed.component;
 
 /**
  *
  */
-public interface PrototypeHost<A> {
+// Ideen er lidt at jeg ikke tror vi kommer udenom en wirelet context som kan bruges naar man
+interface WireletContext {
 
-    static <A> OldHostDriver<PrototypeHostConfiguration<A>, PrototypeHost<A>, A> driver(ArtifactDriver<A> driver, ContainerBundle bundle, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
 }
-// Noget 

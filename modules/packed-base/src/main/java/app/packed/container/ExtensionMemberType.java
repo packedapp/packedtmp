@@ -46,8 +46,7 @@ public @interface ExtensionMemberType {
 // Was @Inherited
 // But if we have abstract classes as packlets, users subclass would have automatically become part of the extension
 
-//Was UseExtension and MemberOfExtension
-//try look here https://www.thesaurus.com/browse/member
+// Was UseExtension and MemberOfExtension
 // Wirelet (non-pipelined) Will be available for injection into any extension runtime component
 // Pipelines -> The given extension must have been installed in order to use any wirelets that belong to the pipeline...
 // Packlet -> Will install the given extension if not already installed

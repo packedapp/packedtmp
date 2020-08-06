@@ -158,7 +158,7 @@ public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
      * Typically used, for example, for testing.
      * 
      * The specified lookup must have the extension as its {@link Lookup#lookupClass()}. And
-     * {@link Lookup#hasFullPrivilegeAccess()} must return true.
+     * {@link Lookup#hasPrivateAccess()} must return true.
      * 
      * <p>
      * Calling this method at runtime will fail with {@link IllegalStateException}. As containers never retain extensions at
@@ -202,7 +202,7 @@ public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
         return pec == null ? Optional.empty() : Optional.of((T) pec.instance());
     }
 
-    @SuppressWarnings("deprecation")
+    // @SuppressWarnings("deprecation")
     @Nullable
     private static PackedExtensionConfiguration pa(MethodHandles.Lookup lookup, Component component) {
         requireNonNull(lookup, "lookup is null");

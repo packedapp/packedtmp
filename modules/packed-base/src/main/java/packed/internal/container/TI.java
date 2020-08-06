@@ -22,7 +22,7 @@ import app.packed.component.Wirelet;
 import app.packed.container.DefaultBundle;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
-import app.packed.container.ExtensionLinked;
+import app.packed.container.ExtensionWired;
 import app.packed.container.ExtensionSidecar;
 import app.packed.inject.InjectionContext;
 import app.packed.lifecycle.LifecycleContext;
@@ -122,7 +122,7 @@ public class TI extends DefaultBundle {
 
         }
 
-        @ExtensionLinked(onlyDirectLink = false)
+        @ExtensionWired(onlyDirectLink = false)
         public void ff(InjectionContext ic, MyExte child) {
             child.foo = " Child of " + foo;
         }

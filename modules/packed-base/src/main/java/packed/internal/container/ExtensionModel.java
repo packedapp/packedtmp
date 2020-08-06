@@ -31,10 +31,10 @@ import app.packed.component.ConsumeWirelet;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
-import app.packed.container.ExtensionLinked;
-import app.packed.container.ExtensionSidecar;
-import app.packed.container.InternalExtensionException;
 import app.packed.container.ExtensionMemberType;
+import app.packed.container.ExtensionSidecar;
+import app.packed.container.ExtensionWired;
+import app.packed.container.InternalExtensionException;
 import app.packed.hook.OnHook;
 import app.packed.lifecycle.LifecycleContext;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
@@ -118,7 +118,14 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
 
     final MethodHandle bundleBuilderMethod;
 
-    /** The depth of this extension. Defined as 0 if no dependencies otherwise max(all dependencies depth) + 1. */
+    /**
+     * The depth of this extension in a global . Defined as 0 if no dependencies otherwise max(all dependencies depth) + 1.
+     */
+    // Depth is the length of the path to its BaseExtension
+    // 0 for BaseExtension otherwise the length of the longest path to BaseExtension
+    // -> Dependencies of a given extension always have a depth that is less than the given extension.
+    // Det er jo ikke et trae... Men en graph. Giver depth mening?
+    // Man kan argumentere med at man laver en masse hylder, hvor de enkelte extensions saa er.
     private final int depth;
 
     /** This extension's direct dependencies (on other extensions). */
@@ -127,7 +134,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
     /** Whether or not is is only any immediately parent that will be linked. */
     final boolean extensionLinkedDirectChildrenOnly;
 
-    /** A method handle to an optional method annotated with {@link ExtensionLinked} on the extension. */
+    /** A method handle to an optional method annotated with {@link ExtensionWired} on the extension. */
     @Nullable
     final MethodHandle extensionLinkedToAncestorExtension; // will have an extensionLinkedToAncestorService in the future
 
@@ -392,11 +399,11 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
 
         @Override
         protected void onMethod(Method m) {
-            ExtensionLinked da = m.getAnnotation(ExtensionLinked.class);
+            ExtensionWired da = m.getAnnotation(ExtensionWired.class);
             if (da != null) {
                 if (linked != null) {
                     throw new IllegalStateException(
-                            "Multiple methods annotated with " + ExtensionLinked.class + " on " + m.getDeclaringClass() + ", only 1 allowed.");
+                            "Multiple methods annotated with " + ExtensionWired.class + " on " + m.getDeclaringClass() + ", only 1 allowed.");
                 }
                 linked = m;
                 callbackOnlyDirectChildren = da.onlyDirectLink();

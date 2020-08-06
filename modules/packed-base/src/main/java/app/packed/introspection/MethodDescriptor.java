@@ -66,10 +66,8 @@ public interface MethodDescriptor extends ExecutableDescriptor {
      */
     // IDK??? det er jo ikke meningen at folk selv skal det...
     // Saa binder vi os ogsaa lige pludselig til at have en backing Method..
-
     // Eller jeg mener, hvis vi har declaring class og vi har parametererne
     // Saa boer vi altid kunne gaa tilbage...
-
     // SpecialCaller...
     MethodHandle unreflectSpecial(Lookup lookup, Class<?> specialCaller) throws IllegalAccessException;
 

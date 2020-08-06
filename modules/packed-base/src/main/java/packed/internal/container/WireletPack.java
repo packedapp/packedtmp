@@ -70,12 +70,12 @@ public final class WireletPack {
      */
     private void create0(Wirelet w) {
         WireletModel m = WireletModel.of(w.getClass());
-        WireletPipelineModel model = m.pipeline();
-        if (model != null) {
-            WireletPipelineContext context = (WireletPipelineContext) map.computeIfAbsent(model.type(), k -> {
-                WireletPipelineContext pc = parent == null ? null : (WireletPipelineContext) parent.getWireletOrPipeline(model.type());
-                WireletPipelineContext wpc = new WireletPipelineContext(model, pc);
-                Class<? extends Extension> extensionType = model.extension();
+        WireletPipelineModel pipeline = m.pipeline();
+        if (pipeline != null) {
+            WireletPipelineContext context = (WireletPipelineContext) map.computeIfAbsent(pipeline.type(), k -> {
+                WireletPipelineContext pc = parent == null ? null : (WireletPipelineContext) parent.getWireletOrPipeline(pipeline.type());
+                WireletPipelineContext wpc = new WireletPipelineContext(pipeline, pc);
+                Class<? extends Extension> extensionType = pipeline.extension();
                 if (extensionType != null) {
                     extensions.put(extensionType, wpc);// We need to add it as a list if we have more than one wirelet context
                 }

@@ -21,26 +21,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An {@link Extension} cannot define more than one method annotated with {@link ExtensionLinked}.
+ * A class cannot define more than one method annotated with {@link ExtensionWired}.
+ * <p>
+ * This annotation can be used on subclasses of {@link Extension} or any singleton services that is annotated with
+ * {@link ExtensionMemberType}. In which case the extension can be injected
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-//Or ExtensionWired if linked=strong, ... onExtensionLinked  (Separate naming for lifecycle and events at,on,post,pre, when)
-
-// Er den generisk?? Hvad med runtime??? Vi skal jo paa en eller anden maade have fat i en webserver...
-
-// Maaske en WebServerExtensionRuntime kan have baade en for configuration time and start time...
-
-//@Connect @ConnectWith, @OnConnected, @OnWired 
-
-//Linking->Static...
-// @ExtensionWired
-
-// ComponentWiring (How the two components are related)
-// In this case the two containers that are linked
-
-// Distance/Strong/Weakly linked
-public @interface ExtensionLinked {
+public @interface ExtensionWired {
 
     // Only children not anything farther removed...
     // If not only direct children. Only the closest ancestor will have its
@@ -49,16 +37,34 @@ public @interface ExtensionLinked {
     // onlyDirectAccenden
     // onlyChild
     // immediateChildOnly
+
+    // Maaske bare drop den. og lav en conditional via context.isChild()
+    // Maaske i foerste omgang... Vi har brug for context taenker jeg...
     boolean onlyDirectLink() default false;// onlyDirectLink
+
     // boolean crossArtifacts default ???
 }
+//Or ExtensionWired if linked=strong, ... onExtensionLinked  (Separate naming for lifecycle and events at,on,post,pre, when)
 
+//Er den generisk?? Hvad med runtime??? Vi skal jo paa en eller anden maade have fat i en webserver...
+
+//Maaske en WebServerExtensionRuntime kan have baade en for configuration time and start time...
+
+//@Connect @ConnectWith, @OnConnected, @OnWired, @ExtensionLinked
+
+//Linking->Static...
+//@ExtensionWired
+
+//ComponentWiring (How the two components are related)
+//In this case the two containers that are linked
+
+//Distance/Strong/Weakly linked
 // Can be injected together with the actual extension...
 // And with Any extension wirelets specified for the child...
 // So @WireletSupply will override what the actual parent does...
 
 // Det kan ogsaa vaere vi laver noget generisk her..
-// I virkeligheden er det jo bare en ContainerRelation
+// I virkeligheden er det jo bare en ContainerRelation (ikke en component relation)
 interface ExtensionLinkedContext {
 
     default boolean isChild() {

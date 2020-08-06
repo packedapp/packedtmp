@@ -15,9 +15,11 @@
  */
 package app.packed.container;
 
+import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Contract;
+import app.packed.container.Extension.Subtension;
 
 /**
  * An extension descriptor.
@@ -28,15 +30,13 @@ import app.packed.base.Contract;
  * @apiNote In the future, if the Java language permits, {@link ExtensionDescriptor} may become a {@code sealed}
  *          interface, which would prohibit subclassing except by explicitly permitted types.
  */
-// depth <-- Er det et concept??? skal vi expose this
 public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
 
-    /**
-     * Returns the depth of the extension.
-     * 
-     * @return the depth of the extension
-     */
-    int depth();
+    // Beskriv algorithme
+    // Throws IAE if the full name of two descriptors are identical. But the extension type is not the same
+    // This can only happen in weird classloader situations.
+    @Override
+    int compareTo(ExtensionDescriptor o);
 
     /**
      * Returns all the different types of contracts the extension exposes.
@@ -57,6 +57,20 @@ public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
     Set<Class<? extends Extension>> dependencies();
 
     /**
+     * Returns the depth of the extension. The depth is defined as 0 for {@link BaseExtension}. For all dependencies it is
+     * the maximum depth of of its dependencies plus one. This has the nice property, that any dependency of an extension
+     * will always have a depth that is less than the extension itself.
+     * 
+     * @return the depth of the extension
+     */
+    int depth();
+
+    default String fullName() {
+        //
+        return type().getCanonicalName();
+    }
+
+    /**
      * Returns the module that the extension belongs to.
      * 
      * @return the module that the extension belongs to
@@ -67,11 +81,33 @@ public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
     }
 
     /**
+     * Returns the name of the extension. The name is always the simple name of the {@link #type() extension type} as
+     * returned by {@link Class#getSimpleName()}.
+     * 
+     * @return the name of the extension.
+     */
+    String name();
+
+    default Optional<Class<? extends Subtension>> subtensionType() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * Returns the type of extension this descriptor describes.
      * 
      * @return the type of extension this descriptor describes
      */
     Class<? extends Extension> type();
+
+    /**
+     * Returns a set of all dependencies that could not be resolved.
+     * 
+     * @return a set
+     * @see ExtensionSidecar#optionalDependencies()
+     */
+    default Set<String> unresolvedDependencies() {
+        return Set.of();// Dependencies that could not be resolved.
+    }
 
     /**
      * Returns a descriptor for the specified extension type.
@@ -87,6 +123,8 @@ public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
         return PackedExtensionDescriptor.of(extensionType);
     }
 }
+// 
+
 // requiresExecution() // usesResources // ResourceUser
 //
 //default Set<Class<? extends Extension>> dependenciesWithTransitiveDependencies() {

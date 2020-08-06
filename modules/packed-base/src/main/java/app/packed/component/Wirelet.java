@@ -105,6 +105,13 @@ public interface Wirelet {
     static Wirelet computeWithName(Function<? super String, @Nullable ? extends Wirelet> function) {
         return Wirelet.computeWithName(n -> Wirelet.computeWithName(n2 -> Wirelet.name(n2)));
     }
+
+    // A wirelet must be consumed or wrapped in Wirelet.ignoreIfUnconsumed
+    @SuppressWarnings("unused")
+    private static Wirelet ignoreIfUnconsumed(Wirelet wirelet) {
+        throw new UnsupportedOperationException();
+    }
+
     // static Wirelet[] from(Collection<? extends Wirelet> wirelets)
 }
 
@@ -126,6 +133,7 @@ public interface Wirelet {
 //    // bundleLink.bootstrapWith(Configuration.read("c:/sdasdasd\'");
 //    // run(new XBundle(), Configuration.read("c:/sdad"));
 //
+
 //    // force start, initialize, await start...
 //    protected final void checkApp() {
 //

@@ -26,11 +26,12 @@ import packed.internal.lifecycle.LifecycleDefinition;
  */
 public final class SidecarTypeMeta {
 
+    @SuppressWarnings("exports")
     public final LifecycleDefinition ld;
 
     final Class<? extends Annotation> sidecarAnnotation;
 
-    public SidecarTypeMeta(Class<? extends Annotation> sidecarAnnotation, LifecycleDefinition ld) {
+    public SidecarTypeMeta(Class<? extends Annotation> sidecarAnnotation, @SuppressWarnings("exports") LifecycleDefinition ld) {
         this.sidecarAnnotation = requireNonNull(sidecarAnnotation);
         this.ld = requireNonNull(ld);
     }
