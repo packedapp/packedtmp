@@ -27,7 +27,7 @@ public class BundleTest extends AbstractArtifactTest {
     /** Tests that a bundle cannot be reused. */
     @Test
     public void notReusable() {
-        ContainerBundle empty = new ContainerBundle() {
+        BaseBundle empty = new BaseBundle() {
 
             @Override
             protected void configure() {}
@@ -40,7 +40,7 @@ public class BundleTest extends AbstractArtifactTest {
     /** Tests that a bundle cannot be reused. */
     @Test
     public void cannotLinkSelf() {
-        ContainerBundle b = new ContainerBundle() {
+        BaseBundle b = new BaseBundle() {
 
             @Override
             protected void configure() {

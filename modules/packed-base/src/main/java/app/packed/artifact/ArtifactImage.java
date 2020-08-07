@@ -17,13 +17,14 @@ package app.packed.artifact;
 
 import java.util.Optional;
 
+import app.packed.component.Bundle;
 import app.packed.component.Component;
 import app.packed.component.ComponentStream;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerDescriptor;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerDescriptor;
 import packed.internal.artifact.PackedArtifactImage;
 
 /**
@@ -110,7 +111,7 @@ public interface ArtifactImage extends ArtifactSource {
      * @return the type of bundle that was used to create this image
      */
     // bundleType()?
-    Class<? extends ContainerBundle> sourceType();
+    Class<? extends Bundle<?>> sourceType();
 
     /**
      * Returns a component stream consisting of all the components in this image.

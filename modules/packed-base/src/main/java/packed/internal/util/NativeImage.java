@@ -19,7 +19,7 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import app.packed.container.ContainerBundle;
+import app.packed.component.Bundle;
 
 /**
  * A helper class for creating native images.
@@ -46,7 +46,7 @@ public final class NativeImage {
         return Mode.NO_IMAGE;
     }
 
-    public static void registerBundle(ContainerBundle bundle) {
+    public static void registerBundle(Bundle<?> bundle) {
         /// Hmmmmmmmmmmmmm
     }
 

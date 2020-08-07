@@ -35,7 +35,7 @@ import packed.internal.config.ConfigSiteSupport;
  * Extensions form the basis, extensible model
  * <p>
  * constructor visibility is ignored. As long as user has class visibility. They can can use an extension via, for
- * example, {@link ContainerBundle#use(Class)} or {@link ContainerConfiguration#use(Class)}.
+ * example, {@link BaseBundle#use(Class)} or {@link ContainerConfiguration#use(Class)}.
  * 
  * <p>
  * Any packages where extension implementations, custom hooks or extension wirelet pipelines are located must be open to

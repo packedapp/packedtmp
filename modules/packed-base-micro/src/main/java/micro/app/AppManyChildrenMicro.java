@@ -29,7 +29,6 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.artifact.App;
-import app.packed.container.ContainerBundle;
 import app.packed.container.BaseBundle;
 
 /**
@@ -58,7 +57,7 @@ public class AppManyChildrenMicro {
         });
     }
 
-    static class TBundle extends ContainerBundle {
+    static class TBundle extends BaseBundle {
 
         final String name;
 

@@ -17,14 +17,13 @@ package packed.internal.container;
 
 import app.packed.artifact.App;
 import app.packed.container.BaseBundle;
-import app.packed.container.ContainerBundle;
 import app.packed.container.ExtensionSidecar;
 import app.packed.statemachine.Leaving;
 
 /**
  *
  */
-public class TestOrder extends ContainerBundle {
+public class TestOrder extends BaseBundle {
 
     public static class SomeExtension extends app.packed.container.Extension {
 

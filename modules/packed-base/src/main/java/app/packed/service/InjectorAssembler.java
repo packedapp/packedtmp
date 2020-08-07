@@ -22,18 +22,17 @@ import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.Key.Qualifier;
 import app.packed.base.Nullable;
+import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
 import app.packed.component.Wirelet;
-import app.packed.container.ContainerBundle;
-import app.packed.container.ContainerConfiguration;
 import app.packed.container.BaseBundle;
+import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Factory;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via
  * {@link Injector#configure(CustomConfigurator, Wirelet...)}. This is thought of a alternative to using a
- * {@link BaseBundle}. Unlike bundles all services are automatically exported once defined. For example useful in
- * tests.
+ * {@link BaseBundle}. Unlike bundles all services are automatically exported once defined. For example useful in tests.
  * 
  * <p>
  * The main difference compared to bundles is that there is no concept of encapsulation. All services are exported by
@@ -97,7 +96,7 @@ public final class InjectorAssembler {
      * @param wirelets
      *            optional import/export wirelets
      */
-    public void link(ContainerBundle bundle, Wirelet... wirelets) {
+    public void link(Bundle<?> bundle, Wirelet... wirelets) {
         configuration().link(bundle, wirelets);
     }
 

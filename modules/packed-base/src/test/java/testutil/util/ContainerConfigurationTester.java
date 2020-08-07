@@ -26,7 +26,7 @@ import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerBundle;
+import app.packed.container.BaseBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 
@@ -92,7 +92,7 @@ public class ContainerConfigurationTester {
         }
     }
 
-    public ContainerConfigurationTester link(ContainerBundle child, Wirelet... wirelets) {
+    public ContainerConfigurationTester link(BaseBundle child, Wirelet... wirelets) {
         cc.link(child, wirelets);
         return this;
     }

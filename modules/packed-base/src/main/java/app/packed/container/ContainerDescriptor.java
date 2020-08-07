@@ -89,7 +89,7 @@ import packed.internal.container.PackedContainerConfigurationContext;
 public class ContainerDescriptor {
 
     /** The type of the bundle. */
-    private final Class<? extends ContainerBundle> bundleType;
+    private final Class<? extends Bundle<?>> bundleType;
 
     private final ContractSet contracts;
 
@@ -267,7 +267,7 @@ public class ContainerDescriptor {
         private String bundleDescription;
 
         /** The bundleType */
-        private final Class<? extends ContainerBundle> bundleType;
+        private final Class<? extends Bundle<?>> bundleType;
 
         private IdentityHashMap<Class<? extends Contract>, Contract> contracts = new IdentityHashMap<>();
 
@@ -277,7 +277,7 @@ public class ContainerDescriptor {
 
         private Map<Key<?>, ServiceDescriptor> services;
 
-        public Builder(Class<? extends ContainerBundle> bundleType) {
+        public Builder(Class<? extends Bundle<?>> bundleType) {
             this.bundleType = requireNonNull(bundleType, "bundleType is null");
         }
 
@@ -305,7 +305,7 @@ public class ContainerDescriptor {
         /**
          * @return the bundleType
          */
-        public final Class<? extends ContainerBundle> bundleType() {
+        public final Class<? extends Bundle<?>> bundleType() {
             return bundleType;
         }
 

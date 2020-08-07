@@ -100,7 +100,7 @@ public final class PackedArtifactImage implements ArtifactImage {
     /** {@inheritDoc} */
     @Override
     @SuppressWarnings("unchecked")
-    public Class<? extends ContainerBundle> sourceType() {
+    public Class<? extends Bundle<?>> sourceType() {
         return (Class<? extends ContainerBundle>) pcc.sourceType(); // images can only be created from bundles
     }
 
@@ -123,7 +123,7 @@ public final class PackedArtifactImage implements ArtifactImage {
 
     /**
      * If the specified source is an image returns the image with any specified wirelets applied. If the specified source is
-     * a {@link ContainerBundle} creates and returns a new image from the specified bundle.
+     * a bundle creates and returns a new image from the specified bundle.
      * 
      * @param source
      *            the artifact source

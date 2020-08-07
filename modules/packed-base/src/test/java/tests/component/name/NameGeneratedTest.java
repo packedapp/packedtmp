@@ -21,6 +21,7 @@ import java.util.function.Function;
 import org.junit.jupiter.api.Test;
 
 import app.packed.component.Wirelet;
+import app.packed.container.BaseBundle;
 import testutil.util.AbstractArtifactTest;
 import testutil.util.ContainerConfigurationTester;
 
@@ -37,7 +38,7 @@ public class NameGeneratedTest extends AbstractArtifactTest {
         check(f -> new HelloWorldBundle(f), "HelloWorld");
     }
 
-    private static void check(Function<Consumer<? super ContainerConfigurationTester>, ? extends app.packed.container.ContainerBundle> cs, String defaultName) {
+    private static void check(Function<Consumer<? super ContainerConfigurationTester>, ? extends BaseBundle> cs, String defaultName) {
         appOf(cs.apply(c -> {})).nameIs(defaultName);
         appOf(cs.apply(c -> {})).nameIs(defaultName);
         // We can override default name
