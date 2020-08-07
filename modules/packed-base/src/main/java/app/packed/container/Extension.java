@@ -77,6 +77,7 @@ public abstract class Extension {
     // I think we should have a value representing configured. In this way people can store the extension
     // or keep it at runtime or whatever they want to do....
     // Samme problem som Bundle vel...
+    // Maaske er en Extension et bundle
     ExtensionConfiguration configuration; // = PEC.CONFIGURED
 
     /**
@@ -245,7 +246,7 @@ public abstract class Extension {
             return user;
         }
 
-        // realm() <--- public final????
+        // realm() <--zx- public final????
         // Vi kan sagtens lave nogle ting final paa sub extensions...
         // Det er jo bare andre extensions der kalde den.
     }

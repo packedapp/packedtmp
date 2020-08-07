@@ -157,6 +157,9 @@ public interface ArtifactContext {
      * <p>
      * If the underlying container has not already been started. Invoking this method will first invoke {@link #start()} and
      * wait.
+     * <p>
+     * If the underlying container failed to start, every invocation of this method will fail with
+     * {@link IllegalStateException} or UnavailableContainerExtension?
      * 
      * @param <T>
      *            the type of service to return
