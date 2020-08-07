@@ -55,6 +55,14 @@ public interface ComponentConfiguration {
     //
     Optional<Class<? extends Extension>> extension();
 
+//    /**
+//     * Returns the class that defines the container.
+//     * 
+//     * @return the class that defines the container
+//     */
+    // Is replaced with someking of compoentn descriptor
+//    Class<?> sourceType();
+
     /**
      * Returns the description of this component. Or null if the description has not been set.
      *
@@ -139,6 +147,16 @@ public interface ComponentConfiguration {
      * @see Component#name()
      */
     ComponentConfiguration setName(String name);
+
+    /**
+     * Creates a new container with this container as its parent by linking the specified bundle.
+     * 
+     * @param bundle
+     *            the bundle to link
+     * @param wirelets
+     *            any wirelets
+     */
+    void link(Bundle<?> bundle, Wirelet... wirelets);
 
     /**
      * Wires a new child component using the specified driver

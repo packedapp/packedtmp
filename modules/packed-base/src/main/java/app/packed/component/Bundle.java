@@ -32,6 +32,10 @@ import packed.internal.component.BundleConfiguration;
  * @param <C>
  *            the type of configuration this bundle wraps
  */
+
+//Bundle: States-> Ready -> Assembling|Composing -> Consumed|Composed... Ready | Using | Used... Usable | Using | Used
+
+//Unconfigured/Configuring/Configured (Failed??? well et can't bee Configured if it's failed)
 public abstract class Bundle<C> {
 
     /**

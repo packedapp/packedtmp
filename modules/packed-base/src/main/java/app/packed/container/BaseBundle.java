@@ -50,8 +50,8 @@ import app.packed.service.ServiceExtension;
  * <p>
  * There are currently two types of bundles available:
  * <ul>
- * <li><b>{@link BaseBundle}</b> which bundles information about services, and creates {@link Injector} instances
- * using .</li>
+ * <li><b>{@link BaseBundle}</b> which bundles information about services, and creates {@link Injector} instances using
+ * .</li>
  * <li><b>{@link BaseBundle}</b> which bundles information about both services and components, and creates container
  * instances using .</li>
  * </ul>
@@ -59,7 +59,10 @@ import app.packed.service.ServiceExtension;
  * @apiNote We never return, for example, Bundle or BaseBundle. As this would make extending the class difficult unless
  *          we defined all methods as non-final.
  */
-// Rename to BaseBundle
+// Skal have en strategi for hvilke extension vi har med
+// og hvilke metoder fra disse extensions vi har med
+// Maaske vi i virkeligheden skal hava ContainerBundle
+// Og saa sige at folk skal laere derfra
 public abstract class BaseBundle extends ContainerBundle {
 
     /**
@@ -68,7 +71,7 @@ public abstract class BaseBundle extends ContainerBundle {
      * @return a base extension instance
      */
     protected final BaseExtension base() {
-        throw new UnsupportedOperationException();
+        return use(BaseExtension.class);
     }
 
     /**
@@ -101,7 +104,7 @@ public abstract class BaseBundle extends ContainerBundle {
      * @see #export(Key)
      */
     protected final <T> ServiceConfiguration<T> export(Class<T> key) {
-        return services().export(key);
+        return service().export(key);
     }
 
     /**
@@ -127,11 +130,11 @@ public abstract class BaseBundle extends ContainerBundle {
      * @see #export(Key)
      */
     protected final <T> ServiceConfiguration<T> export(Key<T> key) {
-        return services().export(key);
+        return service().export(key);
     }
 
     protected final <T> ServiceConfiguration<T> export(ServiceComponentConfiguration<T> configuration) {
-        return services().export(configuration);
+        return service().export(configuration);
     }
 
 //    /**
@@ -144,7 +147,7 @@ public abstract class BaseBundle extends ContainerBundle {
 //    }
 
     protected final void exportAll() {
-        services().exportAll();
+        service().exportAll();
     }
 
     protected final LifecycleExtension lifecycle() {
@@ -167,7 +170,7 @@ public abstract class BaseBundle extends ContainerBundle {
      */
     protected final <T> ServiceComponentConfiguration<T> provide(Class<T> implementation) {
         // Provide er i virkeligheden... install() followed by service().provide(Singleton or Static)
-        return services().provide(implementation);
+        return service().provide(implementation);
     }
 
     /**
@@ -182,7 +185,7 @@ public abstract class BaseBundle extends ContainerBundle {
      * @return the configuration of the component that was installed
      */
     protected final <T> ServiceComponentConfiguration<T> provide(Factory<T> factory) {
-        return services().provide(factory);
+        return service().provide(factory);
     }
 
     protected final <T> ServiceComponentConfiguration<T> provide(SingletonConfiguration<T> configuration) {
@@ -190,27 +193,27 @@ public abstract class BaseBundle extends ContainerBundle {
     }
 
     protected final void provideAll(Injector injector, Wirelet... wirelets) {
-        services().provideAll(injector, wirelets);
+        service().provideAll(injector, wirelets);
     }
 
     protected final <T> ServiceComponentConfiguration<T> provideConstant(T instance) {
-        return services().provideConstant(instance);
+        return service().provideConstant(instance);
     }
 
     protected final void require(Class<?> key) {
-        services().require(Key.of(key));
+        service().require(Key.of(key));
     }
 
     protected final void require(Key<?>... keys) {
-        services().require(keys);
+        service().require(keys);
     }
 
     protected final void requireOptionally(Class<?> key) {
-        services().requireOptionally(Key.of(key));
+        service().requireOptionally(Key.of(key));
     }
 
     protected final void requireOptionally(Key<?>... keys) {
-        services().requireOptionally(keys);
+        service().requireOptionally(keys);
     }
 
     /**
@@ -218,7 +221,7 @@ public abstract class BaseBundle extends ContainerBundle {
      * 
      * @return a service extension instance
      */
-    protected final ServiceExtension services() {
+    protected final ServiceExtension service() {
         return use(ServiceExtension.class);
     }
 

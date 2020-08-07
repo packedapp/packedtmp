@@ -54,18 +54,11 @@ import app.packed.service.ServiceExtension;
 // Kunne godt have nogle lifecycle metoder man kunne overskrive.
 // F.eks. at man vil validere noget
 
-// Bundle: States-> Ready -> Assembling|Composing -> Consumed|Composed... Ready | Using | Used... Usable | Using | Used
-
-// Unconfigured/Configuring/Configured (Failed??? well et can't bee Configured if it's failed)
 public abstract class ContainerBundle extends ComponentBundle<ContainerConfiguration> implements ArtifactSource {
 
     /** Creates a new ContainerBundle. */
     protected ContainerBundle() {
-        this(ContainerConfiguration.driver());
-    }
-
-    protected ContainerBundle(ComponentDriver<? extends ContainerConfiguration> driver) {
-        super(driver);
+        super(ContainerConfiguration.driver());
     }
 
     /**
@@ -80,8 +73,6 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
     }
 
     /**
-     * 
-     * 
      * @param <W>
      * @param wireletType
      * @param predicate
@@ -215,15 +206,6 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
         // Packed will access a constructor
     }
 
-//
-//    protected final <A, H, C> C provideHost(OldHostDriver<A, H, C> driver) {
-//        return configuration().addHost(driver);
-//    }
-//
-//    protected final <A, H, C> C provideHost(OldHostDriver<A, H, C> driver, Key<? super A> key) {
-//        return configuration().addHost(driver);
-//    }
-
     /**
      * Returns an extension of the specified type.
      * <p>
@@ -252,42 +234,8 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
     protected final <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
-
 }
-
-///**
-//* Invoked by the runtime to start the configuration process.
-//* 
-//* @param configuration
-//*            the configuration to wrap
-//* @throws IllegalStateException
-//*             if the bundle is in use, or has previously been used
-//*/
-//private void doConfigure(ContainerConfiguration configuration) {
-//  requireNonNull(configuration, "configuration is null");
 //
-//  // We perform a compare and exchange with configuration. Guarding against
-//  // concurrent usage of this bundle.
-//  Object prev = CONFIGURATION.compareAndExchange(this, null, configuration);
-//  if (prev == null) {
-//      try {
-//          configure();
-//      } finally {
-//          CONFIGURATION.setVolatile(this, BundleHelper.POST_CONFIGURE);
-//      }
-//  } else if (prev instanceof ComponentConfiguration) {
-//      // Can be this thread or another thread that is already using the bundle.
-//      throw new IllegalStateException("This bundle is being used elsewhere, bundleType = " + getClass());
-//  } else {
-//      // Bundle has already been used succesfullly or unsuccesfully
-//      throw new IllegalStateException("This bundle has already been used, bundleType = " + getClass());
-//  }
-//
-//  // Do we want to cache exceptions?
-//  // Do we want better error messages, for example, This bundle has already been used to create an artifactImage
-//  // Do we want to store the calling thread in case of recursive linking..
-//
-//  // We should have some way to mark it failed????
-//  // If configure() fails. The ContainerConfiguration still works...
-//  /// Well we should probably catch the exception from where ever we call his method
+//protected ContainerBundle(ComponentDriver<? extends ContainerConfiguration> driver) {
+//  super(driver);
 //}

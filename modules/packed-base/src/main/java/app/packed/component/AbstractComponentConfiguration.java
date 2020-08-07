@@ -118,32 +118,32 @@ public abstract class AbstractComponentConfiguration implements ComponentConfigu
 
     /** {@inheritDoc} */
     @Override
-    public void checkConfigurable() {
+    public final void checkConfigurable() {
         context.checkConfigurable();
     }
 
     /** {@inheritDoc} */
     @Override
-    public ConfigSite configSite() {
+    public final ConfigSite configSite() {
         return context.configSite();
     }
 
     /** {@inheritDoc} */
     @Override
-    public Optional<Class<? extends Extension>> extension() {
+    public final Optional<Class<? extends Extension>> extension() {
         return context.extension();
     }
 
     /** {@inheritDoc} */
     @Override
     @Nullable
-    public String getDescription() {
+    public final String getDescription() {
         return context.getDescription();
     }
 
     /** {@inheritDoc} */
     @Override
-    public String getName() {
+    public final String getName() {
         return context.getName();
     }
 
@@ -151,14 +151,20 @@ public abstract class AbstractComponentConfiguration implements ComponentConfigu
 
     /** {@inheritDoc} */
     @Override
-    public ComponentDescriptor model() {
+    public final ComponentDescriptor model() {
         return context.model();
     }
 
     /** {@inheritDoc} */
     @Override
-    public ComponentPath path() {
+    public final ComponentPath path() {
         return context.path();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final void link(Bundle<?> bundle, Wirelet... wirelets) {
+        context.link(bundle, wirelets);
     }
 
     /** {@inheritDoc} */
@@ -176,7 +182,14 @@ public abstract class AbstractComponentConfiguration implements ComponentConfigu
     }
 
     @Override
-    public <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
+    public final <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         return context.wire(driver, wirelets);
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public final String toString() {
+        return context.toString();
+    }
+
 }

@@ -22,9 +22,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Nullable;
-import app.packed.component.Bundle;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentDescriptor;
 import app.packed.component.ComponentDriver;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
@@ -123,16 +121,6 @@ public interface ContainerConfiguration extends ComponentConfiguration {
     boolean isArtifactRoot();
 
     /**
-     * Creates a new container with this container as its parent by linking the specified bundle.
-     * 
-     * @param bundle
-     *            the bundle to link
-     * @param wirelets
-     *            any wirelets
-     */
-    void link(Bundle<?> bundle, Wirelet... wirelets);
-
-    /**
      * Registers a {@link Lookup} object that will be used for accessing members on components that are registered with the
      * container.
      * <p>
@@ -155,24 +143,11 @@ public interface ContainerConfiguration extends ComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    default ComponentDescriptor model() {
-        return ComponentDescriptor.CONTAINER;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     ContainerConfiguration setDescription(String description);
 
     /** {@inheritDoc} */
     @Override
     ContainerConfiguration setName(String name);
-
-    /**
-     * Returns the class that defines the container.
-     * 
-     * @return the class that defines the container
-     */
-    Class<?> sourceType();
 
     /**
      * Returns an extension of the specified type. If this is the first time an extension of the specified type is
@@ -192,26 +167,11 @@ public interface ContainerConfiguration extends ComponentConfiguration {
     <T extends Extension> T use(Class<T> extensionType);
 
     /**
-     * Returns a driver for creating containers and their configurations.
+     * Returns the default driver for containers.
      * 
-     * @return a driver for creating containers and their configurations
+     * @return the default driver for containers
      */
     static ComponentDriver<ContainerConfiguration> driver() {
         return ContainerComponentDriver.INSTANCE;
     }
 }
-
-// I think ContainerConfiguration is better
-// Ideen er lidt at man kan lave sine egne
-// ContainerConfiguration.of(Lookup); <--- of(lookup, lookup.lookupClass)
-// ContainerConfiguration.of(Lookup, Class sourceType);
-///**
-//* Creates a new layer.
-//* 
-//* @param name
-//*            the name of layer
-//* @param dependencies
-//*            dependencies on other layers
-//* @return the new layer
-//*/
-//ContainerLayer newLayer(String name, ContainerLayer... dependencies);

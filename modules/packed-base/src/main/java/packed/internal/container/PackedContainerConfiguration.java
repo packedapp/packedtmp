@@ -21,19 +21,15 @@ import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.component.AbstractComponentConfiguration;
-import app.packed.component.Bundle;
-import app.packed.component.ComponentDescriptor;
-import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
-import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
 
 /** The default implementation of {@link ContainerConfiguration}. */
-public class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
+public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
 
     /** The context to delegate all calls to. */
     private final PackedContainerConfigurationContext context;
@@ -51,50 +47,8 @@ public class PackedContainerConfiguration extends AbstractComponentConfiguration
 
     /** {@inheritDoc} */
     @Override
-    public final void checkConfigurable() {
-        context.checkConfigurable();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final ConfigSite configSite() {
-        return context.configSite();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean equals(Object obj) {
-        return context.equals(obj);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final Optional<Class<? extends Extension>> extension() {
-        return context.extension();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public Set<Class<? extends Extension>> extensions() {
         return context.extensions();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final @Nullable String getDescription() {
-        return context.getDescription();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final String getName() {
-        return context.getName();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int hashCode() {
-        return context.hashCode();
     }
 
     /** {@inheritDoc} */
@@ -135,26 +89,8 @@ public class PackedContainerConfiguration extends AbstractComponentConfiguration
 
     /** {@inheritDoc} */
     @Override
-    public void link(Bundle<?> bundle, Wirelet... wirelets) {
-        context.link(bundle, wirelets);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void lookup(@Nullable Lookup lookup) {
         context.lookup(lookup);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final ComponentDescriptor model() {
-        return context.model();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final ComponentPath path() {
-        return context.path();
     }
 
     /** {@inheritDoc} */
@@ -169,18 +105,6 @@ public class PackedContainerConfiguration extends AbstractComponentConfiguration
     public PackedContainerConfiguration setName(String name) {
         context.setName(name);
         return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Class<?> sourceType() {
-        return context.sourceType();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String toString() {
-        return context.toString();
     }
 
     /** {@inheritDoc} */

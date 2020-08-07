@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.component.Bundle;
 import app.packed.component.ComponentDescriptor;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentPath;
@@ -149,4 +150,11 @@ public final class PackedServiceComponentConfiguration<T> implements ServiceComp
     public <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         return component.wire(driver, wirelets);
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public void link(Bundle<?> bundle, Wirelet... wirelets) {
+        component.link(bundle, wirelets);
+    }
+
 }
