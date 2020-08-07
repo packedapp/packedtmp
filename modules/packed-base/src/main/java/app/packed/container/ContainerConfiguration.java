@@ -36,7 +36,7 @@ import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 
 /**
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
- * extending {@link ContainerBundle} or {@link DefaultBundle}.
+ * extending {@link ContainerBundle} or {@link BaseBundle}.
  */
 public interface ContainerConfiguration extends ComponentConfiguration {
 

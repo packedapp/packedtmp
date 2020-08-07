@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.DefaultBundle;
+import app.packed.container.BaseBundle;
 
 /** Tests {@link App#start(ContainerBundle, Wirelet...)} */
 public class AppOfTest {
@@ -34,7 +34,7 @@ public class AppOfTest {
     @Test
     public void emptyApp() {
         AtomicReference<ContainerConfiguration> ar = new AtomicReference<>();
-        App app = App.start(new DefaultBundle() {
+        App app = App.start(new BaseBundle() {
             @Override
             public void configure() {
                 ar.set(configuration());

@@ -42,7 +42,7 @@ import app.packed.service.ServiceExtension;
  * A bundle instance can be used ({@link #configure()}) exactly once. Attempting to use it multiple times will fail with
  * an {@link IllegalStateException}.
  * 
- * A generic bundle. Normally you would extend {@link DefaultBundle}
+ * A generic bundle. Normally you would extend {@link BaseBundle}
  */
 
 // Nej der er ingen grund til at lave den concurrent. Som regel er det en ny instans...
@@ -140,7 +140,7 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
      * @param factory
      *            the factory to install
      * @return the configuration of the component
-     * @see DefaultBundle#install(Factory)
+     * @see BaseBundle#install(Factory)
      */
     protected final <T> SingletonConfiguration<T> install(Factory<T> factory) {
         return configuration().install(factory);

@@ -39,13 +39,10 @@ public abstract class Bundle<C> {
      * {@link BundleConfiguration}.
      * <p>
      * <ul>
-     * <li>Initially, this field is null, indicating that the bundle has not yet been used.
-     * <li>the second item
-     * <li>the third item
+     * <li>Initially, this field is null, indicating that the bundle has not yet been consumed.
+     * <li>Then it is initialized with the actual configurations object. Cas'ed to prevent
+     * <li>Finally, a non-null placeholder is set to indicate that the bundle has been consumed
      * </ul>
-     * <p>
-     * Is initial null configure has not yet been called. Then it is initialized which a Configuration. Finally before
-     * returning from configure. The configuration is replaced with xxx.
      */
     @Nullable
     private Object configuration;

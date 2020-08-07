@@ -20,12 +20,12 @@ import java.util.Optional;
 
 import app.packed.artifact.App;
 import app.packed.component.Wirelet;
-import app.packed.container.DefaultBundle;
+import app.packed.container.BaseBundle;
 
 /**
  *
  */
-public class WFree extends DefaultBundle {
+public class WFree extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override

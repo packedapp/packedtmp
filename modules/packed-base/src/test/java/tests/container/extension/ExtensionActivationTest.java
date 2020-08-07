@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.artifact.App;
 import app.packed.component.Packlet;
-import app.packed.container.DefaultBundle;
+import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
@@ -40,7 +40,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Test
     public void instanceMethod() {
-        App.start(new DefaultBundle() {
+        App.start(new BaseBundle() {
             @Override
             public void configure() {
                 assertThat(extensions()).isEmpty();
@@ -54,7 +54,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Test
     public void staticField() {
-        App.start(new DefaultBundle() {
+        App.start(new BaseBundle() {
             @Override
             public void configure() {
                 assertThat(extensions()).isEmpty();
@@ -66,7 +66,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Test
     public void instanceField() {
-        App.start(new DefaultBundle() {
+        App.start(new BaseBundle() {
             @Override
             public void configure() {
                 assertThat(extensions()).isEmpty();
@@ -78,7 +78,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Test
     public void staticMethod() {
-        App.start(new DefaultBundle() {
+        App.start(new BaseBundle() {
             @Override
             public void configure() {
                 assertThat(extensions()).isEmpty();

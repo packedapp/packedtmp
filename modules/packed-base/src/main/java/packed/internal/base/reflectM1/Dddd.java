@@ -17,12 +17,12 @@ package packed.internal.base.reflectM1;
 
 import app.packed.artifact.ArtifactImage;
 import app.packed.component.Wirelet;
-import app.packed.container.DefaultBundle;
+import app.packed.container.BaseBundle;
 
 /**
  *
  */
-public class Dddd extends DefaultBundle {
+public class Dddd extends BaseBundle {
 
     int depth;
 

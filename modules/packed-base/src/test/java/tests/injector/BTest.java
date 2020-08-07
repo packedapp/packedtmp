@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.stream.Collectors;
 
 import app.packed.container.ContainerDescriptor;
-import app.packed.container.DefaultBundle;
+import app.packed.container.BaseBundle;
 import app.packed.service.Injector;
 import app.packed.service.ServiceDescriptor;
 
@@ -48,7 +48,7 @@ public class BTest {
 
     }
 
-    public static class MyBundle extends DefaultBundle {
+    public static class MyBundle extends BaseBundle {
 
         @Override
         protected void configure() {
@@ -58,7 +58,7 @@ public class BTest {
         }
     }
 
-    public static class MyBundle4 extends DefaultBundle {
+    public static class MyBundle4 extends BaseBundle {
 
         @Override
         protected void configure() {

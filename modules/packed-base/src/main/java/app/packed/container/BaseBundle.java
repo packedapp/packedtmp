@@ -50,9 +50,9 @@ import app.packed.service.ServiceExtension;
  * <p>
  * There are currently two types of bundles available:
  * <ul>
- * <li><b>{@link DefaultBundle}</b> which bundles information about services, and creates {@link Injector} instances
+ * <li><b>{@link BaseBundle}</b> which bundles information about services, and creates {@link Injector} instances
  * using .</li>
- * <li><b>{@link DefaultBundle}</b> which bundles information about both services and components, and creates container
+ * <li><b>{@link BaseBundle}</b> which bundles information about both services and components, and creates container
  * instances using .</li>
  * </ul>
  * 
@@ -60,7 +60,7 @@ import app.packed.service.ServiceExtension;
  *          we defined all methods as non-final.
  */
 // Rename to BaseBundle
-public abstract class DefaultBundle extends ContainerBundle {
+public abstract class BaseBundle extends ContainerBundle {
 
     /**
      * Returns a {@link BaseExtension} instance.

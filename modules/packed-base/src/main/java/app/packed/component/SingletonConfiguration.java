@@ -15,12 +15,12 @@
  */
 package app.packed.component;
 
-import app.packed.container.DefaultBundle;
+import app.packed.container.BaseBundle;
 import app.packed.inject.Factory;
 
 /**
  * This class represents the configuration of a component. Actual instances of this interface is usually obtained by
- * calling one of the install methods on, for example, {@link DefaultBundle}.
+ * calling one of the install methods on, for example, {@link BaseBundle}.
  * <p>
  * It it also possible to install components at runtime via {@link Component}.
  */

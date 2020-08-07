@@ -20,7 +20,7 @@ import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.container.DefaultBundle;
+import app.packed.container.BaseBundle;
 import app.packed.inject.Factory;
 
 /**
@@ -28,15 +28,15 @@ import app.packed.inject.Factory;
  * {@link SingletonConfiguration configuration of as component}.
  * <p>
  * An instance of this interface is usually obtained by calling one of the provide methods on {@link ServiceExtension}
- * or {@link DefaultBundle}.
+ * or {@link BaseBundle}.
  * 
  * @see ServiceExtension#provide(Class)
  * @see ServiceExtension#provide(Factory)
  * @see ServiceExtension#provideConstant(Object)
  *
- * @see DefaultBundle#provide(Class)
- * @see DefaultBundle#provide(Factory)
- * @see DefaultBundle#provideConstant(Object)
+ * @see BaseBundle#provide(Class)
+ * @see BaseBundle#provide(Factory)
+ * @see BaseBundle#provideConstant(Object)
  */
 public interface ServiceComponentConfiguration<T> extends ServiceConfiguration<T>, SingletonConfiguration<T> {
 

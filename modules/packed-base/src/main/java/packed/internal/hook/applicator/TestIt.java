@@ -18,7 +18,7 @@ package packed.internal.hook.applicator;
 import app.packed.artifact.App;
 import app.packed.component.Packlet;
 import app.packed.component.SingletonConfiguration;
-import app.packed.container.DefaultBundle;
+import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.hook.AssignableToHook;
 import app.packed.hook.OnHook;
@@ -30,7 +30,7 @@ import packed.internal.hook.applicator.TestIt.FooExtension;
 // Herbliverden brugt mht til hooks
 // Skal aendres til Sidecars...
 @Packlet(extension = FooExtension.class)
-public class TestIt extends DefaultBundle {
+public class TestIt extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override

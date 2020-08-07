@@ -26,13 +26,13 @@ import app.packed.component.CustomConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.DefaultBundle;
+import app.packed.container.BaseBundle;
 import app.packed.inject.Factory;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via
  * {@link Injector#configure(CustomConfigurator, Wirelet...)}. This is thought of a alternative to using a
- * {@link DefaultBundle}. Unlike bundles all services are automatically exported once defined. For example useful in
+ * {@link BaseBundle}. Unlike bundles all services are automatically exported once defined. For example useful in
  * tests.
  * 
  * <p>
