@@ -18,9 +18,7 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.VarHandle;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.HashMap;
@@ -66,14 +64,9 @@ import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.runtime.PackedInjector;
-import packed.internal.util.LookupUtil;
-import packed.internal.util.ThrowableUtil;
 
 /** The default container context. */
 public final class PackedContainerConfigurationContext extends PackedComponentConfigurationContext {
-
-    /** A MethodHandle that can invoke Bundle#configure. */
-    private static final MethodHandle BUNDLE_CONFIGURE = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), Bundle.class, "configure", void.class);
 
     private static final int LS_0_MAINL = 0;
 
@@ -86,9 +79,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
 //    /** Any child containers of this component (lazily initialized), in order of insertion. */
 //    @Nullable
 //    ArrayList<PackedContainerConfiguration> containers;
-
-    /** A VarHandle that can access Bundle#configuration. */
-    private static final VarHandle VH_BUNDLE_CONFIGURATION = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Bundle.class, "configuration", Object.class);
 
     /** Any extension that is active. */
     @Nullable
@@ -221,35 +211,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
     private void configure() {
         // If it is an image it has already been assembled
         if (source instanceof Bundle) {
-            Bundle<?> cb = (Bundle<?>) source;
-
-            // We perform a compare and exchange with configuration. Guarding against
-            // concurrent usage of this bundle.
-            PackedContainerConfiguration pcc = new PackedContainerConfiguration(this);
-            Object existing = VH_BUNDLE_CONFIGURATION.compareAndExchange(cb, null, pcc);
-            if (existing == null) {
-                try {
-                    BUNDLE_CONFIGURE.invoke(cb);
-                } catch (Throwable e) {
-                    throw ThrowableUtil.orUndeclared(e);
-                } finally {
-                    VH_BUNDLE_CONFIGURATION.setVolatile(cb, BundleConfiguration.CONSUMED_SUCCESFULLY);
-                }
-            } else if (existing instanceof BundleConfiguration) {
-                // Bundle has already been used succesfullly or unsuccesfully
-                throw new IllegalStateException("This bundle has already been used, type = " + cb.getClass());
-            } else {
-                // Can be this thread or another thread that is already using the bundle.
-                throw new IllegalStateException("This bundle is already being used elsewhere, type = " + cb.getClass());
-            }
-
-            // Do we want to cache exceptions?
-            // Do we want better error messages, for example, This bundle has already been used to create an artifactImage
-            // Do we want to store the calling thread in case of recursive linking..
-
-            // We should have some way to mark it failed????
-            // If configure() fails. The ContainerConfiguration still works...
-            /// Well we should probably catch the exception from where ever we call his method
+            BundleConfiguration.configure((Bundle<?>) source, new PackedContainerConfiguration(this));
         }
         // Initializes the name of the container, and sets the state to State.FINAL
         initializeName(State.FINAL, null);
