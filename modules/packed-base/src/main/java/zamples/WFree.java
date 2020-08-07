@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package zamples;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 
+import app.packed.artifact.App;
 import app.packed.component.Wirelet;
 import app.packed.container.DefaultBundle;
 

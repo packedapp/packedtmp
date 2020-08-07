@@ -32,7 +32,6 @@ import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import packed.internal.container.PackedContainerConfigurationContext;
-import packed.internal.host.PackedGuestConfigurationContext;
 
 /**
  *

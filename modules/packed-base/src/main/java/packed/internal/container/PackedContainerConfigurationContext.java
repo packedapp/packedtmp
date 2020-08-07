@@ -401,9 +401,10 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
     // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return
     // type.
     // Maybe in the future LinkedBundle<- (LinkableContainerSource)
+    @Override
     public void link(Bundle<?> bundle, Wirelet... wirelets) {
         requireNonNull(bundle, "bundle is null");
-        PackedComponentDriver<?> d = BundleConfiguration.pdriver(bundle);
+        PackedComponentDriver<?> d = BundleConfiguration.driver(bundle);
 
         // extract driveren fra bundle...
         // lav nyt barn med den...

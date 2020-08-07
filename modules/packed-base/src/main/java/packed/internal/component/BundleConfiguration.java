@@ -25,22 +25,26 @@ import packed.internal.util.LookupUtil;
 /**
  *
  */
+// Bundle Accessor
 public final class BundleConfiguration {
 
-    /** A VarHandle that can access Bundle#driver. */
-    private static final VarHandle VH_BUNDLE_DRIVER = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Bundle.class, "driver", ComponentDriver.class);
-
     public static final BundleConfiguration CONSUMED_SUCCESFULLY = new BundleConfiguration();
+
+    /** A VarHandle used from {@link #driver(Bundle)} to access the driver field of a bundle. */
+    private static final VarHandle VH_BUNDLE_DRIVER = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Bundle.class, "driver", ComponentDriver.class);
 
     public void configurationAccessed() {
 
     }
 
-    public static ComponentDriver<?> driver(Bundle<?> bundle) {
-        return (ComponentDriver<?>) VH_BUNDLE_DRIVER.get(bundle);
-    }
-
-    public static PackedComponentDriver<?> pdriver(Bundle<?> bundle) {
-        return (PackedComponentDriver<?>) driver(bundle);
+    /**
+     * Returns the component driver the specified bundle wraps.
+     * 
+     * @param bundle
+     *            the bundle to extract a component driver from
+     * @return the component driver of the bundle
+     */
+    public static PackedComponentDriver<?> driver(Bundle<?> bundle) {
+        return (PackedComponentDriver<?>) VH_BUNDLE_DRIVER.get(bundle);
     }
 }

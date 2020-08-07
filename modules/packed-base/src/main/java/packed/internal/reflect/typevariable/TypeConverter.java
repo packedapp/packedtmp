@@ -20,6 +20,7 @@ import java.lang.reflect.Type;
 /**
  *
  */
+// Replaced by converter project...
 public abstract class TypeConverter<T> {
 
     public static final TypeConverter<Type> IDENTITY = new TypeConverter<Type>() {

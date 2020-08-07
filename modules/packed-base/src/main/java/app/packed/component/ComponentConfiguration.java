@@ -49,6 +49,10 @@ public interface ComponentConfiguration {
      * 
      * @return any extension this component belongs to
      */
+    // Syntes vi flytter den til en attribute....
+    // Og det samme med description??
+    // BaseExtensionAttributes
+    //
     Optional<Class<? extends Extension>> extension();
 
     /**

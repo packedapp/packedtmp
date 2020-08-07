@@ -139,6 +139,8 @@ public interface ComponentConfigurationContext {
      * @return a configuration for the component
      */
     <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
+
+    void link(Bundle<?> bundle, Wirelet... wirelets);
 }
 
 ///**

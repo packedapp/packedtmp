@@ -49,6 +49,9 @@ import packed.internal.util.ThrowableUtil;
  *            The type of artifact this driver creates.
  * @see App#driver()
  */
+
+//Tror bare vi laver om til et interface.... 
+
 // Tror ikke artifacts kan bruge annoteringer??? Altsaa maaske paa surragates???
 // Ville maaske vaere fedt nok bare at kunne sige
 // @OnShutdown()

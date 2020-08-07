@@ -68,11 +68,6 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
         super(driver);
     }
 
-    // Do we need a provide host also????
-    protected final <C> C add(ComponentDriver<C> driver) {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * Returns an unmodifiable view of the extensions that have been configured so far.
      * 

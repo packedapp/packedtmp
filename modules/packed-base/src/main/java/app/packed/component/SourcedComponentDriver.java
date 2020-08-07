@@ -20,7 +20,6 @@ import app.packed.inject.Factory;
 /**
  *
  */
-// X extends SourcedComponentConfiguration<T>
 public interface SourcedComponentDriver<T, X extends ComponentConfiguration> {
 
     static <T> SourcedComponentDriver<T, SingletonConfiguration<T>> singleton() {

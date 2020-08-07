@@ -28,100 +28,81 @@ import packed.internal.component.BundleConfiguration;
  * <p>
  * This class is not meant to be extended by ordinary users. But provides means for power users to extend the basic
  * functionality of Packed.
+ * 
+ * @param <C>
+ *            the type of configuration this bundle wraps
  */
-// T extends RealmConfiguration...
-// We don't want any code except packed.base to receive any kind of Lookup objects
-// so Either T extends that... or we have some secret backdoor call to the underlying ComponentConfiguration...
-// so realm(Lookup) {((RealmConfig) configuration).realm(ddd);}
-public abstract class Bundle<T> {
+public abstract class Bundle<C> {
 
     /**
-     * The configuration of the container. Is initial null configure has not yet been called. Then it is initialized which a
-     * Configuration. Finally before returning from configure. The configuration is replaced with xxx.
+     * The configuration of this bundle. This field is "magically" set using methods handles from
+     * {@link BundleConfiguration}.
      * <p>
+     * <ul>
+     * <li>Initially, this field is null, indicating that the bundle has not yet been used.
+     * <li>the second item
+     * <li>the third item
+     * </ul>
+     * <p>
+     * Is initial null configure has not yet been called. Then it is initialized which a Configuration. Finally before
+     * returning from configure. The configuration is replaced with xxx.
      */
-    // This fields can contain 4 different types. All updated in PackedContainerConfiguration#configure.
     @Nullable
     private Object configuration;
 
-    /** The driver of this bundle. */
-    final ComponentDriver<? extends T> driver;
+    /** The driver of this bundle. Is read "magically" using methods handles from {@link BundleConfiguration}. */
+    final ComponentDriver<? extends C> driver;
 
     /**
      * Creates a new bundle using the supplied driver.
      * 
      * @param driver
-     *            the driver to use for constructing the bundles configuration object
+     *            the driver to use for constructing this bundle's configuration object
      */
-    protected Bundle(ComponentDriver<? extends T> driver) {
+    protected Bundle(ComponentDriver<? extends C> driver) {
         this.driver = requireNonNull(driver, "driver is null");
     }
 
-    protected <X> Bundle(SourcedComponentDriver<X, ? extends T> driver, Class<X> implementation) {
+    protected <S> Bundle(SourcedComponentDriver<S, ? extends C> driver, Class<S> implementation) {
         this.driver = null;
     }
 
-    protected <X> Bundle(SourcedComponentDriver<X, ? extends T> driver, Factory<X> implementation) {
+    protected <S> Bundle(SourcedComponentDriver<S, ? extends C> driver, Factory<S> factory) {
         this.driver = null;
     }
 
-    protected <X> Bundle(SourcedComponentDriver<X, ? extends T> driver, X instance) {
-        this.driver = null; // Wirelet bliver ikke specificeret her.. Fordi ComponentDriver ikke bruger det.
+    /**
+     * @param <S>
+     *            the type of instance
+     * @param driver
+     * @param instance
+     *            the instance to wrap
+     */
+    protected <S> Bundle(SourcedComponentDriver<S, ? extends C> driver, S instance) {
+        this.driver = null;
     }
 
     /**
      * Returns the configuration object that this bundle wraps.
+     * <p>
+     * This method must only be called from within the bounds of the {@link #configure()} method.
      * 
      * @return the configuration object that this bundle wraps
      * @throws IllegalStateException
      *             if called from outside of {@link #configure()}
      */
     @SuppressWarnings("unchecked")
-    protected final T configuration() {
+    protected final C configuration() {
         Object c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
         } else if (c instanceof BundleConfiguration) {
             throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
         } else {
-            return (T) c;
+            return (C) c;
         }
     }
 
     /** Configures the bundle. This method should never be invoked directly by the user. */
     protected abstract void configure();
 }
-
-// Maaske hedder det ikke en bundle som root???
-
-// Bundle, protected final
-// realm <-- protected metoder
-
-// Assembly, public
-// realm() <-- public metode
-
-//A bundle encapsulates configuration of a component.
-//Possible enhancing it with options.
-//
-//Captures a realm as well.
-//
-//Controls precisely what is exposed to users of the Bundle
-//(Is typically provided to other users)
-//
-//Can be used exactly once.
-//
-//-----
-//I want them to be part of the container
-//and then replaced at runtime...
-//
-//Sounds strange that Extension is part of the container.
-//But ContainerBundle is not
-//
-//Extensions are removed... possible replaced with an instance component
-//----
-//
-//Always extended
-//
-//ActorBundle {
-//
-//}

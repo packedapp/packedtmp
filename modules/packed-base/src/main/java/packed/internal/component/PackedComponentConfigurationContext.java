@@ -28,6 +28,7 @@ import java.util.Optional;
 
 import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
+import app.packed.component.Bundle;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDescriptor;
@@ -46,7 +47,6 @@ import packed.internal.container.ContainerWirelet.ContainerNameWirelet;
 import packed.internal.container.PackedContainerConfigurationContext;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.hook.applicator.DelayedAccessor;
-import packed.internal.host.PackedHostConfigurationContext;
 
 /** A common superclass for all component configuration classes. */
 public abstract class PackedComponentConfigurationContext implements ComponentConfigurationContext {
@@ -362,6 +362,11 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
 
     public boolean isInSameContainer(PackedComponentConfigurationContext other) {
         return containerX() == other.containerX();
+    }
+
+    @Override
+    public void link(Bundle<?> bundle, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

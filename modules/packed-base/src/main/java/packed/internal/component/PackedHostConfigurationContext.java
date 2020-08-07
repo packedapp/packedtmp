@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.host;
+package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,8 +24,6 @@ import app.packed.component.ComponentDescriptor;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import packed.internal.artifact.PackedArtifactImage;
-import packed.internal.component.PackedComponentConfigurationContext;
-import packed.internal.component.PackedComponentDriver;
 
 /**
  * The defa

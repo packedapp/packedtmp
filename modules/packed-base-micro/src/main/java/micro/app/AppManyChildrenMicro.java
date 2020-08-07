@@ -30,6 +30,7 @@ import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.artifact.App;
 import app.packed.container.ContainerBundle;
+import app.packed.container.DefaultBundle;
 
 /**
  *
@@ -47,7 +48,7 @@ public class AppManyChildrenMicro {
 
     @Benchmark
     public App manyChildren() {
-        return App.start(new ContainerBundle() {
+        return App.start(new DefaultBundle() {
             @Override
             protected void configure() {
                 for (int i = 0; i < size; i++) {

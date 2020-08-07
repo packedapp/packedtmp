@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.base;
+package packed.internal.util;
 
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
@@ -29,6 +29,9 @@ import app.packed.container.ContainerBundle;
 // Skal vi have en instance af det?????
 
 // NativeImageHelper, NativeImageSupport, NativeImageUtil
+
+// Er ikke sikker paa vi gider lave denne offentlig som standard
+// Folk maa selv kalde ind i graal
 public final class NativeImage {
 
     public void saveMethod(Method m) {}
