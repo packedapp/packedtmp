@@ -85,8 +85,4 @@ public abstract class Factory1<T, R> extends BaseFactory<R> {
     protected Factory1(Function<? super T, ? extends R> function) {
         super(function);
     }
-
-    public final T t() {
-        throw new UnsupportedOperationException();
-    }
 }
