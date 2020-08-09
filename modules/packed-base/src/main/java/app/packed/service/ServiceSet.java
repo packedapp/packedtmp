@@ -17,6 +17,7 @@ package app.packed.service;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import app.packed.base.Key;
 
@@ -30,7 +31,15 @@ import app.packed.base.Key;
 // For en plugin struktur. Skal vi havde adgang til hvilke modul der definere den
 
 // ServiceCollection?
+// Extends Iterable???
+
+// Vi vil gerne paa en eller anden maade have Attributes, ServiceDescriptors, osv med...
+// ServiceDescriptor -> Instance
 public interface ServiceSet<T> {
+
+    default void forEach(Consumer<? super T> action) {
+        toList().forEach(action);
+    }
 
     /**
      * Returns an immutable set of keys for each service in this set. If there are multiple services with the same key, only

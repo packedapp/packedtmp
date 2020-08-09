@@ -147,6 +147,9 @@ public final class ArtifactDriver<A> {
      * @throws RuntimeException
      *             if the artifact could not be created
      */
+    // VIL MENE at sourcen i saa fald det er en bundle
+    // Skal kunne lave en container...
+    // Maaske laver vi implicit en container og smider den i...
     public A instantiate(ArtifactSource source, Wirelet... wirelets) {
         return newArtifact(create(source, wirelets));
     }
@@ -202,8 +205,9 @@ public final class ArtifactDriver<A> {
     }
 
     public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, Class<? extends A> implementation) {
-        final MethodHandle mh;
+        // Vi vil gerne bruge artifact type som navnet paa artifacten... istedet for implementationen
         MethodType mt = MethodType.methodType(void.class, ArtifactContext.class);
+        final MethodHandle mh;
         try {
             mh = caller.findConstructor(implementation, mt);
         } catch (NoSuchMethodException | IllegalAccessException e) {

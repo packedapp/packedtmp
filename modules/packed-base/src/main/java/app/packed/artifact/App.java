@@ -22,8 +22,8 @@ import app.packed.base.Key;
 import app.packed.component.Component;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
-import app.packed.component.Wirelet;
 import app.packed.component.ComponentStream.Option;
+import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundle;
 import app.packed.lifecycleold.LifecycleOperations;
@@ -32,13 +32,9 @@ import app.packed.lifecycleold.StopOption;
 import app.packed.service.ServiceExtension;
 
 /**
- * An App (application) is the main type of artifact available in Packed.
+ * An App (application) is the main type of artifact available in Packed and should cover must usages for people.
  * <p>
  * Applications are low overhead not using more then a few kilobytes.
- * <p>
- * You can have apps running apps runnings app.
- * 
- * You can easily have Hundreds of Thousands of applications running in the same JVM.
  */
 public interface App extends AutoCloseable {
 
@@ -85,11 +81,10 @@ public interface App extends AutoCloseable {
     String name();
 
     /**
-     * Returns the path of this application.
-     * <p>
-     * The returned path is always identical to the path of the application's top container.
+     * Returns the path of this application. Unless the app is installed as a guest, this method always returns
+     * <code>"{@literal /}"<code>.
      *
-     * @return the component path of this application
+     * @return the path of this application
      * @see Component#path()
      */
     ComponentPath path();
@@ -170,10 +165,11 @@ public interface App extends AutoCloseable {
      */
     // TODO throw UnknownPathException();;
     // componentAt
+    // Altsaa maaske har vi mere et slags SystemView?
     Component useComponent(CharSequence path);
 
     /**
-     * Returns an artifact driver that can produce {@link App} instances.
+     * Returns an the default artifact driver for producing {@link App} instances.
      * <p>
      * This method is mainly used by advanced users.
      * 

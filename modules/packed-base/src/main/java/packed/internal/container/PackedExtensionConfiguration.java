@@ -34,6 +34,7 @@ import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerDescriptor;
 import app.packed.container.Extension;
+import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionSidecar;
 import app.packed.inject.Factory;
@@ -209,12 +210,6 @@ public final class PackedExtensionConfiguration /* extends AbstractComponentConf
         return e;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public boolean isUsed(Class<? extends Extension> extensionType) {
-        return pcc.isExtensionUsed(extensionType);
-    }
-
     /**
      * Returns a lifecycle context for the extension. Used by {@link #MH_LIFECYCLE_CONTEXT}.
      * 
@@ -275,7 +270,7 @@ public final class PackedExtensionConfiguration /* extends AbstractComponentConf
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends Extension> T use(Class<T> extensionType) {
+    public <T extends Extension> T useOld(Class<T> extensionType) {
         // TODO can we call this method from the constructor????
         requireNonNull(extensionType, "extensionType is null");
         // We need to check whether or not the extension is allowed to use the specified extension every time.
@@ -364,5 +359,18 @@ public final class PackedExtensionConfiguration /* extends AbstractComponentConf
             pcc.activeExtension = existing;
         }
         return pec; // Return extension to users
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <E extends Subtension> E use(Class<E> extensionType) {
+        requireNonNull(extensionType, "extensionType is null");
+
+        // This check is done in a class value
+        @SuppressWarnings("unchecked")
+        Class<? extends Extension> declaringClass = (Class<? extends Extension>) extensionType.getDeclaringClass();
+        System.out.println(declaringClass);
+        // Need to find injection
+        throw new UnsupportedOperationException();
     }
 }

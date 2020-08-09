@@ -35,6 +35,8 @@ import app.packed.component.Wirelet;
 // Flags.. Minder lidt om wirelets...
 // Og list stop options
 // https://twitter.github.io/util/docs/com/twitter/app/App.html
+
+// ER HELT SIKKER IKKE EN DEL AF LIFECYCLE VIL JEG MENE
 public interface StopOption {
 
     static StopOption erroneous(Throwable cause) {
@@ -62,6 +64,11 @@ public interface StopOption {
     }
 
     static StopOption now(Throwable cause) {
+        throw new UnsupportedOperationException();
+    }
+
+    // Will override default settings.
+    static StopOption undeploy() {
         throw new UnsupportedOperationException();
     }
 

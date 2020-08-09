@@ -52,8 +52,6 @@ import packed.internal.artifact.PackedArtifactImage;
  *          which would prohibit subclassing except by explicitly permitted types.
  * 
  */
-// Hvad hvis man kan lave image af andre ting....????
-// ArtifactPrefab
 public interface ArtifactImage extends ArtifactSource {
 
     /**

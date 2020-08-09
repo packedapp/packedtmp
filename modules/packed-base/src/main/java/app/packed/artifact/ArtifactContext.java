@@ -41,8 +41,8 @@ import app.packed.service.ServiceExtension;
  * @apiNote In the future, if the Java language permits, {@link ArtifactContext} may become a {@code sealed} interface,
  *          which would prohibit subclassing except by explicitly permitted types.
  */
-// ArtifactContext does not extends ContainerContext??? Fordi 
-// Nej der er stadig ting som en artifact ikke har adgang til...
+// ArtifactContext does not extends ContainerContext??? Fordi ContainerContext er privat
+// til en container. Og en artifact er mere udefar
 public interface ArtifactContext {
 
     /**

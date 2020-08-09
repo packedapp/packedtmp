@@ -69,7 +69,7 @@ public @interface ExtensionSidecar {
     /**
      * Other extensions that an extension may use (but do not have to). This need not include transitive dependencies
      * (dependencies of dependencies). Only extensions that are directly used, for example, via
-     * {@link ExtensionConfiguration#use(Class)}.
+     * {@link ExtensionConfiguration#useOld(Class)}.
      * 
      * @return extensions that the extension may use
      */

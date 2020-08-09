@@ -28,6 +28,7 @@ import app.packed.component.ComponentPath;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
+import app.packed.container.Extension.Subtension;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentConfigurationToComponentAdaptor;
 import packed.internal.container.PackedContainerConfigurationContext;
@@ -132,27 +133,9 @@ public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
      * 
      * @see ContainerConfiguration#use(Class)
      */
-    <E extends Extension> E use(Class<E> extensionType);
+    <E extends Extension> E useOld(Class<E> extensionType);
 
-    /**
-     * Returns whether or not the specified extension type has been used.
-     * 
-     * @param extensionType
-     *            the extension type to test.
-     * @return whether or not the extension has been used
-     */
-    // Forklar noget om hvornaar man kan vaere 100% sikker paa den ikke er brugt
-    // Tillader vi alle extensions??? ogsaa dem vi ikke depender paa
-
-    // Og man kan misforstaa den som om at det er om denne extension bruger den.
-    boolean isUsed(Class<? extends Extension> extensionType);
-    // Returns empty if the extension is not available
-
-    // Hmm maaske vi flytter den ud af extension... Syntes ikke den skal dukke op under metoder...
-    // Maaske paa ExtensionContext istedet for...
-
-    // Skal ogsaa have en version der tager en Bundle???
-    // Og et Image???
+    <E extends Subtension> E use(Class<E> extensionType);
 
     /**
      * Typically used, for example, for testing.
@@ -161,8 +144,8 @@ public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
      * {@link Lookup#hasPrivateAccess()} must return true.
      * 
      * <p>
-     * Calling this method at runtime will fail with {@link IllegalStateException}. As containers never retain extensions at
-     * runtime.
+     * Calling this method after a container has been fully initialized will fail with {@link IllegalStateException}. As
+     * containers never retain extensions at runtime. I don't even know if you can call it doing initialization
      * 
      * @param caller
      *            a lookup for an extension subclass with full privileges
@@ -232,6 +215,29 @@ public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
         return pcc.getExtensionContext(extensionType);
     }
 }
+
+//
+///**
+// * Returns whether or not the specified extension type has been used.
+// * 
+// * @param extensionType
+// *            the extension type to test.
+// * @return whether or not the extension has been used
+// */
+// Forklar noget om hvornaar man kan vaere 100% sikker paa den ikke er brugt
+// Tillader vi alle extensions??? ogsaa dem vi ikke depender paa
+
+// Og man kan misforstaa den som om at det er om denne extension bruger den.
+
+//// PROBLEMET er at vi ikke tracker hvilke extensions in extension bruger...
+//boolean isUsed(Class<? extends Extension> extensionType);
+// Returns empty if the extension is not available
+
+// Hmm maaske vi flytter den ud af extension... Syntes ikke den skal dukke op under metoder...
+// Maaske paa ExtensionContext istedet for...
+
+// Skal ogsaa have en version der tager en Bundle???
+// Og et Image???
 
 // What we are generating...
 // This can be tricky, For example, if we create an image.

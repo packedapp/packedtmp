@@ -54,7 +54,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
     static final class Ex1 extends Extension {
         @Leaving(state = ExtensionSidecar.INSTANTIATING)
         void on() {
-            use(Ex2.class);
+            useOld(Ex2.class);
         }
     }
 
@@ -63,7 +63,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
 
         @Leaving(state = ExtensionSidecar.INSTANTIATING)
         void on() {
-            use(Ex3.class);
+            useOld(Ex3.class);
         }
     }
 
@@ -76,7 +76,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
 
         @Leaving(state = ExtensionSidecar.INSTANTIATING)
         void on() {
-            use(ExRecursive2.class);
+            useOld(ExRecursive2.class);
         }
     }
 
@@ -84,7 +84,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
 
         @Leaving(state = ExtensionSidecar.INSTANTIATING)
         void on() {
-            use(ExRecursive1.class);
+            useOld(ExRecursive1.class);
         }
     }
 }

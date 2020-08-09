@@ -216,21 +216,33 @@ public abstract class Extension {
      *             configurable and an extension of the specified type has not already been installed
      * @throws UnsupportedOperationException
      *             if the specified extension type has not been specified via {@link ExtensionSidecar}
-     * @see ExtensionConfiguration#use(Class)
+     * @see ExtensionConfiguration#useOld(Class)
      */
     // This will be removed..
-    protected final <E extends Extension> E use(Class<E> extensionType) {
-        return configuration().use(extensionType);
+    protected final <E extends Extension> E useOld(Class<E> extensionType) {
+        return configuration().useOld(extensionType);
     }
 
-    protected final <E extends Subtension> E useSub(Class<E> extensionType) {
-        throw new UnsupportedOperationException();
+    protected final <E extends Subtension> E use(Class<E> extensionType) {
+        return configuration().use(extensionType);
     }
 
     // Naah, taenker vi tillader at lave inline klasser her...
     // Saa vi gider ikke have user..
     // Problemet er den funcking constructor...
     // Er rimlig sikker paa at inline klasser altid er statiske...
+
+    /**
+     * There are no annotations that make sense for this class
+     * 
+     * <p>
+     * Instances of this class is automatically created by the runtime as needed. The instances are never cached. A new one
+     * is created every it is requested.
+     */
+    // Should we require that extensions that want to expose services
+    // to other extensions must implement them via @Provide
+    // Naah, a subtension is not a runtime concept...
+    // I really think people need to store there own Class
     public static abstract class Subtension {
 
         // User...

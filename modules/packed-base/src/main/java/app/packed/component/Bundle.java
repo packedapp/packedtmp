@@ -17,6 +17,7 @@ package app.packed.component;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
 import app.packed.container.ContainerBundle;
 import app.packed.inject.Factory;
@@ -36,7 +37,7 @@ import packed.internal.component.BundleConfiguration;
 //Bundle: States-> Ready -> Assembling|Composing -> Consumed|Composed... Ready | Using | Used... Usable | Using | Used
 
 //Unconfigured/Configuring/Configured (Failed??? well et can't bee Configured if it's failed)
-public abstract class Bundle<C> {
+public abstract class Bundle<C> implements ArtifactSource {
 
     /**
      * The configuration of this bundle. This field is "magically" set using methods handles from

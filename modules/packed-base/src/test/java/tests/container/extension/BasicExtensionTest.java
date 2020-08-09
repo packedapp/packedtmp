@@ -46,7 +46,7 @@ public class BasicExtensionTest extends AbstractArtifactTest {
             String msg = "This operation cannot be invoked from the constructor of the extension. If you need to perform initialization before returning the extension to the user, override Extension#initialize()";
             // assertThatIllegalStateException().isThrownBy(() -> buildContext()).withMessage(msg);
             assertThatIllegalStateException().isThrownBy(() -> checkConfigurable()).withMessage(msg);
-            assertThatIllegalStateException().isThrownBy(() -> use(TestExtension1.class)).withMessage(msg);
+            assertThatIllegalStateException().isThrownBy(() -> useOld(TestExtension1.class)).withMessage(msg);
         }
     }
 
