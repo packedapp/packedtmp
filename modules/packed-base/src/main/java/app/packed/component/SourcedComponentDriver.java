@@ -22,6 +22,10 @@ import app.packed.inject.Factory;
  */
 public interface SourcedComponentDriver<T, X extends ComponentConfiguration> {
 
+    ComponentDriver<X> bindToInstance(T instance);
+
+    ComponentDriver<X> bindToFactory(Factory<T> factory);
+
     static <T> SourcedComponentDriver<T, SingletonConfiguration<T>> singleton() {
         throw new UnsupportedOperationException();
     }
@@ -30,15 +34,26 @@ public interface SourcedComponentDriver<T, X extends ComponentConfiguration> {
 class StringBundle extends Bundle<SingletonConfiguration<String>> {
 
     protected StringBundle(String foo) {
-        super(SourcedComponentDriver.singleton(), foo);
+        super(driver().bindToInstance(foo));
     }
 
     protected StringBundle(Factory<String> factory) {
-        super(SourcedComponentDriver.singleton(), factory);
+        super(driver().bindToFactory(factory));
+    }
+
+    private static SourcedComponentDriver<String, SingletonConfiguration<String>> driver() {
+        return SourcedComponentDriver.singleton();
     }
 
     /** {@inheritDoc} */
     @Override
     protected void configure() {}
 
+    public static void main(String[] args) {
+        SourcedComponentDriver<String, SingletonConfiguration<String>> singleton = SingletonConfiguration.singleton();
+        ComponentDriver<SingletonConfiguration<Object>> bindToInstance = SingletonConfiguration.singleton().bindToInstance("fffo");
+        ComponentDriver<SingletonConfiguration<String>> bindToInstance2 = singleton.bindToInstance("foo");
+        System.out.println(bindToInstance);
+        System.out.println(bindToInstance2);
+    }
 }

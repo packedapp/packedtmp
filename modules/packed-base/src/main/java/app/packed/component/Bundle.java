@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
 import app.packed.container.ContainerBundle;
-import app.packed.inject.Factory;
 import packed.internal.component.BundleConfiguration;
 
 /**
@@ -33,15 +32,12 @@ import packed.internal.component.BundleConfiguration;
  * @param <C>
  *            the type of configuration this bundle wraps
  */
-
 //Bundle: States-> Ready -> Assembling|Composing -> Consumed|Composed... Ready | Using | Used... Usable | Using | Used
-
 //Unconfigured/Configuring/Configured (Failed??? well et can't bee Configured if it's failed)
 public abstract class Bundle<C> implements ArtifactSource {
 
     /**
-     * The configuration of this bundle. This field is "magically" set using methods handles from
-     * {@link BundleConfiguration}.
+     * The configuration of this bundle. This field is "magically" set via a var handle from {@link BundleConfiguration}.
      * <p>
      * <ul>
      * <li>Initially, this field is null, indicating that the bundle has not yet been consumed.
@@ -52,36 +48,17 @@ public abstract class Bundle<C> implements ArtifactSource {
     @Nullable
     private Object configuration;
 
-    /** The driver of this bundle. Is read "magically" using methods handles from {@link BundleConfiguration}. */
+    /** The driver of this bundle. Is "magically" read via a var handle from {@link BundleConfiguration}. */
     final ComponentDriver<? extends C> driver;
 
     /**
-     * Creates a new bundle using the supplied driver.
+     * Creates a new bundle using the specified driver.
      * 
      * @param driver
      *            the driver to use for constructing this bundle's configuration object
      */
     protected Bundle(ComponentDriver<? extends C> driver) {
         this.driver = requireNonNull(driver, "driver is null");
-    }
-
-    protected <S> Bundle(SourcedComponentDriver<S, ? extends C> driver, Class<S> implementation) {
-        this.driver = null;
-    }
-
-    protected <S> Bundle(SourcedComponentDriver<S, ? extends C> driver, Factory<S> factory) {
-        this.driver = null;
-    }
-
-    /**
-     * @param <S>
-     *            the type of instance
-     * @param driver
-     * @param instance
-     *            the instance to wrap
-     */
-    protected <S> Bundle(SourcedComponentDriver<S, ? extends C> driver, S instance) {
-        this.driver = null;
     }
 
     /**

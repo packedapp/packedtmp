@@ -177,15 +177,6 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
     }
 
     /**
-     * Returns the artifact this component is a part of.
-     * 
-     * @return the artifact this component is a part of
-     */
-    public final PackedAssembleContext artifact() {
-        return artifact;
-    }
-
-    /**
      * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
      * not located on any subclasses of {@link Extension} or any class that implements {@link ArtifactSource}.
      * <p>
@@ -267,7 +258,7 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
         return (PackedContainerConfigurationContext) c;
     }
 
-    public final RuntimeComponentModel descritor() {
+    final RuntimeComponentModel descritor() {
         return RuntimeComponentModel.of(driver, this);
     }
 

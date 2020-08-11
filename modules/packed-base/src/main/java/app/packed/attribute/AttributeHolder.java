@@ -20,7 +20,5 @@ package app.packed.attribute;
  */
 // something that holds attributes
 public interface AttributeHolder {
-    default AttributeSet attributes() {
-        return AttributeSet.EMPTY;
-    }
+    AttributeSet attributes();
 }

@@ -205,7 +205,7 @@ public final class PackedExtensionConfiguration /* extends AbstractComponentConf
     public Extension instance() {
         Extension e = instance;
         if (e == null) {
-            throw new IllegalStateException("Cannot call this method from the constructor of the extension");
+            throw new IllegalStateException("Cannot call this method from the constructor of " + model.type().getSimpleName());
         }
         return e;
     }

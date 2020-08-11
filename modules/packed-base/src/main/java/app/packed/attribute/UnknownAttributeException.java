@@ -18,7 +18,7 @@ package app.packed.attribute;
 /**
  *
  */
-// Thrown when using AttributeProvide
+// Thrown when using AttributeProvide, Maybe just InternalException?
 public class UnknownAttributeException {
 
 }

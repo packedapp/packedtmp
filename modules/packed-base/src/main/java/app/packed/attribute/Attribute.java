@@ -34,6 +34,7 @@ import packed.internal.attribute.PackedAttribute;
  *            the type of value this attribute maps to
  */
 // Nej syntes ikke vi gider have meta annotationer....
+// Altsaa det eneste var hvis folk skal ville putte annoteringer paa...
 public interface Attribute<T> /* extends AttributeHolder */ {
 
     static final Attribute<ComponentStream> CS = Attribute.of(MethodHandles.lookup(), "description", ComponentStream.class,

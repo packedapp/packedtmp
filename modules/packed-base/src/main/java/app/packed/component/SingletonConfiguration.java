@@ -42,6 +42,10 @@ public interface SingletonConfiguration<T> extends SourcedComponentConfiguration
     default SingletonConfiguration<T> removable() {
         throw new UnsupportedOperationException();
     }
+
+    static <T> SourcedComponentDriver<T, SingletonConfiguration<T>> singleton() {
+        throw new UnsupportedOperationException();
+    }
 }
 
 interface XCC2<T> {

@@ -30,7 +30,7 @@ import packed.internal.util.ThrowableUtil;
 // Bundle Accessor
 public final class BundleConfiguration {
 
-    public static final BundleConfiguration CONSUMED_SUCCESFULLY = new BundleConfiguration();
+    private static final BundleConfiguration CONSUMED_SUCCESFULLY = new BundleConfiguration();
 
     /** A VarHandle that can access Bundle#configuration. */
     private static final VarHandle VH_BUNDLE_CONFIGURATION = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Bundle.class, "configuration", Object.class);

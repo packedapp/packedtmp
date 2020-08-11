@@ -66,5 +66,4 @@ public final class PackedSingletonConfigurationContext<T> extends PackedComponen
     public void runHooks(Object source) {
         componentModel.invokeOnHookOnInstall(source, this);
     }
-
 }

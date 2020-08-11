@@ -24,9 +24,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 import app.packed.artifact.ArtifactSource;
-import app.packed.component.Bundle;
 import app.packed.component.ComponentBundle;
-import app.packed.component.ComponentDriver;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
@@ -170,19 +168,6 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
     }
 
     /**
-     * Links the specified bundle as a child to this bundle.
-     * 
-     * @param bundle
-     *            the bundle to link
-     * @param wirelets
-     *            an optional array of wirelets
-     * @see ContainerConfiguration#link(Bundle, Wirelet...)
-     */
-    protected final void link(Bundle<?> bundle, Wirelet... wirelets) {
-        configuration().link(bundle, wirelets);
-    }
-
-    /**
      * The lookup object passed to this method is never made available through the public api. It is only used internally.
      * Unless your private
      * 
@@ -229,10 +214,6 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
     // useWirelet()
     protected final <W extends Wirelet> Optional<W> wirelet(Class<W> type) {
         return configuration().assemblyWirelet(type);
-    }
-
-    protected final <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
     }
 }
 //

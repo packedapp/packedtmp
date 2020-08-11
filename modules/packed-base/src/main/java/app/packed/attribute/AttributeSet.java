@@ -40,8 +40,6 @@ import packed.internal.attribute.EmptyAttributeSet;
 //attributes.ifPresent(ServiceExtension.CONTAINS, e->sysout("number of foo " + e);
 public interface AttributeSet {
 
-    AttributeSet EMPTY = EmptyAttributeSet.EMPTY;
-
     /**
      * Returns a set of all the attributes that are present in this set.
      * 
@@ -62,8 +60,6 @@ public interface AttributeSet {
     // If the attribute has a default value this will be returned???
     <T> T get(Attribute<T> attribute);
 
-    boolean isEmpty();
-
     /**
      * If an attribute is present, performs the given action with the value of the attribute, otherwise does nothing.
      *
@@ -74,8 +70,18 @@ public interface AttributeSet {
 
     <T> void ifPresentOrElse(Attribute<T> attribute, Consumer<? super T> action, Runnable emptyAction);
 
+    boolean isEmpty();
+
     <T> T orElse(Attribute<T> attribute, T other);
 
+    /**
+     * Returns an empty unmodifiable attribute set.
+     *
+     * @return an empty {@code AtttributeSet}
+     */
+    static AttributeSet of() {
+        return EmptyAttributeSet.EMPTY;
+    }
 }
 
 // AttributeSet open(Lookup lookup);

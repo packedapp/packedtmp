@@ -277,7 +277,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
 
     // Flyt til AbstractComponentConfiguration????? Saa det er interfacet der styrer?
     public <T> SingletonConfiguration<T> install(Class<T> implementation) {
-        requireNonNull(implementation, "implementation is null");
         return install(Factory.find(implementation));
     }
 
@@ -507,28 +506,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         return new PackedContainerConfigurationContext(cs, output, source, wirelets);
     }
 }
-///**
-//* Creates a new layer.
-//* 
-//* @param name
-//*            the name of layer
-//* @param dependencies
-//*            dependencies on other layers
-//* @return the new layer
-//*/
-//
-//private HashMap<String, PackedContainerLayer> layers;
-//public ContainerLayer newLayer(String name, ContainerLayer... dependencies) {
-// HashMap<String, PackedContainerLayer> l = layers;
-// if (l == null) {
-//     l = layers = new HashMap<>();
-// }
-// PackedContainerLayer newLayer = new PackedContainerLayer(this, name, dependencies);
-// if (l.putIfAbsent(name, newLayer) != null) {
-//     throw new IllegalArgumentException("A layer with the name '" + name + "' has already been added");
-// }
-// return newLayer;
-//}
 
 // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
 // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite

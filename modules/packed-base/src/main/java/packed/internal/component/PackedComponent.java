@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import app.packed.attribute.AttributeSet;
 import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.component.ComponentPath;
@@ -85,6 +86,12 @@ public class PackedComponent implements Component {
 
         // Last but least, initialize all children...
         this.children = context.initializeChildren(this, ic);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public AttributeSet attributes() {
+        return AttributeSet.of();
     }
 
     /** {@inheritDoc} */

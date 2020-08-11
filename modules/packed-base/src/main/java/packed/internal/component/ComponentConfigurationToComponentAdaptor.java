@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import app.packed.attribute.AttributeSet;
 import app.packed.component.Component;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRelation;
@@ -53,6 +54,12 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
     private ComponentConfigurationToComponentAdaptor(PackedComponentConfigurationContext componentConfiguration, List<PackedGuestConfigurationContext> pgc) {
         this.componentConfiguration = requireNonNull(componentConfiguration);
         this.pgc = pgc;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public AttributeSet attributes() {
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -129,12 +136,24 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
 
     /** {@inheritDoc} */
     @Override
+    public Optional<Component> parent() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public final ComponentPath path() {
         ComponentPath cp = componentConfiguration.path();
         for (PackedGuestConfigurationContext p : pgc) {
             cp = p.path().add(cp);
         }
         return cp;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentRelation relationTo(Component other) {
+        return null;
     }
 
     /** {@inheritDoc} */
@@ -173,17 +192,4 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
             return new ComponentConfigurationToComponentAdaptor(bcc, pgc);
         }
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public Optional<Component> parent() {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentRelation relationTo(Component other) {
-        return null;
-    }
-
 }
