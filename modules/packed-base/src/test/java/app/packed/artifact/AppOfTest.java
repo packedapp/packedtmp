@@ -41,7 +41,6 @@ public class AppOfTest {
         });
 
         assertThat(app).isNotNull();
-        assertThat(app.description()).isEmpty();
         assertThat(app.name()).isNotNull();
         assertThat(app.configSite()).isNotNull();
         assertThat(app.stream()).size().isEqualTo(1);

@@ -15,7 +15,6 @@
  */
 package app.packed.artifact;
 
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import app.packed.base.Key;
@@ -25,7 +24,6 @@ import app.packed.component.ComponentStream;
 import app.packed.component.ComponentStream.Option;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerBundle;
 import app.packed.lifecycleold.LifecycleOperations;
 import app.packed.lifecycleold.RunState;
 import app.packed.lifecycleold.StopOption;
@@ -56,17 +54,6 @@ public interface App extends AutoCloseable {
      * @return the configuration site of this application
      */
     ConfigSite configSite();
-
-    /**
-     * Returns the description of this application. Or an empty optional if no description has been set.
-     * <p>
-     * The returned description is always identical to the description of the application's root container.
-     *
-     * @return the description of this application
-     *
-     * @see ContainerBundle#setDescription(String)
-     */
-    Optional<String> description();
 
     /**
      * Returns the name of this application.
@@ -253,6 +240,17 @@ public interface App extends AutoCloseable {
 //        return ArtifactDriver.start(PackedApp.class, source, wirelets);
 //    }
 }
+
+///**
+// * Returns the description of this application. Or an empty optional if no description has been set.
+// * <p>
+// * The returned description is always identical to the description of the application's root container.
+// *
+// * @return the description of this application
+// *
+// * @see ContainerBundle#setDescription(String)
+// */
+//Optional<String> description();
 
 ///**
 //* Initiates an asynchronously startup of the application. Normally, there is no need to call this methods since most

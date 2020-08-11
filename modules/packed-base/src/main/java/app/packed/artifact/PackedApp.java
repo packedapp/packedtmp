@@ -3,7 +3,6 @@ package app.packed.artifact;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import app.packed.base.Key;
@@ -38,12 +37,6 @@ final class PackedApp implements App {
     @Override
     public ConfigSite configSite() {
         return context.configSite();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Optional<String> description() {
-        return context.description();
     }
 
     /** {@inheritDoc} */

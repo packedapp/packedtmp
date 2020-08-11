@@ -68,7 +68,7 @@ public final class PackedContainer extends PackedComponent {
     }
 
     /** Used to expose a container as an ArtifactContext. */
-    public static final class PackedArtifactContext implements ArtifactContext, Component {
+    public static final class PackedArtifactContext implements ArtifactContext {
 
         private final PackedContainer container;
 
@@ -76,8 +76,6 @@ public final class PackedContainer extends PackedComponent {
             this.container = requireNonNull(container);
         }
 
-        /** {@inheritDoc} */
-        @Override
         public Collection<Component> children() {
             return container.children();
         }
@@ -88,16 +86,8 @@ public final class PackedContainer extends PackedComponent {
             return container.configSite();
         }
 
-        /** {@inheritDoc} */
-        @Override
         public int depth() {
             return container.depth();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Optional<String> description() {
-            return container.description();
         }
 
         /** {@inheritDoc} */
@@ -112,8 +102,6 @@ public final class PackedContainer extends PackedComponent {
             return container.name();
         }
 
-        /** {@inheritDoc} */
-        @Override
         public Optional<Component> parent() {
             return container.parent();
         }
@@ -154,8 +142,6 @@ public final class PackedContainer extends PackedComponent {
             return container.useComponent(path);
         }
 
-        /** {@inheritDoc} */
-        @Override
         public ComponentRelation relationTo(Component other) {
             return container.relationTo(other);
         }

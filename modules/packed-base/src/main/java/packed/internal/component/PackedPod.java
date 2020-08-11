@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * All strongly connected components relate to the same pod.
  */
+// Skal jo godt nok vaere lille for Actors...
 public final class PackedPod {
 
     PackedPod parent; // Vi kan vel bare smide den i instances...

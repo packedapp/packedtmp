@@ -32,10 +32,20 @@ import app.packed.container.Extension;
 
 // Driver + Bundle + X... Skal gaa igen imellem images...
 // Faktisk er navnet vel ogsaa her????? Nah ikke for rod images containere...
+
+// Ved intet om specifikke boern eller parents...
+//Det maa ogsaa betyde at den ikke ved noget om pods...
+
+// Naar man instantiere et image, for alt andet end roden (heller ikke roden taenker jeg)
+// Skal man kunne smide RCM med over i.
 public final class RuntimeComponentModel {
 
     /** The configuration site of the component. */
     final ConfigSite configSite;
+
+    /** The depth of the component in a tree of components. */
+    // Depth kan have 8 bit-> full depth, 8 bit, container depth, 8 bit artifact depth.
+    final int depth;
 
     /** The description of this component (optional). */
     @Nullable
@@ -51,16 +61,12 @@ public final class RuntimeComponentModel {
         this.extension = context.extension();
     }
 
-    /** The depth of the component in a tree of components. */
-    // Depth kan have 8 bit-> full depth, 8 bit, container depth, 8 bit artifact depth.
-    final int depth;
+    public Optional<Class<? extends Extension>> extension() {
+        return extension;
+    }
 
     static RuntimeComponentModel of(ComponentDriver<?> driver, PackedComponentConfigurationContext context) {
         return new RuntimeComponentModel(context);
-    }
-
-    public Optional<Class<? extends Extension>> extension() {
-        return extension;
     }
 
 }

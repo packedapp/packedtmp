@@ -25,7 +25,7 @@ import app.packed.component.ComponentRelation;
 /**
  *
  */
-public class SamePodComponentRelation implements ComponentRelation {
+public final class PackedComponentRelation implements ComponentRelation {
 
     private final int distance;
 
@@ -35,7 +35,7 @@ public class SamePodComponentRelation implements ComponentRelation {
 
     private final PackedComponent to;
 
-    public SamePodComponentRelation(PackedComponent from, PackedComponent to, int distance, PackedComponent lcd) {
+    public PackedComponentRelation(PackedComponent from, PackedComponent to, int distance, PackedComponent lcd) {
         this.from = from;
         this.to = to;
         this.distance = distance;
@@ -117,12 +117,16 @@ public class SamePodComponentRelation implements ComponentRelation {
         return to;
     }
 
-    public static ComponentRelation relation(PackedComponent from, PackedComponent to) {
+    public static ComponentRelation find(PackedComponent from, Component to) {
+        return relation(from, (PackedComponent) to);
+    }
+
+    private static ComponentRelation relation(PackedComponent from, PackedComponent to) {
         int fd = from.depth();
         int td = to.depth();
         if (from.pod == to.pod) {
             if (fd == td) {
-                return new SamePodComponentRelation(from, to, 0, from);
+                return new PackedComponentRelation(from, to, 0, from);
             }
 
             PackedComponent f = from;
@@ -136,7 +140,7 @@ public class SamePodComponentRelation implements ComponentRelation {
                     distance++;
                 }
                 if (f == to) {
-                    return new SamePodComponentRelation(from, to, distance, to);
+                    return new PackedComponentRelation(from, to, distance, to);
                 }
             } else {
                 while (td > fd) {
@@ -145,7 +149,7 @@ public class SamePodComponentRelation implements ComponentRelation {
                     distance++;
                 }
                 if (t == from) {
-                    return new SamePodComponentRelation(from, to, distance, from);
+                    return new PackedComponentRelation(from, to, distance, from);
                 }
             }
             while (f != t) {
@@ -153,7 +157,7 @@ public class SamePodComponentRelation implements ComponentRelation {
                 t = t.parent;
                 distance += 2;
             }
-            return new SamePodComponentRelation(from, to, distance, f);
+            return new PackedComponentRelation(from, to, distance, f);
         }
         throw new UnsupportedOperationException();
     }

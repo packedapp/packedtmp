@@ -140,11 +140,10 @@ public abstract class ComponentBundle<T extends ComponentConfiguration> extends 
     }
 
     protected final void xLink(Bundle<?> bundle, Wirelet... wirelets) {
-        ContainerConfiguration cc = xWire(ContainerConfiguration.driver(), Wirelet.name("HejHej"));
-        cc.install(String.class);
+        configuration().link(bundle, wirelets);
     }
 
     protected final <C extends ComponentConfiguration> C xWire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
+        return configuration().wire(driver, wirelets);
     }
 }

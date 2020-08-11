@@ -40,15 +40,17 @@ public interface SystemX {
 
     ComponentStream stream(ComponentStream.Option... options);
 
-    // Returns et configurations system... ikke et running system.
-    static SystemX of(Bundle<?> b) {
-        throw new UnsupportedOperationException();
-    }
-
     public static void main(Component c) {
         String s = c.attributes().get(Attribute.DESCRIPTION);
 
+        c.attributes().ifPresent(Attribute.DESCRIPTION, e -> System.out.println(e));
+
         System.out.println(s);
+    }
+
+    // Returns et configurations system... ikke et running system.
+    static SystemX of(Bundle<?> b) {
+        throw new UnsupportedOperationException();
     }
 
     // Option? Ways to construct a system. snapshot()

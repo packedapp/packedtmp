@@ -34,4 +34,6 @@ import app.packed.component.Wirelet;
  * @apiNote In the future, if the Java language permits, {@link ArtifactSource} may become a {@code sealed} interface,
  *          which would prohibit subclassing except by explicitly permitted types.
  */
+
+// An artifact is an object that can be used to access a system or part of it, from outside of the system.
 public interface ArtifactSource {}

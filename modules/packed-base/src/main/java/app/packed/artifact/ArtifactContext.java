@@ -15,7 +15,6 @@
  */
 package app.packed.artifact;
 
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import app.packed.base.Key;
@@ -53,8 +52,6 @@ public interface ArtifactContext {
     default ConfigSite configSite() {
         return top().configSite();
     }
-
-    Optional<String> description();
 
     /**
      * Returns a set of all the extension that are available to the top component. If the top component is a container it is

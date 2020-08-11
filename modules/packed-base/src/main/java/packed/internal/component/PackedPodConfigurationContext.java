@@ -22,7 +22,9 @@ public final class PackedPodConfigurationContext {
 
     // int componentIndex...
 
-    PackedPod pod = new PackedPod();
+    int index;
+
+    private PackedPod pod = new PackedPod();
 
     PackedPod pod() {
         return pod;

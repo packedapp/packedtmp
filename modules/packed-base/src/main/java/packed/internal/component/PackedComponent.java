@@ -193,7 +193,7 @@ public class PackedComponent implements Component {
     /** {@inheritDoc} */
     @Override
     public final ComponentRelation relationTo(Component other) {
-        return SamePodComponentRelation.relation(this, (PackedComponent) other);
+        return PackedComponentRelation.find(this, other);
     }
 
     /** {@inheritDoc} */

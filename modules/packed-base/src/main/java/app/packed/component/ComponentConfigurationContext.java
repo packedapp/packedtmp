@@ -69,6 +69,17 @@ public interface ComponentConfigurationContext {
     String getName();
 
     /**
+     * @param bundle
+     * @param wirelets
+     * 
+     * @apiNote Previously this method returned the specified bundle. However, to encourage people to configure the bundle
+     *          before calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have
+     *          void return type.
+     */
+    // Why not just wire... or maybe link and linklist
+    void link(Bundle<?> bundle, Wirelet... wirelets);
+
+    /**
      * Returns the full path of the component.
      * <p>
      * Once this method has been invoked, the name of the component can no longer be changed via {@link #setName(String)}.
@@ -122,8 +133,6 @@ public interface ComponentConfigurationContext {
      * @return a configuration for the component
      */
     <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
-
-    void link(Bundle<?> bundle, Wirelet... wirelets);
 }
 
 ///**
