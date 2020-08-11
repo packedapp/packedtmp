@@ -56,7 +56,7 @@ public class PackedComponent implements Component {
 
     final ReentrantLock lock = new ReentrantLock();
 
-    final packed.internal.component.ComponentRuntimeDescriptor model;
+    final ComponentRuntimeDescriptor model;
 
     final PackedPod pod = new PackedPod();
 

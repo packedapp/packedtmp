@@ -78,8 +78,6 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
     @Nullable
     protected String description;
 
-    final ComponentRuntimeDescriptor descriptor;
-
     public final PackedComponentDriver<?> driver;
 
     /** Any extension this component belongs to. */
@@ -106,10 +104,8 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
      * @param output
      *            the output of the build process
      */
-    protected PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ComponentRuntimeDescriptor descriptor, ConfigSite configSite,
-            AssembleOutput output) {
+    protected PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ConfigSite configSite, AssembleOutput output) {
         this.driver = requireNonNull(driver);
-        this.descriptor = requireNonNull(descriptor);
         this.configSite = requireNonNull(configSite);
 
         this.parent = null;
@@ -128,10 +124,8 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
      * @param parent
      *            the parent of the component
      */
-    protected PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ComponentRuntimeDescriptor descriptor, ConfigSite configSite,
-            PackedComponentConfigurationContext parent) {
+    protected PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ConfigSite configSite, PackedComponentConfigurationContext parent) {
         this.driver = requireNonNull(driver);
-        this.descriptor = requireNonNull(descriptor);
         this.configSite = requireNonNull(configSite);
 
         this.parent = requireNonNull(parent);
@@ -142,10 +136,9 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
         this.artifact = parent.artifact;
     }
 
-    protected PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ComponentRuntimeDescriptor descriptor, ConfigSite configSite,
-            PackedHostConfigurationContext parent, PackedContainerConfigurationContext pcc, AssembleOutput output) {
+    protected PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ConfigSite configSite, PackedHostConfigurationContext parent,
+            PackedContainerConfigurationContext pcc, AssembleOutput output) {
         this.driver = requireNonNull(driver);
-        this.descriptor = requireNonNull(descriptor);
         this.configSite = requireNonNull(configSite);
 
         this.parent = requireNonNull(parent);

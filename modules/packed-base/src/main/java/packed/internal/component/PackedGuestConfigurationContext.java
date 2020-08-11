@@ -34,7 +34,7 @@ public class PackedGuestConfigurationContext extends PackedComponentConfiguratio
     public final PackedContainerConfigurationContext delegate;
 
     PackedGuestConfigurationContext(PackedHostConfigurationContext host, PackedContainerConfigurationContext pcc, ArtifactImage image) {
-        super(PackedComponentDriver.defaultComp(), ComponentRuntimeDescriptor.STATELESS, pcc.configSite(), host, pcc, AssembleOutput.image());
+        super(PackedComponentDriver.defaultComp(), pcc.configSite(), host, pcc, AssembleOutput.image());
         this.delegate = requireNonNull(pcc);
         this.description = pcc.getDescription();
     }

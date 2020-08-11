@@ -15,7 +15,14 @@
  */
 package packed.internal.component;
 
+import static java.util.Objects.requireNonNull;
+
+import java.util.Optional;
+
+import app.packed.base.Nullable;
 import app.packed.component.ComponentDriver;
+import app.packed.config.ConfigSite;
+import app.packed.container.Extension;
 
 /**
  * The different types of components that are supported in Packed.
@@ -31,11 +38,6 @@ public final class ComponentRuntimeDescriptor {
     // All Other methods are ignored...
     // Also Annotations et
 //    public static final ComponentDescriptor FUNCTION = new ComponentDescriptor();
-
-    public static final ComponentRuntimeDescriptor COMPONENT_INSTANCE = new ComponentRuntimeDescriptor(3);
-
-    /** A container holds other components and provide strong boundaries between different containers. */
-    public static final ComponentRuntimeDescriptor CONTAINER = new ComponentRuntimeDescriptor(2);
 //
 //    /**
 //     * A host allows for dynamic wiring between a host and a guest container. Unlike the static wiring available via, for
@@ -43,10 +45,21 @@ public final class ComponentRuntimeDescriptor {
 //     */
 //    HOST,
 
-    public static final ComponentRuntimeDescriptor STATELESS = new ComponentRuntimeDescriptor(1);
+    /** The configuration site of the component. */
+    final ConfigSite configSite;
 
-    ComponentRuntimeDescriptor(int depth) {
-        this.depth = depth;
+    /** The description of this component (optional). */
+    @Nullable
+    private final String description;
+
+    /** Any extension the component belongs to. */ // Generic Extension Table?
+    final Optional<Class<? extends Extension>> extension;
+
+    ComponentRuntimeDescriptor(PackedComponentConfigurationContext context) {
+        this.depth = context.depth();
+        this.configSite = requireNonNull(context.configSite());
+        this.description = context.getDescription();
+        this.extension = context.extension();
     }
 
     /** The depth of the component in a tree of components. */
@@ -54,7 +67,7 @@ public final class ComponentRuntimeDescriptor {
     final int depth;
 
     static ComponentRuntimeDescriptor of(ComponentDriver<?> driver, PackedComponentConfigurationContext context) {
-        return new ComponentRuntimeDescriptor(context.depth());
+        return new ComponentRuntimeDescriptor(context);
     }
 
 }

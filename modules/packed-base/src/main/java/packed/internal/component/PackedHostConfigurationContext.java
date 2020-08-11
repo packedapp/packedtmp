@@ -35,7 +35,7 @@ public final class PackedHostConfigurationContext extends PackedComponentConfigu
      * @param parent
      */
     public PackedHostConfigurationContext(ConfigSite configSite, PackedComponentConfigurationContext parent) {
-        super(PackedComponentDriver.defaultComp(), ComponentRuntimeDescriptor.COMPONENT_INSTANCE, configSite, parent);
+        super(PackedComponentDriver.defaultComp(), configSite, parent);
     }
 
     public void deploy(ArtifactSource source, ArtifactDriver<?> driver, Wirelet... wirelets) {

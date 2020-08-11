@@ -45,7 +45,6 @@ import app.packed.service.ServiceExtension;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.component.BundleConfiguration;
-import packed.internal.component.ComponentRuntimeDescriptor;
 import packed.internal.component.ComponentModel;
 import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedComponentConfigurationContext;
@@ -123,7 +122,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
      *            any wirelets specified by the user
      */
     private PackedContainerConfigurationContext(ConfigSite cs, AssembleOutput output, Object source, Wirelet... wirelets) {
-        super(ContainerComponentDriver.INSTANCE, ComponentRuntimeDescriptor.CONTAINER, cs, output);
+        super(ContainerComponentDriver.INSTANCE, cs, output);
         this.source = requireNonNull(source);
         this.lookup = this.model = ContainerModel.of(source.getClass());
         this.wireletContext = WireletPack.fromRoot(this, wirelets);
@@ -141,7 +140,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
      */
     public PackedContainerConfigurationContext(PackedComponentDriver<?> driver, PackedComponentConfigurationContext parent, Bundle<?> bundle,
             Wirelet... wirelets) {
-        super(driver, ComponentRuntimeDescriptor.CONTAINER, ConfigSiteSupport.captureStackFrame(parent.configSite(), ConfigSiteInjectOperations.INJECTOR_OF), parent);
+        super(driver, ConfigSiteSupport.captureStackFrame(parent.configSite(), ConfigSiteInjectOperations.INJECTOR_OF), parent);
         this.source = requireNonNull(bundle, "bundle is null");
         this.lookup = this.model = ContainerModel.of(bundle.getClass());
         this.wireletContext = WireletPack.fromLink(this, wirelets);
