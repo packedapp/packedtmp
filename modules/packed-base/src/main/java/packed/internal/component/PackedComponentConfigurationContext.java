@@ -267,8 +267,8 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
         return (PackedContainerConfigurationContext) c;
     }
 
-    public final ComponentRuntimeDescriptor descritor() {
-        return ComponentRuntimeDescriptor.of(driver, this);
+    public final RuntimeComponentModel descritor() {
+        return RuntimeComponentModel.of(driver, this);
     }
 
     public final Optional<Class<? extends Extension>> extension() {

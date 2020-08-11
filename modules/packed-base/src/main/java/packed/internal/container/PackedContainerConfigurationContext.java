@@ -530,32 +530,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
 // return newLayer;
 //}
 
-//private HostConfigurationContext addHost() {
-//  ConfigSite configSite = captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL);
-//  PackedHostConfiguration conf = new PackedHostConfiguration(configSite, this);
-//  installPrepare(State.INSTALL_INVOKED);
-//  currentComponent = conf;
-//  return conf;
-//}
-//
-//public <T extends HostConfiguration> T addHost(Class<T> hostType) {
-//  OpenClass cp = new OpenClass(MethodHandles.lookup(), hostType, true);
-//
-//  InjectableFunction aa = InjectableFunction.of(hostType, HostConfigurationContext.class);
-//  aa.addKey(HostConfigurationContext.class, 0);
-//  MethodHandle mh = cp.findConstructor(aa);
-//  try {
-//      return (T) mh.invoke(addHost());
-//  } catch (Throwable e) {
-//      throw new RuntimeException(e);
-//  }
-//}
-
-//@Override
-//public <A, H, C> C addHost(OldHostDriver<A, H, C> driver) {
-//  return null;
-//}
-
 // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
 // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
 // loop situations, for example, if a bundle recursively links itself which fails by throwing

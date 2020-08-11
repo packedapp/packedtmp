@@ -105,7 +105,7 @@ public final class PackedComponentStreamOption implements ComponentStream.Option
     }
 
     public boolean processThisDeeper(PackedComponent origin, PackedComponent actual) {
-        Class<? extends Extension> extensionType = actual.extension().orElse(null);
+        Class<? extends Extension> extensionType = actual.model.extension().orElse(null);
         // if (s==0) return;
         // TODO just changed includeExtensions == null || !includeExtensions.contains(extensionType))) to &&, dobbel check
         // Also in next method

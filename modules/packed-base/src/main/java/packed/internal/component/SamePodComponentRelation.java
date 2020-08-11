@@ -116,4 +116,45 @@ public class SamePodComponentRelation implements ComponentRelation {
     public Component to() {
         return to;
     }
+
+    public static ComponentRelation relation(PackedComponent from, PackedComponent to) {
+        int fd = from.depth();
+        int td = to.depth();
+        if (from.pod == to.pod) {
+            if (fd == td) {
+                return new SamePodComponentRelation(from, to, 0, from);
+            }
+
+            PackedComponent f = from;
+            PackedComponent t = to;
+            int distance = 0;
+
+            if (fd > td) {
+                while (fd > td) {
+                    f = f.parent;
+                    fd--;
+                    distance++;
+                }
+                if (f == to) {
+                    return new SamePodComponentRelation(from, to, distance, to);
+                }
+            } else {
+                while (td > fd) {
+                    t = t.parent;
+                    td--;
+                    distance++;
+                }
+                if (t == from) {
+                    return new SamePodComponentRelation(from, to, distance, from);
+                }
+            }
+            while (f != t) {
+                f = f.parent;
+                t = t.parent;
+                distance += 2;
+            }
+            return new SamePodComponentRelation(from, to, distance, f);
+        }
+        throw new UnsupportedOperationException();
+    }
 }

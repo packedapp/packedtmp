@@ -31,7 +31,6 @@ import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.component.ComponentStream.Option;
 import app.packed.config.ConfigSite;
-import app.packed.container.Extension;
 import app.packed.lifecycleold.StopOption;
 import app.packed.service.Injector;
 import packed.internal.artifact.PackedInstantiationContext;
@@ -99,10 +98,6 @@ public final class PackedContainer extends PackedComponent {
         @Override
         public Optional<String> description() {
             return container.description();
-        }
-
-        public Optional<Class<? extends Extension>> extension() {
-            return container.extension();
         }
 
         /** {@inheritDoc} */

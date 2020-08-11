@@ -31,19 +31,19 @@ import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
-import app.packed.container.Extension;
 import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.container.ComponentWirelet.ComponentNameWirelet;
 import packed.internal.container.PackedContainer;
 
-/** An abstract base implementation of {@link Component}. */
+/** An default implementation of {@link Component}. */
 public class PackedComponent implements Component {
 
     /** Any child components this component might have. Is null if we know the component will never have any children. */
     @Nullable
     public final Map<String, PackedComponent> children;
 
-    final ComponentRuntimeDescriptor model; // shared among images
+    /** The runtime model of the component. */
+    final RuntimeComponentModel model;
 
     /** The name of the component. The name is guaranteed to be unique between siblings. */
     final String name;
@@ -52,8 +52,8 @@ public class PackedComponent implements Component {
     @Nullable
     final PackedComponent parent;
 
-    /** A pod contains shared information for all components that are strongly connected. */
-    final PackedPod pod; // Shared among strongly connected components.
+    /** The pod the component is a part of, components that are strongly connected are all in the same pod. */
+    final PackedPod pod;
 
     /**
      * Creates a new abstract component.
@@ -116,10 +116,6 @@ public class PackedComponent implements Component {
         return Optional.ofNullable(model.description);
     }
 
-    public Optional<Class<? extends Extension>> extension() {
-        return model.extension;
-    }
-
     public final Component findComponent(CharSequence path) {
         return findComponent(path.toString());
     }
@@ -172,6 +168,10 @@ public class PackedComponent implements Component {
         return (PackedContainer) c;
     }
 
+    public RuntimeComponentModel model() {
+        return model;
+    }
+
     /** {@inheritDoc} */
     @Override
     public final String name() {
@@ -180,7 +180,7 @@ public class PackedComponent implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public Optional<Component> parent() {
+    public final Optional<Component> parent() {
         return Optional.ofNullable(parent);
     }
 
@@ -192,8 +192,8 @@ public class PackedComponent implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public ComponentRelation relationTo(Component other) {
-        throw new UnsupportedOperationException();
+    public final ComponentRelation relationTo(Component other) {
+        return SamePodComponentRelation.relation(this, (PackedComponent) other);
     }
 
     /** {@inheritDoc} */

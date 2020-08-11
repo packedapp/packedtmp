@@ -24,6 +24,9 @@ import app.packed.container.InternalExtensionException;
 /**
  *
  */
+
+// Tror faktisk ikke der er nogen grund til at SubExtension.. kender 
+// selve extensionen...
 public final class SubtensionModel {
 
     private final ExtensionModel extension;

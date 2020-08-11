@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package zamples;
 
 import app.packed.artifact.App;
 import app.packed.container.BaseBundle;

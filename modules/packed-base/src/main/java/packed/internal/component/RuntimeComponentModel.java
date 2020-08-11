@@ -32,7 +32,7 @@ import app.packed.container.Extension;
 
 // Driver + Bundle + X... Skal gaa igen imellem images...
 // Faktisk er navnet vel ogsaa her????? Nah ikke for rod images containere...
-public final class ComponentRuntimeDescriptor {
+public final class RuntimeComponentModel {
 
     /** The configuration site of the component. */
     final ConfigSite configSite;
@@ -44,7 +44,7 @@ public final class ComponentRuntimeDescriptor {
     /** Any extension the component belongs to. */ // Generic Extension Table?
     final Optional<Class<? extends Extension>> extension;
 
-    ComponentRuntimeDescriptor(PackedComponentConfigurationContext context) {
+    RuntimeComponentModel(PackedComponentConfigurationContext context) {
         this.depth = context.depth;
         this.configSite = requireNonNull(context.configSite());
         this.description = context.getDescription();
@@ -55,8 +55,12 @@ public final class ComponentRuntimeDescriptor {
     // Depth kan have 8 bit-> full depth, 8 bit, container depth, 8 bit artifact depth.
     final int depth;
 
-    static ComponentRuntimeDescriptor of(ComponentDriver<?> driver, PackedComponentConfigurationContext context) {
-        return new ComponentRuntimeDescriptor(context);
+    static RuntimeComponentModel of(ComponentDriver<?> driver, PackedComponentConfigurationContext context) {
+        return new RuntimeComponentModel(context);
+    }
+
+    public Optional<Class<? extends Extension>> extension() {
+        return extension;
     }
 
 }
