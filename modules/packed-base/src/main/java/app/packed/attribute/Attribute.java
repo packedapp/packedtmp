@@ -19,8 +19,11 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.util.Optional;
+import java.util.function.Function;
 
 import app.packed.base.TypeLiteral;
+import app.packed.component.ComponentStream;
 import packed.internal.attribute.PackedAttribute;
 
 /**
@@ -30,7 +33,11 @@ import packed.internal.attribute.PackedAttribute;
  * @param <T>
  *            the type of value this attribute maps to
  */
+// Nej syntes ikke vi gider have meta annotationer....
 public interface Attribute<T> /* extends AttributeHolder */ {
+
+    static final Attribute<ComponentStream> CS = Attribute.of(MethodHandles.lookup(), "description", ComponentStream.class,
+            Option.renderAs(cs -> "" + cs.count()));
 
     static final Attribute<String> DESCRIPTION = Attribute.of(MethodHandles.lookup(), "description", String.class, Option.open());
 
@@ -46,12 +53,29 @@ public interface Attribute<T> /* extends AttributeHolder */ {
      */
     Class<?> declaredBy();
 
+    default Optional<T> defaultValue() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Display the name of this attribute as.
      * 
      * @return display the name of this attribute as
      */
     String displayAs();
+
+    /**
+     * Returns whether or not the attribute is hidden. Attributes whose name start with <code>.<.code> are automatically
+     * hidden.
+     * <p>
+     * Hidden attributes will never show in {@link AttributeSet#attributes()} or {@link AttributeSet#entrySet()},
+     * {@link AttributeSet#isEmpty()}. All other methods work as normal.
+     * 
+     * @return whether or not the attribute is hidden.
+     */
+    default boolean isHidden() {
+        return name().startsWith(".");
+    }
 
     /**
      * Returns the module the attribute belongs to. The module is always the module in which the {@link #declaredBy()} is
@@ -99,47 +123,35 @@ public interface Attribute<T> /* extends AttributeHolder */ {
      *            any options used for constructing the attribute
      * @return the new attribute
      */
-    static <T> Attribute<T> of(Lookup lookup, String name, Class<T> type, Option... options) {
+    @SafeVarargs
+    static <T> Attribute<T> of(Lookup lookup, String name, Class<T> type, Option<T>... options) {
         requireNonNull(type, "type is null");
         return of(lookup, name, TypeLiteral.of(type), options);
     }
 
-    static <T> Attribute<T> of(Lookup lookup, String name, TypeLiteral<T> type, Option... options) {
+    @SafeVarargs
+    static <T> Attribute<T> of(Lookup lookup, String name, TypeLiteral<T> type, Option<T>... options) {
         requireNonNull(type, "type is null");
         return PackedAttribute.of(lookup, name, type.rawType(), type, options);
     }
 
     /** Various options that can be specified when creating new attributes. */
-    interface Option {
+    static interface Option<T> {
         // Supportere ikke Nullable. Saa mangler attributen bare..
         // Tror ikke vi behoever denne... vi soerger for de steder vi har brug det at der ikke kan registreres ting for sent...
 
-        static Option description(String description) {
+        //// Hmm IDK.. Optional<T> Attribute.defaultValue();
+        static <T> Option<T> defaultValue(T value) {
             throw new UnsupportedOperationException();
         }
 
-        //// Hmm IDK
-        static Option defaultValue(Object value) {
+        // Adds a description of the attribute...
+        // What about I18N
+        static <T> Option<T> description(String description) {
             throw new UnsupportedOperationException();
         }
 
-        /**
-         * An attribute can be hidden. Meaning it will not show up in {@link AttributeSet#attributes()} or
-         * {@link AttributeSet#entrySet()}. Otherwise it will function as any other attribute. For example, it can still be
-         * provided via {@link AttributeProvide}.
-         * <p>
-         * Can still not provide values unless it is open...
-         * 
-         * @return a hidden option
-         */
-        static Option hidden() {
-            // Should we require that hidden options always starts with .
-            // maybe attributes that starts with . are always hidden....
-            // SO maybe we do not need this option...
-            throw new UnsupportedOperationException();
-        }
-
-        static Option mutable() {
+        static <T> Option<T> mutable() {
             throw new UnsupportedOperationException();
         }
         // Syntes virkelig ikke vi skal supportere Nullable.
@@ -148,8 +160,13 @@ public interface Attribute<T> /* extends AttributeHolder */ {
 
         // open() openModule();
         // openModule() open to all in same module...
-        static Option open() {
+        static <T> Option<T> open() {
             return null;
+        }
+
+        // if (injectionGraph.size>2 ? : 333);
+        static <T> Option<T> renderAs(Function<T, String> toString) {
+            throw new UnsupportedOperationException();
         }
 
 //        static Option permanent() {
@@ -157,7 +174,23 @@ public interface Attribute<T> /* extends AttributeHolder */ {
 //        }
     }
 }
-
+//
+///**
+// * An attribute can be hidden. Meaning it will not show up in {@link AttributeSet#attributes()} or
+// * {@link AttributeSet#entrySet()}. Otherwise it will function as any other attribute. For example, it can still be
+// * provided via {@link AttributeProvide}.
+// * <p>
+// * Can still not provide values unless it is open...
+// * 
+// * @return a hidden option
+// */
+//// .XXX -> hidden attribute
+//static <T> Option<T> hidden() {
+//    // Should we require that hidden options always starts with .
+//    // maybe attributes that starts with . are always hidden....
+//    // SO maybe we do not need this option...
+//    throw new UnsupportedOperationException();
+//}
 // shortname
 // DependsOn
 

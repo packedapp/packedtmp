@@ -73,7 +73,7 @@ public class PackedAttribute<T> implements Attribute<T> {
         return typeLiteral;
     }
 
-    public static <T> Attribute<T> of(Lookup lookup, String name, Class<?> rawType, TypeLiteral<T> type, Option[] options) {
+    public static <T> Attribute<T> of(Lookup lookup, String name, Class<?> rawType, TypeLiteral<T> type, Option<?>[] options) {
         requireNonNull(lookup, "lookup is null");
         requireNonNull(name, "name is null");
         requireNonNull(type, "type is null");
@@ -83,7 +83,7 @@ public class PackedAttribute<T> implements Attribute<T> {
         }
         if (options.length > 0) {
             AttributeBuilder ab = new AttributeBuilder();
-            for (Option o : options) {
+            for (Option<?> o : options) {
                 ((PackedOption) o).process(ab);
             }
             // DoStuff
@@ -94,7 +94,7 @@ public class PackedAttribute<T> implements Attribute<T> {
         return pa;
     }
 
-    public static <T> Attribute<T> of(Lookup lookup, String name, TypeLiteral<T> type, Option[] options) {
+    public static <T> Attribute<T> of(Lookup lookup, String name, TypeLiteral<T> type, Option<?>[] options) {
         return of(lookup, name, type.rawType(), type, options);
     }
 
@@ -103,7 +103,7 @@ public class PackedAttribute<T> implements Attribute<T> {
     }
 
     // Ideen er at alle options extender denne
-    static abstract class PackedOption implements Attribute.Option {
+    static abstract class PackedOption implements Attribute.Option<Object> {
 
         abstract void process(AttributeBuilder builder);
     }
