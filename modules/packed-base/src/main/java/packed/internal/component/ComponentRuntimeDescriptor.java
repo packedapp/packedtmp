@@ -34,17 +34,6 @@ import app.packed.container.Extension;
 // Faktisk er navnet vel ogsaa her????? Nah ikke for rod images containere...
 public final class ComponentRuntimeDescriptor {
 
-    // A single Method...
-    // All Other methods are ignored...
-    // Also Annotations et
-//    public static final ComponentDescriptor FUNCTION = new ComponentDescriptor();
-//
-//    /**
-//     * A host allows for dynamic wiring between a host and a guest container. Unlike the static wiring available via, for
-//     * example, via {@link Bundle#link(Bundle, Wirelet...)}.
-//     */
-//    HOST,
-
     /** The configuration site of the component. */
     final ConfigSite configSite;
 

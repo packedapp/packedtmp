@@ -30,6 +30,10 @@ public final class PackedPod {
     // If non-root instances[0] always is the parent...
 
     ConcurrentHashMap<Integer, PackedPod>[] hosts;
+
+    PackedPod() {
+
+    }
 }
 
 /// GUESTS (

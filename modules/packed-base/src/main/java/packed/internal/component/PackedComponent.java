@@ -65,7 +65,7 @@ public class PackedComponent implements Component {
      */
     public PackedComponent(@Nullable PackedComponent parent, PackedComponentConfigurationContext context, PackedInstantiationContext ic) {
         this.parent = parent;
-        this.pod = context.pod();
+        this.pod = context.pod.pod();
         this.model = requireNonNull(context.descritor());
 
         // Initialize name

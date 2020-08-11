@@ -96,6 +96,8 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
     // Maaske er det en special GuestConfigurationAdaptor som er rod paa runtime.
     protected ComponentConfigurationState state = new ComponentConfigurationState();
 
+    final PackedPodConfigurationContext pod;
+
     /**
      * A special constructor for the top level container.
      * 
@@ -108,6 +110,7 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
         this.driver = requireNonNull(driver);
         this.configSite = requireNonNull(configSite);
 
+        this.pod = new PackedPodConfigurationContext();
         this.parent = null;
         this.container = null;
         this.depth = 0;
@@ -131,6 +134,7 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
         this.parent = requireNonNull(parent);
         this.container = parent instanceof PackedContainerConfigurationContext ? (PackedContainerConfigurationContext) parent : parent.container;
         this.depth = parent.depth + 1;
+        this.pod = parent.pod;
 
         this.extension = container.activeExtension;
         this.artifact = parent.artifact;
@@ -144,6 +148,7 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
         this.parent = requireNonNull(parent);
         this.container = null;
         this.depth = parent.depth + 1;
+        this.pod = ((PackedComponentConfigurationContext) parent).pod; // ??
 
         this.extension = null;
         this.artifact = new PackedAssembleContext(pcc, output);
@@ -360,10 +365,6 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
     public final ComponentPath path() {
         initializeName(State.PATH_INVOKED, null);
         return PackedComponentPath.of(this); // show we weak intern them????
-    }
-
-    public PackedPod pod() {
-        return new PackedPod();
     }
 
     /** {@inheritDoc} */
