@@ -39,9 +39,9 @@ import app.packed.container.Extension;
  * ComponentType??? Ja det er jo saadan hvad InstanceOf
  * 
  * <p>
- * This annotation cannot be used on subclasses of {@link ContainerBundle} as we want to avoid situations where some extensions
- * are added via class annotations and others via {@link ContainerBundle#configure()}. Giving the false impression to users that
- * only annotations added via this annotation is used
+ * This annotation cannot be used on subclasses of {@link ContainerBundle} as we want to avoid situations where some
+ * extensions are added via class annotations and others via {@link ContainerBundle#configure()}. Giving the false
+ * impression to users that only annotations added via this annotation is used
  */
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)

@@ -47,6 +47,8 @@ public abstract class SidecarModel extends Model {
     // Can 2 extensions define the same contract???? Don't think so
     // If not we could have a Contract.class->ContractFactory Map and a Contract.of(ContainerSource, Class<T extends
     // Contract>);
+    // Contract must use MemberOfExtension
+    // And not provide other constract
     protected final Map<Class<? extends Contract>, MethodHandle> contracts;
 
     /** Methods annotated with {@link Leaving}. Takes the sidecar instance */

@@ -13,24 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package packed.internal.component;
+
+import app.packed.component.ComponentDriver;
 
 /**
  * The different types of components that are supported in Packed.
  */
 
 // Til noedt kan vi kalde den BuildinComponentType
-public final class ComponentDescriptor {
+
+// Driver + Bundle + X... Skal gaa igen imellem images...
+// Faktisk er navnet vel ogsaa her????? Nah ikke for rod images containere...
+public final class ComponentRuntimeDescriptor {
 
     // A single Method...
     // All Other methods are ignored...
     // Also Annotations et
 //    public static final ComponentDescriptor FUNCTION = new ComponentDescriptor();
 
-    public static final ComponentDescriptor COMPONENT_INSTANCE = new ComponentDescriptor();
+    public static final ComponentRuntimeDescriptor COMPONENT_INSTANCE = new ComponentRuntimeDescriptor(3);
 
     /** A container holds other components and provide strong boundaries between different containers. */
-    public static final ComponentDescriptor CONTAINER = new ComponentDescriptor();
+    public static final ComponentRuntimeDescriptor CONTAINER = new ComponentRuntimeDescriptor(2);
 //
 //    /**
 //     * A host allows for dynamic wiring between a host and a guest container. Unlike the static wiring available via, for
@@ -38,13 +43,20 @@ public final class ComponentDescriptor {
 //     */
 //    HOST,
 
-    public static final ComponentDescriptor STATELESS = new ComponentDescriptor();
+    public static final ComponentRuntimeDescriptor STATELESS = new ComponentRuntimeDescriptor(1);
 
-    ComponentDescriptor() {}
-
-    public String initializeNameDefaultName(AbstractComponentConfiguration acc) {
-        return acc.initializeNameDefaultName();
+    ComponentRuntimeDescriptor(int depth) {
+        this.depth = depth;
     }
+
+    /** The depth of the component in a tree of components. */
+    // Depth kan have 8 bit-> full depth, 8 bit, container depth, 8 bit artifact depth.
+    final int depth;
+
+    static ComponentRuntimeDescriptor of(ComponentDriver<?> driver, PackedComponentConfigurationContext context) {
+        return new ComponentRuntimeDescriptor(context.depth());
+    }
+
 }
 
 //Sealed type....

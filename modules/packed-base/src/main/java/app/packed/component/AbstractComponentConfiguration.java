@@ -130,12 +130,6 @@ public abstract class AbstractComponentConfiguration implements ComponentConfigu
 
     /** {@inheritDoc} */
     @Override
-    public final Optional<Class<? extends Extension>> extension() {
-        return context.extension();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     @Nullable
     public final String getDescription() {
         return context.getDescription();
@@ -148,12 +142,6 @@ public abstract class AbstractComponentConfiguration implements ComponentConfigu
     }
 
     protected abstract String initializeNameDefaultName();
-
-    /** {@inheritDoc} */
-    @Override
-    public final ComponentDescriptor model() {
-        return context.model();
-    }
 
     /** {@inheritDoc} */
     @Override

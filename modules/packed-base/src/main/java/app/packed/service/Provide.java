@@ -24,6 +24,7 @@ import java.lang.annotation.Target;
 import app.packed.base.invoke.OpenMode;
 import app.packed.base.invoke.Opens;
 import app.packed.component.Packlet;
+import app.packed.container.ExtensionMemberType;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a service of some kind. A field
@@ -83,10 +84,13 @@ import app.packed.component.Packlet;
 // Maaske @Provide og @ProvidePrototype... @ProvideTemplate
 // Det ville ogsaa hjaelpe paa sidecars maaske?? Eller de ignore den vel bare...
 
+// Er ret sikker paa vi ikke kan smide det paa en type..???? IDK
+
 @Target({ ElementType.TYPE, ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Packlet(extension = ServiceExtension.class)
+@ExtensionMemberType(ServiceExtension.class)
 @Opens(to = { OpenMode.METHOD_INVOKE, OpenMode.FIELD_SET })
 public @interface Provide {
 

@@ -28,8 +28,8 @@ import java.util.stream.Stream;
 
 import app.packed.base.Nullable;
 import app.packed.component.Component;
-import app.packed.component.ComponentDescriptor;
 import app.packed.component.ComponentPath;
+import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
@@ -47,10 +47,6 @@ public class PackedComponent implements Component {
     /** The configuration site of the component. */
     private final ConfigSite configSite;
 
-    /** The depth of the component in a tree of components. */
-    // Depth kan have 8 bit-> full depth, 8 bit, container depth, 8 bit artifact depth.
-    private final int depth;
-
     /** The description of this component (optional). */
     @Nullable
     private final String description;
@@ -60,7 +56,9 @@ public class PackedComponent implements Component {
 
     final ReentrantLock lock = new ReentrantLock();
 
-    final app.packed.component.ComponentDescriptor model;
+    final packed.internal.component.ComponentRuntimeDescriptor model;
+
+    final PackedPod pod = new PackedPod();
 
     /** The name of the component. The name is guaranteed to be unique between siblings. */
     // TODO I think we need to remove final. Problem is with Host. Where we putIfAbsent.
@@ -87,7 +85,6 @@ public class PackedComponent implements Component {
         this.parent = parent;
         this.configSite = requireNonNull(configuration.configSite());
         this.description = configuration.getDescription();
-        this.depth = parent == null ? 0 : parent.depth + 1; // If configuration is from image, depth will not match
         this.extension = configuration.extension();
         if (parent == null) {
             String n = configuration.name;
@@ -128,7 +125,7 @@ public class PackedComponent implements Component {
     /** {@inheritDoc} */
     @Override
     public final int depth() {
-        return depth;
+        return model.depth;
     }
 
     /** {@inheritDoc} */
@@ -137,8 +134,6 @@ public class PackedComponent implements Component {
         return Optional.ofNullable(description);
     }
 
-    /** {@inheritDoc} */
-    @Override
     public Optional<Class<? extends Extension>> extension() {
         return extension;
     }
@@ -195,11 +190,6 @@ public class PackedComponent implements Component {
         return (PackedContainer) c;
     }
 
-    @Override
-    public final ComponentDescriptor model() {
-        return model;
-    }
-
     /** {@inheritDoc} */
     @Override
     public final String name() {
@@ -249,5 +239,11 @@ public class PackedComponent implements Component {
     @Override
     public Optional<Component> parent() {
         return Optional.ofNullable(parent);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentRelation relationTo(Component other) {
+        return null;
     }
 }

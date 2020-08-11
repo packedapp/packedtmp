@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Nullable;
-import app.packed.component.ComponentDescriptor;
 import app.packed.config.ConfigSite;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
@@ -40,14 +39,14 @@ public final class PackedSingletonConfigurationContext<T> extends PackedComponen
 
     public PackedSingletonConfigurationContext(ConfigSite configSite, PackedComponentConfigurationContext parent, ComponentModel componentModel,
             BaseFactory<T> factory) {
-        super(PackedComponentDriver.defaultComp(), ComponentDescriptor.COMPONENT_INSTANCE, configSite, parent);
+        super(PackedComponentDriver.defaultComp(), ComponentRuntimeDescriptor.COMPONENT_INSTANCE, configSite, parent);
         this.componentModel = requireNonNull(componentModel);
         this.factory = requireNonNull(factory);
         this.instance = null;
     }
 
     public PackedSingletonConfigurationContext(ConfigSite configSite, PackedComponentConfigurationContext parent, ComponentModel componentModel, T instance) {
-        super(PackedComponentDriver.defaultComp(), ComponentDescriptor.COMPONENT_INSTANCE, configSite, parent);
+        super(PackedComponentDriver.defaultComp(), ComponentRuntimeDescriptor.COMPONENT_INSTANCE, configSite, parent);
         this.componentModel = requireNonNull(componentModel);
         this.factory = null;
         this.instance = requireNonNull(instance);

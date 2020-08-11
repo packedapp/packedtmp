@@ -16,8 +16,6 @@
  */
 package app.packed.component;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -68,14 +66,14 @@ import packed.internal.component.PackedComponentStreamOption;
 // Men der skal lige lidt mere guf paa Component sub interfaces...Foerend jeg gider lave det
 public interface ComponentStream extends Stream<Component> {
 
-    /**
-     * Returns a stream that only contains containers.
-     * 
-     * @return a stream that only contains containers
-     */
-    default ComponentStream containers() {
-        return filterOnType(ComponentDescriptor.CONTAINER);
-    }
+//    /**
+//     * Returns a stream that only contains containers.
+//     * 
+//     * @return a stream that only contains containers
+//     */
+//    default ComponentStream containers() {
+//        return filterOnType(ComponentDescriptor.CONTAINER);
+//    }
 
     default <A> Stream<A> feature(Class<A> faetures) {
         throw new UnsupportedOperationException();
@@ -100,11 +98,11 @@ public interface ComponentStream extends Stream<Component> {
     // // }
     // });
     // }
-
-    default ComponentStream filterOnType(ComponentDescriptor type) {
-        requireNonNull(type, "type is null");
-        return filter(e -> e.model() == type);
-    }
+//
+//    default ComponentStream filterOnType(ComponentDescriptor type) {
+//        requireNonNull(type, "type is null");
+//        return filter(e -> e.model() == type);
+//    }
 
     // /**
     // * Returns a component stream consisting of all components in this stream where the specified tag is present.
@@ -220,8 +218,21 @@ public interface ComponentStream extends Stream<Component> {
     /// Men eftersom vi kun kan goere en stream mindre... Altsaa med mindre vi laver nogle flatmap tricks.
     // a.la. components.mapToVirtual....
 
+    // Maaske er en option -> Include X | Go Deeper | Order to return components
+
+    // Det er vel de 3 ting alt er bygget op omkring...
+    // in same container -> src.container = include + go deeper
+
     /**
      * Various options that can be used when creating component streams.
+     * <p>
+     * Options control
+     * 
+     * Whether or not a component should be included in the stream
+     * 
+     * Whether or not the children of a given component should be processed
+     * 
+     * The order in which children should be processed
      * 
      * @see Component#stream(Option...)
      * @see App#stream(Option...)
@@ -251,7 +262,7 @@ public interface ComponentStream extends Stream<Component> {
         // FollowUnitialized guests...
 
         /**
-         * Include components that belongs to an extension ({@link Component#extension()} is non-empty).
+         * Include components that belongs to an extension .
          * 
          * @return an option that includes all components that are part of an extension
          */
@@ -260,8 +271,8 @@ public interface ComponentStream extends Stream<Component> {
         }
 
         /**
-         * Include components that belongs to any of the specified extension types({@link Component#extension()} is non-empty
-         * and contained in the specified varargs).
+         * Include components that belongs to any of the specified extension types is non-empty and contained in the specified
+         * varargs).
          * 
          * @param extensionTypes
          *            extension types that should be included in the stream
@@ -293,6 +304,10 @@ public interface ComponentStream extends Stream<Component> {
          */
         static ComponentStream.Option skipOrigin() {
             return PackedComponentStreamOption.EXCLUDE_ORIGIN_OPTION;
+        }
+
+        static ComponentStream.Option parallel() {
+            throw new UnsupportedOperationException();
         }
 
         // maxDepth, maxRelativeDepth

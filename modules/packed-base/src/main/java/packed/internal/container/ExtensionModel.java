@@ -26,7 +26,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Nullable;
-import app.packed.component.Component;
 import app.packed.component.ConsumeWirelet;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
@@ -149,7 +148,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
     /** The canonical name of the extension. Used when needing to deterministically sort extensions. */
     private final String nameUsedForSorting;
 
-    /** An optional containing the extension type. To avoid excessive creation of them for {@link Component#extension()}. */
+    /** An optional containing the extension type. To avoid excessive creation of them at runtime. */
     public final Optional<Class<? extends Extension>> optional; // can go away with Valhalla
 
     /** The default component name of the extension. */

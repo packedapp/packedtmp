@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactSource;
 import app.packed.component.Bundle;
-import app.packed.component.ComponentDescriptor;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import packed.internal.artifact.PackedArtifactImage;
@@ -36,7 +35,7 @@ public final class PackedHostConfigurationContext extends PackedComponentConfigu
      * @param parent
      */
     public PackedHostConfigurationContext(ConfigSite configSite, PackedComponentConfigurationContext parent) {
-        super(PackedComponentDriver.defaultComp(), ComponentDescriptor.COMPONENT_INSTANCE, configSite, parent);
+        super(PackedComponentDriver.defaultComp(), ComponentRuntimeDescriptor.COMPONENT_INSTANCE, configSite, parent);
     }
 
     public void deploy(ArtifactSource source, ArtifactDriver<?> driver, Wirelet... wirelets) {

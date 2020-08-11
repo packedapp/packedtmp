@@ -26,8 +26,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import app.packed.component.Component;
-import app.packed.component.ComponentDescriptor;
 import app.packed.component.ComponentPath;
+import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
@@ -117,15 +117,8 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
         return Optional.ofNullable(componentConfiguration.getDescription());
     }
 
-    /** {@inheritDoc} */
-    @Override
     public final Optional<Class<? extends Extension>> extension() {
         return componentConfiguration.extension();
-    }
-
-    @Override
-    public ComponentDescriptor model() {
-        return componentConfiguration.descritor();
     }
 
     /** {@inheritDoc} */
@@ -185,6 +178,12 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
     @Override
     public Optional<Component> parent() {
         throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentRelation relationTo(Component other) {
+        return null;
     }
 
 }

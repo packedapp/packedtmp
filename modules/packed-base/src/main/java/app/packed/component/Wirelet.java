@@ -107,8 +107,7 @@ public interface Wirelet {
     }
 
     // A wirelet must be consumed or wrapped in Wirelet.ignoreIfUnconsumed
-    @SuppressWarnings("unused")
-    private static Wirelet ignoreIfUnconsumed(Wirelet wirelet) {
+    static Wirelet ignoreIfUnconsumed(Wirelet wirelet) {
         throw new UnsupportedOperationException();
     }
 

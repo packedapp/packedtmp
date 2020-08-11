@@ -26,8 +26,8 @@ import app.packed.artifact.ArtifactContext;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.Component;
-import app.packed.component.ComponentDescriptor;
 import app.packed.component.ComponentPath;
+import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.component.ComponentStream.Option;
 import app.packed.config.ConfigSite;
@@ -41,6 +41,7 @@ import packed.internal.service.runtime.PackedInjector;
 /** The default container implementation. */
 public final class PackedContainer extends PackedComponent {
 
+    // Skal vaere en service of some kind...
     private final Injector injector;
 
     /**
@@ -100,8 +101,6 @@ public final class PackedContainer extends PackedComponent {
             return container.description();
         }
 
-        /** {@inheritDoc} */
-        @Override
         public Optional<Class<? extends Extension>> extension() {
             return container.extension();
         }
@@ -110,12 +109,6 @@ public final class PackedContainer extends PackedComponent {
         @Override
         public Injector injector() {
             return container.injector;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentDescriptor model() {
-            return container.model();
         }
 
         /** {@inheritDoc} */
@@ -164,6 +157,12 @@ public final class PackedContainer extends PackedComponent {
         @Override
         public Component useComponent(CharSequence path) {
             return container.useComponent(path);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ComponentRelation relationTo(Component other) {
+            return container.relationTo(other);
         }
     }
 }

@@ -13,16 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package packed.internal.component;
+
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- *
+ * All strongly connected components relate to the same pod.
  */
-public interface ComponentSource {
+public final class PackedPod {
 
-    ComponentStream stream(ComponentStream.Option... options);
+    PackedPod parent; // Vi kan vel bare smide den i instances...
 
-    static ComponentSource of(Bundle<?> b) {
-        throw new UnsupportedOperationException();
-    }
+    ComponentRuntimeDescriptor[] descriptors;// packed descriptors...
+
+    Object[] instances; // May contain f.eks. CHM.. ?? Maybe hosts are also there...
+    // If non-root instances[0] always is the parent...
+
+    ConcurrentHashMap<Integer, PackedPod>[] hosts;
 }
+
+/// GUESTS (
+
+// En guest kunne mere eller mindre vaere 10 objects

@@ -17,7 +17,6 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.component.ComponentDescriptor;
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 
@@ -27,7 +26,7 @@ public final class PackedStatelessComponentConfigurationContext extends PackedCo
     private final ComponentModel componentModel;
 
     public PackedStatelessComponentConfigurationContext(ConfigSite configSite, PackedComponentConfigurationContext parent, ComponentModel componentModel) {
-        super(PackedComponentDriver.defaultComp(), ComponentDescriptor.STATELESS, configSite, parent);
+        super(PackedComponentDriver.defaultComp(), ComponentRuntimeDescriptor.STATELESS, configSite, parent);
         this.componentModel = requireNonNull(componentModel);
     }
 

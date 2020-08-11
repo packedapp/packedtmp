@@ -31,7 +31,6 @@ import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
-import app.packed.component.ComponentDescriptor;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentPath;
 import app.packed.component.Wirelet;
@@ -79,7 +78,7 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
     @Nullable
     protected String description;
 
-    final ComponentDescriptor descriptor;
+    final ComponentRuntimeDescriptor descriptor;
 
     public final PackedComponentDriver<?> driver;
 
@@ -107,7 +106,7 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
      * @param output
      *            the output of the build process
      */
-    protected PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ComponentDescriptor descriptor, ConfigSite configSite,
+    protected PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ComponentRuntimeDescriptor descriptor, ConfigSite configSite,
             AssembleOutput output) {
         this.driver = requireNonNull(driver);
         this.descriptor = requireNonNull(descriptor);
@@ -129,7 +128,7 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
      * @param parent
      *            the parent of the component
      */
-    protected PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ComponentDescriptor descriptor, ConfigSite configSite,
+    protected PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ComponentRuntimeDescriptor descriptor, ConfigSite configSite,
             PackedComponentConfigurationContext parent) {
         this.driver = requireNonNull(driver);
         this.descriptor = requireNonNull(descriptor);
@@ -143,7 +142,7 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
         this.artifact = parent.artifact;
     }
 
-    protected PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ComponentDescriptor descriptor, ConfigSite configSite,
+    protected PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ComponentRuntimeDescriptor descriptor, ConfigSite configSite,
             PackedHostConfigurationContext parent, PackedContainerConfigurationContext pcc, AssembleOutput output) {
         this.driver = requireNonNull(driver);
         this.descriptor = requireNonNull(descriptor);
@@ -274,12 +273,10 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
         return depth;
     }
 
-    public final ComponentDescriptor descritor() {
-        return descriptor;
+    public final ComponentRuntimeDescriptor descritor() {
+        return ComponentRuntimeDescriptor.of(driver, this);
     }
 
-    /** {@inheritDoc} */
-    @Override
     public final Optional<Class<? extends Extension>> extension() {
         return extension == null ? Optional.empty() : extension.optional();
     }
@@ -367,11 +364,6 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
     @Override
     public void link(Bundle<?> bundle, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public final ComponentDescriptor model() {
-        return descriptor;
     }
 
     /** {@inheritDoc} */

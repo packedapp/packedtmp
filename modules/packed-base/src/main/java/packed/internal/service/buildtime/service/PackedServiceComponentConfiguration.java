@@ -17,17 +17,13 @@ package packed.internal.service.buildtime.service;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Optional;
-
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
-import app.packed.component.ComponentDescriptor;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentPath;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import app.packed.container.Extension;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceMode;
 import packed.internal.component.PackedSingletonConfigurationContext;
@@ -131,18 +127,6 @@ public final class PackedServiceComponentConfiguration<T> implements ServiceComp
     public ServiceComponentConfiguration<T> setName(String name) {
         component.setName(name);
         return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Optional<Class<? extends Extension>> extension() {
-        return component.extension();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentDescriptor model() {
-        return component.model();
     }
 
     /** {@inheritDoc} */

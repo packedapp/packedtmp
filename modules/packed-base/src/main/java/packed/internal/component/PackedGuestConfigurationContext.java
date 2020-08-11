@@ -18,7 +18,6 @@ package packed.internal.component;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.artifact.ArtifactImage;
-import app.packed.component.ComponentDescriptor;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.container.PackedContainerConfigurationContext;
 
@@ -35,7 +34,7 @@ public class PackedGuestConfigurationContext extends PackedComponentConfiguratio
     public final PackedContainerConfigurationContext delegate;
 
     PackedGuestConfigurationContext(PackedHostConfigurationContext host, PackedContainerConfigurationContext pcc, ArtifactImage image) {
-        super(PackedComponentDriver.defaultComp(), ComponentDescriptor.STATELESS, pcc.configSite(), host, pcc, AssembleOutput.image());
+        super(PackedComponentDriver.defaultComp(), ComponentRuntimeDescriptor.STATELESS, pcc.configSite(), host, pcc, AssembleOutput.image());
         this.delegate = requireNonNull(pcc);
         this.description = pcc.getDescription();
     }

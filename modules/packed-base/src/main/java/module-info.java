@@ -1,5 +1,6 @@
 module app.packed.base {
     exports app.packed.artifact;
+    exports app.packed.attribute;
     exports app.packed.base; // then have @Preview @DeprecatedWithReason
     exports app.packed.base.invoke;
     exports app.packed.introspection;
@@ -23,7 +24,7 @@ module app.packed.base {
     exports packed.internal.hook to app.packed.errorhandling;
     exports packed.internal.artifact to app.packed.errorhandling;
     exports packed.internal.errorhandling to app.packed.errorhandling;
-
+    exports packed.internal.attribute to app.packed.attribute;
     exports packed.internal.sidecar to app.packed.conta;
     exports packed.internal.hook.applicator to app.packed.errorhandling, app.packed.cli;
 

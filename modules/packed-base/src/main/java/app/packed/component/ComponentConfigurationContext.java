@@ -15,12 +15,9 @@
  */
 package app.packed.component;
 
-import java.util.Optional;
-
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundle;
-import app.packed.container.Extension;
 
 /**
  * Component configuration context objects used by {@link AbstractComponentConfiguration}.
@@ -50,13 +47,6 @@ public interface ComponentConfigurationContext {
     ConfigSite configSite();
 
     /**
-     * If this component has been installed from an extension, returns the extension. Otherwise returns empty.
-     * 
-     * @return any extension this component belongs to
-     */
-    Optional<Class<? extends Extension>> extension();
-
-    /**
      * Returns the description of this component. Or null if the description has not been set.
      *
      * @return the description of this component. Or null if the description has not been set.
@@ -77,13 +67,6 @@ public interface ComponentConfigurationContext {
      * @see #setName(String)
      */
     String getName();
-
-    /**
-     * Returns the type of component this configuration creates.
-     * 
-     * @return the type of component this configuration creates
-     */
-    ComponentDescriptor model();
 
     /**
      * Returns the full path of the component.

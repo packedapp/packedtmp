@@ -28,8 +28,9 @@ import java.util.stream.Collectors;
 import app.packed.artifact.ArtifactImage;
 import app.packed.base.Contract;
 import app.packed.base.Key;
-import app.packed.container.ContainerDescriptor;
 import app.packed.container.ContainerBundle;
+import app.packed.container.ContainerDescriptor;
+import app.packed.container.ExtensionMemberType;
 
 /**
  * A service contract details of a contractee.
@@ -68,7 +69,7 @@ import app.packed.container.ContainerBundle;
 // Dependencies needed and services provided
 
 // This class is typically used at container level.
-
+@ExtensionMemberType(ServiceExtension.class)
 public final class ServiceContract extends Contract {
 
     /** A contract with no requirements and no services provided. */

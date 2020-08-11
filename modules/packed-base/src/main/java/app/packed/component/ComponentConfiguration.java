@@ -15,12 +15,9 @@
  */
 package app.packed.component;
 
-import java.util.Optional;
-
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundle;
-import app.packed.container.Extension;
 
 /**
  *
@@ -45,25 +42,6 @@ public interface ComponentConfiguration {
     ConfigSite configSite();
 
     /**
-     * If this component has been installed from an extension, returns the extension. Otherwise returns empty.
-     * 
-     * @return any extension this component belongs to
-     */
-    // Syntes vi flytter den til en attribute....
-    // Og det samme med description??
-    // BaseExtensionAttributes
-    //
-    Optional<Class<? extends Extension>> extension();
-
-//    /**
-//     * Returns the class that defines the container.
-//     * 
-//     * @return the class that defines the container
-//     */
-    // Is replaced with someking of compoentn descriptor
-//    Class<?> sourceType();
-
-    /**
      * Returns the description of this component. Or null if the description has not been set.
      *
      * @return the description of this component. Or null if the description has not been set.
@@ -84,13 +62,13 @@ public interface ComponentConfiguration {
      * @see #setName(String)
      */
     String getName();
-
-    /**
-     * Returns the type of component this configuration creates.
-     * 
-     * @return the type of component this configuration creates
-     */
-    ComponentDescriptor model();
+//
+//    /**
+//     * Returns the type of component this configuration creates.
+//     * 
+//     * @return the type of component this configuration creates
+//     */
+//    ComponentDescriptor model();
 
 //    /**
 //     * Registers an action that will be performed whenever a name is assigned to the component.
@@ -171,3 +149,22 @@ public interface ComponentConfiguration {
      */
     <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
 }
+
+///**
+//* If this component has been installed from an extension, returns the extension. Otherwise returns empty.
+//* 
+//* @return any extension this component belongs to
+//*/
+//// Syntes vi flytter den til en attribute....
+//// Og det samme med description??
+//// BaseExtensionAttributes
+////
+//Optional<Class<? extends Extension>> extension();
+
+///**
+//* Returns the class that defines the container.
+//* 
+//* @return the class that defines the container
+//*/
+// Is replaced with someking of compoentn descriptor
+//Class<?> sourceType();

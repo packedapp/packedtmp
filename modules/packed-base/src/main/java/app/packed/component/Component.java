@@ -17,15 +17,16 @@ package app.packed.component;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.function.Consumer;
 
+import app.packed.attribute.AttributeHolder;
 import app.packed.config.ConfigSite;
-import app.packed.container.Extension;
 
 /**
  * A component is the basic entity in Packed. Much like everything is a is one of the defining features of Unix, and its
  * derivatives. In packed everything is a component.
  */
-public interface Component {
+public interface Component extends AttributeHolder {
 
     /**
      * Returns an unmodifiable view of all of this component's children.
@@ -42,9 +43,9 @@ public interface Component {
     ConfigSite configSite();
 
     /**
-     * Returns the depth of the component in the system. The root component having depth 0.
+     * Returns the distance to the root component. The root component having depth 0.
      * 
-     * @return the depth of the component in the system
+     * @return the distance to the root component
      */
     int depth();
 
@@ -56,24 +57,6 @@ public interface Component {
      *         component
      */
     Optional<String> description();
-
-    /**
-     * If this component is a part of extension, returns the extension. Otherwise returns empty.
-     * 
-     * @return any extension this component belongs to
-     */
-    // Don't really like this... It strongly ties a container to a component.
-    // As extensions are children of containers always...
-    // But then again ComponentStream.Option contains stuff about containers ect.
-    // Maybe model it as an attribute
-    Optional<Class<? extends Extension>> extension();
-
-    /**
-     * Returns the type of component.
-     * 
-     * @return the type of component
-     */
-    ComponentDescriptor model();
 
     /**
      * Returns the name of this component.
@@ -88,41 +71,6 @@ public interface Component {
     String name();
 
     /**
-     * <p>
-     * This operation does not allocate any objects internally.
-     * 
-     * @implNote Implementations of this method should never generate object (which is a bit difficult
-     * @param action
-     *            oops
-     */
-    // We want to take some options I think. But not as a options
-    // Well it is more or less the same options....
-    // Tror vi laver options om til en klasse. Og saa har to metoder.
-    // Og dropper varargs..
-    // void traverse(Consumer<? super Component> action);
-
-    // Naah feature er vel readonly...
-    // use kan komme paa ComponentContext og maaske ComponentConfiguration?
-
-    // To maader,
-    /// Et service object der tager en ComponentContext...
-    ///// Det betyder jo ogsaa at vi ikke kan have attributemap paa Component
-    ///// Fordi man ikke skal kunne f.eks. schedulere uden component context'en
-
-    //// En ComponentContext.use(XXXX class)
-
-//  /**
-//   * Registers an action that will be performed whenever a name is assigned to the component.
-//   * <p>
-//   * This method is mainly used by extensions.
-//   * 
-//   * @param action
-//   *            the action to be performed when the name of the component is finalized
-//   */
-//  default void onNamed(Consumer<? super ComponentConfiguration> action) {
-//      throw new UnsupportedOperationException();
-//  }
-    /**
      * Returns the parent component of this component. Or empty if this component has no parent.
      * 
      * @return the parent component of this component. Or empty if this component has no parent
@@ -136,22 +84,96 @@ public interface Component {
      */
     ComponentPath path();
 
-    default Optional<Class<?>> realm() {
-        // Wirelets, Artifacts does not have
-        throw new UnsupportedOperationException();
-    }
+    /**
+     * Returns the relation from this component to the specified component.
+     * 
+     * @param other
+     *            the other component
+     * @return the relation to the other component
+     */
+    ComponentRelation relationTo(Component other);
 
     /**
-     * Returns a component stream consisting of this component and all of its descendants in any order.
+     * Returns a stream consisting of this component and all of its descendants in any order.
      *
      * @param options
-     *            specifying which components will be included in the stream
+     *            specifying the order and contents of the stream
      * 
      * @return a component stream consisting of this component and all of its descendants in any order
      */
     ComponentStream stream(ComponentStream.Option... options);
+
+    /**
+     * 
+     * 
+     * <p>
+     * This operation does not allocate any objects internally.
+     * 
+     * @implNote Implementations of this method should never generate object (which is a bit difficult
+     * @param action
+     *            oops
+     */
+    // We want to take some options I think. But not as a options
+    // Well it is more or less the same options....
+    // Tror vi laver options om til en klasse. Og saa har to metoder.
+    // Og dropper varargs..
+    default void traverse(Consumer<? super Component> action) {
+        throw new UnsupportedOperationException();
+    }
 }
 
+///**
+// * <p>
+// * This operation does not allocate any objects internally.
+// * 
+// * @implNote Implementations of this method should never generate object (which is a bit difficult
+// * @param action
+// *            oops
+// */
+// We want to take some options I think. But not as a options
+// Well it is more or less the same options....
+// Tror vi laver options om til en klasse. Og saa har to metoder.
+// Og dropper varargs..
+// void traverse(Consumer<? super Component> action);
+
+// Naah feature er vel readonly...
+// use kan komme paa ComponentContext og maaske ComponentConfiguration?
+
+// To maader,
+/// Et service object der tager en ComponentContext...
+///// Det betyder jo ogsaa at vi ikke kan have attributemap paa Component
+///// Fordi man ikke skal kunne f.eks. schedulere uden component context'en
+
+//// En ComponentContext.use(XXXX class)
+///**
+//* If this component is a part of extension, returns the extension. Otherwise returns empty.
+//* 
+//* @return any extension this component belongs to
+//*/
+//// Don't really like this... It strongly ties a container to a component.
+//// As extensions are children of containers always...
+//// But then again ComponentStream.Option contains stuff about containers ect.
+//// Maybe model it as an attribute
+//Optional<Class<? extends Extension>> extension();
+
+///**
+//* Returns the type of component.
+//* 
+//* @return the type of component
+//*/
+//ComponentDescriptor model();
+
+//  /**
+//* Registers an action that will be performed whenever a name is assigned to the component.
+//* <p>
+//* This method is mainly used by extensions.
+//* 
+//* @param action
+//*            the action to be performed when the name of the component is finalized
+//*/
+//default void onNamed(Consumer<? super ComponentConfiguration> action) {
+//throw new UnsupportedOperationException();
+//}
 // SystemView/Descriptor
 // Contracts...
 // {
