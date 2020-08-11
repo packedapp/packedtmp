@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,7 +33,7 @@ import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import packed.internal.artifact.PackedInstantiationContext;
-import packed.internal.container.ContainerWirelet.ContainerNameWirelet;
+import packed.internal.container.ComponentWirelet.ComponentNameWirelet;
 import packed.internal.container.PackedContainer;
 
 /** An abstract base implementation of {@link Component}. */
@@ -44,51 +43,35 @@ public class PackedComponent implements Component {
     @Nullable
     public final Map<String, PackedComponent> children;
 
-    /** The configuration site of the component. */
-    private final ConfigSite configSite;
-
-    /** The description of this component (optional). */
-    @Nullable
-    private final String description;
-
-    /** Any extension the component belongs to. */ // Generic Extension Table?
-    private final Optional<Class<? extends Extension>> extension;
-
-    final ReentrantLock lock = new ReentrantLock();
-
-    final ComponentRuntimeDescriptor model;
-
-    final PackedPod pod = new PackedPod();
+    final ComponentRuntimeDescriptor model; // shared among images
 
     /** The name of the component. The name is guaranteed to be unique between siblings. */
-    // TODO I think we need to remove final. Problem is with Host. Where we putIfAbsent.
-    // There is a small window where it might have been overridden....
-    // Unless we create the container in computeIfAbsent.... which I just think we should....
-    // Problem is also that the final name might not be stored in AbstractComponentConfiguration...
-    //// Auch I think we need to maintain some of that naming state for images....
-    /// For example, whether or not naming is free...
-    private final String name;
+    final String name;
 
     /** The parent component, iff this component has a parent. */
     @Nullable
     final PackedComponent parent;
+
+    /** A pod contains shared information for all components that are strongly connected. */
+    final PackedPod pod; // Shared among strongly connected components.
 
     /**
      * Creates a new abstract component.
      * 
      * @param parent
      *            the parent component, iff this component has a parent.
-     * @param configuration
+     * @param context
      *            the configuration used for creating this component
      */
-    public PackedComponent(@Nullable PackedComponent parent, PackedComponentConfigurationContext configuration, PackedInstantiationContext ic) {
+    public PackedComponent(@Nullable PackedComponent parent, PackedComponentConfigurationContext context, PackedInstantiationContext ic) {
         this.parent = parent;
-        this.configSite = requireNonNull(configuration.configSite());
-        this.description = configuration.getDescription();
-        this.extension = configuration.extension();
+        this.pod = context.pod();
+        this.model = requireNonNull(context.descritor());
+
+        // Initialize name
         if (parent == null) {
-            String n = configuration.name;
-            ContainerNameWirelet ol = ic.wirelets() == null ? null : ic.wirelets().nameWirelet();
+            String n = context.name;
+            ComponentNameWirelet ol = ic.wirelets() == null ? null : ic.wirelets().nameWirelet();
             if (ol != null) {
                 n = ol.name;
                 if (n.endsWith("?")) {
@@ -97,12 +80,11 @@ public class PackedComponent implements Component {
             }
             this.name = n;
         } else {
-            this.name = requireNonNull(configuration.name);
+            this.name = requireNonNull(context.name);
         }
-        this.model = requireNonNull(configuration.descritor());
 
         // Last but least, initialize all children...
-        this.children = configuration.initializeChildren(this, ic);
+        this.children = context.initializeChildren(this, ic);
     }
 
     /** {@inheritDoc} */
@@ -119,7 +101,7 @@ public class PackedComponent implements Component {
     /** {@inheritDoc} */
     @Override
     public final ConfigSite configSite() {
-        return configSite;
+        return model.configSite;
     }
 
     /** {@inheritDoc} */
@@ -131,11 +113,11 @@ public class PackedComponent implements Component {
     /** {@inheritDoc} */
     @Override
     public final Optional<String> description() {
-        return Optional.ofNullable(description);
+        return Optional.ofNullable(model.description);
     }
 
     public Optional<Class<? extends Extension>> extension() {
-        return extension;
+        return model.extension;
     }
 
     public final Component findComponent(CharSequence path) {
@@ -198,8 +180,20 @@ public class PackedComponent implements Component {
 
     /** {@inheritDoc} */
     @Override
+    public Optional<Component> parent() {
+        return Optional.ofNullable(parent);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public final ComponentPath path() {
         return PackedComponentPath.of(this);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentRelation relationTo(Component other) {
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -233,17 +227,5 @@ public class PackedComponent implements Component {
             throw new IllegalArgumentException("Could not find component with path: " + path + " avilable components:" + list);
         }
         return c;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Optional<Component> parent() {
-        return Optional.ofNullable(parent);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentRelation relationTo(Component other) {
-        return null;
     }
 }

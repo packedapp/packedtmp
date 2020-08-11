@@ -24,7 +24,7 @@ import java.util.Map.Entry;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
-import packed.internal.container.ContainerWirelet.ContainerNameWirelet;
+import packed.internal.container.ComponentWirelet.ComponentNameWirelet;
 
 /**
  * A container of wirelets and wirelet pipelines.
@@ -39,7 +39,7 @@ public final class WireletPack {
 
     // We might at some point, allow the setting of a default name...
     // In which we need to different between not-set and set to null
-    ContainerNameWirelet newName; // kan komme i map... og saa saetter vi et flag istedet for...
+    ComponentNameWirelet newName; // kan komme i map... og saa saetter vi et flag istedet for...
 
     /** An optional parent. */
     @Nullable
@@ -84,10 +84,10 @@ public final class WireletPack {
 
             context.wirelets.add(w);
 
-        } else if (w instanceof ContainerWirelet) {
+        } else if (w instanceof ComponentWirelet) {
             // Hmm skulle vi vente til alle wirelets er succesfuld processeret???
             // Altsaa hvad hvis den fejler.... Altsaa taenker ikke den maa lavere aendringer i containeren.. kun i wirelet context
-            ((ContainerWirelet) w).process(this);
+            ((ComponentWirelet) w).process(this);
         } else if (w instanceof WireletList) {
             for (Wirelet ww : ((WireletList) w).wirelets) {
                 create0(ww);
@@ -142,7 +142,8 @@ public final class WireletPack {
         return pcc.name;
     }
 
-    public ContainerNameWirelet nameWirelet() {
+    // That name wirelet.. should only be used by the top-container....
+    public ComponentNameWirelet nameWirelet() {
         WireletPack wc = this;
         while (wc != null) {
             if (wc.newName != null) {

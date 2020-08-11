@@ -58,8 +58,6 @@ public final class PackedHostConfigurationContext extends PackedComponentConfigu
     /** {@inheritDoc} */
     @Override
     protected String initializeNameDefaultName() {
-        // Vi burde kunne extract AppHost fra <T>
         return "Host"; // Host for now, But if we have host driver...
     }
-
 }

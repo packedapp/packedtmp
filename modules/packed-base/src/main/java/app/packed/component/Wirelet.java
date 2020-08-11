@@ -21,7 +21,7 @@ import app.packed.base.Nullable;
 import app.packed.container.ContainerBundle;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
-import packed.internal.container.ContainerWirelet.ContainerNameWirelet;
+import packed.internal.container.ComponentWirelet.ComponentNameWirelet;
 import packed.internal.container.WireletList;
 
 /**
@@ -98,7 +98,7 @@ public interface Wirelet {
      * @return a wirelet that can be used to set the name of the container
      */
     static Wirelet name(String name) {
-        return new ContainerNameWirelet(name);
+        return new ComponentNameWirelet(name);
     }
 
     // If the function returns null. The wirelet will not be processed

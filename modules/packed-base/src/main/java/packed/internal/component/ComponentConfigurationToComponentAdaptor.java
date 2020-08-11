@@ -104,9 +104,9 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
     /** {@inheritDoc} */
     @Override
     public final int depth() {
-        int depth = componentConfiguration.depth();
+        int depth = componentConfiguration.depth;
         for (PackedGuestConfigurationContext p : pgc) {
-            depth += p.depth();
+            depth += p.depth;
         }
         return depth;
     }

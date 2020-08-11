@@ -164,7 +164,7 @@ public final class PackedComponentPath implements ComponentPath {
     }
 
     static ComponentPath of(PackedComponentConfigurationContext cc) {
-        int depth = cc.depth();
+        int depth = cc.depth;
         switch (depth) {
         case 0:
             return ROOT;

@@ -50,13 +50,13 @@ public final class ComponentRuntimeDescriptor {
 
     /** The description of this component (optional). */
     @Nullable
-    private final String description;
+    final String description;
 
     /** Any extension the component belongs to. */ // Generic Extension Table?
     final Optional<Class<? extends Extension>> extension;
 
     ComponentRuntimeDescriptor(PackedComponentConfigurationContext context) {
-        this.depth = context.depth();
+        this.depth = context.depth;
         this.configSite = requireNonNull(context.configSite());
         this.description = context.getDescription();
         this.extension = context.extension();

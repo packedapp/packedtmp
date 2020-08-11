@@ -27,7 +27,6 @@ import packed.internal.container.PackedContainerConfigurationContext;
 // Vi pakker altid containere ind i future configuration.
 // F.eks. kan vi jo tilfoeje et image 2 steder
 // Hvilke resultere i to forskellige paths.
-
 // Der er ikke nogen vej udenom
 public class PackedGuestConfigurationContext extends PackedComponentConfigurationContext {
 

@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 import java.util.Set;
@@ -75,10 +74,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
 
     private static final int LS_3_FINISHED = 3;
 
-//    /** Any child containers of this component (lazily initialized), in order of insertion. */
-//    @Nullable
-//    ArrayList<PackedContainerConfiguration> containers;
-
     /** Any extension that is active. */
     @Nullable
     public PackedExtensionConfiguration activeExtension;
@@ -91,8 +86,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
     private final LinkedHashMap<Class<? extends Extension>, PackedExtensionConfiguration> extensions = new LinkedHashMap<>();
 
     private TreeSet<PackedExtensionConfiguration> extensionsOrdered;
-
-    private HashMap<String, PackedContainerLayer> layers;
 
     /** The current component lookup object, updated via {@link #lookup(Lookup)} */
     private ComponentLookup lookup;
@@ -433,27 +426,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         }
     }
 
-    /**
-     * Creates a new layer.
-     * 
-     * @param name
-     *            the name of layer
-     * @param dependencies
-     *            dependencies on other layers
-     * @return the new layer
-     */
-    public ContainerLayer newLayer(String name, ContainerLayer... dependencies) {
-        HashMap<String, PackedContainerLayer> l = layers;
-        if (l == null) {
-            l = layers = new HashMap<>();
-        }
-        PackedContainerLayer newLayer = new PackedContainerLayer(this, name, dependencies);
-        if (l.putIfAbsent(name, newLayer) != null) {
-            throw new IllegalArgumentException("A layer with the name '" + name + "' has already been added");
-        }
-        return newLayer;
-    }
-
     public Class<?> sourceType() {
         return source.getClass();
     }
@@ -535,6 +507,28 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         return new PackedContainerConfigurationContext(cs, output, source, wirelets);
     }
 }
+///**
+//* Creates a new layer.
+//* 
+//* @param name
+//*            the name of layer
+//* @param dependencies
+//*            dependencies on other layers
+//* @return the new layer
+//*/
+//
+//private HashMap<String, PackedContainerLayer> layers;
+//public ContainerLayer newLayer(String name, ContainerLayer... dependencies) {
+// HashMap<String, PackedContainerLayer> l = layers;
+// if (l == null) {
+//     l = layers = new HashMap<>();
+// }
+// PackedContainerLayer newLayer = new PackedContainerLayer(this, name, dependencies);
+// if (l.putIfAbsent(name, newLayer) != null) {
+//     throw new IllegalArgumentException("A layer with the name '" + name + "' has already been added");
+// }
+// return newLayer;
+//}
 
 //private HostConfigurationContext addHost() {
 //  ConfigSite configSite = captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL);

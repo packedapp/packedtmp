@@ -42,7 +42,7 @@ import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedAssembleContext;
 import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.container.ContainerWirelet.ContainerNameWirelet;
+import packed.internal.container.ComponentWirelet.ComponentNameWirelet;
 import packed.internal.container.PackedContainerConfigurationContext;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.hook.applicator.DelayedAccessor;
@@ -72,13 +72,13 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
     public ArrayList<DelayedAccessor> del = new ArrayList<>();
 
     /** The depth of the component in the hierarchy (including any parent artifacts). */
-    private final int depth;
+    final int depth;
 
     /** The description of the component. */
     @Nullable
     protected String description;
 
-    public final PackedComponentDriver<?> driver;
+    private final PackedComponentDriver<?> driver;
 
     /** Any extension this component belongs to. */
     @Nullable
@@ -130,7 +130,7 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
 
         this.parent = requireNonNull(parent);
         this.container = parent instanceof PackedContainerConfigurationContext ? (PackedContainerConfigurationContext) parent : parent.container;
-        this.depth = parent.depth() + 1;
+        this.depth = parent.depth + 1;
 
         this.extension = container.activeExtension;
         this.artifact = parent.artifact;
@@ -143,7 +143,7 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
 
         this.parent = requireNonNull(parent);
         this.container = null;
-        this.depth = parent.depth() + 1;
+        this.depth = parent.depth + 1;
 
         this.extension = null;
         this.artifact = new PackedAssembleContext(pcc, output);
@@ -262,10 +262,6 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
         return (PackedContainerConfigurationContext) c;
     }
 
-    public final int depth() {
-        return depth;
-    }
-
     public final ComponentRuntimeDescriptor descritor() {
         return ComponentRuntimeDescriptor.of(driver, this);
     }
@@ -366,6 +362,10 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
         return PackedComponentPath.of(this); // show we weak intern them????
     }
 
+    public PackedPod pod() {
+        return new PackedPod();
+    }
+
     /** {@inheritDoc} */
     @Override
     public void setDescription(String description) {
@@ -378,7 +378,7 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
     @Override
     public void setName(String name) {
         // First lets check the name is valid
-        ContainerNameWirelet.checkName(name);
+        ComponentNameWirelet.checkName(name);
         switch (state.oldState) {
         case INITIAL:
             initializeName(State.SET_NAME_INVOKED, name);
