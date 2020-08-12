@@ -15,8 +15,6 @@
  */
 package packed.internal.component;
 
-import static java.util.Objects.requireNonNull;
-
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
 import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
@@ -24,11 +22,8 @@ import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
 /** The default implementation of {@link StatelessConfiguration}. */
 public final class PackedStatelessComponentConfigurationContext extends PackedComponentConfigurationContext {
 
-    public final ComponentModel componentModel;
-
     public PackedStatelessComponentConfigurationContext(ConfigSite configSite, PackedComponentConfigurationContext parent, StatelessComponentDriver scd,
             ComponentModel componentModel) {
         super(scd, configSite, parent);
-        this.componentModel = requireNonNull(componentModel);
     }
 }

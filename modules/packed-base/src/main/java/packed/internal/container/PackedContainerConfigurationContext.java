@@ -295,7 +295,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         requireNonNull(implementation, "implementation is null");
         StatelessComponentDriver scd = new StatelessComponentDriver(lookup, implementation);
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
-        PackedStatelessComponentConfigurationContext conf = new PackedStatelessComponentConfigurationContext(configSite, this, scd, scd.model);
+        PackedComponentConfigurationContext conf = new PackedStatelessComponentConfigurationContext(configSite, this, scd, scd.model);
         installPrepare(State.INSTALL_INVOKED);
         currentComponent = conf;
         scd.model.invokeOnHookOnInstall(source, conf);

@@ -17,15 +17,16 @@ package packed.internal.component;
 
 import app.packed.component.AbstractComponentConfiguration;
 import app.packed.component.StatelessConfiguration;
+import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
 
 /**
  *
  */
 public class PackedStatelessComponentConfiguration extends AbstractComponentConfiguration implements StatelessConfiguration {
 
-    private final PackedStatelessComponentConfigurationContext context;
+    private final PackedComponentConfigurationContext context;
 
-    public PackedStatelessComponentConfiguration(PackedStatelessComponentConfigurationContext context) {
+    public PackedStatelessComponentConfiguration(PackedComponentConfigurationContext context) {
         super(context);
         this.context = context;
     }
@@ -33,7 +34,7 @@ public class PackedStatelessComponentConfiguration extends AbstractComponentConf
     /** {@inheritDoc} */
     @Override
     public Class<?> definition() {
-        return context.componentModel.type();
+        return ((StatelessComponentDriver) context.driver).model.type();
     }
 
     /** {@inheritDoc} */

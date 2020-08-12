@@ -79,7 +79,7 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
     @Nullable
     protected String description;
 
-    private final PackedComponentDriver<?> driver;
+    public final PackedComponentDriver<?> driver;
 
     /** Any extension this component belongs to. */
     @Nullable
