@@ -58,7 +58,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
 
     /** Any children of this component (lazily initialized), in order of insertion. */
     @Nullable
-    protected HashMap<String, PackedComponentConfigurationContext> children;
+    private HashMap<String, PackedComponentConfigurationContext> children;
 
     /** The configuration site of this component. */
     private final ConfigSite configSite;
@@ -108,7 +108,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     // We maintain this here instead of in a LinkedHashMap, because the insertion order
     // is effected if we change the name of a component. Which we do not want.
     @Nullable
-    protected PackedComponentConfigurationContext nextSiebling;
+    public PackedComponentConfigurationContext nextSiebling;
 
     /**
      * A special constructor for the top level container.
@@ -282,11 +282,9 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     }
 
     protected void extensionsPrepareInstantiation(PackedInstantiationContext ic) {
-        if (children != null) {
-            for (PackedComponentConfigurationContext acc : children.values()) {
-                if (artifact == acc.artifact) {
-                    acc.extensionsPrepareInstantiation(ic);
-                }
+        for (PackedComponentConfigurationContext c = firstChild; c != null; c = c.nextSiebling) {
+            if (artifact == c.artifact) {
+                c.extensionsPrepareInstantiation(ic);
             }
         }
     }
@@ -305,14 +303,15 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     }
 
     final Map<String, PackedComponent> initializeChildren(PackedComponent parent, PackedInstantiationContext ic) {
-        if (children == null) {
+        if (firstChild == null) {
             return null;
         }
         // Hmm, we should probably used LinkedHashMap to retain order.
         // It just uses so much memory...
         HashMap<String, PackedComponent> result = new HashMap<>(children.size());
-        for (PackedComponentConfigurationContext acc : children.values()) {
-            PackedComponent ac = acc.driver.create(parent, acc, ic);
+
+        for (PackedComponentConfigurationContext c = firstChild; c != null; c = c.nextSiebling) {
+            PackedComponent ac = c.driver.create(parent, c, ic);
             result.put(ac.name(), ac);
         }
         return Map.copyOf(result);

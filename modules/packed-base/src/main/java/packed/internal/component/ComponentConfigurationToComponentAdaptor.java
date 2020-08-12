@@ -86,13 +86,13 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
 //        };
 
         if (c == null) {
-            if (componentConfiguration.children == null) {
+            if (componentConfiguration.firstChild == null) {
                 // It is not really a view...
                 // return new AbstractCollection<>(); <--- cache it,
                 c = Map.of();
             } else {
                 LinkedHashMap<String, ComponentConfigurationToComponentAdaptor> m = new LinkedHashMap<>();
-                for (PackedComponentConfigurationContext acc : componentConfiguration.children.values()) {
+                for (PackedComponentConfigurationContext acc = componentConfiguration.firstChild; acc != null; acc = acc.nextSiebling) {
                     m.put(acc.name, of0(acc, pgc));
                 }
                 c = children = Map.copyOf(m);

@@ -152,14 +152,11 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         }
 
         if (realState == LS_1_LINKING && newState > LS_1_LINKING) {
-            if (children != null) {
-                for (PackedComponentConfigurationContext acc : children.values()) {
-                    if (acc instanceof PackedContainerConfigurationContext) {
-                        ((PackedContainerConfigurationContext) acc).assembleExtensions();
-                    }
+            for (PackedComponentConfigurationContext cc = firstChild; cc != null; cc = cc.nextSiebling) {
+                if (cc instanceof PackedContainerConfigurationContext) {
+                    ((PackedContainerConfigurationContext) cc).assembleExtensions();
                 }
             }
-
             for (PackedExtensionConfiguration pec : extensionsOrdered) {
                 activeExtension = pec;
                 pec.onChildrenConfigured();
@@ -367,35 +364,33 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private void methodHandlePassing0(PackedComponent ac, PackedInstantiationContext ic) {
-        if (children != null) {
-            for (PackedComponentConfigurationContext cc : children.values()) {
-                PackedComponent child = ac.children.get(cc.name);
-                if (cc instanceof PackedContainerConfigurationContext) {
-                    ((PackedContainerConfigurationContext) cc).methodHandlePassing0(child, ic);
-                }
-                if (!cc.del.isEmpty()) {
-                    for (DelayedAccessor da : cc.del) {
-                        Object sidecar = ic.get(this, da.sidecarType);
-                        Object ig;
-                        if (da instanceof SidecarFieldDelayerAccessor) {
-                            SidecarFieldDelayerAccessor sda = (SidecarFieldDelayerAccessor) da;
-                            MethodHandle mh = sda.pra.mh;
-                            if (!Modifier.isStatic(sda.pra.field.getModifiers())) {
-                                PackedSingletonConfigurationContext<?> icc = ((PackedSingletonConfigurationContext<?>) cc);
-                                mh = mh.bindTo(icc.instance);
-                            }
-                            ig = sda.pra.operator.invoke(mh);
-                        } else {
-                            SidecarMethodDelayerAccessor sda = (SidecarMethodDelayerAccessor) da;
-                            MethodHandle mh = sda.pra.mh;
-                            if (!Modifier.isStatic(sda.pra.method.getModifiers())) {
-                                PackedSingletonConfigurationContext<?> icc = ((PackedSingletonConfigurationContext<?>) cc);
-                                mh = mh.bindTo(icc.instance);
-                            }
-                            ig = sda.pra.operator.apply(mh);
+        for (PackedComponentConfigurationContext cc = firstChild; cc != null; cc = cc.nextSiebling) {
+            PackedComponent child = ac.children.get(cc.name);
+            if (cc instanceof PackedContainerConfigurationContext) {
+                ((PackedContainerConfigurationContext) cc).methodHandlePassing0(child, ic);
+            }
+            if (!cc.del.isEmpty()) {
+                for (DelayedAccessor da : cc.del) {
+                    Object sidecar = ic.get(this, da.sidecarType);
+                    Object ig;
+                    if (da instanceof SidecarFieldDelayerAccessor) {
+                        SidecarFieldDelayerAccessor sda = (SidecarFieldDelayerAccessor) da;
+                        MethodHandle mh = sda.pra.mh;
+                        if (!Modifier.isStatic(sda.pra.field.getModifiers())) {
+                            PackedSingletonConfigurationContext<?> icc = ((PackedSingletonConfigurationContext<?>) cc);
+                            mh = mh.bindTo(icc.instance);
                         }
-                        ((BiConsumer) da.consumer).accept(sidecar, ig);
+                        ig = sda.pra.operator.invoke(mh);
+                    } else {
+                        SidecarMethodDelayerAccessor sda = (SidecarMethodDelayerAccessor) da;
+                        MethodHandle mh = sda.pra.mh;
+                        if (!Modifier.isStatic(sda.pra.method.getModifiers())) {
+                            PackedSingletonConfigurationContext<?> icc = ((PackedSingletonConfigurationContext<?>) cc);
+                            mh = mh.bindTo(icc.instance);
+                        }
+                        ig = sda.pra.operator.apply(mh);
                     }
+                    ((BiConsumer) da.consumer).accept(sidecar, ig);
                 }
             }
         }
