@@ -19,23 +19,16 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.component.StatelessConfiguration;
 import app.packed.config.ConfigSite;
+import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
 
 /** The default implementation of {@link StatelessConfiguration}. */
 public final class PackedStatelessComponentConfigurationContext extends PackedComponentConfigurationContext {
 
     public final ComponentModel componentModel;
 
-    public PackedStatelessComponentConfigurationContext(ConfigSite configSite, PackedComponentConfigurationContext parent, ComponentModel componentModel) {
-        super(PackedComponentDriver.defaultComp(), configSite, parent);
+    public PackedStatelessComponentConfigurationContext(ConfigSite configSite, PackedComponentConfigurationContext parent, StatelessComponentDriver scd,
+            ComponentModel componentModel) {
+        super(scd, configSite, parent);
         this.componentModel = requireNonNull(componentModel);
     }
-//
-//    public PackedStatelessComponentConfigurationContext runHooks(Object source) {
-//        componentModel.invokeOnHookOnInstall(source, this);
-//        return this;
-//    }
-//
-//    public Class<?> definition() {
-//        return componentModel.type();
-//    }
 }

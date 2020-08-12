@@ -49,6 +49,7 @@ import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedComponentConfigurationContext;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
+import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
 import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.component.PackedSingletonConfigurationContext;
 import packed.internal.component.PackedStatelessComponentConfiguration;
@@ -292,12 +293,12 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
 
     public StatelessConfiguration installStateless(Class<?> implementation) {
         requireNonNull(implementation, "implementation is null");
-        ComponentModel model = lookup.componentModelOf(implementation);
+        StatelessComponentDriver scd = new StatelessComponentDriver(lookup, implementation);
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
-        PackedStatelessComponentConfigurationContext conf = new PackedStatelessComponentConfigurationContext(configSite, this, model);
+        PackedStatelessComponentConfigurationContext conf = new PackedStatelessComponentConfigurationContext(configSite, this, scd, scd.model);
         installPrepare(State.INSTALL_INVOKED);
         currentComponent = conf;
-        conf.componentModel.invokeOnHookOnInstall(source, conf);
+        scd.model.invokeOnHookOnInstall(source, conf);
         return new PackedStatelessComponentConfiguration(conf);
     }
 

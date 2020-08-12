@@ -22,6 +22,7 @@ import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerConfiguration;
 import packed.internal.artifact.PackedInstantiationContext;
+import packed.internal.container.ComponentLookup;
 import packed.internal.container.PackedContainer;
 import packed.internal.container.PackedContainerConfigurationContext;
 
@@ -44,6 +45,18 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
 
     public static ContainerComponentDriver container() {
         return new ContainerComponentDriver();
+    }
+
+    public static DefaultComponentDriver statelessBind(ComponentLookup lookup, Class<?> implementation) {
+        return new DefaultComponentDriver();
+    }
+
+    public static class StatelessComponentDriver extends DefaultComponentDriver {
+        public final ComponentModel model;
+
+        public StatelessComponentDriver(ComponentLookup lookup, Class<?> implementation) {
+            this.model = lookup.componentModelOf(implementation);
+        }
     }
 
     public static class DefaultComponentDriver extends PackedComponentDriver<ComponentConfiguration> {

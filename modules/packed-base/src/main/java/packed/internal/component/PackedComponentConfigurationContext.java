@@ -41,6 +41,7 @@ import app.packed.container.Extension;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedAssembleContext;
 import packed.internal.artifact.PackedInstantiationContext;
+import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ComponentWirelet.ComponentNameWirelet;
 import packed.internal.container.PackedContainerConfigurationContext;
@@ -363,7 +364,7 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
         } else if (this instanceof PackedSingletonConfigurationContext) {
             return ((PackedSingletonConfigurationContext<?>) this).componentModel.defaultPrefix();
         } else {
-            return ((PackedStatelessComponentConfigurationContext) this).componentModel.defaultPrefix();
+            return ((StatelessComponentDriver) this.driver).model.defaultPrefix();
         }
     }
 
