@@ -23,6 +23,7 @@ import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
+import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerConfiguration;
@@ -59,6 +60,7 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         public final ComponentModel model;
 
         public StatelessComponentDriver(ComponentLookup lookup, Class<?> implementation) {
+            requireNonNull(implementation, "implementation is null");
             this.model = lookup.componentModelOf(implementation);
         }
 
@@ -88,8 +90,8 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
             this.instance = requireNonNull(instance);
         }
 
-        public StatelessConfiguration toConf(PackedComponentConfigurationContext context) {
-            return new PackedStatelessComponentConfiguration(context);
+        public <T> SingletonConfiguration<T> toConf(PackedComponentConfigurationContext context) {
+            return new PackedSingletonConfiguration<>(context);
         }
 
         public MethodHandle fromFactory(PackedContainerConfigurationContext context) {

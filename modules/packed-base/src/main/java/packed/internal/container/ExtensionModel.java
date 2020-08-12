@@ -410,17 +410,4 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
             }
         }
     }
-
-//    static class ExtensionComparator implements Comparator<ExtensionModel> {
-//
-//        /** {@inheritDoc} */
-//        @Override
-//        public int compare(ExtensionModel m1, ExtensionModel m2) {
-//            if (m1.depth == m2.depth) {
-//                int c = m1.
-//            }
-//            return m1.depth - m2.depth;
-//        }
-//
-//    }
 }

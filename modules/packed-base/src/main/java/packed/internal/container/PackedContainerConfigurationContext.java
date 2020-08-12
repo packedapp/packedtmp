@@ -51,7 +51,6 @@ import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
-import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.hook.applicator.DelayedAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarFieldDelayerAccessor;
@@ -238,9 +237,10 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         ComponentModel model = lookup.componentModelOf(factory.rawType());
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(lookup, factory);
+
         PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(scd, configSite, null, this);
         model.invokeOnHookOnInstall(source, conf);
-        return new PackedSingletonConfiguration<>(conf);
+        return scd.toConf(conf);
     }
 
     public <T> SingletonConfiguration<T> installInstance(T instance) {
@@ -248,14 +248,15 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         ComponentModel model = lookup.componentModelOf(instance.getClass());
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(lookup, instance);
+
         PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(scd, configSite, null, this);
         model.invokeOnHookOnInstall(source, conf);
-        return new PackedSingletonConfiguration<>(conf);
+        return scd.toConf(conf);
     }
 
     public StatelessConfiguration installStateless(Class<?> implementation) {
-        requireNonNull(implementation, "implementation is null");
         StatelessComponentDriver scd = new StatelessComponentDriver(lookup, implementation);
+
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(scd, configSite, null, this);
         scd.model.invokeOnHookOnInstall(source, conf);
