@@ -140,7 +140,7 @@ public final class WireletPack {
             }
             wc = wc.parent;
         }
-        return pcc.name;
+        return pcc.getName();
     }
 
     // That name wirelet.. should only be used by the top-container....

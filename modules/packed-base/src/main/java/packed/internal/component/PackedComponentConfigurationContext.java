@@ -113,6 +113,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     protected ComponentConfigurationState state = new ComponentConfigurationState();
 
     private final Object source;
+
     /** Any wirelets that was specified by the user when creating this configuration. */
     @Nullable
     public final WireletPack wireletContext;
@@ -190,25 +191,6 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
             return (PackedContainerConfigurationContext) this;
         }
         return container;
-    }
-
-    /**
-     * Adds the specified child to this component.
-     * 
-     * @param child
-     *            the child to add
-     */
-    protected final void addChild(PackedComponentConfigurationContext child) {
-        requireNonNull(child.name);
-        HashMap<String, PackedComponentConfigurationContext> c = children;
-        if (c == null) {
-            c = children = new HashMap<>();
-            firstChild = lastChild = child;
-        } else {
-            lastChild.nextSiebling = child;
-            lastChild = child;
-        }
-        children.put(child.name, child);
     }
 
     /**
@@ -325,7 +307,6 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
                     if (cwn != null) {
                         nameState = NAME_INITIALIZED_WITH_WIRELET;
                         n = cwn.name;
-                        // System.out.println("FOund wirelet " + n);
                     }
                 }
             }
@@ -361,12 +342,17 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
                 parent.children.put(n, this);
             } else {
                 name = n;
-                parent.addChild(this);
+                if (parent.children == null) {
+                    parent.children = new HashMap<>();
+                    parent.firstChild = parent.lastChild = this;
+                } else {
+                    parent.lastChild.nextSiebling = this;
+                    parent.lastChild = this;
+                }
+                parent.children.put(n, this);
             }
-
         }
         name = n;
-        // System.out.println("Name set to " + n);
     }
 
     private String initializeName0() {
@@ -484,13 +470,6 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
 //        }
 //        throw new InternalError();
     }
-
-//    public static void main(String[] args) {
-//        int nameState = NAME_INITIALIZED_WITH_WIRELET;
-//        System.out.println(Integer.toBinaryString(nameState));
-//        nameState = (nameState & ~NAME_GETSET_MASK) | NAME_GET;
-//        System.out.println(Integer.toBinaryString(nameState));
-//    }
 
     final Map<String, PackedComponent> initializeChildren(PackedComponent parent, PackedInstantiationContext ic) {
         if (firstChild == null) {

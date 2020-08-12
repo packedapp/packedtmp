@@ -78,10 +78,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
     @Nullable
     public PackedExtensionConfiguration activeExtension;
 
-    /** The component that was last installed. */
-    @Nullable
-    private PackedComponentConfigurationContext currentComponent;
-
     /** All used extensions, in order of registration. */
     private final LinkedHashMap<Class<? extends Extension>, PackedExtensionConfiguration> extensions = new LinkedHashMap<>();
 
@@ -166,7 +162,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
     }
 
     private void assembleExtensions() {
-        installPrepare(State.GET_NAME_INVOKED);
         advanceTo(LS_3_FINISHED);
     }
 
@@ -254,8 +249,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(lookup, factory);
         PackedSingletonConfigurationContext<T> conf = new PackedSingletonConfigurationContext<>(scd, configSite, this, model, (BaseFactory<T>) factory);
-        installPrepare(State.INSTALL_INVOKED);
-        currentComponent = conf;
         model.invokeOnHookOnInstall(source, conf);
         return new PackedSingletonConfiguration<>(conf);
     }
@@ -266,14 +259,8 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(lookup, instance);
         PackedSingletonConfigurationContext<T> conf = new PackedSingletonConfigurationContext<>(scd, configSite, this, model, instance);
-        installPrepare(State.INSTALL_INVOKED);
-        currentComponent = conf;
         model.invokeOnHookOnInstall(source, conf);
         return new PackedSingletonConfiguration<>(conf);
-    }
-
-    private void installPrepare(State state) {
-
     }
 
     public StatelessConfiguration installStateless(Class<?> implementation) {
@@ -281,8 +268,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         StatelessComponentDriver scd = new StatelessComponentDriver(lookup, implementation);
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(scd, configSite, null, this);
-        installPrepare(State.INSTALL_INVOKED);
-        currentComponent = conf;
         scd.model.invokeOnHookOnInstall(source, conf);
         return scd.toConf(conf);
     }
@@ -336,12 +321,9 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         }
 
         // finalize name of this container
-        installPrepare(State.LINK_INVOKED);
-        currentComponent = null;// need to clear out current component...
         if (child instanceof PackedComponentConfigurationContext) {
             ((PackedContainerConfigurationContext) child).configure();
         }
-        // addChild(child);
     }
 
     public void lookup(@Nullable Lookup lookup) {
