@@ -264,7 +264,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         PackedSingletonConfigurationContext<T> conf = new PackedSingletonConfigurationContext<>(configSite, this, model, (BaseFactory<T>) factory);
         installPrepare(State.INSTALL_INVOKED);
         currentComponent = conf;
-        conf.runHooks(source);
+        model.invokeOnHookOnInstall(source, conf);
         return new PackedSingletonConfiguration<>(conf);
     }
 
@@ -275,7 +275,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         PackedSingletonConfigurationContext<T> conf = new PackedSingletonConfigurationContext<>(configSite, this, model, instance);
         installPrepare(State.INSTALL_INVOKED);
         currentComponent = conf;
-        conf.runHooks(source);
+        model.invokeOnHookOnInstall(source, conf);
         return new PackedSingletonConfiguration<>(conf);
     }
 
