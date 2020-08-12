@@ -19,8 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -49,11 +47,12 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
     public final PackedComponentConfigurationContext componentConfiguration;
 
     // Need to main any guest ancestor. As images must resolve in relation to it.
-    private final List<PackedGuestConfigurationContext> pgc;
+    // private final List<PackedGuestConfigurationContext> pgc;
 
-    private ComponentConfigurationToComponentAdaptor(PackedComponentConfigurationContext componentConfiguration, List<PackedGuestConfigurationContext> pgc) {
+    private ComponentConfigurationToComponentAdaptor(
+            PackedComponentConfigurationContext componentConfiguration /* , List<PackedGuestConfigurationContext> pgc */) {
         this.componentConfiguration = requireNonNull(componentConfiguration);
-        this.pgc = pgc;
+        // this.pgc = pgc;
     }
 
     /** {@inheritDoc} */
@@ -93,7 +92,7 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
             } else {
                 LinkedHashMap<String, ComponentConfigurationToComponentAdaptor> m = new LinkedHashMap<>();
                 for (PackedComponentConfigurationContext acc = componentConfiguration.firstChild; acc != null; acc = acc.nextSiebling) {
-                    m.put(acc.name, of0(acc, pgc));
+                    m.put(acc.name, of0(acc /* , pgc */));
                 }
                 c = children = Map.copyOf(m);
             }
@@ -112,9 +111,9 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
     @Override
     public final int depth() {
         int depth = componentConfiguration.depth;
-        for (PackedGuestConfigurationContext p : pgc) {
-            depth += p.depth;
-        }
+        /*
+         * for (PackedGuestConfigurationContext p : pgc) { depth += p.depth; }
+         */
         return depth;
     }
 
@@ -144,9 +143,9 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
     @Override
     public final ComponentPath path() {
         ComponentPath cp = componentConfiguration.path();
-        for (PackedGuestConfigurationContext p : pgc) {
-            cp = p.path().add(cp);
-        }
+//        for (PackedGuestConfigurationContext p : pgc) {
+//            cp = p.path().add(cp);
+//        }
         return cp;
     }
 
@@ -178,18 +177,21 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
     }
 
     public static Component of(PackedContainerConfigurationContext pcc) {
-        return of0(pcc, List.of());
+        return new ComponentConfigurationToComponentAdaptor(pcc /* , pgc */);
+        // return of0(pcc, List.of());
     }
 
-    private static ComponentConfigurationToComponentAdaptor of0(PackedComponentConfigurationContext bcc, List<PackedGuestConfigurationContext> pgc) {
-        if (bcc instanceof PackedGuestConfigurationContext) {
-            // Need to figure out hosts on hosts..
-            PackedGuestConfigurationContext pgcc = (PackedGuestConfigurationContext) bcc;
-            LinkedList<PackedGuestConfigurationContext> al = new LinkedList<>(pgc);
-            al.addFirst(pgcc);
-            return new ComponentConfigurationToComponentAdaptor(pgcc.delegate, List.copyOf(al));
-        } else {
-            return new ComponentConfigurationToComponentAdaptor(bcc, pgc);
-        }
+    private static ComponentConfigurationToComponentAdaptor of0(PackedComponentConfigurationContext bcc /* , List<PackedGuestConfigurationContext> pgc */) {
+        return new ComponentConfigurationToComponentAdaptor(bcc /* , pgc */);
+//        
+//        if (bcc instanceof PackedGuestConfigurationContext) {
+//            // Need to figure out hosts on hosts..
+//            PackedGuestConfigurationContext pgcc = (PackedGuestConfigurationContext) bcc;
+//            LinkedList<PackedGuestConfigurationContext> al = new LinkedList<>(pgc);
+//            al.addFirst(pgcc);
+//            return new ComponentConfigurationToComponentAdaptor(pgcc.delegate, List.copyOf(al));
+//        } else {
+//            return new ComponentConfigurationToComponentAdaptor(bcc, pgc);
+//        }
     }
 }

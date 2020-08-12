@@ -167,22 +167,22 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
         initializeNameXX(null);
     }
 
-    protected PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ConfigSite configSite, PackedHostConfigurationContext parent,
-            PackedContainerConfigurationContext pcc, AssembleOutput output, Wirelet... wirelets) {
-        this.driver = requireNonNull(driver);
-        this.configSite = requireNonNull(configSite);
-        this.source = null;
-        this.wireletContext = WireletPack.from(this, wirelets);
-
-        this.parent = requireNonNull(parent);
-        this.container = null;
-        this.depth = parent.depth + 1;
-        this.pod = ((PackedComponentConfigurationContext) parent).pod; // ??
-
-        this.extension = null;
-        this.artifact = new PackedAssembleContext(pcc, output);
-        initializeNameXX(null);
-    }
+//    protected PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ConfigSite configSite, PackedHostConfigurationContext parent,
+//            PackedContainerConfigurationContext pcc, AssembleOutput output, Wirelet... wirelets) {
+//        this.driver = requireNonNull(driver);
+//        this.configSite = requireNonNull(configSite);
+//        this.source = null;
+//        this.wireletContext = WireletPack.from(this, wirelets);
+//
+//        this.parent = requireNonNull(parent);
+//        this.container = null;
+//        this.depth = parent.depth + 1;
+//        this.pod = ((PackedComponentConfigurationContext) parent).pod; // ??
+//
+//        this.extension = null;
+//        this.artifact = new PackedAssembleContext(pcc, output);
+//        initializeNameXX(null);
+//    }
 
     public PackedContainerConfigurationContext actualContainer() {
         if (this instanceof PackedContainerConfigurationContext) {
