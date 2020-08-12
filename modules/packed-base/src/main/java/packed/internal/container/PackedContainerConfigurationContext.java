@@ -188,7 +188,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         }
         // Initializes the name of the container, and sets the state to State.FINAL
         // initializeName(State.FINAL, null);
-        super.state.oldState = State.FINAL; // Thing is here, that initialize name returns early if name!=null
+        super.finalState = true; // Thing is here, that initialize name returns early if name!=null
     }
 
     public Set<Class<? extends Extension>> extensions() {

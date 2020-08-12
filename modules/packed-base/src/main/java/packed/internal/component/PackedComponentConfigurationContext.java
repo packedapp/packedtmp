@@ -108,9 +108,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
 
     final PackedPodConfigurationContext pod;
 
-    /** The state of this configuration. */
-    // Maaske er det en special GuestConfigurationAdaptor som er rod paa runtime.
-    protected ComponentConfigurationState state = new ComponentConfigurationState();
+    protected boolean finalState = false;
 
     protected final Object source;
 
@@ -245,7 +243,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     /** {@inheritDoc} */
     @Override
     public final void checkConfigurable() {
-        if (state.oldState == State.FINAL) {
+        if (finalState) {
             throw new IllegalStateException("This component can no longer be configured");
         }
     }
