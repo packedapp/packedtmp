@@ -33,7 +33,7 @@ public class PackedStatelessComponentConfiguration extends AbstractComponentConf
     /** {@inheritDoc} */
     @Override
     public Class<?> definition() {
-        return context.definition();
+        return context.componentModel.type();
     }
 
     /** {@inheritDoc} */

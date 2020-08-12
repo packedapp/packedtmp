@@ -297,7 +297,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         PackedStatelessComponentConfigurationContext conf = new PackedStatelessComponentConfigurationContext(configSite, this, model);
         installPrepare(State.INSTALL_INVOKED);
         currentComponent = conf;
-        conf.runHooks(source);
+        conf.componentModel.invokeOnHookOnInstall(source, conf);
         return new PackedStatelessComponentConfiguration(conf);
     }
 
