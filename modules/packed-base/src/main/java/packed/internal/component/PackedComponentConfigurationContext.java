@@ -102,8 +102,11 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     @Nullable
     protected PackedComponentConfigurationContext firstChild;
 
+    @Nullable
+    protected PackedComponentConfigurationContext lastChild;
+
     // We maintain this here instead of in a LinkedHashMap, because the insertion order
-    // is a little whacked if we change naming
+    // is effected if we change the name of a component. Which we do not want.
     @Nullable
     protected PackedComponentConfigurationContext nextSiebling;
 
@@ -181,9 +184,10 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
         HashMap<String, PackedComponentConfigurationContext> c = children;
         if (c == null) {
             c = children = new HashMap<>();
-            firstChild = child;
+            firstChild = lastChild = child;
         } else {
-            firstChild.nextSiebling = child;
+            lastChild.nextSiebling = child;
+            lastChild = child;
         }
         children.put(child.name, child);
     }
