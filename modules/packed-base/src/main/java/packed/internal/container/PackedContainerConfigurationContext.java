@@ -53,7 +53,6 @@ import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
 import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.component.PackedSingletonConfigurationContext;
 import packed.internal.component.PackedStatelessComponentConfiguration;
-import packed.internal.component.PackedStatelessComponentConfigurationContext;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.hook.applicator.DelayedAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarFieldDelayerAccessor;
@@ -295,7 +294,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         requireNonNull(implementation, "implementation is null");
         StatelessComponentDriver scd = new StatelessComponentDriver(lookup, implementation);
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
-        PackedComponentConfigurationContext conf = new PackedStatelessComponentConfigurationContext(configSite, this, scd, scd.model);
+        PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(scd, configSite, this);
         installPrepare(State.INSTALL_INVOKED);
         currentComponent = conf;
         scd.model.invokeOnHookOnInstall(source, conf);

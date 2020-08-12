@@ -49,7 +49,7 @@ import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.hook.applicator.DelayedAccessor;
 
 /** A common superclass for all component configuration classes. */
-public abstract class PackedComponentConfigurationContext implements ComponentConfigurationContext {
+public class PackedComponentConfigurationContext implements ComponentConfigurationContext {
 
     /** A stack walker used from {@link #captureStackFrame(String)}. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
@@ -128,7 +128,7 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
      * @param parent
      *            the parent of the component
      */
-    protected PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ConfigSite configSite, PackedComponentConfigurationContext parent) {
+    public PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ConfigSite configSite, PackedComponentConfigurationContext parent) {
         this.driver = requireNonNull(driver);
         this.configSite = requireNonNull(configSite);
 
