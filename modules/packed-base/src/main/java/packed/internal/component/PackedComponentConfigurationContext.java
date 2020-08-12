@@ -226,7 +226,6 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
      * @return whether or not to filter the frame
      */
     private final boolean captureStackFrameIgnoreFilter(StackFrame frame) {
-
         Class<?> c = frame.getDeclaringClass();
         // Det virker ikke skide godt, hvis man f.eks. er en metode on a abstract bundle der override configure()...
         // Syntes bare vi filtrer app.packed.base modulet fra...
@@ -334,7 +333,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
 
         boolean isFree = false;
         if (n == null) {
-            n = initializeNameDefaultName();
+            n = initializeName0();
             isFree = true;
         } else if (n.endsWith("?")) {
             n = n.substring(0, n.length() - 1);
@@ -355,7 +354,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
         return this.name = n;
     }
 
-    public final String initializeNameDefaultName() {
+    private String initializeName0() {
         if (this instanceof PackedContainerConfigurationContext) {
             // I think try and move some of this to ComponentNameWirelet
             @Nullable

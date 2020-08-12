@@ -15,14 +15,7 @@
  */
 package packed.internal.component;
 
-import static java.util.Objects.requireNonNull;
-
-import app.packed.artifact.ArtifactDriver;
-import app.packed.artifact.ArtifactSource;
-import app.packed.component.Bundle;
-import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import packed.internal.artifact.PackedArtifactImage;
 
 /**
  * The defa
@@ -38,21 +31,21 @@ public final class PackedHostConfigurationContext extends PackedComponentConfigu
         super(PackedComponentDriver.defaultComp(), configSite, parent);
     }
 
-    public void deploy(ArtifactSource source, ArtifactDriver<?> driver, Wirelet... wirelets) {
-        requireNonNull(source, "source is null");
-        requireNonNull(driver, "driver is null");
-
-        PackedArtifactImage img;
-        if (source instanceof PackedArtifactImage) {
-            img = ((PackedArtifactImage) source).with(wirelets);
-        } else {
-            img = PackedArtifactImage.of((Bundle<?>) source, wirelets);
-        }
-
-        PackedGuestConfigurationContext pgc = new PackedGuestConfigurationContext(this, img.configuration(), img);
-        pgc.initializeName(State.LINK_INVOKED, null);
-
-        addChild(pgc);
-    }
+//    public void deploy(ArtifactSource source, ArtifactDriver<?> driver, Wirelet... wirelets) {
+//        requireNonNull(source, "source is null");
+//        requireNonNull(driver, "driver is null");
+//
+//        PackedArtifactImage img;
+//        if (source instanceof PackedArtifactImage) {
+//            img = ((PackedArtifactImage) source).with(wirelets);
+//        } else {
+//            img = PackedArtifactImage.of((Bundle<?>) source, wirelets);
+//        }
+//
+//        PackedGuestConfigurationContext pgc = new PackedGuestConfigurationContext(this, img.configuration(), img);
+//        pgc.initializeName(State.LINK_INVOKED, null);
+//
+//        addChild(pgc);
+//    }
 
 }
