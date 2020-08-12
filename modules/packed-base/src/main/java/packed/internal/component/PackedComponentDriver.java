@@ -15,6 +15,8 @@
  */
 package packed.internal.component;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.ComponentConfiguration;
@@ -27,6 +29,7 @@ import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.container.ComponentLookup;
 import packed.internal.container.PackedContainer;
 import packed.internal.container.PackedContainerConfigurationContext;
+import packed.internal.inject.factory.BaseFactory;
 
 /**
  *
@@ -64,16 +67,22 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
     public static class SingletonComponentDriver extends DefaultComponentDriver {
         public final ComponentModel model;
 
-        public SingletonComponentDriver(ComponentLookup lookup, Class<?> implementation) {
-            this.model = lookup.componentModelOf(implementation);
-        }
+        @Nullable
+        public final BaseFactory<?> factory;
+
+        @Nullable
+        public final Object instance;
 
         public SingletonComponentDriver(ComponentLookup lookup, Factory<?> factory) {
             this.model = lookup.componentModelOf(factory.rawType());
+            this.factory = (@Nullable BaseFactory<?>) factory;
+            this.instance = null;
         }
 
         public SingletonComponentDriver(ComponentLookup lookup, Object instance) {
             this.model = lookup.componentModelOf(instance.getClass());
+            this.factory = null;
+            this.instance = requireNonNull(instance);
         }
 
         public StatelessConfiguration toConf(PackedComponentConfigurationContext context) {

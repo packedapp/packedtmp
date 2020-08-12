@@ -24,10 +24,7 @@ import app.packed.component.ComponentDriver;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
-/**
- *
- */
-// Bundle Accessor
+/** Helper class to access non-public members in {@link Bundle}. */
 public final class BundleConfiguration {
 
     private static final BundleConfiguration CONSUMED_SUCCESFULLY = new BundleConfiguration();

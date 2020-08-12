@@ -35,6 +35,7 @@ import app.packed.service.Provide;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceMode;
+import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.PackedSingletonConfigurationContext;
 import packed.internal.container.WireletList;
 import packed.internal.inject.ConfigSiteInjectOperations;
@@ -94,8 +95,9 @@ public final class ServiceProvidingManager {
     public void addProvidesHook(AtProvidesHook hook, PackedSingletonConfigurationContext cc) {
         // The parent node is not added until #provideFactory or #provideInstance
         AbstractComponentBuildEntry parentNode;
-        if (cc.instance != null) {
-            parentNode = new ComponentConstantBuildEntry<>(node, cc.configSite(), cc, cc.instance);
+        SingletonComponentDriver driver = (SingletonComponentDriver) cc.driver;
+        if (driver.instance != null) {
+            parentNode = new ComponentConstantBuildEntry<>(node, cc.configSite(), cc, driver.instance);
         } else {
             BaseFactory<?> factory = cc.factory;
             List<ServiceDependency> dependencies = factory.factory.dependencies;

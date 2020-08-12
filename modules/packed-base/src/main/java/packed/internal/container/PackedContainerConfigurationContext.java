@@ -238,7 +238,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         ComponentModel model = lookup.componentModelOf(factory.rawType());
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(lookup, factory);
-        PackedSingletonConfigurationContext<T> conf = new PackedSingletonConfigurationContext<>(scd, configSite, this, model, (BaseFactory<T>) factory);
+        PackedSingletonConfigurationContext<T> conf = new PackedSingletonConfigurationContext<>(scd, configSite, this, (BaseFactory<T>) factory);
         model.invokeOnHookOnInstall(source, conf);
         return new PackedSingletonConfiguration<>(conf);
     }
@@ -248,7 +248,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         ComponentModel model = lookup.componentModelOf(instance.getClass());
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(lookup, instance);
-        PackedSingletonConfigurationContext<T> conf = new PackedSingletonConfigurationContext<>(scd, configSite, this, model, instance);
+        PackedSingletonConfigurationContext<T> conf = new PackedSingletonConfigurationContext<>(scd, configSite, this, instance);
         model.invokeOnHookOnInstall(source, conf);
         return new PackedSingletonConfiguration<>(conf);
     }
@@ -338,16 +338,17 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
                         SidecarFieldDelayerAccessor sda = (SidecarFieldDelayerAccessor) da;
                         MethodHandle mh = sda.pra.mh;
                         if (!Modifier.isStatic(sda.pra.field.getModifiers())) {
-                            PackedSingletonConfigurationContext<?> icc = ((PackedSingletonConfigurationContext<?>) cc);
-                            mh = mh.bindTo(icc.instance);
+                            SingletonComponentDriver scd = (SingletonComponentDriver) cc.driver;
+
+                            mh = mh.bindTo(scd.instance);
                         }
                         ig = sda.pra.operator.invoke(mh);
                     } else {
                         SidecarMethodDelayerAccessor sda = (SidecarMethodDelayerAccessor) da;
                         MethodHandle mh = sda.pra.mh;
                         if (!Modifier.isStatic(sda.pra.method.getModifiers())) {
-                            PackedSingletonConfigurationContext<?> icc = ((PackedSingletonConfigurationContext<?>) cc);
-                            mh = mh.bindTo(icc.instance);
+                            SingletonComponentDriver scd = (SingletonComponentDriver) cc.driver;
+                            mh = mh.bindTo(scd.instance);
                         }
                         ig = sda.pra.operator.apply(mh);
                     }

@@ -29,26 +29,22 @@ import packed.internal.inject.factory.FactoryHandle;
  */
 public final class PackedSingletonConfigurationContext<T> extends PackedComponentConfigurationContext {
 
-    public final ComponentModel componentModel;
-
     @Nullable
     public final BaseFactory<T> factory;
 
     @Nullable
+    @Deprecated
     public final T instance;
 
     public PackedSingletonConfigurationContext(PackedComponentDriver<?> cd, ConfigSite configSite, PackedComponentConfigurationContext parent,
-            ComponentModel componentModel, BaseFactory<T> factory) {
+            BaseFactory<T> factory) {
         super(cd, configSite, null, parent);
-        this.componentModel = requireNonNull(componentModel);
         this.factory = requireNonNull(factory);
         this.instance = null;
     }
 
-    public PackedSingletonConfigurationContext(PackedComponentDriver<?> cd, ConfigSite configSite, PackedComponentConfigurationContext parent,
-            ComponentModel componentModel, T instance) {
+    public PackedSingletonConfigurationContext(PackedComponentDriver<?> cd, ConfigSite configSite, PackedComponentConfigurationContext parent, T instance) {
         super(cd, configSite, null, parent);
-        this.componentModel = requireNonNull(componentModel);
         this.factory = null;
         this.instance = requireNonNull(instance);
     }

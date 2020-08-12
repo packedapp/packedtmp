@@ -58,10 +58,6 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     /** The artifact this component is a part of. */
     private final PackedAssembleContext artifact;
 
-    /** Any children of this component (lazily initialized). */
-    @Nullable
-    private HashMap<String, PackedComponentConfigurationContext> children;
-
     /** The configuration site of this component. */
     private final ConfigSite configSite;
 
@@ -86,26 +82,6 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     @Nullable
     private final PackedExtensionConfiguration extension;
 
-    /** The first child of this component. */
-    @Nullable
-    protected PackedComponentConfigurationContext firstChild;
-
-    @Nullable
-    protected PackedComponentConfigurationContext lastChild;
-
-    /** The name of the component. */
-    @Nullable
-    public String name;
-
-    // We maintain this here instead of in a LinkedHashMap, because the insertion order
-    // is effected if we change the name of a component. Which we do not want.
-    @Nullable
-    public PackedComponentConfigurationContext nextSiebling;
-
-    /** The parent of this component, or null for a root container. */
-    @Nullable
-    public final PackedComponentConfigurationContext parent;
-
     final PackedPodConfigurationContext pod;
 
     protected boolean finalState = false;
@@ -115,6 +91,30 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     /** Any wirelets that was specified by the user when creating this configuration. */
     @Nullable
     public final WireletPack wireletContext;
+
+    /** The name of the component. */
+    @Nullable
+    public String name;
+
+    /** Any children of this component (lazily initialized). */
+    @Nullable
+    private HashMap<String, PackedComponentConfigurationContext> children;
+
+    /** The first child of this component. */
+    @Nullable
+    protected PackedComponentConfigurationContext firstChild;
+
+    @Nullable
+    private PackedComponentConfigurationContext lastChild;
+
+    // We maintain this here instead of in a LinkedHashMap, because the insertion order
+    // is effected if we change the name of a component. Which we do not want.
+    @Nullable
+    public PackedComponentConfigurationContext nextSiebling;
+
+    /** The parent of this component, or null for a root container. */
+    @Nullable
+    public final PackedComponentConfigurationContext parent;
 
     /**
      * A special constructor for the top level container.
@@ -166,23 +166,6 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
         this.artifact = parent.artifact;
         initializeNameXX(null);
     }
-
-//    protected PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ConfigSite configSite, PackedHostConfigurationContext parent,
-//            PackedContainerConfigurationContext pcc, AssembleOutput output, Wirelet... wirelets) {
-//        this.driver = requireNonNull(driver);
-//        this.configSite = requireNonNull(configSite);
-//        this.source = null;
-//        this.wireletContext = WireletPack.from(this, wirelets);
-//
-//        this.parent = requireNonNull(parent);
-//        this.container = null;
-//        this.depth = parent.depth + 1;
-//        this.pod = ((PackedComponentConfigurationContext) parent).pod; // ??
-//
-//        this.extension = null;
-//        this.artifact = new PackedAssembleContext(pcc, output);
-//        initializeNameXX(null);
-//    }
 
     public PackedContainerConfigurationContext actualContainer() {
         if (this instanceof PackedContainerConfigurationContext) {
