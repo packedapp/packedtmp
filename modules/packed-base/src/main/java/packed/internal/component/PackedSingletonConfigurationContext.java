@@ -15,37 +15,21 @@
  */
 package packed.internal.component;
 
-import static java.util.Objects.requireNonNull;
-
-import java.lang.invoke.MethodHandle;
-
-import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import packed.internal.inject.factory.BaseFactory;
-import packed.internal.inject.factory.FactoryHandle;
 
 /**
  *
  */
 public final class PackedSingletonConfigurationContext<T> extends PackedComponentConfigurationContext {
 
-    @Nullable
-    @Deprecated
-    public final BaseFactory<T> factory;
-
     public PackedSingletonConfigurationContext(PackedComponentDriver<?> cd, ConfigSite configSite, PackedComponentConfigurationContext parent,
             BaseFactory<T> factory) {
         super(cd, configSite, null, parent);
-        this.factory = requireNonNull(factory);
     }
 
     public PackedSingletonConfigurationContext(PackedComponentDriver<?> cd, ConfigSite configSite, PackedComponentConfigurationContext parent, T instance) {
         super(cd, configSite, null, parent);
-        this.factory = null;
     }
 
-    public MethodHandle fromFactory() {
-        FactoryHandle<?> handle = factory.factory.handle;
-        return container().fromFactoryHandle(handle);
-    }
 }
