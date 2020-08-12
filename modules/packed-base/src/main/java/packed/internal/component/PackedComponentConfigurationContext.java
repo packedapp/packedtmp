@@ -358,7 +358,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
             }
             // TODO think it should be named Artifact type, for example, app, injector, ...
             return "Unknown";
-        } else if (this instanceof PackedSingletonConfigurationContext) {
+        } else if (this.driver instanceof SingletonComponentDriver) {
             return ((SingletonComponentDriver) this.driver).model.defaultPrefix();
         } else {
             return ((StatelessComponentDriver) this.driver).model.defaultPrefix();

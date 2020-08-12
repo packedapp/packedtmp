@@ -52,13 +52,11 @@ import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
 import packed.internal.component.PackedSingletonConfiguration;
-import packed.internal.component.PackedSingletonConfigurationContext;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.hook.applicator.DelayedAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarFieldDelayerAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarMethodDelayerAccessor;
 import packed.internal.inject.ConfigSiteInjectOperations;
-import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.runtime.PackedInjector;
@@ -238,7 +236,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         ComponentModel model = lookup.componentModelOf(factory.rawType());
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(lookup, factory);
-        PackedSingletonConfigurationContext<T> conf = new PackedSingletonConfigurationContext<>(scd, configSite, this, (BaseFactory<T>) factory);
+        PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(scd, configSite, null, this);
         model.invokeOnHookOnInstall(source, conf);
         return new PackedSingletonConfiguration<>(conf);
     }
@@ -248,7 +246,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         ComponentModel model = lookup.componentModelOf(instance.getClass());
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(lookup, instance);
-        PackedSingletonConfigurationContext<T> conf = new PackedSingletonConfigurationContext<>(scd, configSite, this, instance);
+        PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(scd, configSite, null, this);
         model.invokeOnHookOnInstall(source, conf);
         return new PackedSingletonConfiguration<>(conf);
     }

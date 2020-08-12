@@ -23,9 +23,9 @@ import app.packed.component.SingletonConfiguration;
  */
 public class PackedSingletonConfiguration<T> extends AbstractComponentConfiguration implements SingletonConfiguration<T> {
 
-    public final PackedSingletonConfigurationContext<T> context;
+    public final PackedComponentConfigurationContext context;
 
-    public PackedSingletonConfiguration(PackedSingletonConfigurationContext<T> context) {
+    public PackedSingletonConfiguration(PackedComponentConfigurationContext context) {
         super(context);
         this.context = context;
     }

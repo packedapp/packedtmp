@@ -35,8 +35,8 @@ import app.packed.service.Provide;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceMode;
+import packed.internal.component.PackedComponentConfigurationContext;
 import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
-import packed.internal.component.PackedSingletonConfigurationContext;
 import packed.internal.container.WireletList;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.ServiceDependency;
@@ -58,7 +58,7 @@ import packed.internal.service.runtime.AbstractInjector;
 public final class ServiceProvidingManager {
 
     /** A map used to cache build entries, connect stuff */
-    private final IdentityHashMap<PackedSingletonConfigurationContext<?>, BuildEntry<?>> componentConfigurationCache = new IdentityHashMap<>();
+    private final IdentityHashMap<PackedComponentConfigurationContext, BuildEntry<?>> componentConfigurationCache = new IdentityHashMap<>();
 
     /** A map of build entries that provide services with the same key. */
     @Nullable
@@ -92,7 +92,7 @@ public final class ServiceProvidingManager {
      *            the configuration of the annotated component
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void addProvidesHook(AtProvidesHook hook, PackedSingletonConfigurationContext cc) {
+    public void addProvidesHook(AtProvidesHook hook, PackedComponentConfigurationContext cc) {
         // The parent node is not added until #provideFactory or #provideInstance
         AbstractComponentBuildEntry parentNode;
         SingletonComponentDriver driver = (SingletonComponentDriver) cc.driver;
@@ -132,7 +132,7 @@ public final class ServiceProvidingManager {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> ServiceComponentConfiguration<T> provideFactory(PackedSingletonConfigurationContext<T> cc) {
+    public <T> ServiceComponentConfiguration<T> provideFactory(PackedComponentConfigurationContext cc) {
         SingletonComponentDriver scd = (SingletonComponentDriver) cc.driver;
         BuildEntry<?> c = componentConfigurationCache.get(cc);// remove??
         if (c == null) {
@@ -145,7 +145,7 @@ public final class ServiceProvidingManager {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> ServiceComponentConfiguration<T> provideInstance(PackedSingletonConfigurationContext cc, T instance) {
+    public <T> ServiceComponentConfiguration<T> provideInstance(PackedComponentConfigurationContext cc, T instance) {
         // First see if we have already installed the node. This happens in #set if the component container any members
         // annotated with @Provides
         BuildEntry<?> c = componentConfigurationCache.get(cc);

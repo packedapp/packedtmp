@@ -24,7 +24,7 @@ import app.packed.base.InvalidDeclarationException;
 import app.packed.config.ConfigSite;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceMode;
-import packed.internal.component.PackedSingletonConfigurationContext;
+import packed.internal.component.PackedComponentConfigurationContext;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
@@ -53,8 +53,8 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         this.mha = requireNonNull(mh);
     }
 
-    public ComponentFactoryBuildEntry(ServiceExtensionNode injectorBuilder, PackedSingletonConfigurationContext<T> cc, ServiceMode instantionMode,
-            MethodHandle mh, List<ServiceDependency> dependencies) {
+    public ComponentFactoryBuildEntry(ServiceExtensionNode injectorBuilder, PackedComponentConfigurationContext cc, ServiceMode instantionMode, MethodHandle mh,
+            List<ServiceDependency> dependencies) {
         super(injectorBuilder, cc.configSite(), dependencies, null, cc);
         this.instantionMode = requireNonNull(instantionMode);
         this.mha = requireNonNull(mh);

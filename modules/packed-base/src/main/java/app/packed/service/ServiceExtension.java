@@ -27,15 +27,15 @@ import app.packed.config.ConfigSite;
 import app.packed.container.ContainerDescriptor;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
-import app.packed.container.ExtensionWired;
 import app.packed.container.ExtensionSidecar;
+import app.packed.container.ExtensionWired;
 import app.packed.hook.OnHook;
 import app.packed.inject.Factory;
 import app.packed.lifecycleold.OnStart;
 import app.packed.sidecar.Expose;
 import app.packed.statemachine.Leaving;
+import packed.internal.component.PackedComponentConfigurationContext;
 import packed.internal.component.PackedSingletonConfiguration;
-import packed.internal.component.PackedSingletonConfigurationContext;
 import packed.internal.container.WireletList;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.ServiceDependency;
@@ -310,7 +310,7 @@ public final class ServiceExtension extends Extension {
      *            the configuration of the component that uses the annotation
      */
     @OnHook
-    void onHook(AtProvidesHook hook, PackedSingletonConfigurationContext<?> cc) {
+    void onHook(AtProvidesHook hook, PackedComponentConfigurationContext cc) {
         node.provider().addProvidesHook(hook, cc);
     }
 
@@ -395,7 +395,7 @@ public final class ServiceExtension extends Extension {
      */
     public <T> ServiceComponentConfiguration<T> provideConstant(T instance) {
         // configurability is checked by ComponentExtension
-        PackedSingletonConfigurationContext<T> cc = ((PackedSingletonConfiguration<T>) installInstance(instance)).context;
+        PackedComponentConfigurationContext cc = ((PackedSingletonConfiguration<T>) installInstance(instance)).context;
         return node.provider().provideInstance(cc, instance);
     }
 
