@@ -112,7 +112,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     // Maaske er det en special GuestConfigurationAdaptor som er rod paa runtime.
     protected ComponentConfigurationState state = new ComponentConfigurationState();
 
-    private final Object source;
+    protected final Object source;
 
     /** Any wirelets that was specified by the user when creating this configuration. */
     @Nullable

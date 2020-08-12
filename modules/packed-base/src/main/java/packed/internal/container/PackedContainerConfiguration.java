@@ -54,7 +54,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** {@inheritDoc} */
     @Override
     public <T> SingletonConfiguration<T> install(Class<T> implementation) {
-        return context.install(implementation);
+        return install(Factory.find(implementation));
     }
 
     /** {@inheritDoc} */

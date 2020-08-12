@@ -91,9 +91,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
 
     int realState;
 
-    /** The source of the container configuration. Typically a Bundle. */
-    private final Object source;
-
     /**
      * Creates a new root configuration.
      * 
@@ -108,7 +105,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
      */
     private PackedContainerConfigurationContext(ConfigSite cs, AssembleOutput output, Object source, Wirelet... wirelets) {
         super(ContainerComponentDriver.INSTANCE, cs, source, output, wirelets);
-        this.source = requireNonNull(source);
         this.lookup = this.model = ContainerModel.of(source.getClass());
     }
 
@@ -125,7 +121,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
     public PackedContainerConfigurationContext(PackedComponentDriver<?> driver, PackedComponentConfigurationContext parent, Bundle<?> bundle,
             Wirelet... wirelets) {
         super(driver, ConfigSiteSupport.captureStackFrame(parent.configSite(), ConfigSiteInjectOperations.INJECTOR_OF), bundle, parent, wirelets);
-        this.source = requireNonNull(bundle, "bundle is null");
         this.lookup = this.model = ContainerModel.of(bundle.getClass());
     }
 
@@ -236,11 +231,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
     public PackedExtensionConfiguration getExtensionContext(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         return extensions.get(extensionType);
-    }
-
-    // Flyt til AbstractComponentConfiguration????? Saa det er interfacet der styrer?
-    public <T> SingletonConfiguration<T> install(Class<T> implementation) {
-        return install(Factory.find(implementation));
     }
 
     public <T> SingletonConfiguration<T> install(Factory<T> factory) {
