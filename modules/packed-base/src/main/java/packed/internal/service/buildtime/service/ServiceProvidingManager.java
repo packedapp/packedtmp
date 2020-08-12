@@ -99,7 +99,7 @@ public final class ServiceProvidingManager {
         if (driver.instance != null) {
             parentNode = new ComponentConstantBuildEntry<>(node, cc.configSite(), cc, driver.instance);
         } else {
-            BaseFactory<?> factory = cc.factory;
+            BaseFactory<?> factory = driver.factory;
             List<ServiceDependency> dependencies = factory.factory.dependencies;
             parentNode = new ComponentFactoryBuildEntry<>(node, cc, ServiceMode.SINGLETON, cc.fromFactory(), dependencies);
         }
