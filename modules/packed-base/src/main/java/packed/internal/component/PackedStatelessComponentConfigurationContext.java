@@ -23,16 +23,11 @@ import app.packed.config.ConfigSite;
 /** The default implementation of {@link StatelessConfiguration}. */
 public final class PackedStatelessComponentConfigurationContext extends PackedComponentConfigurationContext {
 
-    private final ComponentModel componentModel;
+    final ComponentModel componentModel;
 
     public PackedStatelessComponentConfigurationContext(ConfigSite configSite, PackedComponentConfigurationContext parent, ComponentModel componentModel) {
         super(PackedComponentDriver.defaultComp(), configSite, parent);
         this.componentModel = requireNonNull(componentModel);
-    }
-
-    @Override
-    protected String initializeNameDefaultName() {
-        return componentModel.defaultPrefix();
     }
 
     public PackedStatelessComponentConfigurationContext runHooks(Object source) {

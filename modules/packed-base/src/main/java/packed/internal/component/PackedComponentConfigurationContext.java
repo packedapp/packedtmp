@@ -339,8 +339,33 @@ public abstract class PackedComponentConfigurationContext implements ComponentCo
         return this.name = n;
     }
 
-    @Deprecated
-    protected abstract String initializeNameDefaultName();
+    public final String initializeNameDefaultName() {
+        if (this instanceof PackedContainerConfigurationContext) {
+            // I think try and move some of this to ComponentNameWirelet
+            @Nullable
+            Class<?> source = ((PackedContainerConfigurationContext) this).sourceType();
+            if (Bundle.class.isAssignableFrom(source)) {
+                String nnn = source.getSimpleName();
+                if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
+                    nnn = nnn.substring(0, nnn.length() - 6);
+                }
+                if (nnn.length() > 0) {
+                    // checkName, if not just App
+                    // TODO need prefix
+                    return nnn;
+                }
+                if (nnn.length() == 0) {
+                    return "Container";
+                }
+            }
+            // TODO think it should be named Artifact type, for example, app, injector, ...
+            return "Unknown";
+        } else if (this instanceof PackedSingletonConfigurationContext) {
+            return ((PackedSingletonConfigurationContext<?>) this).componentModel.defaultPrefix();
+        } else {
+            return ((PackedStatelessComponentConfigurationContext) this).componentModel.defaultPrefix();
+        }
+    }
 
     public boolean isInSameContainer(PackedComponentConfigurationContext other) {
         return containerX() == other.containerX();

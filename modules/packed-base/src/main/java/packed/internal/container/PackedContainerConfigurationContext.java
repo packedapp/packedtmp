@@ -95,7 +95,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
 
     int realState;
 
-    /** The source of the container configuration. Typically a Bundle */
+    /** The source of the container configuration. Typically a Bundle. */
     private final Object source;
 
     /** Any wirelets that was specified by the user when creating this configuration. */
@@ -250,29 +250,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
     public PackedExtensionConfiguration getExtensionContext(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         return extensions.get(extensionType);
-    }
-
-    @Override
-    public String initializeNameDefaultName() {
-        // I think try and move some of this to ComponentNameWirelet
-        @Nullable
-        Class<?> source = this.sourceType();
-        if (Bundle.class.isAssignableFrom(source)) {
-            String nnn = source.getSimpleName();
-            if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
-                nnn = nnn.substring(0, nnn.length() - 6);
-            }
-            if (nnn.length() > 0) {
-                // checkName, if not just App
-                // TODO need prefix
-                return nnn;
-            }
-            if (nnn.length() == 0) {
-                return "Container";
-            }
-        }
-        // TODO think it should be named Artifact type, for example, app, injector, ...
-        return "Unknown";
     }
 
     // Flyt til AbstractComponentConfiguration????? Saa det er interfacet der styrer?

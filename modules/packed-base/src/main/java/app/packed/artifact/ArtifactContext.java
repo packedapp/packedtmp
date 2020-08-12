@@ -42,7 +42,7 @@ import app.packed.service.ServiceExtension;
  */
 // ArtifactContext does not extends ContainerContext??? Fordi ContainerContext er privat
 // til en container. Og en artifact er mere udefar
-public interface ArtifactContext {
+public interface ArtifactContext /* extends System */ {
 
     /**
      * Returns the config site of this artifact.
@@ -60,6 +60,7 @@ public interface ArtifactContext {
      * 
      * @return the extensions that are used
      */
+    // Maaske en attribute istedet for...
     default ExtensionOrdering extensions() {
         return ExtensionOrdering.empty();
     }
@@ -114,6 +115,8 @@ public interface ArtifactContext {
     }
 
     // TypeLiteral??? Maaske returnere execute() et object...
+
+    // En Attribute????
     default Class<?> resultType() {
         // Ideen er her taenkt at vi kan bruge den samme med Job...
         //// En anden slags entry point annotering...

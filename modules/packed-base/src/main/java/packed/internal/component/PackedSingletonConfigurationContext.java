@@ -57,12 +57,6 @@ public final class PackedSingletonConfigurationContext<T> extends PackedComponen
         return container().fromFactoryHandle(handle);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected String initializeNameDefaultName() {
-        return componentModel.defaultPrefix();
-    }
-
     public void runHooks(Object source) {
         componentModel.invokeOnHookOnInstall(source, this);
     }

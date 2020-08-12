@@ -66,10 +66,10 @@ public class PackedComponent implements Component {
      */
     public PackedComponent(@Nullable PackedComponent parent, PackedComponentConfigurationContext context, PackedInstantiationContext ic) {
         this.parent = parent;
-        this.pod = context.pod.pod();
         this.model = requireNonNull(context.descritor());
+        this.pod = requireNonNull(context.pod.pod());
 
-        // Initialize name
+        // Initialize name, we don't want to override this in Configuration context. We don't want the conf to change...
         if (parent == null) {
             String n = context.name;
             ComponentNameWirelet ol = ic.wirelets() == null ? null : ic.wirelets().nameWirelet();

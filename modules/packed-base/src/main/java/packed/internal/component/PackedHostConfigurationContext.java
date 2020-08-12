@@ -55,9 +55,10 @@ public final class PackedHostConfigurationContext extends PackedComponentConfigu
         addChild(pgc);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected String initializeNameDefaultName() {
-        return "Host"; // Host for now, But if we have host driver...
-    }
+//    /** {@inheritDoc} */
+//    @Override
+//    protected String initializeNameDefaultName() {
+//        throw new UnsupportedOperationException();
+//        // return "Host"; // Host for now, But if we have host driver...
+//    }
 }

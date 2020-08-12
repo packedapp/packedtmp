@@ -39,6 +39,8 @@ package app.packed.artifact;
 // inde man gaar videre. Hvis man har et image er det jo ikke noget problem...
 
 interface Pod {
+
+    // Don't really know why we keep the root.
     Class<?> root();
 }
 

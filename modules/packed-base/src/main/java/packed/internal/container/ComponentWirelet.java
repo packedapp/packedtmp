@@ -32,8 +32,6 @@ import app.packed.component.Wirelet;
 // Altsaa det bliver vel smidt vaek naar man har lavet et image....
 
 // Taenker det er noget man kan teste for ArchCheck.check(new DooBundle());
-
-// ComponentWirelet???
 public abstract class ComponentWirelet implements Wirelet {
 
     abstract void process(WireletPack c);

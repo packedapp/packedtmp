@@ -38,12 +38,13 @@ public class PackedGuestConfigurationContext extends PackedComponentConfiguratio
         this.description = pcc.getDescription();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected String initializeNameDefaultName() {
-        if (delegate.name != null) {
-            return delegate.name;
-        }
-        return delegate.initializeNameDefaultName();
-    }
+//    /** {@inheritDoc} */
+//    @Override
+//    protected String initializeNameDefaultName() {
+//        throw new UnsupportedOperationException();
+////        if (delegate.name != null) {
+////            return delegate.name;
+////        }
+////        return delegate.initializeNameDefaultName();
+//    }
 }
