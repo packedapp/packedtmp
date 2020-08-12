@@ -101,7 +101,7 @@ public final class ServiceProvidingManager {
         } else {
             BaseFactory<?> factory = driver.factory;
             List<ServiceDependency> dependencies = factory.factory.dependencies;
-            parentNode = new ComponentFactoryBuildEntry<>(node, cc, ServiceMode.SINGLETON, cc.fromFactory(), dependencies);
+            parentNode = new ComponentFactoryBuildEntry<>(node, cc, ServiceMode.SINGLETON, driver.fromFactory(cc.container()), dependencies);
         }
 
         // If any of the @Provide methods are instance members the parent node needs special treatment.
@@ -137,7 +137,7 @@ public final class ServiceProvidingManager {
         BuildEntry<?> c = componentConfigurationCache.get(cc);// remove??
         if (c == null) {
             List<ServiceDependency> dependencies = scd.factory.factory.dependencies;
-            c = new ComponentFactoryBuildEntry<>(node, cc, ServiceMode.SINGLETON, cc.fromFactory(), (List) dependencies);
+            c = new ComponentFactoryBuildEntry<>(node, cc, ServiceMode.SINGLETON, scd.fromFactory(cc.container()), (List) dependencies);
         }
         c.as((Key) scd.factory.key());
         providingEntries.add(c);

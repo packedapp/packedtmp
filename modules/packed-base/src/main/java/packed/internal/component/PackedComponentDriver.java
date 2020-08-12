@@ -17,6 +17,8 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.ComponentConfiguration;
@@ -30,6 +32,7 @@ import packed.internal.container.ComponentLookup;
 import packed.internal.container.PackedContainer;
 import packed.internal.container.PackedContainerConfigurationContext;
 import packed.internal.inject.factory.BaseFactory;
+import packed.internal.inject.factory.FactoryHandle;
 
 /**
  *
@@ -87,6 +90,11 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
 
         public StatelessConfiguration toConf(PackedComponentConfigurationContext context) {
             return new PackedStatelessComponentConfiguration(context);
+        }
+
+        public MethodHandle fromFactory(PackedContainerConfigurationContext context) {
+            FactoryHandle<?> handle = factory.factory.handle;
+            return context.fromFactoryHandle(handle);
         }
     }
 
