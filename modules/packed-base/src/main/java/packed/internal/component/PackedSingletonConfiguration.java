@@ -43,10 +43,4 @@ public class PackedSingletonConfiguration<T> extends AbstractComponentConfigurat
         context.setName(name);
         return this;
     }
-
-    /** {@inheritDoc} */
-    @Override
-    protected String initializeNameDefaultName() {
-        return context.initializeNameDefaultName();
-    }
 }

@@ -50,10 +50,4 @@ public class PackedStatelessComponentConfiguration extends AbstractComponentConf
         context.setName(name);
         return this;
     }
-
-    /** {@inheritDoc} */
-    @Override
-    protected String initializeNameDefaultName() {
-        return context.initializeNameDefaultName();
-    }
 }

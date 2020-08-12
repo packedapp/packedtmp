@@ -141,8 +141,6 @@ public abstract class AbstractComponentConfiguration implements ComponentConfigu
         return context.getName();
     }
 
-    protected abstract String initializeNameDefaultName();
-
     /** {@inheritDoc} */
     @Override
     public final ComponentPath path() {
