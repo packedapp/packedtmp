@@ -62,10 +62,6 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     @Nullable
     private HashMap<String, PackedComponentConfigurationContext> children;
 
-    /** Any children of this component (lazily initialized). */
-    @Nullable
-    private HashMap<String, PackedComponentConfigurationContext> children2;
-
     /** The configuration site of this component. */
     private final ConfigSite configSite;
 
@@ -317,45 +313,6 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     @Nullable
     public final String getDescription() {
         return description;
-    }
-
-    public final String initializeName(State newState, String setName) {
-        if (true) {
-            return "";
-        }
-        String n = name;
-        if (n != null) {
-            return n;
-        }
-        n = setName;
-        if (this instanceof PackedContainerConfigurationContext) {
-            PackedContainerConfigurationContext pcc = (PackedContainerConfigurationContext) this;
-            if (pcc.wireletContext != null) {
-                n = pcc.wireletContext.name(pcc);
-            }
-        }
-
-        boolean isFree = false;
-        if (n == null) {
-            n = initializeName0();
-            isFree = true;
-        } else if (n.endsWith("?")) {
-            n = n.substring(0, n.length() - 1);
-            isFree = true;
-        }
-
-        if (parent != null && parent.children != null && parent.children.containsKey(n)) {
-            if (!isFree) {
-                throw new RuntimeException("Name already exist " + n);
-            }
-            int counter = 1;
-            String prefix = n;
-            do {
-                n = prefix + counter++;
-            } while (parent.children.containsKey(n));
-        }
-        this.state.oldState = newState;
-        return this.name = n;
     }
 
     private void initializeNameXX(String newName) {

@@ -98,10 +98,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
     /** The source of the container configuration. Typically a Bundle. */
     private final Object source;
 
-//    /** Any wirelets that was specified by the user when creating this configuration. */
-//    @Nullable
-//    public final WireletPack wireletContext;
-
     /**
      * Creates a new root configuration.
      * 
@@ -277,18 +273,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
     }
 
     private void installPrepare(State state) {
-        if (true) {
-            return;
-        }
 
-        if (currentComponent != null) {
-            currentComponent.initializeName(state, null);
-            requireNonNull(currentComponent.name);
-            addChild(currentComponent);
-        } else {
-            // This look strange...
-            initializeName(State.INSTALL_INVOKED, null);
-        }
     }
 
     public StatelessConfiguration installStateless(Class<?> implementation) {
@@ -351,7 +336,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         }
 
         // finalize name of this container
-        initializeName(State.LINK_INVOKED, null);
         installPrepare(State.LINK_INVOKED);
         currentComponent = null;// need to clear out current component...
         if (child instanceof PackedComponentConfigurationContext) {
