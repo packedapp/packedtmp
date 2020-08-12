@@ -16,7 +16,6 @@
 package packed.internal.container;
 
 import java.util.ArrayDeque;
-import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -30,6 +29,9 @@ import app.packed.container.InternalExtensionException;
  */
 final class ExtensionModelLoader {
 
+    // Maaske skal vi baade have id, og depth... Eller er depth ligegyldigt???
+    // final static Map<String, String> baseExtensions = Map.of();
+
     private static final WeakHashMap<Class<? extends Extension>, Throwable> ERRORS = new WeakHashMap<>();
 
     private static final WeakHashMap<Class<? extends Extension>, ExtensionModel> EXTENSIONS = new WeakHashMap<>();
@@ -37,14 +39,11 @@ final class ExtensionModelLoader {
     /** A lock used for making sure that we only load one extension tree at a time. */
     private static final ReentrantLock GLOBAL_LOCK = new ReentrantLock();
 
+    private static int nextExtensionId;
+
     private final ArrayDeque<Class<? extends Extension>> stack = new ArrayDeque<>();
 
     private ExtensionModelLoader() {}
-
-    // Maaske skal vi baade have id, og depth... Eller er depth ligegyldigt???
-    final static Map<String, String> baseExtensions = Map.of();
-
-    private static int nextExtensionId;
 
     private ExtensionModel load1(Class<? extends Extension> extensionType) {
         // Den eneste grund til at vi gennem en exception er pga
@@ -56,10 +55,7 @@ final class ExtensionModelLoader {
 
         ExtensionModel m;
         try {
-            ExtensionModel.Builder builder = new ExtensionModel.Builder(extensionType, this);
-            // System.out.println("Building " + extensionType + " " + nextExtensionId);
-            builder.id = nextExtensionId++;
-            // System.out.println("Building " + extensionType + " " + nextExtensionId);
+            ExtensionModel.Builder builder = new ExtensionModel.Builder(extensionType, this, nextExtensionId++);
 
             // TODO move this to the builder when it has loaded all its dependencies...
             // And maybe make nextExtension it local to Loader and only update the static one

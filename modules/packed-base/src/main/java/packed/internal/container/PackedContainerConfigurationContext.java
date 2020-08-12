@@ -82,6 +82,8 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
     private TreeSet<PackedExtensionConfiguration> extensionsOrdered;
 
     /** The current component lookup object, updated via {@link #lookup(Lookup)} */
+    // useFor future components...
+    // We need to support some way to
     private ComponentLookup lookup;
 
     /** A container model. */

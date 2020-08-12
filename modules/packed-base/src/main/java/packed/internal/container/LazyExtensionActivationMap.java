@@ -16,6 +16,11 @@
 package packed.internal.container;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -105,6 +110,16 @@ public final class LazyExtensionActivationMap {
 
     public static boolean isAutoActivate(Class<?> clazz) {
         return EXTENSION_ACTIVATORS.get(clazz) != null;
+    }
+
+    @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    public @interface LazyExtensionUsage {
+
+        String[] optional() default {};
+
+        Class<? extends Extension>[] value();
     }
 
     public static LazyExtensionActivationMap of(Class<?> cl) {

@@ -311,7 +311,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         /** The depth of the extension relative to other extensions. */
         private int depth;
 
-        int id;
+        final int id;
 
         MethodHandle li;
 
@@ -329,9 +329,10 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
          * @param extensionType
          *            the type of extension we are building a model for
          */
-        Builder(Class<? extends Extension> extensionType, ExtensionModelLoader loader) {
+        Builder(Class<? extends Extension> extensionType, ExtensionModelLoader loader, int id) {
             super(extensionType, STM);
             this.loader = requireNonNull(loader);
+            this.id = id;
         }
 
         private void addDependency(Class<? extends Extension> dependencyType) {
