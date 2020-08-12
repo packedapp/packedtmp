@@ -22,7 +22,6 @@ import java.lang.StackWalker.StackFrame;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -59,7 +58,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
 
     /** Any children of this component (lazily initialized), in order of insertion. */
     @Nullable
-    protected LinkedHashMap<String, PackedComponentConfigurationContext> children;
+    protected HashMap<String, PackedComponentConfigurationContext> children;
 
     /** The configuration site of this component. */
     private final ConfigSite configSite;
@@ -98,6 +97,15 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     protected ComponentConfigurationState state = new ComponentConfigurationState();
 
     final PackedPodConfigurationContext pod;
+
+    /** The first child of this component. */
+    @Nullable
+    protected PackedComponentConfigurationContext firstChild;
+
+    // We maintain this here instead of in a LinkedHashMap, because the insertion order
+    // is a little whacked if we change naming
+    @Nullable
+    protected PackedComponentConfigurationContext nextSiebling;
 
     /**
      * A special constructor for the top level container.
@@ -170,9 +178,12 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
      */
     protected final void addChild(PackedComponentConfigurationContext child) {
         requireNonNull(child.name);
-        LinkedHashMap<String, PackedComponentConfigurationContext> c = children;
+        HashMap<String, PackedComponentConfigurationContext> c = children;
         if (c == null) {
-            c = children = new LinkedHashMap<>();
+            c = children = new HashMap<>();
+            firstChild = child;
+        } else {
+            firstChild.nextSiebling = child;
         }
         children.put(child.name, child);
     }

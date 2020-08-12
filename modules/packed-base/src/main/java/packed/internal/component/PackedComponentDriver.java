@@ -19,6 +19,7 @@ import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
+import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerConfiguration;
 import packed.internal.artifact.PackedInstantiationContext;
@@ -56,6 +57,10 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
 
         public StatelessComponentDriver(ComponentLookup lookup, Class<?> implementation) {
             this.model = lookup.componentModelOf(implementation);
+        }
+
+        public StatelessConfiguration toConf(PackedComponentConfigurationContext context) {
+            return new PackedStatelessComponentConfiguration(context);
         }
     }
 

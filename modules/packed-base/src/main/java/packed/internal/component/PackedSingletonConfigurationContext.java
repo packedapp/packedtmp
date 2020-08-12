@@ -56,8 +56,4 @@ public final class PackedSingletonConfigurationContext<T> extends PackedComponen
         FactoryHandle<?> handle = factory.factory.handle;
         return container().fromFactoryHandle(handle);
     }
-
-    public void runHooks(Object source) {
-        componentModel.invokeOnHookOnInstall(source, this);
-    }
 }

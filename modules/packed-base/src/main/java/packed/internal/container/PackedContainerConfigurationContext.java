@@ -52,7 +52,6 @@ import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
 import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.component.PackedSingletonConfigurationContext;
-import packed.internal.component.PackedStatelessComponentConfiguration;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.hook.applicator.DelayedAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarFieldDelayerAccessor;
@@ -298,7 +297,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         installPrepare(State.INSTALL_INVOKED);
         currentComponent = conf;
         scd.model.invokeOnHookOnInstall(source, conf);
-        return new PackedStatelessComponentConfiguration(conf);
+        return scd.toConf(conf);
     }
 
     public ArtifactContext instantiateArtifact(WireletPack wc) {

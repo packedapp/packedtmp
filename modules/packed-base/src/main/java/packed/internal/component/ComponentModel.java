@@ -106,7 +106,6 @@ public final class ComponentModel extends Model {
             if (sourceHook != null) {
                 sourceHook.invoke(cs, acc);
             }
-
             // Next, invoke any OnHook methods on relevant extensions.
             for (ExtensionRequestPair he : extensionHooks) {
                 // Finds (possible installing) the extension with @OnHook methods
