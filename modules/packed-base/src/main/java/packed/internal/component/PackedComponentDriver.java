@@ -22,6 +22,7 @@ import app.packed.component.ComponentDriver;
 import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerConfiguration;
+import app.packed.inject.Factory;
 import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.container.ComponentLookup;
 import packed.internal.container.PackedContainer;
@@ -44,12 +45,8 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         return new DefaultComponentDriver();
     }
 
-    public static ContainerComponentDriver container() {
+    public static ContainerComponentDriver container(Object source) {
         return new ContainerComponentDriver();
-    }
-
-    public static DefaultComponentDriver statelessBind(ComponentLookup lookup, Class<?> implementation) {
-        return new DefaultComponentDriver();
     }
 
     public static class StatelessComponentDriver extends DefaultComponentDriver {
@@ -57,6 +54,26 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
 
         public StatelessComponentDriver(ComponentLookup lookup, Class<?> implementation) {
             this.model = lookup.componentModelOf(implementation);
+        }
+
+        public StatelessConfiguration toConf(PackedComponentConfigurationContext context) {
+            return new PackedStatelessComponentConfiguration(context);
+        }
+    }
+
+    public static class SingletonComponentDriver extends DefaultComponentDriver {
+        public final ComponentModel model;
+
+        public SingletonComponentDriver(ComponentLookup lookup, Class<?> implementation) {
+            this.model = lookup.componentModelOf(implementation);
+        }
+
+        public SingletonComponentDriver(ComponentLookup lookup, Factory<?> factory) {
+            this.model = lookup.componentModelOf(factory.rawType());
+        }
+
+        public SingletonComponentDriver(ComponentLookup lookup, Object instance) {
+            this.model = lookup.componentModelOf(instance.getClass());
         }
 
         public StatelessConfiguration toConf(PackedComponentConfigurationContext context) {

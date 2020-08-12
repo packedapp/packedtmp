@@ -49,6 +49,7 @@ import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedComponentConfigurationContext;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
+import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
 import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.component.PackedSingletonConfigurationContext;
@@ -97,9 +98,9 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
     /** The source of the container configuration. Typically a Bundle. */
     private final Object source;
 
-    /** Any wirelets that was specified by the user when creating this configuration. */
-    @Nullable
-    public final WireletPack wireletContext;
+//    /** Any wirelets that was specified by the user when creating this configuration. */
+//    @Nullable
+//    public final WireletPack wireletContext;
 
     /**
      * Creates a new root configuration.
@@ -114,10 +115,9 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
      *            any wirelets specified by the user
      */
     private PackedContainerConfigurationContext(ConfigSite cs, AssembleOutput output, Object source, Wirelet... wirelets) {
-        super(ContainerComponentDriver.INSTANCE, cs, output);
+        super(ContainerComponentDriver.INSTANCE, cs, source, output, wirelets);
         this.source = requireNonNull(source);
         this.lookup = this.model = ContainerModel.of(source.getClass());
-        this.wireletContext = WireletPack.fromRoot(this, wirelets);
     }
 
     /**
@@ -132,10 +132,9 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
      */
     public PackedContainerConfigurationContext(PackedComponentDriver<?> driver, PackedComponentConfigurationContext parent, Bundle<?> bundle,
             Wirelet... wirelets) {
-        super(driver, ConfigSiteSupport.captureStackFrame(parent.configSite(), ConfigSiteInjectOperations.INJECTOR_OF), parent);
+        super(driver, ConfigSiteSupport.captureStackFrame(parent.configSite(), ConfigSiteInjectOperations.INJECTOR_OF), bundle, parent, wirelets);
         this.source = requireNonNull(bundle, "bundle is null");
         this.lookup = this.model = ContainerModel.of(bundle.getClass());
-        this.wireletContext = WireletPack.fromLink(this, wirelets);
     }
 
     private void advanceTo(int newState) {
@@ -202,7 +201,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
             BundleConfiguration.configure((Bundle<?>) source, new PackedContainerConfiguration(this));
         }
         // Initializes the name of the container, and sets the state to State.FINAL
-        initializeName(State.FINAL, null);
+        // initializeName(State.FINAL, null);
         super.state.oldState = State.FINAL; // Thing is here, that initialize name returns early if name!=null
     }
 
@@ -257,7 +256,8 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         requireNonNull(factory, "factory is null");
         ComponentModel model = lookup.componentModelOf(factory.rawType());
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
-        PackedSingletonConfigurationContext<T> conf = new PackedSingletonConfigurationContext<>(configSite, this, model, (BaseFactory<T>) factory);
+        SingletonComponentDriver scd = new SingletonComponentDriver(lookup, factory);
+        PackedSingletonConfigurationContext<T> conf = new PackedSingletonConfigurationContext<>(scd, configSite, this, model, (BaseFactory<T>) factory);
         installPrepare(State.INSTALL_INVOKED);
         currentComponent = conf;
         model.invokeOnHookOnInstall(source, conf);
@@ -268,7 +268,8 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         requireNonNull(instance, "instance is null");
         ComponentModel model = lookup.componentModelOf(instance.getClass());
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
-        PackedSingletonConfigurationContext<T> conf = new PackedSingletonConfigurationContext<>(configSite, this, model, instance);
+        SingletonComponentDriver scd = new SingletonComponentDriver(lookup, instance);
+        PackedSingletonConfigurationContext<T> conf = new PackedSingletonConfigurationContext<>(scd, configSite, this, model, instance);
         installPrepare(State.INSTALL_INVOKED);
         currentComponent = conf;
         model.invokeOnHookOnInstall(source, conf);
@@ -276,6 +277,10 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
     }
 
     private void installPrepare(State state) {
+        if (true) {
+            return;
+        }
+
         if (currentComponent != null) {
             currentComponent.initializeName(state, null);
             requireNonNull(currentComponent.name);
@@ -290,7 +295,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         requireNonNull(implementation, "implementation is null");
         StatelessComponentDriver scd = new StatelessComponentDriver(lookup, implementation);
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
-        PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(scd, configSite, this);
+        PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(scd, configSite, null, this);
         installPrepare(State.INSTALL_INVOKED);
         currentComponent = conf;
         scd.model.invokeOnHookOnInstall(source, conf);
@@ -352,7 +357,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         if (child instanceof PackedComponentConfigurationContext) {
             ((PackedContainerConfigurationContext) child).configure();
         }
-        addChild(child);
+        // addChild(child);
     }
 
     public void lookup(@Nullable Lookup lookup) {
@@ -436,7 +441,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
             } else {
                 caller.checkConfigurable();
             }
-            initializeName(State.EXTENSION_USED, null); // initializes name of container, if not already set
+            // initializeName(State.EXTENSION_USED, null); // initializes name of container, if not already set
             extensions.put(extensionType, pec = PackedExtensionConfiguration.of(this, extensionType));
         }
         return pec;

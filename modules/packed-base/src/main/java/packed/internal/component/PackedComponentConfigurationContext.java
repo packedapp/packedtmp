@@ -40,11 +40,13 @@ import app.packed.container.Extension;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedAssembleContext;
 import packed.internal.artifact.PackedInstantiationContext;
+import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ComponentWirelet.ComponentNameWirelet;
 import packed.internal.container.PackedContainerConfigurationContext;
 import packed.internal.container.PackedExtensionConfiguration;
+import packed.internal.container.WireletPack;
 import packed.internal.hook.applicator.DelayedAccessor;
 
 /** A common superclass for all component configuration classes. */
@@ -56,9 +58,13 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     /** The artifact this component is a part of. */
     private final PackedAssembleContext artifact;
 
-    /** Any children of this component (lazily initialized), in order of insertion. */
+    /** Any children of this component (lazily initialized). */
     @Nullable
     private HashMap<String, PackedComponentConfigurationContext> children;
+
+    /** Any children of this component (lazily initialized). */
+    @Nullable
+    private HashMap<String, PackedComponentConfigurationContext> children2;
 
     /** The configuration site of this component. */
     private final ConfigSite configSite;
@@ -84,20 +90,6 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     @Nullable
     private final PackedExtensionConfiguration extension;
 
-    /** The name of the component. */
-    @Nullable
-    public String name;
-
-    /** The parent of this component, or null for a root container. */
-    @Nullable
-    public final PackedComponentConfigurationContext parent;
-
-    /** The state of this configuration. */
-    // Maaske er det en special GuestConfigurationAdaptor som er rod paa runtime.
-    protected ComponentConfigurationState state = new ComponentConfigurationState();
-
-    final PackedPodConfigurationContext pod;
-
     /** The first child of this component. */
     @Nullable
     protected PackedComponentConfigurationContext firstChild;
@@ -105,10 +97,29 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     @Nullable
     protected PackedComponentConfigurationContext lastChild;
 
+    /** The name of the component. */
+    @Nullable
+    public String name;
+
     // We maintain this here instead of in a LinkedHashMap, because the insertion order
     // is effected if we change the name of a component. Which we do not want.
     @Nullable
     public PackedComponentConfigurationContext nextSiebling;
+
+    /** The parent of this component, or null for a root container. */
+    @Nullable
+    public final PackedComponentConfigurationContext parent;
+
+    final PackedPodConfigurationContext pod;
+
+    /** The state of this configuration. */
+    // Maaske er det en special GuestConfigurationAdaptor som er rod paa runtime.
+    protected ComponentConfigurationState state = new ComponentConfigurationState();
+
+    private final Object source;
+    /** Any wirelets that was specified by the user when creating this configuration. */
+    @Nullable
+    public final WireletPack wireletContext;
 
     /**
      * A special constructor for the top level container.
@@ -118,9 +129,12 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
      * @param output
      *            the output of the build process
      */
-    protected PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ConfigSite configSite, AssembleOutput output) {
+    protected PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ConfigSite configSite, Object source, AssembleOutput output,
+            Wirelet... wirelets) {
         this.driver = requireNonNull(driver);
         this.configSite = requireNonNull(configSite);
+        this.source = source;
+        this.wireletContext = WireletPack.from(this, wirelets);
 
         this.pod = new PackedPodConfigurationContext();
         this.parent = null;
@@ -129,6 +143,8 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
 
         this.extension = null;
         this.artifact = new PackedAssembleContext((PackedContainerConfigurationContext) this, output);
+
+        initializeNameXX(null);
     }
 
     /**
@@ -139,9 +155,12 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
      * @param parent
      *            the parent of the component
      */
-    public PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ConfigSite configSite, PackedComponentConfigurationContext parent) {
+    public PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ConfigSite configSite, Object source,
+            PackedComponentConfigurationContext parent, Wirelet... wirelets) {
         this.driver = requireNonNull(driver);
         this.configSite = requireNonNull(configSite);
+        this.source = source;
+        this.wireletContext = WireletPack.from(this, wirelets);
 
         this.parent = requireNonNull(parent);
         this.container = parent instanceof PackedContainerConfigurationContext ? (PackedContainerConfigurationContext) parent : parent.container;
@@ -150,12 +169,15 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
 
         this.extension = container.activeExtension;
         this.artifact = parent.artifact;
+        initializeNameXX(null);
     }
 
     protected PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ConfigSite configSite, PackedHostConfigurationContext parent,
-            PackedContainerConfigurationContext pcc, AssembleOutput output) {
+            PackedContainerConfigurationContext pcc, AssembleOutput output, Wirelet... wirelets) {
         this.driver = requireNonNull(driver);
         this.configSite = requireNonNull(configSite);
+        this.source = null;
+        this.wireletContext = WireletPack.from(this, wirelets);
 
         this.parent = requireNonNull(parent);
         this.container = null;
@@ -164,6 +186,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
 
         this.extension = null;
         this.artifact = new PackedAssembleContext(pcc, output);
+        initializeNameXX(null);
     }
 
     public PackedContainerConfigurationContext actualContainer() {
@@ -296,28 +319,10 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
         return description;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public final String getName() {
-        return initializeName(State.GET_NAME_INVOKED, null);
-    }
-
-    final Map<String, PackedComponent> initializeChildren(PackedComponent parent, PackedInstantiationContext ic) {
-        if (firstChild == null) {
-            return null;
-        }
-        // Hmm, we should probably used LinkedHashMap to retain order.
-        // It just uses so much memory...
-        HashMap<String, PackedComponent> result = new HashMap<>(children.size());
-
-        for (PackedComponentConfigurationContext c = firstChild; c != null; c = c.nextSiebling) {
-            PackedComponent ac = c.driver.create(parent, c, ic);
-            result.put(ac.name(), ac);
-        }
-        return Map.copyOf(result);
-    }
-
     public final String initializeName(State newState, String setName) {
+        if (true) {
+            return "";
+        }
         String n = name;
         if (n != null) {
             return n;
@@ -353,11 +358,66 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
         return this.name = n;
     }
 
+    private void initializeNameXX(String newName) {
+        String n = newName;
+        if (newName == null) {
+            if (this instanceof PackedContainerConfigurationContext) {
+                PackedContainerConfigurationContext pcc = (PackedContainerConfigurationContext) this;
+                if (pcc.wireletContext != null) {
+                    ComponentNameWirelet cwn = pcc.wireletContext.nameWirelet();
+                    if (cwn != null) {
+                        nameState = NAME_INITIALIZED_WITH_WIRELET;
+                        n = cwn.name;
+                        // System.out.println("FOund wirelet " + n);
+                    }
+                }
+            }
+        }
+
+        boolean isFree = false;
+
+        if (n == null) {
+            n = initializeName0();
+            isFree = true;
+        } else if (n.endsWith("?")) {
+            n = n.substring(0, n.length() - 1);
+            isFree = true;
+        }
+
+        // maybe just putIfAbsent, under the assumption that we will rarely need to override.
+        if (parent != null) {
+            if (parent != null && parent.children != null && parent.children.containsKey(n)) {
+                // If name exists. Lets keep a counter (maybe if bigger than 5). For people trying to
+                // insert a given component 1 million times...
+                if (!isFree) {
+                    throw new RuntimeException("Name already exist " + n);
+                }
+                int counter = 1;
+                String prefix = n;
+                do {
+                    n = prefix + counter++;
+                } while (parent.children.containsKey(n));
+            }
+
+            if (newName != null) {
+                parent.children.remove(name);
+                parent.children.put(n, this);
+            } else {
+                name = n;
+                parent.addChild(this);
+            }
+
+        }
+        name = n;
+        // System.out.println("Name set to " + n);
+    }
+
     private String initializeName0() {
         if (this instanceof PackedContainerConfigurationContext) {
+
             // I think try and move some of this to ComponentNameWirelet
             @Nullable
-            Class<?> source = ((PackedContainerConfigurationContext) this).sourceType();
+            Class<?> source = this.source.getClass();
             if (Bundle.class.isAssignableFrom(source)) {
                 String nnn = source.getSimpleName();
                 if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
@@ -375,10 +435,119 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
             // TODO think it should be named Artifact type, for example, app, injector, ...
             return "Unknown";
         } else if (this instanceof PackedSingletonConfigurationContext) {
-            return ((PackedSingletonConfigurationContext<?>) this).componentModel.defaultPrefix();
+            return ((SingletonComponentDriver) this.driver).model.defaultPrefix();
         } else {
             return ((StatelessComponentDriver) this.driver).model.defaultPrefix();
         }
+    }
+
+    int nameState;
+
+    private static final int NAME_INITIALIZED_WITH_WIRELET = 1 << 18; // set atomically with DONE
+    private static final int NAME_SET = 1 << 17; // set atomically with ABNORMAL
+    private static final int NAME_GET = 1 << 16; // true if joiner waiting
+    private static final int NAME_GET_PATH = 1 << 15; // true if joiner waiting
+    private static final int NAME_CHILD_GOT_PATH = 1 << 14; // true if joiner waiting
+
+    private static final int NAME_GETSET_MASK = NAME_SET + NAME_GET + NAME_GET_PATH + NAME_CHILD_GOT_PATH;
+
+    /** {@inheritDoc} */
+    @Override
+    public final String getName() {
+        // Only update with NAME_GET if no prev set/get op
+        nameState = (nameState & ~NAME_GETSET_MASK) | NAME_GET;
+        return name;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final ComponentPath path() {
+        int anyPathMask = NAME_GET_PATH + NAME_CHILD_GOT_PATH;
+        if ((nameState & anyPathMask) != 0) {
+            PackedComponentConfigurationContext p = parent;
+            while (p != null && ((p.nameState & anyPathMask) == 0)) {
+                p.nameState = (p.nameState & ~NAME_GETSET_MASK) | NAME_GET_PATH;
+            }
+        }
+        nameState = (nameState & ~NAME_GETSET_MASK) | NAME_GET_PATH;
+        return PackedComponentPath.of(this); // show we weak intern them????
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setName(String name) {
+        // First lets check the name is valid
+        ComponentNameWirelet.checkName(name);
+        int s = nameState;
+
+        checkConfigurable();
+
+        if ((s & NAME_SET) != 0) {
+            throw new IllegalStateException("#setName(String) can only be called once");
+        }
+
+        if ((s & NAME_GET) != 0) {
+            throw new IllegalStateException("#setName(String) cannot be called after #getName() has been invoked");
+        }
+
+        if ((s & NAME_GET_PATH) != 0) {
+            throw new IllegalStateException("#setName(String) cannot be called after #path() has been invoked");
+        }
+
+        if ((s & NAME_CHILD_GOT_PATH) != 0) {
+            throw new IllegalStateException("#setName(String) cannot be called after #path() has been invoked on a child component");
+        }
+
+        nameState |= NAME_SET;
+
+        if ((s & NAME_INITIALIZED_WITH_WIRELET) != 0) {
+            return;// We never set override a name set by a wirelet
+        }
+
+        initializeNameXX(name);
+//
+//        switch (state.oldState) {
+//        case INITIAL:
+//            initializeName(State.SET_NAME_INVOKED, name);
+//            return;
+//        case FINAL:
+//            checkConfigurable();
+//        case GET_NAME_INVOKED:
+//            throw new IllegalStateException("Cannot call #setName(String) after the name has been initialized via calls to #getName()");
+//        case EXTENSION_USED:
+//            throw new IllegalStateException("Cannot call #setName(String) after any extensions has has been used");
+//        case PATH_INVOKED:
+//            throw new IllegalStateException("Cannot call #setName(String) after name has been initialized via calls to #path()");
+//        case INSTALL_INVOKED:
+//            throw new IllegalStateException("Cannot call this method after having installed components or used extensions");
+//        case LINK_INVOKED:
+//            throw new IllegalStateException("Cannot call this method after #link() has been invoked");
+//        case SET_NAME_INVOKED:
+//            throw new IllegalStateException("#setName(String) can only be called once");
+//        }
+//        throw new InternalError();
+    }
+
+//    public static void main(String[] args) {
+//        int nameState = NAME_INITIALIZED_WITH_WIRELET;
+//        System.out.println(Integer.toBinaryString(nameState));
+//        nameState = (nameState & ~NAME_GETSET_MASK) | NAME_GET;
+//        System.out.println(Integer.toBinaryString(nameState));
+//    }
+
+    final Map<String, PackedComponent> initializeChildren(PackedComponent parent, PackedInstantiationContext ic) {
+        if (firstChild == null) {
+            return null;
+        }
+        // Hmm, we should probably used LinkedHashMap to retain order.
+        // It just uses so much memory...
+        HashMap<String, PackedComponent> result = new HashMap<>(children.size());
+
+        for (PackedComponentConfigurationContext c = firstChild; c != null; c = c.nextSiebling) {
+            PackedComponent ac = c.driver.create(parent, c, ic);
+            result.put(ac.name(), ac);
+        }
+        return Map.copyOf(result);
     }
 
     public boolean isInSameContainer(PackedComponentConfigurationContext other) {
@@ -392,44 +561,10 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
 
     /** {@inheritDoc} */
     @Override
-    public final ComponentPath path() {
-        initializeName(State.PATH_INVOKED, null);
-        return PackedComponentPath.of(this); // show we weak intern them????
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void setDescription(String description) {
         requireNonNull(description, "description is null");
         checkConfigurable();
         this.description = description;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setName(String name) {
-        // First lets check the name is valid
-        ComponentNameWirelet.checkName(name);
-        switch (state.oldState) {
-        case INITIAL:
-            initializeName(State.SET_NAME_INVOKED, name);
-            return;
-        case FINAL:
-            checkConfigurable();
-        case GET_NAME_INVOKED:
-            throw new IllegalStateException("Cannot call #setName(String) after the name has been initialized via calls to #getName()");
-        case EXTENSION_USED:
-            throw new IllegalStateException("Cannot call #setName(String) after any extensions has has been used");
-        case PATH_INVOKED:
-            throw new IllegalStateException("Cannot call #setName(String) after name has been initialized via calls to #path()");
-        case INSTALL_INVOKED:
-            throw new IllegalStateException("Cannot call this method after having installed components or used extensions");
-        case LINK_INVOKED:
-            throw new IllegalStateException("Cannot call this method after #link() has been invoked");
-        case SET_NAME_INVOKED:
-            throw new IllegalStateException("#setName(String) can only be called once");
-        }
-        throw new InternalError();
     }
 
     @Override

@@ -36,6 +36,7 @@ import testutil.util.ContainerConfigurationTester;
  * configuring it. And then later on, we change the name of the container in which it is configured, in such a way that
  * the path of the child changes. We want to avoid this.
  */
+@Disabled
 public class NameFreezeTest extends AbstractArtifactTest {
 
     /**
@@ -51,6 +52,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
         }, "Cannot call #setName(String) after the name has been initialized via calls to #getName()");
     }
 
+    @Disabled
     @Test
     public void component_setName_cannotBeCalledAfter_install() {
         checkThrowsISE(c -> {
@@ -63,6 +65,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
         // ComponentExtension
     }
 
+    @Disabled
     @Test
     public void component_setName_cannotBeCalledAfter_link() {
         checkThrowsISE(c -> {
@@ -127,6 +130,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
      * outlaw is always.
      */
     @Test
+    @Disabled
     public void container_setName_cannotBeCalledAfter_link() {
         checkThrowsISE(c -> c.link(emptyBundle()).setName("Bar"), "Cannot call this method after #link() has been invoked");
     }

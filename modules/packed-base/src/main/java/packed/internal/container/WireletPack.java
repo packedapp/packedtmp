@@ -24,6 +24,7 @@ import java.util.Map.Entry;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
+import packed.internal.component.PackedComponentConfigurationContext;
 import packed.internal.container.ComponentWirelet.ComponentNameWirelet;
 
 /**
@@ -143,6 +144,7 @@ public final class WireletPack {
     }
 
     // That name wirelet.. should only be used by the top-container....
+    @Nullable
     public ComponentNameWirelet nameWirelet() {
         WireletPack wc = this;
         while (wc != null) {
@@ -201,6 +203,14 @@ public final class WireletPack {
     @Nullable
     public static WireletPack fromImage(PackedContainerConfigurationContext pcc, @Nullable WireletPack existing, Wirelet... wirelets) {
         return create(pcc, existing, wirelets);
+    }
+
+    @Nullable
+    public static WireletPack from(PackedComponentConfigurationContext pcc, Wirelet... wirelets) {
+        if (pcc instanceof PackedContainerConfigurationContext) {
+            return fromLink((PackedContainerConfigurationContext) pcc, wirelets);
+        }
+        return null;
     }
 
     @Nullable
