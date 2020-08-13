@@ -47,6 +47,8 @@ public enum AssembleTarget {
     // Artifact_Initializing Artifact_Executing...
     // Managed Artifact, Unmanaged Artifact....
 
+    // Problemet med denne er at roden kan vaere en artifact.
+    // Men de enkelte
     /** Create a new {@link ArtifactImage} from a {@link ContainerBundle} (or an existing image). */
     IMAGE;
 

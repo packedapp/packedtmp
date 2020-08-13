@@ -91,7 +91,7 @@ public final class WireletModel extends Model {
      * 
      * @return whether or not the wirelet is inherited
      */
-    boolean inherited() {
+    public boolean inherited() {
         return inherited;
     }
 
@@ -112,7 +112,7 @@ public final class WireletModel extends Model {
      *            the wirelet type to return a model for.
      * @return the model
      */
-    static WireletModel of(Class<? extends Wirelet> wireletType) {
+    public static WireletModel of(Class<? extends Wirelet> wireletType) {
         return MODELS.get(wireletType);
     }
 

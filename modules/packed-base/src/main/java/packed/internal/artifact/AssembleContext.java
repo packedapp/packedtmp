@@ -29,6 +29,9 @@ import packed.internal.errorhandling.ErrorMessage;
 // Der hvor den ikke fungere er f.eks. artifactType....
 // Det er ikke til at vide foerend paa instantierings tidspunkt...
 
+// addSuccessProcess(Runnable r);
+// addFailureProcess(Runnable r);
+// addCompletionProcesser(Consumer<@Nullable Throwable> d);
 public interface AssembleContext {
 
     void addError(ErrorMessage message);

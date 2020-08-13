@@ -30,7 +30,7 @@ import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension.Subtension;
 import app.packed.inject.Factory;
-import packed.internal.component.ComponentConfigurationToComponentAdaptor;
+import packed.internal.component.ComponentAdaptor;
 import packed.internal.container.PackedContainerConfigurationContext;
 import packed.internal.container.PackedExtensionConfiguration;
 
@@ -192,7 +192,7 @@ public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
         requireNonNull(lookup, "component is null");
 
         // This method can only be used at buildtime
-        if (!(component instanceof ComponentConfigurationToComponentAdaptor)) {
+        if (!(component instanceof ComponentAdaptor)) {
             throw new IllegalStateException("This method cannot be called on at runtime of a container");
         }
 
@@ -210,7 +210,7 @@ public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
                     + ", try creating a new lookup object using MethodHandle.privateLookupIn(lookup, " + extensionType.getSimpleName() + ".class)");
         }
 
-        ComponentConfigurationToComponentAdaptor cc = (ComponentConfigurationToComponentAdaptor) component;
+        ComponentAdaptor cc = (ComponentAdaptor) component;
         PackedContainerConfigurationContext pcc = cc.componentConfiguration.actualContainer();
         return pcc.getExtensionContext(extensionType);
     }

@@ -38,10 +38,10 @@ import packed.internal.container.PackedContainerConfigurationContext;
 
 // TODO maaske kan configuration implementere Component nu naar den ikke er offentlig????
 // Men det er context jo...
-public final class ComponentConfigurationToComponentAdaptor implements Component {
+public final class ComponentAdaptor implements Component {
 
     /** A cached, lazy initialized list of all children. */
-    private volatile Map<String, ComponentConfigurationToComponentAdaptor> children;
+    private volatile Map<String, ComponentAdaptor> children;
 
     /** The component configuration to wrap. */
     public final PackedComponentConfigurationContext componentConfiguration;
@@ -49,7 +49,7 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
     // Need to main any guest ancestor. As images must resolve in relation to it.
     // private final List<PackedGuestConfigurationContext> pgc;
 
-    private ComponentConfigurationToComponentAdaptor(
+    private ComponentAdaptor(
             PackedComponentConfigurationContext componentConfiguration /* , List<PackedGuestConfigurationContext> pgc */) {
         this.componentConfiguration = requireNonNull(componentConfiguration);
         // this.pgc = pgc;
@@ -65,7 +65,7 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public final Collection<Component> children() {
-        Map<String, ComponentConfigurationToComponentAdaptor> c = children;
+        Map<String, ComponentAdaptor> c = children;
 
         // TODO fix this shit
 //        return new AbstractCollection<Component>() {
@@ -90,7 +90,7 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
                 // return new AbstractCollection<>(); <--- cache it,
                 c = Map.of();
             } else {
-                LinkedHashMap<String, ComponentConfigurationToComponentAdaptor> m = new LinkedHashMap<>();
+                LinkedHashMap<String, ComponentAdaptor> m = new LinkedHashMap<>();
                 for (PackedComponentConfigurationContext acc = componentConfiguration.firstChild; acc != null; acc = acc.nextSiebling) {
                     m.put(acc.name, of0(acc /* , pgc */));
                 }
@@ -164,7 +164,7 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
     private final Stream<Component> stream0(PackedComponentConfigurationContext origin, boolean isRoot, PackedComponentStreamOption option) {
         // Also fix in ComponentConfigurationToComponentAdaptor when changing stuff here
         children(); // lazy calc
-        Map<String, ComponentConfigurationToComponentAdaptor> c = children;
+        Map<String, ComponentAdaptor> c = children;
         if (c != null && !c.isEmpty()) {
             if (option.processThisDeeper(origin, componentConfiguration)) {
                 Stream<Component> s = c.values().stream().flatMap(co -> co.stream0(origin, false, option));
@@ -177,12 +177,12 @@ public final class ComponentConfigurationToComponentAdaptor implements Component
     }
 
     public static Component of(PackedContainerConfigurationContext pcc) {
-        return new ComponentConfigurationToComponentAdaptor(pcc /* , pgc */);
+        return new ComponentAdaptor(pcc /* , pgc */);
         // return of0(pcc, List.of());
     }
 
-    private static ComponentConfigurationToComponentAdaptor of0(PackedComponentConfigurationContext bcc /* , List<PackedGuestConfigurationContext> pgc */) {
-        return new ComponentConfigurationToComponentAdaptor(bcc /* , pgc */);
+    private static ComponentAdaptor of0(PackedComponentConfigurationContext bcc /* , List<PackedGuestConfigurationContext> pgc */) {
+        return new ComponentAdaptor(bcc /* , pgc */);
 //        
 //        if (bcc instanceof PackedGuestConfigurationContext) {
 //            // Need to figure out hosts on hosts..

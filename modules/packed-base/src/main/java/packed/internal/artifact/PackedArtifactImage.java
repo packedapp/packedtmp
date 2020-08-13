@@ -28,7 +28,7 @@ import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerDescriptor;
-import packed.internal.component.ComponentConfigurationToComponentAdaptor;
+import packed.internal.component.ComponentAdaptor;
 import packed.internal.container.PackedContainerConfigurationContext;
 import packed.internal.container.WireletPack;
 
@@ -107,7 +107,7 @@ public final class PackedArtifactImage implements ArtifactImage {
     /** {@inheritDoc} */
     @Override
     public ComponentStream stream(ComponentStream.Option... options) {
-        return ComponentConfigurationToComponentAdaptor.of(pcc).stream(options);
+        return ComponentAdaptor.of(pcc).stream(options);
     }
 
     public WireletPack wirelets() {

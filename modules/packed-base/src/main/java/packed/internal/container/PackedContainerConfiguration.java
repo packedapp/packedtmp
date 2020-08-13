@@ -78,7 +78,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** {@inheritDoc} */
     @Override
     public boolean isArtifactRoot() {
-        return context.isArtifactRoot();
+        return context.hasParent();// not sure this is correct
     }
 
     /** {@inheritDoc} */

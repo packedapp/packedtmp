@@ -22,10 +22,13 @@ import packed.internal.container.PackedContainerConfigurationContext;
 import packed.internal.errorhandling.ErrorMessage;
 
 /** The default implementation of {@link AssembleContext} */
-public final class PackedAssembleContext implements AssembleContext {
+public final class PackedAssemblyContext implements AssembleContext {
 
     /** The build output. */
     private final AssembleOutput output;
+
+    /** The thread that is assembling the system. */
+    private final Thread thread = Thread.currentThread();
 
     /** The configuration of the top container. */
     private final PackedContainerConfigurationContext topContainerConfiguration;
@@ -38,7 +41,7 @@ public final class PackedAssembleContext implements AssembleContext {
      * @param output
      *            the output of the build process
      */
-    public PackedAssembleContext(PackedContainerConfigurationContext topContainerConfiguration, AssembleOutput output) {
+    public PackedAssemblyContext(PackedContainerConfigurationContext topContainerConfiguration, AssembleOutput output) {
         this.topContainerConfiguration = requireNonNull(topContainerConfiguration);
         this.output = requireNonNull(output);
     }
@@ -72,5 +75,9 @@ public final class PackedAssembleContext implements AssembleContext {
     @Override
     public Class<?> sourceType() {
         return topContainerConfiguration.sourceType();
+    }
+
+    public Thread thread() {
+        return thread;
     }
 }

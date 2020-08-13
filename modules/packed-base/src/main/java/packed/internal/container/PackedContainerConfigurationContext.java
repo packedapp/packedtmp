@@ -250,7 +250,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         SingletonComponentDriver scd = new SingletonComponentDriver(lookup, instance);
 
         PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(scd, configSite, null, this);
-        model.invokeOnHookOnInstall(source, conf);
+        model.invokeOnHookOnInstall(source, conf); // installs any extensions...
         return scd.toConf(conf);
     }
 
@@ -258,6 +258,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         StatelessComponentDriver scd = new StatelessComponentDriver(lookup, implementation);
 
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
+
         PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(scd, configSite, null, this);
         scd.model.invokeOnHookOnInstall(source, conf);
         return scd.toConf(conf);
@@ -271,10 +272,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         PackedContainer pc = new PackedContainer(null, this, pic);
         methodHandlePassing0(pc, pic);
         return pc.toArtifactContext();
-    }
-
-    public boolean isArtifactRoot() {
-        return parent == null; // TODO change when we have hosts.
     }
 
     /**
@@ -403,36 +400,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
             extensions.put(extensionType, pec = PackedExtensionConfiguration.of(this, extensionType));
         }
         return pec;
-    }
-
-    @SuppressWarnings("unchecked")
-    public <W extends Wirelet> Optional<W> wireletAny(Class<W> type) {
-        WireletModel wm = WireletModel.of(type);
-        boolean inherited = wm.inherited();
-        Object wop = null;
-        if (wireletContext != null) {
-            wop = wireletContext.getWireletOrPipeline(type);
-        }
-        if (wop == null && inherited) {
-            PackedComponentConfigurationContext acc = parent;
-            while (acc != null) {
-                if (acc instanceof PackedContainerConfigurationContext) {
-                    PackedContainerConfigurationContext pcc = (PackedContainerConfigurationContext) acc;
-                    if (pcc.wireletContext != null) {
-                        wop = pcc.wireletContext.getWireletOrPipeline(type);
-                        if (wop != null) {
-                            break;
-                        }
-                    }
-                }
-                acc = acc.parent;
-            }
-        }
-        if (wop instanceof WireletPipelineContext) {
-            wop = ((WireletPipelineContext) wop).instance;
-            requireNonNull(wop);// Maybe not instantiated yet???
-        }
-        return wop == null ? Optional.empty() : Optional.ofNullable((W) wop);
     }
 
     public static PackedContainerConfigurationContext of(AssembleOutput output, Object source, Wirelet... wirelets) {

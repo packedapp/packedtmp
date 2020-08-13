@@ -38,7 +38,7 @@ import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import packed.internal.artifact.AssembleOutput;
-import packed.internal.artifact.PackedAssembleContext;
+import packed.internal.artifact.PackedAssemblyContext;
 import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
@@ -46,7 +46,9 @@ import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ComponentWirelet.ComponentNameWirelet;
 import packed.internal.container.PackedContainerConfigurationContext;
 import packed.internal.container.PackedExtensionConfiguration;
+import packed.internal.container.WireletModel;
 import packed.internal.container.WireletPack;
+import packed.internal.container.WireletPipelineContext;
 import packed.internal.hook.applicator.DelayedAccessor;
 
 /** A common superclass for all component configuration classes. */
@@ -56,7 +58,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
     /** The artifact this component is a part of. */
-    private final PackedAssembleContext artifact;
+    private final PackedAssemblyContext artifact;
 
     /** The configuration site of this component. */
     private final ConfigSite configSite;
@@ -104,6 +106,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     @Nullable
     protected PackedComponentConfigurationContext firstChild;
 
+    /** The last child of this component. Is exclusively used to help maintain {@link #nextSiebling}. */
     @Nullable
     private PackedComponentConfigurationContext lastChild;
 
@@ -114,7 +117,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
 
     /** The parent of this component, or null for a root container. */
     @Nullable
-    public final PackedComponentConfigurationContext parent;
+    final PackedComponentConfigurationContext parent;
 
     /**
      * A special constructor for the top level container.
@@ -137,7 +140,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
         this.depth = 0;
 
         this.extension = null;
-        this.artifact = new PackedAssembleContext((PackedContainerConfigurationContext) this, output);
+        this.artifact = new PackedAssemblyContext((PackedContainerConfigurationContext) this, output);
 
         initializeNameXX(null);
     }
@@ -221,6 +224,10 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
         // Dvs ourContainerSource
         return Extension.class.isAssignableFrom(c)
                 || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && ArtifactSource.class.isAssignableFrom(c));
+    }
+
+    public boolean hasParent() {
+        return parent != null;
     }
 
     /** {@inheritDoc} */
@@ -488,6 +495,36 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     public <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         requireNonNull(driver, "driver is null");
         throw new UnsupportedOperationException();
+    }
+
+    @SuppressWarnings("unchecked")
+    public <W extends Wirelet> Optional<W> wireletAny(Class<W> type) {
+        WireletModel wm = WireletModel.of(type);
+        boolean inherited = wm.inherited();
+        Object wop = null;
+        if (wireletContext != null) {
+            wop = wireletContext.getWireletOrPipeline(type);
+        }
+        if (wop == null && inherited) {
+            PackedComponentConfigurationContext acc = parent;
+            while (acc != null) {
+                if (acc instanceof PackedContainerConfigurationContext) {
+                    PackedContainerConfigurationContext pcc = (PackedContainerConfigurationContext) acc;
+                    if (pcc.wireletContext != null) {
+                        wop = pcc.wireletContext.getWireletOrPipeline(type);
+                        if (wop != null) {
+                            break;
+                        }
+                    }
+                }
+                acc = acc.parent;
+            }
+        }
+        if (wop instanceof WireletPipelineContext) {
+            wop = ((WireletPipelineContext) wop).instance;
+            requireNonNull(wop);// Maybe not instantiated yet???
+        }
+        return wop == null ? Optional.empty() : Optional.ofNullable((W) wop);
     }
 
     /** The state of the component configuration */

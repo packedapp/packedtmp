@@ -15,6 +15,8 @@
  */
 package app.packed.component;
 
+import app.packed.container.ContainerConfiguration;
+
 /**
  *
  */
@@ -22,4 +24,13 @@ package app.packed.component;
 public interface CustomConfigurator<T> {
 
     void configure(T stuff);
+}
+
+class Dom implements CustomConfigurator<ContainerConfiguration> {
+
+    /** {@inheritDoc} */
+    @Override
+    public void configure(ContainerConfiguration stuff) {
+        System.out.println("NICE");
+    }
 }
