@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.component;
 
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
@@ -22,6 +22,7 @@ import app.packed.component.WireletSidecar;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMemberType;
 import app.packed.container.InternalExtensionException;
+import packed.internal.container.ExtensionModel;
 import packed.internal.sidecar.Model;
 
 /** A model of a {@link Wirelet}. This class is public because of {@link NoWireletPipeline}. */

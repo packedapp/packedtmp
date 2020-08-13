@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.artifact.ArtifactImage;
-import packed.internal.container.WireletModel;
+import packed.internal.component.WireletModel;
 
 /**
  * An annotation that can be used on subclasses of {@link Wirelet}. Classes that extend {@link Wirelet} are implicit

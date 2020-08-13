@@ -29,8 +29,8 @@ import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerDescriptor;
 import packed.internal.component.ComponentAdaptor;
+import packed.internal.component.WireletPack;
 import packed.internal.container.PackedContainerConfigurationContext;
-import packed.internal.container.WireletPack;
 
 /** The default implementation of {@link ArtifactImage}. */
 public final class PackedArtifactImage implements ArtifactImage {

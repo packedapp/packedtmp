@@ -21,8 +21,8 @@ import app.packed.base.Nullable;
 import app.packed.container.ContainerBundle;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
-import packed.internal.container.InternalWirelet.ComponentNameWirelet;
-import packed.internal.container.WireletList;
+import packed.internal.component.WireletList;
+import packed.internal.component.InternalWirelet.ComponentNameWirelet;
 
 /**
  * Packlets are an umbrella term for small pieces of glue code, that is used to connect, wire, instantiate, debug your

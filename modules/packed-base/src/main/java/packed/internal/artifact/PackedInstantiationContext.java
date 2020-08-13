@@ -21,7 +21,7 @@ import java.util.IdentityHashMap;
 
 import app.packed.base.Nullable;
 import packed.internal.component.PackedComponentConfigurationContext;
-import packed.internal.container.WireletPack;
+import packed.internal.component.WireletPack;
 
 /**
  * An instantiation context is created for every delimited tree hierachy.

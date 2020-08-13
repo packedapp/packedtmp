@@ -24,7 +24,7 @@ import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
-import packed.internal.container.WireletList;
+import packed.internal.component.WireletList;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.wirelets.PackedUpstreamInjectionWirelet;

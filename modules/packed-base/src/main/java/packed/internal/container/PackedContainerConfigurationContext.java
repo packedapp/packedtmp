@@ -48,6 +48,7 @@ import packed.internal.component.ComponentModel;
 import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedComponentConfigurationContext;
 import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.WireletPack;
 import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;

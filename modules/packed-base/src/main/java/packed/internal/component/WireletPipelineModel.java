@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.component;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandles;
 import app.packed.base.Nullable;
 import app.packed.component.WireletPipeline;
 import app.packed.container.Extension;
+import packed.internal.container.ExtensionModel;
 import packed.internal.reflect.MethodHandleBuilder;
 import packed.internal.reflect.OpenClass;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
