@@ -81,9 +81,9 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
 
     final PackedPodConfigurationContext pod;
 
-    protected boolean finalState = false;
+    public boolean finalState = false;
 
-    protected final Object source;
+    public final Object source;
 
     /** Any wirelets that was specified by the user when creating this configuration. */
     @Nullable

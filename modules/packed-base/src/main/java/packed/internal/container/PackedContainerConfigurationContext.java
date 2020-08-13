@@ -51,7 +51,6 @@ import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
-import packed.internal.component.role.ComponentRoleConf;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.hook.applicator.DelayedAccessor;
@@ -63,7 +62,7 @@ import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.runtime.PackedInjector;
 
 /** The default container context. */
-public final class PackedContainerConfigurationContext extends PackedComponentConfigurationContext implements ComponentRoleConf {
+public final class PackedContainerConfigurationContext extends PackedComponentConfigurationContext {
 
     private static final int LS_0_MAINL = 0;
 
@@ -92,6 +91,8 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
 
     int realState;
 
+    PackedComponentConfigurationContext component;
+
     /**
      * Creates a new root configuration.
      * 
@@ -108,6 +109,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
             AssembleOutput output, Wirelet... wirelets) {
         super(driver, cs, source, parent, output, wirelets);
         this.lookup = this.model = ContainerModel.of(source.getClass());
+        this.component = this;
     }
 
     private void advanceTo(int newState) {
@@ -124,7 +126,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         }
 
         if (realState == LS_1_LINKING && newState > LS_1_LINKING) {
-            for (PackedComponentConfigurationContext cc = firstChild; cc != null; cc = cc.nextSibling) {
+            for (PackedComponentConfigurationContext cc = component.firstChild; cc != null; cc = cc.nextSibling) {
                 if (cc instanceof PackedContainerConfigurationContext) {
                     ((PackedContainerConfigurationContext) cc).assembleExtensions();
                 }
@@ -147,8 +149,8 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
     }
 
     public void buildDescriptor(ContainerDescriptor.Builder builder) {
-        builder.setBundleDescription(getDescription());
-        builder.setName(getName());
+        builder.setBundleDescription(component.getDescription());
+        builder.setName(component.getName());
         for (PackedExtensionConfiguration e : extensions.values()) {
             e.buildDescriptor(builder);
         }
@@ -160,10 +162,10 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
      */
     private void configure() {
         // If it is an image it has already been assembled
-        if (source instanceof Bundle) {
-            BundleConfiguration.configure((Bundle<?>) source, new PackedContainerConfiguration(this));
+        if (component.source instanceof Bundle) {
+            BundleConfiguration.configure((Bundle<?>) component.source, new PackedContainerConfiguration(this));
         }
-        super.finalState = true;
+        component.finalState = true;
     }
 
     public Set<Class<? extends Extension>> extensions() {
@@ -266,7 +268,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
 
         // extract driveren fra bundle...
         // lav nyt barn med den...
-        PackedComponentConfigurationContext child = d.newContainConf(this, bundle, wirelets);
+        PackedComponentConfigurationContext child = d.newContainConf(component, bundle, wirelets);
 
         // IDK do we want to progress to next stage just in case...
         if (realState == LS_0_MAINL) {
@@ -292,7 +294,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private void methodHandlePassing0(PackedComponent ac, PackedInstantiationContext ic) {
-        for (PackedComponentConfigurationContext cc = firstChild; cc != null; cc = cc.nextSibling) {
+        for (PackedComponentConfigurationContext cc = component.firstChild; cc != null; cc = cc.nextSibling) {
             PackedComponent child = ac.children.get(cc.name);
             if (cc instanceof PackedContainerConfigurationContext) {
                 ((PackedContainerConfigurationContext) cc).methodHandlePassing0(child, ic);
@@ -326,7 +328,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
     }
 
     public Class<?> sourceType() {
-        return source.getClass();
+        return component.source.getClass();
     }
 
     @SuppressWarnings("unchecked")
@@ -361,7 +363,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
                     // Cannot perform this operation
                     throw new IllegalStateException("Cannot install new extensions at this point, extensionType = " + extensionType);
                 }
-                checkConfigurable();
+                component.checkConfigurable();
             } else {
                 caller.checkConfigurable();
             }
