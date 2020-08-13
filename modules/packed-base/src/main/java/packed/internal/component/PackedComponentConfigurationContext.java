@@ -37,7 +37,6 @@ import app.packed.container.Extension;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedAssemblyContext;
 import packed.internal.artifact.PackedInstantiationContext;
-import packed.internal.component.role.ComponentRoleConf;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletModel;
 import packed.internal.component.wirelet.WireletPack;
@@ -48,7 +47,7 @@ import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.hook.applicator.DelayedAccessor;
 
 /** A common superclass for all component configuration classes. */
-public class PackedComponentConfigurationContext implements ComponentConfigurationContext {
+public final class PackedComponentConfigurationContext implements ComponentConfigurationContext {
 
     /** A stack walker used from {@link #captureStackFrame(String)}. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
@@ -89,9 +88,6 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     @Nullable
     public final WireletPack wireletContext;
 
-    /** The various specializations of this component. */
-    final ComponentRoleConf[] specializations = new ComponentRoleConf[0];
-
     /** The name of the component. */
     public String name;
 
@@ -129,14 +125,15 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
      * @param parent
      *            the parent of the component
      */
-    public PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ConfigSite configSite, Object source,
-            PackedComponentConfigurationContext parent, AssembleOutput output, PackedContainerConfigurationContext container, Wirelet... wirelets) {
+    public PackedComponentConfigurationContext(PackedComponentConfigurationContext parent, PackedComponentDriver<?> driver, ConfigSite configSite,
+            Object source, AssembleOutput output, PackedContainerConfigurationContext container, Wirelet... wirelets) {
         this.driver = requireNonNull(driver);
         this.configSite = requireNonNull(configSite);
         this.source = source;
         this.wireletContext = WireletPack.from(this, wirelets);
         this.container = container;
         this.parent = parent;
+
         if (parent == null) {
             this.pod = new PackedPodConfigurationContext();
             this.containerOld = null;

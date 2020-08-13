@@ -98,7 +98,7 @@ public final class PackedContainerConfigurationContext {
     public static PackedContainerConfigurationContext create(PackedComponentDriver<?> driver, ConfigSite cs, Object source,
             PackedComponentConfigurationContext parent, AssembleOutput output, Wirelet... wirelets) {
         PackedContainerConfigurationContext p1 = new PackedContainerConfigurationContext(source);
-        PackedComponentConfigurationContext pccc = new PackedComponentConfigurationContext(driver, cs, source, parent, output, p1, wirelets);
+        PackedComponentConfigurationContext pccc = new PackedComponentConfigurationContext(parent, driver, cs, source, output, p1, wirelets);
         p1.component = pccc;
         return p1;
     }
@@ -212,7 +212,7 @@ public final class PackedContainerConfigurationContext {
         ConfigSite configSite = component.captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(lookup, factory);
 
-        PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(scd, configSite, null, component, null, this);
+        PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(component, scd, configSite, null, null, this);
         model.invokeOnHookOnInstall(component.source, conf);
         return scd.toConf(conf);
     }
@@ -223,7 +223,7 @@ public final class PackedContainerConfigurationContext {
         ConfigSite configSite = component.captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(lookup, instance);
 
-        PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(scd, configSite, null, component, null, this);
+        PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(component, scd, configSite, null, null, this);
         model.invokeOnHookOnInstall(component.source, conf); // installs any extensions...
         return scd.toConf(conf);
     }
@@ -233,7 +233,7 @@ public final class PackedContainerConfigurationContext {
 
         ConfigSite configSite = component.captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
 
-        PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(scd, configSite, null, component, null, this);
+        PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(component, scd, configSite, null, null, this);
         scd.model.invokeOnHookOnInstall(component.source, conf);
         return scd.toConf(conf);
     }
