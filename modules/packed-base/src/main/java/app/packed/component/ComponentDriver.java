@@ -44,26 +44,6 @@ public interface ComponentDriver<C> {
 // S spawn();
 // CompletableFuture<S> spawnAsync();
 
-// NU ER VI TILBAGE MED EN COMPONENT KAN HAVE EN ROLLE... (eller flere???)
-
-// Role == ENUM?????
-
-// Role = Container.class , type = DefaultContainer
-// Role = Actor.class, type = SomeActor
-// Role = Host.class, type = SomeHostImplementation?
-// Role = Component.class, type = SomeComponent
-// Role = Pooled.class, type = SomeElement.class
-// Role = Singleton.class, type = ddddd
-// Role = Statics.class, type = DDDDD
-// Role = RunInScope.class, type = DDDDD
-// Role = Unmanaged.class, type = DDDDD (Used with prototype services)
-// Role = ActorSystem.class [holds actors]
-// Role = Class, implementation = Class
-// Role == Class only if users can define their own role....
-// Role == JobManager.class
-// Role == Job.class
-// Role == ScheduledJob.class <- Is it a component????
-
 // Stateless, Statefull, DistributedObject, Entity <-
 
 // Requestlets, Scopelets, ...

@@ -132,7 +132,7 @@ public final class WireletPack {
         return null;
     }
 
-    public String name(PackedContainerConfigurationContext pcc) {
+    public String name(PackedComponentConfigurationContext pcc) {
         WireletPack wc = this;
         while (wc != null) {
             if (wc.newName != null) {

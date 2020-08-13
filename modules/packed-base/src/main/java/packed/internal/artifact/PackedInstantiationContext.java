@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.IdentityHashMap;
 
 import app.packed.base.Nullable;
-import packed.internal.container.PackedContainerConfigurationContext;
+import packed.internal.component.PackedComponentConfigurationContext;
 import packed.internal.container.WireletPack;
 
 /**
@@ -35,7 +35,6 @@ import packed.internal.container.WireletPack;
  * <p>
  * Describes which phases it is available from
  * <p>
- * The main difference from {@link AssembleContext} is when using an artifact image
  * <p>
  * <strong>Note that this implementation is not synchronized.</strong> Hmmm what about if use them at startup???
  */
@@ -47,7 +46,7 @@ import packed.internal.container.WireletPack;
 public final class PackedInstantiationContext {
 
     /** All context objects. */
-    private final IdentityHashMap<PackedContainerConfigurationContext, IdentityHashMap<Class<?>, Object>> map = new IdentityHashMap<>();
+    private final IdentityHashMap<PackedComponentConfigurationContext, IdentityHashMap<Class<?>, Object>> map = new IdentityHashMap<>();
 
     public final WireletPack wirelets;
 
@@ -66,14 +65,14 @@ public final class PackedInstantiationContext {
 
     @SuppressWarnings("unchecked")
     @Nullable
-    public <T> T get(PackedContainerConfigurationContext configuration, Class<T> type) {
+    public <T> T get(PackedComponentConfigurationContext configuration, Class<T> type) {
         requireNonNull(configuration, "configuration is null");
         requireNonNull(type, "type is null");
         var e = map.get(configuration);
         return e == null ? null : (T) e.get(type);
     }
 
-    public void put(PackedContainerConfigurationContext configuration, Object obj) {
+    public void put(PackedComponentConfigurationContext configuration, Object obj) {
         requireNonNull(configuration, "configuration is null");
         requireNonNull(obj, "obj is null");
         map.computeIfAbsent(configuration, e -> new IdentityHashMap<>()).put(obj.getClass(), obj);

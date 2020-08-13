@@ -42,6 +42,7 @@ import packed.internal.artifact.PackedAssemblyContext;
 import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
+import packed.internal.component.specialization.ComponentSpecialization;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ComponentWirelet.ComponentNameWirelet;
 import packed.internal.container.PackedContainerConfigurationContext;
@@ -94,6 +95,9 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     @Nullable
     public final WireletPack wireletContext;
 
+    /** The various specializations of this component. */
+    final ComponentSpecialization[] specializations = new ComponentSpecialization[0];
+
     /** The name of the component. */
     @Nullable
     public String name;
@@ -106,7 +110,10 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     @Nullable
     protected PackedComponentConfigurationContext firstChild;
 
-    /** The last child of this component. Is exclusively used to help maintain {@link #nextSiebling}. */
+    /**
+     * The latest inserted child of this component. Or null if this component has no children. Is exclusively used to help
+     * maintain {@link #nextSiebling}.
+     */
     @Nullable
     private PackedComponentConfigurationContext lastChild;
 
@@ -115,38 +122,12 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     @Nullable
     public PackedComponentConfigurationContext nextSiebling;
 
-    /** The parent of this component, or null for a root container. */
+    /** The parent of this component, or null for a root component. */
     @Nullable
     final PackedComponentConfigurationContext parent;
 
     /**
-     * A special constructor for the top level container.
-     * 
-     * @param configSite
-     *            the configuration site of the component
-     * @param output
-     *            the output of the build process
-     */
-    protected PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ConfigSite configSite, Object source, AssembleOutput output,
-            Wirelet... wirelets) {
-        this.driver = requireNonNull(driver);
-        this.configSite = requireNonNull(configSite);
-        this.source = source;
-        this.wireletContext = WireletPack.from(this, wirelets);
-
-        this.pod = new PackedPodConfigurationContext();
-        this.parent = null;
-        this.container = null;
-        this.depth = 0;
-
-        this.extension = null;
-        this.artifact = new PackedAssemblyContext((PackedContainerConfigurationContext) this, output);
-
-        initializeNameXX(null);
-    }
-
-    /**
-     * Creates a new abstract component configuration
+     * Creates a new instance of this class
      * 
      * @param configSite
      *            the configuration site of the component
@@ -154,19 +135,28 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
      *            the parent of the component
      */
     public PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ConfigSite configSite, Object source,
-            PackedComponentConfigurationContext parent, Wirelet... wirelets) {
+            PackedComponentConfigurationContext parent, AssembleOutput output, Wirelet... wirelets) {
         this.driver = requireNonNull(driver);
         this.configSite = requireNonNull(configSite);
         this.source = source;
         this.wireletContext = WireletPack.from(this, wirelets);
 
-        this.parent = requireNonNull(parent);
-        this.container = parent instanceof PackedContainerConfigurationContext ? (PackedContainerConfigurationContext) parent : parent.container;
-        this.depth = parent.depth + 1;
-        this.pod = parent.pod;
+        if (parent == null) {
+            this.pod = new PackedPodConfigurationContext();
+            this.parent = null;
+            this.container = null;
+            this.depth = 0;
+            this.extension = null;
+            this.artifact = new PackedAssemblyContext((PackedContainerConfigurationContext) this, output);
+        } else {
+            this.parent = requireNonNull(parent);
+            this.container = parent instanceof PackedContainerConfigurationContext ? (PackedContainerConfigurationContext) parent : parent.container;
+            this.depth = parent.depth + 1;
+            this.pod = parent.pod;
+            this.extension = container.activeExtension;
+            this.artifact = parent.artifact;
+        }
 
-        this.extension = container.activeExtension;
-        this.artifact = parent.artifact;
         initializeNameXX(null);
     }
 
@@ -465,6 +455,10 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
         }
         // Hmm, we should probably used LinkedHashMap to retain order.
         // It just uses so much memory...
+        // If we allow a wirelet, we should note that people
+        // should never rely on ordering.. Especially if it is inherited.
+
+        // Maybe ordered is the default...
         HashMap<String, PackedComponent> result = new HashMap<>(children.size());
 
         for (PackedComponentConfigurationContext c = firstChild; c != null; c = c.nextSiebling) {

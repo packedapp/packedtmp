@@ -51,6 +51,7 @@ import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
+import packed.internal.component.specialization.ComponentSpecialization;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.hook.applicator.DelayedAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarFieldDelayerAccessor;
@@ -61,7 +62,7 @@ import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.runtime.PackedInjector;
 
 /** The default container context. */
-public final class PackedContainerConfigurationContext extends PackedComponentConfigurationContext {
+public final class PackedContainerConfigurationContext extends PackedComponentConfigurationContext implements ComponentSpecialization {
 
     private static final int LS_0_MAINL = 0;
 
@@ -103,7 +104,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
      *            any wirelets specified by the user
      */
     private PackedContainerConfigurationContext(ConfigSite cs, AssembleOutput output, Object source, Wirelet... wirelets) {
-        super(ContainerComponentDriver.INSTANCE, cs, source, output, wirelets);
+        super(ContainerComponentDriver.INSTANCE, cs, source, null, output, wirelets);
         this.lookup = this.model = ContainerModel.of(source.getClass());
     }
 
@@ -119,7 +120,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
      */
     public PackedContainerConfigurationContext(PackedComponentDriver<?> driver, PackedComponentConfigurationContext parent, Bundle<?> bundle,
             Wirelet... wirelets) {
-        super(driver, ConfigSiteSupport.captureStackFrame(parent.configSite(), ConfigSiteInjectOperations.INJECTOR_OF), bundle, parent, wirelets);
+        super(driver, ConfigSiteSupport.captureStackFrame(parent.configSite(), ConfigSiteInjectOperations.INJECTOR_OF), bundle, parent, null, wirelets);
         this.lookup = this.model = ContainerModel.of(bundle.getClass());
     }
 
@@ -238,7 +239,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(lookup, factory);
 
-        PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(scd, configSite, null, this);
+        PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(scd, configSite, null, this, null);
         model.invokeOnHookOnInstall(source, conf);
         return scd.toConf(conf);
     }
@@ -249,7 +250,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(lookup, instance);
 
-        PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(scd, configSite, null, this);
+        PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(scd, configSite, null, this, null);
         model.invokeOnHookOnInstall(source, conf); // installs any extensions...
         return scd.toConf(conf);
     }
@@ -259,7 +260,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
 
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
 
-        PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(scd, configSite, null, this);
+        PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(scd, configSite, null, this, null);
         scd.model.invokeOnHookOnInstall(source, conf);
         return scd.toConf(conf);
     }
