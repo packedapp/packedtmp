@@ -57,6 +57,7 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         this.roles = roles;
     }
 
+    // Maybe create nullable if should not add??
     public abstract ComponentNode create(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, InstantiationContext ic);
 
     public String defaultName(Object ssss) {
@@ -80,10 +81,8 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
             }
             // TODO think it should be named Artifact type, for example, app, injector, ...
             return "Unknown";
-        } else if (this instanceof SingletonComponentDriver) {
-            return ((SingletonComponentDriver) this).model.defaultPrefix();
         } else {
-            return ((StatelessComponentDriver) this).model.defaultPrefix();
+            return ((ModelComponentDriver<?>) this).model.defaultPrefix();
         }
     }
 
