@@ -54,13 +54,13 @@ public final class PackedContainer extends PackedComponent {
      *            the instantiation context of the container
      */
     public PackedContainer(@Nullable PackedComponent parent, PackedContainerConfigurationContext pcc, PackedInstantiationContext instantiationContext) {
-        super(parent, pcc, instantiationContext);
-        Injector i = instantiationContext.get(pcc, PackedInjector.class);
+        super(parent, pcc.component, instantiationContext);
+        Injector i = instantiationContext.get(pcc.component, PackedInjector.class);
         if (i == null) {
-            i = new PackedInjector(pcc.configSite(), pcc.getDescription(), new LinkedHashMap<>());
+            i = new PackedInjector(pcc.component.configSite(), pcc.component.getDescription(), new LinkedHashMap<>());
         }
         this.injector = i;
-        instantiationContext.put(pcc, this);
+        instantiationContext.put(pcc.component, this);
     }
 
     public ArtifactContext toArtifactContext() {

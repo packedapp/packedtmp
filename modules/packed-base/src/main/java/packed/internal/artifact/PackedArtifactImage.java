@@ -61,7 +61,7 @@ public final class PackedArtifactImage implements ArtifactImage {
     /** {@inheritDoc} */
     @Override
     public ConfigSite configSite() {
-        return pcc.configSite();
+        return pcc.component.configSite();
     }
 
     /**
@@ -76,7 +76,7 @@ public final class PackedArtifactImage implements ArtifactImage {
     /** {@inheritDoc} */
     @Override
     public Optional<String> description() {
-        return Optional.ofNullable(pcc.getDescription());
+        return Optional.ofNullable(pcc.component.getDescription());
     }
 
     /** {@inheritDoc} */
@@ -94,7 +94,7 @@ public final class PackedArtifactImage implements ArtifactImage {
         // Only if a name has been explicitly set?
         // Or can we include "FooBar?"
         // Return Optional<String>????
-        return wc == null ? pcc.getName() : wc.name(pcc);
+        return wc == null ? pcc.component.getName() : wc.name(pcc.component);
     }
 
     /** {@inheritDoc} */
@@ -107,7 +107,7 @@ public final class PackedArtifactImage implements ArtifactImage {
     /** {@inheritDoc} */
     @Override
     public ComponentStream stream(ComponentStream.Option... options) {
-        return ComponentAdaptor.of(pcc).stream(options);
+        return ComponentAdaptor.of(pcc.component).stream(options);
     }
 
     public WireletPack wirelets() {
@@ -154,7 +154,7 @@ public final class PackedArtifactImage implements ArtifactImage {
      */
     public static PackedArtifactImage of(Bundle<?> bundle, Wirelet... wirelets) {
         PackedContainerConfigurationContext pcc = PackedContainerConfigurationContext.assemble(AssembleOutput.image(), bundle, wirelets);
-        return new PackedArtifactImage(pcc, pcc.wireletContext);
+        return new PackedArtifactImage(pcc, pcc.component.wireletContext);
     }
 }
 

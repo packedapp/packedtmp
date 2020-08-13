@@ -161,7 +161,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     /** {@inheritDoc} */
     @Override
     public ConfigSite containerConfigSite() {
-        return pcc.configSite();
+        return pcc.component.configSite();
     }
 
     /** {@inheritDoc} */
@@ -179,7 +179,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
      */
     @Nullable
     Object findWirelet(Class<? extends Wirelet> wireletType) {
-        return pcc.wireletAny(wireletType).orElse(null);
+        return pcc.component.wireletAny(wireletType).orElse(null);
     }
 
     /** {@inheritDoc} */
@@ -263,7 +263,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     @Override
     public ComponentPath path() {
         // TODO return path of this component.
-        return pcc.path();
+        return pcc.component.path();
     }
 
     /** {@inheritDoc} */
@@ -326,11 +326,11 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
             // Should we also set the active extension in the parent???
             if (model.extensionLinkedToAncestorExtension != null) {
                 PackedExtensionConfiguration parentExtension = null;
-                PackedContainerConfigurationContext parent = pcc.container();
+                PackedContainerConfigurationContext parent = pcc.component.container();
                 if (!model.extensionLinkedDirectChildrenOnly) {
                     while (parentExtension == null && parent != null) {
                         parentExtension = parent.getExtensionContext(extensionType);
-                        parent = parent.container();
+                        parent = parent.component.container();
                     }
                 } else if (parent != null) {
                     parentExtension = parent.getExtensionContext(extensionType);
@@ -351,8 +351,8 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
             model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_0_INSTANTIATION, e, pec);
 
             // 3. Finally initialize any pipeline (??swap step 2 and 3??)
-            if (pcc.wireletContext != null) {
-                pcc.wireletContext.extensionInitialized(pec);
+            if (pcc.component.wireletContext != null) {
+                pcc.component.wireletContext.extensionInitialized(pec);
             }
         } finally {
             pcc.activeExtension = existing;

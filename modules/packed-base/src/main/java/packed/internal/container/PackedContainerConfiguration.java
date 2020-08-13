@@ -35,14 +35,14 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     private final PackedContainerConfigurationContext context;
 
     public PackedContainerConfiguration(PackedContainerConfigurationContext context) {
-        super(context);
+        super(context.component);
         this.context = context;
     }
 
     /** {@inheritDoc} */
     @Override
     public <W extends Wirelet> Optional<W> assemblyWirelet(Class<W> type) {
-        return context.assemblyWirelet(type);
+        return context.component.assemblyWirelet(type);
     }
 
     /** {@inheritDoc} */
@@ -78,7 +78,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** {@inheritDoc} */
     @Override
     public boolean isArtifactRoot() {
-        return context.hasParent();// not sure this is correct
+        return context.component.hasParent();// not sure this is correct
     }
 
     /** {@inheritDoc} */
@@ -90,14 +90,14 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** {@inheritDoc} */
     @Override
     public PackedContainerConfiguration setDescription(String description) {
-        context.setDescription(description);
+        context.component.setDescription(description);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
     public PackedContainerConfiguration setName(String name) {
-        context.setName(name);
+        context.component.setName(name);
         return this;
     }
 

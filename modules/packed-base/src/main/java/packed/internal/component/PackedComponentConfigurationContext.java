@@ -119,7 +119,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     final PackedComponentConfigurationContext parent;
 
     /** Any container this component is part of. A container is part of it self */
-    private final PackedContainerConfigurationContext container;
+    public final PackedContainerConfigurationContext container;
 
     /**
      * Creates a new instance of this class
@@ -142,10 +142,10 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
             this.containerOld = null;
             this.depth = 0;
             this.extension = null;
-            this.artifact = new PackedAssemblyContext((PackedContainerConfigurationContext) this, output);
+            this.artifact = new PackedAssemblyContext(this.container, output);
         } else {
             this.pod = parent.pod;
-            this.containerOld = parent.driver.isContainer() ? (PackedContainerConfigurationContext) parent : parent.containerOld;
+            this.containerOld = parent.driver.isContainer() ? (PackedContainerConfigurationContext) parent.container : parent.containerOld;
             this.depth = parent.depth + 1;
             this.extension = containerOld.activeExtension;
             this.artifact = parent.artifact;
@@ -159,8 +159,8 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     }
 
     public PackedContainerConfigurationContext actualContainer() {
-        if (this instanceof PackedContainerConfigurationContext) {
-            return (PackedContainerConfigurationContext) this;
+        if (this.isContainer()) {
+            return this.container;
         }
         return containerOld;
     }
@@ -180,7 +180,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
      * @see StackWalker
      */
     // TODO add stuff about we also ignore non-concrete container sources...
-    protected final ConfigSite captureStackFrame(String operation) {
+    public final ConfigSite captureStackFrame(String operation) {
         // API-NOTE This method is not available on ExtensionContext to encourage capturing of stack frames to be limited
         // to the extension class in order to simplify the filtering mechanism.
 
@@ -257,7 +257,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
         String n = newName;
         if (newName == null) {
             if (driver.isContainer()) {
-                PackedContainerConfigurationContext pcc = (PackedContainerConfigurationContext) this;
+                PackedComponentConfigurationContext pcc = this;
                 if (pcc.wireletContext != null) {
                     ComponentNameWirelet cwn = pcc.wireletContext.nameWirelet();
                     if (cwn != null) {

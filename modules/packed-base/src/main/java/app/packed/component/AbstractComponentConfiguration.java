@@ -26,6 +26,7 @@ import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
+import packed.internal.component.PackedComponentConfigurationContext;
 import packed.internal.config.ConfigSiteSupport;
 
 /** An abstract implementation of ComponentConfiguration that can be extended by extensions. */
@@ -150,7 +151,7 @@ public abstract class AbstractComponentConfiguration implements ComponentConfigu
     /** {@inheritDoc} */
     @Override
     public final void link(Bundle<?> bundle, Wirelet... wirelets) {
-        context.link(bundle, wirelets);
+        ((PackedComponentConfigurationContext) context).container.link(bundle, wirelets);
     }
 
     /** {@inheritDoc} */

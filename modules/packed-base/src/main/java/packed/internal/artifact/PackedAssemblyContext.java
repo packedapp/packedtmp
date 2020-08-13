@@ -53,7 +53,7 @@ public final class PackedAssemblyContext implements AssembleContext {
     /** {@inheritDoc} */
     @Override
     public ConfigSite configSite() {
-        return topContainerConfiguration.configSite();
+        return topContainerConfiguration.component.configSite();
     }
 
     /** {@inheritDoc} */

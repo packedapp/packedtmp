@@ -209,8 +209,8 @@ public final class WireletPack {
 
     @Nullable
     public static WireletPack from(PackedComponentConfigurationContext pcc, Wirelet... wirelets) {
-        if (pcc instanceof PackedContainerConfigurationContext) {
-            return fromLink((PackedContainerConfigurationContext) pcc, wirelets);
+        if (pcc.isContainer()) {
+            return fromLink(pcc.container, wirelets);
         }
         return null;
     }

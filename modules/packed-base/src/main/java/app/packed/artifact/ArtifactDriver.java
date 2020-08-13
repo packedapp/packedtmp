@@ -96,7 +96,7 @@ public final class ArtifactDriver<A> {
         C c = factory.apply(pc);
         consumer.configure(c);
         pcc.assemble();
-        ArtifactContext pac = pcc.instantiateArtifact(pcc.wireletContext);
+        ArtifactContext pac = pcc.instantiateArtifact(pcc.component.wireletContext);
         return newArtifact(pac);
     }
     // Ja den er faktisk fin nok syntes jeg...
@@ -111,7 +111,7 @@ public final class ArtifactDriver<A> {
             wc = WireletPack.fromImage(pcc, pai.wirelets(), wirelets);
         } else { // assert Bundle?
             pcc = PackedContainerConfigurationContext.assemble(AssembleOutput.artifact(this), source, wirelets);
-            wc = pcc.wireletContext;
+            wc = pcc.component.wireletContext;
         }
         return pcc.instantiateArtifact(wc);
     }
