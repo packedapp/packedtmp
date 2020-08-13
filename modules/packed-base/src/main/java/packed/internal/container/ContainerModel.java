@@ -169,8 +169,6 @@ public final class ContainerModel extends Model implements ComponentLookup {
         return MODEL_CACHE.get(sourceType);
     }
 
-    // I
-
     /** A component lookup class wrapping a {@link Lookup} object. */
     private static final class PerLookup implements ComponentLookup {
 
@@ -219,11 +217,3 @@ public final class ContainerModel extends Model implements ComponentLookup {
         }
     }
 }
-
-// Maaske havde Factory.open() istedet for
-// Factory.withMethodHandle <- Only for construction of Object????... We are more or less opening it
-
-// Via bundle.lookup(MethodHandle) //Hvordan faar vi installeret @Install Bundle, @ComponentScan.. lookup must be first
-// command in a bundle.... Otherwise fail..
-// Via MethodHandle on SupportClass
-// Via Bundle.class

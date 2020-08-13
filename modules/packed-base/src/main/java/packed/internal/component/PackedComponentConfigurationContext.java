@@ -38,10 +38,10 @@ import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedAssemblyContext;
 import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.component.role.ComponentRoleConf;
+import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletModel;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.component.wirelet.WireletPipelineContext;
-import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.PackedContainerConfigurationContext;
 import packed.internal.container.PackedExtensionConfiguration;
@@ -59,9 +59,8 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     /** The configuration site of this component. */
     private final ConfigSite configSite;
 
-    /** The container this component belongs to, or null for a root container. */
+    /** Any container this component belongs to, or null for a root container. */
     @Nullable
-    // BelongsToContainer
     private final PackedContainerConfigurationContext container;
 
     /** Ugly stuff. */
