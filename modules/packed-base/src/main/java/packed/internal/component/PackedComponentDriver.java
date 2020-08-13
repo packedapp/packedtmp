@@ -59,6 +59,34 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         return hasRole(ROLE_CONTAINER);
     }
 
+    public String defaultName(Object ssss) {
+        if (hasContainer()) {
+            // I think try and move some of this to ComponentNameWirelet
+            @Nullable
+            Class<?> source = ssss.getClass();
+            if (Bundle.class.isAssignableFrom(source)) {
+                String nnn = source.getSimpleName();
+                if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
+                    nnn = nnn.substring(0, nnn.length() - 6);
+                }
+                if (nnn.length() > 0) {
+                    // checkName, if not just App
+                    // TODO need prefix
+                    return nnn;
+                }
+                if (nnn.length() == 0) {
+                    return "Container";
+                }
+            }
+            // TODO think it should be named Artifact type, for example, app, injector, ...
+            return "Unknown";
+        } else if (this instanceof SingletonComponentDriver) {
+            return ((SingletonComponentDriver) this).model.defaultPrefix();
+        } else {
+            return ((StatelessComponentDriver) this).model.defaultPrefix();
+        }
+    }
+
     public final boolean hasRole(int role) {
         return (roles & role) != 0;
     }

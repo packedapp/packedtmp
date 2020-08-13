@@ -37,8 +37,6 @@ import app.packed.container.Extension;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedAssemblyContext;
 import packed.internal.artifact.PackedInstantiationContext;
-import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
-import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
 import packed.internal.component.role.ComponentRoleConf;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ComponentWirelet.ComponentNameWirelet;
@@ -145,13 +143,13 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
             this.artifact = new PackedAssemblyContext((PackedContainerConfigurationContext) this, output);
         } else {
             this.pod = parent.pod;
-            this.container = parent instanceof PackedContainerConfigurationContext ? (PackedContainerConfigurationContext) parent : parent.container;
+            this.container = parent.driver.hasContainer() ? (PackedContainerConfigurationContext) parent : parent.container;
             this.depth = parent.depth + 1;
             this.extension = container.activeExtension;
             this.artifact = parent.artifact;
         }
 
-        initializeName(null);
+        setName0(null);
     }
 
     public PackedContainerConfigurationContext actualContainer() {
@@ -249,7 +247,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
         return description;
     }
 
-    private void initializeName(String newName) {
+    private void setName0(String newName) {
         String n = newName;
         if (newName == null) {
             if (driver.hasContainer()) {
@@ -267,7 +265,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
         boolean isFree = false;
 
         if (n == null) {
-            n = initializeName0();
+            n = driver.defaultName(source);
             isFree = true;
         } else if (n.endsWith("?")) {
             n = n.substring(0, n.length() - 1);
@@ -305,35 +303,6 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
             }
         }
         name = n;
-    }
-
-    private String initializeName0() {
-        if (this instanceof PackedContainerConfigurationContext) {
-
-            // I think try and move some of this to ComponentNameWirelet
-            @Nullable
-            Class<?> source = this.source.getClass();
-            if (Bundle.class.isAssignableFrom(source)) {
-                String nnn = source.getSimpleName();
-                if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
-                    nnn = nnn.substring(0, nnn.length() - 6);
-                }
-                if (nnn.length() > 0) {
-                    // checkName, if not just App
-                    // TODO need prefix
-                    return nnn;
-                }
-                if (nnn.length() == 0) {
-                    return "Container";
-                }
-            }
-            // TODO think it should be named Artifact type, for example, app, injector, ...
-            return "Unknown";
-        } else if (this.driver instanceof SingletonComponentDriver) {
-            return ((SingletonComponentDriver) this.driver).model.defaultPrefix();
-        } else {
-            return ((StatelessComponentDriver) this.driver).model.defaultPrefix();
-        }
     }
 
     int nameState;
@@ -399,7 +368,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
             return;// We never set override a name set by a wirelet
         }
 
-        initializeName(name);
+        setName0(name);
 //
 //        switch (state.oldState) {
 //        case INITIAL:
