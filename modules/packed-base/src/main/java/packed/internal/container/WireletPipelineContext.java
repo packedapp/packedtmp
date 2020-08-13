@@ -72,7 +72,6 @@ public final class WireletPipelineContext {
 
     void instantiate(@Nullable Extension extension) {
         instance = model.newPipeline(extension);
-
         try {
             MH_WIRELET_PIPELINE_INITIALIZE.invoke(instance, this);
         } catch (Throwable e) {

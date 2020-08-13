@@ -57,13 +57,12 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         @SuppressWarnings("unchecked")
         @Override
         protected ExtensionModel computeValue(Class<?> type) {
-            // First, check that the user has specified an actual sub type of Extension to
-            // ContainerConfiguration#use() or Bundle#use()
+            // First, check that the user has specified an actual sub type of Extension to ExtensionModel.of()
             if (type == Extension.class) {
-                throw new IllegalArgumentException(Extension.class.getSimpleName() + ".class is not a valid argument.");
+                throw new IllegalArgumentException(Extension.class.getSimpleName() + ".class is not a valid argument to this method.");
             } else if (!Extension.class.isAssignableFrom(type)) {
                 throw new IllegalArgumentException(
-                        "The specified type '" + StringFormatter.format(type) + "' does not extend '" + StringFormatter.format(Extension.class) + "'");
+                        "The specified type '" + StringFormatter.format(type) + "' must extend '" + StringFormatter.format(Extension.class) + "'");
             }
             return ExtensionModelLoader.load((Class<? extends Extension>) type);
         }
@@ -232,8 +231,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         try {
             return (Extension) constructor.invokeExact(context);
         } catch (Throwable e) {
-//            ThrowableUtil.throwIfUnchecked(e);
-            throw new InternalExtensionException("Instantiation of Extension failed", e);
+            throw new InternalExtensionException("Extension (" + type().getSimpleName() + ")  could not be created", e);
         }
     }
 
@@ -311,11 +309,11 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         /** The depth of the extension relative to other extensions. */
         private int depth;
 
-        final int id;
+        private final int id;
 
-        MethodHandle li;
+        private MethodHandle li;
 
-        Method linked;
+        private Method linked;
 
         /** The loader used to load the extension. */
         private final ExtensionModelLoader loader;

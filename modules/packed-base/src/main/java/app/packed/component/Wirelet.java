@@ -21,7 +21,7 @@ import app.packed.base.Nullable;
 import app.packed.container.ContainerBundle;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
-import packed.internal.container.ComponentWirelet.ComponentNameWirelet;
+import packed.internal.container.InternalWirelet.ComponentNameWirelet;
 import packed.internal.container.WireletList;
 
 /**

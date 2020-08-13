@@ -25,7 +25,7 @@ import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import packed.internal.component.PackedComponentConfigurationContext;
-import packed.internal.container.ComponentWirelet.ComponentNameWirelet;
+import packed.internal.container.InternalWirelet.ComponentNameWirelet;
 
 /**
  * A container of wirelets and wirelet pipelines.
@@ -85,10 +85,10 @@ public final class WireletPack {
 
             context.wirelets.add(w);
 
-        } else if (w instanceof ComponentWirelet) {
+        } else if (w instanceof InternalWirelet) {
             // Hmm skulle vi vente til alle wirelets er succesfuld processeret???
             // Altsaa hvad hvis den fejler.... Altsaa taenker ikke den maa lavere aendringer i containeren.. kun i wirelet context
-            ((ComponentWirelet) w).process(this);
+            ((InternalWirelet) w).process(this);
         } else if (w instanceof WireletList) {
             for (Wirelet ww : ((WireletList) w).wirelets) {
                 create0(ww);

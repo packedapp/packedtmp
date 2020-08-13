@@ -39,7 +39,7 @@ import packed.internal.artifact.PackedAssemblyContext;
 import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.component.role.ComponentRoleConf;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.container.ComponentWirelet.ComponentNameWirelet;
+import packed.internal.container.InternalWirelet.ComponentNameWirelet;
 import packed.internal.container.PackedContainerConfigurationContext;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.container.WireletModel;

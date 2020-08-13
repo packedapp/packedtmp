@@ -32,12 +32,12 @@ import app.packed.component.Wirelet;
 // Altsaa det bliver vel smidt vaek naar man har lavet et image....
 
 // Taenker det er noget man kan teste for ArchCheck.check(new DooBundle());
-public abstract class ComponentWirelet implements Wirelet {
+public abstract class InternalWirelet implements Wirelet {
 
     abstract void process(WireletPack c);
 
     /** A wirelet that will set the name of the container. Used by {@link Wirelet#name(String)}. */
-    public static final class ComponentNameWirelet extends ComponentWirelet {
+    public static final class ComponentNameWirelet extends InternalWirelet {
 
         /** The (checked) name to override with. */
         public final String name;

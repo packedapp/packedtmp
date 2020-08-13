@@ -20,7 +20,7 @@ import app.packed.component.ConsumeWirelet;
 /**
  * You should only change the s
  */
-public enum ExtensionWireletScope {
+public enum WireletScope {
 
     /**
      * Wirelets and pipelines are only available for injection at runtime. Trying to inject a wirelet or pipeline using
