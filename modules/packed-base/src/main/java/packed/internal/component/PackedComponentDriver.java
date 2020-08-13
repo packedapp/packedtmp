@@ -103,7 +103,7 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
 
     public PackedComponentConfigurationContext newContainConf(PackedComponentConfigurationContext parent, Bundle<?> bundle, Wirelet... wirelets) {
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(parent.configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
-        return new PackedContainerConfigurationContext(this, cs, bundle, parent, null, wirelets);
+        return PackedContainerConfigurationContext.create(this, cs, bundle, parent, null, wirelets);
     }
 
     public static ContainerComponentDriver container(Object source) {
@@ -125,25 +125,21 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         }
     }
 
-    public static class SingletonComponentDriver extends PackedComponentDriver<ComponentConfiguration> {
+    public static class SingletonComponentDriver extends ModelComponentDriver<ComponentConfiguration> {
         @Nullable
         public final BaseFactory<?> factory;
 
         @Nullable
         public final Object instance;
 
-        public final ComponentModel model;
-
         public SingletonComponentDriver(ComponentLookup lookup, Factory<?> factory) {
-            super(PackedComponentDriver.ROLE_SINGLETON);
-            this.model = lookup.componentModelOf(factory.rawType());
+            super(PackedComponentDriver.ROLE_SINGLETON, lookup.componentModelOf(factory.rawType()));
             this.factory = (@Nullable BaseFactory<?>) factory;
             this.instance = null;
         }
 
         public SingletonComponentDriver(ComponentLookup lookup, Object instance) {
-            super(PackedComponentDriver.ROLE_SINGLETON);
-            this.model = lookup.componentModelOf(instance.getClass());
+            super(PackedComponentDriver.ROLE_SINGLETON, lookup.componentModelOf(instance.getClass()));
             this.factory = null;
             this.instance = requireNonNull(instance);
         }
@@ -164,13 +160,24 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         }
     }
 
-    public static class StatelessComponentDriver extends PackedComponentDriver<ComponentConfiguration> {
+    public static abstract class ModelComponentDriver<T> extends PackedComponentDriver<T> {
         public final ComponentModel model;
 
+        /**
+         * @param roles
+         */
+        ModelComponentDriver(int roles, ComponentModel model) {
+            super(roles);
+            this.model = model;
+        }
+
+    }
+
+    public static class StatelessComponentDriver extends ModelComponentDriver<ComponentConfiguration> {
+
         public StatelessComponentDriver(ComponentLookup lookup, Class<?> implementation) {
-            super(PackedComponentDriver.ROLE_STATELESS);
+            super(PackedComponentDriver.ROLE_STATELESS, lookup.componentModelOf(requireNonNull(implementation, "implementation is null")));
             requireNonNull(implementation, "implementation is null");
-            this.model = lookup.componentModelOf(implementation);
         }
 
         /** {@inheritDoc} */

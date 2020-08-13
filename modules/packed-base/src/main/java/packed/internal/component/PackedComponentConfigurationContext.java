@@ -61,7 +61,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
 
     /** Any container this component belongs to, or null for a root container. */
     @Nullable
-    private final PackedContainerConfigurationContext container;
+    private final PackedContainerConfigurationContext containerOld;
 
     /** Ugly stuff. */
     public ArrayList<DelayedAccessor> del = new ArrayList<>();
@@ -118,6 +118,9 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     @Nullable
     final PackedComponentConfigurationContext parent;
 
+    /** Any container this component is part of. A container is part of it self */
+    private final PackedContainerConfigurationContext container;
+
     /**
      * Creates a new instance of this class
      * 
@@ -127,24 +130,24 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
      *            the parent of the component
      */
     public PackedComponentConfigurationContext(PackedComponentDriver<?> driver, ConfigSite configSite, Object source,
-            PackedComponentConfigurationContext parent, AssembleOutput output, Wirelet... wirelets) {
+            PackedComponentConfigurationContext parent, AssembleOutput output, PackedContainerConfigurationContext container, Wirelet... wirelets) {
         this.driver = requireNonNull(driver);
         this.configSite = requireNonNull(configSite);
         this.source = source;
         this.wireletContext = WireletPack.from(this, wirelets);
-
+        this.container = container;
         this.parent = parent;
         if (parent == null) {
             this.pod = new PackedPodConfigurationContext();
-            this.container = null;
+            this.containerOld = null;
             this.depth = 0;
             this.extension = null;
             this.artifact = new PackedAssemblyContext((PackedContainerConfigurationContext) this, output);
         } else {
             this.pod = parent.pod;
-            this.container = parent.driver.isContainer() ? (PackedContainerConfigurationContext) parent : parent.container;
+            this.containerOld = parent.driver.isContainer() ? (PackedContainerConfigurationContext) parent : parent.containerOld;
             this.depth = parent.depth + 1;
-            this.extension = container.activeExtension;
+            this.extension = containerOld.activeExtension;
             this.artifact = parent.artifact;
         }
 
@@ -155,7 +158,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
         if (this instanceof PackedContainerConfigurationContext) {
             return (PackedContainerConfigurationContext) this;
         }
-        return container;
+        return containerOld;
     }
 
     /**
@@ -232,7 +235,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
      */
     @Nullable
     public final PackedContainerConfigurationContext container() {
-        return container;
+        return containerOld;
     }
 
     public final Optional<Class<? extends Extension>> extension() {

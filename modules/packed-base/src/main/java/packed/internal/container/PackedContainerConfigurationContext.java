@@ -105,11 +105,17 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
      * @param wirelets
      *            any wirelets specified by the user
      */
-    public PackedContainerConfigurationContext(PackedComponentDriver<?> driver, ConfigSite cs, Object source, PackedComponentConfigurationContext parent,
+    @Deprecated
+    private PackedContainerConfigurationContext(PackedComponentDriver<?> driver, ConfigSite cs, Object source, PackedComponentConfigurationContext parent,
             AssembleOutput output, Wirelet... wirelets) {
-        super(driver, cs, source, parent, output, wirelets);
+        super(driver, cs, source, parent, output, null, wirelets);
         this.lookup = this.model = ContainerModel.of(source.getClass());
         this.component = this;
+    }
+
+    public static PackedContainerConfigurationContext create(PackedComponentDriver<?> driver, ConfigSite cs, Object source,
+            PackedComponentConfigurationContext parent, AssembleOutput output, Wirelet... wirelets) {
+        return new PackedContainerConfigurationContext(driver, cs, source, parent, output, wirelets);
     }
 
     private void advanceTo(int newState) {
@@ -221,7 +227,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(lookup, factory);
 
-        PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(scd, configSite, null, this, null);
+        PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(scd, configSite, null, this, null, this);
         model.invokeOnHookOnInstall(source, conf);
         return scd.toConf(conf);
     }
@@ -232,7 +238,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(lookup, instance);
 
-        PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(scd, configSite, null, this, null);
+        PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(scd, configSite, null, this, null, this);
         model.invokeOnHookOnInstall(source, conf); // installs any extensions...
         return scd.toConf(conf);
     }
@@ -242,7 +248,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
 
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
 
-        PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(scd, configSite, null, this, null);
+        PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(scd, configSite, null, this, null, this);
         scd.model.invokeOnHookOnInstall(source, conf);
         return scd.toConf(conf);
     }
@@ -374,13 +380,13 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
 
     public static PackedContainerConfigurationContext of(AssembleOutput output, Object source, Wirelet... wirelets) {
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
-        return new PackedContainerConfigurationContext(ContainerComponentDriver.INSTANCE, cs, source, null, output, wirelets);
+        return PackedContainerConfigurationContext.create(ContainerComponentDriver.INSTANCE, cs, source, null, output, wirelets);
     }
 
     public static PackedContainerConfigurationContext assemble(AssembleOutput output, ArtifactSource source, Wirelet... wirelets) {
         PackedContainerConfigurationContext c = of(output, source, wirelets);
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
-        c = new PackedContainerConfigurationContext(ContainerComponentDriver.INSTANCE, cs, source, null, output, wirelets);
+        c = PackedContainerConfigurationContext.create(ContainerComponentDriver.INSTANCE, cs, source, null, output, wirelets);
         c.assemble();
         return c;
     }
