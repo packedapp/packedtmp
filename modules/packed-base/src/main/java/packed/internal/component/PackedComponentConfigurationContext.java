@@ -252,7 +252,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     private void initializeName(String newName) {
         String n = newName;
         if (newName == null) {
-            if (this instanceof PackedContainerConfigurationContext) {
+            if (driver.hasContainer()) {
                 PackedContainerConfigurationContext pcc = (PackedContainerConfigurationContext) this;
                 if (pcc.wireletContext != null) {
                     ComponentNameWirelet cwn = pcc.wireletContext.nameWirelet();
@@ -472,13 +472,10 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
         if (wop == null && inherited) {
             PackedComponentConfigurationContext acc = parent;
             while (acc != null) {
-                if (acc instanceof PackedContainerConfigurationContext) {
-                    PackedContainerConfigurationContext pcc = (PackedContainerConfigurationContext) acc;
-                    if (pcc.wireletContext != null) {
-                        wop = pcc.wireletContext.getWireletOrPipeline(type);
-                        if (wop != null) {
-                            break;
-                        }
+                if (acc.wireletContext != null) {
+                    wop = acc.wireletContext.getWireletOrPipeline(type);
+                    if (wop != null) {
+                        break;
                     }
                 }
                 acc = acc.parent;

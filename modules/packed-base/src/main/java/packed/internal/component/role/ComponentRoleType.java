@@ -19,6 +19,7 @@ package packed.internal.component.role;
  *
  */
 // ComponentRole vs ComponentSpecialzation...
+
 public enum ComponentRoleType {
 
     FUNCTION,
@@ -29,6 +30,11 @@ public enum ComponentRoleType {
 
     GUEST;
 }
+
+//     INLINE, // Kan tilfoeje siblings paa assembly time... maaske ikke en rolle... men extensions...
+
+// Extension | Inline + Buildtime (will not transition to instantiation)
+
 // Extension? Hmmmm for mig virker den som om det er _en_ driver instans der altid bliver brugt... og ikke som noget man kan konfigurere
 // --- Dvs den hoere eksplicit til en container... Og er maaske ikke engang public...
 
