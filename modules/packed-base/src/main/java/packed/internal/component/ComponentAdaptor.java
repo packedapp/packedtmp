@@ -30,7 +30,6 @@ import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
-import packed.internal.container.PackedContainerConfigurationContext;
 
 /**
  *
@@ -49,8 +48,7 @@ public final class ComponentAdaptor implements Component {
     // Need to main any guest ancestor. As images must resolve in relation to it.
     // private final List<PackedGuestConfigurationContext> pgc;
 
-    private ComponentAdaptor(
-            PackedComponentConfigurationContext componentConfiguration /* , List<PackedGuestConfigurationContext> pgc */) {
+    private ComponentAdaptor(PackedComponentConfigurationContext componentConfiguration /* , List<PackedGuestConfigurationContext> pgc */) {
         this.componentConfiguration = requireNonNull(componentConfiguration);
         // this.pgc = pgc;
     }
@@ -92,7 +90,7 @@ public final class ComponentAdaptor implements Component {
             } else {
                 LinkedHashMap<String, ComponentAdaptor> m = new LinkedHashMap<>();
                 for (PackedComponentConfigurationContext acc = componentConfiguration.firstChild; acc != null; acc = acc.nextSibling) {
-                    m.put(acc.name, of0(acc /* , pgc */));
+                    m.put(acc.name, of(acc /* , pgc */));
                 }
                 c = children = Map.copyOf(m);
             }
@@ -176,12 +174,7 @@ public final class ComponentAdaptor implements Component {
         }
     }
 
-    public static Component of(PackedContainerConfigurationContext pcc) {
-        return new ComponentAdaptor(pcc /* , pgc */);
-        // return of0(pcc, List.of());
-    }
-
-    private static ComponentAdaptor of0(PackedComponentConfigurationContext bcc /* , List<PackedGuestConfigurationContext> pgc */) {
+    public static ComponentAdaptor of(PackedComponentConfigurationContext bcc /* , List<PackedGuestConfigurationContext> pgc */) {
         return new ComponentAdaptor(bcc /* , pgc */);
 //        
 //        if (bcc instanceof PackedGuestConfigurationContext) {
