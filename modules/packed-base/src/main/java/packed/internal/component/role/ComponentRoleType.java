@@ -20,21 +20,30 @@ package packed.internal.component.role;
  */
 // ComponentRole vs ComponentSpecialzation...
 
+// Rules
+// Extension always has a Container as its parent
+// Guest always has a Host a parent or is root.
+// An EXTENSION can never have more roles
+
 public enum ComponentRoleType {
 
     // Extension giver god mening... Da vi har en masse custom lifecycle....
 
     // Ide'en er lidt at f.eks. Extension er en BuildInstance...
     // Omvendt taenker jeg paa at extensions kan have runtime services kun paa build time
-    BUILD_INSTANCE, // Maaske er det bare en Extension. En Host har en Guest...
-
-    FUNCTION,
+    EXTENSION, // Maaske er det bare en Extension. En Host har en Guest...
 
     CONTAINER,
 
     HOST,
 
-    GUEST;
+    GUEST,
+
+    // Maaske Stateless, Statefull, Function, osv. ikke er en rolle..
+    // Men en state []. One of three..
+
+    FUNCTION,
+
 }
 
 //     INLINE, // Kan tilfoeje siblings paa assembly time... maaske ikke en rolle... men extensions...

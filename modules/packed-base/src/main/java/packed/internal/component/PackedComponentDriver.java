@@ -26,12 +26,15 @@ import app.packed.component.ComponentDriver;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
+import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Factory;
 import packed.internal.artifact.PackedInstantiationContext;
+import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ComponentLookup;
 import packed.internal.container.PackedContainer;
 import packed.internal.container.PackedContainerConfigurationContext;
+import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
 
@@ -98,8 +101,9 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         return hasRole(ROLE_CONTAINER);
     }
 
-    public PackedComponentConfigurationContext newConfiguration(PackedComponentConfigurationContext parent, Bundle<?> bundle, Wirelet... wirelets) {
-        return new PackedContainerConfigurationContext(this, parent, bundle, wirelets);
+    public PackedComponentConfigurationContext newContainConf(PackedComponentConfigurationContext parent, Bundle<?> bundle, Wirelet... wirelets) {
+        ConfigSite cs = ConfigSiteSupport.captureStackFrame(parent.configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
+        return new PackedContainerConfigurationContext(this, cs, parent, bundle, wirelets);
     }
 
     public static ContainerComponentDriver container(Object source) {
