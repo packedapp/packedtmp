@@ -124,9 +124,9 @@ public final class PackedComponentStreamOption implements ComponentStream.Option
         if (extensionType != null && ((s & INCLUDE_EXTENSIONS) != 0 || (includeExtensions == null || !includeExtensions.contains(extensionType)))) {
             return false;
         }
-        if ((s & IN_SAME_CONTAINER) != 0 && !origin.isInSameContainer(actual)) {
-            return false;
-        }
+//        if ((s & IN_SAME_CONTAINER) != 0 && !origin.isInSameContainer(actual)) {
+//            return false;
+//        }
         return true;
     }
 }

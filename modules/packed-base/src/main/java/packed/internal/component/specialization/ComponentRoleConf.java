@@ -18,6 +18,6 @@ package packed.internal.component.specialization;
 /**
  *
  */
-public interface ComponentSpecialization {
+public interface ComponentRoleConf {
 
 }

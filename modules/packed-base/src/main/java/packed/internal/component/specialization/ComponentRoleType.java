@@ -19,7 +19,7 @@ package packed.internal.component.specialization;
  *
  */
 // ComponentRole vs ComponentSpecialzation...
-public enum ComponentSpecializationType {
+public enum ComponentRoleType {
 
     FUNCTION,
 

@@ -39,7 +39,7 @@ import packed.internal.artifact.PackedAssemblyContext;
 import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
-import packed.internal.component.specialization.ComponentSpecialization;
+import packed.internal.component.specialization.ComponentRoleConf;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ComponentWirelet.ComponentNameWirelet;
 import packed.internal.container.PackedContainerConfigurationContext;
@@ -93,10 +93,9 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     public final WireletPack wireletContext;
 
     /** The various specializations of this component. */
-    final ComponentSpecialization[] specializations = new ComponentSpecialization[0];
+    final ComponentRoleConf[] specializations = new ComponentRoleConf[0];
 
     /** The name of the component. */
-    @Nullable
     public String name;
 
     /** Any children of this component (lazily initialized). */
@@ -109,15 +108,14 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
 
     /**
      * The latest inserted child of this component. Or null if this component has no children. Is exclusively used to help
-     * maintain {@link #nextSiebling}.
+     * maintain {@link #nextSibling}.
      */
     @Nullable
     private PackedComponentConfigurationContext lastChild;
 
-    // We maintain this here instead of in a LinkedHashMap, because the insertion order
-    // is effected if we change the name of a component. Which we do not want.
+    /** The next sibling, in insertion order */
     @Nullable
-    public PackedComponentConfigurationContext nextSiebling;
+    public PackedComponentConfigurationContext nextSibling;
 
     /** The parent of this component, or null for a root component. */
     @Nullable
@@ -240,14 +238,6 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
         return container;
     }
 
-    PackedContainerConfigurationContext containerX() {
-        PackedComponentConfigurationContext c = this;
-        while (!(c instanceof PackedContainerConfigurationContext)) {
-            c = c.parent;
-        }
-        return (PackedContainerConfigurationContext) c;
-    }
-
     public final Optional<Class<? extends Extension>> extension() {
         return extension == null ? Optional.empty() : extension.optional();
     }
@@ -308,7 +298,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
                     parent.children = new HashMap<>();
                     parent.firstChild = parent.lastChild = this;
                 } else {
-                    parent.lastChild.nextSiebling = this;
+                    parent.lastChild.nextSibling = this;
                     parent.lastChild = this;
                 }
                 parent.children.put(n, this);
@@ -445,15 +435,11 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
         // Maybe ordered is the default...
         HashMap<String, PackedComponent> result = new HashMap<>(children.size());
 
-        for (PackedComponentConfigurationContext c = firstChild; c != null; c = c.nextSiebling) {
+        for (PackedComponentConfigurationContext c = firstChild; c != null; c = c.nextSibling) {
             PackedComponent ac = c.driver.create(parent, c, ic);
             result.put(ac.name(), ac);
         }
         return Map.copyOf(result);
-    }
-
-    public boolean isInSameContainer(PackedComponentConfigurationContext other) {
-        return containerX() == other.containerX();
     }
 
     @Override
@@ -505,6 +491,14 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
         return wop == null ? Optional.empty() : Optional.ofNullable((W) wop);
     }
 
+    @SuppressWarnings("unchecked")
+    public <W extends Wirelet> Optional<W> assemblyWirelet(Class<W> type) {
+        WireletModel wm = WireletModel.of(type);
+        if (!wm.requireAssemblyTime) {
+            throw new IllegalStateException("Wirelet of type " + type + " does not have assemblytime = true");
+        }
+        return wireletContext == null ? Optional.empty() : Optional.ofNullable((W) wireletContext.getWireletOrPipeline(type));
+    }
 }
 ///** The state of the component configuration */
 //public enum State {

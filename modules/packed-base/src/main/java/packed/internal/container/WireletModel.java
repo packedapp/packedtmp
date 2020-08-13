@@ -48,7 +48,7 @@ public final class WireletModel extends Model {
     @Nullable
     private final WireletPipelineModel pipeline;
 
-    final boolean requireAssemblyTime;
+    public final boolean requireAssemblyTime;
 
     /**
      * Create a new wirelet model.

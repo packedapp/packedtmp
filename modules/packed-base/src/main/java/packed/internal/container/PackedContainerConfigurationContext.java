@@ -22,7 +22,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.BiConsumer;
@@ -51,7 +50,7 @@ import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
-import packed.internal.component.specialization.ComponentSpecialization;
+import packed.internal.component.specialization.ComponentRoleConf;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.hook.applicator.DelayedAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarFieldDelayerAccessor;
@@ -62,7 +61,7 @@ import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.runtime.PackedInjector;
 
 /** The default container context. */
-public final class PackedContainerConfigurationContext extends PackedComponentConfigurationContext implements ComponentSpecialization {
+public final class PackedContainerConfigurationContext extends PackedComponentConfigurationContext implements ComponentRoleConf {
 
     private static final int LS_0_MAINL = 0;
 
@@ -138,7 +137,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         }
 
         if (realState == LS_1_LINKING && newState > LS_1_LINKING) {
-            for (PackedComponentConfigurationContext cc = firstChild; cc != null; cc = cc.nextSiebling) {
+            for (PackedComponentConfigurationContext cc = firstChild; cc != null; cc = cc.nextSibling) {
                 if (cc instanceof PackedContainerConfigurationContext) {
                     ((PackedContainerConfigurationContext) cc).assembleExtensions();
                 }
@@ -158,15 +157,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
 
     private void assembleExtensions() {
         advanceTo(LS_3_FINISHED);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <W extends Wirelet> Optional<W> assemblyWirelet(Class<W> type) {
-        WireletModel wm = WireletModel.of(type);
-        if (!wm.requireAssemblyTime) {
-            throw new IllegalStateException("Wirelet of type " + type + " does not have assemblytime = true");
-        }
-        return wireletContext == null ? Optional.empty() : Optional.ofNullable((W) wireletContext.getWireletOrPipeline(type));
     }
 
     public void buildDescriptor(ContainerDescriptor.Builder builder) {
@@ -202,7 +192,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
                 ic.put(ccc, di);
             }
         }
-        for (PackedComponentConfigurationContext c = pccc.firstChild; c != null; c = c.nextSiebling) {
+        for (PackedComponentConfigurationContext c = pccc.firstChild; c != null; c = c.nextSibling) {
             if (pccc.artifact == c.artifact) {
                 extensionsPrepareInstantiation(c, ic);
             }
@@ -327,7 +317,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private void methodHandlePassing0(PackedComponent ac, PackedInstantiationContext ic) {
-        for (PackedComponentConfigurationContext cc = firstChild; cc != null; cc = cc.nextSiebling) {
+        for (PackedComponentConfigurationContext cc = firstChild; cc != null; cc = cc.nextSibling) {
             PackedComponent child = ac.children.get(cc.name);
             if (cc instanceof PackedContainerConfigurationContext) {
                 ((PackedContainerConfigurationContext) cc).methodHandlePassing0(child, ic);

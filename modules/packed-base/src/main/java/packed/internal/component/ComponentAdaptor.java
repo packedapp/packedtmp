@@ -91,7 +91,7 @@ public final class ComponentAdaptor implements Component {
                 c = Map.of();
             } else {
                 LinkedHashMap<String, ComponentAdaptor> m = new LinkedHashMap<>();
-                for (PackedComponentConfigurationContext acc = componentConfiguration.firstChild; acc != null; acc = acc.nextSiebling) {
+                for (PackedComponentConfigurationContext acc = componentConfiguration.firstChild; acc != null; acc = acc.nextSibling) {
                     m.put(acc.name, of0(acc /* , pgc */));
                 }
                 c = children = Map.copyOf(m);
