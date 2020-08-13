@@ -28,14 +28,11 @@ import java.util.Optional;
 import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
-import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentPath;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerBundle;
-import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedAssemblyContext;
@@ -59,7 +56,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
     /** The artifact this component is a part of. */
-    private final PackedAssemblyContext artifact;
+    public final PackedAssemblyContext artifact;
 
     /** The configuration site of this component. */
     private final ConfigSite configSite;
@@ -108,7 +105,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
 
     /** The first child of this component. */
     @Nullable
-    protected PackedComponentConfigurationContext firstChild;
+    public PackedComponentConfigurationContext firstChild;
 
     /**
      * The latest inserted child of this component. Or null if this component has no children. Is exclusively used to help
@@ -141,23 +138,22 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
         this.source = source;
         this.wireletContext = WireletPack.from(this, wirelets);
 
+        this.parent = parent;
         if (parent == null) {
             this.pod = new PackedPodConfigurationContext();
-            this.parent = null;
             this.container = null;
             this.depth = 0;
             this.extension = null;
             this.artifact = new PackedAssemblyContext((PackedContainerConfigurationContext) this, output);
         } else {
-            this.parent = requireNonNull(parent);
+            this.pod = parent.pod;
             this.container = parent instanceof PackedContainerConfigurationContext ? (PackedContainerConfigurationContext) parent : parent.container;
             this.depth = parent.depth + 1;
-            this.pod = parent.pod;
             this.extension = container.activeExtension;
             this.artifact = parent.artifact;
         }
 
-        initializeNameXX(null);
+        initializeName(null);
     }
 
     public PackedContainerConfigurationContext actualContainer() {
@@ -252,20 +248,8 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
         return (PackedContainerConfigurationContext) c;
     }
 
-    final RuntimeComponentModel descritor() {
-        return RuntimeComponentModel.of(driver, this);
-    }
-
     public final Optional<Class<? extends Extension>> extension() {
         return extension == null ? Optional.empty() : extension.optional();
-    }
-
-    protected void extensionsPrepareInstantiation(PackedInstantiationContext ic) {
-        for (PackedComponentConfigurationContext c = firstChild; c != null; c = c.nextSiebling) {
-            if (artifact == c.artifact) {
-                c.extensionsPrepareInstantiation(ic);
-            }
-        }
     }
 
     /** {@inheritDoc} */
@@ -275,7 +259,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
         return description;
     }
 
-    private void initializeNameXX(String newName) {
+    private void initializeName(String newName) {
         String n = newName;
         if (newName == null) {
             if (this instanceof PackedContainerConfigurationContext) {
@@ -425,7 +409,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
             return;// We never set override a name set by a wirelet
         }
 
-        initializeNameXX(name);
+        initializeName(name);
 //
 //        switch (state.oldState) {
 //        case INITIAL:
@@ -521,34 +505,34 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
         return wop == null ? Optional.empty() : Optional.ofNullable((W) wop);
     }
 
-    /** The state of the component configuration */
-    public enum State {
-
-        /** The initial state. */
-        EXTENSION_USED,
-
-        /** */
-        FINAL,
-
-        /** {@link ComponentConfiguration#getName()} has been invoked. */
-        GET_NAME_INVOKED,
-
-        /** The initial state. */
-        INITIAL,
-
-        /** One of the install component methods has been invoked. */
-        INSTALL_INVOKED,
-
-        /** {@link ContainerConfiguration#link(ContainerBundle, Wirelet...)} has been invoked. */
-        LINK_INVOKED,
-
-        /** One of the install component methods has been invoked. */
-        PATH_INVOKED,
-
-        /** Set name has been invoked. */
-        SET_NAME_INVOKED;
-    }
 }
+///** The state of the component configuration */
+//public enum State {
+//
+//  /** The initial state. */
+//  EXTENSION_USED,
+//
+//  /** */
+//  FINAL,
+//
+//  /** {@link ComponentConfiguration#getName()} has been invoked. */
+//  GET_NAME_INVOKED,
+//
+//  /** The initial state. */
+//  INITIAL,
+//
+//  /** One of the install component methods has been invoked. */
+//  INSTALL_INVOKED,
+//
+//  /** {@link ContainerConfiguration#link(ContainerBundle, Wirelet...)} has been invoked. */
+//  LINK_INVOKED,
+//
+//  /** One of the install component methods has been invoked. */
+//  PATH_INVOKED,
+//
+//  /** Set name has been invoked. */
+//  SET_NAME_INVOKED;
+//}
 //
 ///**
 //* Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is

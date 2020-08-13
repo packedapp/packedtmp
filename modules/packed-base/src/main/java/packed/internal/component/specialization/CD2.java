@@ -27,7 +27,7 @@ public abstract class CD2 {
     }
 
     public interface HostOption {
-
+        // ONLY_ADD, NO_REMOVE, NO_UPDATE, IDK
     }
 
     public interface ContainerOption {

@@ -66,7 +66,7 @@ public class PackedComponent implements Component {
      */
     public PackedComponent(@Nullable PackedComponent parent, PackedComponentConfigurationContext context, PackedInstantiationContext ic) {
         this.parent = parent;
-        this.model = requireNonNull(context.descritor());
+        this.model = RuntimeComponentModel.of(context.driver, context);
         this.pod = requireNonNull(context.pod.pod());
 
         // Initialize name, we don't want to override this in Configuration context. We don't want the conf to change...

@@ -186,24 +186,27 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         if (source instanceof Bundle) {
             BundleConfiguration.configure((Bundle<?>) source, new PackedContainerConfiguration(this));
         }
-        // Initializes the name of the container, and sets the state to State.FINAL
-        // initializeName(State.FINAL, null);
-        super.finalState = true; // Thing is here, that initialize name returns early if name!=null
+        super.finalState = true;
     }
 
     public Set<Class<? extends Extension>> extensions() {
         return Collections.unmodifiableSet(extensions.keySet());
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected void extensionsPrepareInstantiation(PackedInstantiationContext ic) {
-        PackedExtensionConfiguration ee = extensions.get(ServiceExtension.class);
-        if (ee != null) {
-            PackedInjector di = ServiceExtensionNode.fromExtension(((ServiceExtension) ee.instance())).onInstantiate(ic.wirelets);
-            ic.put(this, di);
+    private static void extensionsPrepareInstantiation(PackedComponentConfigurationContext pccc, PackedInstantiationContext ic) {
+        if (pccc instanceof PackedContainerConfigurationContext) {
+            PackedContainerConfigurationContext ccc = (PackedContainerConfigurationContext) pccc;
+            PackedExtensionConfiguration ee = ccc.extensions.get(ServiceExtension.class);
+            if (ee != null) {
+                PackedInjector di = ServiceExtensionNode.fromExtension(((ServiceExtension) ee.instance())).onInstantiate(ic.wirelets);
+                ic.put(ccc, di);
+            }
         }
-        super.extensionsPrepareInstantiation(ic);
+        for (PackedComponentConfigurationContext c = pccc.firstChild; c != null; c = c.nextSiebling) {
+            if (pccc.artifact == c.artifact) {
+                extensionsPrepareInstantiation(c, ic);
+            }
+        }
     }
 
     /**
@@ -267,7 +270,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
 
     public ArtifactContext instantiateArtifact(WireletPack wc) {
         PackedInstantiationContext pic = new PackedInstantiationContext(wc);
-        extensionsPrepareInstantiation(pic);
+        extensionsPrepareInstantiation(this, pic);
 
         // Will instantiate the whole container hierachy
         PackedContainer pc = new PackedContainer(null, this, pic);
