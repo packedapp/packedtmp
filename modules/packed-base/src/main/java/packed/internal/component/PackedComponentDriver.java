@@ -103,7 +103,7 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
 
     public PackedComponentConfigurationContext newContainConf(PackedComponentConfigurationContext parent, Bundle<?> bundle, Wirelet... wirelets) {
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(parent.configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
-        return new PackedContainerConfigurationContext(this, cs, bundle, parent, wirelets);
+        return new PackedContainerConfigurationContext(this, cs, bundle, parent, null, wirelets);
     }
 
     public static ContainerComponentDriver container(Object source) {

@@ -103,27 +103,10 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
      * @param wirelets
      *            any wirelets specified by the user
      */
-    private PackedContainerConfigurationContext(PackedComponentDriver<?> driver, ConfigSite cs, Object source, PackedComponentConfigurationContext parent,
+    public PackedContainerConfigurationContext(PackedComponentDriver<?> driver, ConfigSite cs, Object source, PackedComponentConfigurationContext parent,
             AssembleOutput output, Wirelet... wirelets) {
         super(driver, cs, source, parent, output, wirelets);
         this.lookup = this.model = ContainerModel.of(source.getClass());
-    }
-
-    /**
-     * Creates a new configuration via {@link #link(Bundle, Wirelet...)}.
-     * 
-     * @param parent
-     *            the parent component (always a container for now)
-     * @param bundle
-     *            the bundle that was linked
-     * @param wirelets
-     *            any wirelets specified by the user
-     */
-
-    public PackedContainerConfigurationContext(PackedComponentDriver<?> driver, ConfigSite cs, Bundle<?> bundle, PackedComponentConfigurationContext parent,
-            Wirelet... wirelets) {
-        super(driver, cs, bundle, parent, null, wirelets);
-        this.lookup = this.model = ContainerModel.of(bundle.getClass());
     }
 
     private void advanceTo(int newState) {
@@ -381,7 +364,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
             } else {
                 caller.checkConfigurable();
             }
-            // initializeName(State.EXTENSION_USED, null); // initializes name of container, if not already set
             extensions.put(extensionType, pec = PackedExtensionConfiguration.of(this, extensionType));
         }
         return pec;
