@@ -31,7 +31,7 @@ import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedArtifactImage;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.container.PackedContainerConfigurationContext;
+import packed.internal.container.PackedContainerRole;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -91,7 +91,7 @@ public final class ArtifactDriver<A> {
 
     // Hmmm
     public final <C> A configure(Function<ContainerConfiguration, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
-        PackedContainerConfigurationContext pcc = PackedContainerConfigurationContext.of(AssembleOutput.artifact(this), consumer, wirelets);
+        PackedContainerRole pcc = PackedContainerRole.of(AssembleOutput.artifact(this), consumer, wirelets);
         PackedContainerConfiguration pc = new PackedContainerConfiguration(pcc);
         C c = factory.apply(pc);
         consumer.configure(c);
@@ -102,7 +102,7 @@ public final class ArtifactDriver<A> {
     // Ja den er faktisk fin nok syntes jeg...
 
     private ArtifactContext create(ArtifactSource source, Wirelet... wirelets) {
-        PackedContainerConfigurationContext pcc;
+        PackedContainerRole pcc;
         WireletPack wc;
         // Either we create from an image, or from a bundle
         if (source instanceof PackedArtifactImage) {
@@ -110,7 +110,7 @@ public final class ArtifactDriver<A> {
             pcc = pai.configuration();
             wc = WireletPack.fromImage(pcc, pai.wirelets(), wirelets);
         } else { // assert Bundle?
-            pcc = PackedContainerConfigurationContext.assemble(AssembleOutput.artifact(this), source, wirelets);
+            pcc = PackedContainerRole.assemble(AssembleOutput.artifact(this), source, wirelets);
             wc = pcc.component.wireletContext;
         }
         return pcc.instantiateArtifact(wc);

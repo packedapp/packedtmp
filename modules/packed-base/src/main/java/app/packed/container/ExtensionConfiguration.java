@@ -31,7 +31,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Extension.Subtension;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentAdaptor;
-import packed.internal.container.PackedContainerConfigurationContext;
+import packed.internal.container.PackedContainerRole;
 import packed.internal.container.PackedExtensionConfiguration;
 
 /**
@@ -211,7 +211,7 @@ public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
         }
 
         ComponentAdaptor cc = (ComponentAdaptor) component;
-        PackedContainerConfigurationContext pcc = cc.componentConfiguration.actualContainer();
+        PackedContainerRole pcc = cc.componentConfiguration.actualContainer();
         return pcc.getExtensionContext(extensionType);
     }
 }

@@ -24,9 +24,9 @@ import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
  */
 public class PackedStatelessComponentConfiguration extends AbstractComponentConfiguration implements StatelessConfiguration {
 
-    private final PackedComponentConfigurationContext context;
+    private final ComponentNodeConfiguration context;
 
-    public PackedStatelessComponentConfiguration(PackedComponentConfigurationContext context) {
+    public PackedStatelessComponentConfiguration(ComponentNodeConfiguration context) {
         super(context);
         this.context = context;
     }

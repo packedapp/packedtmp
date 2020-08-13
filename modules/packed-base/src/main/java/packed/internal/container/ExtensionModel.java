@@ -19,11 +19,15 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.WeakHashMap;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 import app.packed.base.Nullable;
 import app.packed.component.ConsumeWirelet;
@@ -64,7 +68,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
                 throw new IllegalArgumentException(
                         "The specified type '" + StringFormatter.format(type) + "' must extend '" + StringFormatter.format(Extension.class) + "'");
             }
-            return ExtensionModelLoader.load((Class<? extends Extension>) type);
+            return Loader.load((Class<? extends Extension>) type, null);
         }
     };
 
@@ -316,7 +320,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         private Method linked;
 
         /** The loader used to load the extension. */
-        private final ExtensionModelLoader loader;
+        private final Loader loader;
 
         /** A builder for all methods annotated with {@link OnHook} on the extension. */
         private OnHookModel onHookModel;
@@ -327,7 +331,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
          * @param extensionType
          *            the type of extension we are building a model for
          */
-        Builder(Class<? extends Extension> extensionType, ExtensionModelLoader loader, int id) {
+        Builder(Class<? extends Extension> extensionType, Loader loader, int id) {
             super(extensionType, STM);
             this.loader = requireNonNull(loader);
             this.id = id;
@@ -337,7 +341,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
             if (dependencyType == sidecarType) {
                 throw new InternalExtensionException("Extension " + sidecarType + " cannot depend on itself via " + ExtensionSidecar.class);
             }
-            ExtensionModel model = ExtensionModelLoader.load(this, dependencyType, loader);
+            ExtensionModel model = Loader.load(dependencyType, loader);
             depth = Math.max(depth, model.depth + 1);
             dependenciesDirect.add(dependencyType);
         }
@@ -408,4 +412,86 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
             }
         }
     }
+
+    /**
+     * An extension loader is responsible for initializing models for extensions.
+     */
+    private static final class Loader {
+
+        // Maaske skal vi baade have id, og depth... Eller er depth ligegyldigt???
+        // final static Map<String, String> baseExtensions = Map.of();
+
+        private static final WeakHashMap<Class<? extends Extension>, Throwable> ERRORS = new WeakHashMap<>();
+
+        private static final WeakHashMap<Class<? extends Extension>, ExtensionModel> EXTENSIONS = new WeakHashMap<>();
+
+        /** A lock used for making sure that we only load one extension tree at a time. */
+        private static final ReentrantLock GLOBAL_LOCK = new ReentrantLock();
+
+        private static int nextExtensionId;
+
+        private final ArrayDeque<Class<? extends Extension>> stack = new ArrayDeque<>();
+
+        private Loader() {}
+
+        private ExtensionModel load1(Class<? extends Extension> extensionType) {
+            // Den eneste grund til at vi gennem en exception er pga
+            if (stack.contains(extensionType)) {
+                String st = stack.stream().map(e -> e.getCanonicalName()).collect(Collectors.joining(" -> "));
+                throw new InternalExtensionException("Cyclic dependencies between extensions encountered: " + st + " -> " + extensionType.getCanonicalName());
+            }
+            stack.push(extensionType);
+
+            ExtensionModel m;
+            try {
+                ExtensionModel.Builder builder = new ExtensionModel.Builder(extensionType, this, nextExtensionId++);
+
+                // TODO move this to the builder when it has loaded all its dependencies...
+                // And maybe make nextExtension it local to Loader and only update the static one
+                // when every extension has been successfully loaded...
+
+                // ALSO nextExtensionID should probably be reset...
+                m = builder.build();
+            } catch (Throwable t) {
+                ERRORS.put(extensionType, t);
+                throw t;
+            } finally {
+                stack.pop();
+            }
+
+            // All dependencies have been successfully validated before we add the actual extension
+            // and any of its pipelines to permanent storage
+            EXTENSIONS.put(extensionType, m);
+
+            return m;
+        }
+
+        // taenker vi godt kan flytte global lock en class valuen...
+
+        private static ExtensionModel load(Class<? extends Extension> extensionType, @Nullable Loader loader) {
+            GLOBAL_LOCK.lock();
+            try {
+                // First lets see if we have created the model before
+                ExtensionModel m = EXTENSIONS.get(extensionType);
+                if (m != null) {
+                    return m;
+                }
+
+                // Lets then see if we have tried to create the model before, but failed
+                Throwable t = ERRORS.get(extensionType);
+                if (t != null) {
+                    throw new InternalExtensionException("Extension " + extensionType + " failed to be configured previously", t);
+                }
+
+                // Create a new loader if we are not already part of one
+                if (loader == null) {
+                    loader = new Loader();
+                }
+                return loader.load1(extensionType);
+            } finally {
+                GLOBAL_LOCK.unlock();
+            }
+        }
+    }
+
 }

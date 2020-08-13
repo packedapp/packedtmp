@@ -29,11 +29,11 @@ import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Factory;
-import packed.internal.artifact.PackedInstantiationContext;
+import packed.internal.artifact.InstantiationContext;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ComponentLookup;
 import packed.internal.container.PackedContainer;
-import packed.internal.container.PackedContainerConfigurationContext;
+import packed.internal.container.PackedContainerRole;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
@@ -57,7 +57,7 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         this.roles = roles;
     }
 
-    public abstract PackedComponent create(@Nullable PackedComponent parent, PackedComponentConfigurationContext configuration, PackedInstantiationContext ic);
+    public abstract ComponentNode create(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, InstantiationContext ic);
 
     public String defaultName(Object ssss) {
         if (isContainer()) {
@@ -101,9 +101,9 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         return hasRole(ROLE_CONTAINER);
     }
 
-    public PackedComponentConfigurationContext newContainConf(PackedComponentConfigurationContext parent, Bundle<?> bundle, Wirelet... wirelets) {
+    public ComponentNodeConfiguration newContainConf(ComponentNodeConfiguration parent, Bundle<?> bundle, Wirelet... wirelets) {
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(parent.configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
-        return PackedContainerConfigurationContext.create(this, cs, bundle, parent, null, wirelets).component;
+        return PackedContainerRole.create(this, cs, bundle, parent, null, wirelets).component;
     }
 
     public static ContainerComponentDriver container(Object source) {
@@ -120,7 +120,7 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
 
         /** {@inheritDoc} */
         @Override
-        public PackedComponent create(@Nullable PackedComponent parent, PackedComponentConfigurationContext configuration, PackedInstantiationContext ic) {
+        public ComponentNode create(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, InstantiationContext ic) {
             return new PackedContainer(parent, configuration.container, ic);
         }
     }
@@ -146,16 +146,16 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
 
         /** {@inheritDoc} */
         @Override
-        public PackedComponent create(@Nullable PackedComponent parent, PackedComponentConfigurationContext configuration, PackedInstantiationContext ic) {
-            return new PackedComponent(parent, configuration, ic);
+        public ComponentNode create(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, InstantiationContext ic) {
+            return new ComponentNode(parent, configuration, ic);
         }
 
-        public MethodHandle fromFactory(PackedContainerConfigurationContext context) {
+        public MethodHandle fromFactory(PackedContainerRole context) {
             FactoryHandle<?> handle = factory.factory.handle;
             return context.fromFactoryHandle(handle);
         }
 
-        public <T> SingletonConfiguration<T> toConf(PackedComponentConfigurationContext context) {
+        public <T> SingletonConfiguration<T> toConf(ComponentNodeConfiguration context) {
             return new PackedSingletonConfiguration<>(context);
         }
     }
@@ -182,11 +182,11 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
 
         /** {@inheritDoc} */
         @Override
-        public PackedComponent create(@Nullable PackedComponent parent, PackedComponentConfigurationContext configuration, PackedInstantiationContext ic) {
-            return new PackedComponent(parent, configuration, ic);
+        public ComponentNode create(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, InstantiationContext ic) {
+            return new ComponentNode(parent, configuration, ic);
         }
 
-        public StatelessConfiguration toConf(PackedComponentConfigurationContext context) {
+        public StatelessConfiguration toConf(ComponentNodeConfiguration context) {
             return new PackedStatelessComponentConfiguration(context);
         }
     }

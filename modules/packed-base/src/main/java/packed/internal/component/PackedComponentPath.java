@@ -145,7 +145,7 @@ public final class PackedComponentPath implements ComponentPath {
 
     }
 
-    static ComponentPath of(PackedComponent component) {
+    static ComponentPath of(ComponentNode component) {
         int depth = component.depth();
         switch (depth) {
         case 0:
@@ -154,7 +154,7 @@ public final class PackedComponentPath implements ComponentPath {
             return new PackedComponentPath(component.name());
         default:
             String[] paths = new String[depth];
-            PackedComponent acc = component;
+            ComponentNode acc = component;
             for (int i = depth - 1; i >= 0; i--) {
                 paths[i] = acc.name();
                 acc = acc.parent;
@@ -163,7 +163,7 @@ public final class PackedComponentPath implements ComponentPath {
         }
     }
 
-    static ComponentPath of(PackedComponentConfigurationContext cc) {
+    static ComponentPath of(ComponentNodeConfiguration cc) {
         int depth = cc.depth;
         switch (depth) {
         case 0:
@@ -172,7 +172,7 @@ public final class PackedComponentPath implements ComponentPath {
             return new PackedComponentPath(cc.name);
         default:
             String[] paths = new String[depth];
-            PackedComponentConfigurationContext acc = cc;
+            ComponentNodeConfiguration acc = cc;
             for (int i = depth - 1; i >= 0; i--) {
                 paths[i] = acc.name;
                 acc = acc.parent;

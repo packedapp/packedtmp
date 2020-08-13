@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
-import app.packed.component.ComponentDriver;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 
@@ -54,7 +53,7 @@ public final class RuntimeComponentModel {
     /** Any extension the component belongs to. */ // Generic Extension Table?
     final Optional<Class<? extends Extension>> extension;
 
-    RuntimeComponentModel(PackedComponentConfigurationContext context) {
+    RuntimeComponentModel(ComponentNodeConfiguration context) {
         this.depth = context.depth;
         this.configSite = requireNonNull(context.configSite());
         this.description = context.getDescription();
@@ -65,7 +64,7 @@ public final class RuntimeComponentModel {
         return extension;
     }
 
-    static RuntimeComponentModel of(ComponentDriver<?> driver, PackedComponentConfigurationContext context) {
+    static RuntimeComponentModel of(ComponentNodeConfiguration context) {
         return new RuntimeComponentModel(context);
     }
 

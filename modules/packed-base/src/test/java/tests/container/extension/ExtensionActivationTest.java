@@ -32,7 +32,7 @@ import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
-import packed.internal.component.PackedComponentConfigurationContext;
+import packed.internal.component.ComponentNodeConfiguration;
 import testutil.util.AbstractArtifactTest;
 
 /** Tests that we can automatically activate an extension using a annotated field or method. */
@@ -145,7 +145,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
     public static final class MyExtension extends Extension {
 
         @OnHook
-        protected void set(Foo s, PackedComponentConfigurationContext a) {}
+        protected void set(Foo s, ComponentNodeConfiguration a) {}
 
     }
 

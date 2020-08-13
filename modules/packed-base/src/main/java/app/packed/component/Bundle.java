@@ -23,17 +23,15 @@ import app.packed.container.ContainerBundle;
 import packed.internal.component.BundleConfiguration;
 
 /**
- * A bundle is a thin wrapper that encapsulates a {@link ComponentDriver} and a component's configuration. This class is
- * primary used through one of its subclasses such as {@link ContainerBundle}.
+ * A bundle is a thin wrapper that encapsulates a {@link ComponentDriver} and the configuration of a component. This
+ * class is primary used through one of its subclasses such as {@link ContainerBundle}.
  * <p>
  * This class is not meant to be extended by ordinary users. But provides means for power users to extend the basic
  * functionality of Packed.
  * 
  * @param <C>
- *            the type of configuration this bundle wraps
+ *            the underlying configuration this bundle wraps
  */
-//Bundle: States-> Ready -> Assembling|Composing -> Consumed|Composed... Ready | Using | Used... Usable | Using | Used
-//Unconfigured/Configuring/Configured (Failed??? well et can't bee Configured if it's failed)
 public abstract class Bundle<C> implements ArtifactSource {
 
     /**
@@ -49,7 +47,11 @@ public abstract class Bundle<C> implements ArtifactSource {
     private Object configuration;
 
     /** The driver of this bundle. Is "magically" read via a var handle from {@link BundleConfiguration}. */
-    final ComponentDriver<? extends C> driver;
+    @SuppressWarnings("unused")
+    // Bundle: States-> Ready -> Assembling|Composing -> Consumed|Composed... Ready | Using | Used... Usable | Using | Used
+    // Unconfigured/Configuring/Configured (Failed??? well et can't bee Configured if it's failed)
+    // [afdf, state = Unusued]consuming|consumed]
+    private final ComponentDriver<? extends C> driver; // TODO maybe use for tostring??? Include state
 
     /**
      * Creates a new bundle using the specified driver.
@@ -75,7 +77,7 @@ public abstract class Bundle<C> implements ArtifactSource {
         Object c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
-        } else if (c instanceof BundleConfiguration) {
+        } else if (c == BundleConfiguration.CONSUMED_SUCCESFULLY) {
             throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
         } else {
             return (C) c;

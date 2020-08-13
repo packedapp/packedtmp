@@ -35,19 +35,19 @@ import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import packed.internal.artifact.AssembleOutput;
+import packed.internal.artifact.InstantiationContext;
 import packed.internal.artifact.PackedAssemblyContext;
-import packed.internal.artifact.PackedInstantiationContext;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletModel;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.component.wirelet.WireletPipelineContext;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.container.PackedContainerConfigurationContext;
+import packed.internal.container.PackedContainerRole;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.hook.applicator.DelayedAccessor;
 
-/** A common superclass for all component configuration classes. */
-public final class PackedComponentConfigurationContext implements ComponentConfigurationContext {
+/** The build time representation of a component. */
+public final class ComponentNodeConfiguration implements ComponentConfigurationContext {
 
     /** A stack walker used from {@link #captureStackFrame(String)}. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
@@ -60,7 +60,7 @@ public final class PackedComponentConfigurationContext implements ComponentConfi
 
     /** Any container this component belongs to, or null for a root container. */
     @Nullable
-    private final PackedContainerConfigurationContext containerOld;
+    private final PackedContainerRole containerOld;
 
     /** Ugly stuff. */
     public ArrayList<DelayedAccessor> del = new ArrayList<>();
@@ -93,29 +93,30 @@ public final class PackedComponentConfigurationContext implements ComponentConfi
 
     /** Any children of this component (lazily initialized). */
     @Nullable
-    private HashMap<String, PackedComponentConfigurationContext> children;
+    private HashMap<String, ComponentNodeConfiguration> children;
 
     /** The first child of this component. */
     @Nullable
-    public PackedComponentConfigurationContext firstChild;
+    public ComponentNodeConfiguration firstChild;
 
     /**
      * The latest inserted child of this component. Or null if this component has no children. Is exclusively used to help
      * maintain {@link #nextSibling}.
      */
     @Nullable
-    private PackedComponentConfigurationContext lastChild;
+    private ComponentNodeConfiguration lastChild;
 
     /** The next sibling, in insertion order */
     @Nullable
-    public PackedComponentConfigurationContext nextSibling;
+    public ComponentNodeConfiguration nextSibling;
 
     /** The parent of this component, or null for a root component. */
     @Nullable
-    final PackedComponentConfigurationContext parent;
+    final ComponentNodeConfiguration parent;
 
     /** Any container this component is part of. A container is part of it self */
-    public final PackedContainerConfigurationContext container;
+    @Nullable
+    public final PackedContainerRole container;
 
     /**
      * Creates a new instance of this class
@@ -125,8 +126,8 @@ public final class PackedComponentConfigurationContext implements ComponentConfi
      * @param parent
      *            the parent of the component
      */
-    public PackedComponentConfigurationContext(PackedComponentConfigurationContext parent, PackedComponentDriver<?> driver, ConfigSite configSite,
-            Object source, AssembleOutput output, PackedContainerConfigurationContext container, Wirelet... wirelets) {
+    public ComponentNodeConfiguration(ComponentNodeConfiguration parent, PackedComponentDriver<?> driver, ConfigSite configSite, Object source,
+            AssembleOutput output, @Nullable PackedContainerRole container, Wirelet... wirelets) {
         this.driver = requireNonNull(driver);
         this.configSite = requireNonNull(configSite);
         this.source = source;
@@ -139,10 +140,10 @@ public final class PackedComponentConfigurationContext implements ComponentConfi
             this.containerOld = null;
             this.depth = 0;
             this.extension = null;
-            this.artifact = new PackedAssemblyContext(this.container, output);
+            this.artifact = new PackedAssemblyContext(container, output);
         } else {
             this.pod = parent.pod;
-            this.containerOld = parent.driver.isContainer() ? (PackedContainerConfigurationContext) parent.container : parent.containerOld;
+            this.containerOld = parent.driver.isContainer() ? (PackedContainerRole) parent.container : parent.containerOld;
             this.depth = parent.depth + 1;
             this.extension = containerOld.activeExtension;
             this.artifact = parent.artifact;
@@ -155,7 +156,7 @@ public final class PackedComponentConfigurationContext implements ComponentConfi
         return driver.isContainer();
     }
 
-    public PackedContainerConfigurationContext actualContainer() {
+    public PackedContainerRole actualContainer() {
         if (this.isContainer()) {
             return this.container;
         }
@@ -177,7 +178,7 @@ public final class PackedComponentConfigurationContext implements ComponentConfi
      * @see StackWalker
      */
     // TODO add stuff about we also ignore non-concrete container sources...
-    public final ConfigSite captureStackFrame(String operation) {
+    public ConfigSite captureStackFrame(String operation) {
         // API-NOTE This method is not available on ExtensionContext to encourage capturing of stack frames to be limited
         // to the extension class in order to simplify the filtering mechanism.
 
@@ -195,7 +196,7 @@ public final class PackedComponentConfigurationContext implements ComponentConfi
      *            the frame to filter
      * @return whether or not to filter the frame
      */
-    private final boolean captureStackFrameIgnoreFilter(StackFrame frame) {
+    private boolean captureStackFrameIgnoreFilter(StackFrame frame) {
         Class<?> c = frame.getDeclaringClass();
         // Det virker ikke skide godt, hvis man f.eks. er en metode on a abstract bundle der override configure()...
         // Syntes bare vi filtrer app.packed.base modulet fra...
@@ -217,7 +218,7 @@ public final class PackedComponentConfigurationContext implements ComponentConfi
 
     /** {@inheritDoc} */
     @Override
-    public final void checkConfigurable() {
+    public void checkConfigurable() {
         if (finalState) {
             throw new IllegalStateException("This component can no longer be configured");
         }
@@ -225,7 +226,7 @@ public final class PackedComponentConfigurationContext implements ComponentConfi
 
     /** {@inheritDoc} */
     @Override
-    public final ConfigSite configSite() {
+    public ConfigSite configSite() {
         return configSite;
     }
 
@@ -235,18 +236,18 @@ public final class PackedComponentConfigurationContext implements ComponentConfi
      * @return the container this component is a part of
      */
     @Nullable
-    public final PackedContainerConfigurationContext container() {
+    public PackedContainerRole container() {
         return containerOld;
     }
 
-    public final Optional<Class<? extends Extension>> extension() {
+    public Optional<Class<? extends Extension>> extension() {
         return extension == null ? Optional.empty() : extension.optional();
     }
 
     /** {@inheritDoc} */
     @Override
     @Nullable
-    public final String getDescription() {
+    public String getDescription() {
         return description;
     }
 
@@ -254,7 +255,7 @@ public final class PackedComponentConfigurationContext implements ComponentConfi
         String n = newName;
         if (newName == null) {
             if (driver.isContainer()) {
-                PackedComponentConfigurationContext pcc = this;
+                ComponentNodeConfiguration pcc = this;
                 if (pcc.wireletContext != null) {
                     ComponentNameWirelet cwn = pcc.wireletContext.nameWirelet();
                     if (cwn != null) {
@@ -321,7 +322,7 @@ public final class PackedComponentConfigurationContext implements ComponentConfi
 
     /** {@inheritDoc} */
     @Override
-    public final String getName() {
+    public String getName() {
         // Only update with NAME_GET if no prev set/get op
         nameState = (nameState & ~NAME_GETSET_MASK) | NAME_GET;
         return name;
@@ -329,10 +330,10 @@ public final class PackedComponentConfigurationContext implements ComponentConfi
 
     /** {@inheritDoc} */
     @Override
-    public final ComponentPath path() {
+    public ComponentPath path() {
         int anyPathMask = NAME_GET_PATH + NAME_CHILD_GOT_PATH;
         if ((nameState & anyPathMask) != 0) {
-            PackedComponentConfigurationContext p = parent;
+            ComponentNodeConfiguration p = parent;
             while (p != null && ((p.nameState & anyPathMask) == 0)) {
                 p.nameState = (p.nameState & ~NAME_GETSET_MASK) | NAME_GET_PATH;
             }
@@ -376,7 +377,7 @@ public final class PackedComponentConfigurationContext implements ComponentConfi
         setName0(name);
     }
 
-    final Map<String, PackedComponent> initializeChildren(PackedComponent parent, PackedInstantiationContext ic) {
+    Map<String, ComponentNode> initializeChildren(ComponentNode parent, InstantiationContext ic) {
         if (firstChild == null) {
             return null;
         }
@@ -386,10 +387,10 @@ public final class PackedComponentConfigurationContext implements ComponentConfi
         // should never rely on ordering.. Especially if it is inherited.
 
         // Maybe ordered is the default...
-        HashMap<String, PackedComponent> result = new HashMap<>(children.size());
+        HashMap<String, ComponentNode> result = new HashMap<>(children.size());
 
-        for (PackedComponentConfigurationContext c = firstChild; c != null; c = c.nextSibling) {
-            PackedComponent ac = c.driver.create(parent, c, ic);
+        for (ComponentNodeConfiguration c = firstChild; c != null; c = c.nextSibling) {
+            ComponentNode ac = c.driver.create(parent, c, ic);
             result.put(ac.name(), ac);
         }
         return Map.copyOf(result);
@@ -423,7 +424,7 @@ public final class PackedComponentConfigurationContext implements ComponentConfi
             wop = wireletContext.getWireletOrPipeline(type);
         }
         if (wop == null && inherited) {
-            PackedComponentConfigurationContext acc = parent;
+            ComponentNodeConfiguration acc = parent;
             while (acc != null) {
                 if (acc.wireletContext != null) {
                     wop = acc.wireletContext.getWireletOrPipeline(type);

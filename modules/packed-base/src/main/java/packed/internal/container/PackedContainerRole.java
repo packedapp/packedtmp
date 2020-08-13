@@ -40,17 +40,18 @@ import app.packed.container.InternalExtensionException;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
 import packed.internal.artifact.AssembleOutput;
-import packed.internal.artifact.PackedInstantiationContext;
+import packed.internal.artifact.InstantiationContext;
 import packed.internal.component.BundleConfiguration;
 import packed.internal.component.ComponentModel;
-import packed.internal.component.PackedComponent;
-import packed.internal.component.PackedComponentConfigurationContext;
+import packed.internal.component.ComponentNode;
+import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteSupport;
+import packed.internal.container.PackedContainer.PackedArtifactContext;
 import packed.internal.hook.applicator.DelayedAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarFieldDelayerAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarMethodDelayerAccessor;
@@ -60,7 +61,7 @@ import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.runtime.PackedInjector;
 
 /** The default container context. */
-public final class PackedContainerConfigurationContext {
+public final class PackedContainerRole {
 
     private static final int LS_0_MAINL = 0;
 
@@ -89,16 +90,16 @@ public final class PackedContainerConfigurationContext {
 
     int realState;
 
-    public PackedComponentConfigurationContext component;
+    public ComponentNodeConfiguration component;
 
-    private PackedContainerConfigurationContext(Object source) {
+    private PackedContainerRole(Object source) {
         this.lookup = this.model = ContainerModel.of(source.getClass());
     }
 
-    public static PackedContainerConfigurationContext create(PackedComponentDriver<?> driver, ConfigSite cs, Object source,
-            PackedComponentConfigurationContext parent, AssembleOutput output, Wirelet... wirelets) {
-        PackedContainerConfigurationContext p1 = new PackedContainerConfigurationContext(source);
-        PackedComponentConfigurationContext pccc = new PackedComponentConfigurationContext(parent, driver, cs, source, output, p1, wirelets);
+    public static PackedContainerRole create(PackedComponentDriver<?> driver, ConfigSite cs, Object source, ComponentNodeConfiguration parent,
+            AssembleOutput output, Wirelet... wirelets) {
+        PackedContainerRole p1 = new PackedContainerRole(source);
+        ComponentNodeConfiguration pccc = new ComponentNodeConfiguration(parent, driver, cs, source, output, p1, wirelets);
         p1.component = pccc;
         return p1;
     }
@@ -117,7 +118,7 @@ public final class PackedContainerConfigurationContext {
         }
 
         if (realState == LS_1_LINKING && newState > LS_1_LINKING) {
-            for (PackedComponentConfigurationContext cc = component.firstChild; cc != null; cc = cc.nextSibling) {
+            for (ComponentNodeConfiguration cc = component.firstChild; cc != null; cc = cc.nextSibling) {
                 if (cc.isContainer()) {
                     cc.container.assembleExtensions();
                 }
@@ -129,7 +130,7 @@ public final class PackedContainerConfigurationContext {
         }
     }
 
-    public PackedContainerConfigurationContext assemble() {
+    public PackedContainerRole assemble() {
         configure();
         assembleExtensions();
         return this;
@@ -163,16 +164,16 @@ public final class PackedContainerConfigurationContext {
         return Collections.unmodifiableSet(extensions.keySet());
     }
 
-    private static void extensionsPrepareInstantiation(PackedComponentConfigurationContext pccc, PackedInstantiationContext ic) {
+    private static void extensionsPrepareInstantiation(ComponentNodeConfiguration pccc, InstantiationContext ic) {
         if (pccc.isContainer()) {
-            PackedContainerConfigurationContext ccc = pccc.container;
+            PackedContainerRole ccc = pccc.container;
             PackedExtensionConfiguration ee = ccc.extensions.get(ServiceExtension.class);
             if (ee != null) {
                 PackedInjector di = ServiceExtensionNode.fromExtension(((ServiceExtension) ee.instance())).onInstantiate(ic.wirelets);
                 ic.put(ccc.component, di);
             }
         }
-        for (PackedComponentConfigurationContext c = pccc.firstChild; c != null; c = c.nextSibling) {
+        for (ComponentNodeConfiguration c = pccc.firstChild; c != null; c = c.nextSibling) {
             if (pccc.artifact == c.artifact) {
                 extensionsPrepareInstantiation(c, ic);
             }
@@ -212,7 +213,7 @@ public final class PackedContainerConfigurationContext {
         ConfigSite configSite = component.captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(lookup, factory);
 
-        PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(component, scd, configSite, null, null, this);
+        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, null, null, this);
         model.invokeOnHookOnInstall(component.source, conf);
         return scd.toConf(conf);
     }
@@ -223,7 +224,7 @@ public final class PackedContainerConfigurationContext {
         ConfigSite configSite = component.captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(lookup, instance);
 
-        PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(component, scd, configSite, null, null, this);
+        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, null, null, this);
         model.invokeOnHookOnInstall(component.source, conf); // installs any extensions...
         return scd.toConf(conf);
     }
@@ -233,19 +234,19 @@ public final class PackedContainerConfigurationContext {
 
         ConfigSite configSite = component.captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
 
-        PackedComponentConfigurationContext conf = new PackedComponentConfigurationContext(component, scd, configSite, null, null, this);
+        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, null, null, this);
         scd.model.invokeOnHookOnInstall(component.source, conf);
         return scd.toConf(conf);
     }
 
     public ArtifactContext instantiateArtifact(WireletPack wc) {
-        PackedInstantiationContext pic = new PackedInstantiationContext(wc);
+        InstantiationContext pic = new InstantiationContext(wc);
         extensionsPrepareInstantiation(this.component, pic);
 
         // Will instantiate the whole container hierachy
         PackedContainer pc = new PackedContainer(null, this, pic);
         methodHandlePassing0(pc, pic);
-        return pc.toArtifactContext();
+        return new PackedArtifactContext(pc);
     }
 
     // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
@@ -258,7 +259,7 @@ public final class PackedContainerConfigurationContext {
 
         // extract driveren fra bundle...
         // lav nyt barn med den...
-        PackedComponentConfigurationContext child = d.newContainConf(component, bundle, wirelets);
+        ComponentNodeConfiguration child = d.newContainConf(component, bundle, wirelets);
 
         // IDK do we want to progress to next stage just in case...
         if (realState == LS_0_MAINL) {
@@ -283,9 +284,9 @@ public final class PackedContainerConfigurationContext {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private void methodHandlePassing0(PackedComponent ac, PackedInstantiationContext ic) {
-        for (PackedComponentConfigurationContext cc = component.firstChild; cc != null; cc = cc.nextSibling) {
-            PackedComponent child = ac.children.get(cc.name);
+    private void methodHandlePassing0(ComponentNode ac, InstantiationContext ic) {
+        for (ComponentNodeConfiguration cc = component.firstChild; cc != null; cc = cc.nextSibling) {
+            ComponentNode child = ac.children.get(cc.name);
             if (cc.isContainer()) {
                 cc.container.methodHandlePassing0(child, ic);
             }
@@ -362,15 +363,15 @@ public final class PackedContainerConfigurationContext {
         return pec;
     }
 
-    public static PackedContainerConfigurationContext of(AssembleOutput output, Object source, Wirelet... wirelets) {
+    public static PackedContainerRole of(AssembleOutput output, Object source, Wirelet... wirelets) {
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
-        return PackedContainerConfigurationContext.create(ContainerComponentDriver.INSTANCE, cs, source, null, output, wirelets);
+        return PackedContainerRole.create(ContainerComponentDriver.INSTANCE, cs, source, null, output, wirelets);
     }
 
-    public static PackedContainerConfigurationContext assemble(AssembleOutput output, ArtifactSource source, Wirelet... wirelets) {
-        PackedContainerConfigurationContext c = of(output, source, wirelets);
+    public static PackedContainerRole assemble(AssembleOutput output, ArtifactSource source, Wirelet... wirelets) {
+        PackedContainerRole c = of(output, source, wirelets);
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
-        c = PackedContainerConfigurationContext.create(ContainerComponentDriver.INSTANCE, cs, source, null, output, wirelets);
+        c = PackedContainerRole.create(ContainerComponentDriver.INSTANCE, cs, source, null, output, wirelets);
         c.assemble();
         return c;
     }

@@ -29,13 +29,13 @@ public final class PackedComponentRelation implements ComponentRelation {
 
     private final int distance;
 
-    private final PackedComponent from;
+    private final ComponentNode from;
 
-    private final PackedComponent lcd;
+    private final ComponentNode lcd;
 
-    private final PackedComponent to;
+    private final ComponentNode to;
 
-    public PackedComponentRelation(PackedComponent from, PackedComponent to, int distance, PackedComponent lcd) {
+    public PackedComponentRelation(ComponentNode from, ComponentNode to, int distance, ComponentNode lcd) {
         this.from = from;
         this.to = to;
         this.distance = distance;
@@ -89,7 +89,7 @@ public final class PackedComponentRelation implements ComponentRelation {
             Component[] components = new Component[distance];
 
             int i = 0;
-            PackedComponent pc = from;
+            ComponentNode pc = from;
             while (pc != lcd) {
                 components[i++] = pc;
             }
@@ -117,11 +117,11 @@ public final class PackedComponentRelation implements ComponentRelation {
         return to;
     }
 
-    public static ComponentRelation find(PackedComponent from, Component to) {
-        return relation(from, (PackedComponent) to);
+    public static ComponentRelation find(ComponentNode from, Component to) {
+        return relation(from, (ComponentNode) to);
     }
 
-    private static ComponentRelation relation(PackedComponent from, PackedComponent to) {
+    private static ComponentRelation relation(ComponentNode from, ComponentNode to) {
         int fd = from.depth();
         int td = to.depth();
         if (from.pod == to.pod) {
@@ -129,8 +129,8 @@ public final class PackedComponentRelation implements ComponentRelation {
                 return new PackedComponentRelation(from, to, 0, from);
             }
 
-            PackedComponent f = from;
-            PackedComponent t = to;
+            ComponentNode f = from;
+            ComponentNode t = to;
             int distance = 0;
 
             if (fd > td) {

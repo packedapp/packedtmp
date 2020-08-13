@@ -18,7 +18,7 @@ package packed.internal.artifact;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
-import packed.internal.container.PackedContainerConfigurationContext;
+import packed.internal.container.PackedContainerRole;
 import packed.internal.errorhandling.ErrorMessage;
 
 /** The default implementation of {@link AssembleContext} */
@@ -31,7 +31,7 @@ public final class PackedAssemblyContext implements AssembleContext {
     private final Thread thread = Thread.currentThread();
 
     /** The configuration of the top container. */
-    private final PackedContainerConfigurationContext topContainerConfiguration;
+    private final PackedContainerRole topContainerConfiguration;
 
     /**
      * Creates a new build context object.
@@ -41,7 +41,7 @@ public final class PackedAssemblyContext implements AssembleContext {
      * @param output
      *            the output of the build process
      */
-    public PackedAssemblyContext(PackedContainerConfigurationContext topContainerConfiguration, AssembleOutput output) {
+    public PackedAssemblyContext(PackedContainerRole topContainerConfiguration, AssembleOutput output) {
         this.topContainerConfiguration = requireNonNull(topContainerConfiguration);
         this.output = requireNonNull(output);
     }

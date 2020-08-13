@@ -30,13 +30,13 @@ import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerDescriptor;
 import packed.internal.component.ComponentAdaptor;
 import packed.internal.component.wirelet.WireletPack;
-import packed.internal.container.PackedContainerConfigurationContext;
+import packed.internal.container.PackedContainerRole;
 
 /** The default implementation of {@link ArtifactImage}. */
 public final class PackedArtifactImage implements ArtifactImage {
 
     /** The configuration of the root container. */
-    private final PackedContainerConfigurationContext pcc;
+    private final PackedContainerRole pcc;
 
     /**
      * Any wirelets that have been applied to the image. Might consist of a chain of wirelet containers with repeat usage of
@@ -53,7 +53,7 @@ public final class PackedArtifactImage implements ArtifactImage {
      * @param wc
      *            any wirelets specified when creating the image or later via {@link #with(Wirelet...)}
      */
-    private PackedArtifactImage(PackedContainerConfigurationContext pcc, @Nullable WireletPack wc) {
+    private PackedArtifactImage(PackedContainerRole pcc, @Nullable WireletPack wc) {
         this.pcc = requireNonNull(pcc);
         this.wc = wc;
     }
@@ -69,7 +69,7 @@ public final class PackedArtifactImage implements ArtifactImage {
      * 
      * @return the configuration of the root container
      */
-    public PackedContainerConfigurationContext configuration() {
+    public PackedContainerRole configuration() {
         return pcc;
     }
 
@@ -153,7 +153,7 @@ public final class PackedArtifactImage implements ArtifactImage {
      *             if the image could not be constructed
      */
     public static PackedArtifactImage of(Bundle<?> bundle, Wirelet... wirelets) {
-        PackedContainerConfigurationContext pcc = PackedContainerConfigurationContext.assemble(AssembleOutput.image(), bundle, wirelets);
+        PackedContainerRole pcc = PackedContainerRole.assemble(AssembleOutput.image(), bundle, wirelets);
         return new PackedArtifactImage(pcc, pcc.component.wireletContext);
     }
 }

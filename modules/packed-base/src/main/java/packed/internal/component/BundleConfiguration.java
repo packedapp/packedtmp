@@ -27,7 +27,7 @@ import packed.internal.util.ThrowableUtil;
 /** Helper class to access non-public members in {@link Bundle}. */
 public final class BundleConfiguration {
 
-    private static final BundleConfiguration CONSUMED_SUCCESFULLY = new BundleConfiguration();
+    public static final BundleConfiguration CONSUMED_SUCCESFULLY = new BundleConfiguration();
 
     /** A VarHandle that can access Bundle#configuration. */
     private static final VarHandle VH_BUNDLE_CONFIGURATION = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Bundle.class, "configuration", Object.class);
@@ -37,6 +37,8 @@ public final class BundleConfiguration {
 
     /** A MethodHandle that can invoke Bundle#configure. */
     private static final MethodHandle MH_BUNDLE_CONFIGURE = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), Bundle.class, "configure", void.class);
+
+    private BundleConfiguration() {}
 
     public static void configure(Bundle<?> bundle, Object configuration) {
 

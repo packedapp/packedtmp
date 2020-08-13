@@ -24,9 +24,9 @@ import java.util.Map.Entry;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
-import packed.internal.component.PackedComponentConfigurationContext;
+import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
-import packed.internal.container.PackedContainerConfigurationContext;
+import packed.internal.container.PackedContainerRole;
 import packed.internal.container.PackedExtensionConfiguration;
 
 /**
@@ -61,7 +61,7 @@ public final class WireletPack {
     /**
      * This method checks that no wirelets have been specified that requires an extensions that have not been used.
      */
-    public void checkAllExtensionsAvailable(PackedContainerConfigurationContext pcc) {
+    public void checkAllExtensionsAvailable(PackedContainerRole pcc) {
         assert (parent == null);
         if (!extensions.isEmpty()) {
             extensionFailed(pcc);
@@ -100,7 +100,7 @@ public final class WireletPack {
         }
     }
 
-    private void extensionFailed(PackedContainerConfigurationContext pcc) {
+    private void extensionFailed(PackedContainerRole pcc) {
         IdentityHashMap<Class<? extends Extension>, ArrayList<Wirelet>> m = new IdentityHashMap<>();
         for (Entry<Class<? extends Extension>, Object> c : extensions.entrySet()) {
             Class<? extends Extension> k = c.getKey();
@@ -134,7 +134,7 @@ public final class WireletPack {
         return null;
     }
 
-    public String name(PackedComponentConfigurationContext pcc) {
+    public String name(ComponentNodeConfiguration pcc) {
         WireletPack wc = this;
         while (wc != null) {
             if (wc.newName != null) {
@@ -170,7 +170,7 @@ public final class WireletPack {
      * @return stuff
      */
     @Nullable
-    private static WireletPack create(PackedContainerConfigurationContext pcc, @Nullable WireletPack existing, Wirelet... wirelets) {
+    private static WireletPack create(PackedContainerRole pcc, @Nullable WireletPack existing, Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
         if (wirelets.length == 0) {
             return existing;
@@ -203,12 +203,12 @@ public final class WireletPack {
     }
 
     @Nullable
-    public static WireletPack fromImage(PackedContainerConfigurationContext pcc, @Nullable WireletPack existing, Wirelet... wirelets) {
+    public static WireletPack fromImage(PackedContainerRole pcc, @Nullable WireletPack existing, Wirelet... wirelets) {
         return create(pcc, existing, wirelets);
     }
 
     @Nullable
-    public static WireletPack from(PackedComponentConfigurationContext pcc, Wirelet... wirelets) {
+    public static WireletPack from(ComponentNodeConfiguration pcc, Wirelet... wirelets) {
         if (pcc.isContainer()) {
             return fromLink(pcc.container, wirelets);
         }
@@ -216,12 +216,12 @@ public final class WireletPack {
     }
 
     @Nullable
-    public static WireletPack fromLink(PackedContainerConfigurationContext pcc, Wirelet... wirelets) {
+    public static WireletPack fromLink(PackedContainerRole pcc, Wirelet... wirelets) {
         return create(pcc, null, wirelets);
     }
 
     @Nullable
-    public static WireletPack fromRoot(PackedContainerConfigurationContext pcc, Wirelet... wirelets) {
+    public static WireletPack fromRoot(PackedContainerRole pcc, Wirelet... wirelets) {
         return create(pcc, null, wirelets);
     }
 }

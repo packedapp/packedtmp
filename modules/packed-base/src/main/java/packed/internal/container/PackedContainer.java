@@ -33,12 +33,12 @@ import app.packed.component.ComponentStream.Option;
 import app.packed.config.ConfigSite;
 import app.packed.lifecycleold.StopOption;
 import app.packed.service.Injector;
-import packed.internal.artifact.PackedInstantiationContext;
-import packed.internal.component.PackedComponent;
+import packed.internal.artifact.InstantiationContext;
+import packed.internal.component.ComponentNode;
 import packed.internal.service.runtime.PackedInjector;
 
 /** The default container implementation. */
-public final class PackedContainer extends PackedComponent {
+public final class PackedContainer extends ComponentNode {
 
     // Skal vaere en service of some kind...
     private final Injector injector;
@@ -53,7 +53,7 @@ public final class PackedContainer extends PackedComponent {
      * @param instantiationContext
      *            the instantiation context of the container
      */
-    public PackedContainer(@Nullable PackedComponent parent, PackedContainerConfigurationContext pcc, PackedInstantiationContext instantiationContext) {
+    public PackedContainer(@Nullable ComponentNode parent, PackedContainerRole pcc, InstantiationContext instantiationContext) {
         super(parent, pcc.component, instantiationContext);
         Injector i = instantiationContext.get(pcc.component, PackedInjector.class);
         if (i == null) {
@@ -63,16 +63,12 @@ public final class PackedContainer extends PackedComponent {
         instantiationContext.put(pcc.component, this);
     }
 
-    public ArtifactContext toArtifactContext() {
-        return new PackedArtifactContext(this);
-    }
-
     /** Used to expose a container as an ArtifactContext. */
     public static final class PackedArtifactContext implements ArtifactContext {
 
         private final PackedContainer container;
 
-        PackedArtifactContext(PackedContainer container) {
+        public PackedArtifactContext(PackedContainer container) {
             this.container = requireNonNull(container);
         }
 

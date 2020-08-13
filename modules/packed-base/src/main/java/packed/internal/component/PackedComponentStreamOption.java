@@ -104,7 +104,7 @@ public final class PackedComponentStreamOption implements ComponentStream.Option
         return (s & EXCLUDE_ORIGIN) == 1;
     }
 
-    public boolean processThisDeeper(PackedComponent origin, PackedComponent actual) {
+    public boolean processThisDeeper(ComponentNode origin, ComponentNode actual) {
         Class<? extends Extension> extensionType = actual.model.extension().orElse(null);
         // if (s==0) return;
         // TODO just changed includeExtensions == null || !includeExtensions.contains(extensionType))) to &&, dobbel check
@@ -118,7 +118,7 @@ public final class PackedComponentStreamOption implements ComponentStream.Option
         return true;
     }
 
-    public boolean processThisDeeper(PackedComponentConfigurationContext origin, PackedComponentConfigurationContext actual) {
+    public boolean processThisDeeper(ComponentNodeConfiguration origin, ComponentNodeConfiguration actual) {
         Class<? extends Extension> extensionType = actual.extension().orElse(null);
         // if (s==0) return;
         if (extensionType != null && ((s & INCLUDE_EXTENSIONS) != 0 || (includeExtensions == null || !includeExtensions.contains(extensionType)))) {

@@ -34,7 +34,7 @@ import app.packed.inject.Factory;
 import app.packed.lifecycleold.OnStart;
 import app.packed.sidecar.Expose;
 import app.packed.statemachine.Leaving;
-import packed.internal.component.PackedComponentConfigurationContext;
+import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.inject.ConfigSiteInjectOperations;
@@ -310,7 +310,7 @@ public final class ServiceExtension extends Extension {
      *            the configuration of the component that uses the annotation
      */
     @OnHook
-    void onHook(AtProvidesHook hook, PackedComponentConfigurationContext cc) {
+    void onHook(AtProvidesHook hook, ComponentNodeConfiguration cc) {
         node.provider().addProvidesHook(hook, cc);
     }
 
@@ -395,7 +395,7 @@ public final class ServiceExtension extends Extension {
      */
     public <T> ServiceComponentConfiguration<T> provideConstant(T instance) {
         // configurability is checked by ComponentExtension
-        PackedComponentConfigurationContext cc = ((PackedSingletonConfiguration<T>) installInstance(instance)).context;
+        ComponentNodeConfiguration cc = ((PackedSingletonConfiguration<T>) installInstance(instance)).context;
         return node.provider().provideInstance(cc, instance);
     }
 

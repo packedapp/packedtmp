@@ -26,7 +26,7 @@ import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceMode;
-import packed.internal.component.PackedComponentConfigurationContext;
+import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.service.buildtime.BuildEntry;
 
 /**
@@ -38,7 +38,7 @@ public final class PackedServiceComponentConfiguration<T> implements ServiceComp
     public final BuildEntry<T> buildEntry;
 
     /** The component we are exposing. */
-    private final PackedComponentConfigurationContext component;
+    private final ComponentNodeConfiguration component;
 
     /**
      * Creates a new configuration object
@@ -46,7 +46,7 @@ public final class PackedServiceComponentConfiguration<T> implements ServiceComp
      * @param buildEntry
      *            the build entry to wrap
      */
-    public PackedServiceComponentConfiguration(PackedComponentConfigurationContext component, BuildEntry<T> buildEntry) {
+    public PackedServiceComponentConfiguration(ComponentNodeConfiguration component, BuildEntry<T> buildEntry) {
         this.buildEntry = requireNonNull(buildEntry);
         this.component = component;
     }

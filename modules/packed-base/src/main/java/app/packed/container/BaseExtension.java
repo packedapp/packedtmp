@@ -17,7 +17,7 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import packed.internal.container.PackedContainerConfigurationContext;
+import packed.internal.container.PackedContainerRole;
 
 /**
  * An extension that is always automatically added whenever a new container is configured. Even while the
@@ -30,7 +30,7 @@ import packed.internal.container.PackedContainerConfigurationContext;
 public final class BaseExtension extends Extension {
 
     /** The container configuration. This extension is the only extension that can use it. */
-    private final PackedContainerConfigurationContext pcc;
+    private final PackedContainerRole pcc;
 
     /**
      * Creates a new extension.
@@ -38,7 +38,7 @@ public final class BaseExtension extends Extension {
      * @param pcc
      *            the container's configuration context.
      */
-    /* package-private */ BaseExtension(PackedContainerConfigurationContext pcc) {
+    /* package-private */ BaseExtension(PackedContainerRole pcc) {
         this.pcc = requireNonNull(pcc, "pcc is null");
     }
 

@@ -32,9 +32,9 @@ import app.packed.inject.Factory;
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
 
     /** The context to delegate all calls to. */
-    private final PackedContainerConfigurationContext context;
+    private final PackedContainerRole context;
 
-    public PackedContainerConfiguration(PackedContainerConfigurationContext context) {
+    public PackedContainerConfiguration(PackedContainerRole context) {
         super(context.component);
         this.context = context;
     }

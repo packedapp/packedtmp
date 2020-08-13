@@ -43,12 +43,12 @@ public final class ComponentAdaptor implements Component {
     private volatile Map<String, ComponentAdaptor> children;
 
     /** The component configuration to wrap. */
-    public final PackedComponentConfigurationContext componentConfiguration;
+    public final ComponentNodeConfiguration componentConfiguration;
 
     // Need to main any guest ancestor. As images must resolve in relation to it.
     // private final List<PackedGuestConfigurationContext> pgc;
 
-    private ComponentAdaptor(PackedComponentConfigurationContext componentConfiguration /* , List<PackedGuestConfigurationContext> pgc */) {
+    private ComponentAdaptor(ComponentNodeConfiguration componentConfiguration /* , List<PackedGuestConfigurationContext> pgc */) {
         this.componentConfiguration = requireNonNull(componentConfiguration);
         // this.pgc = pgc;
     }
@@ -89,7 +89,7 @@ public final class ComponentAdaptor implements Component {
                 c = Map.of();
             } else {
                 LinkedHashMap<String, ComponentAdaptor> m = new LinkedHashMap<>();
-                for (PackedComponentConfigurationContext acc = componentConfiguration.firstChild; acc != null; acc = acc.nextSibling) {
+                for (ComponentNodeConfiguration acc = componentConfiguration.firstChild; acc != null; acc = acc.nextSibling) {
                     m.put(acc.name, of(acc /* , pgc */));
                 }
                 c = children = Map.copyOf(m);
@@ -159,7 +159,7 @@ public final class ComponentAdaptor implements Component {
         return new PackedComponentStream(stream0(componentConfiguration, true, PackedComponentStreamOption.of(options)));
     }
 
-    private final Stream<Component> stream0(PackedComponentConfigurationContext origin, boolean isRoot, PackedComponentStreamOption option) {
+    private final Stream<Component> stream0(ComponentNodeConfiguration origin, boolean isRoot, PackedComponentStreamOption option) {
         // Also fix in ComponentConfigurationToComponentAdaptor when changing stuff here
         children(); // lazy calc
         Map<String, ComponentAdaptor> c = children;
@@ -174,7 +174,7 @@ public final class ComponentAdaptor implements Component {
         }
     }
 
-    public static ComponentAdaptor of(PackedComponentConfigurationContext bcc /* , List<PackedGuestConfigurationContext> pgc */) {
+    public static ComponentAdaptor of(ComponentNodeConfiguration bcc /* , List<PackedGuestConfigurationContext> pgc */) {
         return new ComponentAdaptor(bcc /* , pgc */);
 //        
 //        if (bcc instanceof PackedGuestConfigurationContext) {

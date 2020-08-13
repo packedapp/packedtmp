@@ -37,7 +37,7 @@ import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.service.ServiceDescriptor;
 import packed.internal.artifact.AssembleOutput;
-import packed.internal.container.PackedContainerConfigurationContext;
+import packed.internal.container.PackedContainerRole;
 
 /**
  * A bundle descriptor.
@@ -247,7 +247,7 @@ public class ContainerDescriptor {
      */
     public static ContainerDescriptor of(ContainerBundle bundle) {
         requireNonNull(bundle, "bundle is null");
-        PackedContainerConfigurationContext pcc = PackedContainerConfigurationContext.assemble(AssembleOutput.descriptor(ContainerDescriptor.class), bundle);
+        PackedContainerRole pcc = PackedContainerRole.assemble(AssembleOutput.descriptor(ContainerDescriptor.class), bundle);
 
         ContainerDescriptor.Builder builder = new ContainerDescriptor.Builder(bundle.getClass());
         pcc.buildDescriptor(builder);

@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.IdentityHashMap;
 
 import app.packed.base.Nullable;
-import packed.internal.component.PackedComponentConfigurationContext;
+import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletPack;
 
 /**
@@ -43,14 +43,14 @@ import packed.internal.component.wirelet.WireletPack;
 
 // Per container, er sgu for besvaergeligt med de der get stuff...
 // Altsaa med mindre vi har behov for at access dem fra andet sted fra
-public final class PackedInstantiationContext {
+public final class InstantiationContext {
 
     /** All context objects. */
-    private final IdentityHashMap<PackedComponentConfigurationContext, IdentityHashMap<Class<?>, Object>> map = new IdentityHashMap<>();
+    private final IdentityHashMap<ComponentNodeConfiguration, IdentityHashMap<Class<?>, Object>> map = new IdentityHashMap<>();
 
     public final WireletPack wirelets;
 
-    public PackedInstantiationContext(WireletPack wirelets) {
+    public InstantiationContext(WireletPack wirelets) {
         this.wirelets = wirelets;
     }
 
@@ -65,14 +65,14 @@ public final class PackedInstantiationContext {
 
     @SuppressWarnings("unchecked")
     @Nullable
-    public <T> T get(PackedComponentConfigurationContext configuration, Class<T> type) {
+    public <T> T get(ComponentNodeConfiguration configuration, Class<T> type) {
         requireNonNull(configuration, "configuration is null");
         requireNonNull(type, "type is null");
         var e = map.get(configuration);
         return e == null ? null : (T) e.get(type);
     }
 
-    public void put(PackedComponentConfigurationContext configuration, Object obj) {
+    public void put(ComponentNodeConfiguration configuration, Object obj) {
         requireNonNull(configuration, "configuration is null");
         requireNonNull(obj, "obj is null");
         map.computeIfAbsent(configuration, e -> new IdentityHashMap<>()).put(obj.getClass(), obj);
