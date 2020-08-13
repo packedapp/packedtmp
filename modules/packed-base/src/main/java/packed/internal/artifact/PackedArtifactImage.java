@@ -153,8 +153,8 @@ public final class PackedArtifactImage implements ArtifactImage {
      *             if the image could not be constructed
      */
     public static PackedArtifactImage of(Bundle<?> bundle, Wirelet... wirelets) {
-        PackedContainerConfigurationContext pcc = PackedContainerConfigurationContext.of(AssembleOutput.image(), bundle, wirelets);
-        return new PackedArtifactImage(pcc.assemble(), pcc.wireletContext);
+        PackedContainerConfigurationContext pcc = PackedContainerConfigurationContext.assemble(AssembleOutput.image(), bundle, wirelets);
+        return new PackedArtifactImage(pcc, pcc.wireletContext);
     }
 }
 

@@ -40,27 +40,24 @@ import packed.internal.inject.factory.FactoryHandle;
  */
 public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
 
+    public static final int ROLE_CONTAINER = 1;
+    public static final int ROLE_GUEST = 2;
+    public static final int ROLE_HOST = 4;
+    public static final int ROLE_SINGLETON = 8;
+    public static final int ROLE_STATELESS = 16;
+
+    // Statemanagement... A function is kind of just a singleton...
+
     private final int roles;
 
     PackedComponentDriver(int roles) {
         this.roles = roles;
     }
 
-    public static final int ROLE_CONTAINER = 1;
-    public static final int ROLE_GUEST = 2;
-    public static final int ROLE_HOST = 4;
-
-    // Statemanagement... A function is kind of just a singleton...
-
-    public static final int ROLE_SINGLETON = 8;
-    public static final int ROLE_STATELESS = 16;
-
-    public final boolean hasContainer() {
-        return hasRole(ROLE_CONTAINER);
-    }
+    public abstract PackedComponent create(@Nullable PackedComponent parent, PackedComponentConfigurationContext configuration, PackedInstantiationContext ic);
 
     public String defaultName(Object ssss) {
-        if (hasContainer()) {
+        if (isContainer()) {
             // I think try and move some of this to ComponentNameWirelet
             @Nullable
             Class<?> source = ssss.getClass();
@@ -92,7 +89,14 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
     }
     // boolean retainAtRuntime()
 
-    public abstract PackedComponent create(@Nullable PackedComponent parent, PackedComponentConfigurationContext configuration, PackedInstantiationContext ic);
+    /**
+     * Returns whether or not this driver creates a component with container role.
+     * 
+     * @return whether or not this driver creates a component with container role
+     */
+    public final boolean isContainer() {
+        return hasRole(ROLE_CONTAINER);
+    }
 
     public PackedComponentConfigurationContext newConfiguration(PackedComponentConfigurationContext parent, Bundle<?> bundle, Wirelet... wirelets) {
         return new PackedContainerConfigurationContext(this, parent, bundle, wirelets);
@@ -102,34 +106,29 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         return new ContainerComponentDriver();
     }
 
-    public static class StatelessComponentDriver extends PackedComponentDriver<ComponentConfiguration> {
-        public final ComponentModel model;
+    public static class ContainerComponentDriver extends PackedComponentDriver<ContainerConfiguration> {
 
-        public StatelessComponentDriver(ComponentLookup lookup, Class<?> implementation) {
-            super(PackedComponentDriver.ROLE_STATELESS);
-            requireNonNull(implementation, "implementation is null");
-            this.model = lookup.componentModelOf(implementation);
-        }
+        public static ContainerComponentDriver INSTANCE = new ContainerComponentDriver();
 
-        public StatelessConfiguration toConf(PackedComponentConfigurationContext context) {
-            return new PackedStatelessComponentConfiguration(context);
+        ContainerComponentDriver() {
+            super(ROLE_CONTAINER);
         }
 
         /** {@inheritDoc} */
         @Override
         public PackedComponent create(@Nullable PackedComponent parent, PackedComponentConfigurationContext configuration, PackedInstantiationContext ic) {
-            return new PackedComponent(parent, configuration, ic);
+            return new PackedContainer(parent, (PackedContainerConfigurationContext) configuration, ic);
         }
     }
 
     public static class SingletonComponentDriver extends PackedComponentDriver<ComponentConfiguration> {
-        public final ComponentModel model;
-
         @Nullable
         public final BaseFactory<?> factory;
 
         @Nullable
         public final Object instance;
+
+        public final ComponentModel model;
 
         public SingletonComponentDriver(ComponentLookup lookup, Factory<?> factory) {
             super(PackedComponentDriver.ROLE_SINGLETON);
@@ -145,8 +144,10 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
             this.instance = requireNonNull(instance);
         }
 
-        public <T> SingletonConfiguration<T> toConf(PackedComponentConfigurationContext context) {
-            return new PackedSingletonConfiguration<>(context);
+        /** {@inheritDoc} */
+        @Override
+        public PackedComponent create(@Nullable PackedComponent parent, PackedComponentConfigurationContext configuration, PackedInstantiationContext ic) {
+            return new PackedComponent(parent, configuration, ic);
         }
 
         public MethodHandle fromFactory(PackedContainerConfigurationContext context) {
@@ -154,25 +155,28 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
             return context.fromFactoryHandle(handle);
         }
 
+        public <T> SingletonConfiguration<T> toConf(PackedComponentConfigurationContext context) {
+            return new PackedSingletonConfiguration<>(context);
+        }
+    }
+
+    public static class StatelessComponentDriver extends PackedComponentDriver<ComponentConfiguration> {
+        public final ComponentModel model;
+
+        public StatelessComponentDriver(ComponentLookup lookup, Class<?> implementation) {
+            super(PackedComponentDriver.ROLE_STATELESS);
+            requireNonNull(implementation, "implementation is null");
+            this.model = lookup.componentModelOf(implementation);
+        }
+
         /** {@inheritDoc} */
         @Override
         public PackedComponent create(@Nullable PackedComponent parent, PackedComponentConfigurationContext configuration, PackedInstantiationContext ic) {
             return new PackedComponent(parent, configuration, ic);
         }
-    }
 
-    public static class ContainerComponentDriver extends PackedComponentDriver<ContainerConfiguration> {
-
-        public static ContainerComponentDriver INSTANCE = new ContainerComponentDriver();
-
-        ContainerComponentDriver() {
-            super(ROLE_CONTAINER);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public PackedComponent create(@Nullable PackedComponent parent, PackedComponentConfigurationContext configuration, PackedInstantiationContext ic) {
-            return new PackedContainer(parent, (PackedContainerConfigurationContext) configuration, ic);
+        public StatelessConfiguration toConf(PackedComponentConfigurationContext context) {
+            return new PackedStatelessComponentConfiguration(context);
         }
     }
 }

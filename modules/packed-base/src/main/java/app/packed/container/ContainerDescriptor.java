@@ -247,8 +247,8 @@ public class ContainerDescriptor {
      */
     public static ContainerDescriptor of(ContainerBundle bundle) {
         requireNonNull(bundle, "bundle is null");
-        PackedContainerConfigurationContext pcc = PackedContainerConfigurationContext.of(AssembleOutput.descriptor(ContainerDescriptor.class), bundle);
-        pcc.assemble();
+        PackedContainerConfigurationContext pcc = PackedContainerConfigurationContext.assemble(AssembleOutput.descriptor(ContainerDescriptor.class), bundle);
+
         ContainerDescriptor.Builder builder = new ContainerDescriptor.Builder(bundle.getClass());
         pcc.buildDescriptor(builder);
         return builder.build();

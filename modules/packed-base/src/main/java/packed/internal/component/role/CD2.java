@@ -20,6 +20,7 @@ package packed.internal.component.role;
  */
 public abstract class CD2 {
 
+    // Or maybe just prefixed with function as in functionUsing
     public interface FunctionOption {
         // using(TypeLiteral)
         // failOnAnnotation..
@@ -32,5 +33,15 @@ public abstract class CD2 {
 
     public interface ContainerOption {
 
+    }
+
+    public interface Option {
+
+        // Cannot be hosts, and cannot have static children either...
+
+        // childFree(), hostFree()
+        static Option alwaysLeaf() {
+            throw new UnsupportedOperationException();
+        }
     }
 }

@@ -143,7 +143,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
             this.artifact = new PackedAssemblyContext((PackedContainerConfigurationContext) this, output);
         } else {
             this.pod = parent.pod;
-            this.container = parent.driver.hasContainer() ? (PackedContainerConfigurationContext) parent : parent.container;
+            this.container = parent.driver.isContainer() ? (PackedContainerConfigurationContext) parent : parent.container;
             this.depth = parent.depth + 1;
             this.extension = container.activeExtension;
             this.artifact = parent.artifact;
@@ -250,7 +250,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
     private void setName0(String newName) {
         String n = newName;
         if (newName == null) {
-            if (driver.hasContainer()) {
+            if (driver.isContainer()) {
                 PackedContainerConfigurationContext pcc = (PackedContainerConfigurationContext) this;
                 if (pcc.wireletContext != null) {
                     ComponentNameWirelet cwn = pcc.wireletContext.nameWirelet();
@@ -288,6 +288,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
             }
 
             if (newName != null) {
+                // TODO check if changed name...
                 parent.children.remove(name);
                 parent.children.put(n, this);
             } else {
@@ -362,6 +363,7 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
             throw new IllegalStateException("#setName(String) cannot be called after #path() has been invoked on a child component");
         }
 
+        // Maaske kan vi godt saette to gange...
         nameState |= NAME_SET;
 
         if ((s & NAME_INITIALIZED_WITH_WIRELET) != 0) {
@@ -369,27 +371,6 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
         }
 
         setName0(name);
-//
-//        switch (state.oldState) {
-//        case INITIAL:
-//            initializeName(State.SET_NAME_INVOKED, name);
-//            return;
-//        case FINAL:
-//            checkConfigurable();
-//        case GET_NAME_INVOKED:
-//            throw new IllegalStateException("Cannot call #setName(String) after the name has been initialized via calls to #getName()");
-//        case EXTENSION_USED:
-//            throw new IllegalStateException("Cannot call #setName(String) after any extensions has has been used");
-//        case PATH_INVOKED:
-//            throw new IllegalStateException("Cannot call #setName(String) after name has been initialized via calls to #path()");
-//        case INSTALL_INVOKED:
-//            throw new IllegalStateException("Cannot call this method after having installed components or used extensions");
-//        case LINK_INVOKED:
-//            throw new IllegalStateException("Cannot call this method after #link() has been invoked");
-//        case SET_NAME_INVOKED:
-//            throw new IllegalStateException("#setName(String) can only be called once");
-//        }
-//        throw new InternalError();
     }
 
     final Map<String, PackedComponent> initializeChildren(PackedComponent parent, PackedInstantiationContext ic) {
@@ -466,6 +447,28 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
         return wireletContext == null ? Optional.empty() : Optional.ofNullable((W) wireletContext.getWireletOrPipeline(type));
     }
 }
+//
+//switch (state.oldState) {
+//case INITIAL:
+//  initializeName(State.SET_NAME_INVOKED, name);
+//  return;
+//case FINAL:
+//  checkConfigurable();
+//case GET_NAME_INVOKED:
+//  throw new IllegalStateException("Cannot call #setName(String) after the name has been initialized via calls to #getName()");
+//case EXTENSION_USED:
+//  throw new IllegalStateException("Cannot call #setName(String) after any extensions has has been used");
+//case PATH_INVOKED:
+//  throw new IllegalStateException("Cannot call #setName(String) after name has been initialized via calls to #path()");
+//case INSTALL_INVOKED:
+//  throw new IllegalStateException("Cannot call this method after having installed components or used extensions");
+//case LINK_INVOKED:
+//  throw new IllegalStateException("Cannot call this method after #link() has been invoked");
+//case SET_NAME_INVOKED:
+//  throw new IllegalStateException("#setName(String) can only be called once");
+//}
+//throw new InternalError();
+
 ///** The state of the component configuration */
 //public enum State {
 //

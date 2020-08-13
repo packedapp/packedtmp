@@ -29,6 +29,7 @@ import java.util.function.Consumer;
 
 import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.ArtifactImage;
+import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.SingletonConfiguration;
@@ -268,18 +269,6 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         return pc.toArtifactContext();
     }
 
-    /**
-     * Returns whether or not the specified extension type has been used.
-     * 
-     * @param extensionType
-     *            the extension type to test.
-     * @return whether or not the extension has been used
-     */
-    boolean isExtensionUsed(Class<? extends Extension> extensionType) {
-        requireNonNull(extensionType, "extensionType is null");
-        return extensions.containsKey(extensionType);
-    }
-
     // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
     // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return
     // type.
@@ -400,8 +389,28 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
         return new PackedContainerConfigurationContext(cs, output, source, wirelets);
     }
-}
 
+    public static PackedContainerConfigurationContext assemble(AssembleOutput output, ArtifactSource source, Wirelet... wirelets) {
+        PackedContainerConfigurationContext c = of(output, source, wirelets);
+        ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
+        c = new PackedContainerConfigurationContext(cs, output, source, wirelets);
+        c.assemble();
+        return c;
+    }
+
+}
+//
+///**
+//* Returns whether or not the specified extension type has been used.
+//* 
+//* @param extensionType
+//*            the extension type to test.
+//* @return whether or not the extension has been used
+//*/
+//boolean isExtensionUsed(Class<? extends Extension> extensionType) {
+//  requireNonNull(extensionType, "extensionType is null");
+//  return extensions.containsKey(extensionType);
+//}
 // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
 // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
 // loop situations, for example, if a bundle recursively links itself which fails by throwing

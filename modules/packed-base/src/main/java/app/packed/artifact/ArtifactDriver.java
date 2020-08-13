@@ -110,8 +110,7 @@ public final class ArtifactDriver<A> {
             pcc = pai.configuration();
             wc = WireletPack.fromImage(pcc, pai.wirelets(), wirelets);
         } else { // assert Bundle?
-            pcc = PackedContainerConfigurationContext.of(AssembleOutput.artifact(this), source, wirelets);
-            pcc.assemble();
+            pcc = PackedContainerConfigurationContext.assemble(AssembleOutput.artifact(this), source, wirelets);
             wc = pcc.wireletContext;
         }
         return pcc.instantiateArtifact(wc);
