@@ -103,8 +103,9 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
      * @param wirelets
      *            any wirelets specified by the user
      */
-    private PackedContainerConfigurationContext(PackedComponentDriver<?> driver, ConfigSite cs, Object source, AssembleOutput output, Wirelet... wirelets) {
-        super(driver, cs, source, null, output, wirelets);
+    private PackedContainerConfigurationContext(PackedComponentDriver<?> driver, ConfigSite cs, Object source, PackedComponentConfigurationContext parent,
+            AssembleOutput output, Wirelet... wirelets) {
+        super(driver, cs, source, parent, output, wirelets);
         this.lookup = this.model = ContainerModel.of(source.getClass());
     }
 
@@ -388,13 +389,13 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
 
     public static PackedContainerConfigurationContext of(AssembleOutput output, Object source, Wirelet... wirelets) {
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
-        return new PackedContainerConfigurationContext(ContainerComponentDriver.INSTANCE, cs, source, output, wirelets);
+        return new PackedContainerConfigurationContext(ContainerComponentDriver.INSTANCE, cs, source, null, output, wirelets);
     }
 
     public static PackedContainerConfigurationContext assemble(AssembleOutput output, ArtifactSource source, Wirelet... wirelets) {
         PackedContainerConfigurationContext c = of(output, source, wirelets);
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
-        c = new PackedContainerConfigurationContext(ContainerComponentDriver.INSTANCE, cs, source, output, wirelets);
+        c = new PackedContainerConfigurationContext(ContainerComponentDriver.INSTANCE, cs, source, null, output, wirelets);
         c.assemble();
         return c;
     }
