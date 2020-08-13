@@ -13,24 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component.specialization;
+package packed.internal.component.role;
 
 /**
  *
  */
-public abstract class CD2 {
+public interface ComponentRoleConf {
 
-    public interface FunctionOption {
-        // using(TypeLiteral)
-        // failOnAnnotation..
-        // Allow X annotation
-    }
-
-    public interface HostOption {
-        // ONLY_ADD, NO_REMOVE, NO_UPDATE, IDK
-    }
-
-    public interface ContainerOption {
-
-    }
 }
