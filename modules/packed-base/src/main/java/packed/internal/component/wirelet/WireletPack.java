@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.component.wirelet;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,7 +24,8 @@ import java.util.Map.Entry;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
-import packed.internal.component.InternalWirelet.ComponentNameWirelet;
+import packed.internal.component.PackedComponentConfigurationContext;
+import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.container.PackedContainerConfigurationContext;
 import packed.internal.container.PackedExtensionConfiguration;
 

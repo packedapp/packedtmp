@@ -29,7 +29,7 @@ import app.packed.container.Extension;
 import app.packed.service.Injector;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedArtifactImage;
-import packed.internal.component.WireletPack;
+import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.PackedContainerConfigurationContext;
 import packed.internal.util.ThrowableUtil;

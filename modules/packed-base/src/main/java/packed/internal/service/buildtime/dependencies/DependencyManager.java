@@ -37,7 +37,7 @@ import app.packed.introspection.ParameterDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
-import packed.internal.component.WireletPipelineModel;
+import packed.internal.component.wirelet.WireletPipelineModel;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.BuildEntry;

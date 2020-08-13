@@ -33,7 +33,7 @@ import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import packed.internal.artifact.PackedInstantiationContext;
-import packed.internal.component.InternalWirelet.ComponentNameWirelet;
+import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.container.PackedContainer;
 
 /** An default implementation of {@link Component}. */

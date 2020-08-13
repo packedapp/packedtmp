@@ -36,7 +36,7 @@ import app.packed.sidecar.Expose;
 import app.packed.statemachine.Leaving;
 import packed.internal.component.PackedComponentConfigurationContext;
 import packed.internal.component.PackedSingletonConfiguration;
-import packed.internal.component.WireletList;
+import packed.internal.component.wirelet.WireletList;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.ServiceExtensionNode;

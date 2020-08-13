@@ -20,6 +20,7 @@ module app.packed.base {
     exports packed.internal.util to app.packed.configuration, app.packed.cli, app.packed.conta;
 
     exports packed.internal.component to app.packed.errorhandling;
+    exports packed.internal.component.wirelet to app.packed.errorhandling;
     exports packed.internal.container to app.packed.errorhandling, app.packed.conta;
     exports packed.internal.hook to app.packed.errorhandling;
     exports packed.internal.artifact to app.packed.errorhandling;

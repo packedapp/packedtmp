@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import app.packed.base.Nullable;
-import packed.internal.component.WireletPipelineContext;
+import packed.internal.component.wirelet.WireletPipelineContext;
 
 /**
  * Extension wirelet pipelines
