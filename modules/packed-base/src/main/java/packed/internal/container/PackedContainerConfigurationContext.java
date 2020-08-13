@@ -133,7 +133,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
 
         if (realState == LS_1_LINKING && newState > LS_1_LINKING) {
             for (PackedComponentConfigurationContext cc = component.firstChild; cc != null; cc = cc.nextSibling) {
-                if (cc instanceof PackedContainerConfigurationContext) {
+                if (cc.isContainer()) {
                     ((PackedContainerConfigurationContext) cc).assembleExtensions();
                 }
             }
@@ -179,7 +179,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
     }
 
     private static void extensionsPrepareInstantiation(PackedComponentConfigurationContext pccc, PackedInstantiationContext ic) {
-        if (pccc instanceof PackedContainerConfigurationContext) {
+        if (pccc.isContainer()) {
             PackedContainerConfigurationContext ccc = (PackedContainerConfigurationContext) pccc;
             PackedExtensionConfiguration ee = ccc.extensions.get(ServiceExtension.class);
             if (ee != null) {
@@ -302,7 +302,7 @@ public final class PackedContainerConfigurationContext extends PackedComponentCo
     private void methodHandlePassing0(PackedComponent ac, PackedInstantiationContext ic) {
         for (PackedComponentConfigurationContext cc = component.firstChild; cc != null; cc = cc.nextSibling) {
             PackedComponent child = ac.children.get(cc.name);
-            if (cc instanceof PackedContainerConfigurationContext) {
+            if (cc.isContainer()) {
                 ((PackedContainerConfigurationContext) cc).methodHandlePassing0(child, ic);
             }
             if (!cc.del.isEmpty()) {

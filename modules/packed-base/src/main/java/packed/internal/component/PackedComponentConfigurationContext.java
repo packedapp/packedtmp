@@ -154,6 +154,10 @@ public class PackedComponentConfigurationContext implements ComponentConfigurati
         setName0(null);
     }
 
+    public boolean isContainer() {
+        return driver.isContainer();
+    }
+
     public PackedContainerConfigurationContext actualContainer() {
         if (this instanceof PackedContainerConfigurationContext) {
             return (PackedContainerConfigurationContext) this;
