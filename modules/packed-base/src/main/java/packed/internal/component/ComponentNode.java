@@ -34,7 +34,6 @@ import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import packed.internal.artifact.InstantiationContext;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
-import packed.internal.container.PackedContainer;
 
 /** An runtime representation of a component. */
 public class ComponentNode implements Component {
@@ -59,7 +58,7 @@ public class ComponentNode implements Component {
     /** The index into the pod. */
     final int podIndex = 0;// Index into... name() return (String) pod[podIndex+model.nameIndex]
 
-    final Object[] data = new Object[1];
+    public final Object[] data = new Object[1];
 
     /**
      * Creates a new component node.
@@ -176,12 +175,12 @@ public class ComponentNode implements Component {
         return isInSameContainer0() == other.isInSameContainer0();
     }
 
-    private PackedContainer isInSameContainer0() {
+    private ComponentNode isInSameContainer0() {
         ComponentNode c = this;
-        while (!(c instanceof PackedContainer)) {
+        while (!(c.model.isContainer())) {
             c = c.parent;
         }
-        return (PackedContainer) c;
+        return c;
     }
 
     public RuntimeComponentModel model() {

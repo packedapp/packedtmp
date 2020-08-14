@@ -41,6 +41,7 @@ import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.InstantiationContext;
 import packed.internal.component.BundleConfiguration;
 import packed.internal.component.ComponentModel;
+import packed.internal.component.ComponentNode;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
@@ -238,7 +239,7 @@ public final class PackedContainerRole {
         extensionsPrepareInstantiation(this.component, pic);
 
         // Will instantiate the whole container hierachy
-        PackedContainer pc = new PackedContainer(null, this, pic);
+        ComponentNode pc = PackedContainer.create(null, this, pic);
         ComponentNodeConfiguration.methodHandlePassing0(component, pc, pic);
         return new PackedArtifactContext(pc);
     }

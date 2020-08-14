@@ -38,37 +38,25 @@ import packed.internal.component.ComponentNode;
 import packed.internal.service.runtime.PackedInjector;
 
 /** The default container implementation. */
-public final class PackedContainer extends ComponentNode {
+public final class PackedContainer {
 
-    // Skal vaere en service of some kind...
-    private final Injector injector;
-
-    /**
-     * Creates a new container
-     * 
-     * @param parent
-     *            the parent of the container if it is a non-root container
-     * @param pcc
-     *            the configuration of the container
-     * @param instantiationContext
-     *            the instantiation context of the container
-     */
-    public PackedContainer(@Nullable ComponentNode parent, PackedContainerRole pcc, InstantiationContext instantiationContext) {
-        super(parent, pcc.component, instantiationContext);
+    public static ComponentNode create(@Nullable ComponentNode parent, PackedContainerRole pcc, InstantiationContext instantiationContext) {
+        ComponentNode cn = new ComponentNode(parent, pcc.component, instantiationContext);
         Injector i = instantiationContext.get(pcc.component, PackedInjector.class);
         if (i == null) {
             i = new PackedInjector(pcc.component.configSite(), pcc.component.getDescription(), new LinkedHashMap<>());
         }
-        this.injector = i;
-        instantiationContext.put(pcc.component, this);
+        cn.data[0] = i;
+        instantiationContext.put(pcc.component, cn);
+        return cn;
     }
 
     /** Used to expose a container as an ArtifactContext. */
     public static final class PackedArtifactContext implements ArtifactContext {
 
-        private final PackedContainer container;
+        private final ComponentNode container;
 
-        public PackedArtifactContext(PackedContainer container) {
+        public PackedArtifactContext(ComponentNode container) {
             this.container = requireNonNull(container);
         }
 
@@ -89,7 +77,7 @@ public final class PackedContainer extends ComponentNode {
         /** {@inheritDoc} */
         @Override
         public Injector injector() {
-            return container.injector;
+            return (Injector) container.data[0];
         }
 
         /** {@inheritDoc} */
@@ -129,7 +117,7 @@ public final class PackedContainer extends ComponentNode {
         /** {@inheritDoc} */
         @Override
         public <T> T use(Key<T> key) {
-            return container.injector.use(key);
+            return injector().use(key);
         }
 
         /** {@inheritDoc} */

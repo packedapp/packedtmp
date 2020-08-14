@@ -53,11 +53,18 @@ public final class RuntimeComponentModel {
     /** Any extension the component belongs to. */ // Generic Extension Table?
     final Optional<Class<? extends Extension>> extension;
 
+    final PackedComponentDriver<?> driver; // tmp
+
     RuntimeComponentModel(ComponentNodeConfiguration context) {
         this.depth = context.depth;
         this.configSite = requireNonNull(context.configSite());
         this.description = context.getDescription();
         this.extension = context.extension();
+        this.driver = context.driver;
+    }
+
+    public boolean isContainer() {
+        return driver.isContainer();
     }
 
     public Optional<Class<? extends Extension>> extension() {

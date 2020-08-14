@@ -142,7 +142,7 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         /** {@inheritDoc} */
         @Override
         public ComponentNode create(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, InstantiationContext ic) {
-            return new PackedContainer(parent, configuration.container, ic);
+            return PackedContainer.create(parent, configuration.container, ic);
         }
     }
 
