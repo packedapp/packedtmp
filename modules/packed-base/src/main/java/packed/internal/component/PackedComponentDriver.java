@@ -34,7 +34,6 @@ import packed.internal.artifact.InstantiationContext;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ComponentLookup;
 import packed.internal.container.ExtensionModel;
-import packed.internal.container.PackedContainer;
 import packed.internal.container.PackedContainerRole;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.factory.BaseFactory;
@@ -142,7 +141,7 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         /** {@inheritDoc} */
         @Override
         public ComponentNode create(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, InstantiationContext ic) {
-            return PackedContainer.create(parent, configuration.container, ic);
+            return PackedContainerRole.create(parent, configuration.container, ic);
         }
     }
 

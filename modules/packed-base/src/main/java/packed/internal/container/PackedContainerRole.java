@@ -36,9 +36,11 @@ import app.packed.container.ContainerDescriptor;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.Factory;
+import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.InstantiationContext;
+import packed.internal.artifact.PackedArtifactContext;
 import packed.internal.component.BundleConfiguration;
 import packed.internal.component.ComponentModel;
 import packed.internal.component.ComponentNode;
@@ -49,7 +51,6 @@ import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.container.PackedContainer.PackedArtifactContext;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.service.buildtime.ServiceExtensionNode;
@@ -70,6 +71,8 @@ public final class PackedContainerRole {
     @Nullable
     public PackedExtensionConfiguration activeExtension;
 
+    public ComponentNodeConfiguration component;
+
     /** All used extensions, in order of registration. */
     private final LinkedHashMap<Class<? extends Extension>, PackedExtensionConfiguration> extensions = new LinkedHashMap<>();
 
@@ -85,18 +88,8 @@ public final class PackedContainerRole {
 
     int realState;
 
-    public ComponentNodeConfiguration component;
-
     private PackedContainerRole(Object source) {
         this.lookup = this.model = ContainerModel.of(source.getClass());
-    }
-
-    public static PackedContainerRole create(PackedComponentDriver<?> driver, ConfigSite cs, Object source, ComponentNodeConfiguration parent,
-            AssembleOutput output, Wirelet... wirelets) {
-        PackedContainerRole p1 = new PackedContainerRole(source);
-        ComponentNodeConfiguration pccc = new ComponentNodeConfiguration(parent, driver, cs, source, output, p1, wirelets);
-        p1.component = pccc;
-        return p1;
     }
 
     private void advanceTo(int newState) {
@@ -157,22 +150,6 @@ public final class PackedContainerRole {
 
     public Set<Class<? extends Extension>> extensions() {
         return Collections.unmodifiableSet(extensions.keySet());
-    }
-
-    private static void extensionsPrepareInstantiation(ComponentNodeConfiguration pccc, InstantiationContext ic) {
-        if (pccc.isContainer()) {
-            PackedContainerRole ccc = pccc.container;
-            PackedExtensionConfiguration ee = ccc.extensions.get(ServiceExtension.class);
-            if (ee != null) {
-                PackedInjector di = ServiceExtensionNode.fromExtension(((ServiceExtension) ee.instance())).onInstantiate(ic.wirelets);
-                ic.put(ccc.component, di);
-            }
-        }
-        for (ComponentNodeConfiguration c = pccc.firstChild; c != null; c = c.nextSibling) {
-            if (pccc.artifact == c.artifact) {
-                extensionsPrepareInstantiation(c, ic);
-            }
-        }
     }
 
     /**
@@ -239,7 +216,7 @@ public final class PackedContainerRole {
         extensionsPrepareInstantiation(this.component, pic);
 
         // Will instantiate the whole container hierachy
-        ComponentNode pc = PackedContainer.create(null, this, pic);
+        ComponentNode pc = create(null, this, pic);
         ComponentNodeConfiguration.methodHandlePassing0(component, pc, pic);
         return new PackedArtifactContext(pc);
     }
@@ -327,17 +304,52 @@ public final class PackedContainerRole {
         return pec;
     }
 
-    public static PackedContainerRole of(AssembleOutput output, Object source, Wirelet... wirelets) {
-        ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
-        return PackedContainerRole.create(ContainerComponentDriver.INSTANCE, cs, source, null, output, wirelets);
-    }
-
     public static PackedContainerRole assemble(AssembleOutput output, ArtifactSource source, Wirelet... wirelets) {
         PackedContainerRole c = of(output, source, wirelets);
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
         c = PackedContainerRole.create(ContainerComponentDriver.INSTANCE, cs, source, null, output, wirelets);
         c.assemble();
         return c;
+    }
+
+    public static ComponentNode create(@Nullable ComponentNode parent, PackedContainerRole pcc, InstantiationContext instantiationContext) {
+        ComponentNode cn = new ComponentNode(parent, pcc.component, instantiationContext);
+        Injector i = instantiationContext.get(pcc.component, PackedInjector.class);
+        if (i == null) {
+            i = new PackedInjector(pcc.component.configSite(), pcc.component.getDescription(), new LinkedHashMap<>());
+        }
+        cn.data[0] = i;
+        instantiationContext.put(pcc.component, cn);
+        return cn;
+    }
+
+    public static PackedContainerRole create(PackedComponentDriver<?> driver, ConfigSite cs, Object source, ComponentNodeConfiguration parent,
+            AssembleOutput output, Wirelet... wirelets) {
+        PackedContainerRole p1 = new PackedContainerRole(source);
+        ComponentNodeConfiguration pccc = new ComponentNodeConfiguration(parent, driver, cs, source, output, p1, wirelets);
+        p1.component = pccc;
+        return p1;
+    }
+
+    private static void extensionsPrepareInstantiation(ComponentNodeConfiguration pccc, InstantiationContext ic) {
+        if (pccc.isContainer()) {
+            PackedContainerRole ccc = pccc.container;
+            PackedExtensionConfiguration ee = ccc.extensions.get(ServiceExtension.class);
+            if (ee != null) {
+                PackedInjector di = ServiceExtensionNode.fromExtension(((ServiceExtension) ee.instance())).onInstantiate(ic.wirelets);
+                ic.put(ccc.component, di);
+            }
+        }
+        for (ComponentNodeConfiguration c = pccc.firstChild; c != null; c = c.nextSibling) {
+            if (pccc.artifact == c.artifact) {
+                extensionsPrepareInstantiation(c, ic);
+            }
+        }
+    }
+
+    public static PackedContainerRole of(AssembleOutput output, Object source, Wirelet... wirelets) {
+        ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
+        return PackedContainerRole.create(ContainerComponentDriver.INSTANCE, cs, source, null, output, wirelets);
     }
 
 }

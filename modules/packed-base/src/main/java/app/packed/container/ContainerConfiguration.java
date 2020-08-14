@@ -105,12 +105,16 @@ public interface ContainerConfiguration extends ComponentConfiguration {
     /**
      * Installs a stateless component.
      * <p>
-     * This method uses the {@link ServiceExtension}.
+     * This method uses the {@link ServiceExtension}. Nahh it just uses Dependency injection
+     * <p>
+     * Extensions might still contain state. So Stateless is better under the assumption that extensions are better tested
+     * the user code.
      * 
      * @param implementation
      *            the type of instantiate and use as the component instance
      * @return the configuration of the component
      */
+    // Maybe just stateless
     StatelessConfiguration installStateless(Class<?> implementation);
 
     /**

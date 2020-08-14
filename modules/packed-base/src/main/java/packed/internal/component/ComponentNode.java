@@ -36,7 +36,7 @@ import packed.internal.artifact.InstantiationContext;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 
 /** An runtime representation of a component. */
-public class ComponentNode implements Component {
+public final class ComponentNode implements Component {
 
     /** Any child components this component might have. Is null if we know the component will never have any children. */
     @Nullable

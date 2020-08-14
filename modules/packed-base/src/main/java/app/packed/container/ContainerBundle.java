@@ -180,17 +180,6 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
         configuration().lookup(lookup);
     }
 
-    final void lookup(Lookup lookup, Object lookupController) {
-        // Ideen er at alle lookups skal godkendes at lookup controlleren...
-        // Controller/Manager/LookupAccessManager
-        // For module email, if you are paranoid.
-        // You can specify a LookupAccessManager where every lookup access.
-        // With both the source and the target. For example, service of type XX from Module YY in Bundle BB needs access to FFF
-
-        // Its always an extension, its always a member, And there is probably a field hook of some kind
-        // Packed will access a constructor
-    }
-
     /**
      * Returns an extension of the specified type.
      * <p>
@@ -217,6 +206,7 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
     }
 }
 //
+
 //protected ContainerBundle(ComponentDriver<? extends ContainerConfiguration> driver) {
 //  super(driver);
 //}

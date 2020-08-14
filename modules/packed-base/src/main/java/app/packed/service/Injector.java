@@ -32,7 +32,7 @@ import app.packed.component.CustomConfigurator;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import packed.internal.container.PackedContainer.PackedArtifactContext;
+import packed.internal.artifact.PackedArtifactContext;
 import packed.internal.util.LookupUtil;
 
 /**
