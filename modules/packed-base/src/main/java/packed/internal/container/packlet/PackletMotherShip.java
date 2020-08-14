@@ -18,8 +18,6 @@ package packed.internal.container.packlet;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Function;
 
-import app.packed.container.sandbox.SpecializeContainer;
-
 /**
  *
  */
@@ -61,11 +59,7 @@ public class PackletMotherShip {
     }
 
     public static PackletMotherShip of(Class<?> source) {
-        SpecializeContainer sc = source.getAnnotation(SpecializeContainer.class);
-        if (sc == null) {
-            return DEFAULT;
-        }
-        throw new UnsupportedOperationException("Specialized containers not supported yet");
+        return DEFAULT;
     }
 
 }
