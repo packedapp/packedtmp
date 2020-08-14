@@ -155,7 +155,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
     public final Optional<Class<? extends Extension>> optional; // can go away with Valhalla
 
     /** The default component name of the extension. */
-    final String componentName;
+    public final String componentName;
 
     /**
      * Creates a new extension model from the specified builder.

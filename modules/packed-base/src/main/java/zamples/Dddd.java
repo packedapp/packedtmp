@@ -16,7 +16,10 @@
 package zamples;
 
 import app.packed.artifact.App;
+import app.packed.artifact.ArtifactImage;
 import app.packed.container.BaseBundle;
+import app.packed.container.Extension;
+import app.packed.service.ServiceExtension;
 
 /**
  *
@@ -24,14 +27,25 @@ import app.packed.container.BaseBundle;
 public class Dddd extends BaseBundle {
 
     public static void main(String[] args) {
-        App a = App.of(new Dddd() /* , Wirelet.name("HejHej"), Wirelet.name("HjX") */);
+        ArtifactImage ai = ArtifactImage.of(new Dddd());
+
+        ai.stream().forEach(e -> System.out.println(e.path() + " - " + e.name()));
+
+        System.out.println("------ run time");
+
+        App a = App.of(ai /* , Wirelet.name("HejHej"), Wirelet.name("HjX") */);
 
         a.stream().forEach(e -> System.out.println(e.path() + " " + e.name()));
+
     }
 
     /** {@inheritDoc} */
     @Override
     protected void configure() {
+        use(ServiceExtension.class);
+        use(MyExtension.class);
         setName("dd?");
     }
+
+    static class MyExtension extends Extension {}
 }

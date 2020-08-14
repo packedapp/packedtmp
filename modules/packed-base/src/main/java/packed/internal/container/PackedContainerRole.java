@@ -19,12 +19,10 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.function.BiConsumer;
 
 import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.ArtifactSource;
@@ -43,7 +41,6 @@ import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.InstantiationContext;
 import packed.internal.component.BundleConfiguration;
 import packed.internal.component.ComponentModel;
-import packed.internal.component.ComponentNode;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
@@ -52,9 +49,6 @@ import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.PackedContainer.PackedArtifactContext;
-import packed.internal.hook.applicator.DelayedAccessor;
-import packed.internal.hook.applicator.DelayedAccessor.SidecarFieldDelayerAccessor;
-import packed.internal.hook.applicator.DelayedAccessor.SidecarMethodDelayerAccessor;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.service.buildtime.ServiceExtensionNode;
@@ -245,7 +239,7 @@ public final class PackedContainerRole {
 
         // Will instantiate the whole container hierachy
         PackedContainer pc = new PackedContainer(null, this, pic);
-        methodHandlePassing0(pc, pic);
+        ComponentNodeConfiguration.methodHandlePassing0(component, pc, pic);
         return new PackedArtifactContext(pc);
     }
 
@@ -281,41 +275,6 @@ public final class PackedContainerRole {
         // Actually I think null might be okay, then its standard module-info.java
         // Component X has access to G, but Packed does not have access
         this.lookup = lookup == null ? model : model.withLookup(lookup);
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private void methodHandlePassing0(ComponentNode ac, InstantiationContext ic) {
-        for (ComponentNodeConfiguration cc = component.firstChild; cc != null; cc = cc.nextSibling) {
-            ComponentNode child = ac.children.get(cc.name);
-            if (cc.isContainer()) {
-                cc.container.methodHandlePassing0(child, ic);
-            }
-            if (!cc.del.isEmpty()) {
-                for (DelayedAccessor da : cc.del) {
-                    Object sidecar = ic.get(this.component, da.sidecarType);
-                    Object ig;
-                    if (da instanceof SidecarFieldDelayerAccessor) {
-                        SidecarFieldDelayerAccessor sda = (SidecarFieldDelayerAccessor) da;
-                        MethodHandle mh = sda.pra.mh;
-                        if (!Modifier.isStatic(sda.pra.field.getModifiers())) {
-                            SingletonComponentDriver scd = (SingletonComponentDriver) cc.driver;
-
-                            mh = mh.bindTo(scd.instance);
-                        }
-                        ig = sda.pra.operator.invoke(mh);
-                    } else {
-                        SidecarMethodDelayerAccessor sda = (SidecarMethodDelayerAccessor) da;
-                        MethodHandle mh = sda.pra.mh;
-                        if (!Modifier.isStatic(sda.pra.method.getModifiers())) {
-                            SingletonComponentDriver scd = (SingletonComponentDriver) cc.driver;
-                            mh = mh.bindTo(scd.instance);
-                        }
-                        ig = sda.pra.operator.apply(mh);
-                    }
-                    ((BiConsumer) da.consumer).accept(sidecar, ig);
-                }
-            }
-        }
     }
 
     public Class<?> sourceType() {
@@ -359,6 +318,10 @@ public final class PackedContainerRole {
                 caller.checkConfigurable();
             }
             extensions.put(extensionType, pec = PackedExtensionConfiguration.of(this, extensionType));
+
+            // Add Component
+            PackedComponentDriver<?> pcd = new PackedComponentDriver.ExtensionComponentDriver(ExtensionModel.of(extensionType));
+            new ComponentNodeConfiguration(component, pcd, component.configSite(), null, null, this);
         }
         return pec;
     }

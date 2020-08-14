@@ -28,10 +28,12 @@ import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.ExtensionConfiguration;
 import app.packed.inject.Factory;
 import packed.internal.artifact.InstantiationContext;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ComponentLookup;
+import packed.internal.container.ExtensionModel;
 import packed.internal.container.PackedContainer;
 import packed.internal.container.PackedContainerRole;
 import packed.internal.inject.ConfigSiteInjectOperations;
@@ -48,6 +50,7 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
     public static final int ROLE_HOST = 4;
     public static final int ROLE_SINGLETON = 8;
     public static final int ROLE_STATELESS = 16;
+    public static final int ROLE_EXTENSION = 32;
 
     // Statemanagement... A function is kind of just a singleton...
 
@@ -81,6 +84,8 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
             }
             // TODO think it should be named Artifact type, for example, app, injector, ...
             return "Unknown";
+        } else if (this instanceof ExtensionComponentDriver) {
+            return ((ExtensionComponentDriver) this).descriptor.componentName;
         } else {
             return ((ModelComponentDriver<?>) this).model.defaultPrefix();
         }
@@ -107,6 +112,23 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
 
     public static ContainerComponentDriver container(Object source) {
         return new ContainerComponentDriver();
+    }
+
+    public static class ExtensionComponentDriver extends PackedComponentDriver<ExtensionConfiguration> {
+
+        final ExtensionModel descriptor;
+
+        public ExtensionComponentDriver(ExtensionModel ed) {
+            super(ROLE_EXTENSION);
+            this.descriptor = requireNonNull(ed);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ComponentNode create(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, InstantiationContext ic) {
+            return null;
+        }
+
     }
 
     public static class ContainerComponentDriver extends PackedComponentDriver<ContainerConfiguration> {

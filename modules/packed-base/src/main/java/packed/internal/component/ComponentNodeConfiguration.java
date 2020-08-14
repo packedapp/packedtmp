@@ -19,11 +19,13 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
 import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
@@ -37,6 +39,7 @@ import app.packed.container.Extension;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.InstantiationContext;
 import packed.internal.artifact.PackedAssemblyContext;
+import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletModel;
 import packed.internal.component.wirelet.WireletPack;
@@ -45,6 +48,8 @@ import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.PackedContainerRole;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.hook.applicator.DelayedAccessor;
+import packed.internal.hook.applicator.DelayedAccessor.SidecarFieldDelayerAccessor;
+import packed.internal.hook.applicator.DelayedAccessor.SidecarMethodDelayerAccessor;
 
 /** The build time representation of a component. */
 public final class ComponentNodeConfiguration implements ComponentConfigurationContext {
@@ -391,7 +396,9 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
         for (ComponentNodeConfiguration c = firstChild; c != null; c = c.nextSibling) {
             ComponentNode ac = c.driver.create(parent, c, ic);
-            result.put(ac.name(), ac);
+            if (ac != null) {
+                result.put(ac.name(), ac);
+            }
         }
         return Map.copyOf(result);
     }
@@ -450,6 +457,42 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         }
         return wireletContext == null ? Optional.empty() : Optional.ofNullable((W) wireletContext.getWireletOrPipeline(type));
     }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static void methodHandlePassing0(ComponentNodeConfiguration pcr, ComponentNode ac, InstantiationContext ic) {
+        for (ComponentNodeConfiguration cc = pcr.firstChild; cc != null; cc = cc.nextSibling) {
+            ComponentNode child = ac.children.get(cc.name);
+            if (cc.isContainer()) {
+                methodHandlePassing0(cc, child, ic);
+            }
+            if (!cc.del.isEmpty()) {
+                for (DelayedAccessor da : cc.del) {
+                    Object sidecar = ic.get(pcr, da.sidecarType);
+                    Object ig;
+                    if (da instanceof SidecarFieldDelayerAccessor) {
+                        SidecarFieldDelayerAccessor sda = (SidecarFieldDelayerAccessor) da;
+                        MethodHandle mh = sda.pra.mh;
+                        if (!Modifier.isStatic(sda.pra.field.getModifiers())) {
+                            SingletonComponentDriver scd = (SingletonComponentDriver) cc.driver;
+
+                            mh = mh.bindTo(scd.instance);
+                        }
+                        ig = sda.pra.operator.invoke(mh);
+                    } else {
+                        SidecarMethodDelayerAccessor sda = (SidecarMethodDelayerAccessor) da;
+                        MethodHandle mh = sda.pra.mh;
+                        if (!Modifier.isStatic(sda.pra.method.getModifiers())) {
+                            SingletonComponentDriver scd = (SingletonComponentDriver) cc.driver;
+                            mh = mh.bindTo(scd.instance);
+                        }
+                        ig = sda.pra.operator.apply(mh);
+                    }
+                    ((BiConsumer) da.consumer).accept(sidecar, ig);
+                }
+            }
+        }
+    }
+
 }
 //
 //switch (state.oldState) {

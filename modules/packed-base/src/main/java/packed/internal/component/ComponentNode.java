@@ -56,6 +56,11 @@ public class ComponentNode implements Component {
     /** The pod the component is a part of, components that are strongly connected are all in the same pod. */
     final PackedPod pod;
 
+    /** The index into the pod. */
+    final int podIndex = 0;// Index into... name() return (String) pod[podIndex+model.nameIndex]
+
+    final Object[] data = new Object[1];
+
     /**
      * Creates a new component node.
      * 
@@ -69,7 +74,11 @@ public class ComponentNode implements Component {
         this.model = RuntimeComponentModel.of(configuration);
         this.pod = requireNonNull(configuration.pod.pod());
 
-        // Initialize name, we don't want to override this in Configuration context. We don't want the conf to change...
+        // Initialize name, we don't want to override this in Configuration context. We don't want the conf to change if
+        // image...
+        // Check for any runtime wirelets that have been specified.
+        // This is probably not the right way to do it. Especially with hosts.. Fix it when we get to hosts...
+        // Maybe this can be written in PodInstantiationContext
         if (parent == null) {
             String n = configuration.name;
             ComponentNameWirelet ol = ic.wirelets() == null ? null : ic.wirelets().nameWirelet();
