@@ -62,11 +62,11 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
     // Maybe create nullable if should not add??
     public abstract ComponentNode create(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, InstantiationContext ic);
 
-    public String defaultName(Object ssss) {
+    public String defaultName(Configurator ssss) {
         if (isContainer()) {
             // I think try and move some of this to ComponentNameWirelet
             @Nullable
-            Class<?> source = ssss.getClass();
+            Class<?> source = ssss.type();
             if (Bundle.class.isAssignableFrom(source)) {
                 String nnn = source.getSimpleName();
                 if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
@@ -106,7 +106,7 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
 
     public ComponentNodeConfiguration newContainConf(ComponentNodeConfiguration parent, Bundle<?> bundle, Wirelet... wirelets) {
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(parent.configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
-        return PackedContainerRole.create(this, cs, bundle, parent, null, wirelets).component;
+        return PackedContainerRole.create(this, cs, Configurator.fromBundle(bundle), parent, null, wirelets).component;
     }
 
     public static ContainerComponentDriver container(Object source) {

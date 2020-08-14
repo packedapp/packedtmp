@@ -15,6 +15,10 @@
  */
 package packed.internal.component;
 
+import app.packed.artifact.ArtifactSource;
+import app.packed.component.Bundle;
+import app.packed.component.CustomConfigurator;
+
 /**
  *
  */
@@ -22,7 +26,32 @@ public class Configurator {
 
     public final Object source;
 
-    Configurator(Object source) {
+    private Configurator(Object source) {
         this.source = source;
     }
+
+    public boolean isBundle() {
+        return source instanceof Bundle;
+    }
+
+    public Bundle<?> asBundle() {
+        return (Bundle<?>) source;
+    }
+
+    public Class<?> type() {
+        return source.getClass();
+    }
+
+    public static Configurator fromBundle(Bundle<?> bundle) {
+        return new Configurator(bundle);
+    }
+
+    public static Configurator fromAS(ArtifactSource source) {
+        return new Configurator(source);
+    }
+
+    public static Configurator fromConfigurator(CustomConfigurator<?> consumer) {
+        return new Configurator(consumer);
+    }
+
 }

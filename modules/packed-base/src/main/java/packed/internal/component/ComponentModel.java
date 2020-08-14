@@ -100,7 +100,7 @@ public final class ComponentModel extends Model {
         return s;
     }
 
-    public <T> ComponentNodeConfiguration invokeOnHookOnInstall(Object cs, ComponentNodeConfiguration acc) {
+    public <T> ComponentNodeConfiguration invokeOnHookOnInstall(Configurator cs, ComponentNodeConfiguration acc) {
         try {
             // First invoke any OnHook methods on the container source (bundle)
             if (sourceHook != null) {

@@ -45,6 +45,7 @@ import packed.internal.component.BundleConfiguration;
 import packed.internal.component.ComponentModel;
 import packed.internal.component.ComponentNode;
 import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.Configurator;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
@@ -142,8 +143,8 @@ public final class PackedContainerRole {
      */
     private void configure() {
         // If it is an image it has already been assembled
-        if (component.source instanceof Bundle) {
-            BundleConfiguration.configure((Bundle<?>) component.source, new PackedContainerConfiguration(this));
+        if (component.source.isBundle()) {
+            BundleConfiguration.configure(component.source.asBundle(), new PackedContainerConfiguration(this));
         }
         component.finalState = true;
     }
@@ -256,7 +257,7 @@ public final class PackedContainerRole {
     }
 
     public Class<?> sourceType() {
-        return component.source.getClass();
+        return component.source.type();
     }
 
     @SuppressWarnings("unchecked")
@@ -305,9 +306,10 @@ public final class PackedContainerRole {
     }
 
     public static PackedContainerRole assemble(AssembleOutput output, ArtifactSource source, Wirelet... wirelets) {
-        PackedContainerRole c = of(output, source, wirelets);
+        Configurator cc = Configurator.fromAS(source);
+        PackedContainerRole c = of(output, cc, wirelets);
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
-        c = PackedContainerRole.create(ContainerComponentDriver.INSTANCE, cs, source, null, output, wirelets);
+        c = PackedContainerRole.create(ContainerComponentDriver.INSTANCE, cs, cc, null, output, wirelets);
         c.assemble();
         return c;
     }
@@ -323,7 +325,7 @@ public final class PackedContainerRole {
         return cn;
     }
 
-    public static PackedContainerRole create(PackedComponentDriver<?> driver, ConfigSite cs, Object source, ComponentNodeConfiguration parent,
+    public static PackedContainerRole create(PackedComponentDriver<?> driver, ConfigSite cs, Configurator source, ComponentNodeConfiguration parent,
             AssembleOutput output, Wirelet... wirelets) {
         PackedContainerRole p1 = new PackedContainerRole(source);
         ComponentNodeConfiguration pccc = new ComponentNodeConfiguration(parent, driver, cs, source, output, p1, wirelets);
@@ -347,7 +349,7 @@ public final class PackedContainerRole {
         }
     }
 
-    public static PackedContainerRole of(AssembleOutput output, Object source, Wirelet... wirelets) {
+    public static PackedContainerRole of(AssembleOutput output, Configurator source, Wirelet... wirelets) {
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
         return PackedContainerRole.create(ContainerComponentDriver.INSTANCE, cs, source, null, output, wirelets);
     }

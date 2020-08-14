@@ -29,6 +29,7 @@ import app.packed.container.Extension;
 import app.packed.service.Injector;
 import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.PackedArtifactImage;
+import packed.internal.component.Configurator;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.PackedContainerRole;
@@ -91,7 +92,8 @@ public final class ArtifactDriver<A> {
 
     // Hmmm
     public final <C> A configure(Function<ContainerConfiguration, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
-        PackedContainerRole pcc = PackedContainerRole.of(AssembleOutput.artifact(this), consumer, wirelets);
+        Configurator cc = Configurator.fromConfigurator(consumer);
+        PackedContainerRole pcc = PackedContainerRole.of(AssembleOutput.artifact(this), cc, wirelets);
         PackedContainerConfiguration pc = new PackedContainerConfiguration(pcc);
         C c = factory.apply(pc);
         consumer.configure(c);

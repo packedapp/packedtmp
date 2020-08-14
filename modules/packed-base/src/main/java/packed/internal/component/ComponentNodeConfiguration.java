@@ -87,7 +87,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     public boolean finalState = false;
 
-    public final Object source;
+    public final Configurator source;
 
     /** Any wirelets that was specified by the user when creating this configuration. */
     @Nullable
@@ -131,7 +131,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
      * @param parent
      *            the parent of the component
      */
-    public ComponentNodeConfiguration(ComponentNodeConfiguration parent, PackedComponentDriver<?> driver, ConfigSite configSite, Object source,
+    public ComponentNodeConfiguration(ComponentNodeConfiguration parent, PackedComponentDriver<?> driver, ConfigSite configSite, Configurator source,
             AssembleOutput output, @Nullable PackedContainerRole container, Wirelet... wirelets) {
         this.driver = requireNonNull(driver);
         this.configSite = requireNonNull(configSite);
