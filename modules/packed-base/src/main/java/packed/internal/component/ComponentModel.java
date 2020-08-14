@@ -101,10 +101,11 @@ public final class ComponentModel extends Model {
     }
 
     public <T> ComponentNodeConfiguration invokeOnHookOnInstall(Configurator cs, ComponentNodeConfiguration acc) {
+        // System.out.println(sourceHook + " - " + cs);
         try {
             // First invoke any OnHook methods on the container source (bundle)
             if (sourceHook != null) {
-                sourceHook.invoke(cs, acc);
+                sourceHook.invoke(cs.source, acc);
             }
             // Next, invoke any OnHook methods on relevant extensions.
             for (ExtensionRequestPair he : extensionHooks) {

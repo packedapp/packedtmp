@@ -186,7 +186,7 @@ public final class PackedContainerRole {
         ConfigSite configSite = component.captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(lookup, factory);
 
-        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, null, null, this);
+        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, component.source, null, this);
         model.invokeOnHookOnInstall(component.source, conf);
         return scd.toConf(conf);
     }
@@ -197,8 +197,8 @@ public final class PackedContainerRole {
         ConfigSite configSite = component.captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(lookup, instance);
 
-        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, null, null, this);
-        model.invokeOnHookOnInstall(component.source, conf); // installs any extensions...
+        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, component.source, null, this);
+        model.invokeOnHookOnInstall(component.source, conf); // noops.
         return scd.toConf(conf);
     }
 
@@ -207,7 +207,7 @@ public final class PackedContainerRole {
 
         ConfigSite configSite = component.captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
 
-        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, null, null, this);
+        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, component.source, null, this);
         scd.model.invokeOnHookOnInstall(component.source, conf);
         return scd.toConf(conf);
     }
@@ -300,7 +300,7 @@ public final class PackedContainerRole {
 
             // Add Component
             PackedComponentDriver<?> pcd = new PackedComponentDriver.ExtensionComponentDriver(ExtensionModel.of(extensionType));
-            new ComponentNodeConfiguration(component, pcd, component.configSite(), null, null, this);
+            new ComponentNodeConfiguration(component, pcd, component.configSite(), Configurator.fromExtension(pec), null, this);
         }
         return pec;
     }

@@ -135,7 +135,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             AssembleOutput output, @Nullable PackedContainerRole container, Wirelet... wirelets) {
         this.driver = requireNonNull(driver);
         this.configSite = requireNonNull(configSite);
-        this.source = source;
+        this.source = requireNonNull(source);
         this.wireletContext = WireletPack.from(this, wirelets);
         this.container = container;
         this.parent = parent;

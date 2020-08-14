@@ -18,6 +18,7 @@ package packed.internal.component;
 import app.packed.artifact.ArtifactSource;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
+import packed.internal.container.PackedExtensionConfiguration;
 
 /**
  *
@@ -40,6 +41,10 @@ public class Configurator {
 
     public Class<?> type() {
         return source.getClass();
+    }
+
+    public static Configurator fromExtension(PackedExtensionConfiguration pec) {
+        return new Configurator(pec);
     }
 
     public static Configurator fromBundle(Bundle<?> bundle) {

@@ -53,15 +53,13 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     static final MethodHandle MH_LIFECYCLE_CONTEXT = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "lifecycle", LifecycleContext.class);
 
     /**
-     * A VarHandle used by {@link #of(PackedContainerRole, Class)} to access the field
-     * Extension#configuration.
+     * A VarHandle used by {@link #of(PackedContainerRole, Class)} to access the field Extension#configuration.
      */
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
     /**
-     * The extension instance this configuration wraps, initialized in
-     * {@link #of(PackedContainerRole, Class)}.
+     * The extension instance this configuration wraps, initialized in {@link #of(PackedContainerRole, Class)}.
      */
     @Nullable
     private Extension instance;
@@ -70,7 +68,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     private boolean isConfigured;
 
     /** The sidecar model of the extension. */
-    private final ExtensionModel model;
+    public final ExtensionModel model;
 
     /** The configuration of the container that uses the extension. */
     private final PackedContainerRole pcc; // identical to component.parent...
