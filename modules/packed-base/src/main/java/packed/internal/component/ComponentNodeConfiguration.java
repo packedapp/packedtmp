@@ -161,10 +161,6 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         setName0(null);
     }
 
-    ComponentNodeConfiguration parentOrNull() {
-        return parent;
-    }
-
     /**
      * Returns the container this component is a part of. Or null if this component is the top level container.
      * 
@@ -285,6 +281,11 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         return configSite;
     }
 
+    /**
+     * Returns the driver of this component.
+     * 
+     * @return the driver of this component
+     */
     public PackedComponentDriver<?> driver() {
         return driver;
     }
@@ -303,14 +304,11 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     private void setName0(String newName) {
         String n = newName;
         if (newName == null) {
-            if (driver.isContainer()) {
-                ComponentNodeConfiguration pcc = this;
-                if (pcc.wirelets != null) {
-                    ComponentNameWirelet cwn = pcc.wirelets.nameWirelet();
-                    if (cwn != null) {
-                        nameState = NAME_INITIALIZED_WITH_WIRELET;
-                        n = cwn.name;
-                    }
+            if (wirelets != null) {
+                ComponentNameWirelet cwn = wirelets.nameWirelet();
+                if (cwn != null) {
+                    nameState = NAME_INITIALIZED_WITH_WIRELET;
+                    n = cwn.name;
                 }
             }
         }
