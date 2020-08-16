@@ -84,11 +84,6 @@ public final class PackedContainerRole {
         }
     }
 
-    public void configuratorDone() {
-        advanceTo(LS_3_FINISHED);
-        component.finalState = true;
-    }
-
     public void buildDescriptor(ContainerDescriptor.Builder builder) {
         builder.setBundleDescription(component.getDescription());
         builder.setName(component.getName());

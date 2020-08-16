@@ -39,7 +39,7 @@ import packed.internal.inject.ConfigSiteInjectOperations;
 public final class PackedAssemblyContext implements AssembleContext {
 
     /** The build output. */
-    private final PackedOutput output;
+    final PackedOutput output;
 
     /** The thread that is assembling the system. */
     private final Thread thread = Thread.currentThread();
@@ -50,7 +50,7 @@ public final class PackedAssemblyContext implements AssembleContext {
      * @param output
      *            the output of the build process
      */
-    public PackedAssemblyContext(PackedOutput output) {
+    PackedAssemblyContext(PackedOutput output) {
         this.output = requireNonNull(output);
     }
 
@@ -69,9 +69,6 @@ public final class PackedAssemblyContext implements AssembleContext {
      * 
      * @return the build output
      */
-    public PackedOutput output() {
-        return output;
-    }
 
     public Thread thread() {
         return thread;
@@ -86,7 +83,8 @@ public final class PackedAssemblyContext implements AssembleContext {
         D pc = driver.forBundleConf(pcc.component);
         C c = factory.apply(pc);
         consumer.configure(c);
-        pcc.configuratorDone();
+        pcc.component.finalState = true;
+        pcc.advanceTo(PackedContainerRole.LS_3_FINISHED);
         return pcc.component;
     }
 
@@ -115,4 +113,24 @@ public final class PackedAssemblyContext implements AssembleContext {
         c.advanceTo(PackedContainerRole.LS_3_FINISHED);
         return c.component;
     }
+
+    static class PackedOutput {
+
+        PackedOutput() {
+
+        }
+
+        public static PackedOutput image() {
+            return new PackedOutput();
+        }
+
+        public static PackedOutput descriptor(Class<?> type) {
+            return new PackedOutput();
+        }
+
+        public static PackedOutput artifact(ArtifactDriver<?> driver) {
+            return new PackedOutput();
+        }
+    }
+
 }
