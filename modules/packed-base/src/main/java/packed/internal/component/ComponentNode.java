@@ -43,6 +43,8 @@ public final class ComponentNode implements Component {
     @Nullable
     public final Map<String, ComponentNode> children;
 
+    public final Object[] data = new Object[1];
+
     /** The runtime model of the component. */
     final RuntimeComponentModel model;
 
@@ -58,8 +60,6 @@ public final class ComponentNode implements Component {
 
     /** The index into the pod. */
     final int podIndex = 0;// Index into... name() return (String) pod[podIndex+model.nameIndex]
-
-    public final Object[] data = new Object[1];
 
     /**
      * Creates a new component node.
@@ -120,34 +120,34 @@ public final class ComponentNode implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public final Collection<Component> children() {
+    public Collection<Component> children() {
         Map<String, ComponentNode> c = children;
         if (c == null) {
             return Collections.emptySet();
         }
-        // Right now it is actually immutable
+        // Right now children are already immutable
         return Collections.unmodifiableCollection(c.values());
     }
 
     /** {@inheritDoc} */
     @Override
-    public final ConfigSite configSite() {
+    public ConfigSite configSite() {
         return model.configSite;
     }
 
     /** {@inheritDoc} */
     @Override
-    public final int depth() {
+    public int depth() {
         return model.depth;
     }
 
     /** {@inheritDoc} */
     @Override
-    public final Optional<String> description() {
+    public Optional<String> description() {
         return Optional.ofNullable(model.description);
     }
 
-    public final Component findComponent(CharSequence path) {
+    public Component findComponent(CharSequence path) {
         return findComponent(path.toString());
     }
 
@@ -205,35 +205,35 @@ public final class ComponentNode implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public final String name() {
+    public String name() {
         return name;
     }
 
     /** {@inheritDoc} */
     @Override
-    public final Optional<Component> parent() {
+    public Optional<Component> parent() {
         return Optional.ofNullable(parent);
     }
 
     /** {@inheritDoc} */
     @Override
-    public final ComponentPath path() {
+    public ComponentPath path() {
         return PackedComponentPath.of(this);
     }
 
     /** {@inheritDoc} */
     @Override
-    public final ComponentRelation relationTo(Component other) {
+    public ComponentRelation relationTo(Component other) {
         return PackedComponentRelation.find(this, other);
     }
 
     /** {@inheritDoc} */
     @Override
-    public final ComponentStream stream(ComponentStream.Option... options) {
+    public ComponentStream stream(ComponentStream.Option... options) {
         return new PackedComponentStream(stream0(this, true, PackedComponentStreamOption.of(options)));
     }
 
-    private final Stream<Component> stream0(ComponentNode origin, boolean isRoot, PackedComponentStreamOption option) {
+    private Stream<Component> stream0(ComponentNode origin, boolean isRoot, PackedComponentStreamOption option) {
         // Also fix in ComponentConfigurationToComponentAdaptor when changing stuff here
         Map<String, ComponentNode> c = children;
         if (c != null && !c.isEmpty()) {
@@ -250,7 +250,7 @@ public final class ComponentNode implements Component {
     /**
      * @param path
      */
-    public final Component useComponent(CharSequence path) {
+    public Component useComponent(CharSequence path) {
         Component c = findComponent(path);
         if (c == null) {
             // Maybe try an match with some fuzzy logic, if children is a resonable size)
