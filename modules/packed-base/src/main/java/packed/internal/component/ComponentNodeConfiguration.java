@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -44,7 +43,6 @@ import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
-import packed.internal.artifact.InstantiationContext;
 import packed.internal.artifact.PackedAssemblyContext;
 import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
@@ -428,27 +426,6 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         }
 
         setName0(name);
-    }
-
-    Map<String, ComponentNode> initializeChildren(ComponentNode parent, InstantiationContext ic) {
-        if (firstChild == null) {
-            return null;
-        }
-        // Hmm, we should probably used LinkedHashMap to retain order.
-        // It just uses so much memory...
-        // If we allow a wirelet, we should note that people
-        // should never rely on ordering.. Especially if it is inherited.
-
-        // Maybe ordered is the default...
-        HashMap<String, ComponentNode> result = new HashMap<>(children.size());
-
-        for (ComponentNodeConfiguration c = firstChild; c != null; c = c.nextSibling) {
-            ComponentNode ac = c.driver.create(parent, c, ic);
-            if (ac != null) {
-                result.put(ac.name(), ac);
-            }
-        }
-        return Map.copyOf(result);
     }
 
     @Override

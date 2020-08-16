@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -93,7 +94,22 @@ public final class ComponentNode implements Component {
         }
 
         // Last but least, initialize all children...
-        this.children = configuration.initializeChildren(this, ic);
+
+        Map<String, ComponentNode> c = null;
+        if (configuration.firstChild != null) {
+            // Maybe ordered is the default...
+            HashMap<String, ComponentNode> result = new HashMap<>(configuration.children.size());
+
+            for (ComponentNodeConfiguration cc = configuration.firstChild; cc != null; cc = cc.nextSibling) {
+                ComponentNode ac = cc.driver.create(parent, cc, ic);
+                if (ac != null) {
+                    result.put(ac.name(), ac);
+                }
+            }
+
+            c = Map.copyOf(result);
+        }
+        this.children = c;
     }
 
     /** {@inheritDoc} */
