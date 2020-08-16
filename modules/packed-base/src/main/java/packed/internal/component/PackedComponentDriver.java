@@ -160,7 +160,7 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
             if (container != null && container.extensions != null) {
                 PackedExtensionConfiguration ee = container.extensions.get(ServiceExtension.class);
                 if (ee != null) {
-                    i = ServiceExtensionNode.fromExtension(((ServiceExtension) ee.instance())).onInstantiate(ic.wirelets);
+                    i = ServiceExtensionNode.fromExtension(((ServiceExtension) ee.instance())).onInstantiate(ic.wirelets());
                 }
 
             }
@@ -169,9 +169,6 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
             }
 
             cn.data[0] = i;
-
-            // Injector i = ic.get(configuration, PackedInjector.class);
-//            cn.data[0] = i;
             return cn;
         }
 

@@ -15,7 +15,19 @@
  */
 package packed.internal.artifact;
 
+import static java.util.Objects.requireNonNull;
+
+import java.util.concurrent.CompletableFuture;
+
 import app.packed.artifact.ArtifactContext;
+import app.packed.base.Key;
+import app.packed.component.Component;
+import app.packed.component.ComponentPath;
+import app.packed.component.ComponentStream;
+import app.packed.component.ComponentStream.Option;
+import app.packed.config.ConfigSite;
+import app.packed.lifecycleold.StopOption;
+import app.packed.service.Injector;
 import packed.internal.component.ComponentNode;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletPack;
@@ -42,7 +54,7 @@ import packed.internal.component.wirelet.WireletPack;
 
 public final class InstantiationContext {
 
-    public final WireletPack wirelets;
+    private final WireletPack wirelets;
 
     private InstantiationContext(WireletPack wirelets) {
         this.wirelets = wirelets;
@@ -63,6 +75,71 @@ public final class InstantiationContext {
         // Will instantiate the whole container hierachy
         ComponentNode node = root.driver().create(null, root, ic);
         return new PackedArtifactContext(node);
+    }
+
+    /** Used to expose a container as an ArtifactContext. */
+    public static final class PackedArtifactContext implements ArtifactContext {
+
+        /** The component node we are wrapping. */
+        private final ComponentNode component;
+
+        private PackedArtifactContext(ComponentNode container) {
+            this.component = requireNonNull(container);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ConfigSite configSite() {
+            return component.configSite();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Injector injector() {
+            return (Injector) component.data[0];
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public String name() {
+            return component.name();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ComponentPath path() {
+            return component.path();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void stop(StopOption... options) {
+
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public <T> CompletableFuture<T> stopAsync(T result, StopOption... options) {
+            return null;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ComponentStream stream(Option... options) {
+            return component.stream(options);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public <T> T use(Key<T> key) {
+            return injector().use(key);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Component useComponent(CharSequence path) {
+            return component.useComponent(path);
+        }
     }
 
 }

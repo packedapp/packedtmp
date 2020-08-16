@@ -24,7 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.TreeSet;
 
-import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.SingletonConfiguration;
@@ -100,7 +99,7 @@ public final class PackedContainerRole {
         if (containerState == LS_1_LINKING && newState > LS_1_LINKING) {
             for (ComponentNodeConfiguration cc = component.firstChild; cc != null; cc = cc.nextSibling) {
                 if (cc.driver().isContainer()) {
-                    cc.container.assembleExtensions();
+                    cc.container.advanceTo(LS_3_FINISHED);
                 }
             }
             for (PackedExtensionConfiguration pec : extensionsOrdered) {
@@ -110,14 +109,9 @@ public final class PackedContainerRole {
         }
     }
 
-    public PackedContainerRole assemble(@Nullable Bundle<?> bundle) {
-        configure(bundle);
-        assembleExtensions();
-        return this;
-    }
-
-    private void assembleExtensions() {
+    public void configuratorDone() {
         advanceTo(LS_3_FINISHED);
+        component.finalState = true;
     }
 
     public void buildDescriptor(ContainerDescriptor.Builder builder) {
@@ -127,17 +121,6 @@ public final class PackedContainerRole {
             e.buildDescriptor(builder);
         }
         builder.extensions.addAll(extensions.keySet());
-    }
-
-    /**
-     * Configures the configuration.
-     */
-    private void configure(@Nullable Bundle<?> bundle) {
-        // If it is an image it has already been assembled
-        if (bundle != null) {
-            BundleConfiguration.configure(bundle, new PackedContainerConfiguration(this));
-        }
-        component.finalState = true;
     }
 
     public Set<Class<? extends Extension>> extensions() {
@@ -288,12 +271,14 @@ public final class PackedContainerRole {
         return pec;
     }
 
-    public static ComponentNodeConfiguration assemble(PackedAccemblyContext output, ArtifactSource source, Wirelet... wirelets) {
-        PackedRealm cc = PackedRealm.fromAS(source);
-        PackedContainerRole c = of(output, cc, wirelets);
+    public static ComponentNodeConfiguration assemble(PackedAccemblyContext output, Bundle<?> bundle, Wirelet... wirelets) {
+        PackedRealm cc = PackedRealm.fromAS(bundle);
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
-        c = PackedContainerRole.create(ContainerComponentDriver.INSTANCE, cs, cc, null, output, wirelets);
-        c.assemble(source instanceof Bundle ? ((Bundle<?>) source) : null);
+        PackedContainerRole c = PackedContainerRole.create(ContainerComponentDriver.INSTANCE, cs, cc, null, output, wirelets);
+
+        BundleConfiguration.configure(bundle, new PackedContainerConfiguration(c));
+        c.component.finalState = true;
+        c.advanceTo(LS_3_FINISHED);
         return c.component;
     }
 

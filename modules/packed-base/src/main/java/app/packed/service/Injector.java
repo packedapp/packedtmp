@@ -32,7 +32,7 @@ import app.packed.component.CustomConfigurator;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import packed.internal.artifact.PackedArtifactContext;
+import packed.internal.artifact.InstantiationContext;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -355,6 +355,7 @@ public interface Injector {
 // // if (wir)
 // throw new UnsupportedOperationException();
 // }
+
 /** An artifact driver for creating {@link App} instances. */
 final class InjectorArtifactHelper {
 
@@ -363,6 +364,6 @@ final class InjectorArtifactHelper {
     static final ArtifactDriver<Injector> DRIVER = ArtifactDriver.of(MethodHandles.lookup(), Injector.class, CONV);
 
     static Injector convert(ArtifactContext container) {
-        return ((PackedArtifactContext) container).injector();
+        return ((InstantiationContext.PackedArtifactContext) container).injector();
     }
 }
