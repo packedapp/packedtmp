@@ -44,7 +44,7 @@ public final class InstantiationContext {
 
     public final WireletPack wirelets;
 
-    public InstantiationContext(WireletPack wirelets) {
+    private InstantiationContext(WireletPack wirelets) {
         this.wirelets = wirelets;
     }
 
@@ -58,12 +58,11 @@ public final class InstantiationContext {
         return wirelets;
     }
 
-    public static ArtifactContext instantiateArtifact(ComponentNodeConfiguration configuration, WireletPack wc) {
-        InstantiationContext pic = new InstantiationContext(wc);
-
+    public static ArtifactContext instantiateArtifact(ComponentNodeConfiguration root, WireletPack wc) {
+        InstantiationContext ic = new InstantiationContext(wc);
         // Will instantiate the whole container hierachy
-        ComponentNode pc = configuration.driver().create(null, configuration, pic);
-        return new PackedArtifactContext(pc);
+        ComponentNode node = root.driver().create(null, root, ic);
+        return new PackedArtifactContext(node);
     }
 
 }
