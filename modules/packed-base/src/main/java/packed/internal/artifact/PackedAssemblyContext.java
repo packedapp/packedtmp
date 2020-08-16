@@ -71,12 +71,6 @@ public final class PackedAssemblyContext implements AssembleContext {
         return output;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Class<?> sourceType() {
-        return topContainerConfiguration.sourceType();
-    }
-
     public Thread thread() {
         return thread;
     }

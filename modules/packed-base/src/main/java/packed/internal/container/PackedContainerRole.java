@@ -222,10 +222,6 @@ public final class PackedContainerRole {
         this.lookup = lookup == null ? model : model.withLookup(lookup);
     }
 
-    public Class<?> sourceType() {
-        return component.realm.type();
-    }
-
     @SuppressWarnings("unchecked")
     public <T extends Extension> T use(Class<T> extensionType) {
         return (T) useExtension(extensionType, null).instance();
@@ -282,6 +278,7 @@ public final class PackedContainerRole {
         return c.component;
     }
 
+    // From Driver,
     public static PackedContainerRole create(PackedComponentDriver<?> driver, ConfigSite cs, PackedRealm source, ComponentNodeConfiguration parent,
             PackedAccemblyContext output, Wirelet... wirelets) {
         PackedContainerRole p1 = new PackedContainerRole(source);
@@ -293,11 +290,6 @@ public final class PackedContainerRole {
     @Nullable
     public static PackedContainerRole findOrNull(ComponentNodeConfiguration cnc) {
         return cnc.containerOld;
-    }
-
-    public static PackedContainerRole of(PackedAccemblyContext output, PackedRealm source, Wirelet... wirelets) {
-        ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
-        return PackedContainerRole.create(ContainerComponentDriver.INSTANCE, cs, source, null, output, wirelets);
     }
 }
 //

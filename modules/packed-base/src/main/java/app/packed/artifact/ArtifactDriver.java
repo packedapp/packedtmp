@@ -23,20 +23,20 @@ import java.lang.invoke.MethodType;
 import java.util.function.Function;
 
 import app.packed.component.Bundle;
+import app.packed.component.ComponentDriver;
 import app.packed.component.CustomConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.service.Injector;
 import packed.internal.artifact.InstantiationContext;
 import packed.internal.artifact.PackedAccemblyContext;
 import packed.internal.artifact.PackedArtifactImage;
 import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 import packed.internal.component.PackedRealm;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.PackedContainerRole;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.util.ThrowableUtil;
@@ -97,13 +97,13 @@ public final class ArtifactDriver<A> {
     }
 
     // Hmmm
-    public final <C> A configure(Function<ContainerConfiguration, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
+    public final <C, D> A configure(ComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
         PackedRealm cc = PackedRealm.fromConfigurator(consumer);
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
         PackedContainerRole pcc = PackedContainerRole.create(ContainerComponentDriver.INSTANCE, cs, cc, null, PackedAccemblyContext.artifact(this), wirelets);
 
-        PackedContainerConfiguration pc = new PackedContainerConfiguration(pcc);
-
+        PackedComponentDriver<D> d = (PackedComponentDriver<D>) driver;
+        D pc = d.forBundleConf(pcc.component);
         C c = factory.apply(pc);
         consumer.configure(c);
         pcc.configuratorDone();
@@ -111,7 +111,6 @@ public final class ArtifactDriver<A> {
         ArtifactContext pac = InstantiationContext.instantiateArtifact(pcc.component, pcc.component.wirelets);
         return newArtifact(pac);
     }
-    // Ja den er faktisk fin nok syntes jeg...
 
     private ArtifactContext create(ArtifactSource source, Wirelet... wirelets) {
         if (source instanceof PackedArtifactImage) {

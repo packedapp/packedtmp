@@ -51,13 +51,6 @@ public interface AssembleContext {
     boolean isInstantiating();
 
     /**
-     * Returns the source of the top level container.
-     * 
-     * @return the source of the top level container
-     */
-    Class<?> sourceType();
-
-    /**
      * The action is mainly used.
      * 
      * For example, for image to clean up ressources that are not after stuff has been resolved...

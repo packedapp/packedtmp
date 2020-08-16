@@ -32,6 +32,7 @@ import app.packed.component.CustomConfigurator;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
+import app.packed.container.ContainerConfiguration;
 import packed.internal.artifact.InstantiationContext;
 import packed.internal.util.LookupUtil;
 
@@ -329,7 +330,7 @@ public interface Injector {
     // interface ArtifactConfigurator() {}
     // configure()
     static Injector configure(CustomConfigurator<? super InjectorAssembler> configurator, Wirelet... wirelets) {
-        return driver().configure(c -> new InjectorAssembler(c), configurator, wirelets);
+        return driver().configure(ContainerConfiguration.driver(), c -> new InjectorAssembler(c), configurator, wirelets);
     }
 
     /**
