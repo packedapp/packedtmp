@@ -36,7 +36,6 @@ import app.packed.container.ContainerDescriptor;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.Factory;
-import app.packed.service.ServiceExtension;
 import packed.internal.artifact.InstantiationContext;
 import packed.internal.artifact.PackedAccemblyContext;
 import packed.internal.artifact.PackedArtifactContext;
@@ -53,8 +52,6 @@ import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.factory.FactoryHandle;
-import packed.internal.service.buildtime.ServiceExtensionNode;
-import packed.internal.service.runtime.PackedInjector;
 
 /** The default container context. */
 public final class PackedContainerRole {
@@ -76,7 +73,7 @@ public final class PackedContainerRole {
     int containerState;
 
     /** All used extensions, in order of registration. */
-    private final LinkedHashMap<Class<? extends Extension>, PackedExtensionConfiguration> extensions = new LinkedHashMap<>();
+    public final LinkedHashMap<Class<? extends Extension>, PackedExtensionConfiguration> extensions = new LinkedHashMap<>();
 
     private TreeSet<PackedExtensionConfiguration> extensionsOrdered;
 
@@ -213,7 +210,6 @@ public final class PackedContainerRole {
 
     public ArtifactContext instantiateArtifact(WireletPack wc) {
         InstantiationContext pic = new InstantiationContext(wc);
-        extensionsPrepareInstantiation(this.component, pic);
 
         // Will instantiate the whole container hierachy
         ComponentNode pc = component.driver().create(null, component, pic);
@@ -320,22 +316,6 @@ public final class PackedContainerRole {
         ComponentNodeConfiguration pccc = new ComponentNodeConfiguration(parent, driver, cs, source, output, p1, wirelets);
         p1.component = pccc;
         return p1;
-    }
-
-    private static void extensionsPrepareInstantiation(ComponentNodeConfiguration pccc, InstantiationContext ic) {
-        if (pccc.driver().isContainer()) {
-            PackedContainerRole ccc = pccc.container;
-            PackedExtensionConfiguration ee = ccc.extensions.get(ServiceExtension.class);
-            if (ee != null) {
-                PackedInjector di = ServiceExtensionNode.fromExtension(((ServiceExtension) ee.instance())).onInstantiate(ic.wirelets);
-                ic.put(ccc.component, di);
-            }
-        }
-        for (ComponentNodeConfiguration c = pccc.firstChild; c != null; c = c.nextSibling) {
-            if (pccc.artifact == c.artifact) {
-                extensionsPrepareInstantiation(c, ic);
-            }
-        }
     }
 
     @Nullable

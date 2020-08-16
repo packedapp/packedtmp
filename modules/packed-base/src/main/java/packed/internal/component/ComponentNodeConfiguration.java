@@ -460,44 +460,6 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         return wireletContext == null ? Optional.empty() : Optional.ofNullable((W) wireletContext.getWireletOrPipeline(type));
     }
 
-//    @SuppressWarnings({ "unchecked", "rawtypes" })
-//    public static void methodHandlePassing0(ComponentNodeConfiguration pcr, ComponentNode ac, InstantiationContext ic) {
-//        for (ComponentNodeConfiguration cc = pcr.firstChild; cc != null; cc = cc.nextSibling) {
-//            if (!cc.del.isEmpty()) {
-//                new Exception().printStackTrace();
-//            }
-//            ComponentNode child = ac.children.get(cc.name);
-//            if (cc.driver().isContainer()) {
-//                methodHandlePassing0(cc, child, ic);
-//            }
-//            if (!cc.del.isEmpty()) {
-//
-//                for (DelayedAccessor da : cc.del) {
-//                    Object sidecar = ic.get(pcr, da.sidecarType);
-//                    Object ig;
-//                    if (da instanceof SidecarFieldDelayerAccessor) {
-//                        SidecarFieldDelayerAccessor sda = (SidecarFieldDelayerAccessor) da;
-//                        MethodHandle mh = sda.pra.mh;
-//                        if (!Modifier.isStatic(sda.pra.field.getModifiers())) {
-//                            SingletonComponentDriver scd = (SingletonComponentDriver) cc.driver;
-//                            mh = mh.bindTo(scd.instance);
-//                        }
-//                        ig = sda.pra.operator.invoke(mh);
-//                    } else {
-//                        SidecarMethodDelayerAccessor sda = (SidecarMethodDelayerAccessor) da;
-//                        MethodHandle mh = sda.pra.mh;
-//                        if (!Modifier.isStatic(sda.pra.method.getModifiers())) {
-//                            SingletonComponentDriver scd = (SingletonComponentDriver) cc.driver;
-//                            mh = mh.bindTo(scd.instance);
-//                        }
-//                        ig = sda.pra.operator.apply(mh);
-//                    }
-//                    ((BiConsumer) da.consumer).accept(sidecar, ig);
-//                }
-//            }
-//        }
-//    }
-
     public Component adaptToComponent() {
         return new ComponentAdaptor(this);
     }
@@ -696,4 +658,41 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 //  // Dvs ourContainerSource
 //  return Extension.class.isAssignableFrom(c)
 //          || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && ArtifactSource.class.isAssignableFrom(c));
+//}
+//@SuppressWarnings({ "unchecked", "rawtypes" })
+//public static void methodHandlePassing0(ComponentNodeConfiguration pcr, ComponentNode ac, InstantiationContext ic) {
+//  for (ComponentNodeConfiguration cc = pcr.firstChild; cc != null; cc = cc.nextSibling) {
+//      if (!cc.del.isEmpty()) {
+//          new Exception().printStackTrace();
+//      }
+//      ComponentNode child = ac.children.get(cc.name);
+//      if (cc.driver().isContainer()) {
+//          methodHandlePassing0(cc, child, ic);
+//      }
+//      if (!cc.del.isEmpty()) {
+//
+//          for (DelayedAccessor da : cc.del) {
+//              Object sidecar = ic.get(pcr, da.sidecarType);
+//              Object ig;
+//              if (da instanceof SidecarFieldDelayerAccessor) {
+//                  SidecarFieldDelayerAccessor sda = (SidecarFieldDelayerAccessor) da;
+//                  MethodHandle mh = sda.pra.mh;
+//                  if (!Modifier.isStatic(sda.pra.field.getModifiers())) {
+//                      SingletonComponentDriver scd = (SingletonComponentDriver) cc.driver;
+//                      mh = mh.bindTo(scd.instance);
+//                  }
+//                  ig = sda.pra.operator.invoke(mh);
+//              } else {
+//                  SidecarMethodDelayerAccessor sda = (SidecarMethodDelayerAccessor) da;
+//                  MethodHandle mh = sda.pra.mh;
+//                  if (!Modifier.isStatic(sda.pra.method.getModifiers())) {
+//                      SingletonComponentDriver scd = (SingletonComponentDriver) cc.driver;
+//                      mh = mh.bindTo(scd.instance);
+//                  }
+//                  ig = sda.pra.operator.apply(mh);
+//              }
+//              ((BiConsumer) da.consumer).accept(sidecar, ig);
+//          }
+//      }
+//  }
 //}

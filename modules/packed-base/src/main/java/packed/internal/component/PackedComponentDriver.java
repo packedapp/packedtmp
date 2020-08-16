@@ -32,15 +32,18 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.inject.Factory;
 import app.packed.service.Injector;
+import app.packed.service.ServiceExtension;
 import packed.internal.artifact.InstantiationContext;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ComponentLookup;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.PackedContainerRole;
+import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
+import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.runtime.PackedInjector;
 
 /**
@@ -150,11 +153,25 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         @Override
         public ComponentNode create(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, InstantiationContext ic) {
             ComponentNode cn = new ComponentNode(parent, configuration, ic);
-            Injector i = ic.get(configuration, PackedInjector.class);
+
+            PackedContainerRole container = configuration.container;// PackedContainerRole.findOrNull(configuration);
+            Injector i = null;
+
+            if (container != null && container.extensions != null) {
+                PackedExtensionConfiguration ee = container.extensions.get(ServiceExtension.class);
+                if (ee != null) {
+                    i = ServiceExtensionNode.fromExtension(((ServiceExtension) ee.instance())).onInstantiate(ic.wirelets);
+                }
+
+            }
             if (i == null) {
                 i = new PackedInjector(configuration.configSite(), configuration.getDescription(), new LinkedHashMap<>());
             }
+
             cn.data[0] = i;
+
+            // Injector i = ic.get(configuration, PackedInjector.class);
+//            cn.data[0] = i;
             return cn;
         }
 

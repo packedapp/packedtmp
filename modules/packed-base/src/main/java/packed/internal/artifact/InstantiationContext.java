@@ -15,11 +15,8 @@
  */
 package packed.internal.artifact;
 
-import static java.util.Objects.requireNonNull;
-
-import java.util.IdentityHashMap;
-
-import app.packed.base.Nullable;
+import app.packed.artifact.ArtifactContext;
+import packed.internal.component.ComponentNode;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletPack;
 
@@ -45,37 +42,10 @@ import packed.internal.component.wirelet.WireletPack;
 
 public final class InstantiationContext {
 
-    /** All context objects. */
-    private final IdentityHashMap<ComponentNodeConfiguration, IdentityHashMap<Class<?>, Object>> map = new IdentityHashMap<>();
-
     public final WireletPack wirelets;
 
     public InstantiationContext(WireletPack wirelets) {
         this.wirelets = wirelets;
-    }
-
-    /**
-     * Returns the type of artifact the build process produces.
-     * 
-     * @return the type of artifact the build process produces
-     */
-    public Class<?> artifactType() {
-        throw new UnsupportedOperationException();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Nullable
-    public <T> T get(ComponentNodeConfiguration configuration, Class<T> type) {
-        requireNonNull(configuration, "configuration is null");
-        requireNonNull(type, "type is null");
-        var e = map.get(configuration);
-        return e == null ? null : (T) e.get(type);
-    }
-
-    public void put(ComponentNodeConfiguration configuration, Object obj) {
-        requireNonNull(configuration, "configuration is null");
-        requireNonNull(obj, "obj is null");
-        map.computeIfAbsent(configuration, e -> new IdentityHashMap<>()).put(obj.getClass(), obj);
     }
 
     /**
@@ -88,16 +58,12 @@ public final class InstantiationContext {
         return wirelets;
     }
 
-//    public ArtifactContext instantiateArtifact(ComponentNodeConfiguration component, WireletPack wc) {
-//        InstantiationContext pic = new InstantiationContext(wc);
-//        extensionsPrepareInstantiation(component, pic);
-//
-//        // Will instantiate the whole container hierachy
-//        // component.driver.newNodeConfiguration(parent, bundle, wirelets)
-//        ComponentNode pc = component.driver().create(null, component, pic);
-//        ComponentNodeConfiguration.methodHandlePassing0(component, pc, pic);
-//        return new PackedArtifactContext(pc);
-//    }
-    // link(SomeBundle.class, LifecycleWirelets.startBeforeAnythingElse());
-    // link(SomeBundle.class, LifecycleWirelets.start(SomeGroup)); //all in same group will be started
+    public static ArtifactContext instantiateArtifact(ComponentNodeConfiguration configuration, WireletPack wc) {
+        InstantiationContext pic = new InstantiationContext(wc);
+
+        // Will instantiate the whole container hierachy
+        ComponentNode pc = configuration.driver().create(null, configuration, pic);
+        return new PackedArtifactContext(pc);
+    }
+
 }

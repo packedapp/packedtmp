@@ -36,46 +36,47 @@ import packed.internal.component.ComponentNode;
 /** Used to expose a container as an ArtifactContext. */
 public final class PackedArtifactContext implements ArtifactContext {
 
-    private final ComponentNode container;
+    /** The component node we are wrapping. */
+    private final ComponentNode component;
 
     public PackedArtifactContext(ComponentNode container) {
-        this.container = requireNonNull(container);
+        this.component = requireNonNull(container);
     }
 
     public Collection<Component> children() {
-        return container.children();
+        return component.children();
     }
 
     /** {@inheritDoc} */
     @Override
     public ConfigSite configSite() {
-        return container.configSite();
+        return component.configSite();
     }
 
     public int depth() {
-        return container.depth();
+        return component.depth();
     }
 
     /** {@inheritDoc} */
     @Override
     public Injector injector() {
-        return (Injector) container.data[0];
+        return (Injector) component.data[0];
     }
 
     /** {@inheritDoc} */
     @Override
     public String name() {
-        return container.name();
+        return component.name();
     }
 
     public Optional<Component> parent() {
-        return container.parent();
+        return component.parent();
     }
 
     /** {@inheritDoc} */
     @Override
     public ComponentPath path() {
-        return container.path();
+        return component.path();
     }
 
     /** {@inheritDoc} */
@@ -93,7 +94,7 @@ public final class PackedArtifactContext implements ArtifactContext {
     /** {@inheritDoc} */
     @Override
     public ComponentStream stream(Option... options) {
-        return container.stream(options);
+        return component.stream(options);
     }
 
     /** {@inheritDoc} */
@@ -105,10 +106,10 @@ public final class PackedArtifactContext implements ArtifactContext {
     /** {@inheritDoc} */
     @Override
     public Component useComponent(CharSequence path) {
-        return container.useComponent(path);
+        return component.useComponent(path);
     }
 
     public ComponentRelation relationTo(Component other) {
-        return container.relationTo(other);
+        return component.relationTo(other);
     }
 }
