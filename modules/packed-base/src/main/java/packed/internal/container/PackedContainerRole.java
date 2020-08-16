@@ -288,13 +288,13 @@ public final class PackedContainerRole {
         return pec;
     }
 
-    public static PackedContainerRole assemble(PackedAccemblyContext output, ArtifactSource source, Wirelet... wirelets) {
+    public static ComponentNodeConfiguration assemble(PackedAccemblyContext output, ArtifactSource source, Wirelet... wirelets) {
         PackedRealm cc = PackedRealm.fromAS(source);
         PackedContainerRole c = of(output, cc, wirelets);
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
         c = PackedContainerRole.create(ContainerComponentDriver.INSTANCE, cs, cc, null, output, wirelets);
         c.assemble(source instanceof Bundle ? ((Bundle<?>) source) : null);
-        return c;
+        return c.component;
     }
 
     public static PackedContainerRole create(PackedComponentDriver<?> driver, ConfigSite cs, PackedRealm source, ComponentNodeConfiguration parent,

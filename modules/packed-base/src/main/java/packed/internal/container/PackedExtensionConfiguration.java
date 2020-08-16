@@ -360,8 +360,8 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
             model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_0_INSTANTIATION, e, pec);
 
             // 3. Finally initialize any pipeline (??swap step 2 and 3??)
-            if (pcc.component.wireletContext != null) {
-                pcc.component.wireletContext.extensionInitialized(pec);
+            if (pcc.component.wirelets != null) {
+                pcc.component.wirelets.extensionInitialized(pec);
             }
         } finally {
             pcc.activeExtension = existing;

@@ -30,8 +30,8 @@ import app.packed.service.Injector;
 import packed.internal.artifact.InstantiationContext;
 import packed.internal.artifact.PackedAccemblyContext;
 import packed.internal.artifact.PackedArtifactImage;
+import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedRealm;
-import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.PackedContainerRole;
 import packed.internal.util.ThrowableUtil;
@@ -99,7 +99,7 @@ public final class ArtifactDriver<A> {
         C c = factory.apply(pc);
         consumer.configure(c);
         pcc.assemble(null);
-        ArtifactContext pac = InstantiationContext.instantiateArtifact(pcc.component, pcc.component.wireletContext);
+        ArtifactContext pac = InstantiationContext.instantiateArtifact(pcc.component, pcc.component.wirelets);
         return newArtifact(pac);
     }
     // Ja den er faktisk fin nok syntes jeg...
@@ -109,9 +109,8 @@ public final class ArtifactDriver<A> {
             return ((PackedArtifactImage) source).newContext(wirelets);
         }
 
-        PackedContainerRole pcc = PackedContainerRole.assemble(PackedAccemblyContext.artifact(this), source, wirelets);
-        WireletPack wc = pcc.component.wireletContext;
-        return InstantiationContext.instantiateArtifact(pcc.component, wc);
+        ComponentNodeConfiguration pcc = PackedContainerRole.assemble(PackedAccemblyContext.artifact(this), source, wirelets);
+        return InstantiationContext.instantiateArtifact(pcc, pcc.wirelets);
     }
 
     public Object execute(ArtifactSource source, Wirelet... wirelets) {

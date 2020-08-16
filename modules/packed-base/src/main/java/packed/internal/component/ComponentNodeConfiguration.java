@@ -89,7 +89,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     /** Any wirelets that was specified by the user when creating this configuration. */
     @Nullable
-    public final WireletPack wireletContext;
+    public final WireletPack wirelets;
 
     /** The name of the component. */
     public String name;
@@ -134,7 +134,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         this.driver = requireNonNull(driver);
         this.configSite = requireNonNull(configSite);
         this.realm = requireNonNull(source);
-        this.wireletContext = WireletPack.from(this, wirelets);
+        this.wirelets = WireletPack.from(this, wirelets);
         this.container = container;
         this.parent = parent;
 
@@ -263,8 +263,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         if (newName == null) {
             if (driver.isContainer()) {
                 ComponentNodeConfiguration pcc = this;
-                if (pcc.wireletContext != null) {
-                    ComponentNameWirelet cwn = pcc.wireletContext.nameWirelet();
+                if (pcc.wirelets != null) {
+                    ComponentNameWirelet cwn = pcc.wirelets.nameWirelet();
                     if (cwn != null) {
                         nameState = NAME_INITIALIZED_WITH_WIRELET;
                         n = cwn.name;
@@ -429,14 +429,14 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         WireletModel wm = WireletModel.of(type);
         boolean inherited = wm.inherited();
         Object wop = null;
-        if (wireletContext != null) {
-            wop = wireletContext.getWireletOrPipeline(type);
+        if (wirelets != null) {
+            wop = wirelets.getWireletOrPipeline(type);
         }
         if (wop == null && inherited) {
             ComponentNodeConfiguration acc = parent;
             while (acc != null) {
-                if (acc.wireletContext != null) {
-                    wop = acc.wireletContext.getWireletOrPipeline(type);
+                if (acc.wirelets != null) {
+                    wop = acc.wirelets.getWireletOrPipeline(type);
                     if (wop != null) {
                         break;
                     }
@@ -457,7 +457,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         if (!wm.requireAssemblyTime) {
             throw new IllegalStateException("Wirelet of type " + type + " does not have assemblytime = true");
         }
-        return wireletContext == null ? Optional.empty() : Optional.ofNullable((W) wireletContext.getWireletOrPipeline(type));
+        return wirelets == null ? Optional.empty() : Optional.ofNullable((W) wirelets.getWireletOrPipeline(type));
     }
 
     public Component adaptToComponent() {

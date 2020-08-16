@@ -43,7 +43,7 @@ public final class PackedArtifactImage implements ArtifactImage {
      * {@link #with(Wirelet...)}.
      */
     @Nullable
-    private final WireletPack wc;
+    private final WireletPack wirelets;
 
     /** The type of bundle used to create this image. */
     private final Class<? extends Bundle<?>> bundleType;
@@ -53,17 +53,17 @@ public final class PackedArtifactImage implements ArtifactImage {
      * 
      * @param pcc
      *            the container configuration to wrap
-     * @param wc
+     * @param wirelets
      *            any wirelets specified when creating the image or later via {@link #with(Wirelet...)}
      */
-    public PackedArtifactImage(ComponentNodeConfiguration pcc, Class<? extends Bundle<?>> bundleType, @Nullable WireletPack wc) {
+    public PackedArtifactImage(ComponentNodeConfiguration pcc, Class<? extends Bundle<?>> bundleType, @Nullable WireletPack wirelets) {
         this.pcc = requireNonNull(pcc);
-        this.wc = wc;
+        this.wirelets = wirelets;
         this.bundleType = requireNonNull(bundleType);
     }
 
     public ArtifactContext newContext(Wirelet... wirelets) {
-        return InstantiationContext.instantiateArtifact(pcc, WireletPack.fromImage(pcc.container, wc, wirelets));
+        return InstantiationContext.instantiateArtifact(pcc, WireletPack.fromImage(pcc.container, this.wirelets, wirelets));
     }
 
     /** {@inheritDoc} */
@@ -93,7 +93,7 @@ public final class PackedArtifactImage implements ArtifactImage {
         // Only if a name has been explicitly set?
         // Or can we include "FooBar?"
         // Return Optional<String>????
-        return wc == null ? pcc.getName() : wc.name(pcc);
+        return wirelets == null ? pcc.getName() : wirelets.name(pcc);
     }
 
     /** {@inheritDoc} */
@@ -112,7 +112,7 @@ public final class PackedArtifactImage implements ArtifactImage {
     @Override
     public PackedArtifactImage with(Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
-        return wirelets.length == 0 ? this : new PackedArtifactImage(pcc, bundleType, WireletPack.fromImage(pcc.container, wc, wirelets));
+        return wirelets.length == 0 ? this : new PackedArtifactImage(pcc, bundleType, WireletPack.fromImage(pcc.container, this.wirelets, wirelets));
     }
 
     /**
@@ -131,49 +131,47 @@ public final class PackedArtifactImage implements ArtifactImage {
             return ((PackedArtifactImage) source).with(wirelets);
         }
         Bundle<?> bundle = (Bundle<?>) source;
-        PackedContainerRole pcc = PackedContainerRole.assemble(PackedAccemblyContext.image(), bundle, wirelets);
-        return new PackedArtifactImage(pcc.component, (Class<? extends Bundle<?>>) bundle.getClass(), pcc.component.wireletContext);
+        ComponentNodeConfiguration conf = PackedContainerRole.assemble(PackedAccemblyContext.image(), bundle, wirelets);
+        return new PackedArtifactImage(conf, (Class<? extends Bundle<?>>) bundle.getClass(), conf.wirelets);
     }
 }
-
 // De kunne jo strength taget vaere metoder paa selve imaged og ikke wirelets.
 // Vi kan jo sagtens internt lave det om til wirelets...
 // Der er bare ingen grund til at lave det public...
-final class XArtifactImageWirelets {
 
-    // retainStackTracesForEachInstantiation...
-    /// Her ligger vi jo lige 1000 ns oveni hvis vi vil se hvor den er instantieret.
+// retainStackTracesForEachInstantiation...
+/// Her ligger vi jo lige 1000 ns oveni hvis vi vil se hvor den er instantieret.
 
-    // Maximum number of instantiations times...
-    // Could, for example, be one for native.
-    // The only think we want to instantiate the application once... And then forget everything
+// Maximum number of instantiations times...
+// Could, for example, be one for native.
+// The only think we want to instantiate the application once... And then forget everything
 
-    /**
-     * @return lazy
-     */
-    static ArtifactImage lazy() {
-        throw new UnsupportedOperationException();
-    }
+//    /**
+//     * @return lazy
+//     */
+//    static ArtifactImage lazy() {
+//        throw new UnsupportedOperationException();
+//    }
 
-    // repeatable/singleUse
+// repeatable/singleUse
 
-    // Lifecycle... Men det afhaender jo ogsaa af repeatable/single use....
-    // Man kan jo ikke initializisere en repeatable....
+// Lifecycle... Men det afhaender jo ogsaa af repeatable/single use....
+// Man kan jo ikke initializisere en repeatable....
 
-    // lazy/non-lazy
+// lazy/non-lazy
 
-    // Creates an image that will be initialized the first time it is executed...
-    // F.eks. name will initialize it...
-    // I think we will apply wirelets lazily as well.
+// Creates an image that will be initialized the first time it is executed...
+// F.eks. name will initialize it...
+// I think we will apply wirelets lazily as well.
 
-    //// GraalVM <- Calculere alle lazy images??? Det taenker jeg...
-    // Vi skal double down med det lazy paa runtime, og validation paa test time
-    // Evt. et build plugin der validere det????
+//// GraalVM <- Calculere alle lazy images??? Det taenker jeg...
+// Vi skal double down med det lazy paa runtime, og validation paa test time
+// Evt. et build plugin der validere det????
 
-    // Ideen er at vi kun skal lave en container en gang. F.eks. NativeBoot
-    static Wirelet oneShot() {
-        throw new UnsupportedOperationException();
-    }
-
-    enum Mode {}
-}
+// Ideen er at vi kun skal lave en container en gang. F.eks. NativeBoot
+//    static Wirelet oneShot() {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    enum Mode {}
+//}
