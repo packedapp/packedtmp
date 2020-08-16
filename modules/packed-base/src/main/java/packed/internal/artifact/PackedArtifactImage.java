@@ -61,23 +61,13 @@ public final class PackedArtifactImage implements ArtifactImage {
     }
 
     public ArtifactContext newContext(Wirelet... wirelets) {
-        WireletPack wp = WireletPack.fromImage(pcc, wirelets(), wirelets);
-        return InstantiationContext.instantiateArtifact(pcc.component, wp);
+        return InstantiationContext.instantiateArtifact(pcc.component, WireletPack.fromImage(pcc, wc, wirelets));
     }
 
     /** {@inheritDoc} */
     @Override
     public ConfigSite configSite() {
         return pcc.component.configSite();
-    }
-
-    /**
-     * Returns the configuration of the root container.
-     * 
-     * @return the configuration of the root container
-     */
-    public PackedContainerRole configuration() {
-        return pcc;
     }
 
     /** {@inheritDoc} */
@@ -116,10 +106,6 @@ public final class PackedArtifactImage implements ArtifactImage {
         return pcc.component.adaptToComponent().stream(options);
     }
 
-    public WireletPack wirelets() {
-        return wc;
-    }
-
     /** {@inheritDoc} */
     @Override
     public PackedArtifactImage with(Wirelet... wirelets) {
@@ -140,13 +126,11 @@ public final class PackedArtifactImage implements ArtifactImage {
     @SuppressWarnings("unchecked")
     public static PackedArtifactImage lazyCreate(ArtifactSource source, Wirelet... wirelets) {
         if (source instanceof PackedArtifactImage) {
-            PackedArtifactImage pai = (PackedArtifactImage) source;
-            return pai.with(wirelets);
-        } else {
-            Bundle<?> bundle = (Bundle<?>) source;
-            PackedContainerRole pcc = PackedContainerRole.assemble(PackedAccemblyContext.image(), bundle, wirelets);
-            return new PackedArtifactImage(pcc, (Class<? extends Bundle<?>>) bundle.getClass(), pcc.component.wireletContext);
+            return ((PackedArtifactImage) source).with(wirelets);
         }
+        Bundle<?> bundle = (Bundle<?>) source;
+        PackedContainerRole pcc = PackedContainerRole.assemble(PackedAccemblyContext.image(), bundle, wirelets);
+        return new PackedArtifactImage(pcc, (Class<? extends Bundle<?>>) bundle.getClass(), pcc.component.wireletContext);
     }
 }
 

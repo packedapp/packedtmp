@@ -106,9 +106,9 @@ public final class ArtifactDriver<A> {
 
     private ArtifactContext create(ArtifactSource source, Wirelet... wirelets) {
         if (source instanceof PackedArtifactImage) {
-            PackedArtifactImage pai = (PackedArtifactImage) source;
-            return pai.newContext(wirelets);
+            return ((PackedArtifactImage) source).newContext(wirelets);
         }
+
         PackedContainerRole pcc = PackedContainerRole.assemble(PackedAccemblyContext.artifact(this), source, wirelets);
         WireletPack wc = pcc.component.wireletContext;
         return InstantiationContext.instantiateArtifact(pcc.component, wc);
