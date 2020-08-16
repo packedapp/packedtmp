@@ -251,23 +251,23 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     public <T> SingletonConfiguration<T> installInstance(T instance) {
         requireNonNull(instance, "instance is null");
-        ComponentModel model = realm().componentModelOf(instance.getClass());
+        ComponentModel model = realm.componentModelOf(instance.getClass());
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(realm, instance);
 
-        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(this, scd, configSite, realm(), null, container);
-        model.invokeOnHookOnInstall(realm(), conf); // noops.
+        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(this, scd, configSite, realm, null, container);
+        model.invokeOnHookOnInstall(realm, conf); // noops.
         return scd.toConf(conf);
     }
 
     public <T> SingletonConfiguration<T> install(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
-        ComponentModel model = realm().componentModelOf(factory.rawType());
+        ComponentModel model = realm.componentModelOf(factory.rawType());
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(realm, factory);
 
-        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(this, scd, configSite, realm(), null, container);
-        model.invokeOnHookOnInstall(realm(), conf);
+        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(this, scd, configSite, realm, null, container);
+        model.invokeOnHookOnInstall(realm, conf);
         return scd.toConf(conf);
     }
 
@@ -276,8 +276,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
 
-        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(this, scd, configSite, realm(), null, container);
-        scd.model.invokeOnHookOnInstall(realm(), conf);
+        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(this, scd, configSite, realm, null, container);
+        scd.model.invokeOnHookOnInstall(realm, conf);
         return scd.toConf(conf);
     }
 
