@@ -34,6 +34,7 @@ import packed.internal.artifact.InstantiationContext;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ComponentLookup;
 import packed.internal.container.ExtensionModel;
+import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.PackedContainerRole;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.factory.BaseFactory;
@@ -62,7 +63,7 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
     // Maybe create nullable if should not add??
     public abstract ComponentNode create(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, InstantiationContext ic);
 
-    public String defaultName(Configurator ssss) {
+    public String defaultName(PackedRealm ssss) {
         if (isContainer()) {
             // I think try and move some of this to ComponentNameWirelet
             @Nullable
@@ -104,13 +105,17 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         return hasRole(ROLE_CONTAINER);
     }
 
-    public ComponentNodeConfiguration newContainConf(ComponentNodeConfiguration parent, Bundle<?> bundle, Wirelet... wirelets) {
+    public ComponentNodeConfiguration newNodeConfiguration(ComponentNodeConfiguration parent, Bundle<?> bundle, Wirelet... wirelets) {
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(parent.configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
-        return PackedContainerRole.create(this, cs, Configurator.fromBundle(bundle), parent, null, wirelets).component;
+        return PackedContainerRole.create(this, cs, PackedRealm.fromBundle(bundle), parent, null, wirelets).component;
     }
 
     public static ContainerComponentDriver container(Object source) {
         return new ContainerComponentDriver();
+    }
+
+    public C forBundleConf(ComponentNodeConfiguration cnc) {
+        throw new UnsupportedOperationException();
     }
 
     public static class ExtensionComponentDriver extends PackedComponentDriver<ExtensionConfiguration> {
@@ -142,6 +147,11 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         @Override
         public ComponentNode create(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, InstantiationContext ic) {
             return PackedContainerRole.create(parent, configuration.container, ic);
+        }
+
+        @Override
+        public ContainerConfiguration forBundleConf(ComponentNodeConfiguration cnc) {
+            return new PackedContainerConfiguration(cnc.container);
         }
     }
 

@@ -203,16 +203,16 @@ public final class WireletPack {
     }
 
     @Nullable
-    public static WireletPack fromImage(PackedContainerRole pcc, @Nullable WireletPack existing, Wirelet... wirelets) {
-        return create(pcc, existing, wirelets);
+    public static WireletPack from(ComponentNodeConfiguration node, Wirelet... wirelets) {
+        if (node.driver().isContainer()) {
+            return fromLink(node.container, wirelets);
+        }
+        return null;
     }
 
     @Nullable
-    public static WireletPack from(ComponentNodeConfiguration pcc, Wirelet... wirelets) {
-        if (pcc.isContainer()) {
-            return fromLink(pcc.container, wirelets);
-        }
-        return null;
+    public static WireletPack fromImage(PackedContainerRole pcc, @Nullable WireletPack existing, Wirelet... wirelets) {
+        return create(pcc, existing, wirelets);
     }
 
     @Nullable

@@ -31,6 +31,7 @@ public interface ComponentDriver<C> {
     default C newConfiguration() {
         throw new UnsupportedOperationException();
     }
+
 }
 // PrototypeContext
 

@@ -38,18 +38,18 @@ import app.packed.container.InternalExtensionException;
 import app.packed.inject.Factory;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
-import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.InstantiationContext;
+import packed.internal.artifact.PackedAccemblyContext;
 import packed.internal.artifact.PackedArtifactContext;
 import packed.internal.component.BundleConfiguration;
 import packed.internal.component.ComponentModel;
 import packed.internal.component.ComponentNode;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.Configurator;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
+import packed.internal.component.PackedRealm;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.inject.ConfigSiteInjectOperations;
@@ -108,7 +108,7 @@ public final class PackedContainerRole {
 
         if (realState == LS_1_LINKING && newState > LS_1_LINKING) {
             for (ComponentNodeConfiguration cc = component.firstChild; cc != null; cc = cc.nextSibling) {
-                if (cc.isContainer()) {
+                if (cc.driver().isContainer()) {
                     cc.container.assembleExtensions();
                 }
             }
@@ -119,8 +119,8 @@ public final class PackedContainerRole {
         }
     }
 
-    public PackedContainerRole assemble() {
-        configure();
+    public PackedContainerRole assemble(@Nullable Bundle<?> bundle) {
+        configure(bundle);
         assembleExtensions();
         return this;
     }
@@ -141,10 +141,10 @@ public final class PackedContainerRole {
     /**
      * Configures the configuration.
      */
-    private void configure() {
+    private void configure(@Nullable Bundle<?> bundle) {
         // If it is an image it has already been assembled
-        if (component.source.isBundle()) {
-            BundleConfiguration.configure(component.source.asBundle(), new PackedContainerConfiguration(this));
+        if (bundle != null) {
+            BundleConfiguration.configure(bundle, new PackedContainerConfiguration(this));
         }
         component.finalState = true;
     }
@@ -186,8 +186,8 @@ public final class PackedContainerRole {
         ConfigSite configSite = component.captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(lookup, factory);
 
-        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, component.source, null, this);
-        model.invokeOnHookOnInstall(component.source, conf);
+        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, component.realm, null, this);
+        model.invokeOnHookOnInstall(component.realm, conf);
         return scd.toConf(conf);
     }
 
@@ -197,8 +197,8 @@ public final class PackedContainerRole {
         ConfigSite configSite = component.captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(lookup, instance);
 
-        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, component.source, null, this);
-        model.invokeOnHookOnInstall(component.source, conf); // noops.
+        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, component.realm, null, this);
+        model.invokeOnHookOnInstall(component.realm, conf); // noops.
         return scd.toConf(conf);
     }
 
@@ -207,8 +207,8 @@ public final class PackedContainerRole {
 
         ConfigSite configSite = component.captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
 
-        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, component.source, null, this);
-        scd.model.invokeOnHookOnInstall(component.source, conf);
+        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, component.realm, null, this);
+        scd.model.invokeOnHookOnInstall(component.realm, conf);
         return scd.toConf(conf);
     }
 
@@ -228,11 +228,9 @@ public final class PackedContainerRole {
     // Maybe in the future LinkedBundle<- (LinkableContainerSource)
     public void link(Bundle<?> bundle, Wirelet... wirelets) {
         requireNonNull(bundle, "bundle is null");
-        PackedComponentDriver<?> d = BundleConfiguration.driver(bundle);
+        PackedComponentDriver<?> driver = BundleConfiguration.driver(bundle);
 
-        // extract driveren fra bundle...
-        // lav nyt barn med den...
-        ComponentNodeConfiguration child = d.newContainConf(component, bundle, wirelets);
+        // check if cnotainer
 
         // IDK do we want to progress to next stage just in case...
         if (realState == LS_0_MAINL) {
@@ -243,10 +241,10 @@ public final class PackedContainerRole {
             throw new IllegalStateException("Was Assembled");
         }
 
-        // finalize name of this container
-        if (child.isContainer()) {
-            child.container.configure();
-        }
+        ComponentNodeConfiguration child = driver.newNodeConfiguration(component, bundle, wirelets);
+
+        BundleConfiguration.configure(bundle, driver.forBundleConf(child));
+        child.finalState = true;
     }
 
     public void lookup(@Nullable Lookup lookup) {
@@ -257,7 +255,7 @@ public final class PackedContainerRole {
     }
 
     public Class<?> sourceType() {
-        return component.source.type();
+        return component.realm.type();
     }
 
     @SuppressWarnings("unchecked")
@@ -300,17 +298,17 @@ public final class PackedContainerRole {
 
             // Add Component
             PackedComponentDriver<?> pcd = new PackedComponentDriver.ExtensionComponentDriver(ExtensionModel.of(extensionType));
-            new ComponentNodeConfiguration(component, pcd, component.configSite(), Configurator.fromExtension(pec), null, this);
+            new ComponentNodeConfiguration(component, pcd, component.configSite(), pec.realm(), null, this);
         }
         return pec;
     }
 
-    public static PackedContainerRole assemble(AssembleOutput output, ArtifactSource source, Wirelet... wirelets) {
-        Configurator cc = Configurator.fromAS(source);
+    public static PackedContainerRole assemble(PackedAccemblyContext output, ArtifactSource source, Wirelet... wirelets) {
+        PackedRealm cc = PackedRealm.fromAS(source);
         PackedContainerRole c = of(output, cc, wirelets);
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
         c = PackedContainerRole.create(ContainerComponentDriver.INSTANCE, cs, cc, null, output, wirelets);
-        c.assemble();
+        c.assemble(source instanceof Bundle ? ((Bundle<?>) source) : null);
         return c;
     }
 
@@ -325,8 +323,8 @@ public final class PackedContainerRole {
         return cn;
     }
 
-    public static PackedContainerRole create(PackedComponentDriver<?> driver, ConfigSite cs, Configurator source, ComponentNodeConfiguration parent,
-            AssembleOutput output, Wirelet... wirelets) {
+    public static PackedContainerRole create(PackedComponentDriver<?> driver, ConfigSite cs, PackedRealm source, ComponentNodeConfiguration parent,
+            PackedAccemblyContext output, Wirelet... wirelets) {
         PackedContainerRole p1 = new PackedContainerRole(source);
         ComponentNodeConfiguration pccc = new ComponentNodeConfiguration(parent, driver, cs, source, output, p1, wirelets);
         p1.component = pccc;
@@ -334,7 +332,7 @@ public final class PackedContainerRole {
     }
 
     private static void extensionsPrepareInstantiation(ComponentNodeConfiguration pccc, InstantiationContext ic) {
-        if (pccc.isContainer()) {
+        if (pccc.driver().isContainer()) {
             PackedContainerRole ccc = pccc.container;
             PackedExtensionConfiguration ee = ccc.extensions.get(ServiceExtension.class);
             if (ee != null) {
@@ -349,9 +347,14 @@ public final class PackedContainerRole {
         }
     }
 
-    public static PackedContainerRole of(AssembleOutput output, Configurator source, Wirelet... wirelets) {
+    public static PackedContainerRole of(PackedAccemblyContext output, PackedRealm source, Wirelet... wirelets) {
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
         return PackedContainerRole.create(ContainerComponentDriver.INSTANCE, cs, source, null, output, wirelets);
+    }
+
+    @Nullable
+    public static PackedContainerRole findOrNull(ComponentNodeConfiguration cnc) {
+        return cnc.containerOld;
     }
 
 }

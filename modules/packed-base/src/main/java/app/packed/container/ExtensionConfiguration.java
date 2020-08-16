@@ -30,7 +30,7 @@ import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension.Subtension;
 import app.packed.inject.Factory;
-import packed.internal.component.ComponentAdaptor;
+import packed.internal.component.ComponentNodeConfiguration.ComponentAdaptor;
 import packed.internal.container.PackedContainerRole;
 import packed.internal.container.PackedExtensionConfiguration;
 
@@ -185,16 +185,10 @@ public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
         return pec == null ? Optional.empty() : Optional.of((T) pec.instance());
     }
 
-    // @SuppressWarnings("deprecation")
     @Nullable
     private static PackedExtensionConfiguration pa(MethodHandles.Lookup lookup, Component component) {
         requireNonNull(lookup, "lookup is null");
         requireNonNull(lookup, "component is null");
-
-        // This method can only be used at buildtime
-        if (!(component instanceof ComponentAdaptor)) {
-            throw new IllegalStateException("This method cannot be called on at runtime of a container");
-        }
 
         // lookup.lookupClass() must point to the extension that should be extracted
         if (lookup.lookupClass() == Extension.class || !Extension.class.isAssignableFrom(lookup.lookupClass())) {
@@ -210,6 +204,10 @@ public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
                     + ", try creating a new lookup object using MethodHandle.privateLookupIn(lookup, " + extensionType.getSimpleName() + ".class)");
         }
 
+        // This method can only be used at buildtime
+        if (!(component instanceof ComponentAdaptor)) {
+            throw new IllegalStateException("This method cannot be called at runtime of a container");
+        }
         ComponentAdaptor cc = (ComponentAdaptor) component;
         PackedContainerRole pcc = cc.conf.actualContainer();
         return pcc.getExtensionContext(extensionType);

@@ -25,7 +25,7 @@ import packed.internal.errorhandling.ErrorMessage;
 public final class PackedAssemblyContext implements AssembleContext {
 
     /** The build output. */
-    private final AssembleOutput output;
+    private final PackedAccemblyContext output;
 
     /** The thread that is assembling the system. */
     private final Thread thread = Thread.currentThread();
@@ -41,7 +41,7 @@ public final class PackedAssemblyContext implements AssembleContext {
      * @param output
      *            the output of the build process
      */
-    public PackedAssemblyContext(PackedContainerRole topContainerConfiguration, AssembleOutput output) {
+    public PackedAssemblyContext(PackedContainerRole topContainerConfiguration, PackedAccemblyContext output) {
         this.topContainerConfiguration = requireNonNull(topContainerConfiguration);
         this.output = requireNonNull(output);
     }
@@ -67,7 +67,7 @@ public final class PackedAssemblyContext implements AssembleContext {
      * 
      * @return the build output
      */
-    public AssembleOutput output() {
+    public PackedAccemblyContext output() {
         return output;
     }
 

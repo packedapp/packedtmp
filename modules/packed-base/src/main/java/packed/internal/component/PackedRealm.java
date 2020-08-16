@@ -23,11 +23,11 @@ import packed.internal.container.PackedExtensionConfiguration;
 /**
  *
  */
-public class Configurator {
+public final class PackedRealm {
 
-    public final Object source;
+    private final Object source;
 
-    private Configurator(Object source) {
+    private PackedRealm(Object source) {
         this.source = source;
     }
 
@@ -43,20 +43,27 @@ public class Configurator {
         return source.getClass();
     }
 
-    public static Configurator fromExtension(PackedExtensionConfiguration pec) {
-        return new Configurator(pec);
+    /**
+     * Creates a new realm for an extension.
+     * 
+     * @param pec
+     *            the extension
+     * @return a new realm
+     */
+    public static PackedRealm fromExtension(PackedExtensionConfiguration pec) {
+        return new PackedRealm(pec);
     }
 
-    public static Configurator fromBundle(Bundle<?> bundle) {
-        return new Configurator(bundle);
+    public static PackedRealm fromBundle(Bundle<?> bundle) {
+        return new PackedRealm(bundle);
     }
 
-    public static Configurator fromAS(ArtifactSource source) {
-        return new Configurator(source);
+    public static PackedRealm fromAS(ArtifactSource source) {
+        return new PackedRealm(source);
     }
 
-    public static Configurator fromConfigurator(CustomConfigurator<?> consumer) {
-        return new Configurator(consumer);
+    public static PackedRealm fromConfigurator(CustomConfigurator<?> consumer) {
+        return new PackedRealm(consumer);
     }
 
 }

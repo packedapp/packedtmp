@@ -27,9 +27,9 @@ import app.packed.component.Wirelet;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.service.Injector;
-import packed.internal.artifact.AssembleOutput;
+import packed.internal.artifact.PackedAccemblyContext;
 import packed.internal.artifact.PackedArtifactImage;
-import packed.internal.component.Configurator;
+import packed.internal.component.PackedRealm;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.PackedContainerRole;
@@ -92,12 +92,12 @@ public final class ArtifactDriver<A> {
 
     // Hmmm
     public final <C> A configure(Function<ContainerConfiguration, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
-        Configurator cc = Configurator.fromConfigurator(consumer);
-        PackedContainerRole pcc = PackedContainerRole.of(AssembleOutput.artifact(this), cc, wirelets);
+        PackedRealm cc = PackedRealm.fromConfigurator(consumer);
+        PackedContainerRole pcc = PackedContainerRole.of(PackedAccemblyContext.artifact(this), cc, wirelets);
         PackedContainerConfiguration pc = new PackedContainerConfiguration(pcc);
         C c = factory.apply(pc);
         consumer.configure(c);
-        pcc.assemble();
+        pcc.assemble(null);
         ArtifactContext pac = pcc.instantiateArtifact(pcc.component.wireletContext);
         return newArtifact(pac);
     }
@@ -112,7 +112,7 @@ public final class ArtifactDriver<A> {
             pcc = pai.configuration();
             wc = WireletPack.fromImage(pcc, pai.wirelets(), wirelets);
         } else { // assert Bundle?
-            pcc = PackedContainerRole.assemble(AssembleOutput.artifact(this), source, wirelets);
+            pcc = PackedContainerRole.assemble(PackedAccemblyContext.artifact(this), source, wirelets);
             wc = pcc.component.wireletContext;
         }
         return pcc.instantiateArtifact(wc);

@@ -38,6 +38,7 @@ import app.packed.service.ServiceMode;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.wirelet.WireletList;
+import packed.internal.container.PackedContainerRole;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.inject.factory.BaseFactory;
@@ -101,7 +102,8 @@ public final class ServiceProvidingManager {
         } else {
             BaseFactory<?> factory = driver.factory;
             List<ServiceDependency> dependencies = factory.factory.dependencies;
-            parentNode = new ComponentFactoryBuildEntry<>(node, cc, ServiceMode.SINGLETON, driver.fromFactory(cc.container()), dependencies);
+            parentNode = new ComponentFactoryBuildEntry<>(node, cc, ServiceMode.SINGLETON, driver.fromFactory(PackedContainerRole.findOrNull(cc)),
+                    dependencies);
         }
 
         // If any of the @Provide methods are instance members the parent node needs special treatment.
@@ -137,7 +139,7 @@ public final class ServiceProvidingManager {
         BuildEntry<?> c = componentConfigurationCache.get(cc);// remove??
         if (c == null) {
             List<ServiceDependency> dependencies = scd.factory.factory.dependencies;
-            c = new ComponentFactoryBuildEntry<>(node, cc, ServiceMode.SINGLETON, scd.fromFactory(cc.container()), (List) dependencies);
+            c = new ComponentFactoryBuildEntry<>(node, cc, ServiceMode.SINGLETON, scd.fromFactory(PackedContainerRole.findOrNull(cc)), (List) dependencies);
         }
         c.as((Key) scd.factory.key());
         providingEntries.add(c);

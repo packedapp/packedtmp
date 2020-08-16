@@ -40,9 +40,9 @@ import packed.internal.component.wirelet.WireletPack;
  */
 // ArtifactInstantiationContext or ContainerInstantionationContext
 // Per Artifact or PerContainer???
-
 // Per container, er sgu for besvaergeligt med de der get stuff...
 // Altsaa med mindre vi har behov for at access dem fra andet sted fra
+
 public final class InstantiationContext {
 
     /** All context objects. */
@@ -91,17 +91,3 @@ public final class InstantiationContext {
     // link(SomeBundle.class, LifecycleWirelets.startBeforeAnythingElse());
     // link(SomeBundle.class, LifecycleWirelets.start(SomeGroup)); //all in same group will be started
 }
-// @SuppressWarnings("unchecked")
-// public <T> T use(ContainerConfiguration configuration, Class<T> type) {
-// requireNonNull(configuration, "configuration is null");
-// requireNonNull(type, "type is null");
-// var e = map.get(configuration);
-// if (e == null) {
-// throw new IllegalArgumentException();
-// }
-// Object o = e.get(type);
-// if (o == null) {
-// throw new IllegalStateException();
-// }
-// return (T) o;
-// }

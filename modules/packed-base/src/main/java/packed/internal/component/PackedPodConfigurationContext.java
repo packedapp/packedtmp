@@ -18,15 +18,20 @@ package packed.internal.component;
 /**
  *
  */
-public final class PackedPodConfigurationContext {
-
-    // int componentIndex...
+// Taenker 
+final class PackedPodConfigurationContext {
 
     int index;
 
-    private PackedPod pod = new PackedPod();
+    /** The pod used at runtime. */
+    private PackedPod pod;
 
     PackedPod pod() {
-        return pod;
+        // Lazy create the runtime pod.
+        PackedPod p = pod;
+        if (p == null) {
+            p = pod = new PackedPod();
+        }
+        return p;
     }
 }

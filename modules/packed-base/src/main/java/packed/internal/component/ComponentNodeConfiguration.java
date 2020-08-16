@@ -22,22 +22,29 @@ import java.lang.StackWalker.StackFrame;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.stream.Stream;
 
 import app.packed.artifact.ArtifactSource;
+import app.packed.attribute.AttributeSet;
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
+import app.packed.component.Component;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentPath;
+import app.packed.component.ComponentRelation;
+import app.packed.component.ComponentStream;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
-import packed.internal.artifact.AssembleOutput;
 import packed.internal.artifact.InstantiationContext;
+import packed.internal.artifact.PackedAccemblyContext;
 import packed.internal.artifact.PackedAssemblyContext;
 import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
@@ -65,7 +72,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     /** Any container this component belongs to, or null for a root container. */
     @Nullable
-    private final PackedContainerRole containerOld;
+    public final PackedContainerRole containerOld;
 
     /** Ugly stuff. */
     public ArrayList<DelayedAccessor> del = new ArrayList<>();
@@ -87,7 +94,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     public boolean finalState = false;
 
-    public final Configurator source;
+    public final PackedRealm realm;
 
     /** Any wirelets that was specified by the user when creating this configuration. */
     @Nullable
@@ -131,11 +138,11 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
      * @param parent
      *            the parent of the component
      */
-    public ComponentNodeConfiguration(ComponentNodeConfiguration parent, PackedComponentDriver<?> driver, ConfigSite configSite, Configurator source,
-            AssembleOutput output, @Nullable PackedContainerRole container, Wirelet... wirelets) {
+    public ComponentNodeConfiguration(ComponentNodeConfiguration parent, PackedComponentDriver<?> driver, ConfigSite configSite, PackedRealm source,
+            PackedAccemblyContext output, @Nullable PackedContainerRole container, Wirelet... wirelets) {
         this.driver = requireNonNull(driver);
         this.configSite = requireNonNull(configSite);
-        this.source = requireNonNull(source);
+        this.realm = requireNonNull(source);
         this.wireletContext = WireletPack.from(this, wirelets);
         this.container = container;
         this.parent = parent;
@@ -157,12 +164,22 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         setName0(null);
     }
 
-    public boolean isContainer() {
-        return driver.isContainer();
+    ComponentNodeConfiguration parentOrNull() {
+        return parent;
+    }
+
+    /**
+     * Returns the container this component is a part of. Or null if this component is the top level container.
+     * 
+     * @return the container this component is a part of
+     */
+    @Nullable
+    public PackedContainerRole container() {
+        return containerOld;
     }
 
     public PackedContainerRole actualContainer() {
-        if (this.isContainer()) {
+        if (driver().isContainer()) {
             return this.container;
         }
         return containerOld;
@@ -217,8 +234,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
                 || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && ArtifactSource.class.isAssignableFrom(c));
     }
 
-    public boolean hasParent() {
-        return parent != null;
+    public int depth() {
+        return depth;
     }
 
     /** {@inheritDoc} */
@@ -235,14 +252,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         return configSite;
     }
 
-    /**
-     * Returns the container this component is a part of. Or null if this component is the top level container.
-     * 
-     * @return the container this component is a part of
-     */
-    @Nullable
-    public PackedContainerRole container() {
-        return containerOld;
+    public PackedComponentDriver<?> driver() {
+        return driver;
     }
 
     public Optional<Class<? extends Extension>> extension() {
@@ -274,7 +285,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         boolean isFree = false;
 
         if (n == null) {
-            n = driver.defaultName(source);
+            n = driver.defaultName(realm);
             isFree = true;
         } else if (n.endsWith("?")) {
             n = n.substring(0, n.length() - 1);
@@ -462,7 +473,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     public static void methodHandlePassing0(ComponentNodeConfiguration pcr, ComponentNode ac, InstantiationContext ic) {
         for (ComponentNodeConfiguration cc = pcr.firstChild; cc != null; cc = cc.nextSibling) {
             ComponentNode child = ac.children.get(cc.name);
-            if (cc.isContainer()) {
+            if (cc.driver().isContainer()) {
                 methodHandlePassing0(cc, child, ic);
             }
             if (!cc.del.isEmpty()) {
@@ -489,6 +500,107 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
                     }
                     ((BiConsumer) da.consumer).accept(sidecar, ig);
                 }
+            }
+        }
+    }
+
+    public Component adaptToComponent() {
+        return new ComponentAdaptor(this);
+    }
+
+    /** An adaptor of the {@link Component} interface from a {@link ComponentNodeConfiguration}. */
+    public static final class ComponentAdaptor implements Component {
+
+        /** The component configuration to wrap. */
+        public final ComponentNodeConfiguration conf;
+
+        private ComponentAdaptor(ComponentNodeConfiguration c) {
+            this.conf = requireNonNull(c);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public AttributeSet attributes() {
+            throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Collection<Component> children() {
+            int size = conf.children == null ? 0 : conf.children.size();
+            if (size == 0) {
+                return List.of();
+            } else {
+                ArrayList<Component> result = new ArrayList<>(size);
+                for (ComponentNodeConfiguration acc = conf.firstChild; acc != null; acc = acc.nextSibling) {
+                    result.add(acc.adaptToComponent());
+                }
+                return result;
+            }
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ConfigSite configSite() {
+            return conf.configSite(); // We might need to rewrite this for image...
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public int depth() {
+            return conf.depth;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Optional<String> description() {
+            return Optional.ofNullable(conf.getDescription());
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public String name() {
+            return conf.getName();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Optional<Component> parent() {
+            ComponentNodeConfiguration p = conf.parent;
+            return p == null ? Optional.empty() : Optional.of(p.adaptToComponent());
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ComponentPath path() {
+            return conf.path();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ComponentRelation relationTo(Component other) {
+            throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ComponentStream stream(ComponentStream.Option... options) {
+            return new PackedComponentStream(stream0(conf, true, PackedComponentStreamOption.of(options)));
+        }
+
+        private Stream<Component> stream0(ComponentNodeConfiguration origin, boolean isRoot, PackedComponentStreamOption option) {
+            // Also fix in ComponentConfigurationToComponentAdaptor when changing stuff here
+            children(); // lazy calc
+            @SuppressWarnings({ "unchecked", "rawtypes" })
+            List<ComponentAdaptor> c = (List) children();
+            if (c != null && !c.isEmpty()) {
+                if (option.processThisDeeper(origin, this.conf)) {
+                    Stream<Component> s = c.stream().flatMap(co -> co.stream0(origin, false, option));
+                    return isRoot && option.excludeOrigin() ? s : Stream.concat(Stream.of(this), s);
+                }
+                return Stream.empty();
+            } else {
+                return isRoot && option.excludeOrigin() ? Stream.empty() : Stream.of(this);
             }
         }
     }

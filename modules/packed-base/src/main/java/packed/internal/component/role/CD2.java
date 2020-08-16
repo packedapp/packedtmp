@@ -27,6 +27,11 @@ public abstract class CD2 {
         // Allow X annotation
     }
 
+    public interface NamingStrategy {
+        // UUID, Replace ? with Number, ...
+        /// Maaske kan folk specifere et pattern "%s-%d-%d-%d" idk
+    }
+
     public interface HostOption {
         // ONLY_ADD, NO_REMOVE, NO_UPDATE, IDK
     }

@@ -30,6 +30,7 @@ import app.packed.hook.OnHook;
 import packed.internal.container.ContainerModel;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.LazyExtensionActivationMap;
+import packed.internal.container.PackedContainerRole;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.HookRequest;
 import packed.internal.hook.HookRequestBuilder;
@@ -100,17 +101,19 @@ public final class ComponentModel extends Model {
         return s;
     }
 
-    public <T> ComponentNodeConfiguration invokeOnHookOnInstall(Configurator cs, ComponentNodeConfiguration acc) {
+    public <T> ComponentNodeConfiguration invokeOnHookOnInstall(PackedRealm cs, ComponentNodeConfiguration acc) {
         // System.out.println(sourceHook + " - " + cs);
         try {
             // First invoke any OnHook methods on the container source (bundle)
             if (sourceHook != null) {
-                sourceHook.invoke(cs.source, acc);
+                // sourceHook.invoke(cs.source, acc);
+                // new Exception().printStackTrace();
             }
             // Next, invoke any OnHook methods on relevant extensions.
             for (ExtensionRequestPair he : extensionHooks) {
                 // Finds (possible installing) the extension with @OnHook methods
-                Extension extension = acc.container().use(he.extensionType);
+                // Maybe null, but this code will be refactored out.
+                Extension extension = PackedContainerRole.findOrNull(acc).use(he.extensionType);
 
                 // Invoke each method annotated with @OnHook on the extension instance
                 he.request.invoke(extension, acc);

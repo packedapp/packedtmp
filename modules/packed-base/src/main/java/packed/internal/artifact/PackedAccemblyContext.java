@@ -20,21 +20,21 @@ import app.packed.artifact.ArtifactDriver;
 /**
  *
  */
-public class AssembleOutput {
+public class PackedAccemblyContext {
 
-    AssembleOutput() {
+    PackedAccemblyContext() {
 
     }
 
-    public static AssembleOutput image() {
-        return new AssembleOutput();
+    public static PackedAccemblyContext image() {
+        return new PackedAccemblyContext();
     }
 
-    public static AssembleOutput descriptor(Class<?> type) {
-        return new AssembleOutput();
+    public static PackedAccemblyContext descriptor(Class<?> type) {
+        return new PackedAccemblyContext();
     }
 
-    public static AssembleOutput artifact(ArtifactDriver<?> driver) {
-        return new AssembleOutput();
+    public static PackedAccemblyContext artifact(ArtifactDriver<?> driver) {
+        return new PackedAccemblyContext();
     }
 }

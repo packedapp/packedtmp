@@ -39,6 +39,7 @@ import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionSidecar;
 import app.packed.inject.Factory;
 import app.packed.lifecycle.LifecycleContext;
+import packed.internal.component.PackedRealm;
 import packed.internal.lifecycle.LifecycleContextHelper;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -58,9 +59,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
-    /**
-     * The extension instance this configuration wraps, initialized in {@link #of(PackedContainerRole, Class)}.
-     */
+    /** The extension instance this configuration wraps, initialized in {@link #of(PackedContainerRole, Class)}. */
     @Nullable
     private Extension instance;
 
@@ -68,21 +67,24 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     private boolean isConfigured;
 
     /** The sidecar model of the extension. */
-    public final ExtensionModel model;
+    private final ExtensionModel model;
 
-    /** The configuration of the container that uses the extension. */
-    private final PackedContainerRole pcc; // identical to component.parent...
+    /** The container this extension belongs to. */
+    private final PackedContainerRole container;
+
+    /** The realm of this extension. */
+    final PackedRealm realm = PackedRealm.fromExtension(this);
 
     /**
      * Creates a new configuration.
      * 
-     * @param pcc
+     * @param container
      *            the configuration of the container that uses the extension
      * @param model
      *            a model of the extension.
      */
-    private PackedExtensionConfiguration(PackedContainerRole pcc, ExtensionModel model) {
-        this.pcc = requireNonNull(pcc);
+    private PackedExtensionConfiguration(PackedContainerRole container, ExtensionModel model) {
+        this.container = requireNonNull(container);
         this.model = requireNonNull(model);
     }
 
@@ -125,7 +127,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     /** {@inheritDoc} */
     @Override
     public void checkConfigurable() {
-        if (pcc.realState != 0) {
+        if (container.realState != 0) {
             throw new IllegalStateException("This extension (" + instance().getClass().getSimpleName() + ") is no longer configurable");
         }
         if (isConfigured) {
@@ -153,13 +155,13 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
      * @return the configuration of the container the extension is registered in
      */
     public PackedContainerRole container() {
-        return pcc;
+        return container;
     }
 
     /** {@inheritDoc} */
     @Override
     public ConfigSite containerConfigSite() {
-        return pcc.component.configSite();
+        return container.component.configSite();
     }
 
     /** {@inheritDoc} */
@@ -177,19 +179,19 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
      */
     @Nullable
     Object findWirelet(Class<? extends Wirelet> wireletType) {
-        return pcc.component.wireletAny(wireletType).orElse(null);
+        return container.component.wireletAny(wireletType).orElse(null);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T> SingletonConfiguration<T> install(Factory<T> factory) {
-        return pcc.install(factory);
+        return container.install(factory);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T> SingletonConfiguration<T> installInstance(T instance) {
-        return pcc.installInstance(instance);
+        return container.installInstance(instance);
     }
 
     /**
@@ -257,11 +259,20 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
         return model.optional;
     }
 
+    /**
+     * Returns the realm this extension belongs to.
+     * 
+     * @return the realm this extension belongs to
+     */
+    public PackedRealm realm() {
+        return realm;
+    }
+
     /** {@inheritDoc} */
     @Override
     public ComponentPath path() {
         // TODO return path of this component.
-        return pcc.component.path();
+        return container.component.path();
     }
 
     /** {@inheritDoc} */
@@ -289,7 +300,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
             throw new UnsupportedOperationException("The specified extension type is not among " + model.extensionType().getSimpleName()
                     + " dependencies, extensionType = " + extensionType + ", valid dependencies = " + model.directDependencies());
         }
-        return (T) pcc.useExtension(extensionType, this).instance;
+        return (T) container.useExtension(extensionType, this).instance;
     }
 
     /**
@@ -324,7 +335,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
             // Should we also set the active extension in the parent???
             if (model.extensionLinkedToAncestorExtension != null) {
                 PackedExtensionConfiguration parentExtension = null;
-                PackedContainerRole parent = pcc.component.container();
+                PackedContainerRole parent = PackedContainerRole.findOrNull(pcc.component);
                 if (!model.extensionLinkedDirectChildrenOnly) {
                     while (parentExtension == null && parent != null) {
                         parentExtension = parent.getExtensionContext(extensionType);

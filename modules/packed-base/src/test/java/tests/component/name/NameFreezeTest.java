@@ -151,8 +151,8 @@ public class NameFreezeTest extends AbstractArtifactTest {
         checkThrowsISE(c -> c.setName("Foo").setName("Bar"), "#setName(String) can only be called once");
     }
 
-    private static void checkThrowsISE(Consumer<? super ContainerConfigurationTester> source, String message) {
-        assertThatIllegalStateException().isThrownBy(() -> appOf(source)).withNoCause().withMessage(message);
+    private static void checkThrowsISE(Consumer<? super ContainerConfigurationTester> action, String message) {
+        assertThatIllegalStateException().isThrownBy(() -> appOf(action)).withNoCause().withMessage(message);
 
         // TODO test for children as well
 
