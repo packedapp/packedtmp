@@ -29,14 +29,10 @@ import app.packed.config.ConfigSite;
 import app.packed.container.ContainerDescriptor;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
-import packed.internal.artifact.PackedAccemblyContext;
+import packed.internal.artifact.PackedAssemblyContext;
 import packed.internal.component.BundleConfiguration;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedComponentDriver;
-import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
-import packed.internal.component.PackedRealm;
-import packed.internal.config.ConfigSiteSupport;
-import packed.internal.inject.ConfigSiteInjectOperations;
 
 /** The default container context. */
 public final class PackedContainerRole {
@@ -47,7 +43,7 @@ public final class PackedContainerRole {
 
     private static final int LS_2_HOSTING = 2;
 
-    private static final int LS_3_FINISHED = 3;
+    public static final int LS_3_FINISHED = 3;
 
     /** Any extension that is active. */
     @Nullable
@@ -62,7 +58,7 @@ public final class PackedContainerRole {
 
     private TreeSet<PackedExtensionConfiguration> extensionsOrdered;
 
-    private void advanceTo(int newState) {
+    public void advanceTo(int newState) {
         if (containerState == 0) {
             // We need to sort all extensions that are used. To make sure
             // they progress in their lifecycle in the right order.
@@ -196,20 +192,9 @@ public final class PackedContainerRole {
         return pec;
     }
 
-    public static ComponentNodeConfiguration assemble(PackedAccemblyContext output, Bundle<?> bundle, Wirelet... wirelets) {
-        PackedRealm cc = PackedRealm.fromBundle(bundle);
-        ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
-        PackedContainerRole c = PackedContainerRole.create(ContainerComponentDriver.INSTANCE, cs, cc, null, output, wirelets);
-
-        BundleConfiguration.configure(bundle, new PackedContainerConfiguration(c));
-        c.component.finalState = true;
-        c.advanceTo(LS_3_FINISHED);
-        return c.component;
-    }
-
     // From Driver,
     public static PackedContainerRole create(PackedComponentDriver<?> driver, ConfigSite cs, PackedRealm realm, ComponentNodeConfiguration parent,
-            PackedAccemblyContext output, Wirelet... wirelets) {
+            PackedAssemblyContext output, Wirelet... wirelets) {
         PackedContainerRole p1 = new PackedContainerRole();
         ComponentNodeConfiguration pccc = new ComponentNodeConfiguration(parent, driver, cs, realm, output, p1, wirelets);
         p1.component = pccc;

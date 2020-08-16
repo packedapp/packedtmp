@@ -15,7 +15,6 @@
  */
 package packed.internal.artifact;
 
-import app.packed.config.ConfigSite;
 import packed.internal.errorhandling.ErrorMessage;
 
 /**
@@ -35,13 +34,6 @@ import packed.internal.errorhandling.ErrorMessage;
 public interface AssembleContext {
 
     void addError(ErrorMessage message);
-
-    /**
-     * Returns the configuration site that initialized the build process.
-     * 
-     * @return the configuration site that initialized the build process
-     */
-    ConfigSite configSite();
 
     /**
      * Returns whether or not we are instantiating an actual artifact. Or if we are just producing an image or a descriptor.

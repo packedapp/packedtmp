@@ -35,11 +35,11 @@ import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
 import packed.internal.artifact.InstantiationContext;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.container.ComponentLookup;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.PackedContainerRole;
 import packed.internal.container.PackedExtensionConfiguration;
+import packed.internal.container.PackedRealm;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
@@ -109,6 +109,10 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
      */
     public final boolean isContainer() {
         return hasRole(ROLE_CONTAINER);
+    }
+
+    public final boolean isGuest() {
+        return hasRole(ROLE_GUEST);
     }
 
     public ComponentNodeConfiguration newNodeConfiguration(ComponentNodeConfiguration parent, Bundle<?> bundle, Wirelet... wirelets) {
@@ -185,14 +189,14 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         @Nullable
         public final Object instance;
 
-        public SingletonComponentDriver(ComponentLookup lookup, Factory<?> factory) {
-            super(PackedComponentDriver.ROLE_SINGLETON, lookup.componentModelOf(factory.rawType()));
+        public SingletonComponentDriver(PackedRealm realm, Factory<?> factory) {
+            super(PackedComponentDriver.ROLE_SINGLETON, realm.componentModelOf(factory.rawType()));
             this.factory = (@Nullable BaseFactory<?>) factory;
             this.instance = null;
         }
 
-        public SingletonComponentDriver(ComponentLookup lookup, Object instance) {
-            super(PackedComponentDriver.ROLE_SINGLETON, lookup.componentModelOf(instance.getClass()));
+        public SingletonComponentDriver(PackedRealm realm, Object instance) {
+            super(PackedComponentDriver.ROLE_SINGLETON, realm.componentModelOf(instance.getClass()));
             this.factory = null;
             this.instance = requireNonNull(instance);
         }
@@ -228,7 +232,7 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
 
     public static class StatelessComponentDriver extends ModelComponentDriver<ComponentConfiguration> {
 
-        public StatelessComponentDriver(ComponentLookup lookup, Class<?> implementation) {
+        public StatelessComponentDriver(PackedRealm lookup, Class<?> implementation) {
             super(PackedComponentDriver.ROLE_STATELESS, lookup.componentModelOf(requireNonNull(implementation, "implementation is null")));
             requireNonNull(implementation, "implementation is null");
         }

@@ -101,7 +101,6 @@ public final class ContainerModel extends Model implements ComponentLookup {
         this.onHookModel = OnHookModel.newModel(new OpenClass(MethodHandles.lookup(), sourceType, true), false,
                 UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
         this.activatorMap = LazyExtensionActivationMap.of(sourceType);
-        // this.dependenciesTotalOrder = ExtensionUseModel2.totalOrder(sourceType);
     }
 
     /** {@inheritDoc} */
@@ -140,7 +139,7 @@ public final class ContainerModel extends Model implements ComponentLookup {
         return factory;
     }
 
-    public ComponentLookup withLookup(Lookup lookup) {
+    ComponentLookup withLookup(Lookup lookup) {
         // Use default access (this) if we specify null lookup
 
         // We need to check this in a separate class. Because from Java 13.

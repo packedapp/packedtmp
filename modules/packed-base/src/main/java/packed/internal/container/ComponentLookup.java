@@ -25,7 +25,7 @@ import packed.internal.reflect.OpenClass;
  * This class exists because we have two ways to access the members of a component instance. One with a {@link Lookup}
  * object, and one using whatever power a module descriptor has given us.
  */
-public interface ComponentLookup {
+interface ComponentLookup {
 
     ComponentModel componentModelOf(Class<?> componentType);
 

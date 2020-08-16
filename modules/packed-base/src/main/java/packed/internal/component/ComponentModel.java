@@ -31,6 +31,7 @@ import packed.internal.container.ContainerModel;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.LazyExtensionActivationMap;
 import packed.internal.container.PackedContainerRole;
+import packed.internal.container.PackedRealm;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.HookRequest;
 import packed.internal.hook.HookRequestBuilder;

@@ -15,6 +15,8 @@
  */
 package packed.internal.component;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  *
  */
@@ -25,6 +27,12 @@ final class PackedPodConfigurationContext {
 
     /** The pod used at runtime. */
     private PackedPod pod;
+
+    final ComponentNodeConfiguration root;
+
+    PackedPodConfigurationContext(ComponentNodeConfiguration root) {
+        this.root = requireNonNull(root);
+    }
 
     PackedPod pod() {
         // Lazy create the runtime pod.

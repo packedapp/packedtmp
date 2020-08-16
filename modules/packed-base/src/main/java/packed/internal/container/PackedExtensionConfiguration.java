@@ -39,7 +39,6 @@ import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionSidecar;
 import app.packed.inject.Factory;
 import app.packed.lifecycle.LifecycleContext;
-import packed.internal.component.PackedRealm;
 import packed.internal.lifecycle.LifecycleContextHelper;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;

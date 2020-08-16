@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,9 +23,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
-import packed.internal.container.ComponentLookup;
-import packed.internal.container.ContainerModel;
-import packed.internal.container.PackedExtensionConfiguration;
+import packed.internal.component.ComponentModel;
 import packed.internal.inject.factory.FactoryHandle;
 
 /**
@@ -38,10 +36,10 @@ public final class PackedRealm {
     /** The current component lookup object, updated via {@link #lookup(Lookup)} */
     // useFor future components...
     // We need to support some way to
-    public ComponentLookup lookup;
+    private ComponentLookup lookup;
 
     /** A container model. */
-    public final ContainerModel model;
+    private final ContainerModel model;
 
     private PackedRealm(Class<?> type) {
         this.type = requireNonNull(type);
@@ -61,6 +59,10 @@ public final class PackedRealm {
 
     public MethodHandle fromFactoryHandle(FactoryHandle<?> handle) {
         return lookup.readable(handle).toMethodHandle();
+    }
+
+    public ComponentModel componentModelOf(Class<?> componentType) {
+        return lookup.componentModelOf(componentType);
     }
 
     /**

@@ -29,7 +29,6 @@ import app.packed.config.ConfigSite;
 import app.packed.container.ContainerDescriptor;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletPack;
-import packed.internal.container.PackedContainerRole;
 
 /** The default implementation of {@link ArtifactImage}. */
 public final class PackedArtifactImage implements ArtifactImage {
@@ -126,7 +125,7 @@ public final class PackedArtifactImage implements ArtifactImage {
      */
     @SuppressWarnings("unchecked")
     public static PackedArtifactImage lazyCreate(Bundle<?> bundle, Wirelet... wirelets) {
-        ComponentNodeConfiguration conf = PackedContainerRole.assemble(PackedAccemblyContext.image(), bundle, wirelets);
+        ComponentNodeConfiguration conf = PackedAssemblyContext.assembleImage(bundle, wirelets);
         return new PackedArtifactImage(conf, (Class<? extends Bundle<?>>) bundle.getClass(), conf.wirelets);
     }
 }

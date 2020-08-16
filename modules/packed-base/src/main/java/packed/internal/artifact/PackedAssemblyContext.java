@@ -17,44 +17,46 @@ package packed.internal.artifact;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.function.Function;
+
+import app.packed.artifact.ArtifactDriver;
+import app.packed.component.Bundle;
+import app.packed.component.CustomConfigurator;
+import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
+import packed.internal.component.BundleConfiguration;
+import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
+import packed.internal.config.ConfigSiteSupport;
+import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.PackedContainerRole;
+import packed.internal.container.PackedRealm;
 import packed.internal.errorhandling.ErrorMessage;
+import packed.internal.inject.ConfigSiteInjectOperations;
 
 /** The default implementation of {@link AssembleContext} */
 public final class PackedAssemblyContext implements AssembleContext {
 
     /** The build output. */
-    private final PackedAccemblyContext output;
+    private final PackedOutput output;
 
     /** The thread that is assembling the system. */
     private final Thread thread = Thread.currentThread();
 
-    /** The configuration of the top container. */
-    private final PackedContainerRole topContainerConfiguration;
-
     /**
      * Creates a new build context object.
      * 
-     * @param topContainerConfiguration
-     *            the configuration of the artifact's top container
      * @param output
      *            the output of the build process
      */
-    public PackedAssemblyContext(PackedContainerRole topContainerConfiguration, PackedAccemblyContext output) {
-        this.topContainerConfiguration = requireNonNull(topContainerConfiguration);
+    public PackedAssemblyContext(PackedOutput output) {
         this.output = requireNonNull(output);
     }
 
     /** {@inheritDoc} */
     @Override
     public void addError(ErrorMessage message) {}
-
-    /** {@inheritDoc} */
-    @Override
-    public ConfigSite configSite() {
-        return topContainerConfiguration.component.configSite();
-    }
 
     /** {@inheritDoc} */
     @Override
@@ -67,11 +69,50 @@ public final class PackedAssemblyContext implements AssembleContext {
      * 
      * @return the build output
      */
-    public PackedAccemblyContext output() {
+    public PackedOutput output() {
         return output;
     }
 
     public Thread thread() {
         return thread;
+    }
+
+    public static <C, D> ComponentNodeConfiguration configure(ArtifactDriver<?> ad, PackedComponentDriver<D> driver, Function<D, C> factory,
+            CustomConfigurator<C> consumer, Wirelet... wirelets) {
+        PackedRealm cc = PackedRealm.fromConfigurator(consumer);
+        ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
+        PackedContainerRole pcc = PackedContainerRole.create(ContainerComponentDriver.INSTANCE, cs, cc, null,
+                new PackedAssemblyContext(PackedOutput.artifact(ad)), wirelets);
+        D pc = driver.forBundleConf(pcc.component);
+        C c = factory.apply(pc);
+        consumer.configure(c);
+        pcc.configuratorDone();
+        return pcc.component;
+    }
+
+    public static ComponentNodeConfiguration assembleArtifact(ArtifactDriver<?> driver, Bundle<?> bundle, Wirelet[] wirelets) {
+        PackedAssemblyContext pac = new PackedAssemblyContext(PackedOutput.artifact(driver));
+        return assemble(pac, bundle, wirelets);
+    }
+
+    public static ComponentNodeConfiguration assembleImage(Bundle<?> bundle, Wirelet[] wirelets) {
+        PackedAssemblyContext pac = new PackedAssemblyContext(PackedOutput.image());
+        return assemble(pac, bundle, wirelets);
+    }
+
+    public static ComponentNodeConfiguration assembleDescriptor(Class<?> descriptorType, Bundle<?> bundle, Wirelet... wirelets) {
+        PackedAssemblyContext pac = new PackedAssemblyContext(PackedOutput.descriptor(descriptorType));
+        return assemble(pac, bundle, wirelets);
+    }
+
+    public static ComponentNodeConfiguration assemble(PackedAssemblyContext output, Bundle<?> bundle, Wirelet... wirelets) {
+        PackedRealm cc = PackedRealm.fromBundle(bundle);
+        ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
+        PackedContainerRole c = PackedContainerRole.create(ContainerComponentDriver.INSTANCE, cs, cc, null, output, wirelets);
+
+        BundleConfiguration.configure(bundle, new PackedContainerConfiguration(c));
+        c.component.finalState = true;
+        c.advanceTo(PackedContainerRole.LS_3_FINISHED);
+        return c.component;
     }
 }

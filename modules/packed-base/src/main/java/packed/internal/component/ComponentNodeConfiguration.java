@@ -45,7 +45,6 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
 import packed.internal.artifact.InstantiationContext;
-import packed.internal.artifact.PackedAccemblyContext;
 import packed.internal.artifact.PackedAssemblyContext;
 import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
@@ -56,6 +55,7 @@ import packed.internal.component.wirelet.WireletPipelineContext;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.PackedContainerRole;
 import packed.internal.container.PackedExtensionConfiguration;
+import packed.internal.container.PackedRealm;
 import packed.internal.inject.ConfigSiteInjectOperations;
 
 /** The build time representation of a component. */
@@ -87,10 +87,12 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     @Nullable
     private final PackedExtensionConfiguration extension;
 
+    /** The pod the component belongs to. */
     final PackedPodConfigurationContext pod;
 
     public boolean finalState = false;
 
+    /** The realm the component belongs to. */
     private final PackedRealm realm;
 
     /** Any wirelets that was specified by the user when creating this configuration. */
@@ -135,23 +137,27 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
      * @param parent
      *            the parent of the component
      */
-    public ComponentNodeConfiguration(ComponentNodeConfiguration parent, PackedComponentDriver<?> driver, ConfigSite configSite, PackedRealm source,
-            PackedAccemblyContext output, @Nullable PackedContainerRole container, Wirelet... wirelets) {
+    public ComponentNodeConfiguration(@Nullable ComponentNodeConfiguration parent, PackedComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm,
+            PackedAssemblyContext pac, @Nullable PackedContainerRole container, Wirelet... wirelets) {
         this.driver = requireNonNull(driver);
         this.configSite = requireNonNull(configSite);
-        this.realm = requireNonNull(source);
+        this.realm = requireNonNull(realm);
         this.container = container;
         this.wirelets = WireletPack.from(this, wirelets);
         this.parent = parent;
 
         if (parent == null) {
-            this.pod = new PackedPodConfigurationContext();
+            this.pod = new PackedPodConfigurationContext(this);
             this.containerOld = null;
             this.depth = 0;
             this.extension = null;
-            this.artifact = new PackedAssemblyContext(container, output);
+            this.artifact = pac;
         } else {
-            this.pod = parent.pod;
+            if (driver.isGuest()) {
+                this.pod = new PackedPodConfigurationContext(this);
+            } else {
+                this.pod = parent.pod;
+            }
             this.containerOld = parent.driver.isContainer() ? (PackedContainerRole) parent.container : parent.containerOld;
             this.depth = parent.depth + 1;
             this.extension = containerOld.activeExtension;
@@ -245,9 +251,9 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     public <T> SingletonConfiguration<T> installInstance(T instance) {
         requireNonNull(instance, "instance is null");
-        ComponentModel model = realm().lookup.componentModelOf(instance.getClass());
+        ComponentModel model = realm().componentModelOf(instance.getClass());
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
-        SingletonComponentDriver scd = new SingletonComponentDriver(realm().lookup, instance);
+        SingletonComponentDriver scd = new SingletonComponentDriver(realm, instance);
 
         ComponentNodeConfiguration conf = new ComponentNodeConfiguration(this, scd, configSite, realm(), null, container);
         model.invokeOnHookOnInstall(realm(), conf); // noops.
@@ -256,9 +262,9 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     public <T> SingletonConfiguration<T> install(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
-        ComponentModel model = realm().lookup.componentModelOf(factory.rawType());
+        ComponentModel model = realm().componentModelOf(factory.rawType());
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
-        SingletonComponentDriver scd = new SingletonComponentDriver(realm().lookup, factory);
+        SingletonComponentDriver scd = new SingletonComponentDriver(realm, factory);
 
         ComponentNodeConfiguration conf = new ComponentNodeConfiguration(this, scd, configSite, realm(), null, container);
         model.invokeOnHookOnInstall(realm(), conf);
@@ -266,7 +272,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     }
 
     public StatelessConfiguration installStateless(Class<?> implementation) {
-        StatelessComponentDriver scd = new StatelessComponentDriver(realm().lookup, implementation);
+        StatelessComponentDriver scd = new StatelessComponentDriver(realm, implementation);
 
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
 
