@@ -40,7 +40,6 @@ abstract class AbstractHookApplicator<T> implements HookApplicator<T> {
         // TODO check instance component if instance field...
         ComponentNodeConfiguration pcc = ((PackedSingletonConfiguration<?>) cc).context;
         pcc.checkConfigurable();
-        pcc.del.add(newAccessor(sidecarType, consumer));
     }
 
     protected abstract <S> DelayedAccessor newAccessor(Class<S> sidecarType, BiConsumer<S, T> consumer);

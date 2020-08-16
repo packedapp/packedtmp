@@ -18,6 +18,7 @@ package packed.internal.component;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.util.LinkedHashMap;
 
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
@@ -30,6 +31,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.inject.Factory;
+import app.packed.service.Injector;
 import packed.internal.artifact.InstantiationContext;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ComponentLookup;
@@ -39,6 +41,7 @@ import packed.internal.container.PackedContainerRole;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
+import packed.internal.service.runtime.PackedInjector;
 
 /**
  *
@@ -146,7 +149,13 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         /** {@inheritDoc} */
         @Override
         public ComponentNode create(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, InstantiationContext ic) {
-            return PackedContainerRole.create(parent, configuration.container, ic);
+            ComponentNode cn = new ComponentNode(parent, configuration, ic);
+            Injector i = ic.get(configuration, PackedInjector.class);
+            if (i == null) {
+                i = new PackedInjector(configuration.configSite(), configuration.getDescription(), new LinkedHashMap<>());
+            }
+            cn.data[0] = i;
+            return cn;
         }
 
         @Override

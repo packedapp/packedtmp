@@ -88,6 +88,16 @@ public final class InstantiationContext {
         return wirelets;
     }
 
+//    public ArtifactContext instantiateArtifact(ComponentNodeConfiguration component, WireletPack wc) {
+//        InstantiationContext pic = new InstantiationContext(wc);
+//        extensionsPrepareInstantiation(component, pic);
+//
+//        // Will instantiate the whole container hierachy
+//        // component.driver.newNodeConfiguration(parent, bundle, wirelets)
+//        ComponentNode pc = component.driver().create(null, component, pic);
+//        ComponentNodeConfiguration.methodHandlePassing0(component, pc, pic);
+//        return new PackedArtifactContext(pc);
+//    }
     // link(SomeBundle.class, LifecycleWirelets.startBeforeAnythingElse());
     // link(SomeBundle.class, LifecycleWirelets.start(SomeGroup)); //all in same group will be started
 }

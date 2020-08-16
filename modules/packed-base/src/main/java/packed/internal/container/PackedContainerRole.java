@@ -36,7 +36,6 @@ import app.packed.container.ContainerDescriptor;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.Factory;
-import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
 import packed.internal.artifact.InstantiationContext;
 import packed.internal.artifact.PackedAccemblyContext;
@@ -74,6 +73,8 @@ public final class PackedContainerRole {
 
     public ComponentNodeConfiguration component;
 
+    int containerState;
+
     /** All used extensions, in order of registration. */
     private final LinkedHashMap<Class<? extends Extension>, PackedExtensionConfiguration> extensions = new LinkedHashMap<>();
 
@@ -86,8 +87,6 @@ public final class PackedContainerRole {
 
     /** A container model. */
     private final ContainerModel model;
-
-    int containerState;
 
     private PackedContainerRole(Object source) {
         this.lookup = this.model = ContainerModel.of(source.getClass());
@@ -217,9 +216,7 @@ public final class PackedContainerRole {
         extensionsPrepareInstantiation(this.component, pic);
 
         // Will instantiate the whole container hierachy
-        // component.driver.newNodeConfiguration(parent, bundle, wirelets)
         ComponentNode pc = component.driver().create(null, component, pic);
-        ComponentNodeConfiguration.methodHandlePassing0(component, pc, pic);
         return new PackedArtifactContext(pc);
     }
 
@@ -317,17 +314,6 @@ public final class PackedContainerRole {
         return c;
     }
 
-    public static ComponentNode create(@Nullable ComponentNode parent, PackedContainerRole pcc, InstantiationContext instantiationContext) {
-        ComponentNode cn = new ComponentNode(parent, pcc.component, instantiationContext);
-        Injector i = instantiationContext.get(pcc.component, PackedInjector.class);
-        if (i == null) {
-            i = new PackedInjector(pcc.component.configSite(), pcc.component.getDescription(), new LinkedHashMap<>());
-        }
-        cn.data[0] = i;
-        instantiationContext.put(pcc.component, cn);
-        return cn;
-    }
-
     public static PackedContainerRole create(PackedComponentDriver<?> driver, ConfigSite cs, PackedRealm source, ComponentNodeConfiguration parent,
             PackedAccemblyContext output, Wirelet... wirelets) {
         PackedContainerRole p1 = new PackedContainerRole(source);
@@ -352,16 +338,15 @@ public final class PackedContainerRole {
         }
     }
 
-    public static PackedContainerRole of(PackedAccemblyContext output, PackedRealm source, Wirelet... wirelets) {
-        ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
-        return PackedContainerRole.create(ContainerComponentDriver.INSTANCE, cs, source, null, output, wirelets);
-    }
-
     @Nullable
     public static PackedContainerRole findOrNull(ComponentNodeConfiguration cnc) {
         return cnc.containerOld;
     }
 
+    public static PackedContainerRole of(PackedAccemblyContext output, PackedRealm source, Wirelet... wirelets) {
+        ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
+        return PackedContainerRole.create(ContainerComponentDriver.INSTANCE, cs, source, null, output, wirelets);
+    }
 }
 //
 ///**
