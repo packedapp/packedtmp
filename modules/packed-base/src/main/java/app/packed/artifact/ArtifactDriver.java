@@ -105,17 +105,12 @@ public final class ArtifactDriver<A> {
     // Ja den er faktisk fin nok syntes jeg...
 
     private ArtifactContext create(ArtifactSource source, Wirelet... wirelets) {
-        PackedContainerRole pcc;
-        WireletPack wc;
-        // Either we create from an image, or from a bundle
         if (source instanceof PackedArtifactImage) {
             PackedArtifactImage pai = (PackedArtifactImage) source;
-            pcc = pai.configuration();
-            wc = WireletPack.fromImage(pcc, pai.wirelets(), wirelets);
-        } else { // assert Bundle?
-            pcc = PackedContainerRole.assemble(PackedAccemblyContext.artifact(this), source, wirelets);
-            wc = pcc.component.wireletContext;
+            return pai.newContext(wirelets);
         }
+        PackedContainerRole pcc = PackedContainerRole.assemble(PackedAccemblyContext.artifact(this), source, wirelets);
+        WireletPack wc = pcc.component.wireletContext;
         return InstantiationContext.instantiateArtifact(pcc.component, wc);
     }
 

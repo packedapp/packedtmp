@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
+import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.ArtifactImage;
 import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
@@ -57,6 +58,11 @@ public final class PackedArtifactImage implements ArtifactImage {
         this.pcc = requireNonNull(pcc);
         this.wc = wc;
         this.bundleType = requireNonNull(bundleType);
+    }
+
+    public ArtifactContext newContext(Wirelet... wirelets) {
+        WireletPack wp = WireletPack.fromImage(pcc, wirelets(), wirelets);
+        return InstantiationContext.instantiateArtifact(pcc.component, wp);
     }
 
     /** {@inheritDoc} */
