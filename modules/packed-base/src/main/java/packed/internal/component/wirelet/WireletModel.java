@@ -20,7 +20,7 @@ import app.packed.component.Wirelet;
 import app.packed.component.WireletPipeline;
 import app.packed.component.WireletSidecar;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionMemberType;
+import app.packed.container.ExtensionMember;
 import app.packed.container.InternalExtensionException;
 import packed.internal.container.ExtensionModel;
 import packed.internal.sidecar.Model;
@@ -74,7 +74,7 @@ public final class WireletModel extends Model {
                 // XXX must be assignable to YY to be a part of the pipeline
                 if (pipeline.extension() != extension) {
                     throw new InternalExtensionException("The wirelet " + type + " and the pipeline " + p + " must both be annotated with @"
-                            + ExtensionMemberType.class.getSimpleName() + " and the same extension was" + extension + " and " + pipeline.extension());
+                            + ExtensionMember.class.getSimpleName() + " and the same extension was" + extension + " and " + pipeline.extension());
                 }
             } else {
                 this.pipeline = null;

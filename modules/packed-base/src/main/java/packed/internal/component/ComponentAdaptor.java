@@ -17,8 +17,9 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -29,28 +30,18 @@ import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
-import app.packed.container.Extension;
 
-/**
- *
- */
-
-// TODO maaske kan configuration implementere Component nu naar den ikke er offentlig????
-// Men det er context jo...
+/** An adaptor of the {@link Component} interface from a {@link ComponentNodeConfiguration}. */
 public final class ComponentAdaptor implements Component {
 
     /** A cached, lazy initialized list of all children. */
     private volatile Map<String, ComponentAdaptor> children;
 
     /** The component configuration to wrap. */
-    public final ComponentNodeConfiguration componentConfiguration;
+    public final ComponentNodeConfiguration conf;
 
-    // Need to main any guest ancestor. As images must resolve in relation to it.
-    // private final List<PackedGuestConfigurationContext> pgc;
-
-    private ComponentAdaptor(ComponentNodeConfiguration componentConfiguration /* , List<PackedGuestConfigurationContext> pgc */) {
-        this.componentConfiguration = requireNonNull(componentConfiguration);
-        // this.pgc = pgc;
+    private ComponentAdaptor(ComponentNodeConfiguration c) {
+        this.conf = requireNonNull(c);
     }
 
     /** {@inheritDoc} */
@@ -60,87 +51,55 @@ public final class ComponentAdaptor implements Component {
     }
 
     /** {@inheritDoc} */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public final Collection<Component> children() {
-        Map<String, ComponentAdaptor> c = children;
-
-        // TODO fix this shit
-//        return new AbstractCollection<Component>() {
-//
-//            @Override
-//            public Iterator<Component> iterator() {
-//                Map<String, ComponentConfigurationToComponentAdaptor> c = children;
-//                // TODO make view instead
-//                return c == null ? List.<Component>of().iterator() : null;
-//            }
-//
-//            @Override
-//            public int size() {
-//                Map<String, ComponentConfigurationToComponentAdaptor> c = children;
-//                return c == null ? 0 : c.size();
-//            }
-//        };
-
-        if (c == null) {
-            if (componentConfiguration.firstChild == null) {
-                // It is not really a view...
-                // return new AbstractCollection<>(); <--- cache it,
-                c = Map.of();
-            } else {
-                LinkedHashMap<String, ComponentAdaptor> m = new LinkedHashMap<>();
-                for (ComponentNodeConfiguration acc = componentConfiguration.firstChild; acc != null; acc = acc.nextSibling) {
-                    m.put(acc.name, of(acc /* , pgc */));
-                }
-                c = children = Map.copyOf(m);
+        int size = children == null ? 0 : children.size();
+        if (size == 0) {
+            return List.of();
+        } else {
+            ArrayList<Component> result = new ArrayList<>(size);
+            for (ComponentNodeConfiguration acc = conf.firstChild; acc != null; acc = acc.nextSibling) {
+                result.add(of(acc));
             }
+            return result;
         }
-        return (Collection) c.values();
     }
 
     /** {@inheritDoc} */
     @Override
     public final ConfigSite configSite() {
-        // We might need to rewrite this for image...
-        return componentConfiguration.configSite();
+        return conf.configSite(); // We might need to rewrite this for image...
     }
 
     /** {@inheritDoc} */
     @Override
     public final int depth() {
-        int depth = componentConfiguration.depth;
-        /*
-         * for (PackedGuestConfigurationContext p : pgc) { depth += p.depth; }
-         */
-        return depth;
+        return conf.depth;
     }
 
     /** {@inheritDoc} */
     @Override
     public final Optional<String> description() {
-        return Optional.ofNullable(componentConfiguration.getDescription());
-    }
-
-    public final Optional<Class<? extends Extension>> extension() {
-        return componentConfiguration.extension();
+        return Optional.ofNullable(conf.getDescription());
     }
 
     /** {@inheritDoc} */
     @Override
     public final String name() {
-        return componentConfiguration.getName();
+        return conf.getName();
     }
 
     /** {@inheritDoc} */
     @Override
     public Optional<Component> parent() {
-        throw new UnsupportedOperationException();
+        ComponentNodeConfiguration p = conf.parent;
+        return p == null ? Optional.empty() : Optional.of(of(p));
     }
 
     /** {@inheritDoc} */
     @Override
     public final ComponentPath path() {
-        ComponentPath cp = componentConfiguration.path();
+        ComponentPath cp = conf.path();
 //        for (PackedGuestConfigurationContext p : pgc) {
 //            cp = p.path().add(cp);
 //        }
@@ -150,13 +109,13 @@ public final class ComponentAdaptor implements Component {
     /** {@inheritDoc} */
     @Override
     public ComponentRelation relationTo(Component other) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @Override
     public final ComponentStream stream(ComponentStream.Option... options) {
-        return new PackedComponentStream(stream0(componentConfiguration, true, PackedComponentStreamOption.of(options)));
+        return new PackedComponentStream(stream0(conf, true, PackedComponentStreamOption.of(options)));
     }
 
     private final Stream<Component> stream0(ComponentNodeConfiguration origin, boolean isRoot, PackedComponentStreamOption option) {
@@ -164,7 +123,7 @@ public final class ComponentAdaptor implements Component {
         children(); // lazy calc
         Map<String, ComponentAdaptor> c = children;
         if (c != null && !c.isEmpty()) {
-            if (option.processThisDeeper(origin, componentConfiguration)) {
+            if (option.processThisDeeper(origin, this.conf)) {
                 Stream<Component> s = c.values().stream().flatMap(co -> co.stream0(origin, false, option));
                 return isRoot && option.excludeOrigin() ? s : Stream.concat(Stream.of(this), s);
             }
@@ -174,17 +133,7 @@ public final class ComponentAdaptor implements Component {
         }
     }
 
-    public static ComponentAdaptor of(ComponentNodeConfiguration bcc /* , List<PackedGuestConfigurationContext> pgc */) {
-        return new ComponentAdaptor(bcc /* , pgc */);
-//        
-//        if (bcc instanceof PackedGuestConfigurationContext) {
-//            // Need to figure out hosts on hosts..
-//            PackedGuestConfigurationContext pgcc = (PackedGuestConfigurationContext) bcc;
-//            LinkedList<PackedGuestConfigurationContext> al = new LinkedList<>(pgc);
-//            al.addFirst(pgcc);
-//            return new ComponentConfigurationToComponentAdaptor(pgcc.delegate, List.copyOf(al));
-//        } else {
-//            return new ComponentConfigurationToComponentAdaptor(bcc, pgc);
-//        }
+    public static ComponentAdaptor of(ComponentNodeConfiguration bcc) {
+        return new ComponentAdaptor(bcc);
     }
 }

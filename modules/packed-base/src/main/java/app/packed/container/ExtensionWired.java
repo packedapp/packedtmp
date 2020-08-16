@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
  * A class cannot define more than one method annotated with {@link ExtensionWired}.
  * <p>
  * This annotation can be used on subclasses of {@link Extension} or any singleton services that is annotated with
- * {@link ExtensionMemberType}. In which case the extension can be injected
+ * {@link ExtensionMember}. In which case the extension can be injected
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

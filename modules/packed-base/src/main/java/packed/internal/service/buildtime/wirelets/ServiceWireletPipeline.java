@@ -18,12 +18,12 @@ package packed.internal.service.buildtime.wirelets;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.component.WireletPipeline;
-import app.packed.container.ExtensionMemberType;
+import app.packed.container.ExtensionMember;
 import app.packed.service.ServiceExtension;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 
 /** The default wirelet pipeline for */
-@ExtensionMemberType(ServiceExtension.class)
+@ExtensionMember(ServiceExtension.class)
 public final class ServiceWireletPipeline extends WireletPipeline<ServiceWireletPipeline, ServiceWirelet> {
 
     /** The service extension node */

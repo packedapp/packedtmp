@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 import app.packed.base.invoke.OpenMode;
 import app.packed.base.invoke.Opens;
 import app.packed.component.Packlet;
-import app.packed.container.ExtensionMemberType;
+import app.packed.container.ExtensionMember;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a service of some kind. A field
@@ -90,7 +90,7 @@ import app.packed.container.ExtensionMemberType;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Packlet(extension = ServiceExtension.class)
-@ExtensionMemberType(ServiceExtension.class)
+@ExtensionMember(ServiceExtension.class)
 @Opens(to = { OpenMode.METHOD_INVOKE, OpenMode.FIELD_SET })
 public @interface Provide {
 

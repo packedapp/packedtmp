@@ -98,7 +98,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     /** Any children of this component (lazily initialized). */
     @Nullable
-    private HashMap<String, ComponentNodeConfiguration> children;
+    HashMap<String, ComponentNodeConfiguration> children;
 
     /** The first child of this component. */
     @Nullable

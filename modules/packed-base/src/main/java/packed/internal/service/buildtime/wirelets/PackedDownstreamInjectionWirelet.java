@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.config.ConfigSite;
-import app.packed.container.ExtensionMemberType;
+import app.packed.container.ExtensionMember;
 import app.packed.service.ServiceDescriptor;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceWirelets;
@@ -34,7 +34,7 @@ import packed.internal.service.runtime.InjectorEntry;
 /** The common superclass for upstream service wirelets. */
 public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
 
-    @ExtensionMemberType(ServiceExtension.class)
+    @ExtensionMember(ServiceExtension.class)
     public static class FilterOnKey extends PackedDownstreamInjectionWirelet {
 
         final Set<Key<?>> set;
@@ -57,7 +57,7 @@ public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
     }
 
     /** A wirelet for {@link ServiceWirelets#peekFrom(Consumer)}. */
-    @ExtensionMemberType(ServiceExtension.class)
+    @ExtensionMember(ServiceExtension.class)
     public static class PeekDownstreamWirelet extends PackedDownstreamInjectionWirelet {
 
         /** The peek action to execute. */
@@ -90,7 +90,7 @@ public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
         }
     }
 
-    @ExtensionMemberType(ServiceExtension.class)
+    @ExtensionMember(ServiceExtension.class)
     public static class ProvideConstantDownstream extends PackedDownstreamInjectionWirelet {
 
         final Object instance;

@@ -34,7 +34,7 @@ import app.packed.component.Wirelet;
 // @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented // Maybe just ExtensionMember
-public @interface ExtensionMemberType {
+public @interface ExtensionMember {
 
     /**
      * Returns the extension the annotated type is a member of.

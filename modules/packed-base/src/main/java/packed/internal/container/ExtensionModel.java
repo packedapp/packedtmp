@@ -34,7 +34,7 @@ import app.packed.component.ConsumeWirelet;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
-import app.packed.container.ExtensionMemberType;
+import app.packed.container.ExtensionMember;
 import app.packed.container.ExtensionSidecar;
 import app.packed.container.ExtensionWired;
 import app.packed.container.InternalExtensionException;
@@ -240,18 +240,18 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
     }
 
     /**
-     * Returns any value of {@link ExtensionMemberType} annotation.
+     * Returns any value of {@link ExtensionMember} annotation.
      * 
      * @param type
      *            the type look for an ExtensionMember annotation on
      * @return an extension the specified type is a member of
      * @throws InternalExtensionException
      *             if an annotation is present and the specified is not in the same module as the extension specified in
-     *             {@link ExtensionMemberType#value()}
+     *             {@link ExtensionMember#value()}
      */
     @Nullable
     public static Class<? extends Extension> findAnyExtensionMember(Class<?> type) {
-        ExtensionMemberType ue = type.getAnnotation(ExtensionMemberType.class);
+        ExtensionMember ue = type.getAnnotation(ExtensionMember.class);
         if (ue != null) {
             Class<? extends Extension> eType = ue.value();
             if (type.getModule() != eType.getModule()) {

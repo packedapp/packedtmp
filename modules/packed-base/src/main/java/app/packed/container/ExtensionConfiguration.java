@@ -211,7 +211,7 @@ public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
         }
 
         ComponentAdaptor cc = (ComponentAdaptor) component;
-        PackedContainerRole pcc = cc.componentConfiguration.actualContainer();
+        PackedContainerRole pcc = cc.conf.actualContainer();
         return pcc.getExtensionContext(extensionType);
     }
 }
