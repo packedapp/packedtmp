@@ -23,7 +23,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import app.packed.artifact.ArtifactSource;
 import app.packed.component.ComponentBundle;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
@@ -52,7 +51,7 @@ import app.packed.service.ServiceExtension;
 // Kunne godt have nogle lifecycle metoder man kunne overskrive.
 // F.eks. at man vil validere noget
 
-public abstract class ContainerBundle extends ComponentBundle<ContainerConfiguration> implements ArtifactSource {
+public abstract class ContainerBundle extends ComponentBundle<ContainerConfiguration> {
 
     /** Creates a new ContainerBundle. */
     protected ContainerBundle() {
@@ -205,8 +204,3 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
         return configuration().assemblyWirelet(type);
     }
 }
-//
-
-//protected ContainerBundle(ComponentDriver<? extends ContainerConfiguration> driver) {
-//  super(driver);
-//}

@@ -73,7 +73,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     private final PackedContainerRole container;
 
     /** The realm of this extension. */
-    final PackedRealm realm = PackedRealm.fromExtension(this);
+    final PackedRealm realm;
 
     /**
      * Creates a new configuration.
@@ -86,6 +86,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     private PackedExtensionConfiguration(PackedContainerRole container, ExtensionModel model) {
         this.container = requireNonNull(container);
         this.model = requireNonNull(model);
+        this.realm = PackedRealm.fromExtension(this);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })

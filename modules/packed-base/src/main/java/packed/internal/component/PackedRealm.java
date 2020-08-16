@@ -15,9 +15,15 @@
  */
 package packed.internal.component;
 
-import app.packed.artifact.ArtifactSource;
+import static java.util.Objects.requireNonNull;
+
+import java.lang.invoke.MethodHandles.Lookup;
+
+import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
+import packed.internal.container.ComponentLookup;
+import packed.internal.container.ContainerModel;
 import packed.internal.container.PackedExtensionConfiguration;
 
 /**
@@ -25,14 +31,30 @@ import packed.internal.container.PackedExtensionConfiguration;
  */
 public final class PackedRealm {
 
-    private final Object source;
+    private final Class<?> type;
 
-    private PackedRealm(Object source) {
-        this.source = source;
+    /** The current component lookup object, updated via {@link #lookup(Lookup)} */
+    // useFor future components...
+    // We need to support some way to
+    public ComponentLookup lookup;
+
+    /** A container model. */
+    public final ContainerModel model;
+
+    private PackedRealm(Class<?> type) {
+        this.type = requireNonNull(type);
+        this.lookup = this.model = ContainerModel.of(type);
     }
 
     public Class<?> type() {
-        return source.getClass();
+        return type;
+    }
+
+    public void lookup(@Nullable Lookup lookup) {
+        // If user specifies null, we use whatever
+        // Actually I think null might be okay, then its standard module-info.java
+        // Component X has access to G, but Packed does not have access
+        this.lookup = lookup == null ? model : model.withLookup(lookup);
     }
 
     /**
@@ -43,19 +65,14 @@ public final class PackedRealm {
      * @return a new realm
      */
     public static PackedRealm fromExtension(PackedExtensionConfiguration pec) {
-        return new PackedRealm(pec);
+        return new PackedRealm(pec.extensionType());
     }
 
     public static PackedRealm fromBundle(Bundle<?> bundle) {
-        return new PackedRealm(bundle);
-    }
-
-    public static PackedRealm fromAS(ArtifactSource source) {
-        return new PackedRealm(source);
+        return new PackedRealm(bundle.getClass());
     }
 
     public static PackedRealm fromConfigurator(CustomConfigurator<?> consumer) {
-        return new PackedRealm(consumer);
+        return new PackedRealm(consumer.getClass());
     }
-
 }

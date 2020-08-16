@@ -85,7 +85,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     public boolean finalState = false;
 
-    public final PackedRealm realm;
+    private final PackedRealm realm;
 
     /** Any wirelets that was specified by the user when creating this configuration. */
     @Nullable
@@ -134,8 +134,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         this.driver = requireNonNull(driver);
         this.configSite = requireNonNull(configSite);
         this.realm = requireNonNull(source);
-        this.wirelets = WireletPack.from(this, wirelets);
         this.container = container;
+        this.wirelets = WireletPack.from(this, wirelets);
         this.parent = parent;
 
         if (parent == null) {
@@ -174,6 +174,10 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             return this.container;
         }
         return containerOld;
+    }
+
+    public PackedRealm realm() {
+        return realm;
     }
 
     /**

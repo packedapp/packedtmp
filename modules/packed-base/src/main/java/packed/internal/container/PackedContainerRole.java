@@ -160,8 +160,8 @@ public final class PackedContainerRole {
         ConfigSite configSite = component.captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(lookup, factory);
 
-        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, component.realm, null, this);
-        model.invokeOnHookOnInstall(component.realm, conf);
+        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, component.realm(), null, this);
+        model.invokeOnHookOnInstall(component.realm(), conf);
         return scd.toConf(conf);
     }
 
@@ -171,8 +171,8 @@ public final class PackedContainerRole {
         ConfigSite configSite = component.captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(lookup, instance);
 
-        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, component.realm, null, this);
-        model.invokeOnHookOnInstall(component.realm, conf); // noops.
+        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, component.realm(), null, this);
+        model.invokeOnHookOnInstall(component.realm(), conf); // noops.
         return scd.toConf(conf);
     }
 
@@ -181,8 +181,8 @@ public final class PackedContainerRole {
 
         ConfigSite configSite = component.captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
 
-        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, component.realm, null, this);
-        scd.model.invokeOnHookOnInstall(component.realm, conf);
+        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, component.realm(), null, this);
+        scd.model.invokeOnHookOnInstall(component.realm(), conf);
         return scd.toConf(conf);
     }
 
@@ -192,7 +192,7 @@ public final class PackedContainerRole {
     public void link(Bundle<?> bundle, Wirelet... wirelets) {
         requireNonNull(bundle, "bundle is null");
 
-        // Extract the driver of the bundle
+        // Extract the driver from the bundle
         PackedComponentDriver<?> driver = BundleConfiguration.driverOf(bundle);
 
         // check if container
@@ -260,7 +260,7 @@ public final class PackedContainerRole {
             }
             extensions.put(extensionType, pec = PackedExtensionConfiguration.of(this, extensionType));
 
-            // Add Component
+            // Add a component configuration node
             PackedComponentDriver<?> pcd = new PackedComponentDriver.ExtensionComponentDriver(ExtensionModel.of(extensionType));
             new ComponentNodeConfiguration(component, pcd, component.configSite(), pec.realm(), null, this);
         }
@@ -268,7 +268,7 @@ public final class PackedContainerRole {
     }
 
     public static ComponentNodeConfiguration assemble(PackedAccemblyContext output, Bundle<?> bundle, Wirelet... wirelets) {
-        PackedRealm cc = PackedRealm.fromAS(bundle);
+        PackedRealm cc = PackedRealm.fromBundle(bundle);
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
         PackedContainerRole c = PackedContainerRole.create(ContainerComponentDriver.INSTANCE, cs, cc, null, output, wirelets);
 
@@ -279,10 +279,10 @@ public final class PackedContainerRole {
     }
 
     // From Driver,
-    public static PackedContainerRole create(PackedComponentDriver<?> driver, ConfigSite cs, PackedRealm source, ComponentNodeConfiguration parent,
+    public static PackedContainerRole create(PackedComponentDriver<?> driver, ConfigSite cs, PackedRealm realm, ComponentNodeConfiguration parent,
             PackedAccemblyContext output, Wirelet... wirelets) {
-        PackedContainerRole p1 = new PackedContainerRole(source);
-        ComponentNodeConfiguration pccc = new ComponentNodeConfiguration(parent, driver, cs, source, output, p1, wirelets);
+        PackedContainerRole p1 = new PackedContainerRole(realm);
+        ComponentNodeConfiguration pccc = new ComponentNodeConfiguration(parent, driver, cs, realm, output, p1, wirelets);
         p1.component = pccc;
         return p1;
     }

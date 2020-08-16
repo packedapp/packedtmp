@@ -48,6 +48,7 @@ public final class ContainerModel extends Model implements ComponentLookup {
         @SuppressWarnings("unchecked")
         @Override
         protected ContainerModel computeValue(Class<?> type) {
+            // Is either a bundle, or a ContainerConfigurator subclass
             return new ContainerModel((Class<? extends ArtifactSource>) type);
         }
     };
@@ -139,7 +140,7 @@ public final class ContainerModel extends Model implements ComponentLookup {
         return factory;
     }
 
-    ComponentLookup withLookup(Lookup lookup) {
+    public ComponentLookup withLookup(Lookup lookup) {
         // Use default access (this) if we specify null lookup
 
         // We need to check this in a separate class. Because from Java 13.

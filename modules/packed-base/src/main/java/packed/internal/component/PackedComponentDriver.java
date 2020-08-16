@@ -69,11 +69,11 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
     // Maybe create nullable if should not add??
     public abstract ComponentNode create(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, InstantiationContext ic);
 
-    public String defaultName(PackedRealm ssss) {
+    public String defaultName(PackedRealm realm) {
         if (isContainer()) {
             // I think try and move some of this to ComponentNameWirelet
             @Nullable
-            Class<?> source = ssss.type();
+            Class<?> source = realm.type();
             if (Bundle.class.isAssignableFrom(source)) {
                 String nnn = source.getSimpleName();
                 if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
