@@ -118,7 +118,6 @@ public final class ArtifactDriver<A> {
         return pcc.instantiateArtifact(wc);
     }
 
-    // Kan take restart wirelets...\
     public Object execute(ArtifactSource source, Wirelet... wirelets) {
         ArtifactContext context = create(source, wirelets);
         context.start();

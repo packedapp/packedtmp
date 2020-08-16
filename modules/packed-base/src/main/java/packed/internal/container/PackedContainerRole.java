@@ -87,14 +87,14 @@ public final class PackedContainerRole {
     /** A container model. */
     private final ContainerModel model;
 
-    int realState;
+    int containerState;
 
     private PackedContainerRole(Object source) {
         this.lookup = this.model = ContainerModel.of(source.getClass());
     }
 
     private void advanceTo(int newState) {
-        if (realState == 0) {
+        if (containerState == 0) {
             // We need to sort all extensions that are used. To make sure
             // they progress in their lifecycle in the right order.
             extensionsOrdered = new TreeSet<>(extensions.values());
@@ -103,10 +103,10 @@ public final class PackedContainerRole {
                 pec.onConfigured();
             }
             activeExtension = null;
-            realState = LS_1_LINKING;
+            containerState = LS_1_LINKING;
         }
 
-        if (realState == LS_1_LINKING && newState > LS_1_LINKING) {
+        if (containerState == LS_1_LINKING && newState > LS_1_LINKING) {
             for (ComponentNodeConfiguration cc = component.firstChild; cc != null; cc = cc.nextSibling) {
                 if (cc.driver().isContainer()) {
                     cc.container.assembleExtensions();
@@ -217,34 +217,39 @@ public final class PackedContainerRole {
         extensionsPrepareInstantiation(this.component, pic);
 
         // Will instantiate the whole container hierachy
-        ComponentNode pc = create(null, this, pic);
+        // component.driver.newNodeConfiguration(parent, bundle, wirelets)
+        ComponentNode pc = component.driver().create(null, component, pic);
         ComponentNodeConfiguration.methodHandlePassing0(component, pc, pic);
         return new PackedArtifactContext(pc);
     }
 
     // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
     // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return
-    // type.
-    // Maybe in the future LinkedBundle<- (LinkableContainerSource)
+    // type. Maybe in the future LinkedBundle<- (LinkableContainerSource)
     public void link(Bundle<?> bundle, Wirelet... wirelets) {
         requireNonNull(bundle, "bundle is null");
-        PackedComponentDriver<?> driver = BundleConfiguration.driver(bundle);
 
-        // check if cnotainer
+        // Extract the driver of the bundle
+        PackedComponentDriver<?> driver = BundleConfiguration.driverOf(bundle);
+
+        // check if container
 
         // IDK do we want to progress to next stage just in case...
-        if (realState == LS_0_MAINL) {
+        if (containerState == LS_0_MAINL) {
             advanceTo(LS_1_LINKING);
-        } else if (realState == LS_2_HOSTING) {
+        } else if (containerState == LS_2_HOSTING) {
             throw new IllegalStateException("Was hosting");
-        } else if (realState == LS_3_FINISHED) {
+        } else if (containerState == LS_3_FINISHED) {
             throw new IllegalStateException("Was Assembled");
         }
 
-        ComponentNodeConfiguration child = driver.newNodeConfiguration(component, bundle, wirelets);
+        // Create the child node
+        ComponentNodeConfiguration newNode = driver.newNodeConfiguration(component, bundle, wirelets);
 
-        BundleConfiguration.configure(bundle, driver.forBundleConf(child));
-        child.finalState = true;
+        // Invoke Bundle::configure
+        BundleConfiguration.configure(bundle, driver.forBundleConf(newNode));
+
+        newNode.finalState = true;
     }
 
     public void lookup(@Nullable Lookup lookup) {
@@ -286,7 +291,7 @@ public final class PackedContainerRole {
         if (pec == null) {
             // Checks that we are still configurable
             if (caller == null) {
-                if (realState != 0) {
+                if (containerState != 0) {
                     // Cannot perform this operation
                     throw new IllegalStateException("Cannot install new extensions at this point, extensionType = " + extensionType);
                 }

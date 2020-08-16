@@ -127,7 +127,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     /** {@inheritDoc} */
     @Override
     public void checkConfigurable() {
-        if (container.realState != 0) {
+        if (container.containerState != 0) {
             throw new IllegalStateException("This extension (" + instance().getClass().getSimpleName() + ") is no longer configurable");
         }
         if (isConfigured) {

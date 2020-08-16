@@ -52,7 +52,7 @@ public final class PackedArtifactImage implements ArtifactImage {
      * @param wc
      *            any wirelets specified when creating the image or later via {@link #with(Wirelet...)}
      */
-    private PackedArtifactImage(PackedContainerRole pcc, @Nullable WireletPack wc) {
+    public PackedArtifactImage(PackedContainerRole pcc, @Nullable WireletPack wc) {
         this.pcc = requireNonNull(pcc);
         this.wc = wc;
     }
@@ -135,25 +135,8 @@ public final class PackedArtifactImage implements ArtifactImage {
             PackedArtifactImage pai = (PackedArtifactImage) source;
             return pai.with(wirelets);
         } else {
-            return of((Bundle<?>) source, wirelets);
+            return Assembly.newImage((Bundle<?>) source, wirelets);
         }
-    }
-
-    /**
-     * Creates an artifact image using the specified source.
-     *
-     * @param bundle
-     *            the source of the image
-     * @param wirelets
-     *            any wirelets to use when construction the image. The wirelets will also be available when instantiating an
-     *            actual artifact
-     * @return the image that was built
-     * @throws RuntimeException
-     *             if the image could not be constructed
-     */
-    public static PackedArtifactImage of(Bundle<?> bundle, Wirelet... wirelets) {
-        PackedContainerRole pcc = PackedContainerRole.assemble(PackedAccemblyContext.image(), bundle, wirelets);
-        return new PackedArtifactImage(pcc, pcc.component.wireletContext);
     }
 }
 

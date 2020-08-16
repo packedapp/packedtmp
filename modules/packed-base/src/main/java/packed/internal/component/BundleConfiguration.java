@@ -32,7 +32,7 @@ public final class BundleConfiguration {
     /** A VarHandle that can access Bundle#configuration. */
     private static final VarHandle VH_BUNDLE_CONFIGURATION = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Bundle.class, "configuration", Object.class);
 
-    /** A VarHandle used from {@link #driver(Bundle)} to access the driver field of a bundle. */
+    /** A VarHandle used from {@link #driverOf(Bundle)} to access the driver field of a bundle. */
     private static final VarHandle VH_BUNDLE_DRIVER = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Bundle.class, "driver", ComponentDriver.class);
 
     /** A MethodHandle that can invoke Bundle#configure. */
@@ -78,7 +78,7 @@ public final class BundleConfiguration {
      *            the bundle to extract a component driver from
      * @return the specified bundle's component driver
      */
-    public static PackedComponentDriver<?> driver(Bundle<?> bundle) {
+    public static PackedComponentDriver<?> driverOf(Bundle<?> bundle) {
         return (PackedComponentDriver<?>) VH_BUNDLE_DRIVER.get(bundle);
     }
 }

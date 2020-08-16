@@ -31,14 +31,6 @@ public final class PackedRealm {
         this.source = source;
     }
 
-    public boolean isBundle() {
-        return source instanceof Bundle;
-    }
-
-    public Bundle<?> asBundle() {
-        return (Bundle<?>) source;
-    }
-
     public Class<?> type() {
         return source.getClass();
     }
