@@ -17,8 +17,6 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Set;
@@ -45,7 +43,6 @@ import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
 import packed.internal.component.PackedRealm;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.inject.ConfigSiteInjectOperations;
-import packed.internal.inject.factory.FactoryHandle;
 
 /** The default container context. */
 public final class PackedContainerRole {
@@ -71,16 +68,10 @@ public final class PackedContainerRole {
 
     private TreeSet<PackedExtensionConfiguration> extensionsOrdered;
 
-    /** The current component lookup object, updated via {@link #lookup(Lookup)} */
-    // useFor future components...
-    // We need to support some way to
-    private ComponentLookup lookup;
+    final PackedRealm realm;
 
-    /** A container model. */
-    private final ContainerModel model;
-
-    private PackedContainerRole(Object source) {
-        this.lookup = this.model = ContainerModel.of(source.getClass());
+    private PackedContainerRole(PackedRealm realm) {
+        this.realm = realm;
     }
 
     private void advanceTo(int newState) {
@@ -128,17 +119,6 @@ public final class PackedContainerRole {
     }
 
     /**
-     * Used to convert factories to method handle
-     * 
-     * @param handle
-     *            the factory handle
-     * @return the method handle
-     */
-    public MethodHandle fromFactoryHandle(FactoryHandle<?> handle) {
-        return lookup.readable(handle).toMethodHandle();
-    }
-
-    /**
      * Returns the context for the specified extension type. Or null if no extension of the specified type has already been
      * added.
      * 
@@ -156,9 +136,9 @@ public final class PackedContainerRole {
 
     public <T> SingletonConfiguration<T> install(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
-        ComponentModel model = lookup.componentModelOf(factory.rawType());
+        ComponentModel model = realm.lookup.componentModelOf(factory.rawType());
         ConfigSite configSite = component.captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
-        SingletonComponentDriver scd = new SingletonComponentDriver(lookup, factory);
+        SingletonComponentDriver scd = new SingletonComponentDriver(realm.lookup, factory);
 
         ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, component.realm(), null, this);
         model.invokeOnHookOnInstall(component.realm(), conf);
@@ -167,9 +147,9 @@ public final class PackedContainerRole {
 
     public <T> SingletonConfiguration<T> installInstance(T instance) {
         requireNonNull(instance, "instance is null");
-        ComponentModel model = lookup.componentModelOf(instance.getClass());
+        ComponentModel model = realm.lookup.componentModelOf(instance.getClass());
         ConfigSite configSite = component.captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
-        SingletonComponentDriver scd = new SingletonComponentDriver(lookup, instance);
+        SingletonComponentDriver scd = new SingletonComponentDriver(realm.lookup, instance);
 
         ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, component.realm(), null, this);
         model.invokeOnHookOnInstall(component.realm(), conf); // noops.
@@ -177,7 +157,7 @@ public final class PackedContainerRole {
     }
 
     public StatelessConfiguration installStateless(Class<?> implementation) {
-        StatelessComponentDriver scd = new StatelessComponentDriver(lookup, implementation);
+        StatelessComponentDriver scd = new StatelessComponentDriver(realm.lookup, implementation);
 
         ConfigSite configSite = component.captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
 
@@ -213,13 +193,6 @@ public final class PackedContainerRole {
         BundleConfiguration.configure(bundle, driver.forBundleConf(newNode));
 
         newNode.finalState = true;
-    }
-
-    public void lookup(@Nullable Lookup lookup) {
-        // If user specifies null, we use whatever
-        // Actually I think null might be okay, then its standard module-info.java
-        // Component X has access to G, but Packed does not have access
-        this.lookup = lookup == null ? model : model.withLookup(lookup);
     }
 
     @SuppressWarnings("unchecked")

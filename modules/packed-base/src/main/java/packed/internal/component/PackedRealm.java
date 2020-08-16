@@ -17,6 +17,7 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.Nullable;
@@ -25,6 +26,7 @@ import app.packed.component.CustomConfigurator;
 import packed.internal.container.ComponentLookup;
 import packed.internal.container.ContainerModel;
 import packed.internal.container.PackedExtensionConfiguration;
+import packed.internal.inject.factory.FactoryHandle;
 
 /**
  *
@@ -55,6 +57,10 @@ public final class PackedRealm {
         // Actually I think null might be okay, then its standard module-info.java
         // Component X has access to G, but Packed does not have access
         this.lookup = lookup == null ? model : model.withLookup(lookup);
+    }
+
+    public MethodHandle fromFactoryHandle(FactoryHandle<?> handle) {
+        return lookup.readable(handle).toMethodHandle();
     }
 
     /**

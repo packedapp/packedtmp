@@ -205,7 +205,7 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
 
         public MethodHandle fromFactory(PackedContainerRole context) {
             FactoryHandle<?> handle = factory.factory.handle;
-            return context.fromFactoryHandle(handle);
+            return context.component.realm().fromFactoryHandle(handle);
         }
 
         public <T> SingletonConfiguration<T> toConf(ComponentNodeConfiguration context) {
