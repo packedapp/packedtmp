@@ -26,7 +26,6 @@ import app.packed.component.Bundle;
 import app.packed.component.ComponentStream;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerDescriptor;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.PackedContainerRole;
@@ -44,6 +43,8 @@ public final class PackedArtifactImage implements ArtifactImage {
     @Nullable
     private final WireletPack wc;
 
+    Class<? extends Bundle<?>> bundleType;
+
     /**
      * Creates a new image from the specified configuration and wirelets.
      * 
@@ -52,9 +53,10 @@ public final class PackedArtifactImage implements ArtifactImage {
      * @param wc
      *            any wirelets specified when creating the image or later via {@link #with(Wirelet...)}
      */
-    public PackedArtifactImage(PackedContainerRole pcc, @Nullable WireletPack wc) {
+    public PackedArtifactImage(PackedContainerRole pcc, Class<? extends Bundle<?>> bundleType, @Nullable WireletPack wc) {
         this.pcc = requireNonNull(pcc);
         this.wc = wc;
+        this.bundleType = requireNonNull(bundleType);
     }
 
     /** {@inheritDoc} */
@@ -98,9 +100,8 @@ public final class PackedArtifactImage implements ArtifactImage {
 
     /** {@inheritDoc} */
     @Override
-    @SuppressWarnings("unchecked")
     public Class<? extends Bundle<?>> sourceType() {
-        return (Class<? extends ContainerBundle>) pcc.sourceType(); // images can only be created from bundles
+        return bundleType; // images can only be created from bundles
     }
 
     /** {@inheritDoc} */
@@ -117,7 +118,7 @@ public final class PackedArtifactImage implements ArtifactImage {
     @Override
     public PackedArtifactImage with(Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
-        return wirelets.length == 0 ? this : new PackedArtifactImage(pcc, WireletPack.fromImage(pcc, wc, wirelets));
+        return wirelets.length == 0 ? this : new PackedArtifactImage(pcc, bundleType, WireletPack.fromImage(pcc, wc, wirelets));
     }
 
     /**
@@ -130,12 +131,15 @@ public final class PackedArtifactImage implements ArtifactImage {
      *            any wirelet
      * @return the image
      */
+    @SuppressWarnings("unchecked")
     public static PackedArtifactImage lazyCreate(ArtifactSource source, Wirelet... wirelets) {
         if (source instanceof PackedArtifactImage) {
             PackedArtifactImage pai = (PackedArtifactImage) source;
             return pai.with(wirelets);
         } else {
-            return Assembly.newImage((Bundle<?>) source, wirelets);
+            Bundle<?> bundle = (Bundle<?>) source;
+            PackedContainerRole pcc = PackedContainerRole.assemble(PackedAccemblyContext.image(), bundle, wirelets);
+            return new PackedArtifactImage(pcc, (Class<? extends Bundle<?>>) bundle.getClass(), pcc.component.wireletContext);
         }
     }
 }

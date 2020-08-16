@@ -15,30 +15,9 @@
  */
 package packed.internal.artifact;
 
-import app.packed.component.Bundle;
-import app.packed.component.Wirelet;
-import packed.internal.container.PackedContainerRole;
-
 /**
  *
  */
 public class Assembly {
-
-    /**
-     * Creates an artifact image using the specified source.
-     *
-     * @param bundle
-     *            the source of the image
-     * @param wirelets
-     *            any wirelets to use when construction the image. The wirelets will also be available when instantiating an
-     *            actual artifact
-     * @return the image that was built
-     * @throws RuntimeException
-     *             if the image could not be constructed
-     */
-    public static PackedArtifactImage newImage(Bundle<?> bundle, Wirelet... wirelets) {
-        PackedContainerRole pcc = PackedContainerRole.assemble(PackedAccemblyContext.image(), bundle, wirelets);
-        return new PackedArtifactImage(pcc, pcc.component.wireletContext);
-    }
 
 }

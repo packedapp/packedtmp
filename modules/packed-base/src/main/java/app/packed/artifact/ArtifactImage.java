@@ -25,7 +25,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerDescriptor;
-import packed.internal.artifact.Assembly;
+import packed.internal.artifact.PackedArtifactImage;
 
 /**
  * Artifact images are immutable ahead-of-time configured artifacts. By configuring an artifact ahead of time, the
@@ -146,6 +146,6 @@ public interface ArtifactImage extends ArtifactSource {
      *             if the image could not be constructed
      */
     static ArtifactImage of(ContainerBundle bundle, Wirelet... wirelets) {
-        return Assembly.newImage(bundle, wirelets);
+        return PackedArtifactImage.lazyCreate(bundle, wirelets);
     }
 }

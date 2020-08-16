@@ -24,7 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.TreeSet;
 
-import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.ArtifactSource;
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
@@ -36,19 +35,15 @@ import app.packed.container.ContainerDescriptor;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.Factory;
-import packed.internal.artifact.InstantiationContext;
 import packed.internal.artifact.PackedAccemblyContext;
-import packed.internal.artifact.PackedArtifactContext;
 import packed.internal.component.BundleConfiguration;
 import packed.internal.component.ComponentModel;
-import packed.internal.component.ComponentNode;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
 import packed.internal.component.PackedRealm;
-import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.factory.FactoryHandle;
@@ -206,14 +201,6 @@ public final class PackedContainerRole {
         ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, component.realm, null, this);
         scd.model.invokeOnHookOnInstall(component.realm, conf);
         return scd.toConf(conf);
-    }
-
-    public ArtifactContext instantiateArtifact(WireletPack wc) {
-        InstantiationContext pic = new InstantiationContext(wc);
-
-        // Will instantiate the whole container hierachy
-        ComponentNode pc = component.driver().create(null, component, pic);
-        return new PackedArtifactContext(pc);
     }
 
     // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
