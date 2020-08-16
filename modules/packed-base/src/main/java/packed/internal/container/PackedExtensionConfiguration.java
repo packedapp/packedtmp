@@ -186,13 +186,13 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     /** {@inheritDoc} */
     @Override
     public <T> SingletonConfiguration<T> install(Factory<T> factory) {
-        return container.install(factory);
+        return container.component.install(factory);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T> SingletonConfiguration<T> installInstance(T instance) {
-        return container.installInstance(instance);
+        return container.component.installInstance(instance);
     }
 
     /**

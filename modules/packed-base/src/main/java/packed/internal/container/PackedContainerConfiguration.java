@@ -60,19 +60,19 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** {@inheritDoc} */
     @Override
     public <T> SingletonConfiguration<T> install(Factory<T> factory) {
-        return context.install(factory);
+        return context.component.install(factory);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T> SingletonConfiguration<T> installInstance(T instance) {
-        return context.installInstance(instance);
+        return context.component.installInstance(instance);
     }
 
     /** {@inheritDoc} */
     @Override
     public StatelessConfiguration installStateless(Class<?> implementation) {
-        return context.installStateless(implementation);
+        return context.component.installStateless(implementation);
     }
 
     /** {@inheritDoc} */
@@ -84,7 +84,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** {@inheritDoc} */
     @Override
     public void lookup(@Nullable Lookup lookup) {
-        context.realm.lookup(lookup);
+        context.component.realm().lookup(lookup);
     }
 
     /** {@inheritDoc} */

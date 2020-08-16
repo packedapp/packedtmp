@@ -38,12 +38,17 @@ import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
+import app.packed.component.SingletonConfiguration;
+import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
+import app.packed.inject.Factory;
 import packed.internal.artifact.InstantiationContext;
 import packed.internal.artifact.PackedAccemblyContext;
 import packed.internal.artifact.PackedAssemblyContext;
+import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
+import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletModel;
 import packed.internal.component.wirelet.WireletPack;
@@ -51,6 +56,7 @@ import packed.internal.component.wirelet.WireletPipelineContext;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.PackedContainerRole;
 import packed.internal.container.PackedExtensionConfiguration;
+import packed.internal.inject.ConfigSiteInjectOperations;
 
 /** The build time representation of a component. */
 public final class ComponentNodeConfiguration implements ComponentConfigurationContext {
@@ -239,6 +245,38 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         if (finalState) {
             throw new IllegalStateException("This component can no longer be configured");
         }
+    }
+
+    public <T> SingletonConfiguration<T> installInstance(T instance) {
+        requireNonNull(instance, "instance is null");
+        ComponentModel model = realm().lookup.componentModelOf(instance.getClass());
+        ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
+        SingletonComponentDriver scd = new SingletonComponentDriver(realm().lookup, instance);
+
+        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(this, scd, configSite, realm(), null, container);
+        model.invokeOnHookOnInstall(realm(), conf); // noops.
+        return scd.toConf(conf);
+    }
+
+    public <T> SingletonConfiguration<T> install(Factory<T> factory) {
+        requireNonNull(factory, "factory is null");
+        ComponentModel model = realm().lookup.componentModelOf(factory.rawType());
+        ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
+        SingletonComponentDriver scd = new SingletonComponentDriver(realm().lookup, factory);
+
+        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(this, scd, configSite, realm(), null, container);
+        model.invokeOnHookOnInstall(realm(), conf);
+        return scd.toConf(conf);
+    }
+
+    public StatelessConfiguration installStateless(Class<?> implementation) {
+        StatelessComponentDriver scd = new StatelessComponentDriver(realm().lookup, implementation);
+
+        ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
+
+        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(this, scd, configSite, realm(), null, container);
+        scd.model.invokeOnHookOnInstall(realm(), conf);
+        return scd.toConf(conf);
     }
 
     /** {@inheritDoc} */

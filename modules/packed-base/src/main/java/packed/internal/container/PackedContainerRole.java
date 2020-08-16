@@ -24,22 +24,16 @@ import java.util.TreeSet;
 
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
-import app.packed.component.SingletonConfiguration;
-import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerDescriptor;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
-import app.packed.inject.Factory;
 import packed.internal.artifact.PackedAccemblyContext;
 import packed.internal.component.BundleConfiguration;
-import packed.internal.component.ComponentModel;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
-import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
-import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
 import packed.internal.component.PackedRealm;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.inject.ConfigSiteInjectOperations;
@@ -67,12 +61,6 @@ public final class PackedContainerRole {
     public final LinkedHashMap<Class<? extends Extension>, PackedExtensionConfiguration> extensions = new LinkedHashMap<>();
 
     private TreeSet<PackedExtensionConfiguration> extensionsOrdered;
-
-    final PackedRealm realm;
-
-    private PackedContainerRole(PackedRealm realm) {
-        this.realm = realm;
-    }
 
     private void advanceTo(int newState) {
         if (containerState == 0) {
@@ -132,38 +120,6 @@ public final class PackedContainerRole {
     public PackedExtensionConfiguration getExtensionContext(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         return extensions.get(extensionType);
-    }
-
-    public <T> SingletonConfiguration<T> install(Factory<T> factory) {
-        requireNonNull(factory, "factory is null");
-        ComponentModel model = realm.lookup.componentModelOf(factory.rawType());
-        ConfigSite configSite = component.captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
-        SingletonComponentDriver scd = new SingletonComponentDriver(realm.lookup, factory);
-
-        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, component.realm(), null, this);
-        model.invokeOnHookOnInstall(component.realm(), conf);
-        return scd.toConf(conf);
-    }
-
-    public <T> SingletonConfiguration<T> installInstance(T instance) {
-        requireNonNull(instance, "instance is null");
-        ComponentModel model = realm.lookup.componentModelOf(instance.getClass());
-        ConfigSite configSite = component.captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
-        SingletonComponentDriver scd = new SingletonComponentDriver(realm.lookup, instance);
-
-        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, component.realm(), null, this);
-        model.invokeOnHookOnInstall(component.realm(), conf); // noops.
-        return scd.toConf(conf);
-    }
-
-    public StatelessConfiguration installStateless(Class<?> implementation) {
-        StatelessComponentDriver scd = new StatelessComponentDriver(realm.lookup, implementation);
-
-        ConfigSite configSite = component.captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
-
-        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(component, scd, configSite, component.realm(), null, this);
-        scd.model.invokeOnHookOnInstall(component.realm(), conf);
-        return scd.toConf(conf);
     }
 
     // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
@@ -254,7 +210,7 @@ public final class PackedContainerRole {
     // From Driver,
     public static PackedContainerRole create(PackedComponentDriver<?> driver, ConfigSite cs, PackedRealm realm, ComponentNodeConfiguration parent,
             PackedAccemblyContext output, Wirelet... wirelets) {
-        PackedContainerRole p1 = new PackedContainerRole(realm);
+        PackedContainerRole p1 = new PackedContainerRole();
         ComponentNodeConfiguration pccc = new ComponentNodeConfiguration(parent, driver, cs, realm, output, p1, wirelets);
         p1.component = pccc;
         return p1;
