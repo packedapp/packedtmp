@@ -127,6 +127,15 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     @Nullable
     public final PackedContainerRole container;
 
+    public ComponentNodeConfiguration(PackedAssemblyContext pac, PackedComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm,
+            Wirelet... wirelets) {
+        this(null, driver, configSite, realm, pac, wirelets);
+    }
+
+    public ComponentNodeConfiguration newChild(PackedComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm, Wirelet... wirelets) {
+        return new ComponentNodeConfiguration(this, driver, configSite, realm, assembly, wirelets);
+    }
+
     /**
      * Creates a new instance of this class
      * 
@@ -135,7 +144,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
      * @param parent
      *            the parent of the component
      */
-    public ComponentNodeConfiguration(@Nullable ComponentNodeConfiguration parent, PackedComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm,
+    private ComponentNodeConfiguration(@Nullable ComponentNodeConfiguration parent, PackedComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm,
             PackedAssemblyContext pac, Wirelet... wirelets) {
         this.driver = requireNonNull(driver);
         this.configSite = requireNonNull(configSite);
@@ -147,13 +156,13 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         }
         this.wirelets = WireletPack.from(this, wirelets);
         this.parent = parent;
-
+        this.assembly = requireNonNull(pac);
         if (parent == null) {
             this.pod = new PackedPodConfigurationContext(this);
             this.containerOld = null;
             this.depth = 0;
             this.extension = null;
-            this.assembly = requireNonNull(pac);
+
         } else {
             if (driver.isGuest()) {
                 this.pod = new PackedPodConfigurationContext(this);
@@ -163,7 +172,6 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             this.containerOld = parent.driver.isContainer() ? (PackedContainerRole) parent.container : parent.containerOld;
             this.depth = parent.depth + 1;
             this.extension = containerOld.activeExtension;
-            this.assembly = parent.assembly;
         }
 
         setName0(null);
@@ -257,7 +265,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(realm, instance);
 
-        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(this, scd, configSite, realm, null);
+        ComponentNodeConfiguration conf = newChild(scd, configSite, realm);
         model.invokeOnHookOnInstall(realm, conf); // noops.
         return scd.toConf(conf);
     }
@@ -268,7 +276,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(realm, factory);
 
-        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(this, scd, configSite, realm, null);
+        ComponentNodeConfiguration conf = newChild(scd, configSite, realm);
         model.invokeOnHookOnInstall(realm, conf);
         return scd.toConf(conf);
     }
@@ -278,7 +286,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
 
-        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(this, scd, configSite, realm, null);
+        ComponentNodeConfiguration conf = newChild(scd, configSite, realm);
         scd.model.invokeOnHookOnInstall(realm, conf);
         return scd.toConf(conf);
     }

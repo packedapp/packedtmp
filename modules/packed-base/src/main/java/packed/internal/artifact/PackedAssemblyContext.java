@@ -76,8 +76,8 @@ public final class PackedAssemblyContext implements AssembleContext {
             CustomConfigurator<C> consumer, Wirelet... wirelets) {
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
 
-        ComponentNodeConfiguration cnc = new ComponentNodeConfiguration(null, driver, cs, PackedRealm.fromConfigurator(consumer),
-                new PackedAssemblyContext(PackedOutput.artifact(ad)), wirelets);
+        ComponentNodeConfiguration cnc = new ComponentNodeConfiguration(new PackedAssemblyContext(PackedOutput.artifact(ad)), driver, cs,
+                PackedRealm.fromConfigurator(consumer), wirelets);
         PackedContainerRole c = cnc.container;
 
         D pc = driver.forBundleConf(c.component);
@@ -105,7 +105,7 @@ public final class PackedAssemblyContext implements AssembleContext {
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
 
         PackedComponentDriver<?> pcd = BundleConfiguration.driverOf(bundle);
-        ComponentNodeConfiguration cnc = new ComponentNodeConfiguration(null, pcd, cs, PackedRealm.fromBundle(bundle), output, wirelets);
+        ComponentNodeConfiguration cnc = new ComponentNodeConfiguration(output, pcd, cs, PackedRealm.fromBundle(bundle), wirelets);
         PackedContainerRole c = cnc.container;
 
         BundleConfiguration.configure(bundle, new PackedContainerConfiguration(c));

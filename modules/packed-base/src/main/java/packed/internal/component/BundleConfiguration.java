@@ -40,6 +40,8 @@ public final class BundleConfiguration {
 
     private BundleConfiguration() {}
 
+    // Maaske skal den tage en driver og en node???
+    // Configuration
     public static void configure(Bundle<?> bundle, Object configuration) {
 
         // We perform a compare and exchange with configuration. Guarding against

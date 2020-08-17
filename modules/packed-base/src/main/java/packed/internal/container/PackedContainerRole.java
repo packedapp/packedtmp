@@ -140,7 +140,7 @@ public final class PackedContainerRole {
 
         // Create the child node
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(component.configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
-        ComponentNodeConfiguration newNode = new ComponentNodeConfiguration(component, driver, cs, PackedRealm.fromBundle(bundle), null, wirelets);
+        ComponentNodeConfiguration newNode = component.newChild(driver, cs, PackedRealm.fromBundle(bundle), wirelets);
 
         // Invoke Bundle::configure
         BundleConfiguration.configure(bundle, driver.forBundleConf(newNode));
@@ -188,7 +188,7 @@ public final class PackedContainerRole {
 
             // Add a component configuration node
             PackedComponentDriver<?> pcd = new PackedComponentDriver.ExtensionComponentDriver(ExtensionModel.of(extensionType));
-            new ComponentNodeConfiguration(component, pcd, component.configSite(), pec.realm(), null);
+            component.newChild(pcd, component.configSite(), pec.realm());
         }
         return pec;
     }
