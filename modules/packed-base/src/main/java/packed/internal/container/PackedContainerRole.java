@@ -188,11 +188,9 @@ public final class PackedContainerRole {
             } else {
                 caller.checkConfigurable();
             }
+
             extensions.put(extensionType, pec = PackedExtensionConfiguration.of(this, extensionType));
 
-            // Add a component configuration node
-            PackedComponentDriver<?> pcd = new PackedComponentDriver.ExtensionComponentDriver(ExtensionModel.of(extensionType));
-            component.newChild(pcd, component.configSite(), pec.realm());
         }
         return pec;
     }

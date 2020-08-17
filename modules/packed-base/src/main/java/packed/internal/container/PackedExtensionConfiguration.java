@@ -39,6 +39,7 @@ import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionSidecar;
 import app.packed.inject.Factory;
 import app.packed.lifecycle.LifecycleContext;
+import packed.internal.component.PackedComponentDriver;
 import packed.internal.lifecycle.LifecycleContextHelper;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -323,6 +324,10 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
 
         // Sets Extension.configuration = pec
         VH_EXTENSION_CONFIGURATION.set(e, pec); // field is package-private in a public package
+
+        // Add a component configuration node
+        PackedComponentDriver<?> pcd = new PackedComponentDriver.ExtensionComponentDriver(ExtensionModel.of(extensionType));
+        pcc.component.newChild(pcd, pcc.component.configSite(), pec.realm());
 
         // Run the following 3 steps before the extension is handed back to the user.
         PackedExtensionConfiguration existing = pcc.activeExtension;
