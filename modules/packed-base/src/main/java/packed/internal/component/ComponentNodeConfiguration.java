@@ -43,6 +43,7 @@ import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
+import packed.internal.artifact.InstantiationContext;
 import packed.internal.artifact.PackedAssemblyContext;
 import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
@@ -289,6 +290,10 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         ComponentNodeConfiguration conf = newChild(scd, configSite, realm);
         scd.model.invokeOnHookOnInstall(realm, conf);
         return scd.toConf(conf);
+    }
+
+    public ComponentNode createNode(InstantiationContext ic) {
+        return new ComponentNode(null, this, ic);
     }
 
     /** {@inheritDoc} */

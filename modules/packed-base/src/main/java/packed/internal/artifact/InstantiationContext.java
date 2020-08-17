@@ -73,7 +73,10 @@ public final class InstantiationContext {
     public static ArtifactContext instantiateArtifact(ComponentNodeConfiguration root, WireletPack wc) {
         InstantiationContext ic = new InstantiationContext(wc);
         // Will instantiate the whole container hierachy
-        ComponentNode node = root.driver().create(null, root, ic);
+        ComponentNode node = root.createNode(ic);
+
+        // TODO run initialization
+
         return new PackedArtifactContext(node);
     }
 

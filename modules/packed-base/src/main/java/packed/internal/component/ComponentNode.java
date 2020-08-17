@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -33,8 +34,14 @@ import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
+import app.packed.service.Injector;
+import app.packed.service.ServiceExtension;
 import packed.internal.artifact.InstantiationContext;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
+import packed.internal.container.PackedContainerRole;
+import packed.internal.container.PackedExtensionConfiguration;
+import packed.internal.service.buildtime.ServiceExtensionNode;
+import packed.internal.service.runtime.PackedInjector;
 
 /** An runtime representation of a component. */
 public final class ComponentNode implements Component {
@@ -69,7 +76,7 @@ public final class ComponentNode implements Component {
      * @param configuration
      *            the configuration used to create this node
      */
-    public ComponentNode(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, InstantiationContext ic) {
+    ComponentNode(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, InstantiationContext ic) {
         this.parent = parent;
         this.model = RuntimeComponentModel.of(configuration);
         this.pod = requireNonNull(configuration.pod.pod());
@@ -93,6 +100,25 @@ public final class ComponentNode implements Component {
             this.name = requireNonNull(configuration.name);
         }
 
+        // Initialize Container
+        if (configuration.driver().isContainer()) {
+            PackedContainerRole container = configuration.container;// PackedContainerRole.findOrNull(configuration);
+            Injector i = null;
+
+            if (container != null && container.extensions != null) {
+                PackedExtensionConfiguration ee = container.extensions.get(ServiceExtension.class);
+                if (ee != null) {
+                    i = ServiceExtensionNode.fromExtension(((ServiceExtension) ee.instance())).onInstantiate(ic.wirelets());
+                }
+
+            }
+            if (i == null) {
+                i = new PackedInjector(configuration.configSite(), configuration.getDescription(), new LinkedHashMap<>());
+            }
+
+            data[0] = i;
+        }
+
         // Last but least, initialize all children...
 
         Map<String, ComponentNode> c = null;
@@ -101,8 +127,8 @@ public final class ComponentNode implements Component {
             HashMap<String, ComponentNode> result = new HashMap<>(configuration.children.size());
 
             for (ComponentNodeConfiguration cc = configuration.firstChild; cc != null; cc = cc.nextSibling) {
-                ComponentNode ac = cc.driver.create(parent, cc, ic);
-                if (ac != null) {
+                if (cc.driver.createRuntimeNode()) {
+                    ComponentNode ac = new ComponentNode(parent, cc, ic);
                     result.put(ac.name(), ac);
                 }
             }
