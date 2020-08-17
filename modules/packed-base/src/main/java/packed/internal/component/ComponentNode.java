@@ -102,6 +102,7 @@ public final class ComponentNode implements Component {
 
         // Initialize Container
         if (configuration.driver().isContainer()) {
+            // I think this injector is only available for the top of an assembly
             PackedContainerRole container = configuration.container;
             Injector i = null;
 
@@ -110,7 +111,6 @@ public final class ComponentNode implements Component {
                 if (ee != null) {
                     i = ServiceExtensionNode.fromExtension(((ServiceExtension) ee.instance())).onInstantiate(ic.wirelets());
                 }
-
             }
             if (i == null) {
                 i = new PackedInjector(configuration.configSite(), configuration.getDescription(), new LinkedHashMap<>());

@@ -50,7 +50,7 @@ public final class PackedContainerRole {
     @Nullable
     public PackedExtensionConfiguration activeExtension;
 
-    public final ComponentNodeConfiguration component;
+    public final ComponentNodeConfiguration node;
 
     int containerState;
 
@@ -62,9 +62,9 @@ public final class PackedContainerRole {
     @Nullable
     public final PackedContainerRole parent;
 
-    public PackedContainerRole(ComponentNodeConfiguration cnc) {
-        this.component = requireNonNull(cnc);
-        this.parent = cnc.parentOrNull() == null ? null : cnc.parentOrNull().container;
+    public PackedContainerRole(ComponentNodeConfiguration node) {
+        this.node = requireNonNull(node);
+        this.parent = node.parentOrNull() == null ? null : node.parentOrNull().container;
     }
 
     public void advanceTo(int newState) {
@@ -81,7 +81,7 @@ public final class PackedContainerRole {
         }
 
         if (containerState == LS_1_LINKING && newState > LS_1_LINKING) {
-            for (ComponentNodeConfiguration cc = component.firstChild; cc != null; cc = cc.nextSibling) {
+            for (ComponentNodeConfiguration cc = node.firstChild; cc != null; cc = cc.nextSibling) {
                 if (cc.driver().isContainer()) {
                     cc.container.advanceTo(LS_3_FINISHED);
                 }
@@ -94,8 +94,8 @@ public final class PackedContainerRole {
     }
 
     public void buildDescriptor(ContainerDescriptor.Builder builder) {
-        builder.setBundleDescription(component.getDescription());
-        builder.setName(component.getName());
+        builder.setBundleDescription(node.getDescription());
+        builder.setName(node.getName());
         for (PackedExtensionConfiguration e : extensions.values()) {
             e.buildDescriptor(builder);
         }
@@ -143,8 +143,8 @@ public final class PackedContainerRole {
         }
 
         // Create the child node
-        ConfigSite cs = ConfigSiteSupport.captureStackFrame(component.configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
-        ComponentNodeConfiguration newNode = component.newChild(driver, cs, PackedRealm.fromBundle(bundle), wirelets);
+        ConfigSite cs = ConfigSiteSupport.captureStackFrame(node.configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
+        ComponentNodeConfiguration newNode = node.newChild(driver, cs, PackedRealm.fromBundle(bundle), wirelets);
 
         // Invoke Bundle::configure
         BundleConfiguration.configure(bundle, driver.forBundleConf(newNode));
@@ -184,13 +184,14 @@ public final class PackedContainerRole {
                     // Cannot perform this operation
                     throw new IllegalStateException("Cannot install new extensions at this point, extensionType = " + extensionType);
                 }
-                component.checkConfigurable();
+                node.checkConfigurable();
             } else {
                 caller.checkConfigurable();
             }
 
+            // Tror lige vi skal have gennemtaenkt den lifecycle...
+            // Taenker om vi
             extensions.put(extensionType, pec = PackedExtensionConfiguration.of(this, extensionType));
-
         }
         return pec;
     }

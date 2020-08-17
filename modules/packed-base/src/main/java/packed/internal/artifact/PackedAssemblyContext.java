@@ -80,13 +80,13 @@ public final class PackedAssemblyContext implements AssembleContext {
                 PackedRealm.fromConfigurator(consumer), wirelets);
         PackedContainerRole c = cnc.container;
 
-        D pc = driver.forBundleConf(c.component);
+        D pc = driver.forBundleConf(c.node);
         C cc = requireNonNull(factory.apply(pc));
         consumer.configure(cc);
 
-        c.component.finalState = true;
+        c.node.finalState = true;
         c.advanceTo(PackedContainerRole.LS_3_FINISHED);
-        return c.component;
+        return c.node;
     }
 
     public static ComponentNodeConfiguration assembleArtifact(ArtifactDriver<?> driver, Bundle<?> bundle, Wirelet[] wirelets) {

@@ -162,7 +162,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     /** {@inheritDoc} */
     @Override
     public ConfigSite containerConfigSite() {
-        return container.component.configSite();
+        return container.node.configSite();
     }
 
     /** {@inheritDoc} */
@@ -180,19 +180,19 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
      */
     @Nullable
     Object findWirelet(Class<? extends Wirelet> wireletType) {
-        return container.component.wireletAny(wireletType).orElse(null);
+        return container.node.wireletAny(wireletType).orElse(null);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T> SingletonConfiguration<T> install(Factory<T> factory) {
-        return container.component.install(factory);
+        return container.node.install(factory);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T> SingletonConfiguration<T> installInstance(T instance) {
-        return container.component.installInstance(instance);
+        return container.node.installInstance(instance);
     }
 
     /**
@@ -273,7 +273,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     @Override
     public ComponentPath path() {
         // TODO return path of this component.
-        return container.component.path();
+        return container.node.path();
     }
 
     /** {@inheritDoc} */
@@ -327,7 +327,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
 
         // Add a component configuration node
         PackedComponentDriver<?> pcd = new PackedComponentDriver.ExtensionComponentDriver(ExtensionModel.of(extensionType));
-        pcc.component.newChild(pcd, pcc.component.configSite(), pec.realm());
+        pcc.node.newChild(pcd, pcc.node.configSite(), pec.realm());
 
         // Run the following 3 steps before the extension is handed back to the user.
         PackedExtensionConfiguration existing = pcc.activeExtension;
@@ -340,11 +340,11 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
             // Should we also set the active extension in the parent???
             if (model.extensionLinkedToAncestorExtension != null) {
                 PackedExtensionConfiguration parentExtension = null;
-                PackedContainerRole parent = pcc.component.container;
+                PackedContainerRole parent = pcc.node.container;
                 if (!model.extensionLinkedDirectChildrenOnly) {
                     while (parentExtension == null && parent != null) {
                         parentExtension = parent.getExtensionContext(extensionType);
-                        parent = parent.component.container();
+                        parent = parent.node.container();
                     }
                 } else if (parent != null) {
                     parentExtension = parent.getExtensionContext(extensionType);
@@ -365,8 +365,8 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
             model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_0_INSTANTIATION, e, pec);
 
             // 3. Finally initialize any pipeline (??swap step 2 and 3??)
-            if (pcc.component.wirelets != null) {
-                pcc.component.wirelets.extensionInitialized(pec);
+            if (pcc.node.wirelets != null) {
+                pcc.node.wirelets.extensionInitialized(pec);
             }
         } finally {
             pcc.activeExtension = existing;

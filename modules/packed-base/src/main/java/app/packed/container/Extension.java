@@ -78,7 +78,7 @@ public abstract class Extension {
     // or keep it at runtime or whatever they want to do....
     // Samme problem som Bundle vel...
     // Maaske er en Extension et bundle
-    ExtensionConfiguration configuration; // = PEC.CONFIGURED
+    private ExtensionConfiguration configuration; // = PEC.CONFIGURED
 
     /**
      * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
@@ -156,7 +156,7 @@ public abstract class Extension {
         ExtensionConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension. If you need to perform "
-                    + "initialization before returning the extension to the user, override " + Extension.class.getSimpleName() + "#initialize()");
+                    + "initialization before returning the extension to the user, override " + Extension.class.getSimpleName() + "#added()");
 //            * 
 //            * @apiNote Original this method was protected. But extension is really the only sidecar that works this way. So to
 //            *          streamline with other sidecars we only allow it to be dependency injected into subclasses.
@@ -173,7 +173,7 @@ public abstract class Extension {
      * Invoked by the runtime immediately after the constructor has returned, Unlike the constructor, {@link #configuration}
      * can be invoked from this method.
      */
-    protected void initialize() {}
+    protected void added() {}
 
     protected final <T> SingletonConfiguration<T> install(Factory<T> factory) {
         return configuration().install(factory);
@@ -191,7 +191,7 @@ public abstract class Extension {
         return configuration().installInstance(instance);
     }
 
-    protected void lookup(Lookup l) {
+    protected final void lookup(Lookup l) {
         // Den fungere ligesom Bundle.lookup()
         // Her har vi selve extension'en som
     }

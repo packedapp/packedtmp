@@ -35,14 +35,14 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     private final PackedContainerRole context;
 
     public PackedContainerConfiguration(PackedContainerRole context) {
-        super(context.component);
+        super(context.node);
         this.context = context;
     }
 
     /** {@inheritDoc} */
     @Override
     public <W extends Wirelet> Optional<W> assemblyWirelet(Class<W> type) {
-        return context.component.assemblyWirelet(type);
+        return context.node.assemblyWirelet(type);
     }
 
     /** {@inheritDoc} */
@@ -60,44 +60,44 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** {@inheritDoc} */
     @Override
     public <T> SingletonConfiguration<T> install(Factory<T> factory) {
-        return context.component.install(factory);
+        return context.node.install(factory);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T> SingletonConfiguration<T> installInstance(T instance) {
-        return context.component.installInstance(instance);
+        return context.node.installInstance(instance);
     }
 
     /** {@inheritDoc} */
     @Override
     public StatelessConfiguration installStateless(Class<?> implementation) {
-        return context.component.installStateless(implementation);
+        return context.node.installStateless(implementation);
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isArtifactRoot() {
-        return context.component.depth() == 0;// not sure this is correct
+        return context.node.depth() == 0;// not sure this is correct
     }
 
     /** {@inheritDoc} */
     @Override
     public void lookup(@Nullable Lookup lookup) {
-        context.component.realm().lookup(lookup);
+        context.node.realm().lookup(lookup);
     }
 
     /** {@inheritDoc} */
     @Override
     public PackedContainerConfiguration setDescription(String description) {
-        context.component.setDescription(description);
+        context.node.setDescription(description);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
     public PackedContainerConfiguration setName(String name) {
-        context.component.setName(name);
+        context.node.setName(name);
         return this;
     }
 

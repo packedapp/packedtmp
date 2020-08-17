@@ -28,10 +28,10 @@ final class PackedPodConfigurationContext {
     /** The pod used at runtime. */
     private PackedPod pod;
 
-    final ComponentNodeConfiguration root;
+    final ComponentNodeConfiguration node;
 
-    PackedPodConfigurationContext(ComponentNodeConfiguration root) {
-        this.root = requireNonNull(root);
+    PackedPodConfigurationContext(ComponentNodeConfiguration node) {
+        this.node = requireNonNull(node);
     }
 
     PackedPod pod() {
