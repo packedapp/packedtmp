@@ -76,8 +76,10 @@ public final class PackedAssemblyContext implements AssembleContext {
     public static <C, D> ComponentNodeConfiguration configure(ArtifactDriver<?> ad, PackedComponentDriver<D> driver, Function<D, C> factory,
             CustomConfigurator<C> consumer, Wirelet... wirelets) {
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
-        PackedContainerRole c = PackedContainerRole.create(ContainerComponentDriver.INSTANCE, cs, PackedRealm.fromConfigurator(consumer), null,
+
+        ComponentNodeConfiguration cnc = new ComponentNodeConfiguration(null, ContainerComponentDriver.INSTANCE, cs, PackedRealm.fromConfigurator(consumer),
                 new PackedAssemblyContext(PackedOutput.artifact(ad)), wirelets);
+        PackedContainerRole c = cnc.container;
 
         D pc = driver.forBundleConf(c.component);
         C cc = requireNonNull(factory.apply(pc));
@@ -102,7 +104,10 @@ public final class PackedAssemblyContext implements AssembleContext {
 
     public static ComponentNodeConfiguration assemble(PackedAssemblyContext output, Bundle<?> bundle, Wirelet... wirelets) {
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
-        PackedContainerRole c = PackedContainerRole.create(ContainerComponentDriver.INSTANCE, cs, PackedRealm.fromBundle(bundle), null, output, wirelets);
+
+        ComponentNodeConfiguration cnc = new ComponentNodeConfiguration(null, ContainerComponentDriver.INSTANCE, cs, PackedRealm.fromBundle(bundle), output,
+                wirelets);
+        PackedContainerRole c = cnc.container;
 
         BundleConfiguration.configure(bundle, new PackedContainerConfiguration(c));
 

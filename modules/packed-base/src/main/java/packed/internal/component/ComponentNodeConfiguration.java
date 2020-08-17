@@ -136,11 +136,10 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
      *            the parent of the component
      */
     public ComponentNodeConfiguration(@Nullable ComponentNodeConfiguration parent, PackedComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm,
-            PackedAssemblyContext pac, @Nullable PackedContainerRole containerd, Wirelet... wirelets) {
+            PackedAssemblyContext pac, Wirelet... wirelets) {
         this.driver = requireNonNull(driver);
         this.configSite = requireNonNull(configSite);
         this.realm = requireNonNull(realm);
-        // this.container = container;
         if (driver.isContainer()) {
             this.container = new PackedContainerRole(this);
         } else {
@@ -154,7 +153,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             this.containerOld = null;
             this.depth = 0;
             this.extension = null;
-            this.assembly = pac;
+            this.assembly = requireNonNull(pac);
         } else {
             if (driver.isGuest()) {
                 this.pod = new PackedPodConfigurationContext(this);
@@ -258,7 +257,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(realm, instance);
 
-        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(this, scd, configSite, realm, null, container);
+        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(this, scd, configSite, realm, null);
         model.invokeOnHookOnInstall(realm, conf); // noops.
         return scd.toConf(conf);
     }
@@ -269,7 +268,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(realm, factory);
 
-        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(this, scd, configSite, realm, null, container);
+        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(this, scd, configSite, realm, null);
         model.invokeOnHookOnInstall(realm, conf);
         return scd.toConf(conf);
     }
@@ -279,7 +278,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
 
-        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(this, scd, configSite, realm, null, container);
+        ComponentNodeConfiguration conf = new ComponentNodeConfiguration(this, scd, configSite, realm, null);
         scd.model.invokeOnHookOnInstall(realm, conf);
         return scd.toConf(conf);
     }

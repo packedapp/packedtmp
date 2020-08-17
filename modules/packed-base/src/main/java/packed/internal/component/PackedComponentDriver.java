@@ -117,7 +117,7 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
 
     public ComponentNodeConfiguration newNodeConfiguration(ComponentNodeConfiguration parent, Bundle<?> bundle, Wirelet... wirelets) {
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(parent.configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
-        return PackedContainerRole.create(this, cs, PackedRealm.fromBundle(bundle), parent, null, wirelets).component;
+        return new ComponentNodeConfiguration(parent, this, cs, PackedRealm.fromBundle(bundle), null, wirelets);
     }
 
     public static ContainerComponentDriver container(Object source) {

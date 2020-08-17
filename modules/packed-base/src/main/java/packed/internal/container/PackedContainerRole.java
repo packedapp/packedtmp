@@ -25,11 +25,9 @@ import java.util.TreeSet;
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.Wirelet;
-import app.packed.config.ConfigSite;
 import app.packed.container.ContainerDescriptor;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
-import packed.internal.artifact.PackedAssemblyContext;
 import packed.internal.component.BundleConfiguration;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedComponentDriver;
@@ -49,7 +47,7 @@ public final class PackedContainerRole {
     @Nullable
     public PackedExtensionConfiguration activeExtension;
 
-    public ComponentNodeConfiguration component;
+    public final ComponentNodeConfiguration component;
 
     int containerState;
 
@@ -58,10 +56,8 @@ public final class PackedContainerRole {
 
     private TreeSet<PackedExtensionConfiguration> extensionsOrdered;
 
-    public PackedContainerRole() {}
-
     public PackedContainerRole(ComponentNodeConfiguration cnc) {
-        this.component = cnc;
+        this.component = requireNonNull(cnc);
     }
 
     public void advanceTo(int newState) {
@@ -188,18 +184,9 @@ public final class PackedContainerRole {
 
             // Add a component configuration node
             PackedComponentDriver<?> pcd = new PackedComponentDriver.ExtensionComponentDriver(ExtensionModel.of(extensionType));
-            new ComponentNodeConfiguration(component, pcd, component.configSite(), pec.realm(), null, this);
+            new ComponentNodeConfiguration(component, pcd, component.configSite(), pec.realm(), null);
         }
         return pec;
-    }
-
-    // From Driver,
-    @Deprecated
-    public static PackedContainerRole create(PackedComponentDriver<?> driver, ConfigSite cs, PackedRealm realm, ComponentNodeConfiguration parent,
-            PackedAssemblyContext output, Wirelet... wirelets) {
-        PackedContainerRole p1 = new PackedContainerRole();
-        ComponentNodeConfiguration pccc = new ComponentNodeConfiguration(parent, driver, cs, realm, output, p1, wirelets);
-        return pccc.container;
     }
 
     @Nullable
