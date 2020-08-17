@@ -28,7 +28,6 @@ import app.packed.component.StatelessConfiguration;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.inject.Factory;
-import packed.internal.artifact.InstantiationContext;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.PackedRealm;
@@ -55,12 +54,9 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         this.roles = roles;
     }
 
-    public boolean createRuntimeNode() {
-        return true;
+    public final boolean createRuntimeNode() {
+        return !hasRole(ROLE_EXTENSION);
     }
-
-    // Maybe create nullable if should not add??
-    public abstract ComponentNode create(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, InstantiationContext ic);
 
     public String defaultName(PackedRealm realm) {
         if (isContainer()) {
@@ -108,10 +104,6 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         return hasRole(ROLE_GUEST);
     }
 
-    public static ContainerComponentDriver container(Object source) {
-        return new ContainerComponentDriver();
-    }
-
     public C forBundleConf(ComponentNodeConfiguration cnc) {
         throw new UnsupportedOperationException();
     }
@@ -124,18 +116,6 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
             super(ROLE_EXTENSION);
             this.descriptor = requireNonNull(ed);
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentNode create(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, InstantiationContext ic) {
-            return null;
-        }
-
-        @Override
-        public boolean createRuntimeNode() {
-            return false;
-        }
-
     }
 
     public static class ContainerComponentDriver extends PackedComponentDriver<ContainerConfiguration> {
@@ -144,29 +124,6 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
 
         ContainerComponentDriver() {
             super(ROLE_CONTAINER);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentNode create(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, InstantiationContext ic) {
-            ComponentNode cn = new ComponentNode(parent, configuration, ic);
-
-//            PackedContainerRole container = configuration.container;// PackedContainerRole.findOrNull(configuration);
-//            Injector i = null;
-//
-//            if (container != null && container.extensions != null) {
-//                PackedExtensionConfiguration ee = container.extensions.get(ServiceExtension.class);
-//                if (ee != null) {
-//                    i = ServiceExtensionNode.fromExtension(((ServiceExtension) ee.instance())).onInstantiate(ic.wirelets());
-//                }
-//
-//            }
-//            if (i == null) {
-//                i = new PackedInjector(configuration.configSite(), configuration.getDescription(), new LinkedHashMap<>());
-//            }
-//
-//            cn.data[0] = i;
-            return cn;
         }
 
         @Override
@@ -192,12 +149,6 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
             super(PackedComponentDriver.ROLE_SINGLETON, realm.componentModelOf(instance.getClass()));
             this.factory = null;
             this.instance = requireNonNull(instance);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentNode create(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, InstantiationContext ic) {
-            return new ComponentNode(parent, configuration, ic);
         }
 
         public MethodHandle fromFactory(ComponentNodeConfiguration context) {
@@ -228,12 +179,6 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         public StatelessComponentDriver(PackedRealm lookup, Class<?> implementation) {
             super(PackedComponentDriver.ROLE_STATELESS, lookup.componentModelOf(requireNonNull(implementation, "implementation is null")));
             requireNonNull(implementation, "implementation is null");
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentNode create(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, InstantiationContext ic) {
-            return new ComponentNode(parent, configuration, ic);
         }
 
         public StatelessConfiguration toConf(ComponentNodeConfiguration context) {
