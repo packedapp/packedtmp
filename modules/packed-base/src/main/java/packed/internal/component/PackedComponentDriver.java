@@ -160,6 +160,7 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         }
 
         public <T> SingletonConfiguration<T> toConf(ComponentNodeConfiguration context) {
+            model.invokeOnHookOnInstall(context);
             return new PackedSingletonConfiguration<>(context);
         }
     }
@@ -185,6 +186,7 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         }
 
         public StatelessConfiguration toConf(ComponentNodeConfiguration context) {
+            model.invokeOnHookOnInstall(context);
             return new PackedStatelessComponentConfiguration(context);
         }
     }

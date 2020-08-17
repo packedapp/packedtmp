@@ -278,7 +278,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     @Override
     public ComponentPath path() {
         // TODO return path of this component.
-        return container.node.path();
+        return node.path();
     }
 
     /** {@inheritDoc} */

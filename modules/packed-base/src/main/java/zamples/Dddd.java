@@ -45,7 +45,17 @@ public class Dddd extends BaseBundle {
         use(ServiceExtension.class);
         use(MyExtension.class);
         setName("dd?");
+        link(new LinkMe());
     }
 
     static class MyExtension extends Extension {}
+
+    static class LinkMe extends BaseBundle {
+
+        /** {@inheritDoc} */
+        @Override
+        protected void configure() {
+            provideConstant("HejHej");
+        }
+    }
 }

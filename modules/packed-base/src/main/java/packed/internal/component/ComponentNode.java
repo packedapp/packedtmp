@@ -128,7 +128,7 @@ public final class ComponentNode implements Component {
 
             for (ComponentNodeConfiguration cc = configuration.firstChild; cc != null; cc = cc.nextSibling) {
                 if (cc.driver().hasRuntimeRepresentation()) {
-                    ComponentNode ac = new ComponentNode(parent, cc, ic);
+                    ComponentNode ac = new ComponentNode(this, cc, ic);
                     result.put(ac.name(), ac);
                 }
             }
@@ -189,7 +189,6 @@ public final class ComponentNode implements Component {
         // Vi smider IllegalArgumentException hvis man absolute path, og man ikke har samme prefix....
 
         // TODO fix for non-absolute paths....
-        //
         ComponentNode c = children.get(path);
         if (c == null) {
             String p = path.toString();

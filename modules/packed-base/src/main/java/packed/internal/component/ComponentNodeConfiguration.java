@@ -187,13 +187,6 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         return container;
     }
 
-    public PackedContainerRole actualContainer() {
-        if (driver().isContainer()) {
-            return this.container;
-        }
-        return container;
-    }
-
     public PackedRealm realm() {
         return realm;
     }
@@ -269,23 +262,19 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     public <T> SingletonConfiguration<T> installInstance(T instance) {
         requireNonNull(instance, "instance is null");
-        ComponentModel model = realm.componentModelOf(instance.getClass());
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(realm, instance);
 
         ComponentNodeConfiguration conf = newChild(scd, configSite, realm);
-        model.invokeOnHookOnInstall(realm, conf); // noops.
         return scd.toConf(conf);
     }
 
     public <T> SingletonConfiguration<T> install(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
-        ComponentModel model = realm.componentModelOf(factory.rawType());
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver scd = new SingletonComponentDriver(realm, factory);
 
         ComponentNodeConfiguration conf = newChild(scd, configSite, realm);
-        model.invokeOnHookOnInstall(realm, conf);
         return scd.toConf(conf);
     }
 
@@ -295,11 +284,10 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
 
         ComponentNodeConfiguration conf = newChild(scd, configSite, realm);
-        scd.model.invokeOnHookOnInstall(realm, conf);
         return scd.toConf(conf);
     }
 
-    public ComponentNode instantiateRootNode(InstantiationContext ic) {
+    public ComponentNode instantiateTree(InstantiationContext ic) {
         return new ComponentNode(null, this, ic);
     }
 

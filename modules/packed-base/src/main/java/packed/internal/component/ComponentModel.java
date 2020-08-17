@@ -30,7 +30,6 @@ import app.packed.hook.OnHook;
 import packed.internal.container.ContainerModel;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.LazyExtensionActivationMap;
-import packed.internal.container.PackedRealm;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.HookRequest;
 import packed.internal.hook.HookRequestBuilder;
@@ -101,7 +100,7 @@ public final class ComponentModel extends Model {
         return s;
     }
 
-    public <T> ComponentNodeConfiguration invokeOnHookOnInstall(PackedRealm cs, ComponentNodeConfiguration acc) {
+    public <T> ComponentNodeConfiguration invokeOnHookOnInstall(ComponentNodeConfiguration acc) {
         // System.out.println(sourceHook + " - " + cs);
         try {
             // First invoke any OnHook methods on the container source (bundle)
