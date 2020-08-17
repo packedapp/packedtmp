@@ -63,7 +63,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
     /** The artifact this component is a part of. */
-    public final PackedAssemblyContext artifact;
+    final PackedAssemblyContext assembly;
 
     /** The configuration site of this component. */
     private final ConfigSite configSite;
@@ -136,11 +136,16 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
      *            the parent of the component
      */
     public ComponentNodeConfiguration(@Nullable ComponentNodeConfiguration parent, PackedComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm,
-            PackedAssemblyContext pac, @Nullable PackedContainerRole container, Wirelet... wirelets) {
+            PackedAssemblyContext pac, @Nullable PackedContainerRole containerd, Wirelet... wirelets) {
         this.driver = requireNonNull(driver);
         this.configSite = requireNonNull(configSite);
         this.realm = requireNonNull(realm);
-        this.container = container;
+        // this.container = container;
+        if (driver.isContainer()) {
+            this.container = new PackedContainerRole(this);
+        } else {
+            this.container = parent.container;
+        }
         this.wirelets = WireletPack.from(this, wirelets);
         this.parent = parent;
 
@@ -149,7 +154,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             this.containerOld = null;
             this.depth = 0;
             this.extension = null;
-            this.artifact = pac;
+            this.assembly = pac;
         } else {
             if (driver.isGuest()) {
                 this.pod = new PackedPodConfigurationContext(this);
@@ -159,7 +164,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             this.containerOld = parent.driver.isContainer() ? (PackedContainerRole) parent.container : parent.containerOld;
             this.depth = parent.depth + 1;
             this.extension = containerOld.activeExtension;
-            this.artifact = parent.artifact;
+            this.assembly = parent.assembly;
         }
 
         setName0(null);

@@ -90,24 +90,26 @@ public final class ArtifactDriver<A> {
         this.mh = requireNonNull(mh);
     }
 
-    // Hmmm
+    public final <D> A configure(ComponentDriver<D> driver, CustomConfigurator<D> consumer, Wirelet... wirelets) {
+        return configure(driver, e -> e, consumer, wirelets);
+    }
+
     public final <C, D> A configure(ComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.configure(this, (PackedComponentDriver<D>) driver, factory, consumer, wirelets);
         ArtifactContext ac = InstantiationContext.instantiateArtifact(node, node.wirelets);
         return newArtifact(ac);
     }
 
-    private ArtifactContext create(ArtifactSource source, Wirelet... wirelets) {
+    private ArtifactContext createArtifactContext(ArtifactSource source, Wirelet... wirelets) {
         if (source instanceof PackedArtifactImage) {
             return ((PackedArtifactImage) source).newContext(wirelets);
         }
-
         ComponentNodeConfiguration node = PackedAssemblyContext.assembleArtifact(this, (Bundle<?>) source, wirelets);
         return InstantiationContext.instantiateArtifact(node, node.wirelets);
     }
 
     public Object execute(ArtifactSource source, Wirelet... wirelets) {
-        ArtifactContext context = create(source, wirelets);
+        ArtifactContext context = createArtifactContext(source, wirelets);
         context.start();
         return null;
     }
@@ -139,7 +141,8 @@ public final class ArtifactDriver<A> {
     // Skal kunne lave en container...
     // Maaske laver vi implicit en container og smider den i...
     public A instantiate(ArtifactSource source, Wirelet... wirelets) {
-        return newArtifact(create(source, wirelets));
+        ArtifactContext context = createArtifactContext(source, wirelets);
+        return newArtifact(context);
     }
 
 //    <E extends A> ArtifactDriver<A> mapTo(Class<E> decoratingType, Function<A, E> decorator) {
@@ -187,7 +190,7 @@ public final class ArtifactDriver<A> {
      *             if the driver does not produce an artifact with an execution phase
      */
     public A start(ArtifactSource source, Wirelet... wirelets) {
-        ArtifactContext context = create(source, wirelets);
+        ArtifactContext context = createArtifactContext(source, wirelets);
         context.start();
         return newArtifact(context);
     }

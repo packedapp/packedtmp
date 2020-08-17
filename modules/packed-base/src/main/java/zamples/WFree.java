@@ -32,6 +32,7 @@ public class WFree extends BaseBundle {
     protected void configure() {
         lookup(MethodHandles.lookup());
         provide(MyComp.class);
+        link(new DDD());
     }
 
     public static void main(String[] args) {
@@ -53,5 +54,15 @@ public class WFree extends BaseBundle {
         SomeWirelet(String x) {
             this.x = x;
         }
+    }
+
+    public class DDD extends BaseBundle {
+
+        /** {@inheritDoc} */
+        @Override
+        protected void configure() {
+            new Exception().printStackTrace();
+        }
+
     }
 }

@@ -48,7 +48,7 @@ public final class BundleConfiguration {
         Object existing = VH_BUNDLE_CONFIGURATION.compareAndExchange(bundle, null, configuration);
         if (existing == null) {
             try {
-                MH_BUNDLE_CONFIGURE.invoke(bundle);
+                MH_BUNDLE_CONFIGURE.invoke(bundle); // Invokes app.packed.component.Bundle#configure();
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             } finally {

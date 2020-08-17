@@ -13,8 +13,7 @@ import app.packed.container.ContainerDescriptor;
 // Skal vi overhoved have denne? Hvor kan man faa en instans af den
 // Skal vi inteagere paa andre maader. // F.eks. onImage(), onArtifact(), onReport();
 
-//was BuildGoal
-// BuildOutput...
+//was BuildGoal// BuildOutput...
 
 //Assemble and Analyze
 //Assemble and create Artifact
@@ -23,11 +22,6 @@ import app.packed.container.ContainerDescriptor;
 //AssembleType, AssembleAnd[Analyze, CreateArtifact, CreateImage]
 
 //AssembleReason
-
-// Hvad med pod??
-// Hvad hvis tilfoerjer en component til en artifact....
-
-// Hvad hvis det bare er en komponent???
 
 public enum AssembleTarget {
 
@@ -51,7 +45,6 @@ public enum AssembleTarget {
     // Men de enkelte
     /** Create a new {@link ArtifactImage} from a {@link ContainerBundle} (or an existing image). */
     IMAGE;
-
 }
 
 // Assemblies are self-describing

@@ -58,6 +58,12 @@ public final class PackedContainerRole {
 
     private TreeSet<PackedExtensionConfiguration> extensionsOrdered;
 
+    public PackedContainerRole() {}
+
+    public PackedContainerRole(ComponentNodeConfiguration cnc) {
+        this.component = cnc;
+    }
+
     public void advanceTo(int newState) {
         if (containerState == 0) {
             // We need to sort all extensions that are used. To make sure
@@ -188,12 +194,12 @@ public final class PackedContainerRole {
     }
 
     // From Driver,
+    @Deprecated
     public static PackedContainerRole create(PackedComponentDriver<?> driver, ConfigSite cs, PackedRealm realm, ComponentNodeConfiguration parent,
             PackedAssemblyContext output, Wirelet... wirelets) {
         PackedContainerRole p1 = new PackedContainerRole();
         ComponentNodeConfiguration pccc = new ComponentNodeConfiguration(parent, driver, cs, realm, output, p1, wirelets);
-        p1.component = pccc;
-        return p1;
+        return pccc.container;
     }
 
     @Nullable
