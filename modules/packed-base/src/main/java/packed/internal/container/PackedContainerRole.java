@@ -23,17 +23,10 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import app.packed.base.Nullable;
-import app.packed.component.Bundle;
-import app.packed.component.Wirelet;
-import app.packed.config.ConfigSite;
 import app.packed.container.ContainerDescriptor;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
-import packed.internal.component.BundleConfiguration;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.PackedComponentDriver;
-import packed.internal.config.ConfigSiteSupport;
-import packed.internal.inject.ConfigSiteInjectOperations;
 
 /** The default container context. */
 public final class PackedContainerRole {
@@ -113,36 +106,6 @@ public final class PackedContainerRole {
     public PackedExtensionConfiguration getExtensionContext(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         return extensions.get(extensionType);
-    }
-
-    // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
-    // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return
-    // type. Maybe in the future LinkedBundle<- (LinkableContainerSource)
-    public void link(Bundle<?> bundle, Wirelet... wirelets) {
-        requireNonNull(bundle, "bundle is null");
-
-        // Extract the driver from the bundle
-        PackedComponentDriver<?> driver = BundleConfiguration.driverOf(bundle);
-
-        // check if container
-
-        // IDK do we want to progress to next stage just in case...
-        if (containerState == LS_0_MAINL) {
-            advanceTo(LS_1_LINKING);
-        } else if (containerState == LS_2_HOSTING) {
-            throw new IllegalStateException("Was hosting");
-        } else if (containerState == LS_3_FINISHED) {
-            throw new IllegalStateException("Was Assembled");
-        }
-
-        // Create the child node
-        ConfigSite cs = ConfigSiteSupport.captureStackFrame(node.configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
-        ComponentNodeConfiguration newNode = node.newChild(driver, cs, PackedRealm.fromBundle(bundle), wirelets);
-
-        // Invoke Bundle::configure
-        BundleConfiguration.configure(bundle, driver.forBundleConf(newNode));
-
-        newNode.finalState = true;
     }
 
     @SuppressWarnings("unchecked")
