@@ -60,7 +60,7 @@ public final class RuntimeComponentModel {
         this.configSite = requireNonNull(context.configSite());
         this.description = context.getDescription();
         this.extension = context.extension();
-        this.driver = context.driver;
+        this.driver = context.driver();
     }
 
     public boolean isContainer() {

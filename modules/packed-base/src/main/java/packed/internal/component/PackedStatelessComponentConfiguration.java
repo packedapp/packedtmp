@@ -34,7 +34,7 @@ public class PackedStatelessComponentConfiguration extends AbstractComponentConf
     /** {@inheritDoc} */
     @Override
     public Class<?> definition() {
-        return ((StatelessComponentDriver) context.driver).model.type();
+        return ((StatelessComponentDriver) context.driver()).model.type();
     }
 
     /** {@inheritDoc} */

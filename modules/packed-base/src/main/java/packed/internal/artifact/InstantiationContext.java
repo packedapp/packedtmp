@@ -73,7 +73,7 @@ public final class InstantiationContext {
     public static ArtifactContext instantiateArtifact(ComponentNodeConfiguration root, WireletPack wc) {
         InstantiationContext ic = new InstantiationContext(wc);
         // Will instantiate the whole container hierachy
-        ComponentNode node = root.createNode(ic);
+        ComponentNode node = root.instantiateRootNode(ic);
 
         // TODO run initialization
 

@@ -63,8 +63,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     /** A stack walker used from {@link #captureStackFrame(String)}. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
-    /** The artifact this component is a part of. */
-    final PackedAssemblyContext assembly;
+    /** The assembly this component is a part of. */
+    private final PackedAssemblyContext assembly;
 
     /** The configuration site of this component. */
     private final ConfigSite configSite;
@@ -76,7 +76,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     @Nullable
     protected String description;
 
-    public final PackedComponentDriver<?> driver;
+    private final PackedComponentDriver<?> driver;
 
     /** Any extension this component belongs to. */
     @Nullable
@@ -97,7 +97,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     /** The name of the component. */
     public String name;
 
-    /** Any children of this component (lazily initialized). */
+    /** Children of this node (lazily initialized). Order maintained by {@link #nextSibling} and friends. */
     @Nullable
     HashMap<String, ComponentNodeConfiguration> children;
 
@@ -171,7 +171,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
                 this.pod = parent.pod;
             }
             this.depth = parent.depth + 1;
-            this.extension = container.activeExtension;
+            this.extension = null;// container.activeExtension;
         }
 
         setName0(null);
@@ -299,7 +299,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         return scd.toConf(conf);
     }
 
-    public ComponentNode createNode(InstantiationContext ic) {
+    public ComponentNode instantiateRootNode(InstantiationContext ic) {
         return new ComponentNode(null, this, ic);
     }
 
@@ -507,6 +507,11 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         return wirelets == null ? Optional.empty() : Optional.ofNullable((W) wirelets.getWireletOrPipeline(type));
     }
 
+    /**
+     * Returns a {@link Component} adaptor of this node.
+     * 
+     * @return a component adaptor
+     */
     public Component adaptToComponent() {
         return new ComponentAdaptor(this);
     }

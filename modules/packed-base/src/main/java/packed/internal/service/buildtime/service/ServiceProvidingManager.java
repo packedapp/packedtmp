@@ -95,7 +95,7 @@ public final class ServiceProvidingManager {
     public void addProvidesHook(AtProvidesHook hook, ComponentNodeConfiguration cc) {
         // The parent node is not added until #provideFactory or #provideInstance
         AbstractComponentBuildEntry parentNode;
-        SingletonComponentDriver driver = (SingletonComponentDriver) cc.driver;
+        SingletonComponentDriver driver = (SingletonComponentDriver) cc.driver();
         if (driver.instance != null) {
             parentNode = new ComponentConstantBuildEntry<>(node, cc.configSite(), cc, driver.instance);
         } else {
@@ -133,7 +133,7 @@ public final class ServiceProvidingManager {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <T> ServiceComponentConfiguration<T> provideFactory(ComponentNodeConfiguration cc) {
-        SingletonComponentDriver scd = (SingletonComponentDriver) cc.driver;
+        SingletonComponentDriver scd = (SingletonComponentDriver) cc.driver();
         BuildEntry<?> c = componentConfigurationCache.get(cc);// remove??
         if (c == null) {
             List<ServiceDependency> dependencies = scd.factory.factory.dependencies;

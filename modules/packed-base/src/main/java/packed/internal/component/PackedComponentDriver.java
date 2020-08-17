@@ -54,7 +54,7 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         this.roles = roles;
     }
 
-    public final boolean createRuntimeNode() {
+    public final boolean hasRuntimeRepresentation() {
         return !hasRole(ROLE_EXTENSION);
     }
 
@@ -80,7 +80,7 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
             // TODO think it should be named Artifact type, for example, app, injector, ...
             return "Unknown";
         } else if (this instanceof ExtensionComponentDriver) {
-            return ((ExtensionComponentDriver) this).descriptor.componentName;
+            return ((ExtensionComponentDriver) this).descriptor.defaultComponentName;
         } else {
             return ((ModelComponentDriver<?>) this).model.defaultPrefix();
         }
@@ -89,7 +89,6 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
     public final boolean hasRole(int role) {
         return (roles & role) != 0;
     }
-    // boolean retainAtRuntime()
 
     /**
      * Returns whether or not this driver creates a component with container role.

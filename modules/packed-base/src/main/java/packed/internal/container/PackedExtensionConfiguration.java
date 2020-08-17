@@ -56,9 +56,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     /** A MethodHandle for invoking {@link #lifecycle()} used by {@link ExtensionModel}. */
     private static final MethodHandle MH_EXTENSION_ADDED = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), Extension.class, "added", void.class);
 
-    /**
-     * A VarHandle used by {@link #of(PackedContainerRole, Class)} to access the field Extension#configuration.
-     */
+    /** A VarHandle used by {@link #of(PackedContainerRole, Class)} to access the field Extension#configuration. */
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
@@ -76,8 +74,9 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     private final PackedContainerRole container;
 
     /** The realm of this extension. */
-    final PackedRealm realm;
+    private final PackedRealm realm;
 
+    /** The component node of the extension. */
     final ComponentNodeConfiguration node;
 
     /**
@@ -92,9 +91,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
         this.container = requireNonNull(container);
         this.model = requireNonNull(model);
         this.realm = PackedRealm.fromExtension(this);
-
-        // Add a component configuration node
-        this.node = container.node.newChild(model.driver(), container.node.configSite(), realm());
+        this.node = container.node.newChild(model.driver(), container.node.configSite(), realm);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -336,9 +333,8 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
         // Add a component configuration node
 
         // Run the following 3 steps before the extension is handed back to the user.
-        PackedExtensionConfiguration existing = container.activeExtension;
+        // PackedExtensionConfiguration existing = container.activeExtension;
         try {
-            container.activeExtension = pec;
             // 1. The first step we take is seeing if there are parent or ancestors that needs to be notified
             // of the extensions existence. This is done first in order to let the remaining steps use any
             // information set by the parent or ancestor.
@@ -382,7 +378,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
                 container.node.wirelets.extensionInitialized(pec);
             }
         } finally {
-            container.activeExtension = existing;
+            // container.activeExtension = existing;
         }
         return pec; // Return extension to users
     }

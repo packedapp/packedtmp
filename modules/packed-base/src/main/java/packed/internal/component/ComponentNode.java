@@ -127,7 +127,7 @@ public final class ComponentNode implements Component {
             HashMap<String, ComponentNode> result = new HashMap<>(configuration.children.size());
 
             for (ComponentNodeConfiguration cc = configuration.firstChild; cc != null; cc = cc.nextSibling) {
-                if (cc.driver.createRuntimeNode()) {
+                if (cc.driver().hasRuntimeRepresentation()) {
                     ComponentNode ac = new ComponentNode(parent, cc, ic);
                     result.put(ac.name(), ac);
                 }

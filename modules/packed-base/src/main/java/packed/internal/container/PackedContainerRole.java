@@ -46,11 +46,7 @@ public final class PackedContainerRole {
 
     public static final int LS_3_FINISHED = 3;
 
-    /** Any extension that is active. */
-    @Nullable
-    public PackedExtensionConfiguration activeExtension;
-
-    public final ComponentNodeConfiguration node;
+    final ComponentNodeConfiguration node;
 
     int containerState;
 
@@ -73,10 +69,8 @@ public final class PackedContainerRole {
             // they progress in their lifecycle in the right order.
             extensionsOrdered = new TreeSet<>(extensions.values());
             for (PackedExtensionConfiguration pec : extensionsOrdered) {
-                activeExtension = pec;
                 pec.onConfigured();
             }
-            activeExtension = null;
             containerState = LS_1_LINKING;
         }
 
@@ -87,7 +81,6 @@ public final class PackedContainerRole {
                 }
             }
             for (PackedExtensionConfiguration pec : extensionsOrdered) {
-                activeExtension = pec;
                 pec.onChildrenConfigured();
             }
         }
