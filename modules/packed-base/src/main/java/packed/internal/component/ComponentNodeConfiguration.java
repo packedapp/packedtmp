@@ -69,10 +69,6 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     /** The configuration site of this component. */
     private final ConfigSite configSite;
 
-    /** Any container this component belongs to, or null for a root container. */
-    @Nullable
-    public final PackedContainerRole containerOld;
-
     /** The depth of the component in the hierarchy (including any parent artifacts). */
     final int depth;
 
@@ -133,6 +129,11 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         this(null, driver, configSite, realm, pac, wirelets);
     }
 
+    @Nullable
+    public ComponentNodeConfiguration parentOrNull() {
+        return parent;
+    }
+
     public ComponentNodeConfiguration newChild(PackedComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm, Wirelet... wirelets) {
         return new ComponentNodeConfiguration(this, driver, configSite, realm, assembly, wirelets);
     }
@@ -150,6 +151,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         this.driver = requireNonNull(driver);
         this.configSite = requireNonNull(configSite);
         this.realm = requireNonNull(realm);
+        this.assembly = requireNonNull(pac);
+
         if (driver.isContainer()) {
             this.container = new PackedContainerRole(this);
         } else {
@@ -157,22 +160,18 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         }
         this.wirelets = WireletPack.from(this, wirelets);
         this.parent = parent;
-        this.assembly = requireNonNull(pac);
         if (parent == null) {
             this.pod = new PackedPodConfigurationContext(this);
-            this.containerOld = null;
             this.depth = 0;
             this.extension = null;
-
         } else {
             if (driver.isGuest()) {
                 this.pod = new PackedPodConfigurationContext(this);
             } else {
                 this.pod = parent.pod;
             }
-            this.containerOld = parent.driver.isContainer() ? (PackedContainerRole) parent.container : parent.containerOld;
             this.depth = parent.depth + 1;
-            this.extension = containerOld.activeExtension;
+            this.extension = container.activeExtension;
         }
 
         setName0(null);
@@ -185,14 +184,14 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
      */
     @Nullable
     public PackedContainerRole container() {
-        return containerOld;
+        return container;
     }
 
     public PackedContainerRole actualContainer() {
         if (driver().isContainer()) {
             return this.container;
         }
-        return containerOld;
+        return container;
     }
 
     public PackedRealm realm() {

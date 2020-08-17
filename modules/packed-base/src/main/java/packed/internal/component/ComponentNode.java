@@ -102,10 +102,10 @@ public final class ComponentNode implements Component {
 
         // Initialize Container
         if (configuration.driver().isContainer()) {
-            PackedContainerRole container = configuration.container;// PackedContainerRole.findOrNull(configuration);
+            PackedContainerRole container = configuration.container;
             Injector i = null;
 
-            if (container != null && container.extensions != null) {
+            if (container.extensions != null) {
                 PackedExtensionConfiguration ee = container.extensions.get(ServiceExtension.class);
                 if (ee != null) {
                     i = ServiceExtensionNode.fromExtension(((ServiceExtension) ee.instance())).onInstantiate(ic.wirelets());

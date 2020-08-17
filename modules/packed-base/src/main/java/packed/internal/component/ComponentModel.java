@@ -30,7 +30,6 @@ import app.packed.hook.OnHook;
 import packed.internal.container.ContainerModel;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.LazyExtensionActivationMap;
-import packed.internal.container.PackedContainerRole;
 import packed.internal.container.PackedRealm;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.HookRequest;
@@ -114,7 +113,7 @@ public final class ComponentModel extends Model {
             for (ExtensionRequestPair he : extensionHooks) {
                 // Finds (possible installing) the extension with @OnHook methods
                 // Maybe null, but this code will be refactored out.
-                Extension extension = PackedContainerRole.findOrNull(acc).use(he.extensionType);
+                Extension extension = acc.container.use(he.extensionType);
 
                 // Invoke each method annotated with @OnHook on the extension instance
                 he.request.invoke(extension, acc);

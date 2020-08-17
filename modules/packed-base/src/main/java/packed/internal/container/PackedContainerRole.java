@@ -59,8 +59,12 @@ public final class PackedContainerRole {
 
     private TreeSet<PackedExtensionConfiguration> extensionsOrdered;
 
+    @Nullable
+    public final PackedContainerRole parent;
+
     public PackedContainerRole(ComponentNodeConfiguration cnc) {
         this.component = requireNonNull(cnc);
+        this.parent = cnc.parentOrNull() == null ? null : cnc.parentOrNull().container;
     }
 
     public void advanceTo(int newState) {
@@ -191,11 +195,6 @@ public final class PackedContainerRole {
             component.newChild(pcd, component.configSite(), pec.realm());
         }
         return pec;
-    }
-
-    @Nullable
-    public static PackedContainerRole findOrNull(ComponentNodeConfiguration cnc) {
-        return cnc.containerOld;
     }
 }
 //
