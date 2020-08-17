@@ -39,14 +39,14 @@ public final class PackedContainerRole {
 
     public static final int LS_3_FINISHED = 3;
 
-    final ComponentNodeConfiguration node;
-
     public int containerState;
 
     /** All used extensions, in order of registration. */
     public final LinkedHashMap<Class<? extends Extension>, PackedExtensionConfiguration> extensions = new LinkedHashMap<>();
 
     private TreeSet<PackedExtensionConfiguration> extensionsOrdered;
+
+    final ComponentNodeConfiguration node;
 
     @Nullable
     public final PackedContainerRole parent;
@@ -152,18 +152,6 @@ public final class PackedContainerRole {
         return pec;
     }
 }
-//
-///**
-//* Returns whether or not the specified extension type has been used.
-//* 
-//* @param extensionType
-//*            the extension type to test.
-//* @return whether or not the extension has been used
-//*/
-//boolean isExtensionUsed(Class<? extends Extension> extensionType) {
-//  requireNonNull(extensionType, "extensionType is null");
-//  return extensions.containsKey(extensionType);
-//}
 // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
 // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
 // loop situations, for example, if a bundle recursively links itself which fails by throwing

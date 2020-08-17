@@ -99,6 +99,10 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         return hasRole(ROLE_CONTAINER);
     }
 
+    public final boolean isExtension() {
+        return hasRole(ROLE_EXTENSION);
+    }
+
     public final boolean isGuest() {
         return hasRole(ROLE_GUEST);
     }

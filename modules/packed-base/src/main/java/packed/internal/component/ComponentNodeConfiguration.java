@@ -476,7 +476,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         }
         // Create the child node
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
-        ComponentNodeConfiguration newNode = newChild(driver, cs, PackedRealm.fromBundle(bundle), wirelets);
+        ComponentNodeConfiguration p = driver().isExtension() ? parent : this;
+        ComponentNodeConfiguration newNode = p.newChild(driver, cs, PackedRealm.fromBundle(bundle), wirelets);
 
         // Invoke Bundle::configure
         BundleConfiguration.configure(bundle, driver.forBundleConf(newNode));

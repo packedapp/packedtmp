@@ -239,7 +239,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     /** {@inheritDoc} */
     @Override
     public void link(Bundle<?> bundle, Wirelet... wirelets) {
-        container.node.link(bundle, wirelets);
+        node.link(bundle, wirelets);
     }
 
     /** Invoked by the container configuration, whenever the extension is configured. */
