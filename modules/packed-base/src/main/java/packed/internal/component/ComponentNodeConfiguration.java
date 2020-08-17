@@ -198,6 +198,14 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         return realm;
     }
 
+    public ComponentNodeConfiguration closeAssembly() {
+        finalState = true;
+        if (container != null) {
+            container.advanceTo(PackedContainerRole.LS_3_FINISHED);
+        }
+        return this;
+    }
+
     /**
      * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
      * not located on any subclasses of {@link Extension} or any class that implements {@link ArtifactSource}.

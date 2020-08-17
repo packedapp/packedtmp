@@ -28,7 +28,6 @@ import packed.internal.component.BundleConfiguration;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.PackedRealm;
 import packed.internal.errorhandling.ErrorMessage;
 import packed.internal.inject.ConfigSiteInjectOperations;
@@ -78,8 +77,8 @@ public final class PackedAssemblyContext implements AssembleContext {
         ComponentNodeConfiguration node = new ComponentNodeConfiguration(new PackedAssemblyContext(PackedOutput.artifact(ad)), driver, cs,
                 PackedRealm.fromConfigurator(consumer), wirelets);
 
-        D pc = driver.forBundleConf(node);
-        C cc = requireNonNull(factory.apply(pc));
+        D conf = driver.forBundleConf(node);
+        C cc = requireNonNull(factory.apply(conf));
         consumer.configure(cc);
 
         return node.closeAssembly();
@@ -97,13 +96,14 @@ public final class PackedAssemblyContext implements AssembleContext {
         return assemble(new PackedAssemblyContext(PackedOutput.descriptor(descriptorType)), bundle, wirelets);
     }
 
-    public static ComponentNodeConfiguration assemble(PackedAssemblyContext output, Bundle<?> bundle, Wirelet... wirelets) {
+    public static ComponentNodeConfiguration assemble(PackedAssemblyContext assembly, Bundle<?> bundle, Wirelet... wirelets) {
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
 
-        PackedComponentDriver<?> pcd = BundleConfiguration.driverOf(bundle);
-        ComponentNodeConfiguration node = new ComponentNodeConfiguration(output, pcd, cs, PackedRealm.fromBundle(bundle), wirelets);
+        PackedComponentDriver<?> driver = BundleConfiguration.driverOf(bundle);
+        ComponentNodeConfiguration node = new ComponentNodeConfiguration(assembly, driver, cs, PackedRealm.fromBundle(bundle), wirelets);
 
-        BundleConfiguration.configure(bundle, new PackedContainerConfiguration(node.container));
+        Object conf = driver.forBundleConf(node);
+        BundleConfiguration.configure(bundle, conf);
 
         return node.closeAssembly();
     }
@@ -126,5 +126,4 @@ public final class PackedAssemblyContext implements AssembleContext {
             return new PackedOutput();
         }
     }
-
 }
