@@ -29,7 +29,6 @@ import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.container.PackedContainerRole;
 import packed.internal.container.PackedRealm;
 import packed.internal.errorhandling.ErrorMessage;
 import packed.internal.inject.ConfigSiteInjectOperations;
@@ -76,17 +75,14 @@ public final class PackedAssemblyContext implements AssembleContext {
             CustomConfigurator<C> consumer, Wirelet... wirelets) {
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
 
-        ComponentNodeConfiguration cnc = new ComponentNodeConfiguration(new PackedAssemblyContext(PackedOutput.artifact(ad)), driver, cs,
+        ComponentNodeConfiguration node = new ComponentNodeConfiguration(new PackedAssemblyContext(PackedOutput.artifact(ad)), driver, cs,
                 PackedRealm.fromConfigurator(consumer), wirelets);
-        PackedContainerRole c = cnc.container;
 
-        D pc = driver.forBundleConf(c.node);
+        D pc = driver.forBundleConf(node);
         C cc = requireNonNull(factory.apply(pc));
         consumer.configure(cc);
 
-        c.node.finalState = true;
-        c.advanceTo(PackedContainerRole.LS_3_FINISHED);
-        return c.node;
+        return node.closeAssembly();
     }
 
     public static ComponentNodeConfiguration assembleArtifact(ArtifactDriver<?> driver, Bundle<?> bundle, Wirelet[] wirelets) {
@@ -105,14 +101,11 @@ public final class PackedAssemblyContext implements AssembleContext {
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
 
         PackedComponentDriver<?> pcd = BundleConfiguration.driverOf(bundle);
-        ComponentNodeConfiguration cnc = new ComponentNodeConfiguration(output, pcd, cs, PackedRealm.fromBundle(bundle), wirelets);
-        PackedContainerRole c = cnc.container;
+        ComponentNodeConfiguration node = new ComponentNodeConfiguration(output, pcd, cs, PackedRealm.fromBundle(bundle), wirelets);
 
-        BundleConfiguration.configure(bundle, new PackedContainerConfiguration(c));
+        BundleConfiguration.configure(bundle, new PackedContainerConfiguration(node.container));
 
-        cnc.finalState = true;
-        c.advanceTo(PackedContainerRole.LS_3_FINISHED);
-        return cnc;
+        return node.closeAssembly();
     }
 
     static class PackedOutput {
