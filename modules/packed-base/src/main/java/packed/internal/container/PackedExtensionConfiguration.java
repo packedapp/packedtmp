@@ -39,7 +39,7 @@ import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionSidecar;
 import app.packed.inject.Factory;
 import app.packed.lifecycle.LifecycleContext;
-import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.lifecycle.LifecycleContextHelper;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -78,6 +78,8 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     /** The realm of this extension. */
     final PackedRealm realm;
 
+    final ComponentNodeConfiguration node;
+
     /**
      * Creates a new configuration.
      * 
@@ -90,6 +92,9 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
         this.container = requireNonNull(container);
         this.model = requireNonNull(model);
         this.realm = PackedRealm.fromExtension(this);
+
+        // Add a component configuration node
+        this.node = container.node.newChild(model.driver(), container.node.configSite(), realm());
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -237,7 +242,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     /** {@inheritDoc} */
     @Override
     public void link(Bundle<?> bundle, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
+        container.node.link(bundle, wirelets);
     }
 
     /** Invoked by the container configuration, whenever the extension is configured. */
@@ -310,17 +315,17 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     /**
      * Creates and initializes a new extension and its context.
      * 
-     * @param pcc
+     * @param container
      *            the configuration of the container.
      * @param extensionType
      *            the type of extension to initialize
      * @return the new extension context
      */
-    static PackedExtensionConfiguration of(PackedContainerRole pcc, Class<? extends Extension> extensionType) {
+    static PackedExtensionConfiguration of(PackedContainerRole container, Class<? extends Extension> extensionType) {
         // I think move to the constructor of this context??? Then extension can be final...
         // Create extension context and instantiate extension
         ExtensionModel model = ExtensionModel.of(extensionType);
-        PackedExtensionConfiguration pec = new PackedExtensionConfiguration(pcc, model);
+        PackedExtensionConfiguration pec = new PackedExtensionConfiguration(container, model);
         pec.checkState(ExtensionSidecar.INSTANTIATING);
         Extension e = pec.instance = model.newInstance(pec); // Creates a new XXExtension instance
         pec.checkState(ExtensionSidecar.NORMAL_USAGE);
@@ -329,13 +334,11 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
         VH_EXTENSION_CONFIGURATION.set(e, pec); // field is package-private in a public package
 
         // Add a component configuration node
-        PackedComponentDriver<?> pcd = new PackedComponentDriver.ExtensionComponentDriver(ExtensionModel.of(extensionType));
-        pcc.node.newChild(pcd, pcc.node.configSite(), pec.realm());
 
         // Run the following 3 steps before the extension is handed back to the user.
-        PackedExtensionConfiguration existing = pcc.activeExtension;
+        PackedExtensionConfiguration existing = container.activeExtension;
         try {
-            pcc.activeExtension = pec;
+            container.activeExtension = pec;
             // 1. The first step we take is seeing if there are parent or ancestors that needs to be notified
             // of the extensions existence. This is done first in order to let the remaining steps use any
             // information set by the parent or ancestor.
@@ -343,7 +346,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
             // Should we also set the active extension in the parent???
             if (model.extensionLinkedToAncestorExtension != null) {
                 PackedExtensionConfiguration parentExtension = null;
-                PackedContainerRole parent = pcc.node.container;
+                PackedContainerRole parent = container.node.container;
                 if (!model.extensionLinkedDirectChildrenOnly) {
                     while (parentExtension == null && parent != null) {
                         parentExtension = parent.getExtensionContext(extensionType);
@@ -364,20 +367,22 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
                 }
             }
 
-            // 2. Invoke all methods on the extension annotated with @When(Normal)
+            // Invoke Extension#added() (should we run this before we link???)
             try {
                 MH_EXTENSION_ADDED.invoke(e);
             } catch (Throwable t) {
                 throw ThrowableUtil.orUndeclared(t);
             }
+
+            // 2. Invoke all methods on the extension annotated with @When(Normal)
             model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_0_INSTANTIATION, e, pec);
 
             // 3. Finally initialize any pipeline (??swap step 2 and 3??)
-            if (pcc.node.wirelets != null) {
-                pcc.node.wirelets.extensionInitialized(pec);
+            if (container.node.wirelets != null) {
+                container.node.wirelets.extensionInitialized(pec);
             }
         } finally {
-            pcc.activeExtension = existing;
+            container.activeExtension = existing;
         }
         return pec; // Return extension to users
     }

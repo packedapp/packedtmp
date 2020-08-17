@@ -40,6 +40,7 @@ import app.packed.container.ExtensionWired;
 import app.packed.container.InternalExtensionException;
 import app.packed.hook.OnHook;
 import app.packed.lifecycle.LifecycleContext;
+import packed.internal.component.PackedComponentDriver;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
@@ -178,6 +179,10 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
 
         this.hooksOnHookModel = builder.onHookModel;
         this.hooksNonActivating = hooksOnHookModel == null ? null : LazyExtensionActivationMap.findNonExtending(hooksOnHookModel);
+    }
+
+    public PackedComponentDriver<?> driver() {
+        return new PackedComponentDriver.ExtensionComponentDriver(this);
     }
 
     /** {@inheritDoc} */
