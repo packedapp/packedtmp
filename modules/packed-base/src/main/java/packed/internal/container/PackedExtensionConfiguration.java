@@ -53,6 +53,9 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     /** A MethodHandle for invoking {@link #lifecycle()} used by {@link ExtensionModel}. */
     static final MethodHandle MH_LIFECYCLE_CONTEXT = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "lifecycle", LifecycleContext.class);
 
+    /** A MethodHandle for invoking {@link #lifecycle()} used by {@link ExtensionModel}. */
+    private static final MethodHandle MH_EXTENSION_ADDED = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), Extension.class, "added", void.class);
+
     /**
      * A VarHandle used by {@link #of(PackedContainerRole, Class)} to access the field Extension#configuration.
      */
@@ -362,6 +365,11 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
             }
 
             // 2. Invoke all methods on the extension annotated with @When(Normal)
+            try {
+                MH_EXTENSION_ADDED.invoke(e);
+            } catch (Throwable t) {
+                throw ThrowableUtil.orUndeclared(t);
+            }
             model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_0_INSTANTIATION, e, pec);
 
             // 3. Finally initialize any pipeline (??swap step 2 and 3??)

@@ -41,19 +41,28 @@ public final class PackedAssemblyContext implements AssembleContext {
     /** The thread that is assembling the system. */
     private final Thread thread = Thread.currentThread();
 
+    // Bruges ikke lige endnu
+    private final Wirelet[] wirelets;
+
     /**
      * Creates a new build context object.
      * 
      * @param output
      *            the output of the build process
      */
-    PackedAssemblyContext(PackedOutput output) {
+    PackedAssemblyContext(PackedOutput output, Wirelet... wirelets) {
         this.output = requireNonNull(output);
+        this.wirelets = wirelets;
+
     }
 
     /** {@inheritDoc} */
     @Override
     public void addError(ErrorMessage message) {}
+
+    public Wirelet[] wirelets() {
+        return wirelets;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -72,6 +81,7 @@ public final class PackedAssemblyContext implements AssembleContext {
 
     public static <C, D> ComponentNodeConfiguration configure(ArtifactDriver<?> ad, PackedComponentDriver<D> driver, Function<D, C> factory,
             CustomConfigurator<C> consumer, Wirelet... wirelets) {
+        // Vil gerne parse nogle wirelets some det allerfoerste
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
 
         ComponentNodeConfiguration node = new ComponentNodeConfiguration(new PackedAssemblyContext(PackedOutput.artifact(ad)), driver, cs,
@@ -97,13 +107,13 @@ public final class PackedAssemblyContext implements AssembleContext {
     }
 
     public static ComponentNodeConfiguration assemble(PackedAssemblyContext assembly, Bundle<?> bundle, Wirelet... wirelets) {
-        ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
-
         PackedComponentDriver<?> driver = BundleConfiguration.driverOf(bundle);
+
+        ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
         ComponentNodeConfiguration node = new ComponentNodeConfiguration(assembly, driver, cs, PackedRealm.fromBundle(bundle), wirelets);
 
         Object conf = driver.forBundleConf(node);
-        BundleConfiguration.configure(bundle, conf);
+        BundleConfiguration.configure(bundle, conf); // in-try-finally. So we can call PAC.fail() and have them run callbacks for dynamic nodes
 
         return node.closeAssembly();
     }
