@@ -452,9 +452,36 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         setName0(name);
     }
 
+    // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
+    // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return
+    // type. Maybe in the future LinkedBundle<- (LinkableContainerSource)
     @Override
     public void link(Bundle<?> bundle, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
+        requireNonNull(bundle, "bundle is null");
+
+        // Extract the driver from the bundle
+        PackedComponentDriver<?> driver = BundleConfiguration.driverOf(bundle);
+
+        // check if container
+
+        if (driver.isContainer()) {
+            // IDK do we want to progress to next stage just in case...
+            if (container.containerState == PackedContainerRole.LS_0_MAINL) {
+                container.advanceTo(PackedContainerRole.LS_1_LINKING);
+            } else if (container.containerState == PackedContainerRole.LS_2_HOSTING) {
+                throw new IllegalStateException("Was hosting");
+            } else if (container.containerState == PackedContainerRole.LS_3_FINISHED) {
+                throw new IllegalStateException("Was Assembled");
+            }
+        }
+        // Create the child node
+        ConfigSite cs = ConfigSiteSupport.captureStackFrame(configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
+        ComponentNodeConfiguration newNode = newChild(driver, cs, PackedRealm.fromBundle(bundle), wirelets);
+
+        // Invoke Bundle::configure
+        BundleConfiguration.configure(bundle, driver.forBundleConf(newNode));
+
+        newNode.finalState = true;
     }
 
     /** {@inheritDoc} */

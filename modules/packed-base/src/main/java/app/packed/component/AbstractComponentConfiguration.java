@@ -151,7 +151,7 @@ public abstract class AbstractComponentConfiguration implements ComponentConfigu
     /** {@inheritDoc} */
     @Override
     public final void link(Bundle<?> bundle, Wirelet... wirelets) {
-        ((ComponentNodeConfiguration) context).container.link(bundle, wirelets);
+        ((ComponentNodeConfiguration) context).link(bundle, wirelets);
     }
 
     /** {@inheritDoc} */

@@ -38,17 +38,17 @@ import packed.internal.inject.ConfigSiteInjectOperations;
 /** The default container context. */
 public final class PackedContainerRole {
 
-    private static final int LS_0_MAINL = 0;
+    public static final int LS_0_MAINL = 0;
 
-    private static final int LS_1_LINKING = 1;
+    public static final int LS_1_LINKING = 1;
 
-    private static final int LS_2_HOSTING = 2;
+    public static final int LS_2_HOSTING = 2;
 
     public static final int LS_3_FINISHED = 3;
 
     final ComponentNodeConfiguration node;
 
-    int containerState;
+    public int containerState;
 
     /** All used extensions, in order of registration. */
     public final LinkedHashMap<Class<? extends Extension>, PackedExtensionConfiguration> extensions = new LinkedHashMap<>();
