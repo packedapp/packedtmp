@@ -27,7 +27,6 @@ import app.packed.config.ConfigSite;
 import packed.internal.component.BundleConfiguration;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedComponentDriver;
-import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.PackedContainerRole;
@@ -77,7 +76,7 @@ public final class PackedAssemblyContext implements AssembleContext {
             CustomConfigurator<C> consumer, Wirelet... wirelets) {
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
 
-        ComponentNodeConfiguration cnc = new ComponentNodeConfiguration(null, ContainerComponentDriver.INSTANCE, cs, PackedRealm.fromConfigurator(consumer),
+        ComponentNodeConfiguration cnc = new ComponentNodeConfiguration(null, driver, cs, PackedRealm.fromConfigurator(consumer),
                 new PackedAssemblyContext(PackedOutput.artifact(ad)), wirelets);
         PackedContainerRole c = cnc.container;
 
@@ -105,15 +104,15 @@ public final class PackedAssemblyContext implements AssembleContext {
     public static ComponentNodeConfiguration assemble(PackedAssemblyContext output, Bundle<?> bundle, Wirelet... wirelets) {
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
 
-        ComponentNodeConfiguration cnc = new ComponentNodeConfiguration(null, ContainerComponentDriver.INSTANCE, cs, PackedRealm.fromBundle(bundle), output,
-                wirelets);
+        PackedComponentDriver<?> pcd = BundleConfiguration.driverOf(bundle);
+        ComponentNodeConfiguration cnc = new ComponentNodeConfiguration(null, pcd, cs, PackedRealm.fromBundle(bundle), output, wirelets);
         PackedContainerRole c = cnc.container;
 
         BundleConfiguration.configure(bundle, new PackedContainerConfiguration(c));
 
-        c.component.finalState = true;
+        cnc.finalState = true;
         c.advanceTo(PackedContainerRole.LS_3_FINISHED);
-        return c.component;
+        return cnc;
     }
 
     static class PackedOutput {

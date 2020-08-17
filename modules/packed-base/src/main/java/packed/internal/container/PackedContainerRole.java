@@ -25,12 +25,15 @@ import java.util.TreeSet;
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.Wirelet;
+import app.packed.config.ConfigSite;
 import app.packed.container.ContainerDescriptor;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import packed.internal.component.BundleConfiguration;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedComponentDriver;
+import packed.internal.config.ConfigSiteSupport;
+import packed.internal.inject.ConfigSiteInjectOperations;
 
 /** The default container context. */
 public final class PackedContainerRole {
@@ -136,7 +139,8 @@ public final class PackedContainerRole {
         }
 
         // Create the child node
-        ComponentNodeConfiguration newNode = driver.newNodeConfiguration(component, bundle, wirelets);
+        ConfigSite cs = ConfigSiteSupport.captureStackFrame(component.configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
+        ComponentNodeConfiguration newNode = new ComponentNodeConfiguration(component, driver, cs, PackedRealm.fromBundle(bundle), null, wirelets);
 
         // Invoke Bundle::configure
         BundleConfiguration.configure(bundle, driver.forBundleConf(newNode));

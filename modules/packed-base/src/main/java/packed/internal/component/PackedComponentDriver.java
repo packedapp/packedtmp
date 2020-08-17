@@ -26,21 +26,17 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
-import app.packed.component.Wirelet;
-import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.inject.Factory;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
 import packed.internal.artifact.InstantiationContext;
-import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.PackedContainerRole;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.container.PackedRealm;
-import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.service.buildtime.ServiceExtensionNode;
@@ -113,11 +109,6 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
 
     public final boolean isGuest() {
         return hasRole(ROLE_GUEST);
-    }
-
-    public ComponentNodeConfiguration newNodeConfiguration(ComponentNodeConfiguration parent, Bundle<?> bundle, Wirelet... wirelets) {
-        ConfigSite cs = ConfigSiteSupport.captureStackFrame(parent.configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
-        return new ComponentNodeConfiguration(parent, this, cs, PackedRealm.fromBundle(bundle), null, wirelets);
     }
 
     public static ContainerComponentDriver container(Object source) {
