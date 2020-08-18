@@ -113,6 +113,7 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
     // Den eneste grund for at de her metoder ikke er paa ComponentConfiguration er actors
     // Eller i andre situation hvor man ikke vil have at man installere alm componenter..
     // Men okay. Maaske skal man wrappe det saa. Det er jo let nok at simulere med useParent
+    @Override
     protected final <T> SingletonConfiguration<T> install(Class<T> implementation) {
         return configuration().install(implementation);
     }
@@ -129,6 +130,7 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
      * @return the configuration of the component
      * @see BaseBundle#install(Factory)
      */
+    @Override
     protected final <T> SingletonConfiguration<T> install(Factory<T> factory) {
         return configuration().install(factory);
     }
@@ -147,6 +149,7 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
      *            the component instance to install
      * @return this configuration
      */
+    @Override
     protected final <T> SingletonConfiguration<T> installInstance(T instance) {
         return configuration().installInstance(instance);
     }

@@ -17,6 +17,7 @@ package app.packed.component;
 
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundle;
+import app.packed.inject.Factory;
 
 /**
  *
@@ -107,6 +108,12 @@ public interface ComponentConfiguration {
      * @return a configuration for the component
      */
     <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
+
+    <C, I> C wire(ClassSourcedDriver<C, I> driver, Class<I> implementation, Wirelet... wirelets);
+
+    <C, I> C wire(FactorySourcedDriver<C, I> driver, Factory<I> implementation, Wirelet... wirelets);
+
+    <C, I> C wireInstance(InstanceSourcedDriver<C, I> driver, I instance, Wirelet... wirelets);
 }
 
 ///**

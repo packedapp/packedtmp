@@ -39,7 +39,7 @@ public class PackedStatelessComponentConfiguration extends AbstractComponentConf
 
     /** {@inheritDoc} */
     @Override
-    public StatelessConfiguration setName(String name) {
+    public PackedStatelessComponentConfiguration setName(String name) {
         context.setName(name);
         return this;
     }

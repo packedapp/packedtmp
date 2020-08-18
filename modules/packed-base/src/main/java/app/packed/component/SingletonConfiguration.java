@@ -27,7 +27,7 @@ import app.packed.service.ExportedServiceConfiguration;
  * <p>
  * It it also possible to install components at runtime via {@link Component}.
  */
-public interface SingletonConfiguration<T> extends SourcedComponentConfiguration<T> {
+public interface SingletonConfiguration<T> extends ComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
@@ -63,7 +63,7 @@ public interface SingletonConfiguration<T> extends SourcedComponentConfiguration
 
     Optional<Key<?>> key();
 
-    static <T> SourcedComponentDriver<T, SingletonConfiguration<T>> driver() {
+    static <T> InstanceSourcedDriver<SingletonConfiguration<T>, T> driver() {
         throw new UnsupportedOperationException();
     }
 }

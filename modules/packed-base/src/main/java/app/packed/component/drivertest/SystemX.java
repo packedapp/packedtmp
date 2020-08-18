@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.component.drivertest;
 
 import app.packed.attribute.Attribute;
+import app.packed.component.Bundle;
+import app.packed.component.Component;
+import app.packed.component.ComponentStream;
 
 /**
  *

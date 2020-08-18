@@ -15,23 +15,11 @@
  */
 package app.packed.component;
 
-import java.lang.invoke.MethodHandles.Lookup;
+import packed.internal.container.PackedRealm;
 
 /**
  *
  */
-@FunctionalInterface
-// T extends AbstractRealm
-public interface CustomConfigurator<T> {
-
-    void configure(T stuff);
-}
-
-// T extends AbstractRealm
-class AbstractRealm {
-
-    // StuffInner stuff
-    public final void realm(Lookup lookup) {
-
-    }
+public interface ClassSourcedDriver<C, I> {
+    ComponentDriver<C> bindToClass(PackedRealm realm, Class<I> factory);
 }

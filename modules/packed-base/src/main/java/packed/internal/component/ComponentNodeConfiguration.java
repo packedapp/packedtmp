@@ -33,12 +33,15 @@ import app.packed.artifact.ArtifactSource;
 import app.packed.attribute.AttributeSet;
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
+import app.packed.component.ClassSourcedDriver;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
+import app.packed.component.FactorySourcedDriver;
+import app.packed.component.InstanceSourcedDriver;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
@@ -612,6 +615,21 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
                 return isRoot && option.excludeOrigin() ? Stream.empty() : Stream.of(this);
             }
         }
+    }
+
+    @Override
+    public <C, I> C wire(ClassSourcedDriver<C, I> driver, Class<I> implementation, Wirelet... wirelets) {
+        return wire(driver.bindToClass(realm, implementation), wirelets);
+    }
+
+    @Override
+    public <C, I> C wire(FactorySourcedDriver<C, I> driver, Factory<I> implementation, Wirelet... wirelets) {
+        return wire(driver.bindToFactory(realm, implementation), wirelets);
+    }
+
+    @Override
+    public <C, I> C wireInstance(InstanceSourcedDriver<C, I> driver, I instance, Wirelet... wirelets) {
+        return wire(driver.bindToInstance(instance), wirelets);
     }
 
     /** {@inheritDoc} */

@@ -17,6 +17,7 @@ package app.packed.component;
 
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
+import app.packed.inject.Factory;
 
 /** A bundle that uses a ComponentConfiguration as the underlying configuration object. */
 public abstract class ComponentBundle<T extends ComponentConfiguration> extends Bundle<T> {
@@ -31,14 +32,6 @@ public abstract class ComponentBundle<T extends ComponentConfiguration> extends 
         super(driver);
     }
 
-//    protected <X> ComponentBundle(SourcedComponentDriver<X, ? extends T> driver, Class<X> implementation) {
-//        super(driver, implementation);
-//    }
-//
-//    protected <X> ComponentBundle(SourcedComponentDriver<X, ? extends T> driver, Factory<X> implementation) {
-//        super(driver, implementation);
-//    }
-
     /**
      * @param <X>
      *            the type of instance
@@ -46,7 +39,7 @@ public abstract class ComponentBundle<T extends ComponentConfiguration> extends 
      * @param instance
      *            the instance to wrap
      */
-    protected <X> ComponentBundle(SourcedComponentDriver<X, ? extends T> driver, X instance) {
+    protected <X> ComponentBundle(InstanceSourcedDriver<? extends T, X> driver, X instance) {
         super(driver.bindToInstance(instance));
     }
 
@@ -136,4 +129,32 @@ public abstract class ComponentBundle<T extends ComponentConfiguration> extends 
     protected final <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         return configuration().wire(driver, wirelets);
     }
+
+    protected final <C, I> C wire(ClassSourcedDriver<C, I> driver, Class<I> implementation, Wirelet... wirelets) {
+        return configuration().wire(driver, implementation, wirelets);
+    }
+
+    protected final <C, I> C wire(FactorySourcedDriver<C, I> driver, Factory<I> factory, Wirelet... wirelets) {
+        return configuration().wire(driver, factory, wirelets);
+    }
+
+    protected final <C, I> C wireInstance(InstanceSourcedDriver<C, I> driver, I instance, Wirelet... wirelets) {
+        return configuration().wireInstance(driver, instance, wirelets);
+    }
+
+    protected <X> SingletonConfiguration<X> install(Class<X> implementation) {
+        return wire(SingletonConfiguration.driver(), implementation);
+    }
+
+    protected <X> SingletonConfiguration<X> install(Factory<X> implementation) {
+        return wire(SingletonConfiguration.driver(), implementation);
+    }
+
+    protected <X> SingletonConfiguration<X> installInstance(X instance) {
+        return wireInstance(SingletonConfiguration.driver(), instance);
+    }
+//    install(Class<T>)
+//    install(Factory<T>)
+//    installHelper(Class<?>)
+//    installInstance(T)
 }

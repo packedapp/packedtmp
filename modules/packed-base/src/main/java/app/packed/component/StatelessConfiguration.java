@@ -20,8 +20,6 @@ import app.packed.inject.Factory;
 /**
  *
  */
-// Den her er bare ikke noget det giver mening at installere
-// uden at expose den som service...PrototypeConfiguration?????
 public interface StatelessConfiguration extends ComponentConfiguration {
 
     /**
@@ -34,23 +32,14 @@ public interface StatelessConfiguration extends ComponentConfiguration {
     /** {@inheritDoc} */
     @Override
     StatelessConfiguration setName(String name);
+
+    static <T> ClassSourcedDriver<T, StatelessConfiguration> driver() {
+        throw new UnsupportedOperationException();
+    }
 }
 
-interface XCC2<T> {
-    // isConfigurable();
-    // add getChildren()?
-    // add getComponentType() <- The type
+interface Mixins<T> {
 
-    // Syntes stadig vi skal overskrive component annotations med mixins //non-repeat overwrite, repeat add...
-    // Mixins er jo lidt limited nu. Kan jo ikke f.eks. lave
-    //
-    // default boolean isStateful() {
-    // return false;// Alternative we have a Component.Mode with Stateful, Stateless, Other
-    // }
-    //
-    // default boolean isStateless() {
-    // return !isStateless();
-    // }
     /**
      * 
      * @param implementation
@@ -98,5 +87,4 @@ interface XCC2<T> {
     default SingletonConfiguration<T> addMixin(Object instance) {
         throw new UnsupportedOperationException();
     }
-
 }

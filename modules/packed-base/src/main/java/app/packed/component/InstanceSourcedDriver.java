@@ -18,6 +18,6 @@ package app.packed.component;
 /**
  *
  */
-public interface SourcedComponentConfiguration<T> extends ComponentConfiguration {
-
+public interface InstanceSourcedDriver<C, I> extends FactorySourcedDriver<C, I> {
+    ComponentDriver<C> bindToInstance(I instance);
 }

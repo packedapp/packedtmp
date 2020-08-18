@@ -60,8 +60,9 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      *            the type of instantiate and use as the component instance
      * @return the configuration of the component
      */
-    // Rename install to add
-    <T> SingletonConfiguration<T> install(Class<T> implementation);
+    default <T> SingletonConfiguration<T> install(Class<T> implementation) {
+        return install(Factory.find(implementation));
+    }
 
     /**
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.

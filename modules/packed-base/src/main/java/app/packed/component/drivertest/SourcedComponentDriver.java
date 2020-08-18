@@ -13,8 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.component.drivertest;
 
+import app.packed.component.Bundle;
+import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentDriver;
+import app.packed.component.InstanceSourcedDriver;
+import app.packed.component.SingletonConfiguration;
 import app.packed.inject.Factory;
 
 /**
@@ -37,12 +42,8 @@ class StringBundle extends Bundle<SingletonConfiguration<String>> {
         super(driver().bindToInstance(foo));
     }
 
-    protected StringBundle(Factory<String> factory) {
-        super(driver().bindToFactory(factory));
-    }
-
-    private static SourcedComponentDriver<String, SingletonConfiguration<String>> driver() {
-        return SourcedComponentDriver.singleton();
+    private static InstanceSourcedDriver<SingletonConfiguration<String>, String> driver() {
+        return SingletonConfiguration.driver();
     }
 
     /** {@inheritDoc} */
@@ -50,7 +51,7 @@ class StringBundle extends Bundle<SingletonConfiguration<String>> {
     protected void configure() {}
 
     public static void main(String[] args) {
-        SourcedComponentDriver<String, SingletonConfiguration<String>> singleton = SingletonConfiguration.driver();
+        InstanceSourcedDriver<SingletonConfiguration<String>, String> singleton = SingletonConfiguration.driver();
         ComponentDriver<SingletonConfiguration<Object>> bindToInstance = SingletonConfiguration.driver().bindToInstance("fffo");
         ComponentDriver<SingletonConfiguration<String>> bindToInstance2 = singleton.bindToInstance("foo");
         System.out.println(bindToInstance);

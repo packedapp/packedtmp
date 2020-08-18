@@ -25,6 +25,7 @@ import java.util.Optional;
 import app.packed.artifact.ArtifactSource;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
+import app.packed.inject.Factory;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.config.ConfigSiteSupport;
 
@@ -136,21 +137,32 @@ public abstract class AbstractComponentConfiguration implements ComponentConfigu
 
     /** {@inheritDoc} */
     @Override
-    public final ComponentPath path() {
-        return context.path();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public final void link(Bundle<?> bundle, Wirelet... wirelets) {
         ((ComponentNodeConfiguration) context).link(bundle, wirelets);
     }
 
     /** {@inheritDoc} */
     @Override
-    public ComponentConfiguration setName(String name) {
+    public final ComponentPath path() {
+        return context.path();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public AbstractComponentConfiguration setName(String name) {
         context.setName(name);
         return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final String toString() {
+        return context.toString();
+    }
+
+    @Override
+    public <C, I> C wire(ClassSourcedDriver<C, I> driver, Class<I> implementation, Wirelet... wirelets) {
+        return context.wire(driver, implementation, wirelets);
     }
 
     @Override
@@ -158,9 +170,13 @@ public abstract class AbstractComponentConfiguration implements ComponentConfigu
         return context.wire(driver, wirelets);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public final String toString() {
-        return context.toString();
+    public <C, I> C wire(FactorySourcedDriver<C, I> driver, Factory<I> implementation, Wirelet... wirelets) {
+        return context.wire(driver, implementation, wirelets);
+    }
+
+    @Override
+    public <C, I> C wireInstance(InstanceSourcedDriver<C, I> driver, I instance, Wirelet... wirelets) {
+        return context.wireInstance(driver, instance, wirelets);
     }
 }

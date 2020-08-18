@@ -13,25 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.component.drivertest;
 
-import java.lang.invoke.MethodHandles.Lookup;
+import app.packed.component.ComponentConfiguration;
 
 /**
  *
  */
-@FunctionalInterface
-// T extends AbstractRealm
-public interface CustomConfigurator<T> {
+public interface SourcedComponentConfiguration<T> extends ComponentConfiguration {
 
-    void configure(T stuff);
-}
-
-// T extends AbstractRealm
-class AbstractRealm {
-
-    // StuffInner stuff
-    public final void realm(Lookup lookup) {
-
-    }
 }
