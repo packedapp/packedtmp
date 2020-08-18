@@ -122,9 +122,19 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     private boolean finalState = false;
 
-    public ComponentNodeConfiguration(PackedAssemblyContext pac, PackedComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm,
-            Wirelet... wirelets) {
-        this(null, driver, configSite, realm, pac, wirelets);
+    int nameState;
+
+    private static final int NAME_INITIALIZED_WITH_WIRELET = 1 << 18; // set atomically with DONE
+    private static final int NAME_SET = 1 << 17; // set atomically with ABNORMAL
+    private static final int NAME_GET = 1 << 16; // true if joiner waiting
+    private static final int NAME_GET_PATH = 1 << 15; // true if joiner waiting
+    private static final int NAME_CHILD_GOT_PATH = 1 << 14; // true if joiner waiting
+
+    private static final int NAME_GETSET_MASK = NAME_SET + NAME_GET + NAME_GET_PATH + NAME_CHILD_GOT_PATH;
+
+    public static ComponentNodeConfiguration newAssembly(PackedAssemblyContext assembly, PackedComponentDriver<?> driver, ConfigSite configSite,
+            PackedRealm realm, Wirelet... wirelets) {
+        return new ComponentNodeConfiguration(assembly, realm, null, driver, configSite, wirelets);
     }
 
     @Nullable
@@ -133,7 +143,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     }
 
     public ComponentNodeConfiguration newChild(PackedComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm, Wirelet... wirelets) {
-        return new ComponentNodeConfiguration(this, driver, configSite, realm, assembly, wirelets);
+        return new ComponentNodeConfiguration(assembly, realm, this, driver, configSite, wirelets);
     }
 
     /**
@@ -144,33 +154,22 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
      * @param parent
      *            the parent of the component
      */
-    private ComponentNodeConfiguration(@Nullable ComponentNodeConfiguration parent, PackedComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm,
-            PackedAssemblyContext pac, Wirelet... wirelets) {
-        this.driver = requireNonNull(driver);
-        this.configSite = requireNonNull(configSite);
+    private ComponentNodeConfiguration(PackedAssemblyContext assembly, PackedRealm realm, @Nullable ComponentNodeConfiguration parent,
+            PackedComponentDriver<?> driver, ConfigSite configSite, Wirelet... wirelets) {
+        this.assembly = requireNonNull(assembly);
         this.realm = requireNonNull(realm);
-        this.assembly = requireNonNull(pac);
 
-        if (driver.isContainer()) {
-            this.container = new PackedContainerRole(this);
-        } else {
-            this.container = parent.container;
-        }
-        this.wirelets = WireletPack.from(this, wirelets);
         this.parent = parent;
-        if (parent == null) {
-            this.pod = new PackedPodConfigurationContext(this);
-            this.depth = 0;
-        } else {
-            if (driver.isGuest()) {
-                this.pod = new PackedPodConfigurationContext(this);
-            } else {
-                this.pod = parent.pod;
-            }
-            this.depth = parent.depth + 1;
-        }
+        this.depth = parent == null ? 0 : parent.depth + 1;
 
-        setName0(null);
+        this.driver = requireNonNull(driver);
+        this.pod = parent == null || driver.isGuest() ? new PackedPodConfigurationContext(this) : parent.pod;
+        this.container = driver.isContainer() ? new PackedContainerRole(this) : parent.container;
+
+        this.configSite = requireNonNull(configSite);
+        this.wirelets = WireletPack.from(this, wirelets);
+
+        setName0(null); // initialize name
     }
 
     /**
@@ -342,16 +341,6 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         }
         name = n;
     }
-
-    int nameState;
-
-    private static final int NAME_INITIALIZED_WITH_WIRELET = 1 << 18; // set atomically with DONE
-    private static final int NAME_SET = 1 << 17; // set atomically with ABNORMAL
-    private static final int NAME_GET = 1 << 16; // true if joiner waiting
-    private static final int NAME_GET_PATH = 1 << 15; // true if joiner waiting
-    private static final int NAME_CHILD_GOT_PATH = 1 << 14; // true if joiner waiting
-
-    private static final int NAME_GETSET_MASK = NAME_SET + NAME_GET + NAME_GET_PATH + NAME_CHILD_GOT_PATH;
 
     /** {@inheritDoc} */
     @Override

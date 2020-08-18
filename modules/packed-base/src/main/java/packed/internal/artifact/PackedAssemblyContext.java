@@ -84,7 +84,7 @@ public final class PackedAssemblyContext implements AssembleContext {
         // Vil gerne parse nogle wirelets some det allerfoerste
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
 
-        ComponentNodeConfiguration node = new ComponentNodeConfiguration(new PackedAssemblyContext(PackedOutput.artifact(ad)), driver, cs,
+        ComponentNodeConfiguration node = ComponentNodeConfiguration.newAssembly(new PackedAssemblyContext(PackedOutput.artifact(ad)), driver, cs,
                 PackedRealm.fromConfigurator(consumer), wirelets);
 
         D conf = driver.forBundleConf(node);
@@ -110,7 +110,7 @@ public final class PackedAssemblyContext implements AssembleContext {
         PackedComponentDriver<?> driver = BundleConfiguration.driverOf(bundle);
 
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
-        ComponentNodeConfiguration node = new ComponentNodeConfiguration(assembly, driver, cs, PackedRealm.fromBundle(bundle), wirelets);
+        ComponentNodeConfiguration node = ComponentNodeConfiguration.newAssembly(assembly, driver, cs, PackedRealm.fromBundle(bundle), wirelets);
 
         Object conf = driver.forBundleConf(node);
         BundleConfiguration.configure(bundle, conf); // in-try-finally. So we can call PAC.fail() and have them run callbacks for dynamic nodes
