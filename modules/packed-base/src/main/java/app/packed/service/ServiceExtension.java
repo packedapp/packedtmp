@@ -338,13 +338,16 @@ public final class ServiceExtension extends Extension {
      * @return the configuration of the component that was installed
      */
     public <T> ServiceComponentConfiguration<T> provide(Factory<T> factory) {
-        return node.provider().provideFactory(((PackedSingletonConfiguration<T>) install(factory)).context);
+        return node.provider().provideFactory(((PackedSingletonConfiguration<T>) install(factory)).context, false);
     }
 
     // Will install a ServiceStatelessConfiguration...
-    <T> ServiceConfiguration<T> provideProtoype(Factory<T> factory) {
-        // Hvordan FFF fungere det her???? Vi skal jo vaere knyttet til en component.
-        throw new UnsupportedOperationException();
+    public <T> ServiceComponentConfiguration<T> providePrototype(Factory<T> factory) {
+        return node.provider().provideFactory(((PackedSingletonConfiguration<T>) install(factory)).context, true);
+    }
+
+    public <T> ServiceComponentConfiguration<T> providePrototype(Class<T> implementation) {
+        return providePrototype(Factory.find(implementation));
     }
 
 //    public <T> ServiceComponentConfiguration<T> provide(Providable<T> c) {

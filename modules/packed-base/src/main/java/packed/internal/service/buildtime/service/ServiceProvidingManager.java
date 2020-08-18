@@ -132,16 +132,20 @@ public final class ServiceProvidingManager {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> ServiceComponentConfiguration<T> provideFactory(ComponentNodeConfiguration cc) {
+    public <T> ServiceComponentConfiguration<T> provideFactory(ComponentNodeConfiguration cc, boolean isPrototype) {
         SingletonComponentDriver scd = (SingletonComponentDriver) cc.driver();
         BuildEntry<?> c = componentConfigurationCache.get(cc);// remove??
         if (c == null) {
             List<ServiceDependency> dependencies = scd.factory.factory.dependencies;
             c = new ComponentFactoryBuildEntry<>(node, cc, ServiceMode.SINGLETON, scd.fromFactory(cc), (List) dependencies);
         }
+        ComponentFactoryBuildEntry e = (ComponentFactoryBuildEntry) c;
+        if (isPrototype) {
+            e.prototype();
+        }
         c.as((Key) scd.factory.key());
         providingEntries.add(c);
-        return new PackedServiceComponentConfiguration<>(cc, (ComponentFactoryBuildEntry) c);
+        return new PackedServiceComponentConfiguration<>(cc, e);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })

@@ -35,9 +35,6 @@ import packed.internal.inject.ConfigSiteInjectOperations;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
 import testutil.stubs.Letters.D;
-import testutil.stubs.Letters.H;
-import testutil.stubs.Letters.I;
-import testutil.stubs.Letters.J;
 
 /**
  * Tests {@link ServiceComponentConfiguration#configSite()} and {@link Injector#configSite()}.
@@ -73,9 +70,9 @@ public class InjectorConfigSiteTest {
             // binding0(conf.provide(E.class).lazy());
             // binding0(conf.provide(Factory.findInjectable(F.class)).lazy());
             // binding0(conf.provideInstance(TypeLiteral.of(G.class)).lazy());
-            binding0(conf.provide(H.class).prototype());
-            binding0(conf.provide(Factory.find(I.class)).prototype());
-            binding0(conf.provideConstant(TypeLiteral.of(J.class)).prototype());
+//            binding0(conf.provide(H.class).prototype());
+//            binding0(conf.provide(Factory.find(I.class)).prototype());
+//            binding0(conf.provideConstant(TypeLiteral.of(J.class)).prototype());
         });
         for (Entry<Class<?>, ConfigSite> e : sites.entrySet()) {
             ConfigSite cs = inj.getDescriptor(e.getKey()).get().configSite();

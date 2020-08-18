@@ -106,8 +106,6 @@ public interface ServiceComponentConfiguration<T> extends ServiceConfiguration<T
     @Override
     ServiceMode instantiationMode();
 
-    ServiceComponentConfiguration<T> prototype();
-
     /**
      * Sets the description of this service.
      *

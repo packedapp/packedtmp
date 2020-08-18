@@ -49,8 +49,8 @@ public class ProvideTest {
             ServiceComponentConfiguration<C> c = conf.provideConstant(C0);
             // ServiceComponentConfiguration<E> e = conf.provide(E.class).lazy();
             // ServiceComponentConfiguration<F> f = conf.provide(Factory.findInjectable(F.class)).lazy();
-            ServiceComponentConfiguration<H> h = conf.provide(H.class).prototype();
-            ServiceComponentConfiguration<I> i = conf.provide(Factory.find(I.class)).prototype();
+            ServiceComponentConfiguration<H> h = conf.providePrototype(H.class);
+            ServiceComponentConfiguration<I> i = conf.providePrototype(Factory.find(I.class));
         });
     }
 

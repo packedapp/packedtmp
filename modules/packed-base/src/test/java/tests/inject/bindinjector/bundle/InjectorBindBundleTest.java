@@ -87,7 +87,7 @@ public class InjectorBindBundleTest {
         BaseBundle b = new BaseBundle() {
             @Override
             protected void configure() {
-                provide(new Factory0<>(al::incrementAndGet) {}).prototype();
+                providePrototype(new Factory0<>(al::incrementAndGet) {});
                 export(Long.class);
             }
         };

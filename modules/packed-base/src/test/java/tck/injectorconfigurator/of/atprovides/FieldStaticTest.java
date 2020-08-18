@@ -56,9 +56,9 @@ public class FieldStaticTest {
     /** Tests prototype {@link Provide#instantionMode()} on static fields. */
     @Test
     public void providePrototype() {
-        MixedFieldsNoInstantiation.test(c -> c.provide(MixedFieldsNoInstantiation.class).prototype());
-        MixedFieldsNoInstantiation.test(c -> c.provide(Factory.find(MixedFieldsNoInstantiation.class)).prototype());
-        MixedFieldsNoInstantiation.test(c -> c.provide(Factory.find(new TypeLiteral<MixedFieldsNoInstantiation>() {})).prototype());
+        MixedFieldsNoInstantiation.test(c -> c.providePrototype(MixedFieldsNoInstantiation.class));
+        MixedFieldsNoInstantiation.test(c -> c.providePrototype(Factory.find(MixedFieldsNoInstantiation.class)));
+        MixedFieldsNoInstantiation.test(c -> c.providePrototype(Factory.find(new TypeLiteral<MixedFieldsNoInstantiation>() {})));
     }
 
     /** A helper class that can be instantiated. */

@@ -102,7 +102,7 @@ public class FieldInstanceTest {
     public void providePrototype() {
         AbstractThrowableAssert<?, ?> a = assertThatThrownBy(() -> create(c -> {
             c.provideConstant(new AtomicBoolean());
-            c.provide(SingletonField.class).prototype();
+            c.providePrototype(SingletonField.class);
         }));
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO check message
@@ -117,7 +117,7 @@ public class FieldInstanceTest {
         a = assertThatThrownBy(() -> Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
             c.provideConstant(new AtomicBoolean());
-            c.provide(PrototypeField.class).prototype();
+            c.providePrototype(PrototypeField.class);
         }));
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO check message

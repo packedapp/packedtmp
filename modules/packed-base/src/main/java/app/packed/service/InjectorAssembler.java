@@ -172,6 +172,14 @@ public final class InjectorAssembler {
         return extension().provide(factory);
     }
 
+    public <T> ServiceComponentConfiguration<T> providePrototype(Class<T> factory) {
+        return extension().providePrototype(factory);
+    }
+
+    public <T> ServiceComponentConfiguration<T> providePrototype(Factory<T> factory) {
+        return extension().providePrototype(factory);
+    }
+
     /**
      * Binds all services from the specified injector.
      * <p>

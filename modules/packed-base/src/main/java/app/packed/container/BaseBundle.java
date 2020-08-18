@@ -188,6 +188,10 @@ public abstract class BaseBundle extends ContainerBundle {
         return service().provide(factory);
     }
 
+    protected final <T> ServiceComponentConfiguration<T> providePrototype(Factory<T> factory) {
+        return service().providePrototype(factory);
+    }
+
     protected final <T> ServiceComponentConfiguration<T> provide(SingletonConfiguration<T> configuration) {
         throw new UnsupportedOperationException();
     }
