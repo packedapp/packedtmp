@@ -45,10 +45,8 @@ import packed.internal.container.PackedExtensionConfiguration;
  * @apiNote In the future, if the Java language permits, {@link ExtensionConfiguration} may become a {@code sealed}
  *          interface, which would prohibit subclassing except by explicitly permitted types.
  */
-// Problemet med at extende ComponentConfiguration er hvis vi tillader at installere alle componenter..
-// saa skal de jo ikke have extensionen som parent??? Eller??
-// Det kunne jo baere vaere en pseduo parent
-public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
+// Does not extend CC as install/installinstance used parent as target
+public interface ExtensionConfiguration {
 
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
@@ -75,10 +73,10 @@ public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
     ConfigSite containerConfigSite(); // parent.configSite
 
     /**
-     * Returns the path of the extension. The path of the container to which the extension is registered with, can be
-     * obtained by calling <code>path.parent().get()</code>.
+     * Returns the component path of the extension. The path of the extension's container, can be obtained by calling
+     * <code>path.parent().get()</code>.
      * 
-     * @return the path of the extension is registered with
+     * @return the component path of the extension
      */
     ComponentPath path();
 
