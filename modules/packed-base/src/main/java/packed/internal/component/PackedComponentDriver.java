@@ -123,6 +123,7 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
     }
 
     public static class SingletonComponentDriver extends ModelComponentDriver<ComponentConfiguration> {
+
         @Nullable
         public final BaseFactory<?> factory;
 
@@ -149,10 +150,6 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         public <T> SingletonConfiguration<T> toConf(ComponentNodeConfiguration context) {
             model.invokeOnHookOnInstall(context);
             return new PackedSingletonConfiguration<>(context);
-        }
-
-        public boolean isInstance() {
-            return instance == null;
         }
     }
 

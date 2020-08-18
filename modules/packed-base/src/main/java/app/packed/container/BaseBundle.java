@@ -22,11 +22,11 @@ import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.lifecycle.LifecycleExtension;
 import app.packed.lifecycleold.OnStart;
+import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
-import app.packed.service.Provide;
 import app.packed.service.PrototypeConfiguration;
-import app.packed.service.ExportedServiceConfiguration;
+import app.packed.service.Provide;
 import app.packed.service.ServiceExtension;
 
 /**
@@ -165,7 +165,6 @@ public abstract class BaseBundle extends ContainerBundle {
      * @see InjectorAssembler#provide(Class)
      */
     protected final <T> SingletonConfiguration<T> provide(Class<T> implementation) {
-        // Provide er i virkeligheden... install() followed by service().provide(Singleton or Static)
         return install(implementation).provide();
     }
 

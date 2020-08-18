@@ -27,9 +27,6 @@ import app.packed.service.ExportedServiceConfiguration;
  * <p>
  * It it also possible to install components at runtime via {@link Component}.
  */
-
-// SingletonConfiguration -> Noget der laver en single instance der kan bruges af andre.
-// Maaske endda registereres som service
 public interface SingletonConfiguration<T> extends SourcedComponentConfiguration<T> {
 
     /** {@inheritDoc} */

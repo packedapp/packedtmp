@@ -56,8 +56,6 @@ public interface Component extends AttributeHolder {
      * unique name (among other components with the same parent).
      *
      * @return the name of this component
-     *
-     * @see SingletonConfiguration#setName(String)
      */
     String name();
 

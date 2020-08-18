@@ -18,13 +18,12 @@ package app.packed.service;
 import app.packed.base.Key;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.SingletonConfiguration;
 import app.packed.container.BaseBundle;
 import app.packed.inject.Factory;
 
 /**
- * This configuration represents an entity that is both a {@link ExportedServiceConfiguration configuration of as service} and a
- * {@link SingletonConfiguration configuration of as component}.
+ * This configuration represents an entity that is both a {@link ExportedServiceConfiguration configuration of as
+ * service} and a .
  * <p>
  * An instance of this interface is usually obtained by calling one of the provide methods on {@link ServiceExtension}
  * or {@link BaseBundle}.

@@ -17,30 +17,27 @@ package packed.internal.hook.applicator;
 
 import java.util.function.BiConsumer;
 
-import app.packed.component.SingletonConfiguration;
 import app.packed.hook.HookApplicator;
-import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.service.buildtime.service.PackedSingletonConfiguration;
 
 /**
  *
  */
 abstract class AbstractHookApplicator<T> implements HookApplicator<T> {
 
-    /** {@inheritDoc} */
-    @Override
-    public final <S> void onReady(SingletonConfiguration<?> cc, Class<S> sidecarType, BiConsumer<S, T> consumer) {
-        // Must have an owner.... And then ComponentConfiguration must have the same owner....
-        // And I guess access mode as well, owner, for example, bundle.getClass();
-        // Maybe check against the same lookup object...
-        // Owner_Type, Component_Instance_Type, Field, FunctionalType, AccessMode
-        /// Maybe we can just check ComponentConfiguration.lookup == this.lookup
-        /// I think we actually need to check this this way
-
-        // TODO check instance component if instance field...
-        ComponentNodeConfiguration pcc = ((PackedSingletonConfiguration<?>) cc).node;
-        pcc.checkConfigurable();
-    }
+//    /** {@inheritDoc} */
+//    @Override
+//    public final <S> void onReady(SingletonConfiguration<?> cc, Class<S> sidecarType, BiConsumer<S, T> consumer) {
+//        // Must have an owner.... And then ComponentConfiguration must have the same owner....
+//        // And I guess access mode as well, owner, for example, bundle.getClass();
+//        // Maybe check against the same lookup object...
+//        // Owner_Type, Component_Instance_Type, Field, FunctionalType, AccessMode
+//        /// Maybe we can just check ComponentConfiguration.lookup == this.lookup
+//        /// I think we actually need to check this this way
+//
+//        // TODO check instance component if instance field...
+//        ComponentNodeConfiguration pcc = ((PackedSingletonConfiguration<?>) cc).node;
+//        pcc.checkConfigurable();
+//    }
 
     protected abstract <S> DelayedAccessor newAccessor(Class<S> sidecarType, BiConsumer<S, T> consumer);
 }
