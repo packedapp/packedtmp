@@ -117,21 +117,8 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         }
     }
 
-    public static abstract class ModelComponentDriver<T> extends PackedComponentDriver<T> {
+    public static class SingletonComponentDriver<T> extends PackedComponentDriver<SingletonConfiguration<T>> {
         public final ComponentModel model;
-
-        /**
-         * @param roles
-         */
-        ModelComponentDriver(int roles, ComponentModel model) {
-            super(roles);
-            this.model = model;
-        }
-
-    }
-
-    public static class SingletonComponentDriver<T> extends ModelComponentDriver<SingletonConfiguration<T>> {
-
         @Nullable
         public final BaseFactory<?> factory;
 
@@ -139,7 +126,8 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         public final Object instance;
 
         public SingletonComponentDriver(PackedRealm realm, Factory<?> factory) {
-            super(PackedComponentDriver.ROLE_SINGLETON, realm.componentModelOf(factory.rawType()));
+            super(PackedComponentDriver.ROLE_SINGLETON);
+            this.model = realm.componentModelOf(factory.rawType());
             this.factory = (@Nullable BaseFactory<?>) factory;
             this.instance = null;
         }
@@ -150,7 +138,8 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         }
 
         public SingletonComponentDriver(PackedRealm realm, Object instance) {
-            super(PackedComponentDriver.ROLE_SINGLETON, realm.componentModelOf(instance.getClass()));
+            super(PackedComponentDriver.ROLE_SINGLETON);
+            this.model = realm.componentModelOf(instance.getClass());
             this.factory = null;
             this.instance = requireNonNull(instance);
         }
@@ -168,9 +157,12 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         }
     }
 
-    public static class StatelessComponentDriver extends ModelComponentDriver<StatelessConfiguration> {
+    public static class StatelessComponentDriver extends PackedComponentDriver<StatelessConfiguration> {
+        public final ComponentModel model;
+
         private StatelessComponentDriver(PackedRealm lookup, Class<?> implementation) {
-            super(PackedComponentDriver.ROLE_STATELESS, lookup.componentModelOf(requireNonNull(implementation, "implementation is null")));
+            super(PackedComponentDriver.ROLE_STATELESS);
+            this.model = lookup.componentModelOf(requireNonNull(implementation, "implementation is null"));
             requireNonNull(implementation, "implementation is null");
         }
 
