@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.service.buildtime.service;
 
 import java.util.Optional;
 
@@ -22,7 +22,11 @@ import app.packed.component.AbstractComponentConfiguration;
 import app.packed.component.SingletonConfiguration;
 import app.packed.service.ServiceConfiguration;
 import app.packed.service.ServiceExtension;
-import packed.internal.service.buildtime.service.PackedServiceComponentConfiguration;
+import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
+import packed.internal.inject.ConfigSiteInjectOperations;
+import packed.internal.service.buildtime.BuildEntry;
+import packed.internal.service.buildtime.ServiceExtensionNode;
 
 /**
  *
@@ -31,7 +35,7 @@ public class PackedSingletonConfiguration<T> extends AbstractComponentConfigurat
 
     public final ComponentNodeConfiguration node;
 
-    private PackedServiceComponentConfiguration<T> provide;
+    private BuildEntry<T> buildEntry;
 
     public PackedSingletonConfiguration(ComponentNodeConfiguration node) {
         super(node);
@@ -46,18 +50,25 @@ public class PackedSingletonConfiguration<T> extends AbstractComponentConfigurat
         return this;
     }
 
-    PackedServiceComponentConfiguration<T> entry() {
-        if (provide == null) {
-            ServiceExtension e = node.container.use(ServiceExtension.class);
-            provide = e.provide(this);
+    @SuppressWarnings("unchecked")
+    BuildEntry<T> entry() {
+        if (buildEntry == null) {
+            ServiceExtension e = node.container().use(ServiceExtension.class);
+            ServiceExtensionNode sen = ServiceExtensionNode.fromExtension(e);
+            SingletonComponentDriver scd = (SingletonComponentDriver) node.driver();
+            if (scd.instance != null) {
+                buildEntry = (BuildEntry<T>) sen.provider().provideInstance(node, scd.instance);
+            } else {
+                buildEntry = sen.provider().provideFactory(node);
+            }
         }
-        return provide;
+        return buildEntry;
     }
 
     /** {@inheritDoc} */
     @Override
     public Optional<Key<?>> key() {
-        return provide == null ? Optional.empty() : provide.key();
+        return buildEntry == null ? Optional.empty() : Optional.of(buildEntry.key());
     }
 
     /** {@inheritDoc} */
@@ -78,6 +89,7 @@ public class PackedSingletonConfiguration<T> extends AbstractComponentConfigurat
     /** {@inheritDoc} */
     @Override
     public ServiceConfiguration<T> export() {
-        return entry().export();
+        checkConfigurable();
+        return buildEntry.node.exports().export(buildEntry, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 }

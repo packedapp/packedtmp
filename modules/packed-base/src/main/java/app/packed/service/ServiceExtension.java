@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.BiConsumer;
 
 import app.packed.base.Key;
-import app.packed.component.SingletonConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerDescriptor;
@@ -33,14 +32,12 @@ import app.packed.inject.Factory;
 import app.packed.sidecar.Expose;
 import app.packed.statemachine.Leaving;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
-import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.service.AtProvidesHook;
-import packed.internal.service.buildtime.service.PackedServiceComponentConfiguration;
+import packed.internal.service.buildtime.service.PackedSingletonConfiguration;
 import packed.internal.service.buildtime.wirelets.ServiceWireletPipeline;
 import packed.internal.service.runtime.AbstractInjector;
 
@@ -285,17 +282,6 @@ public final class ServiceExtension extends Extension {
     // Will install a ServiceStatelessConfiguration...
     public <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {
         return node.provider().provideFactory(((PackedSingletonConfiguration<T>) install(factory)).node, true);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> PackedServiceComponentConfiguration<T> provide(SingletonConfiguration<T> c) {
-        PackedSingletonConfiguration<T> cc = (PackedSingletonConfiguration<T>) c;
-        SingletonComponentDriver scd = (SingletonComponentDriver) cc.node.driver();
-        if (scd.instance != null) {
-            return (PackedServiceComponentConfiguration<T>) node.provider().provideInstance(cc.node, scd.instance);
-        } else {
-            return node.provider().provideFactory(cc.node, false);
-        }
     }
 
     /**

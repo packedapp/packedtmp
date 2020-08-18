@@ -31,6 +31,7 @@ import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.PackedRealm;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
+import packed.internal.service.buildtime.service.PackedSingletonConfiguration;
 
 /**
  *

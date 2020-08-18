@@ -127,7 +127,7 @@ public final class ServiceProvidingManager {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> PackedServiceComponentConfiguration<T> provideFactory(ComponentNodeConfiguration cc, boolean isPrototype) {
+    public <T> PackedPrototypeConfiguration<T> provideFactory(ComponentNodeConfiguration cc, boolean isPrototype) {
         SingletonComponentDriver scd = (SingletonComponentDriver) cc.driver();
         BuildEntry<?> c = componentConfigurationCache.get(cc);// remove??
         if (c == null) {
@@ -140,11 +140,24 @@ public final class ServiceProvidingManager {
         }
         c.as((Key) scd.factory.key());
         providingEntries.add(c);
-        return new PackedServiceComponentConfiguration<>(cc, e);
+        return new PackedPrototypeConfiguration<>(cc, e);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> PackedServiceComponentConfiguration<T> provideInstance(ComponentNodeConfiguration cc, T instance) {
+    public <T> BuildEntry<T> provideFactory(ComponentNodeConfiguration cc) {
+        SingletonComponentDriver scd = (SingletonComponentDriver) cc.driver();
+        BuildEntry<?> c = componentConfigurationCache.get(cc);// remove??
+        if (c == null) {
+            List<ServiceDependency> dependencies = scd.factory.factory.dependencies;
+            c = new ComponentFactoryBuildEntry<>(node, cc, ServiceMode.SINGLETON, scd.fromFactory(cc), (List) dependencies);
+        }
+        c.as((Key) scd.factory.key());
+        providingEntries.add(c);
+        return (BuildEntry<T>) c;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public <T> BuildEntry<T> provideInstance(ComponentNodeConfiguration cc, T instance) {
         // First see if we have already installed the node. This happens in #set if the component container any members
         // annotated with @Provides
         BuildEntry<?> c = componentConfigurationCache.get(cc);
@@ -155,7 +168,7 @@ public final class ServiceProvidingManager {
 
         c.as((Key) Key.of(instance.getClass()));
         providingEntries.add(c);
-        return new PackedServiceComponentConfiguration<>(cc, (BuildEntry) c);
+        return (BuildEntry<T>) c;
     }
 
     public HashMap<Key<?>, BuildEntry<?>> resolve() {

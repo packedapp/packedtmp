@@ -32,7 +32,7 @@ import packed.internal.service.buildtime.BuildEntry;
 /**
  *
  */
-public final class PackedServiceComponentConfiguration<T> extends AbstractComponentConfiguration implements PrototypeConfiguration<T> {
+public final class PackedPrototypeConfiguration<T> extends AbstractComponentConfiguration implements PrototypeConfiguration<T> {
 
     /** The service we are exposing. */
     public final BuildEntry<T> buildEntry;
@@ -46,7 +46,7 @@ public final class PackedServiceComponentConfiguration<T> extends AbstractCompon
      * @param buildEntry
      *            the build entry to wrap
      */
-    public PackedServiceComponentConfiguration(ComponentNodeConfiguration component, BuildEntry<T> buildEntry) {
+    public PackedPrototypeConfiguration(ComponentNodeConfiguration component, BuildEntry<T> buildEntry) {
         super(component);
         this.buildEntry = requireNonNull(buildEntry);
         this.component = component;
@@ -54,7 +54,7 @@ public final class PackedServiceComponentConfiguration<T> extends AbstractCompon
 
     /** {@inheritDoc} */
     @Override
-    public PackedServiceComponentConfiguration<T> as(Key<? super T> key) {
+    public PackedPrototypeConfiguration<T> as(Key<? super T> key) {
         checkConfigurable();
         buildEntry.as(key);
         return this;
@@ -69,7 +69,7 @@ public final class PackedServiceComponentConfiguration<T> extends AbstractCompon
 
     /** {@inheritDoc} */
     @Override
-    public PackedServiceComponentConfiguration<T> setName(String name) {
+    public PackedPrototypeConfiguration<T> setName(String name) {
         component.setName(name);
         return this;
     }

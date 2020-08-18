@@ -20,7 +20,7 @@ import java.util.function.BiConsumer;
 import app.packed.component.SingletonConfiguration;
 import app.packed.hook.HookApplicator;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.PackedSingletonConfiguration;
+import packed.internal.service.buildtime.service.PackedSingletonConfiguration;
 
 /**
  *

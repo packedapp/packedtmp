@@ -30,7 +30,7 @@ import app.packed.service.ServiceExtension;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ErrorMessages;
 import packed.internal.service.buildtime.ServiceExtensionNode;
-import packed.internal.service.buildtime.service.PackedServiceComponentConfiguration;
+import packed.internal.service.buildtime.service.PackedPrototypeConfiguration;
 
 /**
  * This class manages everything to do with exporting of service entries.
@@ -88,8 +88,15 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
      *            the config site of the export
      * @return stuff
      */
-    public <T> ServiceConfiguration<T> export(PackedServiceComponentConfiguration<T> configuration, ConfigSite configSite) {
+    public <T> ServiceConfiguration<T> export(PackedPrototypeConfiguration<T> configuration, ConfigSite configSite) {
         BuildEntry<T> entryToExport = configuration.buildEntry;
+        if (entryToExport.node != node) {
+            throw new IllegalArgumentException("The specified configuration was created by another injector extension");
+        }
+        return export0(new ExportedBuildEntry<>(node, entryToExport, configSite));
+    }
+
+    public <T> ServiceConfiguration<T> export(BuildEntry<T> entryToExport, ConfigSite configSite) {
         if (entryToExport.node != node) {
             throw new IllegalArgumentException("The specified configuration was created by another injector extension");
         }
