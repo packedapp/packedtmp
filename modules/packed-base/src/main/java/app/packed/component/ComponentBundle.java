@@ -32,16 +32,16 @@ public abstract class ComponentBundle<T extends ComponentConfiguration> extends 
         super(driver);
     }
 
-    /**
-     * @param <X>
-     *            the type of instance
-     * @param driver
-     * @param instance
-     *            the instance to wrap
-     */
-    protected <X> ComponentBundle(InstanceSourcedDriver<? extends T, X> driver, X instance) {
-        super(driver.bindToInstance(instance));
-    }
+//    /**
+//     * @param <X>
+//     *            the type of instance
+//     * @param driver
+//     * @param instance
+//     *            the instance to wrap
+//     */
+//    protected <X> ComponentBundle(InstanceSourcedDriver<? extends T, X> driver, X instance) {
+//        super(driver.bindToInstance(instance));
+//    }
 
     /**
      * Checks that the {@link #configure()} method has not already been invoked. This is typically used to make sure that
@@ -141,20 +141,4 @@ public abstract class ComponentBundle<T extends ComponentConfiguration> extends 
     protected final <C, I> C wireInstance(InstanceSourcedDriver<C, I> driver, I instance, Wirelet... wirelets) {
         return configuration().wireInstance(driver, instance, wirelets);
     }
-
-    protected <X> SingletonConfiguration<X> install(Class<X> implementation) {
-        return wire(SingletonConfiguration.driver(), implementation);
-    }
-
-    protected <X> SingletonConfiguration<X> install(Factory<X> implementation) {
-        return wire(SingletonConfiguration.driver(), implementation);
-    }
-
-    protected <X> SingletonConfiguration<X> installInstance(X instance) {
-        return wireInstance(SingletonConfiguration.driver(), instance);
-    }
-//    install(Class<T>)
-//    install(Factory<T>)
-//    installHelper(Class<?>)
-//    installInstance(T)
 }

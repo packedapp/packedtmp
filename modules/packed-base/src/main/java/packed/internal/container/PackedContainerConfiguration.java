@@ -20,11 +20,8 @@ import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.component.AbstractComponentConfiguration;
-import app.packed.component.SingletonConfiguration;
-import app.packed.component.StatelessConfiguration;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
-import app.packed.inject.Factory;
 import packed.internal.component.ComponentNodeConfiguration;
 
 /** The default implementation of {@link ContainerConfiguration}. */
@@ -38,24 +35,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     @Override
     public Set<Class<? extends Extension>> extensions() {
         return context.containerExtensions();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T> SingletonConfiguration<T> install(Factory<T> factory) {
-        return node().install(factory);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T> SingletonConfiguration<T> installInstance(T instance) {
-        return node().installInstance(instance);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public StatelessConfiguration installStateless(Class<?> implementation) {
-        return wire(StatelessConfiguration.driver(), implementation);
     }
 
     /** {@inheritDoc} */

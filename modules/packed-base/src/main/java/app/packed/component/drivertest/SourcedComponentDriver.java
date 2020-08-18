@@ -15,10 +15,8 @@
  */
 package app.packed.component.drivertest;
 
-import app.packed.component.Bundle;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
-import app.packed.component.InstanceSourcedDriver;
 import app.packed.component.SingletonConfiguration;
 import app.packed.inject.Factory;
 
@@ -35,26 +33,26 @@ public interface SourcedComponentDriver<T, X extends ComponentConfiguration> {
         throw new UnsupportedOperationException();
     }
 }
-
-class StringBundle extends Bundle<SingletonConfiguration<String>> {
-
-    protected StringBundle(String foo) {
-        super(driver().bindToInstance(foo));
-    }
-
-    private static InstanceSourcedDriver<SingletonConfiguration<String>, String> driver() {
-        return SingletonConfiguration.driver();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void configure() {}
-
-    public static void main(String[] args) {
-        InstanceSourcedDriver<SingletonConfiguration<String>, String> singleton = SingletonConfiguration.driver();
-        ComponentDriver<SingletonConfiguration<Object>> bindToInstance = SingletonConfiguration.driver().bindToInstance("fffo");
-        ComponentDriver<SingletonConfiguration<String>> bindToInstance2 = singleton.bindToInstance("foo");
-        System.out.println(bindToInstance);
-        System.out.println(bindToInstance2);
-    }
-}
+//
+//class StringBundle extends Bundle<SingletonConfiguration<String>> {
+//
+//    protected StringBundle(String foo) {
+//        super(driver().bindToInstance(foo));
+//    }
+//
+//    private static InstanceSourcedDriver<SingletonConfiguration<String>, String> driver() {
+//        return SingletonConfiguration.driver();
+//    }
+//
+//    /** {@inheritDoc} */
+//    @Override
+//    protected void configure() {}
+//
+//    public static void main(String[] args) {
+//        InstanceSourcedDriver<SingletonConfiguration<String>, String> singleton = SingletonConfiguration.driver();
+//        ComponentDriver<SingletonConfiguration<Object>> bindToInstance = SingletonConfiguration.driver().bindToInstance("fffo");
+//        ComponentDriver<SingletonConfiguration<String>> bindToInstance2 = singleton.bindToInstance("foo");
+//        System.out.println(bindToInstance);
+//        System.out.println(bindToInstance2);
+//    }
+//}

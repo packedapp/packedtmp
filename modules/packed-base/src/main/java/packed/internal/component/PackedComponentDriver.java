@@ -24,6 +24,7 @@ import app.packed.component.Bundle;
 import app.packed.component.ClassSourcedDriver;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
+import app.packed.component.InstanceSourcedDriver;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.container.ContainerConfiguration;
@@ -123,10 +124,11 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         public final BaseFactory<?> factory;
 
         @Nullable
-        public final Object instance;
+        public final T instance;
 
         public SingletonComponentDriver(PackedRealm realm, Factory<?> factory) {
             super(PackedComponentDriver.ROLE_SINGLETON);
+            requireNonNull(factory, "factory is null");
             this.model = realm.componentModelOf(factory.rawType());
             this.factory = (@Nullable BaseFactory<?>) factory;
             this.instance = null;
@@ -137,11 +139,11 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
             return model.defaultPrefix();
         }
 
-        public SingletonComponentDriver(PackedRealm realm, Object instance) {
+        public SingletonComponentDriver(PackedRealm realm, T instance) {
             super(PackedComponentDriver.ROLE_SINGLETON);
+            this.instance = requireNonNull(instance, "instance is null");
             this.model = realm.componentModelOf(instance.getClass());
             this.factory = null;
-            this.instance = requireNonNull(instance);
         }
 
         public MethodHandle fromFactory(ComponentNodeConfiguration context) {
@@ -154,6 +156,21 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
             ComponentNodeConfiguration cnc = (ComponentNodeConfiguration) context;
             model.invokeOnHookOnInstall(cnc);
             return new PackedSingletonConfiguration<>(cnc);
+        }
+
+        public static <T> InstanceSourcedDriver<SingletonConfiguration<T>, T> driver() {
+            return new InstanceSourcedDriver<SingletonConfiguration<T>, T>() {
+
+                @Override
+                public ComponentDriver<SingletonConfiguration<T>> bindToFactory(PackedRealm realm, Factory<T> factory) {
+                    return new SingletonComponentDriver<>(realm, factory);
+                }
+
+                @Override
+                public ComponentDriver<SingletonConfiguration<T>> bindToInstance(PackedRealm realm, T instance) {
+                    return new SingletonComponentDriver<>(realm, instance);
+                }
+            };
         }
     }
 

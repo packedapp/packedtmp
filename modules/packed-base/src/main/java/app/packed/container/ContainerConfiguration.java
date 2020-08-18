@@ -76,7 +76,9 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      * @return the configuration of the component
      * @see ContainerBundle#install(Factory)
      */
-    <T> SingletonConfiguration<T> install(Factory<T> factory);
+    default <T> SingletonConfiguration<T> install(Factory<T> factory) {
+        return wire(SingletonConfiguration.driver(), factory);
+    }
 
     /**
      * @param <T>
@@ -86,7 +88,9 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      * @return the configuration of the component
      * @see ContainerBundle#installInstance(Object)
      */
-    <T> SingletonConfiguration<T> installInstance(T instance);
+    default <T> SingletonConfiguration<T> installInstance(T instance) {
+        return wireInstance(SingletonConfiguration.driver(), instance);
+    }
 
     /**
      * Installs a stateless component.
@@ -100,8 +104,9 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      *            the type of instantiate and use as the component instance
      * @return the configuration of the component
      */
-    // Maybe just stateless
-    StatelessConfiguration installStateless(Class<?> implementation);
+    default StatelessConfiguration installStateless(Class<?> implementation) {
+        return wire(StatelessConfiguration.driver(), implementation);
+    }
 
     /**
      * Registers a {@link Lookup} object that will be used for accessing members on components that are registered with the

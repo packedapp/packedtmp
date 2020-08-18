@@ -15,9 +15,11 @@
  */
 package app.packed.component;
 
+import packed.internal.container.PackedRealm;
+
 /**
  *
  */
 public interface InstanceSourcedDriver<C, I> extends FactorySourcedDriver<C, I> {
-    ComponentDriver<C> bindToInstance(I instance);
+    ComponentDriver<C> bindToInstance(PackedRealm realm, I instance);
 }

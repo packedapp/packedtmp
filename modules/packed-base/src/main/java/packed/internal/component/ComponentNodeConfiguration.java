@@ -42,14 +42,12 @@ import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.component.FactorySourcedDriver;
 import app.packed.component.InstanceSourcedDriver;
-import app.packed.component.SingletonConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
 import packed.internal.artifact.InstantiationContext;
 import packed.internal.artifact.PackedAssemblyContext;
-import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletModel;
 import packed.internal.component.wirelet.WireletPack;
@@ -429,18 +427,6 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         newNode.finalState = true;
     }
 
-    public <T> SingletonConfiguration<T> installInstance(T instance) {
-        requireNonNull(instance, "instance is null");
-        SingletonComponentDriver<T> scd = new SingletonComponentDriver<>(realm, instance);
-        return wire(scd);
-    }
-
-    public <T> SingletonConfiguration<T> install(Factory<T> factory) {
-        requireNonNull(factory, "factory is null");
-        SingletonComponentDriver<T> scd = new SingletonComponentDriver<>(realm, factory);
-        return wire(scd);
-    }
-
     /** {@inheritDoc} */
     @Override
     public <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
@@ -608,7 +594,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     @Override
     public <C, I> C wireInstance(InstanceSourcedDriver<C, I> driver, I instance, Wirelet... wirelets) {
-        return wire(driver.bindToInstance(instance), wirelets);
+        return wire(driver.bindToInstance(realm, instance), wirelets);
     }
 
     /** {@inheritDoc} */
