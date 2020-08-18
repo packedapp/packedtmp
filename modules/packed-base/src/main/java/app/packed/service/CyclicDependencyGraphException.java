@@ -25,6 +25,9 @@ import app.packed.artifact.AssembleException;
 
 // Hvis vi vaelger at smide den. Saa syntes jeg vi skal have.
 // datastructuren i selve exceptionen saa man kan explore den.
+
+// IStedet for en EXception kunne AssembleException have en AttributeSet??
+// Hmm whatever graph er ikke serializable ligesom Extension
 public class CyclicDependencyGraphException extends AssembleException {
 
     /** <code>serialVersionUID</code>. */

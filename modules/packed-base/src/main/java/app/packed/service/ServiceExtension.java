@@ -197,9 +197,7 @@ public final class ServiceExtension extends Extension {
      * @see #export(Key)
      */
     public <T> ExportedServiceConfiguration<T> export(Class<T> key) {
-        requireNonNull(key, "key is null");
-        checkConfigurable();
-        return node.exports().export(Key.of(key), captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
+        return export(Key.of(key));
     }
 
     /**

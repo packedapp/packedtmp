@@ -118,7 +118,7 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
 
         @Override
         public ContainerConfiguration forBundleConf(ComponentNodeConfiguration cnc) {
-            return new PackedContainerConfiguration(cnc.container);
+            return new PackedContainerConfiguration(cnc);
         }
     }
 

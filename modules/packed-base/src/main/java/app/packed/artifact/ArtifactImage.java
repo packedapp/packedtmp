@@ -118,6 +118,7 @@ public interface ArtifactImage extends ArtifactSource {
     // f.eks. applyPartialConfiguration(SomeConf)... Vi aendrer schemaet..
     // withFixedConf(app.threads = 123)... withDefaultConf(app.threads = 123)
     // Vi fejler hvis det ikke kan bruges??? Pure static solution...
+    // rename to prefixWith() <--- no validation...
     ArtifactImage with(Wirelet... wirelets);
 
     /**

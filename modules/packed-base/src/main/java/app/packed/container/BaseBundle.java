@@ -183,6 +183,10 @@ public abstract class BaseBundle extends ContainerBundle {
         return install(factory).provide();
     }
 
+    protected final <T> PrototypeConfiguration<T> providePrototype(Class<T> implementation) {
+        return providePrototype(Factory.find(implementation));
+    }
+
     protected final <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {
         return service().providePrototype(factory);
     }

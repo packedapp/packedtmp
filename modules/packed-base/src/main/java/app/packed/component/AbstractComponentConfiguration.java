@@ -163,5 +163,4 @@ public abstract class AbstractComponentConfiguration implements ComponentConfigu
     public final String toString() {
         return context.toString();
     }
-
 }

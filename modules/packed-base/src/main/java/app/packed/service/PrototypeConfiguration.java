@@ -22,21 +22,18 @@ import app.packed.container.BaseBundle;
 import app.packed.inject.Factory;
 
 /**
- * This configuration represents an entity that is both a {@link ExportedServiceConfiguration configuration of as
- * service} and a .
+ * A prototype service configuration represents an entity that is both a {@link ExportedServiceConfiguration
+ * configuration of as service} and a .
  * <p>
  * An instance of this interface is usually obtained by calling one of the provide methods on {@link ServiceExtension}
  * or {@link BaseBundle}.
  * 
- * @see BaseBundle#provide(Class)
- * @see BaseBundle#provide(Factory)
- * @see BaseBundle#provideInstance(Object)
+ * @see BaseBundle#providePrototype(Class)
+ * @see BaseBundle#providePrototype(Factory)
+ * @see ServiceExtension#providePrototype(Factory)
  */
+//PrototypeServiceConfiguration??
 public interface PrototypeConfiguration<T> extends ComponentConfiguration {
-
-    //// Can be used to set separately tags, descriptions, ect...
-    // SingletonConfiguration<T> componentConfiguration();
-    // ServiceConfiguration<T> serviceConfiguration();
 
     /**
      * Makes the main component instance available as a service by binding it to the specified key. If the specified key is

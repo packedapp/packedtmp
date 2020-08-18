@@ -37,10 +37,10 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     private final ComponentNodeConfiguration node;
 
-    public PackedContainerConfiguration(PackedContainerRole context) {
-        super(context.node);
-        this.context = context;
-        this.node = context.node;
+    public PackedContainerConfiguration(ComponentNodeConfiguration node) {
+        super(node);
+        this.context = node.container();
+        this.node = node;
     }
 
     /** {@inheritDoc} */
