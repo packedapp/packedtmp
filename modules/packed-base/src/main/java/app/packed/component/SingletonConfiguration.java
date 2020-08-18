@@ -18,18 +18,23 @@ package app.packed.component;
 import java.util.Optional;
 
 import app.packed.base.Key;
+import app.packed.container.BaseBundle;
 import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.ServiceExtension;
 import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 
 /**
- *
+ * This class represents the configuration of a component. Actual instances of this interface is usually obtained by
+ * calling one of the install methods on, for example, {@link BaseBundle}.
+ * <p>
+ * It it also possible to install components at runtime via {@link Component}.
  */
-public class SingletonConfiguration<T> extends AbstractComponentConfiguration implements ISingletonConfiguration<T> {
+public class SingletonConfiguration<T> extends AbstractComponentConfiguration {
 
     public final ComponentNodeConfiguration node;
 
@@ -40,8 +45,28 @@ public class SingletonConfiguration<T> extends AbstractComponentConfiguration im
         this.node = (ComponentNodeConfiguration) node;
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /**
+     * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
+     * null, any existing binding is removed.
+     *
+     * @param key
+     *            the key to bind to
+     * @return this configuration
+     * @see #as(Key)
+     */
+    public SingletonConfiguration<T> as(Class<? super T> key) {
+        return as(Key.of(key));
+    }
+
+    /**
+     * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
+     * null, any existing binding is removed.
+     *
+     * @param key
+     *            the key to bind to
+     * @return this configuration
+     * @see #as(Class)
+     */
     public SingletonConfiguration<T> as(Key<? super T> key) {
         checkConfigurable();
         entry().as(key);
@@ -63,14 +88,10 @@ public class SingletonConfiguration<T> extends AbstractComponentConfiguration im
         return buildEntry;
     }
 
-    /** {@inheritDoc} */
-    @Override
     public Optional<Key<?>> key() {
         return buildEntry == null ? Optional.empty() : Optional.of(buildEntry.key());
     }
 
-    /** {@inheritDoc} */
-    @Override
     public SingletonConfiguration<T> provide() {
         entry();
         // TODO should provide as the default key
@@ -84,10 +105,12 @@ public class SingletonConfiguration<T> extends AbstractComponentConfiguration im
         return this;
     }
 
-    /** {@inheritDoc} */
-    @Override
     public ExportedServiceConfiguration<T> export() {
         checkConfigurable();
         return buildEntry.node.exports().export(buildEntry, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
+    }
+
+    public static <T> InstanceSourcedDriver<SingletonConfiguration<T>, T> driver() {
+        return PackedComponentDriver.SingletonComponentDriver.driver();
     }
 }

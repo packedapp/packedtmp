@@ -22,7 +22,7 @@ import java.lang.reflect.Modifier;
 import java.util.Optional;
 
 import app.packed.artifact.ArtifactSource;
-import app.packed.component.ISingletonConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 import packed.internal.config.ConfigSiteSupport;
@@ -175,7 +175,7 @@ public abstract class Extension {
      */
     protected void added() {}
 
-    protected final <T> ISingletonConfiguration<T> install(Factory<T> factory) {
+    protected final <T> SingletonConfiguration<T> install(Factory<T> factory) {
         return configuration().install(factory);
     }
 
@@ -187,7 +187,7 @@ public abstract class Extension {
      * @return the configuration of the component
      * @see ContainerConfiguration#installInstance(Object)
      */
-    protected final <T> ISingletonConfiguration<T> installInstance(T instance) {
+    protected final <T> SingletonConfiguration<T> installInstance(T instance) {
         return configuration().installInstance(instance);
     }
 

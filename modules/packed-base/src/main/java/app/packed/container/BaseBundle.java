@@ -17,7 +17,7 @@ package app.packed.container;
 
 import app.packed.base.Key;
 import app.packed.base.Key.Qualifier;
-import app.packed.component.ISingletonConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.lifecycle.LifecycleExtension;
@@ -164,7 +164,7 @@ public abstract class BaseBundle extends ContainerBundle {
      * @return a service configuration for the service
      * @see InjectorAssembler#provide(Class)
      */
-    protected final <T> ISingletonConfiguration<T> provide(Class<T> implementation) {
+    protected final <T> SingletonConfiguration<T> provide(Class<T> implementation) {
         return install(implementation).provide();
     }
 
@@ -179,7 +179,7 @@ public abstract class BaseBundle extends ContainerBundle {
      *            the factory used for creating the component instance
      * @return the configuration of the component that was installed
      */
-    protected final <T> ISingletonConfiguration<T> provide(Factory<T> factory) {
+    protected final <T> SingletonConfiguration<T> provide(Factory<T> factory) {
         return install(factory).provide();
     }
 
@@ -208,7 +208,7 @@ public abstract class BaseBundle extends ContainerBundle {
      *            the instance to bind
      * @return a service configuration for the service
      */
-    protected final <T> ISingletonConfiguration<T> provideInstance(T instance) {
+    protected final <T> SingletonConfiguration<T> provideInstance(T instance) {
         return installInstance(instance).provide();
     }
 

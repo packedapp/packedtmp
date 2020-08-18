@@ -26,7 +26,6 @@ import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.InstanceSourcedDriver;
 import app.packed.component.SingletonConfiguration;
-import app.packed.component.ISingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Factory;
@@ -114,11 +113,11 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
 
         @Override
         public ContainerConfiguration toConfiguration(ComponentConfigurationContext cnc) {
-            return new PackedContainerConfiguration((ComponentNodeConfiguration) cnc);
+            return new PackedContainerConfiguration(cnc);
         }
     }
 
-    public static class SingletonComponentDriver<T> extends PackedComponentDriver<ISingletonConfiguration<T>> {
+    public static class SingletonComponentDriver<T> extends PackedComponentDriver<SingletonConfiguration<T>> {
         public final ComponentModel model;
         @Nullable
         public final BaseFactory<?> factory;
@@ -152,22 +151,22 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         }
 
         @Override
-        public ISingletonConfiguration<T> toConfiguration(ComponentConfigurationContext context) {
+        public SingletonConfiguration<T> toConfiguration(ComponentConfigurationContext context) {
             ComponentNodeConfiguration cnc = (ComponentNodeConfiguration) context;
             model.invokeOnHookOnInstall(cnc);
             return new SingletonConfiguration<>(cnc);
         }
 
-        public static <T> InstanceSourcedDriver<ISingletonConfiguration<T>, T> driver() {
-            return new InstanceSourcedDriver<ISingletonConfiguration<T>, T>() {
+        public static <T> InstanceSourcedDriver<SingletonConfiguration<T>, T> driver() {
+            return new InstanceSourcedDriver<SingletonConfiguration<T>, T>() {
 
                 @Override
-                public ComponentDriver<ISingletonConfiguration<T>> bindToFactory(PackedRealm realm, Factory<T> factory) {
+                public ComponentDriver<SingletonConfiguration<T>> bindToFactory(PackedRealm realm, Factory<T> factory) {
                     return new SingletonComponentDriver<>(realm, factory);
                 }
 
                 @Override
-                public ComponentDriver<ISingletonConfiguration<T>> bindToInstance(PackedRealm realm, T instance) {
+                public ComponentDriver<SingletonConfiguration<T>> bindToInstance(PackedRealm realm, T instance) {
                     return new SingletonComponentDriver<>(realm, instance);
                 }
             };
