@@ -23,7 +23,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import app.packed.base.Key.Qualifier;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
-import app.packed.component.SingletonConfiguration;
+import app.packed.component.ISingletonConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseBundle;
 import app.packed.container.ContainerConfiguration;
@@ -139,7 +139,7 @@ public final class InjectorAssembler {
      *            the implementation to provide a singleton instance of
      * @return a service configuration for the service
      */
-    public <T> SingletonConfiguration<T> provide(Class<T> implementation) {
+    public <T> ISingletonConfiguration<T> provide(Class<T> implementation) {
         return configuration.install(implementation).provide();
     }
 
@@ -155,7 +155,7 @@ public final class InjectorAssembler {
      *            the factory to bind
      * @return a service configuration for the service
      */
-    public <T> SingletonConfiguration<T> provide(Factory<T> factory) {
+    public <T> ISingletonConfiguration<T> provide(Factory<T> factory) {
         return configuration.install(factory).provide();
     }
 
@@ -230,7 +230,7 @@ public final class InjectorAssembler {
     // All annotations will be processed like provide() except that constructors will not be processed
     // Ohh we need to analyze them differently, because we should ignore all constructors.
     // Should not fail if we fx have two public constructors of equal lenght
-    public <T> SingletonConfiguration<T> provideInstance(T instance) {
+    public <T> ISingletonConfiguration<T> provideInstance(T instance) {
         return configuration.installInstance(instance).provide();
     }
 }

@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 import app.packed.component.ComponentBundle;
-import app.packed.component.SingletonConfiguration;
+import app.packed.component.ISingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.component.WireletSidecar;
@@ -113,8 +113,8 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
     // Den eneste grund for at de her metoder ikke er paa ComponentConfiguration er actors
     // Eller i andre situation hvor man ikke vil have at man installere alm componenter..
     // Men okay. Maaske skal man wrappe det saa. Det er jo let nok at simulere med useParent
-    protected final <T> SingletonConfiguration<T> install(Class<T> implementation) {
-        return wire(SingletonConfiguration.driver(), implementation);
+    protected final <T> ISingletonConfiguration<T> install(Class<T> implementation) {
+        return wire(ISingletonConfiguration.driver(), implementation);
     }
 
     /**
@@ -129,8 +129,8 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
      * @return the configuration of the component
      * @see BaseBundle#install(Factory)
      */
-    protected final <T> SingletonConfiguration<T> install(Factory<T> factory) {
-        return wire(SingletonConfiguration.driver(), factory);
+    protected final <T> ISingletonConfiguration<T> install(Factory<T> factory) {
+        return wire(ISingletonConfiguration.driver(), factory);
     }
 
     /**
@@ -139,7 +139,7 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
      * If this install operation is the first install operation of the container. The component will be installed as the
      * root component of the container. All subsequent install operations on this bundle will have have component as its
      * parent. If you wish to have a specific component as a parent, the various install methods on
-     * {@link SingletonConfiguration} can be used to specify a specific parent.
+     * {@link ISingletonConfiguration} can be used to specify a specific parent.
      *
      * @param <T>
      *            the type of component to install
@@ -147,8 +147,8 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
      *            the component instance to install
      * @return this configuration
      */
-    protected final <T> SingletonConfiguration<T> installInstance(T instance) {
-        return wireInstance(SingletonConfiguration.driver(), instance);
+    protected final <T> ISingletonConfiguration<T> installInstance(T instance) {
+        return wireInstance(ISingletonConfiguration.driver(), instance);
     }
 
     protected final StatelessConfiguration installHelper(Class<?> implementation) {

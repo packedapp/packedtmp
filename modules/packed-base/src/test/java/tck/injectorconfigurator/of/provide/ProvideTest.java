@@ -24,7 +24,7 @@ import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
-import app.packed.component.SingletonConfiguration;
+import app.packed.component.ISingletonConfiguration;
 import app.packed.inject.Factory;
 import app.packed.service.Injector;
 import app.packed.service.PrototypeConfiguration;
@@ -44,9 +44,9 @@ public class ProvideTest {
     public void configSite() throws Throwable {
         Injector inj = Injector.configure(conf -> {
             conf.lookup(MethodHandles.lookup());// The module where letter classes are in are not exported
-            SingletonConfiguration<A> a = conf.provide(A.class);
-            SingletonConfiguration<B> b = conf.provide(Factory.find(B.class));
-            SingletonConfiguration<C> c = conf.provideInstance(C0);
+            ISingletonConfiguration<A> a = conf.provide(A.class);
+            ISingletonConfiguration<B> b = conf.provide(Factory.find(B.class));
+            ISingletonConfiguration<C> c = conf.provideInstance(C0);
             // ServiceComponentConfiguration<E> e = conf.provide(E.class).lazy();
             // ServiceComponentConfiguration<F> f = conf.provide(Factory.findInjectable(F.class)).lazy();
             PrototypeConfiguration<H> h = conf.providePrototype(H.class);
@@ -57,7 +57,7 @@ public class ProvideTest {
     @Test
     public void bindInstance() {
         Injector i = Injector.configure(e -> {
-            SingletonConfiguration<A> sc = e.provideInstance(A0);
+            ISingletonConfiguration<A> sc = e.provideInstance(A0);
             testConfiguration(sc, true, Key.of(A.class));
         });
         testSingleton(i, Key.of(A.class), A0);
@@ -75,7 +75,7 @@ public class ProvideTest {
         }
     }
 
-    static void testConfiguration(SingletonConfiguration<?> sc, boolean isConstant, Key<?> key) {
+    static void testConfiguration(ISingletonConfiguration<?> sc, boolean isConstant, Key<?> key) {
 
         // assertThat(sc.instantiationMode()).isSameAs(ServiceMode.SINGLETON);
         // configSite;

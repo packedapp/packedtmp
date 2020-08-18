@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.BiConsumer;
 
 import app.packed.base.Key;
+import app.packed.component.SingletonConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerDescriptor;
@@ -37,7 +38,6 @@ import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.service.AtProvidesHook;
-import packed.internal.service.buildtime.service.PackedSingletonConfiguration;
 import packed.internal.service.buildtime.wirelets.ServiceWireletPipeline;
 import packed.internal.service.runtime.AbstractInjector;
 
@@ -279,7 +279,7 @@ public final class ServiceExtension extends Extension {
 
     // Will install a ServiceStatelessConfiguration...
     public <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {
-        return node.provider().provideFactory(((PackedSingletonConfiguration<T>) install(factory)).node, true);
+        return node.provider().provideFactory(((SingletonConfiguration<T>) install(factory)).node, true);
     }
 
     /**

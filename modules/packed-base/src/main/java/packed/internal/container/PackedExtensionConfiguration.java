@@ -29,7 +29,7 @@ import app.packed.base.Contract;
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.ComponentPath;
-import app.packed.component.SingletonConfiguration;
+import app.packed.component.ISingletonConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerDescriptor;
@@ -190,14 +190,14 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
 
     /** {@inheritDoc} */
     @Override
-    public <T> SingletonConfiguration<T> install(Factory<T> factory) {
-        return container.node.wire(SingletonConfiguration.driver(), factory);
+    public <T> ISingletonConfiguration<T> install(Factory<T> factory) {
+        return container.node.wire(ISingletonConfiguration.driver(), factory);
     }
 
     /** {@inheritDoc} */
     @Override
-    public <T> SingletonConfiguration<T> installInstance(T instance) {
-        return container.node.wireInstance(SingletonConfiguration.driver(), instance);
+    public <T> ISingletonConfiguration<T> installInstance(T instance) {
+        return container.node.wireInstance(ISingletonConfiguration.driver(), instance);
     }
 
     /**
