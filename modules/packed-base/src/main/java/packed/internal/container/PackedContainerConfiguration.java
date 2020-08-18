@@ -93,13 +93,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     /** {@inheritDoc} */
     @Override
-    public PackedContainerConfiguration setDescription(String description) {
-        node.setDescription(description);
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public PackedContainerConfiguration setName(String name) {
         node.setName(name);
         return this;

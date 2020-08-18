@@ -48,10 +48,9 @@ public final class ConstantInjectorEntry<T> extends InjectorEntry<T> {
     /**
      * @param configSite
      * @param key
-     * @param description
      */
-    public ConstantInjectorEntry(ConfigSite configSite, Key<T> key, @Nullable String description, @Nullable T instance) {
-        super(configSite, key, description);
+    public ConstantInjectorEntry(ConfigSite configSite, Key<T> key, @Nullable T instance) {
+        super(configSite, key);
         this.constant = requireNonNull(instance);
     }
 

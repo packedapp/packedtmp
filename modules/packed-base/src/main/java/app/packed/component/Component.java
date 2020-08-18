@@ -50,15 +50,6 @@ public interface Component extends AttributeHolder {
     int depth();
 
     /**
-     * Returns the description of this component. Or an empty optional if no description was set when configuring the
-     * component.
-     *
-     * @return the description of this component. Or an empty optional if no description was set when configuring the
-     *         component
-     */
-    Optional<String> description();
-
-    /**
      * Returns the name of this component.
      * <p>
      * If no name is explicitly set by the user when configuring the component. The runtime will automatically generate a

@@ -93,10 +93,6 @@ public class ContainerDescriptor {
 
     private final ContractSet contracts;
 
-    /** The (optional) description of the bundle. */
-    @Nullable
-    private final String description;
-
     private final LinkedHashSet<Class<? extends Extension>> extensions;
 
     @Nullable
@@ -114,7 +110,6 @@ public class ContainerDescriptor {
         requireNonNull(builder, "builder is null");
         this.contracts = ContractSet.of(builder.contracts.values());
         this.bundleType = builder.bundleType();
-        this.description = builder.getBundleDescription();
         this.name = builder.name == null ? "?" : builder.name;
         this.extensions = builder.extensions;
     }
@@ -136,17 +131,6 @@ public class ContainerDescriptor {
     // <T extends AnyBundleDescriptor> List<T> children(Class<T> descriptorType) {
     // Men hvem bestemmer hvilken descriptor type vi laver????
     // Hvis det er en tom skal, der tager en Builder???
-
-    /**
-     * Returns any description that has been set for the bundle via {@link ContainerBundle#setDescription(String)}.
-     * 
-     * @return a optional description of the bundle
-     * 
-     * @see ContainerBundle#setDescription(String)
-     */
-    public final Optional<String> description() {
-        return Optional.ofNullable(description);
-    }
 
     /**
      * Returns an unmodifiable set of all the extensions the bundle uses.

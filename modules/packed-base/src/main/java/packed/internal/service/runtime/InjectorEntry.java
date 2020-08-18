@@ -17,8 +17,6 @@ package packed.internal.service.runtime;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Optional;
-
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
@@ -34,10 +32,6 @@ public abstract class InjectorEntry<T> implements ServiceDescriptor {
     /** The point where this entry was registered. */
     private final ConfigSite configSite;
 
-    /** An (optionally) description of the service. */
-    @Nullable
-    private final String description;
-
     /** The key under which the service is available. */
     private final Key<T> key;
 
@@ -48,12 +42,11 @@ public abstract class InjectorEntry<T> implements ServiceDescriptor {
      *            the build node to create the runtime node from
      */
     InjectorEntry(BuildEntry<T> buildEntry) {
-        this(buildEntry.configSite(), buildEntry.key(), buildEntry.getDescription());
+        this(buildEntry.configSite(), buildEntry.key());
     }
 
-    InjectorEntry(ConfigSite configSite, Key<T> key, @Nullable String description) {
+    InjectorEntry(ConfigSite configSite, Key<T> key) {
         this.configSite = requireNonNull(configSite);
-        this.description = description;
         this.key = requireNonNull(key);
     }
 
@@ -61,12 +54,6 @@ public abstract class InjectorEntry<T> implements ServiceDescriptor {
     @Override
     public final ConfigSite configSite() {
         return configSite;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final Optional<String> description() {
-        return Optional.ofNullable(description);
     }
 
     /**
@@ -98,10 +85,6 @@ public abstract class InjectorEntry<T> implements ServiceDescriptor {
         StringBuilder sb = new StringBuilder();
         sb.append(key());
         sb.append("[").append(instantiationMode()).append(']');
-        if (description != null) {
-            sb.append(":").append(description);
-
-        }
         return sb.toString();
     }
 }

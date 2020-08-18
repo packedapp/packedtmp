@@ -79,7 +79,6 @@ public class ProvideTest {
 
         // assertThat(sc.instantiationMode()).isSameAs(ServiceMode.SINGLETON);
         // configSite;
-        assertThat(sc.getDescription()).isNull();
         assertThat(sc.getKey()).isEqualTo(Key.of(A.class));
         // assertThat(sc.tags().isEmpty());
     }

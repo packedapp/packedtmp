@@ -52,8 +52,6 @@ public abstract class BuildEntry<T> {
     /** The dependencies of this node. */
     public final List<ServiceDependency> dependencies;
 
-    public String description;
-
     /** A flag used to detect cycles in the dependency graph. */
     public boolean detectCycleVisited;
 
@@ -142,10 +140,6 @@ public abstract class BuildEntry<T> {
         return null;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
     /**
      * Returns whether or not this node has any dependencies that needs to be resolved.
      *
@@ -173,7 +167,7 @@ public abstract class BuildEntry<T> {
     public abstract boolean requiresPrototypeRequest();
 
     public final ServiceDescriptor toDescriptor() {
-        return new PackedServiceDescriptor(key, configSite, description);
+        return new PackedServiceDescriptor(key, configSite);
     }
 
     @SuppressWarnings("unchecked")

@@ -39,13 +39,6 @@ public class PackedStatelessComponentConfiguration extends AbstractComponentConf
 
     /** {@inheritDoc} */
     @Override
-    public StatelessConfiguration setDescription(String description) {
-        context.setDescription(description);
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public StatelessConfiguration setName(String name) {
         context.setName(name);
         return this;

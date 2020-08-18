@@ -15,15 +15,12 @@
  */
 package app.packed.artifact;
 
-import java.util.Optional;
-
 import app.packed.component.Bundle;
 import app.packed.component.Component;
 import app.packed.component.ComponentStream;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundle;
-import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerDescriptor;
 import packed.internal.artifact.PackedArtifactImage;
 
@@ -60,17 +57,6 @@ public interface ArtifactImage extends ArtifactSource {
      * @return the configuration site of this image
      */
     ConfigSite configSite();
-
-    /**
-     * Returns any description that have been set for the image.
-     * <p>
-     * The returned description is always identical to the description of the root container.
-     * 
-     * @return any description that has been set for the image
-     * @see ContainerConfiguration#setDescription(String)
-     * @see ContainerBundle#setDescription(String)
-     */
-    Optional<String> description();
 
     /**
      * Returns a bundle descriptor for this image.

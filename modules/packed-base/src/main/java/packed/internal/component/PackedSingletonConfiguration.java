@@ -32,13 +32,6 @@ public class PackedSingletonConfiguration<T> extends AbstractComponentConfigurat
 
     /** {@inheritDoc} */
     @Override
-    public PackedSingletonConfiguration<T> setDescription(String description) {
-        context.setDescription(description);
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public PackedSingletonConfiguration<T> setName(String name) {
         context.setName(name);
         return this;

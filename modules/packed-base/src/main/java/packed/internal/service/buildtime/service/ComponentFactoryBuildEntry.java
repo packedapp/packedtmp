@@ -48,7 +48,6 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
 
     public ComponentFactoryBuildEntry(ConfigSite configSite, AtProvides atProvides, MethodHandle mh, AbstractComponentBuildEntry<?> parent) {
         super(parent.node, configSite, atProvides.dependencies, atProvides.isStaticMember ? null : parent, parent.componentConfiguration);
-        this.description = atProvides.description;
         this.instantionMode = atProvides.instantionMode;
         this.mha = requireNonNull(mh);
     }

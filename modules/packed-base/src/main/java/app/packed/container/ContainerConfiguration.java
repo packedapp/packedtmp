@@ -147,10 +147,6 @@ public interface ContainerConfiguration extends ComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    ContainerConfiguration setDescription(String description);
-
-    /** {@inheritDoc} */
-    @Override
     ContainerConfiguration setName(String name);
 
     /**

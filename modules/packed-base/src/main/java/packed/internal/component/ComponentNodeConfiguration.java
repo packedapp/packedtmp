@@ -116,10 +116,6 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     /** The configuration site of this component. */
     private final ConfigSite configSite;
 
-    /** The description of the component. */
-    @Nullable
-    private String description;
-
     private boolean finalState = false;
 
     int nameState;
@@ -279,13 +275,6 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         return Extension.class.isAssignableFrom(realm.type()) ? Optional.empty() : Optional.of((Class<? extends Extension>) realm.type());
     }
 
-    /** {@inheritDoc} */
-    @Override
-    @Nullable
-    public String getDescription() {
-        return description;
-    }
-
     private void setName0(String newName) {
         String n = newName;
         if (newName == null) {
@@ -437,14 +426,6 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         newNode.finalState = true;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void setDescription(String description) {
-        requireNonNull(description, "description is null");
-        checkConfigurable();
-        this.description = description;
-    }
-
     public <T> SingletonConfiguration<T> installInstance(T instance) {
         requireNonNull(instance, "instance is null");
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
@@ -571,12 +552,6 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         @Override
         public int depth() {
             return conf.depth;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Optional<String> description() {
-            return Optional.ofNullable(conf.getDescription());
         }
 
         /** {@inheritDoc} */

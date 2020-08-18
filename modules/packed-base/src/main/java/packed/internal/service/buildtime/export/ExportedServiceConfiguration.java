@@ -66,23 +66,7 @@ final class ExportedServiceConfiguration<T> implements ServiceConfiguration<T> {
     /** {@inheritDoc} */
     @Override
     @Nullable
-    public String getDescription() {
-        return entry.description;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    @Nullable
     public Key<?> getKey() {
         return entry.key();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ServiceConfiguration<T> setDescription(String description) {
-        requireNonNull(description, "description is null");
-        entry.node.checkExportConfigurable();
-        entry.description = description;
-        return this;
     }
 }

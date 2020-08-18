@@ -29,7 +29,6 @@ import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactSource;
 import app.packed.base.Key;
 import app.packed.component.CustomConfigurator;
-import app.packed.component.SingletonConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
@@ -150,17 +149,6 @@ public interface Injector {
      * @see #contains(Class)
      */
     boolean contains(Key<?> key); // We do not call get here, as it might create a value
-
-    /**
-     * Returns the description of this injector. Or an empty optional if no description has been set
-     * <p>
-     * The returned description is always identical to the description of the injector's root container.
-     *
-     * @return the description of this injector. Or an empty optional if no description has been set
-     *
-     * @see SingletonConfiguration#setDescription(String)
-     */
-    Optional<String> description();
 
     /**
      * Returns a service instance for the given key if available, otherwise an empty optional. As an alternative, if you

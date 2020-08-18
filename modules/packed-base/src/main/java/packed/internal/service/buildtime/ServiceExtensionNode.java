@@ -217,7 +217,7 @@ public final class ServiceExtensionNode {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public PackedInjector onInstantiate(WireletPack wc) {
         LinkedHashMap<Key<?>, InjectorEntry<?>> snm = new LinkedHashMap<>();
-        PackedInjector publicInjector = new PackedInjector(context().containerConfigSite(), "Internal Descriptor", snm);
+        PackedInjector publicInjector = new PackedInjector(context().containerConfigSite(), snm);
 
         ServiceExtensionInstantiationContext con = new ServiceExtensionInstantiationContext();
         for (var e : specials.entrySet()) {
@@ -242,7 +242,7 @@ public final class ServiceExtensionNode {
                 instance = e.getKey().wrapIfOptional(instance);
             }
             BuildEntry<?> be = e.getValue();
-            con.transformers.put(be, new ConstantInjectorEntry<Object>(ConfigSite.UNKNOWN, (Key) be.key, be.description, instance));
+            con.transformers.put(be, new ConstantInjectorEntry<Object>(ConfigSite.UNKNOWN, (Key) be.key, instance));
         }
 
         for (var e : resolvedEntries.entrySet()) {

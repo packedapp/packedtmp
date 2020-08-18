@@ -113,7 +113,7 @@ public final class ComponentNode implements Component {
                 }
             }
             if (i == null) {
-                i = new PackedInjector(configuration.configSite(), configuration.getDescription(), new LinkedHashMap<>());
+                i = new PackedInjector(configuration.configSite(), new LinkedHashMap<>());
             }
 
             data[0] = i;
@@ -165,12 +165,6 @@ public final class ComponentNode implements Component {
     @Override
     public int depth() {
         return model.depth;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Optional<String> description() {
-        return Optional.ofNullable(model.description);
     }
 
     public Component findComponent(CharSequence path) {

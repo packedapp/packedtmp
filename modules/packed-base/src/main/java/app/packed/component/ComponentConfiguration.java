@@ -15,7 +15,6 @@
  */
 package app.packed.component;
 
-import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundle;
 
@@ -40,16 +39,6 @@ public interface ComponentConfiguration {
      * @return the configuration site that created this configuration
      */
     ConfigSite configSite();
-
-    /**
-     * Returns the description of this component. Or null if the description has not been set.
-     *
-     * @return the description of this component. Or null if the description has not been set.
-     * @see #setDescription(String)
-     * @see Component#description()
-     */
-    @Nullable
-    String getDescription();
 
     /**
      * Returns the name of the component. If no name has previously been set via {@link #setName(String)} a name is
@@ -96,17 +85,6 @@ public interface ComponentConfiguration {
      * @return the path of this configuration.
      */
     ComponentPath path(); // systemPath()<--- // artifactPath()???
-
-    /**
-     * Sets the description of this component.
-     *
-     * @param description
-     *            the description to set
-     * @return this configuration
-     * @see #getDescription()
-     * @see Component#description()
-     */
-    ComponentConfiguration setDescription(String description);
 
     /**
      * Sets the {@link Component#name() name} of the component. The name must consists only of alphanumeric characters and

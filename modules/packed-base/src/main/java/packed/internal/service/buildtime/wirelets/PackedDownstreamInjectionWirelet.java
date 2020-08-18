@@ -112,7 +112,7 @@ public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         public void process(ConfigSite cs, LinkedHashMap<Key<?>, InjectorEntry<?>> newServices) {
-            newServices.put(key, new ConstantInjectorEntry(cs, key, null, instance));
+            newServices.put(key, new ConstantInjectorEntry(cs, key, instance));
         }
 
         @Override

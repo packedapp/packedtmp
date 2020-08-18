@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
-import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 
@@ -46,10 +45,6 @@ public final class RuntimeComponentModel {
     // Depth kan have 8 bit-> full depth, 8 bit, container depth, 8 bit artifact depth.
     final int depth;
 
-    /** The description of this component (optional). */
-    @Nullable
-    final String description;
-
     /** Any extension the component belongs to. */ // Generic Extension Table?
     final Optional<Class<? extends Extension>> extension;
 
@@ -58,7 +53,6 @@ public final class RuntimeComponentModel {
     RuntimeComponentModel(ComponentNodeConfiguration context) {
         this.depth = context.depth;
         this.configSite = requireNonNull(context.configSite());
-        this.description = context.getDescription();
         this.extension = context.extension();
         this.driver = context.driver();
     }

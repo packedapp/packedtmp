@@ -29,9 +29,5 @@ public interface StatelessConfiguration extends ComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    StatelessConfiguration setDescription(String description);
-
-    /** {@inheritDoc} */
-    @Override
     StatelessConfiguration setName(String name);
 }

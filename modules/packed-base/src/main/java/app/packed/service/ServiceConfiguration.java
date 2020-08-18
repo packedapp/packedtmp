@@ -16,7 +16,6 @@
 package app.packed.service;
 
 import app.packed.base.Key;
-import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.container.BaseBundle;
 
@@ -56,15 +55,6 @@ public interface ServiceConfiguration<T> /* extends Taggable */ {
     ConfigSite configSite();
 
     /**
-     * Returns the description of this service. Or null if no description has been set.
-     *
-     * @return the description of this service
-     * @see #setDescription(String)
-     */
-    @Nullable
-    String getDescription();
-
-    /**
      * Returns the key that the service is registered under.
      *
      * @return the key that the service is registered under
@@ -72,16 +62,6 @@ public interface ServiceConfiguration<T> /* extends Taggable */ {
      * @see #as(Class)
      */
     Key<?> getKey();
-
-    /**
-     * Sets the description of this service.
-     *
-     * @param description
-     *            the description of the service
-     * @return this configuration
-     * @see #getDescription()
-     */
-    ServiceConfiguration<T> setDescription(@Nullable String description);
 
     // :< Can't really have both named and setName
     // ServiceConfiguration<T> named(String name);//put a Named qualifier

@@ -17,10 +17,7 @@ package packed.internal.service.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Optional;
-
 import app.packed.base.Key;
-import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.service.ServiceDescriptor;
 
@@ -29,10 +26,6 @@ final class PackedServiceDescriptor implements ServiceDescriptor {
 
     /** The configuration site of the service. */
     private final ConfigSite configSite;
-
-    /** An optional description of the service. */
-    @Nullable
-    private final String description;
 
     /** The key of the service. */
     private final Key<?> key;
@@ -44,25 +37,16 @@ final class PackedServiceDescriptor implements ServiceDescriptor {
      *            the key of the service
      * @param configSite
      *            the config site of the service
-     * @param description
-     *            the (optional) description of the service
      */
-    PackedServiceDescriptor(Key<?> key, ConfigSite configSite, String description) {
+    PackedServiceDescriptor(Key<?> key, ConfigSite configSite) {
         this.key = requireNonNull(key);
         this.configSite = requireNonNull(configSite);
-        this.description = description;
     }
 
     /** {@inheritDoc} */
     @Override
     public ConfigSite configSite() {
         return configSite;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Optional<String> description() {
-        return Optional.ofNullable(description);
     }
 
     /** {@inheritDoc} */
@@ -74,6 +58,6 @@ final class PackedServiceDescriptor implements ServiceDescriptor {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return "ServiceDescriptor[key=" + key + ", configSite=" + configSite + ", description=" + description + "]";
+        return "ServiceDescriptor[key=" + key + ", configSite=" + configSite + "]";
     }
 }

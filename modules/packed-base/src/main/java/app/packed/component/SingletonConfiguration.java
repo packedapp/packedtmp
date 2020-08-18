@@ -31,17 +31,7 @@ public interface SingletonConfiguration<T> extends SourcedComponentConfiguration
 
     /** {@inheritDoc} */
     @Override
-    SingletonConfiguration<T> setDescription(String description);
-
-    /** {@inheritDoc} */
-    @Override
     SingletonConfiguration<T> setName(String name);
-
-    // The component can be removed at runtime, separately from its container.
-    // But again its not supported now...
-    default SingletonConfiguration<T> removable() {
-        throw new UnsupportedOperationException();
-    }
 
     static <T> SourcedComponentDriver<T, SingletonConfiguration<T>> singleton() {
         throw new UnsupportedOperationException();

@@ -73,13 +73,6 @@ public final class PackedServiceComponentConfiguration<T> implements ServiceComp
     /** {@inheritDoc} */
     @Override
     @Nullable
-    public String getDescription() {
-        return buildEntry.description;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    @Nullable
     public Key<?> getKey() {
         return buildEntry.key();
     }
@@ -95,16 +88,6 @@ public final class PackedServiceComponentConfiguration<T> implements ServiceComp
     @Override
     public ComponentPath path() {
         return component.path();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ServiceComponentConfiguration<T> setDescription(@Nullable String description) {
-        // TODO, vi har kun en description...hvis man er lavet fra en component configuration...
-        // Skriver direkte igennem til the underlying component configuration.. Hvis man er lavet via provide...
-        component.setDescription(description);
-        buildEntry.description = description;
-        return this;
     }
 
     /** {@inheritDoc} */
@@ -125,5 +108,4 @@ public final class PackedServiceComponentConfiguration<T> implements ServiceComp
     public void link(Bundle<?> bundle, Wirelet... wirelets) {
         component.link(bundle, wirelets);
     }
-
 }

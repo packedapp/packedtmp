@@ -81,7 +81,6 @@ public final class PackedContainerRole {
     }
 
     public void buildDescriptor(ContainerDescriptor.Builder builder) {
-        builder.setBundleDescription(node.getDescription());
         builder.setName(node.getName());
         for (PackedExtensionConfiguration e : extensions.values()) {
             e.buildDescriptor(builder);

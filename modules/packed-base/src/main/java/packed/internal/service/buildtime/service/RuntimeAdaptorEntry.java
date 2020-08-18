@@ -41,7 +41,6 @@ public final class RuntimeAdaptorEntry<T> extends BuildEntry<T> {
         super(node, ConfigSite.UNKNOWN, List.of());
         this.entry = entry;
         this.key = requireNonNull(entry.key());
-        this.description = entry.description().orElse(null);
     }
 
     /** {@inheritDoc} */

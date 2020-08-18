@@ -1,7 +1,5 @@
 package app.packed.service;
 
-import java.util.Optional;
-
 import app.packed.base.Key;
 import app.packed.config.ConfigSite;
 
@@ -15,14 +13,6 @@ public interface ServiceDescriptor {
      * @return the configuration site of this service
      */
     ConfigSite configSite();
-
-    /**
-     * Returns the optional description of this service.
-     *
-     * @return the optional description of this service
-     * @see ServiceComponentConfiguration#setDescription(String)
-     */
-    Optional<String> description();
 
     /**
      * Returns the key that the service is registered with.

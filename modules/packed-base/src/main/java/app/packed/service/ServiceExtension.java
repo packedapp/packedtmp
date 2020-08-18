@@ -184,6 +184,11 @@ public final class ServiceExtension extends Extension {
         throw new UnsupportedOperationException();
     }
 
+    <T> ServiceConfiguration<T> alias(Class<T> key) {
+        //
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Exports a service of the specified type.
      * 

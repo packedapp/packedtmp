@@ -45,10 +45,6 @@ public final class PackedInjector extends AbstractInjector {
     /** The configuration site of this injector. */
     private final ConfigSite configSite;
 
-    /** An optional description of the injector. */
-    @Nullable
-    private final String description;
-
     /** The parent of this injector, or null if this is a top-level injector. */
     @Nullable
     final AbstractInjector parent;
@@ -56,10 +52,9 @@ public final class PackedInjector extends AbstractInjector {
     /** All services that this injector provides. */
     private final Map<Key<?>, InjectorEntry<?>> entries;
 
-    public PackedInjector(ConfigSite configSite, @Nullable String description, Map<Key<?>, InjectorEntry<?>> services) {
+    public PackedInjector(ConfigSite configSite, Map<Key<?>, InjectorEntry<?>> services) {
         this.parent = null;
         this.configSite = requireNonNull(configSite);
-        this.description = description;
         this.entries = services;
     }
 
@@ -67,12 +62,6 @@ public final class PackedInjector extends AbstractInjector {
     @Override
     public ConfigSite configSite() {
         return configSite;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Optional<String> description() {
-        return Optional.ofNullable(description);
     }
 
     @Override
@@ -125,6 +114,6 @@ public final class PackedInjector extends AbstractInjector {
         ConfigSite ccs = cs;
         wl.forEach(PackedDownstreamInjectionWirelet.class, w -> w.process(ccs, newServices));
         // TODO Auto-generated method stub
-        return new PackedInjector(cs, description, newServices);
+        return new PackedInjector(cs, newServices);
     }
 }

@@ -23,7 +23,6 @@ import java.lang.reflect.Modifier;
 import java.util.Optional;
 
 import app.packed.artifact.ArtifactSource;
-import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import packed.internal.component.ComponentNodeConfiguration;
@@ -131,13 +130,6 @@ public abstract class AbstractComponentConfiguration implements ComponentConfigu
 
     /** {@inheritDoc} */
     @Override
-    @Nullable
-    public final String getDescription() {
-        return context.getDescription();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public final String getName() {
         return context.getName();
     }
@@ -152,13 +144,6 @@ public abstract class AbstractComponentConfiguration implements ComponentConfigu
     @Override
     public final void link(Bundle<?> bundle, Wirelet... wirelets) {
         ((ComponentNodeConfiguration) context).link(bundle, wirelets);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentConfiguration setDescription(String description) {
-        context.setDescription(description);
-        return this;
     }
 
     /** {@inheritDoc} */

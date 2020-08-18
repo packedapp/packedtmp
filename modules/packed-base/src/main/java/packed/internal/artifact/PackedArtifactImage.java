@@ -17,8 +17,6 @@ package packed.internal.artifact;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Optional;
-
 import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.ArtifactImage;
 import app.packed.base.Nullable;
@@ -68,12 +66,6 @@ public final class PackedArtifactImage implements ArtifactImage {
     @Override
     public ConfigSite configSite() {
         return node.configSite();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Optional<String> description() {
-        return Optional.ofNullable(node.getDescription());
     }
 
     /** {@inheritDoc} */

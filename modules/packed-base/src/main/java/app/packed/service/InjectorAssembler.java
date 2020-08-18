@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.Key.Qualifier;
-import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
 import app.packed.component.Wirelet;
@@ -76,18 +75,6 @@ public final class InjectorAssembler {
             initialized = true;
         }
         return se;
-    }
-
-    /**
-     * Returns the description of the injector, or null if no description has been set via {@link #setDescription(String)}.
-     *
-     * @return the description of the injector, or null if no description has been set via {@link #setDescription(String)}.
-     * @see Injector#description()
-     * @see #setDescription(String)
-     */
-    @Nullable
-    public String getDescription() {
-        return configuration().getDescription();
     }
 
     /**
@@ -245,21 +232,6 @@ public final class InjectorAssembler {
     // Should not fail if we fx have two public constructors of equal lenght
     public <T> ServiceComponentConfiguration<T> provideInstance(T instance) {
         return extension().provideInstance(instance);
-    }
-
-    /**
-     * Sets the (nullable) description of the injector, the description can later be obtained via
-     * {@link Injector#description()}.
-     *
-     * @param description
-     *            a (nullable) description of this injector
-     * @return this configuration
-     * @see #getDescription()
-     * @see Injector#description()
-     */
-    public InjectorAssembler setDescription(String description) {
-        configuration().setDescription(description);
-        return this;
     }
 }
 // addStatics(); useStatics()

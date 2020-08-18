@@ -43,7 +43,6 @@ final class FromOtherInjectorBuildEntry<T> extends BuildEntry<T> {
         this.entry = entry;
         this.fromInjector = fromInjector;
         this.key = requireNonNull(entry.key());
-        this.description = entry.description().orElse(null);
     }
 
     /** {@inheritDoc} */

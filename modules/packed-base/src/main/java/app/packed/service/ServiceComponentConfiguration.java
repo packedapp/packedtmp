@@ -16,7 +16,6 @@
 package app.packed.service;
 
 import app.packed.base.Key;
-import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
@@ -79,16 +78,6 @@ public interface ServiceComponentConfiguration<T> extends ServiceConfiguration<T
     ConfigSite configSite();
 
     /**
-     * Returns the description of this service. Or null if no description has been set.
-     *
-     * @return the description of this service
-     * @see #setDescription(String)
-     */
-    @Override
-    @Nullable
-    String getDescription();
-
-    /**
      * Returns the key that the service is registered under.
      *
      * @return the key that the service is registered under
@@ -97,17 +86,6 @@ public interface ServiceComponentConfiguration<T> extends ServiceConfiguration<T
      */
     @Override
     Key<?> getKey();
-
-    /**
-     * Sets the description of this service.
-     *
-     * @param description
-     *            the description of the service
-     * @return this configuration
-     * @see #getDescription()
-     */
-    @Override
-    ServiceComponentConfiguration<T> setDescription(@Nullable String description);
 
     /**
      * Sets the {@link Component#name() name} of the component. The name must consists only of alphanumeric characters and

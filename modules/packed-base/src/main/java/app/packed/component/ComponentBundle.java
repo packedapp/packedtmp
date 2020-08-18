@@ -111,17 +111,6 @@ public abstract class ComponentBundle<T extends ComponentConfiguration> extends 
     }
 
     /**
-     * Sets the description of the container.
-     * 
-     * @param description
-     *            the description to set
-     * @see ContainerConfiguration#setDescription(String)
-     */
-    protected final void setDescription(String description) {
-        configuration().setDescription(description);
-    }
-
-    /**
      * Sets the name of the container. The name must consists only of alphanumeric characters and '_', '-' or '.'. The name
      * is case sensitive.
      * <p>
