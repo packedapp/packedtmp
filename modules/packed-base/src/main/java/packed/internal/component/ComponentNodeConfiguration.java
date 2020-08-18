@@ -53,7 +53,6 @@ import packed.internal.component.wirelet.WireletPack;
 import packed.internal.component.wirelet.WireletPipelineContext;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.PackedContainerRole;
-import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.container.PackedRealm;
 import packed.internal.inject.ConfigSiteInjectOperations;
 
@@ -66,26 +65,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     /** The assembly this component is a part of. */
     private final PackedAssemblyContext assembly;
 
-    /** The configuration site of this component. */
-    private final ConfigSite configSite;
-
-    /** The depth of the component in the hierarchy (including any parent artifacts). */
-    final int depth;
-
-    /** The description of the component. */
-    @Nullable
-    protected String description;
-
+    /** The driver used to create this component. */
     private final PackedComponentDriver<?> driver;
-
-    /** Any extension this component belongs to. */
-    @Nullable
-    private final PackedExtensionConfiguration extension;
-
-    /** The pod the component belongs to. */
-    final PackedPodConfigurationContext pod;
-
-    public boolean finalState = false;
 
     /** The realm the component belongs to. */
     private final PackedRealm realm;
@@ -94,8 +75,18 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     @Nullable
     public final WireletPack wirelets;
 
+    /** The pod the component belongs to. */
+    final PackedPodConfigurationContext pod;
+
     /** The name of the component. */
-    public String name;
+    String name;
+
+    /** The depth of the component in the hierarchy (including any parent artifacts). */
+    final int depth;
+
+    /** Any container this component is part of. A container is part of it self */
+    @Nullable
+    final PackedContainerRole container;
 
     /** Children of this node (lazily initialized). Order maintained by {@link #nextSibling} and friends. */
     @Nullable
@@ -120,9 +111,16 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     @Nullable
     final ComponentNodeConfiguration parent;
 
-    /** Any container this component is part of. A container is part of it self */
+    /**************** See how much of this we can get rid of. *****************/
+
+    /** The configuration site of this component. */
+    private final ConfigSite configSite;
+
+    /** The description of the component. */
     @Nullable
-    public final PackedContainerRole container;
+    private String description;
+
+    private boolean finalState = false;
 
     public ComponentNodeConfiguration(PackedAssemblyContext pac, PackedComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm,
             Wirelet... wirelets) {
@@ -163,7 +161,6 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         if (parent == null) {
             this.pod = new PackedPodConfigurationContext(this);
             this.depth = 0;
-            this.extension = null;
         } else {
             if (driver.isGuest()) {
                 this.pod = new PackedPodConfigurationContext(this);
@@ -171,7 +168,6 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
                 this.pod = parent.pod;
             }
             this.depth = parent.depth + 1;
-            this.extension = null;// container.activeExtension;
         }
 
         setName0(null);
@@ -260,33 +256,6 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         }
     }
 
-    public <T> SingletonConfiguration<T> installInstance(T instance) {
-        requireNonNull(instance, "instance is null");
-        ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
-        SingletonComponentDriver scd = new SingletonComponentDriver(realm, instance);
-
-        ComponentNodeConfiguration conf = newChild(scd, configSite, realm);
-        return scd.toConf(conf);
-    }
-
-    public <T> SingletonConfiguration<T> install(Factory<T> factory) {
-        requireNonNull(factory, "factory is null");
-        ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
-        SingletonComponentDriver scd = new SingletonComponentDriver(realm, factory);
-
-        ComponentNodeConfiguration conf = newChild(scd, configSite, realm);
-        return scd.toConf(conf);
-    }
-
-    public StatelessConfiguration installStateless(Class<?> implementation) {
-        StatelessComponentDriver scd = new StatelessComponentDriver(realm, implementation);
-
-        ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
-
-        ComponentNodeConfiguration conf = newChild(scd, configSite, realm);
-        return scd.toConf(conf);
-    }
-
     public ComponentNode instantiateTree(InstantiationContext ic) {
         return new ComponentNode(null, this, ic);
     }
@@ -306,8 +275,9 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         return driver;
     }
 
+    @SuppressWarnings("unchecked")
     public Optional<Class<? extends Extension>> extension() {
-        return extension == null ? Optional.empty() : extension.optional();
+        return Extension.class.isAssignableFrom(realm.type()) ? Optional.empty() : Optional.of((Class<? extends Extension>) realm.type());
     }
 
     /** {@inheritDoc} */
@@ -463,7 +433,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             }
         }
         // Create the child node
-        ConfigSite cs = ConfigSiteSupport.captureStackFrame(configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
+        // ConfigSite cs = ConfigSiteSupport.captureStackFrame(configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
+        ConfigSite cs = ConfigSite.UNKNOWN;
         ComponentNodeConfiguration p = driver().isExtension() ? parent : this;
         ComponentNodeConfiguration newNode = p.newChild(driver, cs, PackedRealm.fromBundle(bundle), wirelets);
 
@@ -481,9 +452,43 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         this.description = description;
     }
 
+    public <T> SingletonConfiguration<T> installInstance(T instance) {
+        requireNonNull(instance, "instance is null");
+        ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
+        SingletonComponentDriver scd = new SingletonComponentDriver(realm, instance);
+
+        ComponentNodeConfiguration conf = newChild(scd, configSite, realm);
+        return scd.toConf(conf);
+    }
+
+    public <T> SingletonConfiguration<T> install(Factory<T> factory) {
+        requireNonNull(factory, "factory is null");
+        ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
+        SingletonComponentDriver scd = new SingletonComponentDriver(realm, factory);
+
+        ComponentNodeConfiguration conf = newChild(scd, configSite, realm);
+        return scd.toConf(conf);
+    }
+
+    public StatelessConfiguration installStateless(Class<?> implementation) {
+        StatelessComponentDriver scd = new StatelessComponentDriver(realm, implementation);
+
+        ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
+
+        ComponentNodeConfiguration conf = newChild(scd, configSite, realm);
+        return scd.toConf(conf);
+    }
+
+    /** {@inheritDoc} */
     @Override
     public <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        requireNonNull(driver, "driver is null");
+        PackedComponentDriver<C> d = (PackedComponentDriver<C>) driver;
+
+        ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
+
+        ComponentNodeConfiguration conf = newChild(d, configSite, realm);
+        // return d.toConf(conf);
+        System.out.println(conf);
         throw new UnsupportedOperationException();
     }
 
@@ -628,5 +633,4 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             }
         }
     }
-
 }

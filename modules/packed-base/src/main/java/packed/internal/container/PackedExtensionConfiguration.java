@@ -342,7 +342,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
             // Should we also set the active extension in the parent???
             if (model.extensionLinkedToAncestorExtension != null) {
                 PackedExtensionConfiguration parentExtension = null;
-                PackedContainerRole parent = container.node.container;
+                PackedContainerRole parent = container.node.container();
                 if (!model.extensionLinkedDirectChildrenOnly) {
                     while (parentExtension == null && parent != null) {
                         parentExtension = parent.getExtensionContext(extensionType);

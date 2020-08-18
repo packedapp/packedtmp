@@ -53,7 +53,7 @@ public final class PackedContainerRole {
 
     public PackedContainerRole(ComponentNodeConfiguration node) {
         this.node = requireNonNull(node);
-        this.parent = node.parentOrNull() == null ? null : node.parentOrNull().container;
+        this.parent = node.parentOrNull() == null ? null : node.parentOrNull().container();
     }
 
     public void advanceTo(int newState) {
@@ -70,7 +70,7 @@ public final class PackedContainerRole {
         if (containerState == LS_1_LINKING && newState > LS_1_LINKING) {
             for (ComponentNodeConfiguration cc = node.firstChild; cc != null; cc = cc.nextSibling) {
                 if (cc.driver().isContainer()) {
-                    cc.container.advanceTo(LS_3_FINISHED);
+                    cc.container().advanceTo(LS_3_FINISHED);
                 }
             }
             for (PackedExtensionConfiguration pec : extensionsOrdered) {

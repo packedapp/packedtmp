@@ -209,7 +209,7 @@ public interface ExtensionConfiguration /* extends ComponentConfiguration */ {
             throw new IllegalStateException("This method cannot be called at runtime of a container");
         }
         ComponentAdaptor cc = (ComponentAdaptor) component;
-        PackedContainerRole pcc = cc.conf.container;
+        PackedContainerRole pcc = cc.conf.container();
         return pcc.getExtensionContext(extensionType);
     }
 }

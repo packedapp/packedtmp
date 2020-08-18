@@ -34,7 +34,7 @@ import packed.internal.component.wirelet.WireletPack;
 public final class PackedArtifactImage implements ArtifactImage {
 
     /** The configuration of the root container. */
-    private final ComponentNodeConfiguration pcc;
+    private final ComponentNodeConfiguration node;
 
     /**
      * Any wirelets that have been applied to the image. Might consist of a chain of wirelet containers with repeat usage of
@@ -55,25 +55,25 @@ public final class PackedArtifactImage implements ArtifactImage {
      *            any wirelets specified when creating the image or later via {@link #with(Wirelet...)}
      */
     private PackedArtifactImage(ComponentNodeConfiguration pcc, Class<? extends Bundle<?>> bundleType, @Nullable WireletPack wirelets) {
-        this.pcc = requireNonNull(pcc);
+        this.node = requireNonNull(pcc);
         this.wirelets = wirelets;
         this.bundleType = requireNonNull(bundleType);
     }
 
     public ArtifactContext newContext(Wirelet... wirelets) {
-        return InstantiationContext.instantiateArtifact(pcc, WireletPack.fromImage(pcc.container, this.wirelets, wirelets));
+        return InstantiationContext.instantiateArtifact(node, WireletPack.fromImage(node.container(), this.wirelets, wirelets));
     }
 
     /** {@inheritDoc} */
     @Override
     public ConfigSite configSite() {
-        return pcc.configSite();
+        return node.configSite();
     }
 
     /** {@inheritDoc} */
     @Override
     public Optional<String> description() {
-        return Optional.ofNullable(pcc.getDescription());
+        return Optional.ofNullable(node.getDescription());
     }
 
     /** {@inheritDoc} */
@@ -81,7 +81,7 @@ public final class PackedArtifactImage implements ArtifactImage {
     public ContainerDescriptor descriptor() {
         // Need to support wirelet context...
         ContainerDescriptor.Builder builder = new ContainerDescriptor.Builder(sourceType());
-        pcc.container.buildDescriptor(builder);
+        node.container().buildDescriptor(builder);
         return builder.build();
     }
 
@@ -91,7 +91,7 @@ public final class PackedArtifactImage implements ArtifactImage {
         // Only if a name has been explicitly set?
         // Or can we include "FooBar?"
         // Return Optional<String>????
-        return wirelets == null ? pcc.getName() : wirelets.name(pcc);
+        return wirelets == null ? node.getName() : wirelets.name(node);
     }
 
     /** {@inheritDoc} */
@@ -103,14 +103,14 @@ public final class PackedArtifactImage implements ArtifactImage {
     /** {@inheritDoc} */
     @Override
     public ComponentStream stream(ComponentStream.Option... options) {
-        return pcc.adaptToComponent().stream(options);
+        return node.adaptToComponent().stream(options);
     }
 
     /** {@inheritDoc} */
     @Override
     public PackedArtifactImage with(Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
-        return wirelets.length == 0 ? this : new PackedArtifactImage(pcc, bundleType, WireletPack.fromImage(pcc.container, this.wirelets, wirelets));
+        return wirelets.length == 0 ? this : new PackedArtifactImage(node, bundleType, WireletPack.fromImage(node.container(), this.wirelets, wirelets));
     }
 
     /**

@@ -249,7 +249,7 @@ public class ContainerDescriptor {
         requireNonNull(bundle, "bundle is null");
         ComponentNodeConfiguration pcc = PackedAssemblyContext.assembleDescriptor(ContainerDescriptor.class, bundle);
         ContainerDescriptor.Builder builder = new ContainerDescriptor.Builder(bundle.getClass());
-        pcc.container.buildDescriptor(builder);
+        pcc.container().buildDescriptor(builder);
         return builder.build();
     }
 

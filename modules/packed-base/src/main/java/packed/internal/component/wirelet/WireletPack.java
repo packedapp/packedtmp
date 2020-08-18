@@ -29,9 +29,7 @@ import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.container.PackedContainerRole;
 import packed.internal.container.PackedExtensionConfiguration;
 
-/**
- * A container of wirelets and wirelet pipelines.
- */
+/** A holder of wirelets and wirelet pipelines. */
 public final class WireletPack {
 
     // Could put them in wirelets. And then have an int countdown instead... every time an extension is removed.
@@ -205,7 +203,7 @@ public final class WireletPack {
     @Nullable
     public static WireletPack from(ComponentNodeConfiguration node, Wirelet... wirelets) {
         if (node.driver().isContainer()) {
-            return fromLink(node.container, wirelets);
+            return fromLink(node.container(), wirelets);
         }
         return null;
     }
