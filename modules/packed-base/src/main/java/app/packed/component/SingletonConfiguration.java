@@ -111,11 +111,4 @@ interface XCC2<T> {
         throw new UnsupportedOperationException();
     }
 
-    default SingletonConfiguration<T> addMixinClass(Class<?> mixin) {
-        // Hvordan opfoere de sig med de forskellige typer... f.eks. prototype services...
-        // Prototypeservice er en type!
-
-        // Denne metode instantiere aldrig
-        throw new UnsupportedOperationException();
-    }
 }

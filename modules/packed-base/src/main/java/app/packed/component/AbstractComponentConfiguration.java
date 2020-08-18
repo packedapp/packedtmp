@@ -52,7 +52,7 @@ import packed.internal.config.ConfigSiteSupport;
 // Men det er jo det samme med image... Det der er rart er jo at vi kan gemme implementeringen vaek
 // Men taenker dem der laver noget har den knyttet til en Extension??? som kan kalde en package
 // private constructor... Kan ikke forstille mig folk laver typer udenom en Extension
-// Eller vi har jo nok ComponentModel<Factory> -> ComponentModel<SingletonConfiguration>
+// Eller vi har jo nok ComponentModel<Factory> -> ComponentModel<SingletonConfiguration>x
 
 // model.newConfiguration(ComponentContainerContext ccc) -> return new SingletonCC(ccc);
 public abstract class AbstractComponentConfiguration implements ComponentConfiguration {

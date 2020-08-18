@@ -27,6 +27,7 @@ import app.packed.component.Wirelet;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
+import packed.internal.component.ComponentNodeConfiguration;
 
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
@@ -34,15 +35,18 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** The context to delegate all calls to. */
     private final PackedContainerRole context;
 
+    private final ComponentNodeConfiguration node;
+
     public PackedContainerConfiguration(PackedContainerRole context) {
         super(context.node);
         this.context = context;
+        this.node = context.node;
     }
 
     /** {@inheritDoc} */
     @Override
     public <W extends Wirelet> Optional<W> assemblyWirelet(Class<W> type) {
-        return context.node.assemblyWirelet(type);
+        return node.assemblyWirelet(type);
     }
 
     /** {@inheritDoc} */
@@ -60,44 +64,44 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** {@inheritDoc} */
     @Override
     public <T> SingletonConfiguration<T> install(Factory<T> factory) {
-        return context.node.install(factory);
+        return node.install(factory);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T> SingletonConfiguration<T> installInstance(T instance) {
-        return context.node.installInstance(instance);
+        return node.installInstance(instance);
     }
 
     /** {@inheritDoc} */
     @Override
     public StatelessConfiguration installStateless(Class<?> implementation) {
-        return context.node.installStateless(implementation);
+        return node.installStateless(implementation);
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isArtifactRoot() {
-        return context.node.depth() == 0;// not sure this is correct
+        return node.depth() == 0;// not sure this is correct
     }
 
     /** {@inheritDoc} */
     @Override
     public void lookup(@Nullable Lookup lookup) {
-        context.node.realm().lookup(lookup);
+        node.realm().lookup(lookup);
     }
 
     /** {@inheritDoc} */
     @Override
     public PackedContainerConfiguration setDescription(String description) {
-        context.node.setDescription(description);
+        node.setDescription(description);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
     public PackedContainerConfiguration setName(String name) {
-        context.node.setName(name);
+        node.setName(name);
         return this;
     }
 

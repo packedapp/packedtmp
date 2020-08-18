@@ -15,6 +15,8 @@
  */
 package app.packed.component;
 
+import java.lang.invoke.MethodHandles;
+
 /**
  * 
  * 
@@ -24,20 +26,23 @@ package app.packed.component;
  * @apiNote In the future, if the Java language permits, {@link ComponentDriver} may become a {@code sealed} interface,
  *          which would prohibit subclassing except by explicitly permitted types.
  */
+// extends AttributeHolder
 public interface ComponentDriver<C> {
 
-    // Har man altid en source???????
-
-    default C newConfiguration() {
+    static <C> ComponentDriver<C> create(MethodHandles.Lookup lookup, Option... options) {
         throw new UnsupportedOperationException();
     }
 
-}
-// PrototypeContext
+    public interface Option {
 
-// install(); <- installs child
-// spawn();
-// spawn(100);
+        /**
+         * The component the driver will be a container.
+         */
+        static Option container() {
+            throw new UnsupportedOperationException();
+        }
+    }
+}
 
 // Error handling top->down and then as a static bundle method as last resort.
 // The bundle XX.... defines a non-static error handler method. But it was never installed
@@ -90,10 +95,6 @@ public interface ComponentDriver<C> {
 
 //interface InstanDriver<T, C>
 
-interface ComponentDriverContext {
-
-}
-
 /**
  *
  *
@@ -113,28 +114,3 @@ interface ComponentDriverContext {
 
 //Vi vil forresten gerne have en SingletonContext der ogsaa fungere for Funktioner med registrere...
 //Nej de har jo ikke en type....
-
-abstract class OldComponentDriver<C> {
-
-    protected OldComponentDriver(Option... options) {
-
-    }
-
-    // Er det ogsaa den her der kommer med til ComponentContext????
-    // Ja det tror jeg... Options...
-
-    // ComponentConfigurationContext???
-    // Ja med mindre det er saa kompliceret
-    protected abstract C create(ComponentDriverContext context);
-
-    static class Option {
-
-        static Option hosting() {
-            throw new UnsupportedOperationException();
-        }
-        // addHost
-        // addGuestType
-    }
-
-    // provide(InstanceDriver d)
-}
