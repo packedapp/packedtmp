@@ -18,7 +18,6 @@ package app.packed.service;
 import app.packed.base.Key;
 import app.packed.component.Component;
 import app.packed.component.SingletonConfiguration;
-import app.packed.config.ConfigSite;
 import app.packed.container.BaseBundle;
 import app.packed.inject.Factory;
 
@@ -68,14 +67,6 @@ public interface ServiceComponentConfiguration<T> extends ServiceConfiguration<T
      */
     @Override
     ServiceComponentConfiguration<T> as(Key<? super T> key);
-
-    /**
-     * Returns the configuration site where this configuration was created.
-     * 
-     * @return the configuration site where this configuration was created
-     */
-    @Override
-    ConfigSite configSite();
 
     /**
      * Returns the key that the service is registered under.

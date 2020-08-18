@@ -15,8 +15,11 @@
  */
 package app.packed.component;
 
+import java.util.Optional;
+
+import app.packed.base.Key;
 import app.packed.container.BaseBundle;
-import app.packed.inject.Factory;
+import app.packed.service.ServiceConfiguration;
 
 /**
  * This class represents the configuration of a component. Actual instances of this interface is usually obtained by
@@ -33,72 +36,37 @@ public interface SingletonConfiguration<T> extends SourcedComponentConfiguration
     @Override
     SingletonConfiguration<T> setName(String name);
 
-    static <T> SourcedComponentDriver<T, SingletonConfiguration<T>> singleton() {
-        throw new UnsupportedOperationException();
-    }
-}
-
-interface XCC2<T> {
-    // isConfigurable();
-    // add getChildren()?
-    // add getComponentType() <- The type
-
-    // Syntes stadig vi skal overskrive component annotations med mixins //non-repeat overwrite, repeat add...
-    // Mixins er jo lidt limited nu. Kan jo ikke f.eks. lave
-    //
-    // default boolean isStateful() {
-    // return false;// Alternative we have a Component.Mode with Stateful, Stateless, Other
-    // }
-    //
-    // default boolean isStateless() {
-    // return !isStateless();
-    // }
     /**
-     * 
-     * @param implementation
-     *            the mixin implementation to add
-     * @return this configuration
-     * @throws IllegalArgumentException
-     *             if the class is not a proper mixin class ({@code super != Object.class } or implements one or more
-     *             interfaces)
-     * @see #addMixin(Factory)
-     * @see #addMixin(Object)
-     */
-    default SingletonConfiguration<T> addMixin(Class<?> implementation) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Adds the specified mixin to the list of mixins for the component.
+     * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
+     * null, any existing binding is removed.
      *
-     * @param factory
-     *            the mixin (factory) to add
+     * @param key
+     *            the key to bind to
      * @return this configuration
-     * @throws IllegalArgumentException
-     *             if the factory does not produce a proper mixin class ({@code super != Object.class } or implements one or
-     *             more interfaces)
-     * @see #addMixin(Class)
-     * @see #addMixin(Object)
+     * @see #as(Key)
      */
-    default SingletonConfiguration<T> addMixin(Factory<?> factory) {
-        throw new UnsupportedOperationException();
+    default SingletonConfiguration<T> as(Class<? super T> key) {
+        return as(Key.of(key));
     }
 
     /**
-     * Adds a component mixin to this component. The mixin can either be a class in which case it will be instantiated and
-     * injected according to same rules as the component instance. Or an instance in which case it will only be injected.
+     * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
+     * null, any existing binding is removed.
      *
-     * @param instance
-     *            the mixin instance to add
+     * @param key
+     *            the key to bind to
      * @return this configuration
-     * @throws IllegalArgumentException
-     *             if the instance is not a proper mixin class ({@code super != Object.class } or implements one or more
-     *             interfaces)
-     * @see #addMixin(Class)
-     * @see #addMixin(Factory)
+     * @see #as(Class)
      */
-    default SingletonConfiguration<T> addMixin(Object instance) {
+    SingletonConfiguration<T> as(Key<? super T> key);
+
+    ServiceConfiguration<T> export();
+
+    SingletonConfiguration<T> provide();
+
+    Optional<Key<?>> key();
+
+    static <T> SourcedComponentDriver<T, SingletonConfiguration<T>> driver() {
         throw new UnsupportedOperationException();
     }
-
 }

@@ -38,7 +38,7 @@ abstract class AbstractHookApplicator<T> implements HookApplicator<T> {
         /// I think we actually need to check this this way
 
         // TODO check instance component if instance field...
-        ComponentNodeConfiguration pcc = ((PackedSingletonConfiguration<?>) cc).context;
+        ComponentNodeConfiguration pcc = ((PackedSingletonConfiguration<?>) cc).node;
         pcc.checkConfigurable();
     }
 

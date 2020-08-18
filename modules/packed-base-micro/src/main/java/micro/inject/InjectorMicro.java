@@ -81,7 +81,8 @@ public class InjectorMicro {
         @Override
         public void configure() {
             ServiceExtension e = use(ServiceExtension.class);
-            e.export(e.provideInstance("Hey"));
+            e.provideInstance("Hey");
+            e.export(String.class);
         }
     }
 }

@@ -17,21 +17,22 @@ package packed.internal.service.buildtime.service;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Optional;
+
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.component.Bundle;
-import app.packed.component.ComponentDriver;
-import app.packed.component.ComponentPath;
-import app.packed.component.Wirelet;
-import app.packed.config.ConfigSite;
+import app.packed.component.AbstractComponentConfiguration;
+import app.packed.component.SingletonConfiguration;
 import app.packed.service.ServiceComponentConfiguration;
+import app.packed.service.ServiceConfiguration;
 import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.service.buildtime.BuildEntry;
 
 /**
  *
  */
-public final class PackedServiceComponentConfiguration<T> implements ServiceComponentConfiguration<T> {
+public final class PackedServiceComponentConfiguration<T> extends AbstractComponentConfiguration implements ServiceComponentConfiguration<T> {
 
     /** The service we are exposing. */
     public final BuildEntry<T> buildEntry;
@@ -46,6 +47,7 @@ public final class PackedServiceComponentConfiguration<T> implements ServiceComp
      *            the build entry to wrap
      */
     public PackedServiceComponentConfiguration(ComponentNodeConfiguration component, BuildEntry<T> buildEntry) {
+        super(component);
         this.buildEntry = requireNonNull(buildEntry);
         this.component = component;
     }
@@ -53,21 +55,9 @@ public final class PackedServiceComponentConfiguration<T> implements ServiceComp
     /** {@inheritDoc} */
     @Override
     public ServiceComponentConfiguration<T> as(Key<? super T> key) {
-        component.checkConfigurable();
+        checkConfigurable();
         buildEntry.as(key);
         return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void checkConfigurable() {
-        component.checkConfigurable();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ConfigSite configSite() {
-        return buildEntry.configSite();
     }
 
     /** {@inheritDoc} */
@@ -79,19 +69,6 @@ public final class PackedServiceComponentConfiguration<T> implements ServiceComp
 
     /** {@inheritDoc} */
     @Override
-    @Nullable
-    public String getName() {
-        return component.getName();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentPath path() {
-        return component.path();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public ServiceComponentConfiguration<T> setName(String name) {
         component.setName(name);
         return this;
@@ -99,13 +76,20 @@ public final class PackedServiceComponentConfiguration<T> implements ServiceComp
 
     /** {@inheritDoc} */
     @Override
-    public <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        return component.wire(driver, wirelets);
+    public Optional<Key<?>> key() {
+        return Optional.of(getKey());
     }
 
     /** {@inheritDoc} */
     @Override
-    public void link(Bundle<?> bundle, Wirelet... wirelets) {
-        component.link(bundle, wirelets);
+    public SingletonConfiguration<T> provide() {
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ServiceConfiguration<T> export() {
+        checkConfigurable();
+        return buildEntry.node.exports().export(this, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 }

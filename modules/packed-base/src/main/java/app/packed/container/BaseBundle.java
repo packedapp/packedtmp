@@ -133,10 +133,6 @@ public abstract class BaseBundle extends ContainerBundle {
         return service().export(key);
     }
 
-    protected final <T> ServiceConfiguration<T> export(ServiceComponentConfiguration<T> configuration) {
-        return service().export(configuration);
-    }
-
 //    /**
 //     * Returns a lifecycle extension instance, installing it if it has not already been installed.
 //     * 

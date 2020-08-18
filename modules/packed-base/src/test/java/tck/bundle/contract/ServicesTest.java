@@ -140,7 +140,7 @@ public class ServicesTest {
                 lookup(MethodHandles.lookup());
                 provide(NeedsAOptional.class);
                 provide(NeedsB.class);
-                export(provide(C.class));
+                provide(C.class).export();
             }
         });
 

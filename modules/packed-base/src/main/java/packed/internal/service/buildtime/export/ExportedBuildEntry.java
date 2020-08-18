@@ -22,7 +22,6 @@ import java.util.List;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
-import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceMode;
 import packed.internal.service.buildtime.BuildEntry;
@@ -68,7 +67,6 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
      *            the entry to export
      * @param configSite
      *            the config site of the export
-     * @see ServiceExtension#export(ServiceComponentConfiguration)
      * @see ServiceExtension#exportAll()
      */
     ExportedBuildEntry(ServiceExtensionNode builder, BuildEntry<T> entryToExport, ConfigSite configSite) {

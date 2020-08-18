@@ -51,25 +51,6 @@ public interface ComponentConfiguration {
      * @see #setName(String)
      */
     String getName();
-//
-//    /**
-//     * Returns the type of component this configuration creates.
-//     * 
-//     * @return the type of component this configuration creates
-//     */
-//    ComponentDescriptor model();
-
-//    /**
-//     * Registers an action that will be performed whenever a name is assigned to the component.
-//     * <p>
-//     * This method is mainly used by extensions.
-//     * 
-//     * @param action
-//     *            the action to be performed when the name of the component is finalized
-//     */
-//    default void onNamed(Consumer<? super ComponentConfiguration> action) {
-//        throw new UnsupportedOperationException();
-//    }
 
     /**
      * Returns the full path of the component.

@@ -149,6 +149,10 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
             model.invokeOnHookOnInstall(context);
             return new PackedSingletonConfiguration<>(context);
         }
+
+        public boolean isInstance() {
+            return instance == null;
+        }
     }
 
     public static abstract class ModelComponentDriver<T> extends PackedComponentDriver<T> {

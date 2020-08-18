@@ -50,8 +50,8 @@ class StringBundle extends Bundle<SingletonConfiguration<String>> {
     protected void configure() {}
 
     public static void main(String[] args) {
-        SourcedComponentDriver<String, SingletonConfiguration<String>> singleton = SingletonConfiguration.singleton();
-        ComponentDriver<SingletonConfiguration<Object>> bindToInstance = SingletonConfiguration.singleton().bindToInstance("fffo");
+        SourcedComponentDriver<String, SingletonConfiguration<String>> singleton = SingletonConfiguration.driver();
+        ComponentDriver<SingletonConfiguration<Object>> bindToInstance = SingletonConfiguration.driver().bindToInstance("fffo");
         ComponentDriver<SingletonConfiguration<String>> bindToInstance2 = singleton.bindToInstance("foo");
         System.out.println(bindToInstance);
         System.out.println(bindToInstance2);

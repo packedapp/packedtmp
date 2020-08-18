@@ -41,6 +41,10 @@ public interface ComponentDriver<C> {
         static Option container() {
             throw new UnsupportedOperationException();
         }
+
+        // Option serviceable()
+        // Hmm Maaske er alle serviceable.. Og man maa bare lade vaere
+        // at expose funktionaliteten.
     }
 }
 

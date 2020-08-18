@@ -39,7 +39,6 @@ import packed.internal.util.StringFormatter;
  *
  * @see ServiceExtension#export(Class)
  * @see ServiceExtension#export(Key)
- * @see ServiceExtension#export(ServiceComponentConfiguration)
  * @see ServiceExtension#exportAll()
  */
 public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
@@ -50,7 +49,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
 
     /**
      * An entry to this list is added every time the user calls {@link ServiceExtension#export(Class)},
-     * {@link ServiceExtension#export(Key)} or {@link ServiceExtension#export(ServiceComponentConfiguration)}.
+     * {@link ServiceExtension#export(Key)}.
      */
     @Nullable
     private ArrayList<ExportedBuildEntry<?>> exportedEntries;
@@ -90,7 +89,6 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
      * @param configSite
      *            the config site of the export
      * @return stuff
-     * @see ServiceExtension#export(ServiceComponentConfiguration)
      */
     public <T> ServiceConfiguration<T> export(ServiceComponentConfiguration<T> configuration, ConfigSite configSite) {
         if (!(configuration instanceof PackedServiceComponentConfiguration)) {

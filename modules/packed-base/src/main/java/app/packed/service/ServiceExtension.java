@@ -35,6 +35,7 @@ import app.packed.lifecycleold.OnStart;
 import app.packed.sidecar.Expose;
 import app.packed.statemachine.Leaving;
 import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.PackedSingletonConfiguration;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.inject.ConfigSiteInjectOperations;
@@ -265,13 +266,6 @@ public final class ServiceExtension extends Extension {
         throw new UnsupportedOperationException();
     }
 
-    // Hvis man skal eksportere noget under 2 nogler, maa man kalde export 2 gange...
-    public <T> ServiceConfiguration<T> export(ServiceComponentConfiguration<T> configuration) {
-        requireNonNull(configuration, "configuration is null");
-        checkConfigurable();
-        return node.exports().export(configuration, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
-    }
-
     /**
      * 
      */
@@ -343,27 +337,28 @@ public final class ServiceExtension extends Extension {
      * @return the configuration of the component that was installed
      */
     public <T> ServiceComponentConfiguration<T> provide(Factory<T> factory) {
-        return node.provider().provideFactory(((PackedSingletonConfiguration<T>) install(factory)).context, false);
+        // install(factory).provide();
+        return node.provider().provideFactory(((PackedSingletonConfiguration<T>) install(factory)).node, false);
     }
 
     // Will install a ServiceStatelessConfiguration...
     public <T> ServiceComponentConfiguration<T> providePrototype(Factory<T> factory) {
-        return node.provider().provideFactory(((PackedSingletonConfiguration<T>) install(factory)).context, true);
+        return node.provider().provideFactory(((PackedSingletonConfiguration<T>) install(factory)).node, true);
     }
 
     public <T> ServiceComponentConfiguration<T> providePrototype(Class<T> implementation) {
         return providePrototype(Factory.find(implementation));
     }
 
-//    public <T> ServiceComponentConfiguration<T> provide(Providable<T> c) {
-//        throw new UnsupportedOperationException();
-//    }
-
-    <T> ServiceComponentConfiguration<T> provide(SingletonConfiguration<T> c) {
-        // return node.provider().provideFactory(install(factory), factory, factory.factory.function);
-
-        // IDeen er lidt at man f.eks. kan lave en ComponentExtension et andet sted, som saa kan bruges her.
-        throw new UnsupportedOperationException();
+    @SuppressWarnings("unchecked")
+    public <T> ServiceComponentConfiguration<T> provide(SingletonConfiguration<T> c) {
+        PackedSingletonConfiguration<T> cc = (PackedSingletonConfiguration<T>) c;
+        SingletonComponentDriver scd = (SingletonComponentDriver) cc.node.driver();
+        if (scd.instance != null) {
+            return (ServiceComponentConfiguration<T>) node.provider().provideInstance(cc.node, scd.instance);
+        } else {
+            return node.provider().provideFactory(cc.node, true);
+        }
     }
 
     /**
@@ -403,7 +398,7 @@ public final class ServiceExtension extends Extension {
      */
     public <T> ServiceComponentConfiguration<T> provideInstance(T instance) {
         // configurability is checked by ComponentExtension
-        ComponentNodeConfiguration cc = ((PackedSingletonConfiguration<T>) installInstance(instance)).context;
+        ComponentNodeConfiguration cc = ((PackedSingletonConfiguration<T>) installInstance(instance)).node;
         return node.provider().provideInstance(cc, instance);
     }
 

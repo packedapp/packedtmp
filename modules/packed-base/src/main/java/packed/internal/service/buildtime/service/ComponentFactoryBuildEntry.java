@@ -77,10 +77,6 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         return instantionMode;
     }
 
-    // public boolean needsInstance() {
-    // return declaringEntry != null && mha.type().parameterCount() != dependencies.size();
-    // }
-
     /** {@inheritDoc} */
     @Override
     protected InjectorEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
@@ -92,7 +88,7 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         }
     }
 
-    public void prototype() {
+    void prototype() {
         if (hasDependencyOnInjectionSite) {
             throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
         }

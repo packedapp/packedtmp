@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
-import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceConfiguration;
 import app.packed.service.ServiceExtension;
 
@@ -29,7 +28,6 @@ import app.packed.service.ServiceExtension;
  * 
  * @see ServiceExtension#export(Class)
  * @see ServiceExtension#export(Key)
- * @see ServiceExtension#export(ServiceComponentConfiguration)
  */
 // Move to ExportManager when we key + check configurable has been finalized
 final class ExportedServiceConfiguration<T> implements ServiceConfiguration<T> {

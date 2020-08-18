@@ -15,9 +15,13 @@
  */
 package app.packed.component;
 
+import app.packed.inject.Factory;
+
 /**
  *
  */
+// Den her er bare ikke noget det giver mening at installere
+// uden at expose den som service...PrototypeConfiguration?????
 public interface StatelessConfiguration extends ComponentConfiguration {
 
     /**
@@ -30,4 +34,69 @@ public interface StatelessConfiguration extends ComponentConfiguration {
     /** {@inheritDoc} */
     @Override
     StatelessConfiguration setName(String name);
+}
+
+interface XCC2<T> {
+    // isConfigurable();
+    // add getChildren()?
+    // add getComponentType() <- The type
+
+    // Syntes stadig vi skal overskrive component annotations med mixins //non-repeat overwrite, repeat add...
+    // Mixins er jo lidt limited nu. Kan jo ikke f.eks. lave
+    //
+    // default boolean isStateful() {
+    // return false;// Alternative we have a Component.Mode with Stateful, Stateless, Other
+    // }
+    //
+    // default boolean isStateless() {
+    // return !isStateless();
+    // }
+    /**
+     * 
+     * @param implementation
+     *            the mixin implementation to add
+     * @return this configuration
+     * @throws IllegalArgumentException
+     *             if the class is not a proper mixin class ({@code super != Object.class } or implements one or more
+     *             interfaces)
+     * @see #addMixin(Factory)
+     * @see #addMixin(Object)
+     */
+    default SingletonConfiguration<T> addMixin(Class<?> implementation) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Adds the specified mixin to the list of mixins for the component.
+     *
+     * @param factory
+     *            the mixin (factory) to add
+     * @return this configuration
+     * @throws IllegalArgumentException
+     *             if the factory does not produce a proper mixin class ({@code super != Object.class } or implements one or
+     *             more interfaces)
+     * @see #addMixin(Class)
+     * @see #addMixin(Object)
+     */
+    default SingletonConfiguration<T> addMixin(Factory<?> factory) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Adds a component mixin to this component. The mixin can either be a class in which case it will be instantiated and
+     * injected according to same rules as the component instance. Or an instance in which case it will only be injected.
+     *
+     * @param instance
+     *            the mixin instance to add
+     * @return this configuration
+     * @throws IllegalArgumentException
+     *             if the instance is not a proper mixin class ({@code super != Object.class } or implements one or more
+     *             interfaces)
+     * @see #addMixin(Class)
+     * @see #addMixin(Factory)
+     */
+    default SingletonConfiguration<T> addMixin(Object instance) {
+        throw new UnsupportedOperationException();
+    }
+
 }
