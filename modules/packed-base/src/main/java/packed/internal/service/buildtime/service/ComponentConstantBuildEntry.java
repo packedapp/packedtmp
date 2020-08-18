@@ -20,10 +20,10 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import app.packed.config.ConfigSite;
-import app.packed.service.ServiceMode;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
+import packed.internal.service.buildtime.ServiceMode;
 import packed.internal.service.runtime.ConstantInjectorEntry;
 import packed.internal.service.runtime.InjectorEntry;
 

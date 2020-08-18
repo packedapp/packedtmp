@@ -32,7 +32,6 @@ import app.packed.config.ConfigSite;
 import app.packed.service.Injector;
 import app.packed.service.Provide;
 import app.packed.service.ServiceExtension;
-import app.packed.service.ServiceMode;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.wirelet.WireletList;
@@ -42,6 +41,7 @@ import packed.internal.inject.factory.BaseFactory;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ErrorMessages;
 import packed.internal.service.buildtime.ServiceExtensionNode;
+import packed.internal.service.buildtime.ServiceMode;
 import packed.internal.service.runtime.AbstractInjector;
 
 /**

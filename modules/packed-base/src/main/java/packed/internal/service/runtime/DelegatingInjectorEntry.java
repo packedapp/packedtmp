@@ -18,8 +18,8 @@ package packed.internal.service.runtime;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.service.ProvideContext;
-import app.packed.service.ServiceMode;
 import packed.internal.service.buildtime.BuildEntry;
+import packed.internal.service.buildtime.ServiceMode;
 
 /**
  * A delegating runtime service node.

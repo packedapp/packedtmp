@@ -27,12 +27,11 @@ import app.packed.inject.Factory;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
 import app.packed.service.Provide;
-import app.packed.service.ServiceMode;
 
-/** Tests {@link Provide#instantionMode()} on static methods. */
+/** Tests {@link Provide#isConstant()} on static methods. */
 public class MethodStaticTest {
 
-    /** Tests default {@link Provide#instantionMode()} on static methods. */
+    /** Tests default {@link Provide#isConstant()} on static methods. */
     @Test
     public void provide() {
         MixedMethodsInstantiable.test(c -> c.provideInstance(new MixedMethodsInstantiable()));
@@ -50,7 +49,7 @@ public class MethodStaticTest {
     // {})).lazy());
     // }
 
-    /** Tests prototype {@link Provide#instantionMode()} on static methods. */
+    /** Tests prototype {@link Provide#isConstant()} on static methods. */
     @Test
     public void providePrototype() {
         MixedMethodsNoInstantiation.test(c -> c.providePrototype(MixedMethodsNoInstantiation.class));
@@ -78,12 +77,12 @@ public class MethodStaticTest {
         // return L;
         // }
 
-        @Provide(instantionMode = ServiceMode.PROTOTYPE)
+        @Provide(isConstant = false)
         static Integer p() {
             return P;
         }
 
-        @Provide(instantionMode = ServiceMode.SINGLETON)
+        @Provide(isConstant = true)
         static Short s() {
             return S;
         }
@@ -134,12 +133,12 @@ public class MethodStaticTest {
         // return L;
         // }
 
-        @Provide(instantionMode = ServiceMode.PROTOTYPE)
+        @Provide(isConstant = false)
         static Integer p() {
             return P;
         }
 
-        @Provide(instantionMode = ServiceMode.SINGLETON)
+        @Provide(isConstant = true)
         static Short s() {
             return S;
         }

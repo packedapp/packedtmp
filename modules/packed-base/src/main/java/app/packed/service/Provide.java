@@ -106,10 +106,5 @@ public @interface Provide {
     // Service 1, Component another -> each have different
     String description() default "";
 
-    /**
-     * The instantiation mode of the providing method or field, the default is {@link ServiceMode#SINGLETON}.
-     * 
-     * @return the binding mode
-     */
-    ServiceMode instantionMode() default ServiceMode.SINGLETON;
+    boolean isConstant() default true;
 }

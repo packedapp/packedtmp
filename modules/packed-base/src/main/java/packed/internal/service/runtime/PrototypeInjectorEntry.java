@@ -20,8 +20,8 @@ import java.lang.invoke.MethodHandle;
 import app.packed.inject.Provider;
 import app.packed.inject.ProvisionException;
 import app.packed.service.ProvideContext;
-import app.packed.service.ServiceMode;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
+import packed.internal.service.buildtime.ServiceMode;
 import packed.internal.service.buildtime.service.ComponentFactoryBuildEntry;
 import packed.internal.util.ThrowableUtil;
 

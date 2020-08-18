@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package packed.internal.service.buildtime;
 
 /**
  * The instantiation mode of a service.
@@ -32,6 +32,9 @@ package app.packed.service;
 
 // Maybe we should more think of it as whether or not it is cachable....
 // This also more or less makes eager singleton + lazy singleton identical
+
+// isConstant???
+
 public enum ServiceMode {
 
     /**

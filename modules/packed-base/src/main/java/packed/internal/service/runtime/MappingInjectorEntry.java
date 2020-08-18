@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Function;
 
 import app.packed.service.ProvideContext;
-import app.packed.service.ServiceMode;
 import packed.internal.service.buildtime.BuildEntry;
+import packed.internal.service.buildtime.ServiceMode;
 
 /** A runtime service entry that uses a {@link Function} to map an existing service. */
 public final class MappingInjectorEntry<F, T> extends InjectorEntry<T> {

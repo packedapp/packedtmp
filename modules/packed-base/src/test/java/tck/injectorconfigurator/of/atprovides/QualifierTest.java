@@ -29,7 +29,6 @@ import app.packed.base.Key;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
 import app.packed.service.Provide;
-import app.packed.service.ServiceMode;
 import testutil.stubs.annotation.StringQualifier;
 
 /**
@@ -134,11 +133,11 @@ public class QualifierTest {
         // @StringQualifier("A")
         // private static Long A;
 
-        @Provide(instantionMode = ServiceMode.PROTOTYPE)
+        @Provide(isConstant = false)
         @StringQualifier("B")
         private static Long B;
 
-        @Provide(instantionMode = ServiceMode.SINGLETON)
+        @Provide(isConstant = true)
         @StringQualifier("C")
         private static Long C;
 

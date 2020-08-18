@@ -31,7 +31,6 @@ import app.packed.container.ContainerDescriptor;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
-import app.packed.service.ServiceMode;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.component.wirelet.WireletPipelineContext;
 import packed.internal.inject.ServiceDependency;

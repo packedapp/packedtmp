@@ -4,11 +4,11 @@ import java.util.List;
 
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
-import app.packed.service.ServiceMode;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
+import packed.internal.service.buildtime.ServiceMode;
 import packed.internal.service.runtime.InjectorEntry;
 
 public class CompositeBuildEntry<T> extends BuildEntry<T> {

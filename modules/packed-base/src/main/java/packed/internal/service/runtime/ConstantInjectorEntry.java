@@ -21,8 +21,8 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.service.ProvideContext;
-import app.packed.service.ServiceMode;
 import packed.internal.service.buildtime.BuildEntry;
+import packed.internal.service.buildtime.ServiceMode;
 
 /** An entry holding a constant. */
 // Can't implement both ServiceDescriptor and Provider...

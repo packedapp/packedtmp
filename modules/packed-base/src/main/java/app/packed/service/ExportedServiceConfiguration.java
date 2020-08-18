@@ -20,10 +20,11 @@ import app.packed.config.ConfigSite;
 import app.packed.container.BaseBundle;
 
 /**
- * A configuration object for a service. An instance of this interface is usually obtained by calling the various
- * provide or export methods located on {@link ServiceExtension}, {@link InjectorAssembler} or {@link BaseBundle}.
+ * A configuration object for an exported service. An instance of this interface is usually obtained by calling the
+ * various provide or export methods located on {@link ServiceExtension}, {@link InjectorAssembler} or
+ * {@link BaseBundle}.
  */
-public interface ExportedServiceConfiguration<T> /* extends Taggable */ {
+public interface ExportedServiceConfiguration<T> {
 
     /**
      * Registers this service under the specified key.
@@ -63,23 +64,3 @@ public interface ExportedServiceConfiguration<T> /* extends Taggable */ {
      */
     Key<?> getKey();
 }
-
-/// **
-// * Indicates that the service will not be registered under any key. There are a number of use cases for this method:
-// * <p>
-// * The primary use for this method is to register object with has fields and/or methods annotated with {@link
-/// Provides}.
-// * But where we do not want to expose the declaring class as a service.
-// * <p>
-// * Install component with a serv
-// * <p>
-// * For import and export stages, to indicate that a service should not be send further in the pipeline.
-// *
-// * @return this configuration
-// */
-//// another usecase is for registering a service that should only be available outward facing
-//// (exportService(provide().asNone).as(Foo.class)
-// ServiceConfiguration<?> asNone();
-//
-/// / Should include dependencies via @Inject
-//// List<DependencyDescriptor> dependencies();

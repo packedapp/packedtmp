@@ -26,7 +26,6 @@ import app.packed.service.Provide;
 import app.packed.service.ProvideContext;
 import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.ServiceDescriptor;
-import app.packed.service.ServiceMode;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.service.AbstractComponentBuildEntry;
 import packed.internal.service.runtime.InjectorEntry;

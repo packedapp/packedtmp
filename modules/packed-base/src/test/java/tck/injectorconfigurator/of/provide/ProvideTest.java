@@ -28,7 +28,6 @@ import app.packed.component.SingletonConfiguration;
 import app.packed.inject.Factory;
 import app.packed.service.Injector;
 import app.packed.service.PrototypeConfiguration;
-import app.packed.service.ServiceMode;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
 import testutil.stubs.Letters.C;
@@ -59,7 +58,7 @@ public class ProvideTest {
     public void bindInstance() {
         Injector i = Injector.configure(e -> {
             SingletonConfiguration<A> sc = e.provideInstance(A0);
-            testConfiguration(sc, ServiceMode.SINGLETON, Key.of(A.class));
+            testConfiguration(sc, true, Key.of(A.class));
         });
         testSingleton(i, Key.of(A.class), A0);
 
@@ -76,7 +75,7 @@ public class ProvideTest {
         }
     }
 
-    static void testConfiguration(SingletonConfiguration<?> sc, ServiceMode instantionMode, Key<?> key) {
+    static void testConfiguration(SingletonConfiguration<?> sc, boolean isConstant, Key<?> key) {
 
         // assertThat(sc.instantiationMode()).isSameAs(ServiceMode.SINGLETON);
         // configSite;

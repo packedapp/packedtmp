@@ -27,8 +27,8 @@ import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.MethodDescriptor;
 import app.packed.service.Provide;
-import app.packed.service.ServiceMode;
 import packed.internal.inject.ServiceDependency;
+import packed.internal.service.buildtime.ServiceMode;
 
 /** A descriptor for a field or method (member) annotated with {@link Provide}. */
 final class AtProvides {
@@ -37,7 +37,7 @@ final class AtProvides {
     @Nullable
     final String description;
 
-    /** The instantiation mode from {@link Provide#instantionMode()}. */
+    /** The instantiation mode from {@link Provide#isConstant()}. */
     final ServiceMode instantionMode;
 
     /** Whether or not the member on which the annotation is present is a static member. */
@@ -64,7 +64,7 @@ final class AtProvides {
         this.provides = requireNonNull(provides);
         this.description = provides.description().length() > 0 ? provides.description() : null;
         this.member = requireNonNull(member);
-        this.instantionMode = provides.instantionMode();
+        this.instantionMode = provides.isConstant() ? ServiceMode.SINGLETON : ServiceMode.PROTOTYPE;
         this.isStaticMember = Modifier.isStatic(member.getModifiers());
         this.key = requireNonNull(key);
     }
