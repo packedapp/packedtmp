@@ -172,7 +172,6 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
      * 
      * @param lookup
      *            the lookup object
-     * @see ContainerConfiguration#lookup(Lookup)
      */
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");

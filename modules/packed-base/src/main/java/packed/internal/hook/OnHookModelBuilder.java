@@ -80,7 +80,7 @@ final class OnHookModelBuilder {
 
     private final UncheckedThrowableFactory<? extends RuntimeException> tf;
 
-    OnHookModelBuilder(OpenClass cp, boolean instantiateRoot, UncheckedThrowableFactory<? extends RuntimeException> tf, Class<?>... additionalParameters) {
+    OnHookModelBuilder(OpenClass cp, boolean instantiateRoot, UncheckedThrowableFactory<? extends RuntimeException> tf) {
         this.root = instantiateRoot ? new HookBuilderNode(cp, tf, cp.type()) : new Node(cp);
         this.tf = requireNonNull(tf);
     }

@@ -170,14 +170,11 @@ public final class OnHookModel {
      * 
      * @param cp
      *            the class processor
-     * @param additionalParameters
-     *            any additional parameter types allowed.
      * @return the new model, or null if the no {@link OnHook} annotations was present
      */
     @Nullable
-    public static OnHookModel newModel(OpenClass cp, boolean instantiateRoot, UncheckedThrowableFactory<? extends RuntimeException> tf,
-            Class<?>... additionalParameters) {
-        return new OnHookModelBuilder(cp, instantiateRoot, tf, additionalParameters).build();
+    public static OnHookModel newModel(OpenClass cp, boolean instantiateRoot, UncheckedThrowableFactory<? extends RuntimeException> tf) {
+        return new OnHookModelBuilder(cp, instantiateRoot, tf).build();
     }
 
     static class Link {

@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 
 import app.packed.base.Nullable;
 import app.packed.component.ConsumeWirelet;
-import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionMember;
@@ -399,7 +398,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
             addExtensionContextElements(mhbConstructor, 0);
 
             OpenClass cp = prep(mhbConstructor);
-            this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY, ContainerConfiguration.class);
+            this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
 
             if (linked != null) {
                 // ancestor extension, descendant extension context, descendant extension
