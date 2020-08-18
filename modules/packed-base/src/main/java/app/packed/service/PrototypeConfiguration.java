@@ -17,6 +17,7 @@ package app.packed.service;
 
 import app.packed.base.Key;
 import app.packed.component.Component;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.SingletonConfiguration;
 import app.packed.container.BaseBundle;
 import app.packed.inject.Factory;
@@ -32,7 +33,7 @@ import app.packed.inject.Factory;
  * @see BaseBundle#provide(Factory)
  * @see BaseBundle#provideInstance(Object)
  */
-public interface PrototypeConfiguration<T> extends ServiceConfiguration<T>, SingletonConfiguration<T> {
+public interface PrototypeConfiguration<T> extends ServiceConfiguration<T>, ComponentConfiguration {
 
     //// Can be used to set separately tags, descriptions, ect...
     // SingletonConfiguration<T> componentConfiguration();
@@ -92,6 +93,8 @@ public interface PrototypeConfiguration<T> extends ServiceConfiguration<T>, Sing
      */
     @Override
     PrototypeConfiguration<T> setName(String name);
+
+    ServiceConfiguration<T> export();
 }
 
 // /**

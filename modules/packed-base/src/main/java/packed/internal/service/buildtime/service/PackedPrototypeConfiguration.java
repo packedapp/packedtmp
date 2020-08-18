@@ -17,12 +17,9 @@ package packed.internal.service.buildtime.service;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Optional;
-
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.AbstractComponentConfiguration;
-import app.packed.component.SingletonConfiguration;
 import app.packed.service.PrototypeConfiguration;
 import app.packed.service.ServiceConfiguration;
 import packed.internal.component.ComponentNodeConfiguration;
@@ -71,18 +68,6 @@ public final class PackedPrototypeConfiguration<T> extends AbstractComponentConf
     @Override
     public PackedPrototypeConfiguration<T> setName(String name) {
         component.setName(name);
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Optional<Key<?>> key() {
-        return Optional.of(getKey());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public SingletonConfiguration<T> provide() {
         return this;
     }
 

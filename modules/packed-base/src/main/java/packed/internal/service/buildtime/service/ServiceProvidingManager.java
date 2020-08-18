@@ -160,7 +160,7 @@ public final class ServiceProvidingManager {
     public <T> BuildEntry<T> provideInstance(ComponentNodeConfiguration cc, T instance) {
         // First see if we have already installed the node. This happens in #set if the component container any members
         // annotated with @Provides
-        BuildEntry<?> c = componentConfigurationCache.get(cc);
+        BuildEntry<T> c = (BuildEntry<T>) componentConfigurationCache.get(cc);
         if (c == null) {
             // No node found, components has no @Provides method, create a new node
             c = new ComponentConstantBuildEntry<T>(node, cc.configSite(), cc, instance);
@@ -168,7 +168,7 @@ public final class ServiceProvidingManager {
 
         c.as((Key) Key.of(instance.getClass()));
         providingEntries.add(c);
-        return (BuildEntry<T>) c;
+        return c;
     }
 
     public HashMap<Key<?>, BuildEntry<?>> resolve() {
