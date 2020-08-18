@@ -55,7 +55,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** {@inheritDoc} */
     @Override
     public StatelessConfiguration installStateless(Class<?> implementation) {
-        return node().installStateless(implementation);
+        return wire(StatelessConfiguration.driver(), implementation);
     }
 
     /** {@inheritDoc} */

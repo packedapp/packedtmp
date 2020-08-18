@@ -15,7 +15,7 @@
  */
 package app.packed.component;
 
-import app.packed.inject.Factory;
+import packed.internal.component.PackedComponentDriver;
 
 /**
  *
@@ -33,58 +33,12 @@ public interface StatelessConfiguration extends ComponentConfiguration {
     @Override
     StatelessConfiguration setName(String name);
 
-    static <T> ClassSourcedDriver<T, StatelessConfiguration> driver() {
-        throw new UnsupportedOperationException();
-    }
-}
-
-interface Mixins<T> {
-
     /**
+     * Returns a driver that can be used to create stateless components.
      * 
-     * @param implementation
-     *            the mixin implementation to add
-     * @return this configuration
-     * @throws IllegalArgumentException
-     *             if the class is not a proper mixin class ({@code super != Object.class } or implements one or more
-     *             interfaces)
-     * @see #addMixin(Factory)
-     * @see #addMixin(Object)
+     * @return a driver
      */
-    default SingletonConfiguration<T> addMixin(Class<?> implementation) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Adds the specified mixin to the list of mixins for the component.
-     *
-     * @param factory
-     *            the mixin (factory) to add
-     * @return this configuration
-     * @throws IllegalArgumentException
-     *             if the factory does not produce a proper mixin class ({@code super != Object.class } or implements one or
-     *             more interfaces)
-     * @see #addMixin(Class)
-     * @see #addMixin(Object)
-     */
-    default SingletonConfiguration<T> addMixin(Factory<?> factory) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Adds a component mixin to this component. The mixin can either be a class in which case it will be instantiated and
-     * injected according to same rules as the component instance. Or an instance in which case it will only be injected.
-     *
-     * @param instance
-     *            the mixin instance to add
-     * @return this configuration
-     * @throws IllegalArgumentException
-     *             if the instance is not a proper mixin class ({@code super != Object.class } or implements one or more
-     *             interfaces)
-     * @see #addMixin(Class)
-     * @see #addMixin(Factory)
-     */
-    default SingletonConfiguration<T> addMixin(Object instance) {
-        throw new UnsupportedOperationException();
+    static <T> ClassSourcedDriver<StatelessConfiguration, T> driver() {
+        return PackedComponentDriver.StatelessComponentDriver.driver();
     }
 }

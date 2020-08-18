@@ -43,7 +43,6 @@ import app.packed.component.ComponentStream;
 import app.packed.component.FactorySourcedDriver;
 import app.packed.component.InstanceSourcedDriver;
 import app.packed.component.SingletonConfiguration;
-import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
@@ -51,7 +50,6 @@ import app.packed.inject.Factory;
 import packed.internal.artifact.InstantiationContext;
 import packed.internal.artifact.PackedAssemblyContext;
 import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
-import packed.internal.component.PackedComponentDriver.StatelessComponentDriver;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletModel;
 import packed.internal.component.wirelet.WireletPack;
@@ -433,40 +431,22 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     public <T> SingletonConfiguration<T> installInstance(T instance) {
         requireNonNull(instance, "instance is null");
-        ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver<T> scd = new SingletonComponentDriver<>(realm, instance);
-
-        ComponentNodeConfiguration conf = newChild(scd, configSite, realm);
-        return scd.toConfiguration(conf);
+        return wire(scd);
     }
 
     public <T> SingletonConfiguration<T> install(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
-        ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         SingletonComponentDriver<T> scd = new SingletonComponentDriver<>(realm, factory);
-
-        ComponentNodeConfiguration conf = newChild(scd, configSite, realm);
-        return scd.toConfiguration(conf);
-    }
-
-    public StatelessConfiguration installStateless(Class<?> implementation) {
-        StatelessComponentDriver scd = new StatelessComponentDriver(realm, implementation);
-
-        ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
-
-        ComponentNodeConfiguration conf = newChild(scd, configSite, realm);
-        return scd.toConfiguration(conf);
+        return wire(scd);
     }
 
     /** {@inheritDoc} */
     @Override
     public <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         PackedComponentDriver<C> d = (PackedComponentDriver<C>) driver;
-
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
-
         ComponentNodeConfiguration conf = newChild(d, configSite, realm);
-
         return driver.toConfiguration(conf);
     }
 

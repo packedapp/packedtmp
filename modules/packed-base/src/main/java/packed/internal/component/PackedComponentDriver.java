@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
+import app.packed.component.ClassSourcedDriver;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.SingletonConfiguration;
@@ -39,11 +40,11 @@ import packed.internal.service.buildtime.service.PackedSingletonConfiguration;
 public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
 
     public static final int ROLE_CONTAINER = 1;
+    public static final int ROLE_EXTENSION = 32;
     public static final int ROLE_GUEST = 2;
     public static final int ROLE_HOST = 4;
     public static final int ROLE_SINGLETON = 8;
     public static final int ROLE_STATELESS = 16;
-    public static final int ROLE_EXTENSION = 32;
 
     // Statemanagement... A function is kind of just a singleton...
 
@@ -51,10 +52,6 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
 
     protected PackedComponentDriver(int roles) {
         this.roles = roles;
-    }
-
-    public final boolean hasRuntimeRepresentation() {
-        return !isExtension();
     }
 
     public String defaultName(PackedRealm realm) {
@@ -77,14 +74,16 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
                 }
             }
             // TODO think it should be named Artifact type, for example, app, injector, ...
-            return "Unknown";
-        } else {
-            return ((ModelComponentDriver<?>) this).model.defaultPrefix();
         }
+        return "Unknown";
     }
 
     public final boolean hasRole(int role) {
         return (roles & role) != 0;
+    }
+
+    public final boolean hasRuntimeRepresentation() {
+        return !isExtension();
     }
 
     /**
@@ -118,6 +117,19 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         }
     }
 
+    public static abstract class ModelComponentDriver<T> extends PackedComponentDriver<T> {
+        public final ComponentModel model;
+
+        /**
+         * @param roles
+         */
+        ModelComponentDriver(int roles, ComponentModel model) {
+            super(roles);
+            this.model = model;
+        }
+
+    }
+
     public static class SingletonComponentDriver<T> extends ModelComponentDriver<SingletonConfiguration<T>> {
 
         @Nullable
@@ -130,6 +142,11 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
             super(PackedComponentDriver.ROLE_SINGLETON, realm.componentModelOf(factory.rawType()));
             this.factory = (@Nullable BaseFactory<?>) factory;
             this.instance = null;
+        }
+
+        @Override
+        public String defaultName(PackedRealm realm) {
+            return model.defaultPrefix();
         }
 
         public SingletonComponentDriver(PackedRealm realm, Object instance) {
@@ -151,24 +168,15 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         }
     }
 
-    public static abstract class ModelComponentDriver<T> extends PackedComponentDriver<T> {
-        public final ComponentModel model;
-
-        /**
-         * @param roles
-         */
-        ModelComponentDriver(int roles, ComponentModel model) {
-            super(roles);
-            this.model = model;
-        }
-
-    }
-
     public static class StatelessComponentDriver extends ModelComponentDriver<StatelessConfiguration> {
-
-        public StatelessComponentDriver(PackedRealm lookup, Class<?> implementation) {
+        private StatelessComponentDriver(PackedRealm lookup, Class<?> implementation) {
             super(PackedComponentDriver.ROLE_STATELESS, lookup.componentModelOf(requireNonNull(implementation, "implementation is null")));
             requireNonNull(implementation, "implementation is null");
+        }
+
+        @Override
+        public String defaultName(PackedRealm realm) {
+            return model.defaultPrefix();
         }
 
         @Override
@@ -176,6 +184,16 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
             ComponentNodeConfiguration cnc = (ComponentNodeConfiguration) context;
             model.invokeOnHookOnInstall(cnc);
             return new PackedStatelessComponentConfiguration(cnc);
+        }
+
+        public static <T> ClassSourcedDriver<StatelessConfiguration, T> driver() {
+            return new ClassSourcedDriver<StatelessConfiguration, T>() {
+
+                @Override
+                public ComponentDriver<StatelessConfiguration> bindToClass(PackedRealm realm, Class<T> implementation) {
+                    return new PackedComponentDriver.StatelessComponentDriver(realm, implementation);
+                }
+            };
         }
     }
 }
