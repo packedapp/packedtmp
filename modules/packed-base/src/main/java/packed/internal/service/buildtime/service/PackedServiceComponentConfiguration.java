@@ -25,7 +25,6 @@ import app.packed.component.ComponentPath;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.service.ServiceComponentConfiguration;
-import app.packed.service.ServiceMode;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.service.buildtime.BuildEntry;
 
@@ -90,12 +89,6 @@ public final class PackedServiceComponentConfiguration<T> implements ServiceComp
     @Nullable
     public String getName() {
         return component.getName();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ServiceMode instantiationMode() {
-        return buildEntry.instantiationMode();
     }
 
     /** {@inheritDoc} */

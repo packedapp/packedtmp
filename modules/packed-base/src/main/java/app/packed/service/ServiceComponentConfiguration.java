@@ -99,14 +99,6 @@ public interface ServiceComponentConfiguration<T> extends ServiceConfiguration<T
     Key<?> getKey();
 
     /**
-     * Returns the instantiation mode of the service.
-     *
-     * @return the instantiation mode of the service
-     */
-    @Override
-    ServiceMode instantiationMode();
-
-    /**
      * Sets the description of this service.
      *
      * @param description
