@@ -20,6 +20,7 @@ import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.component.AbstractComponentConfiguration;
+import app.packed.component.ComponentConfigurationContext;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import packed.internal.component.ComponentNodeConfiguration;
@@ -27,7 +28,7 @@ import packed.internal.component.ComponentNodeConfiguration;
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
 
-    public PackedContainerConfiguration(ComponentNodeConfiguration node) {
+    public PackedContainerConfiguration(ComponentConfigurationContext node) {
         super(node);
     }
 

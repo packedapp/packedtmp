@@ -26,7 +26,8 @@ import java.lang.invoke.MethodHandles;
  * @apiNote In the future, if the Java language permits, {@link ComponentDriver} may become a {@code sealed} interface,
  *          which would prohibit subclassing except by explicitly permitted types.
  */
-// extends AttributeHolder
+// TODO maybe remove all methods...
+// And just retain implementations for internal usage...
 public interface ComponentDriver<C> {
 
     static <C> ComponentDriver<C> create(MethodHandles.Lookup lookup, Option... options) {

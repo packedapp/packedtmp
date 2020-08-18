@@ -66,7 +66,7 @@ public interface ComponentConfiguration {
      * 
      * @return the path of this configuration.
      */
-    ComponentPath path(); // systemPath()<--- // artifactPath()???
+    ComponentPath path();
 
     /**
      * Sets the {@link Component#name() name} of the component. The name must consists only of alphanumeric characters and
@@ -115,22 +115,3 @@ public interface ComponentConfiguration {
 
     <C, I> C wireInstance(InstanceSourcedDriver<C, I> driver, I instance, Wirelet... wirelets);
 }
-
-///**
-//* If this component has been installed from an extension, returns the extension. Otherwise returns empty.
-//* 
-//* @return any extension this component belongs to
-//*/
-//// Syntes vi flytter den til en attribute....
-//// Og det samme med description??
-//// BaseExtensionAttributes
-////
-//Optional<Class<? extends Extension>> extension();
-
-///**
-//* Returns the class that defines the container.
-//* 
-//* @return the class that defines the container
-//*/
-// Is replaced with someking of compoentn descriptor
-//Class<?> sourceType();
