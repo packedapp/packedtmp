@@ -202,7 +202,7 @@ public interface ExtensionConfiguration {
                     + ", try creating a new lookup object using MethodHandle.privateLookupIn(lookup, " + extensionType.getSimpleName() + ".class)");
         }
 
-        ComponentNodeConfiguration node = ComponentNodeConfiguration.convert(lookup, component);
+        ComponentNodeConfiguration node = ComponentNodeConfiguration.unadapt(lookup, component);
         PackedContainerRole container = node.container();
         return container == null ? null : container.getContext(extensionType);
     }

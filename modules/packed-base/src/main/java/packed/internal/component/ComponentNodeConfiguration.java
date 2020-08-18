@@ -515,7 +515,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     // This should only be called by special methods
     // We just take the lookup to make sure caller think twice before calling this method.
-    public static ComponentNodeConfiguration convert(Lookup caller, Component component) {
+    public static ComponentNodeConfiguration unadapt(Lookup caller, Component component) {
         if (!(component instanceof ComponentAdaptor)) {
             throw new IllegalStateException("This method must be called before a component is instantiated");
         }
