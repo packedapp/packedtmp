@@ -18,7 +18,6 @@ package app.packed.container;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
-import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Nullable;
@@ -26,8 +25,6 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
-import app.packed.component.Wirelet;
-import app.packed.component.WireletSidecar;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
 import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
@@ -39,26 +36,14 @@ import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 public interface ContainerConfiguration extends ComponentConfiguration {
 
     /**
-     * The specified wirelet type must have
+     * Returns an unmodifiable view of the extensions that are currently used.
      * 
-     * @param <W>
-     *            the type of wirelet
-     * @param type
-     *            the type of wirelet
-     * @return an optional containing the wirelet if defined otherwise empty.
-     * @throws IllegalArgumentException
-     *             if the specified wirelet type does not have {@link WireletSidecar#failOnImage()} set to true
-     */
-    <W extends Wirelet> Optional<W> assemblyWirelet(Class<W> type); // Should assembly be the default????
-
-    /**
-     * Returns an unmodifiable view of the extensions that have been configured so far.
-     * 
-     * @return an unmodifiable view of the extensions that have been configured so far
+     * @return an unmodifiable view of the extensions that are currently used
      * 
      * @see #use(Class)
      * @see ContainerBundle#extensions()
      */
+    // Maybe an attribute.. component.with(Extension.USED_EXTENSIONS)
     Set<Class<? extends Extension>> extensions();
 
     /**
@@ -118,13 +103,6 @@ public interface ContainerConfiguration extends ComponentConfiguration {
     StatelessConfiguration installStateless(Class<?> implementation);
 
     /**
-     * Returns whether or not this container is the root container in an artifact.
-     * 
-     * @return whether or not this container is the root container in an artifact
-     */
-    boolean isArtifactRoot();
-
-    /**
      * Registers a {@link Lookup} object that will be used for accessing members on components that are registered with the
      * container.
      * <p>
@@ -160,6 +138,9 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      *             been installed
      * @see #extensions()
      */
+    // extension() // extendWith(ServiceExtension.class).
+    // Mest taenkt hvis vi faa hurtig metoder for attributes.
+    // a.la. cc.with(
     <T extends Extension> T use(Class<T> extensionType);
 
     /**
@@ -171,3 +152,16 @@ public interface ContainerConfiguration extends ComponentConfiguration {
         return ContainerComponentDriver.INSTANCE;
     }
 }
+
+///**
+//* The specified wirelet type must have
+//* 
+//* @param <W>
+//*            the type of wirelet
+//* @param type
+//*            the type of wirelet
+//* @return an optional containing the wirelet if defined otherwise empty.
+//* @throws IllegalArgumentException
+//*             if the specified wirelet type does not have {@link WireletSidecar#failOnImage()} set to true
+//*/
+//<W extends Wirelet> Optional<W> assemblyWirelet(Class<W> type); // Should assembly be the default????

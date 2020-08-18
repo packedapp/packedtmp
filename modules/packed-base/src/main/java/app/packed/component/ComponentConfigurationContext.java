@@ -15,8 +15,12 @@
  */
 package app.packed.component;
 
+import java.util.Set;
+
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundle;
+import app.packed.container.ContainerConfiguration;
+import app.packed.container.Extension;
 
 /**
  * Component configuration context objects used by {@link AbstractComponentConfiguration}.
@@ -26,6 +30,9 @@ import app.packed.container.ContainerBundle;
  * @apiNote In the future, if the Java language permits, {@link ComponentConfigurationContext} may become a
  *          {@code sealed} interface, which would prohibit subclassing except by explicitly permitted types.
  */
+
+//Component component(); seeThrough???
+//If we have that we can also navigate?? I guess thats okay
 public interface ComponentConfigurationContext {
 
     /**
@@ -81,7 +88,7 @@ public interface ComponentConfigurationContext {
      * 
      * @return the path of this configuration.
      */
-    ComponentPath path(); // systemPath()<--- // artifactPath()???
+    ComponentPath path();
 
     /**
      * Sets the {@link Component#name() name} of the component. The name must consists only of alphanumeric characters and
@@ -112,16 +119,23 @@ public interface ComponentConfigurationContext {
      * @return a configuration for the component
      */
     <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
-}
 
-///**
-//* Registers an action that will be performed whenever a name is assigned to the component.
-//* <p>
-//* This method is mainly used by extensions.
-//* 
-//* @param action
-//*            the action to be performed when the name of the component is finalized
-//*/
-//default void onNamed(Consumer<? super ComponentConfiguration> action) {
-//  throw new UnsupportedOperationException();
-//}
+    /**
+     * Returns an unmodifiable view of the extensions that are currently used.
+     * 
+     * @return an unmodifiable view of the extensions that are currently used
+     * 
+     * @see ContainerBundle#extensions()
+     */
+    // Maybe an attribute.. component.with(Extension.USED_EXTENSIONS)
+    Set<Class<? extends Extension>> containerExtensions();
+
+    /**
+     * @param <T>
+     * @param extensionType
+     * @return the extension
+     * @throws UnsupportedOperationException
+     * @see ContainerConfiguration#use(Class)
+     */
+    <T extends Extension> T containerUse(Class<T> extensionType);
+}

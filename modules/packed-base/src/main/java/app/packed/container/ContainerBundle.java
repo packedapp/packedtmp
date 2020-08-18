@@ -19,7 +19,6 @@ package app.packed.container;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -157,16 +156,6 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
     }
 
     /**
-     * Returns whether or not this bundle will configure the top container in an artifact.
-     * 
-     * @return whether or not this bundle will configure the top container in an artifact
-     * @see ContainerConfiguration#isArtifactRoot()
-     */
-    protected final boolean isTopContainer() {
-        return configuration().isArtifactRoot();
-    }
-
-    /**
      * The lookup object passed to this method is never made available through the public api. It is only used internally.
      * Unless your private
      * 
@@ -197,9 +186,9 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
         return configuration().use(extensionType);
     }
 
-    // Must be a assembly type wirelet
-    // useWirelet()
-    protected final <W extends Wirelet> Optional<W> wirelet(Class<W> type) {
-        return configuration().assemblyWirelet(type);
-    }
+//    // Must be a assembly type wirelet
+//    // useWirelet()
+//    protected final <W extends Wirelet> Optional<W> wirelet(Class<W> type) {
+//        return configuration().assemblyWirelet(type);
+//    }
 }

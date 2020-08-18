@@ -16,14 +16,12 @@
 package packed.internal.container;
 
 import java.lang.invoke.MethodHandles.Lookup;
-import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.component.AbstractComponentConfiguration;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
-import app.packed.component.Wirelet;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
@@ -32,27 +30,18 @@ import packed.internal.component.ComponentNodeConfiguration;
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
 
-    /** The context to delegate all calls to. */
-    private final PackedContainerRole context;
-
-    private final ComponentNodeConfiguration node;
-
     public PackedContainerConfiguration(ComponentNodeConfiguration node) {
         super(node);
-        this.context = node.container();
-        this.node = node;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public <W extends Wirelet> Optional<W> assemblyWirelet(Class<W> type) {
-        return node.assemblyWirelet(type);
+    private ComponentNodeConfiguration node() {
+        return (ComponentNodeConfiguration) super.context;
     }
 
     /** {@inheritDoc} */
     @Override
     public Set<Class<? extends Extension>> extensions() {
-        return context.extensions();
+        return node().container().extensions();
     }
 
     /** {@inheritDoc} */
@@ -64,43 +53,37 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** {@inheritDoc} */
     @Override
     public <T> SingletonConfiguration<T> install(Factory<T> factory) {
-        return node.install(factory);
+        return node().install(factory);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T> SingletonConfiguration<T> installInstance(T instance) {
-        return node.installInstance(instance);
+        return node().installInstance(instance);
     }
 
     /** {@inheritDoc} */
     @Override
     public StatelessConfiguration installStateless(Class<?> implementation) {
-        return node.installStateless(implementation);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isArtifactRoot() {
-        return node.depth() == 0;// not sure this is correct
+        return node().installStateless(implementation);
     }
 
     /** {@inheritDoc} */
     @Override
     public void lookup(@Nullable Lookup lookup) {
-        node.realm().lookup(lookup);
+        node().realm().lookup(lookup);
     }
 
     /** {@inheritDoc} */
     @Override
     public PackedContainerConfiguration setName(String name) {
-        node.setName(name);
+        super.setName(name);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
     public <T extends Extension> T use(Class<T> extensionType) {
-        return context.use(extensionType);
+        return context.containerUse(extensionType);
     }
 }

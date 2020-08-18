@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.artifact.ArtifactSource;
@@ -600,5 +601,23 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
                 return isRoot && option.excludeOrigin() ? Stream.empty() : Stream.of(this);
             }
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T extends Extension> T containerUse(Class<T> extensionType) {
+        if (container == null || container.node != this) {
+            throw new UnsupportedOperationException("This method can only be used by a component has ComponentDriver.Option.container() enabled");
+        }
+        return container.use(extensionType);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<Class<? extends Extension>> containerExtensions() {
+        if (container == null || container.node != this) {
+            throw new UnsupportedOperationException("This method can only be used by a component has ComponentDriver.Option.container() enabled");
+        }
+        return container.extensions();
     }
 }

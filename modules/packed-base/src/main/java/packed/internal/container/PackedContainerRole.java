@@ -47,7 +47,7 @@ public final class PackedContainerRole {
     private TreeSet<PackedExtensionConfiguration> extensionsOrdered;
 
     /** The component node this container belongs to. */
-    final ComponentNodeConfiguration node;
+    public final ComponentNodeConfiguration node;
 
     @Nullable
     public final PackedContainerRole parent;
