@@ -39,7 +39,7 @@ public class FieldInstanceTest {
     /** Tests default {@link Provide#instantionMode()} on instance fields. */
     @Test
     public void provide() {
-        MixedFields.test(c -> c.provideConstant(new MixedFields()));
+        MixedFields.test(c -> c.provideInstance(new MixedFields()));
         MixedFields.test(c -> c.provide(MixedFields.class));
         MixedFields.test(c -> c.provide(Factory.find(MixedFields.class)));
         MixedFields.test(c -> c.provide(Factory.find(new TypeLiteral<MixedFields>() {})));
@@ -92,7 +92,7 @@ public class FieldInstanceTest {
     @Test
     public void xxx() {
         create(c -> {
-            c.provideConstant(new AtomicBoolean());
+            c.provideInstance(new AtomicBoolean());
             c.provide(SingletonField.class);
         });
     }
@@ -101,7 +101,7 @@ public class FieldInstanceTest {
     @Test
     public void providePrototype() {
         AbstractThrowableAssert<?, ?> a = assertThatThrownBy(() -> create(c -> {
-            c.provideConstant(new AtomicBoolean());
+            c.provideInstance(new AtomicBoolean());
             c.providePrototype(SingletonField.class);
         }));
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
@@ -116,7 +116,7 @@ public class FieldInstanceTest {
 
         a = assertThatThrownBy(() -> Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
-            c.provideConstant(new AtomicBoolean());
+            c.provideInstance(new AtomicBoolean());
             c.providePrototype(PrototypeField.class);
         }));
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();

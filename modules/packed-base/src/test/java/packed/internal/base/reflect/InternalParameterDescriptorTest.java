@@ -81,7 +81,7 @@ public class InternalParameterDescriptorTest {
         Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide(X.class);
-            c.provideConstant(this);
+            c.provideInstance(this);
         });
     }
 }

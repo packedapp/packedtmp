@@ -34,7 +34,7 @@ public class DescriptionTest {
     @Test
     @Disabled
     public void injectorWithDescription() {
-        Injector i = of(c -> c.provideConstant(new WithDescription()));
+        Injector i = of(c -> c.provideInstance(new WithDescription()));
         assertThat(i.getDescriptor(Long.class).get().description()).hasValue("niceField");
         assertThat(i.getDescriptor(Integer.class).get().description()).hasValue("niceMethod");
     }
@@ -42,7 +42,7 @@ public class DescriptionTest {
     /** Tests service without description on {@link Provide}. */
     @Test
     public void injectorWithoutDescription() {
-        Injector i = of(c -> c.provideConstant(new WithoutDescription()));
+        Injector i = of(c -> c.provideInstance(new WithoutDescription()));
         assertThat(i.getDescriptor(Long.class).get().description()).isEmpty();
         assertThat(i.getDescriptor(Integer.class).get().description()).isEmpty();
     }

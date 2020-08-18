@@ -201,7 +201,7 @@ public abstract class BaseBundle extends ContainerBundle {
     }
 
     protected final <T> ServiceComponentConfiguration<T> provideConstant(T instance) {
-        return service().provideConstant(instance);
+        return service().provideInstance(instance);
     }
 
     protected final void require(Class<?> key) {

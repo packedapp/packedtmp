@@ -243,8 +243,8 @@ public final class InjectorAssembler {
     // All annotations will be processed like provide() except that constructors will not be processed
     // Ohh we need to analyze them differently, because we should ignore all constructors.
     // Should not fail if we fx have two public constructors of equal lenght
-    public <T> ServiceComponentConfiguration<T> provideConstant(T instance) {
-        return extension().provideConstant(instance);
+    public <T> ServiceComponentConfiguration<T> provideInstance(T instance) {
+        return extension().provideInstance(instance);
     }
 
     /**

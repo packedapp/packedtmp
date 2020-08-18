@@ -39,7 +39,7 @@ public class MethodInstanceTest {
     /** Tests default {@link Provide#instantionMode()} on instance methods. */
     @Test
     public void provide() {
-        MixedMethods.test(c -> c.provideConstant(new MixedMethods()));
+        MixedMethods.test(c -> c.provideInstance(new MixedMethods()));
         MixedMethods.test(c -> c.provide(MixedMethods.class));
         MixedMethods.test(c -> c.provide(Factory.find(MixedMethods.class)));
         MixedMethods.test(c -> c.provide(Factory.find(new TypeLiteral<MixedMethods>() {})));
@@ -60,7 +60,7 @@ public class MethodInstanceTest {
     public void providePrototype() {
         AbstractThrowableAssert<?, ?> a = assertThatThrownBy(() -> Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
-            c.provideConstant(new AtomicBoolean());
+            c.provideInstance(new AtomicBoolean());
             c.providePrototype(SingletonMethod.class);
         }));
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
@@ -76,7 +76,7 @@ public class MethodInstanceTest {
 
         a = assertThatThrownBy(() -> Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
-            c.provideConstant(new AtomicBoolean());
+            c.provideInstance(new AtomicBoolean());
             c.providePrototype(PrototypeMethod.class);
         }));
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();

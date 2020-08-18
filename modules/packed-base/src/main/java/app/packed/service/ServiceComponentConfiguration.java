@@ -32,7 +32,7 @@ import app.packed.inject.Factory;
  * 
  * @see ServiceExtension#provide(Class)
  * @see ServiceExtension#provide(Factory)
- * @see ServiceExtension#provideConstant(Object)
+ * @see ServiceExtension#provideInstance(Object)
  *
  * @see BaseBundle#provide(Class)
  * @see BaseBundle#provide(Factory)

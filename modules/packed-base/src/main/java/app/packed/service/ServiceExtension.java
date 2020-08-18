@@ -396,7 +396,7 @@ public final class ServiceExtension extends Extension {
      *            the instance to bind
      * @return a service configuration for the service
      */
-    public <T> ServiceComponentConfiguration<T> provideConstant(T instance) {
+    public <T> ServiceComponentConfiguration<T> provideInstance(T instance) {
         // configurability is checked by ComponentExtension
         ComponentNodeConfiguration cc = ((PackedSingletonConfiguration<T>) installInstance(instance)).context;
         return node.provider().provideInstance(cc, instance);
