@@ -34,14 +34,10 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         super(node);
     }
 
-    private ComponentNodeConfiguration node() {
-        return (ComponentNodeConfiguration) super.context;
-    }
-
     /** {@inheritDoc} */
     @Override
     public Set<Class<? extends Extension>> extensions() {
-        return node().container().extensions();
+        return context.containerExtensions();
     }
 
     /** {@inheritDoc} */
@@ -72,6 +68,10 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     @Override
     public void lookup(@Nullable Lookup lookup) {
         node().realm().lookup(lookup);
+    }
+
+    private ComponentNodeConfiguration node() {
+        return (ComponentNodeConfiguration) super.context;
     }
 
     /** {@inheritDoc} */
