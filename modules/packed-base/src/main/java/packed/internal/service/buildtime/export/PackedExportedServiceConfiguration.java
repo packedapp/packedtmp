@@ -20,17 +20,17 @@ import static java.util.Objects.requireNonNull;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
-import app.packed.service.ServiceConfiguration;
+import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.ServiceExtension;
 
 /**
- * An instance of {@link ServiceConfiguration} that is returned to the user when he exports a service
+ * An instance of {@link ExportedServiceConfiguration} that is returned to the user when he exports a service
  * 
  * @see ServiceExtension#export(Class)
  * @see ServiceExtension#export(Key)
  */
 // Move to ExportManager when we key + check configurable has been finalized
-final class ExportedServiceConfiguration<T> implements ServiceConfiguration<T> {
+final class PackedExportedServiceConfiguration<T> implements ExportedServiceConfiguration<T> {
 
     /** The entry that is exported. */
     private final ExportedBuildEntry<T> entry;
@@ -41,13 +41,13 @@ final class ExportedServiceConfiguration<T> implements ServiceConfiguration<T> {
      * @param entry
      *            the entry to export
      */
-    ExportedServiceConfiguration(ExportedBuildEntry<T> entry) {
+    PackedExportedServiceConfiguration(ExportedBuildEntry<T> entry) {
         this.entry = requireNonNull(entry);
     }
 
     /** {@inheritDoc} */
     @Override
-    public ServiceConfiguration<T> as(@Nullable Key<? super T> key) {
+    public ExportedServiceConfiguration<T> as(@Nullable Key<? super T> key) {
         // TODO, maybe it gets disabled the minute we start analyzing exports???
         // Nah, lige saa snart, vi begynder
         entry.node.checkExportConfigurable();

@@ -26,7 +26,7 @@ import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
 import app.packed.service.Provide;
 import app.packed.service.PrototypeConfiguration;
-import app.packed.service.ServiceConfiguration;
+import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.ServiceExtension;
 
 /**
@@ -103,7 +103,7 @@ public abstract class BaseBundle extends ContainerBundle {
      * @return a service configuration for the exposed service
      * @see #export(Key)
      */
-    protected final <T> ServiceConfiguration<T> export(Class<T> key) {
+    protected final <T> ExportedServiceConfiguration<T> export(Class<T> key) {
         return service().export(key);
     }
 
@@ -129,7 +129,7 @@ public abstract class BaseBundle extends ContainerBundle {
      * @return a service configuration for the exposed service
      * @see #export(Key)
      */
-    protected final <T> ServiceConfiguration<T> export(Key<T> key) {
+    protected final <T> ExportedServiceConfiguration<T> export(Key<T> key) {
         return service().export(key);
     }
 

@@ -20,7 +20,7 @@ import java.util.Optional;
 import app.packed.base.Key;
 import app.packed.component.AbstractComponentConfiguration;
 import app.packed.component.SingletonConfiguration;
-import app.packed.service.ServiceConfiguration;
+import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.ServiceExtension;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
@@ -88,7 +88,7 @@ public class PackedSingletonConfiguration<T> extends AbstractComponentConfigurat
 
     /** {@inheritDoc} */
     @Override
-    public ServiceConfiguration<T> export() {
+    public ExportedServiceConfiguration<T> export() {
         checkConfigurable();
         return buildEntry.node.exports().export(buildEntry, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }

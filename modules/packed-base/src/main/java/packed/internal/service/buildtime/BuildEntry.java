@@ -24,7 +24,7 @@ import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.service.Provide;
 import app.packed.service.ProvideContext;
-import app.packed.service.ServiceConfiguration;
+import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.ServiceDescriptor;
 import app.packed.service.ServiceMode;
 import packed.internal.inject.ServiceDependency;
@@ -38,7 +38,7 @@ import packed.internal.util.KeyBuilder;
  * needed at runtime.
  * 
  * <p>
- * BSEs are never exposed to end-users, but instead wrapped in implementations of {@link ServiceConfiguration}.
+ * BSEs are never exposed to end-users, but instead wrapped in implementations of {@link ExportedServiceConfiguration}.
  */
 // BuildEntry does not implements ServiceDescriptor because it is mutable, so we
 public abstract class BuildEntry<T> {

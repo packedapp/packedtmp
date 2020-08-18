@@ -25,7 +25,7 @@ import java.util.LinkedHashSet;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
-import app.packed.service.ServiceConfiguration;
+import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.ServiceExtension;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ErrorMessages;
@@ -88,7 +88,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
      *            the config site of the export
      * @return stuff
      */
-    public <T> ServiceConfiguration<T> export(PackedPrototypeConfiguration<T> configuration, ConfigSite configSite) {
+    public <T> ExportedServiceConfiguration<T> export(PackedPrototypeConfiguration<T> configuration, ConfigSite configSite) {
         BuildEntry<T> entryToExport = configuration.buildEntry;
         if (entryToExport.node != node) {
             throw new IllegalArgumentException("The specified configuration was created by another injector extension");
@@ -96,7 +96,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
         return export0(new ExportedBuildEntry<>(node, entryToExport, configSite));
     }
 
-    public <T> ServiceConfiguration<T> export(BuildEntry<T> entryToExport, ConfigSite configSite) {
+    public <T> ExportedServiceConfiguration<T> export(BuildEntry<T> entryToExport, ConfigSite configSite) {
         if (entryToExport.node != node) {
             throw new IllegalArgumentException("The specified configuration was created by another injector extension");
         }
@@ -116,7 +116,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
      * @see ServiceExtension#export(Class)
      * @see ServiceExtension#export(Key)
      */
-    public <T> ServiceConfiguration<T> export(Key<T> key, ConfigSite configSite) {
+    public <T> ExportedServiceConfiguration<T> export(Key<T> key, ConfigSite configSite) {
         return export0(new ExportedBuildEntry<>(node, key, configSite));
     }
 
@@ -129,13 +129,13 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
      *            the build entry to export
      * @return a configuration object that can be exposed to the user
      */
-    private <T> ExportedServiceConfiguration<T> export0(ExportedBuildEntry<T> entry) {
+    private <T> PackedExportedServiceConfiguration<T> export0(ExportedBuildEntry<T> entry) {
         ArrayList<ExportedBuildEntry<?>> e = exportedEntries;
         if (e == null) {
             e = exportedEntries = new ArrayList<>(5);
         }
         e.add(entry);
-        return new ExportedServiceConfiguration<>(entry);
+        return new PackedExportedServiceConfiguration<>(entry);
     }
 
     /**

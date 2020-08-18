@@ -21,7 +21,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.AbstractComponentConfiguration;
 import app.packed.service.PrototypeConfiguration;
-import app.packed.service.ServiceConfiguration;
+import app.packed.service.ExportedServiceConfiguration;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.service.buildtime.BuildEntry;
@@ -73,7 +73,7 @@ public final class PackedPrototypeConfiguration<T> extends AbstractComponentConf
 
     /** {@inheritDoc} */
     @Override
-    public ServiceConfiguration<T> export() {
+    public ExportedServiceConfiguration<T> export() {
         checkConfigurable();
         return buildEntry.node.exports().export(this, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }

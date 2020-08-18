@@ -19,7 +19,7 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.container.BaseBundle;
-import app.packed.service.ServiceConfiguration;
+import app.packed.service.ExportedServiceConfiguration;
 
 /**
  * This class represents the configuration of a component. Actual instances of this interface is usually obtained by
@@ -60,7 +60,7 @@ public interface SingletonConfiguration<T> extends SourcedComponentConfiguration
      */
     SingletonConfiguration<T> as(Key<? super T> key);
 
-    ServiceConfiguration<T> export();
+    ExportedServiceConfiguration<T> export();
 
     SingletonConfiguration<T> provide();
 

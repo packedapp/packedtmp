@@ -23,7 +23,7 @@ import app.packed.container.BaseBundle;
  * A configuration object for a service. An instance of this interface is usually obtained by calling the various
  * provide or export methods located on {@link ServiceExtension}, {@link InjectorAssembler} or {@link BaseBundle}.
  */
-public interface ServiceConfiguration<T> /* extends Taggable */ {
+public interface ExportedServiceConfiguration<T> /* extends Taggable */ {
 
     /**
      * Registers this service under the specified key.
@@ -33,7 +33,7 @@ public interface ServiceConfiguration<T> /* extends Taggable */ {
      * @return this configuration
      * @see #getKey()
      */
-    default ServiceConfiguration<T> as(Class<? super T> key) {
+    default ExportedServiceConfiguration<T> as(Class<? super T> key) {
         return as(Key.of(key));
     }
 
@@ -45,7 +45,7 @@ public interface ServiceConfiguration<T> /* extends Taggable */ {
      * @return this configuration
      * @see #getKey()
      */
-    ServiceConfiguration<T> as(Key<? super T> key);
+    ExportedServiceConfiguration<T> as(Key<? super T> key);
 
     /**
      * Returns the configuration site where this configuration was created.

@@ -23,7 +23,7 @@ import app.packed.container.BaseBundle;
 import app.packed.inject.Factory;
 
 /**
- * This configuration represents an entity that is both a {@link ServiceConfiguration configuration of as service} and a
+ * This configuration represents an entity that is both a {@link ExportedServiceConfiguration configuration of as service} and a
  * {@link SingletonConfiguration configuration of as component}.
  * <p>
  * An instance of this interface is usually obtained by calling one of the provide methods on {@link ServiceExtension}
@@ -91,7 +91,7 @@ public interface PrototypeConfiguration<T> extends ComponentConfiguration {
     @Override
     PrototypeConfiguration<T> setName(String name);
 
-    ServiceConfiguration<T> export();
+    ExportedServiceConfiguration<T> export();
 }
 
 // /**

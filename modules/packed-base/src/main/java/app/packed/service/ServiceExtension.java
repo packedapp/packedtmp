@@ -175,13 +175,13 @@ public final class ServiceExtension extends Extension {
 //        throw new UnsupportedOperationException();
 //    }
 
-    <T> ServiceConfiguration<T> addOptional(Class<T> optional) {
+    <T> ExportedServiceConfiguration<T> addOptional(Class<T> optional) {
         // @Inject is allowed, but other annotations, types und so weiter is not...
 
         throw new UnsupportedOperationException();
     }
 
-    <T> ServiceConfiguration<T> alias(Class<T> key) {
+    <T> ExportedServiceConfiguration<T> alias(Class<T> key) {
         //
         throw new UnsupportedOperationException();
     }
@@ -196,7 +196,7 @@ public final class ServiceExtension extends Extension {
      * @return a configuration for the exported service
      * @see #export(Key)
      */
-    public <T> ServiceConfiguration<T> export(Class<T> key) {
+    public <T> ExportedServiceConfiguration<T> export(Class<T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
         return node.exports().export(Key.of(key), captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
@@ -226,7 +226,7 @@ public final class ServiceExtension extends Extension {
      * @return a service configuration for the exposed service
      * @see #export(Key)
      */
-    public <T> ServiceConfiguration<T> export(Key<T> key) {
+    public <T> ExportedServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
         return node.exports().export(key, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
