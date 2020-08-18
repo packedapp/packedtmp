@@ -345,11 +345,11 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
                 PackedContainerRole parent = container.node.container();
                 if (!model.extensionLinkedDirectChildrenOnly) {
                     while (parentExtension == null && parent != null) {
-                        parentExtension = parent.getExtensionContext(extensionType);
+                        parentExtension = parent.getContext(extensionType);
                         parent = parent.node.container();
                     }
                 } else if (parent != null) {
-                    parentExtension = parent.getExtensionContext(extensionType);
+                    parentExtension = parent.getContext(extensionType);
                 }
 
                 // set activate extension???

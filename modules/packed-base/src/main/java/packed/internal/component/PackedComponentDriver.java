@@ -26,9 +26,7 @@ import app.packed.component.ComponentDriver;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ExtensionConfiguration;
 import app.packed.inject.Factory;
-import packed.internal.container.ExtensionModel;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.PackedRealm;
 import packed.internal.inject.factory.BaseFactory;
@@ -50,12 +48,12 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
 
     private final int roles;
 
-    PackedComponentDriver(int roles) {
+    protected PackedComponentDriver(int roles) {
         this.roles = roles;
     }
 
     public final boolean hasRuntimeRepresentation() {
-        return !hasRole(ROLE_EXTENSION);
+        return !isExtension();
     }
 
     public String defaultName(PackedRealm realm) {
@@ -79,8 +77,6 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
             }
             // TODO think it should be named Artifact type, for example, app, injector, ...
             return "Unknown";
-        } else if (this instanceof ExtensionComponentDriver) {
-            return ((ExtensionComponentDriver) this).descriptor.defaultComponentName;
         } else {
             return ((ModelComponentDriver<?>) this).model.defaultPrefix();
         }
@@ -109,16 +105,6 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
 
     public C forBundleConf(ComponentNodeConfiguration cnc) {
         throw new UnsupportedOperationException();
-    }
-
-    public static class ExtensionComponentDriver extends PackedComponentDriver<ExtensionConfiguration> {
-
-        final ExtensionModel descriptor;
-
-        public ExtensionComponentDriver(ExtensionModel ed) {
-            super(ROLE_EXTENSION);
-            this.descriptor = requireNonNull(ed);
-        }
     }
 
     public static class ContainerComponentDriver extends PackedComponentDriver<ContainerConfiguration> {

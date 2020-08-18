@@ -402,6 +402,10 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
     // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return
     // type. Maybe in the future LinkedBundle<- (LinkableContainerSource)
+    // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
+    // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
+    // loop situations, for example, if a bundle recursively links itself which fails by throwing
+    // java.lang.StackOverflowError instead of an infinite loop.
     @Override
     public void link(Bundle<?> bundle, Wirelet... wirelets) {
         requireNonNull(bundle, "bundle is null");

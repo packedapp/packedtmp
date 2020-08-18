@@ -158,6 +158,8 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
     /** The default component name of the extension. */
     public final String defaultComponentName;
 
+    private final PackedComponentDriver<?> driver;
+
     /**
      * Creates a new extension model from the specified builder.
      * 
@@ -172,7 +174,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         this.directDependencies = Set.copyOf(builder.dependenciesDirect);
         this.optional = Optional.of(extensionType()); // No need to create an optional every time we need this
         this.nameUsedForSorting = requireNonNull(extensionType().getCanonicalName());
-
+        this.driver = new ExtensionComponentDriver(this);
         this.defaultComponentName = "." + extensionType().getSimpleName();
         this.extensionLinkedToAncestorExtension = builder.li;
         this.extensionLinkedDirectChildrenOnly = builder.callbackOnlyDirectChildren;
@@ -182,7 +184,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
     }
 
     public PackedComponentDriver<?> driver() {
-        return new PackedComponentDriver.ExtensionComponentDriver(this);
+        return driver;
     }
 
     /** {@inheritDoc} */
@@ -300,6 +302,21 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
             return (List<Class<? extends Extension>>) result;
         }
         return ThrowableUtil.throwReturn((Throwable) result);
+    }
+
+    public static class ExtensionComponentDriver extends PackedComponentDriver<ExtensionConfiguration> {
+
+        private final ExtensionModel model;
+
+        public ExtensionComponentDriver(ExtensionModel ed) {
+            super(ROLE_EXTENSION);
+            this.model = requireNonNull(ed);
+        }
+
+        @Override
+        public String defaultName(PackedRealm realm) {
+            return model.defaultComponentName;
+        }
     }
 
     /** A builder for {@link ExtensionModel}. */

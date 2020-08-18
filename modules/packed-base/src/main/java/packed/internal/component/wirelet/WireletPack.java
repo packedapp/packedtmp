@@ -102,7 +102,7 @@ public final class WireletPack {
         IdentityHashMap<Class<? extends Extension>, ArrayList<Wirelet>> m = new IdentityHashMap<>();
         for (Entry<Class<? extends Extension>, Object> c : extensions.entrySet()) {
             Class<? extends Extension> k = c.getKey();
-            if (pcc.getExtensionContext(k) == null) {
+            if (pcc.getContext(k) == null) {
 
             }
         }
@@ -188,7 +188,7 @@ public final class WireletPack {
                 if (extension == null) {
                     wpc.instantiate(null);
                 } else if (existing != null) {
-                    PackedExtensionConfiguration pec = pcc.getExtensionContext(extension);
+                    PackedExtensionConfiguration pec = pcc.getContext(extension);
                     if (pec == null) {
                         wc.extensionFailed(pcc);
                     } else {

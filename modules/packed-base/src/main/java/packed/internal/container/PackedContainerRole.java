@@ -46,6 +46,7 @@ public final class PackedContainerRole {
 
     private TreeSet<PackedExtensionConfiguration> extensionsOrdered;
 
+    /** The component node this container belongs to. */
     final ComponentNodeConfiguration node;
 
     @Nullable
@@ -103,7 +104,7 @@ public final class PackedContainerRole {
      * @see #useExtension(Class, PackedExtensionConfiguration)
      */
     @Nullable
-    public PackedExtensionConfiguration getExtensionContext(Class<? extends Extension> extensionType) {
+    public PackedExtensionConfiguration getContext(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         return extensions.get(extensionType);
     }
@@ -152,7 +153,3 @@ public final class PackedContainerRole {
         return pec;
     }
 }
-// Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
-// has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
-// loop situations, for example, if a bundle recursively links itself which fails by throwing
-// java.lang.StackOverflowError instead of an infinite loop.
