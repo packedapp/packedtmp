@@ -45,7 +45,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
             public void configure() {
                 assertThat(extensions()).isEmpty();
                 WithMethodInstance.invoked = false;
-                installConstant(new WithMethodInstance());
+                installInstance(new WithMethodInstance());
                 assertThat(WithMethodInstance.invoked).isTrue();
                 assertThat(extensions()).containsExactlyInAnyOrder(MyExtension.class);
             }
@@ -58,7 +58,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
             @Override
             public void configure() {
                 assertThat(extensions()).isEmpty();
-                installConstant(new WithFieldStatic());
+                installInstance(new WithFieldStatic());
                 assertThat(extensions()).containsExactlyInAnyOrder(MyExtension.class);
             }
         });
@@ -70,7 +70,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
             @Override
             public void configure() {
                 assertThat(extensions()).isEmpty();
-                installConstant(new WithFieldInstance());
+                installInstance(new WithFieldInstance());
                 assertThat(extensions()).containsExactlyInAnyOrder(MyExtension.class);
             }
         });
@@ -83,7 +83,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
             public void configure() {
                 assertThat(extensions()).isEmpty();
                 WithMethodStatic.invoked = false;
-                installConstant(new WithMethodStatic());
+                installInstance(new WithMethodStatic());
                 assertThat(WithMethodStatic.invoked).isTrue();
                 assertThat(extensions()).containsExactlyInAnyOrder(MyExtension.class);
             }

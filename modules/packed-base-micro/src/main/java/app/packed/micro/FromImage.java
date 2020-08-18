@@ -66,13 +66,13 @@ public class FromImage {
     static final ArtifactImage INSTALL = ArtifactImage.of(new BaseBundle() {
         @Override
         public void configure() {
-            installConstant("foo");
+            installInstance("foo");
         }
     });
     static final ArtifactImage INSTALL_AUTO_ACTIVATE = ArtifactImage.of(new BaseBundle() {
         @Override
         public void configure() {
-            installConstant(new MyStuff());
+            installInstance(new MyStuff());
         }
     });
 

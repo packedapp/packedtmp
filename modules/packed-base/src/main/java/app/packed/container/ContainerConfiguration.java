@@ -98,7 +98,7 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      * @param instance
      *            the instance to install
      * @return the configuration of the component
-     * @see ContainerBundle#installConstant(Object)
+     * @see ContainerBundle#installInstance(Object)
      */
     <T> SingletonConfiguration<T> installInstance(T instance);
 

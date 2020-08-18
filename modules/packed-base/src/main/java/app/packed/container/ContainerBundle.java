@@ -148,7 +148,7 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
      *            the component instance to install
      * @return this configuration
      */
-    protected final <T> SingletonConfiguration<T> installConstant(T instance) {
+    protected final <T> SingletonConfiguration<T> installInstance(T instance) {
         return configuration().installInstance(instance);
     }
 

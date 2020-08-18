@@ -75,7 +75,7 @@ public class ExtensionActivation {
         BaseBundle b = new BaseBundle() {
             @Override
             public void configure() {
-                installConstant("foo");
+                installInstance("foo");
             }
         };
         return ArtifactImage.of(b);
@@ -87,7 +87,7 @@ public class ExtensionActivation {
             @Override
             public void configure() {
                 use(MyExtension.class);
-                installConstant("foo");
+                installInstance("foo");
             }
         };
         return ArtifactImage.of(b);
@@ -98,7 +98,7 @@ public class ExtensionActivation {
         BaseBundle b = new BaseBundle() {
             @Override
             public void configure() {
-                installConstant(new MyStuff());
+                installInstance(new MyStuff());
             }
         };
         return ArtifactImage.of(b);
