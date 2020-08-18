@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.TypeLiteral;
+import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 import app.packed.service.Injector;
@@ -82,16 +83,16 @@ public class InjectorConfigSiteTest {
     }
 
     /** A helper method for {@link #binding()}. */
-    private void binding0(ServiceComponentConfiguration<?> sc) {
+    private void binding0(SingletonConfiguration<?> sc) {
         // A hack where we use the binding key of the service, to figure out the line number.
-        int index = sc.getKey().typeLiteral().rawType().getSimpleName().toString().charAt(0) - 'A';
+        int index = sc.key().get().typeLiteral().rawType().getSimpleName().toString().charAt(0) - 'A';
         ConfigSite cs = sc.configSite();
         int line = sfCreate.getLineNumber();
         assertThat(cs).hasToString(sfCreate.toString().replace(":" + line, ":" + (line + index + 3)));
         assertThat(cs.operation()).isEqualTo(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         assertThat(cs.hasParent()).isTrue();
         assertThat(cs.parent().get().toString()).isEqualTo(injectorCreate.toString());
-        sites.put(sc.getKey().typeLiteral().rawType(), cs);
+        sites.put(sc.key().get().typeLiteral().rawType(), cs);
     }
 
     /**

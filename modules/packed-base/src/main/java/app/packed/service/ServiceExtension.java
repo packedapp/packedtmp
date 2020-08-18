@@ -357,7 +357,7 @@ public final class ServiceExtension extends Extension {
         if (scd.instance != null) {
             return (ServiceComponentConfiguration<T>) node.provider().provideInstance(cc.node, scd.instance);
         } else {
-            return node.provider().provideFactory(cc.node, true);
+            return node.provider().provideFactory(cc.node, false);
         }
     }
 

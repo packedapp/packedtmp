@@ -24,6 +24,7 @@ import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
+import app.packed.component.SingletonConfiguration;
 import app.packed.inject.Factory;
 import app.packed.service.Injector;
 import app.packed.service.ServiceComponentConfiguration;
@@ -44,7 +45,7 @@ public class ProvideTest {
     public void configSite() throws Throwable {
         Injector inj = Injector.configure(conf -> {
             conf.lookup(MethodHandles.lookup());// The module where letter classes are in are not exported
-            ServiceComponentConfiguration<A> a = conf.provide(A.class);
+            SingletonConfiguration<A> a = conf.provide(A.class);
             ServiceComponentConfiguration<B> b = conf.provide(Factory.find(B.class));
             ServiceComponentConfiguration<C> c = conf.provideInstance(C0);
             // ServiceComponentConfiguration<E> e = conf.provide(E.class).lazy();

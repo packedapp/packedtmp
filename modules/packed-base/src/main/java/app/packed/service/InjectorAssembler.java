@@ -23,6 +23,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import app.packed.base.Key.Qualifier;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
+import app.packed.component.SingletonConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseBundle;
 import app.packed.container.ContainerConfiguration;
@@ -139,8 +140,8 @@ public final class InjectorAssembler {
      * @return a service configuration for the service
      * @see ServiceExtension#provide(Class)
      */
-    public <T> ServiceComponentConfiguration<T> provide(Class<T> implementation) {
-        return extension().provide(implementation);
+    public <T> SingletonConfiguration<T> provide(Class<T> implementation) {
+        return configuration.install(implementation).provide();
     }
 
     /**
