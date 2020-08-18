@@ -33,7 +33,7 @@ import app.packed.inject.Factory;
  * @see BaseBundle#provide(Factory)
  * @see BaseBundle#provideInstance(Object)
  */
-public interface PrototypeConfiguration<T> extends ServiceConfiguration<T>, ComponentConfiguration {
+public interface PrototypeConfiguration<T> extends ComponentConfiguration {
 
     //// Can be used to set separately tags, descriptions, ect...
     // SingletonConfiguration<T> componentConfiguration();
@@ -48,7 +48,6 @@ public interface PrototypeConfiguration<T> extends ServiceConfiguration<T>, Comp
      * @return this configuration
      * @see #as(Key)
      */
-    @Override
     default PrototypeConfiguration<T> as(Class<? super T> key) {
         return as(Key.of(key));
     }
@@ -62,7 +61,6 @@ public interface PrototypeConfiguration<T> extends ServiceConfiguration<T>, Comp
      * @return this configuration
      * @see #as(Class)
      */
-    @Override
     PrototypeConfiguration<T> as(Key<? super T> key);
 
     /**
@@ -72,7 +70,6 @@ public interface PrototypeConfiguration<T> extends ServiceConfiguration<T>, Comp
      * @see #as(Key)
      * @see #as(Class)
      */
-    @Override
     Key<?> getKey();
 
     /**

@@ -62,10 +62,6 @@ public interface ServiceConfiguration<T> /* extends Taggable */ {
      * @see #as(Class)
      */
     Key<?> getKey();
-
-    // :< Can't really have both named and setName
-    // ServiceConfiguration<T> named(String name);//put a Named qualifier
-
 }
 
 /// **
