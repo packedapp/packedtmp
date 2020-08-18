@@ -47,7 +47,7 @@ public class ProvideTest {
             conf.lookup(MethodHandles.lookup());// The module where letter classes are in are not exported
             SingletonConfiguration<A> a = conf.provide(A.class);
             ServiceComponentConfiguration<B> b = conf.provide(Factory.find(B.class));
-            ServiceComponentConfiguration<C> c = conf.provideInstance(C0);
+            SingletonConfiguration<C> c = conf.provideInstance(C0);
             // ServiceComponentConfiguration<E> e = conf.provide(E.class).lazy();
             // ServiceComponentConfiguration<F> f = conf.provide(Factory.findInjectable(F.class)).lazy();
             ServiceComponentConfiguration<H> h = conf.providePrototype(H.class);
@@ -58,7 +58,7 @@ public class ProvideTest {
     @Test
     public void bindInstance() {
         Injector i = Injector.configure(e -> {
-            ServiceComponentConfiguration<A> sc = e.provideInstance(A0);
+            SingletonConfiguration<A> sc = e.provideInstance(A0);
             testConfiguration(sc, ServiceMode.SINGLETON, Key.of(A.class));
         });
         testSingleton(i, Key.of(A.class), A0);
@@ -76,11 +76,11 @@ public class ProvideTest {
         }
     }
 
-    static void testConfiguration(ServiceComponentConfiguration<?> sc, ServiceMode instantionMode, Key<?> key) {
+    static void testConfiguration(SingletonConfiguration<?> sc, ServiceMode instantionMode, Key<?> key) {
 
         // assertThat(sc.instantiationMode()).isSameAs(ServiceMode.SINGLETON);
         // configSite;
-        assertThat(sc.getKey()).isEqualTo(Key.of(A.class));
+        assertThat(sc.key().get()).isEqualTo(Key.of(A.class));
         // assertThat(sc.tags().isEmpty());
     }
 }
