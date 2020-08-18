@@ -70,7 +70,7 @@ public class Dddd extends BaseBundle {
         @Override
         protected void configure() {
             installInstance("HejHej");
-            provideConstant("HejHej");
+            provideInstance("HejHej");
             if (depth > 0) {
                 // link(new LinkMe(depth - 1));
                 // link(new LinkMe(depth - 1));

@@ -31,14 +31,13 @@ import app.packed.component.SingletonConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 import app.packed.service.Injector;
-import app.packed.service.ServiceComponentConfiguration;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
 import testutil.stubs.Letters.D;
 
 /**
- * Tests {@link ServiceComponentConfiguration#configSite()} and {@link Injector#configSite()}.
+ * Tests config site.
  * <p>
  * Most of the test are pretty hackish.
  */

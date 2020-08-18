@@ -25,7 +25,7 @@ import app.packed.lifecycleold.OnStart;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
 import app.packed.service.Provide;
-import app.packed.service.ServiceComponentConfiguration;
+import app.packed.service.PrototypeConfiguration;
 import app.packed.service.ServiceConfiguration;
 import app.packed.service.ServiceExtension;
 
@@ -184,7 +184,7 @@ public abstract class BaseBundle extends ContainerBundle {
         return install(factory).provide();
     }
 
-    protected final <T> ServiceComponentConfiguration<T> providePrototype(Factory<T> factory) {
+    protected final <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {
         return service().providePrototype(factory);
     }
 
@@ -192,7 +192,20 @@ public abstract class BaseBundle extends ContainerBundle {
         service().provideAll(injector, wirelets);
     }
 
-    protected final <T> SingletonConfiguration<T> provideConstant(T instance) {
+    /**
+     * Binds the specified instance as a new service.
+     * <p>
+     * The default key for the service will be {@code instance.getClass()}. If the type returned by
+     * {@code instance.getClass()} is annotated with a {@link Qualifier qualifier annotation}, the default key will have the
+     * qualifier annotation added.
+     *
+     * @param <T>
+     *            the type of service to bind
+     * @param instance
+     *            the instance to bind
+     * @return a service configuration for the service
+     */
+    protected final <T> SingletonConfiguration<T> provideInstance(T instance) {
         return installInstance(instance).provide();
     }
 

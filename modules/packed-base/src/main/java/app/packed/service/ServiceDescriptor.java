@@ -18,7 +18,6 @@ public interface ServiceDescriptor {
      * Returns the key that the service is registered with.
      *
      * @return the key that the service is registered with
-     * @see ServiceComponentConfiguration#as(Key)
      */
     Key<?> key();
 }

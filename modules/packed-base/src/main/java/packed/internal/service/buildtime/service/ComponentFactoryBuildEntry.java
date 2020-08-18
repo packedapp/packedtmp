@@ -22,7 +22,6 @@ import java.util.List;
 
 import app.packed.base.InvalidDeclarationException;
 import app.packed.config.ConfigSite;
-import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceMode;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.inject.ServiceDependency;
@@ -34,7 +33,7 @@ import packed.internal.service.runtime.PrototypeInjectorEntry;
 
 /**
  * An entry representing a component node. This node is used for all three binding modes mainly because it makes
- * extending it with {@link ServiceComponentConfiguration} much easier.
+ * extending it with much easier.
  */
 public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildEntry<T> {
 

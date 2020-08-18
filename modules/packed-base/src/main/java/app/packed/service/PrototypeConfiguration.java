@@ -28,15 +28,11 @@ import app.packed.inject.Factory;
  * An instance of this interface is usually obtained by calling one of the provide methods on {@link ServiceExtension}
  * or {@link BaseBundle}.
  * 
- * @see ServiceExtension#provide(Class)
- * @see ServiceExtension#provide(Factory)
- * @see ServiceExtension#provideInstance(Object)
- *
  * @see BaseBundle#provide(Class)
  * @see BaseBundle#provide(Factory)
- * @see BaseBundle#provideConstant(Object)
+ * @see BaseBundle#provideInstance(Object)
  */
-public interface ServiceComponentConfiguration<T> extends ServiceConfiguration<T>, SingletonConfiguration<T> {
+public interface PrototypeConfiguration<T> extends ServiceConfiguration<T>, SingletonConfiguration<T> {
 
     //// Can be used to set separately tags, descriptions, ect...
     // SingletonConfiguration<T> componentConfiguration();
@@ -52,7 +48,7 @@ public interface ServiceComponentConfiguration<T> extends ServiceConfiguration<T
      * @see #as(Key)
      */
     @Override
-    default ServiceComponentConfiguration<T> as(Class<? super T> key) {
+    default PrototypeConfiguration<T> as(Class<? super T> key) {
         return as(Key.of(key));
     }
 
@@ -66,7 +62,7 @@ public interface ServiceComponentConfiguration<T> extends ServiceConfiguration<T
      * @see #as(Class)
      */
     @Override
-    ServiceComponentConfiguration<T> as(Key<? super T> key);
+    PrototypeConfiguration<T> as(Key<? super T> key);
 
     /**
      * Returns the key that the service is registered under.
@@ -95,7 +91,7 @@ public interface ServiceComponentConfiguration<T> extends ServiceConfiguration<T
      * @see Component#name()
      */
     @Override
-    ServiceComponentConfiguration<T> setName(String name);
+    PrototypeConfiguration<T> setName(String name);
 }
 
 // /**

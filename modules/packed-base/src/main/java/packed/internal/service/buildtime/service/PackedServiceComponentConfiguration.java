@@ -23,7 +23,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.AbstractComponentConfiguration;
 import app.packed.component.SingletonConfiguration;
-import app.packed.service.ServiceComponentConfiguration;
+import app.packed.service.PrototypeConfiguration;
 import app.packed.service.ServiceConfiguration;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.inject.ConfigSiteInjectOperations;
@@ -32,7 +32,7 @@ import packed.internal.service.buildtime.BuildEntry;
 /**
  *
  */
-public final class PackedServiceComponentConfiguration<T> extends AbstractComponentConfiguration implements ServiceComponentConfiguration<T> {
+public final class PackedServiceComponentConfiguration<T> extends AbstractComponentConfiguration implements PrototypeConfiguration<T> {
 
     /** The service we are exposing. */
     public final BuildEntry<T> buildEntry;
@@ -54,7 +54,7 @@ public final class PackedServiceComponentConfiguration<T> extends AbstractCompon
 
     /** {@inheritDoc} */
     @Override
-    public ServiceComponentConfiguration<T> as(Key<? super T> key) {
+    public PackedServiceComponentConfiguration<T> as(Key<? super T> key) {
         checkConfigurable();
         buildEntry.as(key);
         return this;
@@ -69,7 +69,7 @@ public final class PackedServiceComponentConfiguration<T> extends AbstractCompon
 
     /** {@inheritDoc} */
     @Override
-    public ServiceComponentConfiguration<T> setName(String name) {
+    public PackedServiceComponentConfiguration<T> setName(String name) {
         component.setName(name);
         return this;
     }

@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.BiConsumer;
 
 import app.packed.base.Key;
-import app.packed.base.Key.Qualifier;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
@@ -31,7 +30,6 @@ import app.packed.container.ExtensionSidecar;
 import app.packed.container.ExtensionWired;
 import app.packed.hook.OnHook;
 import app.packed.inject.Factory;
-import app.packed.lifecycleold.OnStart;
 import app.packed.sidecar.Expose;
 import app.packed.statemachine.Leaving;
 import packed.internal.component.ComponentNodeConfiguration;
@@ -42,6 +40,7 @@ import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.service.AtProvidesHook;
+import packed.internal.service.buildtime.service.PackedServiceComponentConfiguration;
 import packed.internal.service.buildtime.wirelets.ServiceWireletPipeline;
 import packed.internal.service.runtime.AbstractInjector;
 
@@ -237,36 +236,6 @@ public final class ServiceExtension extends Extension {
     }
 
     /**
-     * Exports a service represented by the specified service configuration. Is typically used together with
-     * {@link #provide(Class)} to export and: <pre>
-     * {@code  
-     * export(provide(Service.class));
-     * }
-     * </pre> or <pre>
-     * {@code  
-     * export(provide(InternalClass.class)).as(ExternalInterface.class);
-     * }
-     * </pre>
-     * 
-     * @param <T>
-     *            the type of service the configuration creates
-     * @param configuration
-     *            the service to export
-     * @return a new service configuration object representing the exported service
-     * @throws IllegalArgumentException
-     *             if the specified configuration object was created by another injection extension instance .
-     */
-    // TODO provide(Foo.class).export instead????
-
-    <T> ServiceConfiguration<T> export(SingletonConfiguration<T> configuration) {
-        // Ideen er at man kan ogsaa eksportere en service der overhoved ikke er
-        // tilgaengelig internt, men kun externt...
-
-        // export(installInstance("ffffo"));
-        throw new UnsupportedOperationException();
-    }
-
-    /**
      * 
      */
     // Will never export services that are requirements...
@@ -313,49 +282,17 @@ public final class ServiceExtension extends Extension {
         node.provider().addProvidesHook(hook, cc);
     }
 
-    /**
-     * @param <T>
-     *            the type of service to provide
-     * @param implementation
-     *            the type of service to provide
-     * 
-     * @return a configuration of the service
-     */
-    public <T> ServiceComponentConfiguration<T> provide(Class<T> implementation) {
-        return provide(Factory.find(implementation));
-    }
-
-    /**
-     *
-     * <p>
-     * Factory raw type will be used for scanning for annotations such as {@link OnStart} and {@link Provide}.
-     *
-     * @param <T>
-     *            the type of component to install
-     * @param factory
-     *            the factory used for creating the component instance
-     * @return the configuration of the component that was installed
-     */
-    public <T> ServiceComponentConfiguration<T> provide(Factory<T> factory) {
-        // install(factory).provide();
-        return node.provider().provideFactory(((PackedSingletonConfiguration<T>) install(factory)).node, false);
-    }
-
     // Will install a ServiceStatelessConfiguration...
-    public <T> ServiceComponentConfiguration<T> providePrototype(Factory<T> factory) {
+    public <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {
         return node.provider().provideFactory(((PackedSingletonConfiguration<T>) install(factory)).node, true);
     }
 
-    public <T> ServiceComponentConfiguration<T> providePrototype(Class<T> implementation) {
-        return providePrototype(Factory.find(implementation));
-    }
-
     @SuppressWarnings("unchecked")
-    public <T> ServiceComponentConfiguration<T> provide(SingletonConfiguration<T> c) {
+    public <T> PackedServiceComponentConfiguration<T> provide(SingletonConfiguration<T> c) {
         PackedSingletonConfiguration<T> cc = (PackedSingletonConfiguration<T>) c;
         SingletonComponentDriver scd = (SingletonComponentDriver) cc.node.driver();
         if (scd.instance != null) {
-            return (ServiceComponentConfiguration<T>) node.provider().provideInstance(cc.node, scd.instance);
+            return (PackedServiceComponentConfiguration<T>) node.provider().provideInstance(cc.node, scd.instance);
         } else {
             return node.provider().provideFactory(cc.node, false);
         }
@@ -381,25 +318,6 @@ public final class ServiceExtension extends Extension {
         }
         checkConfigurable();
         node.provider().provideAll((AbstractInjector) injector, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL), WireletList.of(wirelets));
-    }
-
-    /**
-     * Binds the specified instance as a new service.
-     * <p>
-     * The default key for the service will be {@code instance.getClass()}. If the type returned by
-     * {@code instance.getClass()} is annotated with a {@link Qualifier qualifier annotation}, the default key will have the
-     * qualifier annotation added.
-     *
-     * @param <T>
-     *            the type of service to bind
-     * @param instance
-     *            the instance to bind
-     * @return a service configuration for the service
-     */
-    public <T> ServiceComponentConfiguration<T> provideInstance(T instance) {
-        // configurability is checked by ComponentExtension
-        ComponentNodeConfiguration cc = ((PackedSingletonConfiguration<T>) installInstance(instance)).node;
-        return node.provider().provideInstance(cc, instance);
     }
 
     public void require(Class<?>... keys) {

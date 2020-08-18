@@ -18,8 +18,8 @@ package tests.injector;
 import java.lang.invoke.MethodHandles;
 import java.util.stream.Collectors;
 
-import app.packed.container.ContainerDescriptor;
 import app.packed.container.BaseBundle;
+import app.packed.container.ContainerDescriptor;
 import app.packed.service.Injector;
 import app.packed.service.ServiceDescriptor;
 
@@ -63,7 +63,7 @@ public class BTest {
         @Override
         protected void configure() {
             lookup(MethodHandles.lookup());
-            provideConstant(123L);
+            provideInstance(123L);
         }
     }
 

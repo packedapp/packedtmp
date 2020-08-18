@@ -51,7 +51,7 @@ public class InjectorBindBundleTest {
         BaseBundle b = new BaseBundle() {
             @Override
             protected void configure() {
-                provideConstant("X");
+                provideInstance("X");
             }
         };
 
@@ -68,7 +68,7 @@ public class InjectorBindBundleTest {
         BaseBundle b = new BaseBundle() {
             @Override
             protected void configure() {
-                provideConstant("X");
+                provideInstance("X");
                 export(String.class);
             }
         };

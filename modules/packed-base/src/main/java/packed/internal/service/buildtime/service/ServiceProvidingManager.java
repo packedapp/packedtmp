@@ -29,10 +29,8 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import app.packed.inject.Factory;
 import app.packed.service.Injector;
 import app.packed.service.Provide;
-import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceMode;
 import packed.internal.component.ComponentNodeConfiguration;
@@ -49,10 +47,7 @@ import packed.internal.service.runtime.AbstractInjector;
 /**
  * This class manages everything to do with providing services for an {@link ServiceExtension}.
  *
- * @see ServiceExtension#provide(Class)
- * @see ServiceExtension#provide(Factory)
  * @see ServiceExtension#provideAll(Injector, Wirelet...)
- * @see ServiceExtension#provideInstance(Object)
  * @see Provide
  */
 public final class ServiceProvidingManager {
@@ -132,7 +127,7 @@ public final class ServiceProvidingManager {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> ServiceComponentConfiguration<T> provideFactory(ComponentNodeConfiguration cc, boolean isPrototype) {
+    public <T> PackedServiceComponentConfiguration<T> provideFactory(ComponentNodeConfiguration cc, boolean isPrototype) {
         SingletonComponentDriver scd = (SingletonComponentDriver) cc.driver();
         BuildEntry<?> c = componentConfigurationCache.get(cc);// remove??
         if (c == null) {
@@ -149,7 +144,7 @@ public final class ServiceProvidingManager {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> ServiceComponentConfiguration<T> provideInstance(ComponentNodeConfiguration cc, T instance) {
+    public <T> PackedServiceComponentConfiguration<T> provideInstance(ComponentNodeConfiguration cc, T instance) {
         // First see if we have already installed the node. This happens in #set if the component container any members
         // annotated with @Provides
         BuildEntry<?> c = componentConfigurationCache.get(cc);

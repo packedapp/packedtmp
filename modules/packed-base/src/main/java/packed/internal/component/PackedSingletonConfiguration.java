@@ -20,9 +20,9 @@ import java.util.Optional;
 import app.packed.base.Key;
 import app.packed.component.AbstractComponentConfiguration;
 import app.packed.component.SingletonConfiguration;
-import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceConfiguration;
 import app.packed.service.ServiceExtension;
+import packed.internal.service.buildtime.service.PackedServiceComponentConfiguration;
 
 /**
  *
@@ -31,7 +31,7 @@ public class PackedSingletonConfiguration<T> extends AbstractComponentConfigurat
 
     public final ComponentNodeConfiguration node;
 
-    private ServiceComponentConfiguration<T> provide;
+    private PackedServiceComponentConfiguration<T> provide;
 
     public PackedSingletonConfiguration(ComponentNodeConfiguration node) {
         super(node);
@@ -46,7 +46,7 @@ public class PackedSingletonConfiguration<T> extends AbstractComponentConfigurat
         return this;
     }
 
-    ServiceComponentConfiguration<T> entry() {
+    PackedServiceComponentConfiguration<T> entry() {
         if (provide == null) {
             ServiceExtension e = node.container.use(ServiceExtension.class);
             provide = e.provide(this);

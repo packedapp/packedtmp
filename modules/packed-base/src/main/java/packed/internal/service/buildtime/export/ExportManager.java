@@ -25,14 +25,12 @@ import java.util.LinkedHashSet;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
-import app.packed.service.ServiceComponentConfiguration;
 import app.packed.service.ServiceConfiguration;
 import app.packed.service.ServiceExtension;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ErrorMessages;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.service.PackedServiceComponentConfiguration;
-import packed.internal.util.StringFormatter;
 
 /**
  * This class manages everything to do with exporting of service entries.
@@ -90,12 +88,8 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
      *            the config site of the export
      * @return stuff
      */
-    public <T> ServiceConfiguration<T> export(ServiceComponentConfiguration<T> configuration, ConfigSite configSite) {
-        if (!(configuration instanceof PackedServiceComponentConfiguration)) {
-            throw new IllegalArgumentException("Custom implementations of " + StringFormatter.format(ServiceComponentConfiguration.class)
-                    + " are not allowed, type = " + StringFormatter.format(configuration.getClass()));
-        }
-        BuildEntry<T> entryToExport = ((PackedServiceComponentConfiguration<T>) configuration).buildEntry;
+    public <T> ServiceConfiguration<T> export(PackedServiceComponentConfiguration<T> configuration, ConfigSite configSite) {
+        BuildEntry<T> entryToExport = configuration.buildEntry;
         if (entryToExport.node != node) {
             throw new IllegalArgumentException("The specified configuration was created by another injector extension");
         }

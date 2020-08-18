@@ -22,8 +22,8 @@ import app.packed.component.Wirelet;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
-import app.packed.container.ExtensionWired;
 import app.packed.container.ExtensionSidecar;
+import app.packed.container.ExtensionWired;
 import app.packed.inject.InjectionContext;
 import app.packed.lifecycle.LifecycleContext;
 import app.packed.service.ServiceWirelets;
@@ -70,7 +70,7 @@ public class TI extends BaseBundle {
     @Override
     protected void configure() {
 
-        provideConstant(123L);
+        provideInstance(123L);
         use(MyExte.class).foo = "Gondor";
 
         link(new FFF(), ServiceWirelets.provide("const"));
@@ -81,7 +81,7 @@ public class TI extends BaseBundle {
         /** {@inheritDoc} */
         @Override
         protected void configure() {
-            provideConstant("HejHej");
+            provideInstance("HejHej");
             link(new FFFFFF(), ServiceWirelets.provide("const"));
         }
 
@@ -92,7 +92,7 @@ public class TI extends BaseBundle {
         /** {@inheritDoc} */
         @Override
         protected void configure() {
-            provideConstant("HejHej");
+            provideInstance("HejHej");
             // System.out.println(use(MyExte.class).foo);
         }
     }

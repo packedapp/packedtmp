@@ -138,7 +138,6 @@ public final class InjectorAssembler {
      * @param implementation
      *            the implementation to provide a singleton instance of
      * @return a service configuration for the service
-     * @see ServiceExtension#provide(Class)
      */
     public <T> SingletonConfiguration<T> provide(Class<T> implementation) {
         return configuration.install(implementation).provide();
@@ -156,15 +155,15 @@ public final class InjectorAssembler {
      *            the factory to bind
      * @return a service configuration for the service
      */
-    public <T> ServiceComponentConfiguration<T> provide(Factory<T> factory) {
-        return extension().provide(factory);
+    public <T> SingletonConfiguration<T> provide(Factory<T> factory) {
+        return configuration.install(factory).provide();
     }
 
-    public <T> ServiceComponentConfiguration<T> providePrototype(Class<T> factory) {
-        return extension().providePrototype(factory);
+    public <T> PrototypeConfiguration<T> providePrototype(Class<T> implementation) {
+        return providePrototype(Factory.find(implementation));
     }
 
-    public <T> ServiceComponentConfiguration<T> providePrototype(Factory<T> factory) {
+    public <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {
         return extension().providePrototype(factory);
     }
 

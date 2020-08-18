@@ -27,7 +27,7 @@ import app.packed.base.Key;
 import app.packed.component.SingletonConfiguration;
 import app.packed.inject.Factory;
 import app.packed.service.Injector;
-import app.packed.service.ServiceComponentConfiguration;
+import app.packed.service.PrototypeConfiguration;
 import app.packed.service.ServiceMode;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
@@ -46,12 +46,12 @@ public class ProvideTest {
         Injector inj = Injector.configure(conf -> {
             conf.lookup(MethodHandles.lookup());// The module where letter classes are in are not exported
             SingletonConfiguration<A> a = conf.provide(A.class);
-            ServiceComponentConfiguration<B> b = conf.provide(Factory.find(B.class));
+            SingletonConfiguration<B> b = conf.provide(Factory.find(B.class));
             SingletonConfiguration<C> c = conf.provideInstance(C0);
             // ServiceComponentConfiguration<E> e = conf.provide(E.class).lazy();
             // ServiceComponentConfiguration<F> f = conf.provide(Factory.findInjectable(F.class)).lazy();
-            ServiceComponentConfiguration<H> h = conf.providePrototype(H.class);
-            ServiceComponentConfiguration<I> i = conf.providePrototype(Factory.find(I.class));
+            PrototypeConfiguration<H> h = conf.providePrototype(H.class);
+            PrototypeConfiguration<I> i = conf.providePrototype(Factory.find(I.class));
         });
     }
 

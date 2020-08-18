@@ -22,7 +22,6 @@ import java.lang.invoke.MethodHandles;
 import app.packed.container.BaseBundle;
 import app.packed.inject.Factory;
 import app.packed.service.Injector;
-import app.packed.service.ServiceExtension;
 
 /**
  *
@@ -53,10 +52,9 @@ public class TetIt {
         /** {@inheritDoc} */
         @Override
         protected void configure() {
-            ServiceExtension e = use(ServiceExtension.class);
-            e.provide(Factory.fromInstance("Root"));
-            e.provide(Factory.fromInstance("Child1"));
-            e.provide(Factory.fromInstance("Child2"));
+            provide(Factory.fromInstance("Root"));
+            provide(Factory.fromInstance("Child1"));
+            provide(Factory.fromInstance("Child2"));
         }
     }
 }

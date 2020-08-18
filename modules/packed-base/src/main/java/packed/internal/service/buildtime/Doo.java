@@ -26,7 +26,7 @@ public class Doo extends BaseBundle {
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-        provideConstant("FooBar");
+        provideInstance("FooBar");
     }
 
     public static void main(String[] args) {
