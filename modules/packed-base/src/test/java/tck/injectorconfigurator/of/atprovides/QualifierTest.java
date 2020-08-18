@@ -90,22 +90,22 @@ public class QualifierTest {
 
     static class MultipleIdenticalQualifiedFieldKeys {
 
-        @Provide
+        @Provide(isConstant = true)
         @StringQualifier("A")
         private Long A = 0L;
 
-        @Provide
+        @Provide(isConstant = true)
         @StringQualifier("A")
         private Long B = 0L;
     }
 
     static class MultipleIdenticalQualifiedMemberKeys {
 
-        @Provide
+        @Provide(isConstant = true)
         @StringQualifier("A")
         private Long A = 0L;
 
-        @Provide
+        @Provide(isConstant = true)
         @StringQualifier("A")
         static Long b() {
             return 0L;
@@ -114,13 +114,13 @@ public class QualifierTest {
 
     static class MultipleIdenticalQualifiedMethodKeys {
 
-        @Provide
+        @Provide(isConstant = true)
         @StringQualifier("A")
         static Long a() {
             return 0L;
         }
 
-        @Provide
+        @Provide(isConstant = true)
         @StringQualifier("A")
         static Long b() {
             return 0L;
@@ -141,7 +141,7 @@ public class QualifierTest {
         @StringQualifier("C")
         private static Long C;
 
-        @Provide
+        @Provide(isConstant = true)
         private static Long L;
     }
 }
