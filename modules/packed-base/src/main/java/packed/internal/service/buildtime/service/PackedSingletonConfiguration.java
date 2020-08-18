@@ -55,7 +55,7 @@ public class PackedSingletonConfiguration<T> extends AbstractComponentConfigurat
         if (buildEntry == null) {
             ServiceExtension e = node.container().use(ServiceExtension.class);
             ServiceExtensionNode sen = ServiceExtensionNode.fromExtension(e);
-            SingletonComponentDriver scd = (SingletonComponentDriver) node.driver();
+            SingletonComponentDriver<T> scd = (SingletonComponentDriver<T>) node.driver();
             if (scd.instance != null) {
                 buildEntry = (BuildEntry<T>) sen.provider().provideInstance(node, scd.instance);
             } else {

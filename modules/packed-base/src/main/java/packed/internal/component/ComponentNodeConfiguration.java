@@ -426,7 +426,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         ComponentNodeConfiguration newNode = p.newChild(driver, cs, PackedRealm.fromBundle(bundle), wirelets);
 
         // Invoke Bundle::configure
-        BundleConfiguration.configure(bundle, driver.forBundleConf(newNode));
+        BundleConfiguration.configure(bundle, driver.toConfiguration(newNode));
 
         newNode.finalState = true;
     }
@@ -434,19 +434,19 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     public <T> SingletonConfiguration<T> installInstance(T instance) {
         requireNonNull(instance, "instance is null");
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
-        SingletonComponentDriver scd = new SingletonComponentDriver(realm, instance);
+        SingletonComponentDriver<T> scd = new SingletonComponentDriver<>(realm, instance);
 
         ComponentNodeConfiguration conf = newChild(scd, configSite, realm);
-        return scd.toConf(conf);
+        return scd.toConfiguration(conf);
     }
 
     public <T> SingletonConfiguration<T> install(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
-        SingletonComponentDriver scd = new SingletonComponentDriver(realm, factory);
+        SingletonComponentDriver<T> scd = new SingletonComponentDriver<>(realm, factory);
 
         ComponentNodeConfiguration conf = newChild(scd, configSite, realm);
-        return scd.toConf(conf);
+        return scd.toConfiguration(conf);
     }
 
     public StatelessConfiguration installStateless(Class<?> implementation) {
@@ -455,7 +455,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
 
         ComponentNodeConfiguration conf = newChild(scd, configSite, realm);
-        return scd.toConf(conf);
+        return scd.toConfiguration(conf);
     }
 
     /** {@inheritDoc} */
@@ -466,9 +466,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
 
         ComponentNodeConfiguration conf = newChild(d, configSite, realm);
-        // return d.toConf(conf);
-        System.out.println(conf);
-        throw new UnsupportedOperationException();
+
+        return driver.toConfiguration(conf);
     }
 
     @SuppressWarnings("unchecked")

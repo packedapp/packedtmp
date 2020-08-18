@@ -33,6 +33,8 @@ public interface ComponentDriver<C> {
         throw new UnsupportedOperationException();
     }
 
+    C toConfiguration(ComponentConfigurationContext cnc);
+
     public interface Option {
 
         /**

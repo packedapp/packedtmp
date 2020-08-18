@@ -87,7 +87,7 @@ public final class PackedAssemblyContext implements AssembleContext {
         ComponentNodeConfiguration node = ComponentNodeConfiguration.newAssembly(new PackedAssemblyContext(PackedOutput.artifact(ad)), driver, cs,
                 PackedRealm.fromConfigurator(consumer), wirelets);
 
-        D conf = driver.forBundleConf(node);
+        D conf = driver.toConfiguration(node);
         C cc = requireNonNull(factory.apply(conf));
         consumer.configure(cc);
 
@@ -112,7 +112,7 @@ public final class PackedAssemblyContext implements AssembleContext {
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
         ComponentNodeConfiguration node = ComponentNodeConfiguration.newAssembly(assembly, driver, cs, PackedRealm.fromBundle(bundle), wirelets);
 
-        Object conf = driver.forBundleConf(node);
+        Object conf = driver.toConfiguration(node);
         BundleConfiguration.configure(bundle, conf); // in-try-finally. So we can call PAC.fail() and have them run callbacks for dynamic nodes
 
         return node.closeAssembly();

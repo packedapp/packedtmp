@@ -30,6 +30,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import app.packed.base.Nullable;
+import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ConsumeWirelet;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
@@ -315,6 +316,12 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         @Override
         public String defaultName(PackedRealm realm) {
             return model.defaultComponentName;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ExtensionConfiguration toConfiguration(ComponentConfigurationContext cnc) {
+            throw new UnsupportedOperationException();
         }
     }
 

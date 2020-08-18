@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
@@ -104,10 +104,6 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         return hasRole(ROLE_GUEST);
     }
 
-    public C forBundleConf(ComponentNodeConfiguration cnc) {
-        throw new UnsupportedOperationException();
-    }
-
     public static class ContainerComponentDriver extends PackedComponentDriver<ContainerConfiguration> {
 
         public static ContainerComponentDriver INSTANCE = new ContainerComponentDriver();
@@ -117,12 +113,12 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         }
 
         @Override
-        public ContainerConfiguration forBundleConf(ComponentNodeConfiguration cnc) {
-            return new PackedContainerConfiguration(cnc);
+        public ContainerConfiguration toConfiguration(ComponentConfigurationContext cnc) {
+            return new PackedContainerConfiguration((ComponentNodeConfiguration) cnc);
         }
     }
 
-    public static class SingletonComponentDriver extends ModelComponentDriver<ComponentConfiguration> {
+    public static class SingletonComponentDriver<T> extends ModelComponentDriver<SingletonConfiguration<T>> {
 
         @Nullable
         public final BaseFactory<?> factory;
@@ -147,9 +143,11 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
             return context.realm().fromFactoryHandle(handle);
         }
 
-        public <T> SingletonConfiguration<T> toConf(ComponentNodeConfiguration context) {
-            model.invokeOnHookOnInstall(context);
-            return new PackedSingletonConfiguration<>(context);
+        @Override
+        public SingletonConfiguration<T> toConfiguration(ComponentConfigurationContext context) {
+            ComponentNodeConfiguration cnc = (ComponentNodeConfiguration) context;
+            model.invokeOnHookOnInstall(cnc);
+            return new PackedSingletonConfiguration<>(cnc);
         }
     }
 
@@ -166,16 +164,18 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
 
     }
 
-    public static class StatelessComponentDriver extends ModelComponentDriver<ComponentConfiguration> {
+    public static class StatelessComponentDriver extends ModelComponentDriver<StatelessConfiguration> {
 
         public StatelessComponentDriver(PackedRealm lookup, Class<?> implementation) {
             super(PackedComponentDriver.ROLE_STATELESS, lookup.componentModelOf(requireNonNull(implementation, "implementation is null")));
             requireNonNull(implementation, "implementation is null");
         }
 
-        public StatelessConfiguration toConf(ComponentNodeConfiguration context) {
-            model.invokeOnHookOnInstall(context);
-            return new PackedStatelessComponentConfiguration(context);
+        @Override
+        public StatelessConfiguration toConfiguration(ComponentConfigurationContext context) {
+            ComponentNodeConfiguration cnc = (ComponentNodeConfiguration) context;
+            model.invokeOnHookOnInstall(cnc);
+            return new PackedStatelessComponentConfiguration(cnc);
         }
     }
 }
