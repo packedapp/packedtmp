@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -512,11 +513,21 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         return new ComponentAdaptor(this);
     }
 
+    // This should only be called by special methods
+    // We just take the lookup to make sure caller think twice before calling this method.
+    public static ComponentNodeConfiguration convert(Lookup caller, Component component) {
+        if (!(component instanceof ComponentAdaptor)) {
+            throw new IllegalStateException("This method must be called before a component is instantiated");
+        }
+        ComponentAdaptor cc = (ComponentAdaptor) component;
+        return cc.conf;
+    }
+
     /** An adaptor of the {@link Component} interface from a {@link ComponentNodeConfiguration}. */
-    public static final class ComponentAdaptor implements Component {
+    private static final class ComponentAdaptor implements Component {
 
         /** The component configuration to wrap. */
-        public final ComponentNodeConfiguration conf;
+        private final ComponentNodeConfiguration conf;
 
         private ComponentAdaptor(ComponentNodeConfiguration c) {
             this.conf = requireNonNull(c);

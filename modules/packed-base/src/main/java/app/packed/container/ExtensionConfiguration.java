@@ -30,7 +30,7 @@ import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension.Subtension;
 import app.packed.inject.Factory;
-import packed.internal.component.ComponentNodeConfiguration.ComponentAdaptor;
+import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.container.PackedContainerRole;
 import packed.internal.container.PackedExtensionConfiguration;
 
@@ -157,6 +157,7 @@ public interface ExtensionConfiguration {
      *             specified lookup object does not have full privileges
      */
     static Optional<ExtensionConfiguration> privateAccess(MethodHandles.Lookup caller, Component component) {
+        requireNonNull(caller, "caller is null");
         return Optional.ofNullable(pa(caller, component));
     }
 
@@ -167,25 +168,24 @@ public interface ExtensionConfiguration {
      *            a lookup object that must have full ac
      * @param extensionType
      *            the type of extension to return
-     * @param c
+     * @param component
      *            the component
      * @return stuff
      * 
      */
     @SuppressWarnings("unchecked")
-    static <T extends Extension> Optional<T> privateAccessExtension(MethodHandles.Lookup lookup, Class<T> extensionType, Component c) {
+    static <T extends Extension> Optional<T> privateAccessExtension(MethodHandles.Lookup lookup, Class<T> extensionType, Component component) {
         requireNonNull(lookup, "lookup is null");
         if (lookup.lookupClass() != extensionType) {
             throw new IllegalArgumentException("The specified lookup object must match the specified extensionType " + extensionType + " as lookupClass()");
         }
         @Nullable
-        PackedExtensionConfiguration pec = pa(lookup, c);
+        PackedExtensionConfiguration pec = pa(lookup, component);
         return pec == null ? Optional.empty() : Optional.of((T) pec.instance());
     }
 
     @Nullable
     private static PackedExtensionConfiguration pa(MethodHandles.Lookup lookup, Component component) {
-        requireNonNull(lookup, "lookup is null");
         requireNonNull(lookup, "component is null");
 
         // lookup.lookupClass() must point to the extension that should be extracted
@@ -202,42 +202,8 @@ public interface ExtensionConfiguration {
                     + ", try creating a new lookup object using MethodHandle.privateLookupIn(lookup, " + extensionType.getSimpleName() + ".class)");
         }
 
-        // This method can only be used at buildtime
-        if (!(component instanceof ComponentAdaptor)) {
-            throw new IllegalStateException("This method cannot be called at runtime of a container");
-        }
-        ComponentAdaptor cc = (ComponentAdaptor) component;
-        PackedContainerRole pcc = cc.conf.container();
-        return pcc.getContext(extensionType);
+        ComponentNodeConfiguration node = ComponentNodeConfiguration.convert(lookup, component);
+        PackedContainerRole container = node.container();
+        return container == null ? null : container.getContext(extensionType);
     }
 }
-
-//
-///**
-// * Returns whether or not the specified extension type has been used.
-// * 
-// * @param extensionType
-// *            the extension type to test.
-// * @return whether or not the extension has been used
-// */
-// Forklar noget om hvornaar man kan vaere 100% sikker paa den ikke er brugt
-// Tillader vi alle extensions??? ogsaa dem vi ikke depender paa
-
-// Og man kan misforstaa den som om at det er om denne extension bruger den.
-
-//// PROBLEMET er at vi ikke tracker hvilke extensions in extension bruger...
-//boolean isUsed(Class<? extends Extension> extensionType);
-// Returns empty if the extension is not available
-
-// Hmm maaske vi flytter den ud af extension... Syntes ikke den skal dukke op under metoder...
-// Maaske paa ExtensionContext istedet for...
-
-// Skal ogsaa have en version der tager en Bundle???
-// Og et Image???
-
-// What we are generating...
-// This can be tricky, For example, if we create an image.
-// This method will always return image,
-//default AssembleTarget buildTarget() {
-//    throw new UnsupportedOperationException();
-//}
