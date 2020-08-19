@@ -27,6 +27,7 @@ import app.packed.config.ConfigSite;
 import packed.internal.component.BundleConfiguration;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.PackedRealm;
 import packed.internal.errorhandling.ErrorMessage;
@@ -81,11 +82,12 @@ public final class PackedAssemblyContext implements AssembleContext {
 
     public static <C, D> ComponentNodeConfiguration configure(ArtifactDriver<?> ad, PackedComponentDriver<D> driver, Function<D, C> factory,
             CustomConfigurator<C> consumer, Wirelet... wirelets) {
+        WireletPack wp = WireletPack.from(driver, wirelets);
         // Vil gerne parse nogle wirelets some det allerfoerste
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
 
         ComponentNodeConfiguration node = ComponentNodeConfiguration.newAssembly(new PackedAssemblyContext(PackedOutput.artifact(ad)), driver, cs,
-                PackedRealm.fromConfigurator(consumer), wirelets);
+                PackedRealm.fromConfigurator(consumer), wp);
 
         D conf = driver.toConfiguration(node);
         C cc = requireNonNull(factory.apply(conf));
@@ -108,9 +110,10 @@ public final class PackedAssemblyContext implements AssembleContext {
 
     public static ComponentNodeConfiguration assemble(PackedAssemblyContext assembly, Bundle<?> bundle, Wirelet... wirelets) {
         PackedComponentDriver<?> driver = BundleConfiguration.driverOf(bundle);
+        WireletPack wp = WireletPack.from(driver, wirelets);
 
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
-        ComponentNodeConfiguration node = ComponentNodeConfiguration.newAssembly(assembly, driver, cs, PackedRealm.fromBundle(bundle), wirelets);
+        ComponentNodeConfiguration node = ComponentNodeConfiguration.newAssembly(assembly, driver, cs, PackedRealm.fromBundle(bundle), wp);
 
         Object conf = driver.toConfiguration(node);
         BundleConfiguration.configure(bundle, conf); // in-try-finally. So we can call PAC.fail() and have them run callbacks for dynamic nodes

@@ -128,7 +128,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     private static final int NAME_GETSET_MASK = NAME_SET + NAME_GET + NAME_GET_PATH + NAME_CHILD_GOT_PATH;
 
     public static ComponentNodeConfiguration newAssembly(PackedAssemblyContext assembly, PackedComponentDriver<?> driver, ConfigSite configSite,
-            PackedRealm realm, Wirelet... wirelets) {
+            PackedRealm realm, WireletPack wirelets) {
         return new ComponentNodeConfiguration(assembly, realm, null, driver, configSite, wirelets);
     }
 
@@ -138,7 +138,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     }
 
     public ComponentNodeConfiguration newChild(PackedComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm, Wirelet... wirelets) {
-        return new ComponentNodeConfiguration(assembly, realm, this, driver, configSite, wirelets);
+        return new ComponentNodeConfiguration(assembly, realm, this, driver, configSite, WireletPack.from(driver, wirelets));
     }
 
     /**
@@ -150,7 +150,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
      *            the parent of the component
      */
     private ComponentNodeConfiguration(PackedAssemblyContext assembly, PackedRealm realm, @Nullable ComponentNodeConfiguration parent,
-            PackedComponentDriver<?> driver, ConfigSite configSite, Wirelet... wirelets) {
+            PackedComponentDriver<?> driver, ConfigSite configSite, @Nullable WireletPack wirelets) {
         this.assembly = requireNonNull(assembly);
         this.realm = requireNonNull(realm);
 
@@ -162,7 +162,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         this.container = driver.isContainer() ? new PackedContainerRole(this) : parent.container;
 
         this.configSite = requireNonNull(configSite);
-        this.wirelets = WireletPack.from(this, wirelets);
+        this.wirelets = wirelets;
 
         setName0(null); // initialize name
     }

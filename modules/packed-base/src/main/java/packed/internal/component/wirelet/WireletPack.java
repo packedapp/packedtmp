@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
-import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.PackedComponentDriver;
 import packed.internal.container.PackedContainerRole;
 
 /** A holder of wirelets and wirelet pipelines. */
@@ -100,8 +100,8 @@ public final class WireletPack {
     }
 
     @Nullable
-    public static WireletPack from(ComponentNodeConfiguration node, Wirelet... wirelets) {
-        if (node.driver().isContainer()) {
+    public static WireletPack from(PackedComponentDriver<?> driver, Wirelet... wirelets) {
+        if (driver.isContainer()) {
             return create(wirelets);
         }
         return null;
