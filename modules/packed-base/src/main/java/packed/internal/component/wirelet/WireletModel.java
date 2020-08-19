@@ -17,15 +17,10 @@ package packed.internal.component.wirelet;
 
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
-import app.packed.component.WireletPipeline;
-import app.packed.component.WireletSidecar;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionMember;
-import app.packed.container.InternalExtensionException;
 import packed.internal.container.ExtensionModel;
 import packed.internal.sidecar.Model;
 
-/** A model of a {@link Wirelet}. This class is public because of {@link NoWireletPipeline}. */
 public final class WireletModel extends Model {
 
     /** A cache of models for {@link Wirelet} subclasses. */
@@ -41,13 +36,7 @@ public final class WireletModel extends Model {
 
     /** Any extension this wirelet is a member of. */
     @Nullable
-    private final Class<? extends Extension> extension;
-
-    /** Any pipeline the wirelet might belong to. */
-    @Nullable
-    private final WireletPipelineModel pipeline;
-
-    public final boolean requireAssemblyTime;
+    final Class<? extends Extension> extension;
 
     /**
      * Create a new wirelet model.
@@ -58,38 +47,6 @@ public final class WireletModel extends Model {
     private WireletModel(Class<? extends Wirelet> type) {
         super(type);
         this.extension = ExtensionModel.findAnyExtensionMember(type);
-
-        // Let's see if the wirelet has an annotation
-        WireletSidecar ws = type.getAnnotation(WireletSidecar.class);
-        if (ws != null) {
-            this.requireAssemblyTime = ws.failOnImage();
-
-            // Find any pipeline this wirelet is part of
-            Class<? extends WireletPipeline<?, ?>> p = ws.pipeline();
-            if (p != NoWireletPipeline.class) {
-                this.pipeline = WireletPipelineModel.of(p);
-                // XXX must be assignable to YY to be a part of the pipeline
-                if (pipeline.extension() != extension) {
-                    throw new InternalExtensionException("The wirelet " + type + " and the pipeline " + p + " must both be annotated with @"
-                            + ExtensionMember.class.getSimpleName() + " and the same extension was" + extension + " and " + pipeline.extension());
-                }
-            } else {
-                this.pipeline = null;
-            }
-        } else { // No annotation, use default values.
-            this.pipeline = null;
-            this.requireAssemblyTime = false;
-        }
-    }
-
-    /**
-     * Returns any pipeline this wirelet is a part of.
-     * 
-     * @return any pipeline this wirelet is a part of
-     */
-    @Nullable
-    WireletPipelineModel pipeline() {
-        return pipeline;
     }
 
     /**
@@ -101,11 +58,5 @@ public final class WireletModel extends Model {
      */
     public static WireletModel of(Class<? extends Wirelet> wireletType) {
         return MODELS.get(wireletType);
-    }
-
-    /** A dummy class indicating no pipeline for {@link WireletSidecar#pipeline()}. */
-    public static final class NoWireletPipeline extends WireletPipeline<NoWireletPipeline, Wirelet> {
-        /** No instantiation. */
-        private NoWireletPipeline() {}
     }
 }

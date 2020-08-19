@@ -22,25 +22,20 @@ import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.config.ConfigSite;
 import app.packed.container.ContainerDescriptor;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import packed.internal.component.wirelet.WireletPack;
-import packed.internal.component.wirelet.WireletPipelineContext;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.dependencies.DependencyManager;
 import packed.internal.service.buildtime.export.ExportManager;
 import packed.internal.service.buildtime.export.ExportedBuildEntry;
 import packed.internal.service.buildtime.service.ComponentFactoryBuildEntry;
 import packed.internal.service.buildtime.service.ServiceProvidingManager;
-import packed.internal.service.buildtime.wirelets.ServiceWireletPipeline;
-import packed.internal.service.runtime.ConstantInjectorEntry;
 import packed.internal.service.runtime.InjectorEntry;
 import packed.internal.service.runtime.PackedInjector;
 import packed.internal.util.LookupUtil;
@@ -180,7 +175,7 @@ public final class ServiceExtensionNode {
         children.add(child);
     }
 
-    public ServiceContract newServiceContract(ServiceWireletPipeline swp) {
+    public ServiceContract newServiceContract(/* ServiceWireletPipeline swp */) {
         // requireNonNull(context);
         return ServiceContract.newContract(c -> {
             if (exporter != null) {
@@ -220,28 +215,29 @@ public final class ServiceExtensionNode {
 
         ServiceExtensionInstantiationContext con = new ServiceExtensionInstantiationContext();
         for (var e : specials.entrySet()) {
+            System.out.println(e);
             Object instance = null;
 
             // if (e.getKey().key().typeLiteral().rawType() == ExtensionInstantiationContext.class) {
             // // DOES not really work c is the instantiation context for the service
             // // not nessesarily for the one we should inject....
             //
-            Class<?> pipelineClass = e.getKey().key().typeLiteral().rawType();
-
-            if (wc != null) {
-                instance = wc.getWireletOrPipeline(pipelineClass);
-                if (instance instanceof WireletPipelineContext) {
-                    instance = ((WireletPipelineContext) instance).instance;
-                }
-                requireNonNull(instance);
-            }
-            if (instance == null) {
-                instance = Optional.empty();
-            } else {
-                instance = e.getKey().wrapIfOptional(instance);
-            }
-            BuildEntry<?> be = e.getValue();
-            con.transformers.put(be, new ConstantInjectorEntry<Object>(ConfigSite.UNKNOWN, (Key) be.key, instance));
+//            Class<?> pipelineClass = e.getKey().key().typeLiteral().rawType();
+//
+//            if (wc != null) {
+//                instance = wc.getWireletOrPipeline(pipelineClass);
+//                if (instance instanceof WireletPipelineContext) {
+//                    instance = ((WireletPipelineContext) instance).instance;
+//                }
+//                requireNonNull(instance);
+//            }
+//            if (instance == null) {
+//                instance = Optional.empty();
+//            } else {
+//                instance = e.getKey().wrapIfOptional(instance);
+//            }
+//            BuildEntry<?> be = e.getValue();
+//            con.transformers.put(be, new ConstantInjectorEntry<Object>(ConfigSite.UNKNOWN, (Key) be.key, instance));
         }
 
         for (var e : resolvedEntries.entrySet()) {

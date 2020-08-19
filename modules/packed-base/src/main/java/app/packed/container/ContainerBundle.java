@@ -26,7 +26,6 @@ import app.packed.component.ComponentBundle;
 import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
-import app.packed.component.WireletSidecar;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
 
@@ -73,8 +72,6 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
      * @param wireletType
      * @param predicate
      * @return stuff
-     * @throws IllegalArgumentException
-     *             if the specified wirelet type does not have {@link WireletSidecar#failOnImage()} set to true
      */
     // Should we add wirelet(Type, consumer) or Optional<Wirelet>
     final <W extends Wirelet> boolean ifWirelet(Class<W> wireletType, Predicate<? super W> predicate) {
@@ -91,8 +88,6 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
         // settings such as WebExtension.defaultPort(); <- but that's runtime
         // I mean for
         // The runtime then...
-        @WireletSidecar(failOnImage = true)
-        class MyWirelet implements Wirelet {}
         return false;
     }
 

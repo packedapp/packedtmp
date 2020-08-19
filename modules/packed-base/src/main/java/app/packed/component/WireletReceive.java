@@ -43,7 +43,7 @@ import java.lang.annotation.Target;
 // WireletReceive  
 public @interface WireletReceive {
 
-    Class<? extends Wirelet> type() default Wirelet.class;
+    // Class<? extends Wirelet> type() default Wirelet.class;
     // Ideen var egentlig lidt at man kunne stjaele f.eks. en ServiceExtensionPipeline...
     // I constructeren...
 

@@ -49,9 +49,7 @@ import app.packed.inject.Factory;
 import packed.internal.artifact.InstantiationContext;
 import packed.internal.artifact.PackedAssemblyContext;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
-import packed.internal.component.wirelet.WireletModel;
 import packed.internal.component.wirelet.WireletPack;
-import packed.internal.component.wirelet.WireletPipelineContext;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.PackedContainerRole;
 import packed.internal.container.PackedRealm;
@@ -442,19 +440,19 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         if (wirelets != null) {
             wop = wirelets.getWireletOrPipeline(type);
         }
-        if (wop instanceof WireletPipelineContext) {
-            wop = ((WireletPipelineContext) wop).instance;
-            requireNonNull(wop);// Maybe not instantiated yet???
-        }
+//        if (wop instanceof WireletPipelineContext) {
+//            wop = ((WireletPipelineContext) wop).instance;
+//            requireNonNull(wop);// Maybe not instantiated yet???
+//        }
         return wop == null ? Optional.empty() : Optional.ofNullable((W) wop);
     }
 
     @SuppressWarnings("unchecked")
     public <W extends Wirelet> Optional<W> receiveWirelet(Class<W> type) {
-        WireletModel wm = WireletModel.of(type);
-        if (!wm.requireAssemblyTime) {
-            throw new IllegalStateException("Wirelet of type " + type + " does not have assemblytime = true");
-        }
+//        WireletModel wm = WireletModel.of(type);
+//        if (!wm.requireAssemblyTime) {
+//            throw new IllegalStateException("Wirelet of type " + type + " does not have assemblytime = true");
+//        }
         return wirelets == null ? Optional.empty() : Optional.ofNullable((W) wirelets.getWireletOrPipeline(type));
     }
 

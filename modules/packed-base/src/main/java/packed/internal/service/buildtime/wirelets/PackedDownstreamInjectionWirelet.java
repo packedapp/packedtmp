@@ -27,6 +27,7 @@ import app.packed.container.ExtensionMember;
 import app.packed.service.ServiceDescriptor;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceWirelets;
+import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.export.ExportedBuildEntry;
 import packed.internal.service.runtime.ConstantInjectorEntry;
 import packed.internal.service.runtime.InjectorEntry;
@@ -45,7 +46,7 @@ public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
 
         /** {@inheritDoc} */
         @Override
-        protected void process(ServiceWireletPipeline p) {
+        protected void process(ServiceExtension p) {
 
         }
 
@@ -75,8 +76,8 @@ public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
 
         /** {@inheritDoc} */
         @Override
-        protected void process(ServiceWireletPipeline extension) {
-            for (ExportedBuildEntry<?> e : extension.node.exports()) {
+        protected void process(ServiceExtension extension) {
+            for (ExportedBuildEntry<?> e : ServiceExtensionNode.fromExtension(extension).exports()) {
                 action.accept(e.toDescriptor());
             }
         }
@@ -104,8 +105,8 @@ public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
 
         /** {@inheritDoc} */
         @Override
-        protected void process(ServiceWireletPipeline p) {
-            System.out.println("Nice builder " + p.node);
+        protected void process(ServiceExtension p) {
+            System.out.println("Nice builder " + p);
         }
 
         /** {@inheritDoc} */

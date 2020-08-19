@@ -59,7 +59,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ServiceWirelet {
 
         /** {@inheritDoc} */
         @Override
-        protected void process(ServiceWireletPipeline p) {
+        protected void process(ServiceExtension p) {
 
         }
     }
@@ -100,7 +100,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ServiceWirelet {
 
         /** {@inheritDoc} */
         @Override
-        protected void process(ServiceWireletPipeline p) {
+        protected void process(ServiceExtension p) {
             // Kan vi smide ProvideAllFromInjector in i pipelinen???
 
             throw new UnsupportedOperationException();
@@ -134,7 +134,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ServiceWirelet {
 
         /** {@inheritDoc} */
         @Override
-        protected void process(ServiceWireletPipeline extension) {
+        protected void process(ServiceExtension extension) {
             // TODO Auto-generated method stub
         }
     }

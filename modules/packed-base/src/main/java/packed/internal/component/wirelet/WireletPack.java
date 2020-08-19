@@ -26,7 +26,6 @@ import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.container.PackedContainerRole;
-import packed.internal.container.PackedExtensionConfiguration;
 
 /** A holder of wirelets and wirelet pipelines. */
 public final class WireletPack {
@@ -74,20 +73,8 @@ public final class WireletPack {
      * @param w
      */
     private void create0(Wirelet w) {
-        WireletModel m = WireletModel.of(w.getClass());
-        WireletPipelineModel pipeline = m.pipeline();
-        if (pipeline != null) {
-            WireletPipelineContext context = (WireletPipelineContext) map.computeIfAbsent(pipeline.type(), k -> {
-                WireletPipelineContext pc = null;// parent == null ? null : (WireletPipelineContext) parent.getWireletOrPipeline(pipeline.type());
-                WireletPipelineContext wpc = new WireletPipelineContext(pipeline, pc);
-                Class<? extends Extension> extensionType = pipeline.extension();
-                if (extensionType != null) {
-                    extensions.put(extensionType, wpc);// We need to add it as a list if we have more than one wirelet context
-                }
-                return wpc;
-            });
-            context.wirelets.add(w);
-        } else if (w instanceof InternalWirelet) {
+        // Class<? extends Extension> cl = WireletModel.of(w.getClass()).extension;
+        if (w instanceof InternalWirelet) {
             // Hmm skulle vi vente til alle wirelets er succesfuld processeret???
             // Altsaa hvad hvis den fejler.... Altsaa taenker ikke den maa lavere aendringer i containeren.. kun i wirelet context
             ((InternalWirelet) w).process(this);
@@ -111,14 +98,6 @@ public final class WireletPack {
 //      throw new IllegalArgumentException("In order to use the wirelet(s) " + wpc.wirelets.get(0) + ", " + extensionType.getSimpleName()
 //      + " is required to be installed.");
         System.out.println(m);
-    }
-
-    public void extensionInitialized(PackedExtensionConfiguration pec) {
-        // See if we have installed a pipeline
-        WireletPipelineContext wpc = (WireletPipelineContext) extensions.get(pec.extensionType());
-        if (wpc != null) {
-            wpc.instantiate(pec.instance());
-        }
     }
 
     @Nullable
@@ -155,15 +134,6 @@ public final class WireletPack {
         }
 
         // initialize all pipelines except for extension pipelines when existing == null
-        for (Object o : wc.map.values()) {
-            if (o instanceof WireletPipelineContext) {
-                WireletPipelineContext wpc = (WireletPipelineContext) o;
-                Class<? extends Extension> extension = wpc.extension();
-                if (extension == null) {
-                    wpc.instantiate(null);
-                }
-            }
-        }
         return wc;
     }
 

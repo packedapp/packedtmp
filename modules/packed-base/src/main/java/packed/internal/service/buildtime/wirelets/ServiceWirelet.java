@@ -16,19 +16,18 @@
 package packed.internal.service.buildtime.wirelets;
 
 import app.packed.component.Wirelet;
-import app.packed.component.WireletSidecar;
+import app.packed.service.ServiceExtension;
 
 /**
  *
  */
-@WireletSidecar(pipeline = ServiceWireletPipeline.class)
 public abstract class ServiceWirelet implements Wirelet {
 
     /**
      * Process this wirelet.
      * 
-     * @param pipeline
-     *            the extensions pipeline
+     * @param extension
+     *            the extension
      */
-    protected abstract void process(ServiceWireletPipeline pipeline);
+    protected abstract void process(ServiceExtension extension);
 }

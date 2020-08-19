@@ -27,7 +27,6 @@ import java.util.StringJoiner;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
-import app.packed.component.WireletPipeline;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.inject.UnsatisfiableDependencyException;
@@ -37,7 +36,6 @@ import app.packed.introspection.ParameterDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
-import packed.internal.component.wirelet.WireletPipelineModel;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.BuildEntry;
@@ -162,26 +160,26 @@ public final class DependencyManager {
                                     }
                                 }
                             }
-                            if (WireletPipeline.class.isAssignableFrom(rawType)) {
-                                WireletPipelineModel wpc = WireletPipelineModel.of((Class<? extends WireletPipeline<?, ?>>) rawType);
-                                if (wpc.extension() == null) {
-                                    // Fail if pipelined wirelet...
-                                    BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
-                                            new ConstantInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "Ignore"));
-                                    resolveTo = ben;
-                                    node.specials.put(dependency, ben);
-                                } else {
-                                    if (entry instanceof ComponentFactoryBuildEntry) {
-                                        Optional<Class<? extends Extension>> op = ((ComponentFactoryBuildEntry) entry).componentConfiguration.extension();
-                                        if (op.isPresent()) {
-                                            BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
-                                                    new ConstantInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "Ignore"));
-                                            resolveTo = ben;
-                                            node.specials.put(dependency, ben);
-                                        }
-                                    }
-                                }
-                            }
+//                            if (WireletPipeline.class.isAssignableFrom(rawType)) {
+//                                WireletPipelineModel wpc = WireletPipelineModel.of((Class<? extends WireletPipeline<?, ?>>) rawType);
+//                                if (wpc.extension() == null) {
+//                                    // Fail if pipelined wirelet...
+//                                    BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
+//                                            new ConstantInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "Ignore"));
+//                                    resolveTo = ben;
+//                                    node.specials.put(dependency, ben);
+//                                } else {
+//                                    if (entry instanceof ComponentFactoryBuildEntry) {
+//                                        Optional<Class<? extends Extension>> op = ((ComponentFactoryBuildEntry) entry).componentConfiguration.extension();
+//                                        if (op.isPresent()) {
+//                                            BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
+//                                                    new ConstantInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "Ignore"));
+//                                            resolveTo = ben;
+//                                            node.specials.put(dependency, ben);
+//                                        }
+//                                    }
+//                                }
+//                            }
                         }
                     }
                     recordResolvedDependency(entry, dependency, resolveTo, false);

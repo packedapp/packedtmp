@@ -119,7 +119,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
                     if (mh.type().parameterCount() == 0) {
                         con = (Contract) mh.invoke(instance);
                     } else {
-                        con = (Contract) mh.invoke(instance, null);
+                        con = (Contract) mh.invoke(instance);
                     }
                 } catch (Throwable e1) {
                     throw new UndeclaredThrowableException(e1);
@@ -374,9 +374,9 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
             model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_0_INSTANTIATION, e, pec);
 
             // 3. Finally initialize any pipeline (??swap step 2 and 3??)
-            if (container.node.wirelets != null) {
-                container.node.wirelets.extensionInitialized(pec);
-            }
+//            if (container.node.wirelets != null) {
+//                container.node.wirelets.extensionInitialized(pec);
+//            }
         } finally {
             // container.activeExtension = existing;
         }
