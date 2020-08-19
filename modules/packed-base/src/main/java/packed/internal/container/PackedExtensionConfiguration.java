@@ -185,7 +185,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
      */
     @Nullable
     Object findWirelet(Class<? extends Wirelet> wireletType) {
-        return container.node.wireletAny(wireletType).orElse(null);
+        return container.node.receiveWirelet(wireletType).orElse(null);
     }
 
     /** {@inheritDoc} */

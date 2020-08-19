@@ -208,7 +208,6 @@ public final class ServiceExtensionNode {
 //        }
 //    }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public PackedInjector onInstantiate(WireletPack wc) {
         LinkedHashMap<Key<?>, InjectorEntry<?>> snm = new LinkedHashMap<>();
         PackedInjector publicInjector = new PackedInjector(context().containerConfigSite(), snm);
@@ -216,7 +215,6 @@ public final class ServiceExtensionNode {
         ServiceExtensionInstantiationContext con = new ServiceExtensionInstantiationContext();
         for (var e : specials.entrySet()) {
             System.out.println(e);
-            Object instance = null;
 
             // if (e.getKey().key().typeLiteral().rawType() == ExtensionInstantiationContext.class) {
             // // DOES not really work c is the instantiation context for the service

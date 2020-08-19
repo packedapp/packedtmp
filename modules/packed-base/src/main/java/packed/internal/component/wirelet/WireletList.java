@@ -90,6 +90,11 @@ public final class WireletList implements Wirelet {
         }
     }
 
+    int size() {
+        // We should maintain this number. So we can easy create an non-growing array in WireletPack
+        return -1;
+    }
+
     /**
      * Returns an {@link Optional} describing the last wirelet of the specified type in this list, or an empty
      * {@code Optional} if this list does not contain any wirelets of the specified type.

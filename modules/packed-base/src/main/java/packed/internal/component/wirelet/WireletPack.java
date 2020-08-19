@@ -18,8 +18,6 @@ package packed.internal.component.wirelet;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
-import java.util.IdentityHashMap;
-import java.util.Map;
 
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
@@ -30,15 +28,11 @@ import packed.internal.container.PackedContainerRole;
 /** A holder of wirelets and wirelet pipelines. */
 public final class WireletPack {
 
-    // Could put them in wirelets. And then have an int countdown instead... every time an extension is removed.
-    private final IdentityHashMap<Class<? extends Extension>, Object> extensions = new IdentityHashMap<>();
-
-    /** A map of wirelets and wirelet pipelines. */
-    private final IdentityHashMap<Class<?>, Object> map = new IdentityHashMap<>();
-
     // We might at some point, allow the setting of a default name...
     // In which we need to different between not-set and set to null
     String newName; // kan komme i map... og saa saetter vi et flag istedet for...
+
+    private ArrayList<Ent> list = new ArrayList<>();
 
     /**
      * Creates a new pack.
@@ -47,33 +41,10 @@ public final class WireletPack {
     private WireletPack() {}
 
     /**
-     * This method checks that no wirelets have been specified that requires an extensions that have not been used.
-     */
-    public void checkAllExtensionsAvailable(PackedContainerRole pcc) {
-        if (!extensions.isEmpty()) {
-            extensionFailed(pcc);
-        }
-    }
-
-    public static class E {
-        public final Wirelet wirelet;
-
-        @Nullable
-        public final Class<? extends Extension> extensionType;
-
-        E(Wirelet wirelet, @Nullable Class<? extends Extension> extensionType) {
-            this.wirelet = requireNonNull(wirelet);
-            this.extensionType = extensionType;
-        }
-
-        public boolean isReceived;
-    }
-
-    /**
      * @param w
      */
     private void create0(Wirelet w) {
-        // Class<? extends Extension> cl = WireletModel.of(w.getClass()).extension;
+        Class<? extends Extension> extensionType = WireletModel.of(w.getClass()).extension;
         if (w instanceof InternalWirelet) {
             // Hmm skulle vi vente til alle wirelets er succesfuld processeret???
             // Altsaa hvad hvis den fejler.... Altsaa taenker ikke den maa lavere aendringer i containeren.. kun i wirelet context
@@ -83,26 +54,21 @@ public final class WireletPack {
                 create0(ww);
             }
         } else {
-            map.put(w.getClass(), w); // override any existing wirelet
+            list.add(new Ent(w, extensionType));
         }
     }
 
-    private void extensionFailed(PackedContainerRole pcc) {
-        IdentityHashMap<Class<? extends Extension>, ArrayList<Wirelet>> m = new IdentityHashMap<>();
-        for (Map.Entry<Class<? extends Extension>, Object> c : extensions.entrySet()) {
-            Class<? extends Extension> k = c.getKey();
-            if (pcc.getContext(k) == null) {
-
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <W extends Wirelet> W receiveLast(Class<W> type) {
+        for (int i = list.size() - 1; i >= 0; i--) {
+            Ent e = list.get(i);
+            if (type.isAssignableFrom(e.wirelet.getClass())) {
+                e.isReceived = true;
+                return (W) e.wirelet;
             }
         }
-//      throw new IllegalArgumentException("In order to use the wirelet(s) " + wpc.wirelets.get(0) + ", " + extensionType.getSimpleName()
-//      + " is required to be installed.");
-        System.out.println(m);
-    }
-
-    @Nullable
-    public Object getWireletOrPipeline(Class<?> type) {
-        return map.get(type);
+        return null;
     }
 
     // That name wirelet.. should only be used by the top-container....
@@ -114,14 +80,12 @@ public final class WireletPack {
     /**
      * Creates a new wirelet pack or returns existing if the array of wirelets is empty.
      * 
-     * @param pcc
-     *            the container configuration
      * @param wirelets
      *            the wirelets
      * @return stuff
      */
     @Nullable
-    private static WireletPack create(PackedContainerRole pcc, Wirelet... wirelets) {
+    private static WireletPack create(Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
         if (wirelets.length == 0) {
             return null;
@@ -132,22 +96,34 @@ public final class WireletPack {
             requireNonNull(w, "wirelets contained a null");
             wc.create0(w);
         }
-
-        // initialize all pipelines except for extension pipelines when existing == null
         return wc;
     }
 
     @Nullable
     public static WireletPack from(ComponentNodeConfiguration node, Wirelet... wirelets) {
         if (node.driver().isContainer()) {
-            return create(node.container(), wirelets);
+            return create(wirelets);
         }
         return null;
     }
 
     @Nullable
     public static WireletPack fromImage(PackedContainerRole pcc, Wirelet... wirelets) {
-        return create(pcc, wirelets);
+        return create(wirelets);
+    }
+
+    public static class Ent {
+        @Nullable
+        public final Class<? extends Extension> extensionType;
+
+        public boolean isReceived;
+
+        public final Wirelet wirelet;
+
+        Ent(Wirelet wirelet, @Nullable Class<? extends Extension> extensionType) {
+            this.wirelet = requireNonNull(wirelet);
+            this.extensionType = extensionType;
+        }
     }
 
 }

@@ -434,26 +434,12 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         return driver.toConfiguration(conf);
     }
 
-    @SuppressWarnings("unchecked")
-    public <W extends Wirelet> Optional<W> wireletAny(Class<W> type) {
-        Object wop = null;
-        if (wirelets != null) {
-            wop = wirelets.getWireletOrPipeline(type);
-        }
-//        if (wop instanceof WireletPipelineContext) {
-//            wop = ((WireletPipelineContext) wop).instance;
-//            requireNonNull(wop);// Maybe not instantiated yet???
-//        }
-        return wop == null ? Optional.empty() : Optional.ofNullable((W) wop);
-    }
-
-    @SuppressWarnings("unchecked")
     public <W extends Wirelet> Optional<W> receiveWirelet(Class<W> type) {
-//        WireletModel wm = WireletModel.of(type);
-//        if (!wm.requireAssemblyTime) {
-//            throw new IllegalStateException("Wirelet of type " + type + " does not have assemblytime = true");
-//        }
-        return wirelets == null ? Optional.empty() : Optional.ofNullable((W) wirelets.getWireletOrPipeline(type));
+        W wop = null;
+        if (wirelets != null) {
+            wop = wirelets.receiveLast(type);
+        }
+        return wop == null ? Optional.empty() : Optional.ofNullable(wop);
     }
 
     /**
