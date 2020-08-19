@@ -280,10 +280,10 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         String n = newName;
         if (newName == null) {
             if (wirelets != null) {
-                ComponentNameWirelet cwn = wirelets.nameWirelet();
-                if (cwn != null) {
+                String nameName = wirelets.nameWirelet();
+                if (nameName != null) {
                     nameState = NAME_INITIALIZED_WITH_WIRELET;
-                    n = cwn.name;
+                    n = nameName;
                 }
             }
         }
@@ -450,7 +450,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     }
 
     @SuppressWarnings("unchecked")
-    public <W extends Wirelet> Optional<W> assemblyWirelet(Class<W> type) {
+    public <W extends Wirelet> Optional<W> receiveWirelet(Class<W> type) {
         WireletModel wm = WireletModel.of(type);
         if (!wm.requireAssemblyTime) {
             throw new IllegalStateException("Wirelet of type " + type + " does not have assemblytime = true");

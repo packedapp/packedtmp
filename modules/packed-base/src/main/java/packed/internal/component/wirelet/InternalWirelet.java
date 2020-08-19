@@ -55,7 +55,7 @@ public abstract class InternalWirelet implements Wirelet {
         /** {@inheritDoc} */
         @Override
         void process(WireletPack c) {
-            c.newName = this;// will override any set previously
+            c.newName = name;// will override any set previously
         }
 
         /**

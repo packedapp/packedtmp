@@ -37,7 +37,6 @@ import app.packed.config.ConfigSite;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
 import packed.internal.artifact.InstantiationContext;
-import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.container.PackedContainerRole;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.service.buildtime.ServiceExtensionNode;
@@ -88,9 +87,9 @@ public final class ComponentNode implements Component {
         // Maybe this can be written in PodInstantiationContext
         if (parent == null) {
             String n = configuration.name;
-            ComponentNameWirelet ol = ic.wirelets() == null ? null : ic.wirelets().nameWirelet();
+            String ol = ic.wirelets() == null ? null : ic.wirelets().nameWirelet();
             if (ol != null) {
-                n = ol.name;
+                n = ol;
                 if (n.endsWith("?")) {
                     n = n.substring(0, n.length() - 1);
                 }
