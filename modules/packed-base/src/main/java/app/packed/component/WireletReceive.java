@@ -40,22 +40,23 @@ import java.lang.annotation.Target;
 // Er tilgaengelig...
 
 // Ahhh for helvede optional......
-// 
-public @interface ConsumeWirelet {
+// WireletReceive  
+public @interface WireletReceive {
 
+    Class<? extends Wirelet> type() default Wirelet.class;
     // Ideen var egentlig lidt at man kunne stjaele f.eks. en ServiceExtensionPipeline...
     // I constructeren...
 
     // Kunne ogsaa koere en consume paa en enkelt wirelet... Saa man ikke kan nedarve den...
-    boolean consumePipeline() default false;
+    // boolean consumePipeline() default false;
 }
 
 // Som udgangspunkt skal de wirelets sgu consumes...
-@interface WSicar2 {
-    boolean requireConsumtion() default false;
-
-    boolean consumptionOptional() default false;
-}
+//@interface WSicar2 {
+//    boolean requireConsumtion() default false;
+//
+//    boolean consumptionOptional() default false;
+//}
 
 // Why can this not be used on a Bundle?
 // Because we do not have access to a bundle. 

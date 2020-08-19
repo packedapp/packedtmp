@@ -68,13 +68,9 @@ public @interface WireletSidecar {
     // failForImage
     boolean failOnImage() default false;
 }
-
-///**
-//* Whether or not a specified wirelet is inherited by child containers. The default value is <code>false</code>.
-//* 
-//* @return whether or not the wirelet is inherited by child containers
-//*/
-//boolean inherited() default false;
+//enum Inheritance {
+//NONE, ARTIFACT, SYSTEM;
+//}
 
 // failIfExtensionUnavailable default true();
 // ArtifactWirelets... Wirelets that cannot be used for linkage...
@@ -83,14 +79,10 @@ public @interface WireletSidecar {
 
 // Hvis vi har behov for at differentiere mellem artifact og system...
 // Lav det som en inner class i WireletSidecar
-enum Inheritance {
-    NONE, ARTIFACT, SYSTEM;
-}
 
 //Altsaa public klasser boer nok provide as service...
 // boolean requireAssemblyTime() must be used on assembly time
 // Cannot be used on an image after it has been created
-
 // assembleOnly
 // linkOnly
 // hostOnly

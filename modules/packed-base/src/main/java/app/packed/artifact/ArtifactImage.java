@@ -108,18 +108,18 @@ public interface ArtifactImage extends ArtifactSource {
     // descriptor().stream()...
     ComponentStream stream(ComponentStream.Option... options);
 
-    /**
-     * Returns a new artifact image by applying the specified wirelets.
-     * 
-     * @param wirelets
-     *            the wirelets to apply
-     * @return the new image
-     */
-    // f.eks. applyPartialConfiguration(SomeConf)... Vi aendrer schemaet..
-    // withFixedConf(app.threads = 123)... withDefaultConf(app.threads = 123)
-    // Vi fejler hvis det ikke kan bruges??? Pure static solution...
-    // rename to prefixWith() <--- no validation...
-    ArtifactImage with(Wirelet... wirelets);
+//    /**
+//     * Returns a new artifact image by applying the specified wirelets.
+//     * 
+//     * @param wirelets
+//     *            the wirelets to apply
+//     * @return the new image
+//     */
+//    // f.eks. applyPartialConfiguration(SomeConf)... Vi aendrer schemaet..
+//    // withFixedConf(app.threads = 123)... withDefaultConf(app.threads = 123)
+//    // Vi fejler hvis det ikke kan bruges??? Pure static solution...
+//    // rename to prefixWith() <--- no validation...
+//    ArtifactImage with(Wirelet... wirelets);
 
     /**
      * Creates a new image from the specified bundle.

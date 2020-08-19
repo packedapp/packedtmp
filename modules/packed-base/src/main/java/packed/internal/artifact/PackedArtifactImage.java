@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.ArtifactImage;
-import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.ComponentStream;
 import app.packed.component.Wirelet;
@@ -34,13 +33,6 @@ public final class PackedArtifactImage implements ArtifactImage {
     /** The configuration of the root container. */
     private final ComponentNodeConfiguration node;
 
-    /**
-     * Any wirelets that have been applied to the image. Might consist of a chain of wirelet containers with repeat usage of
-     * {@link #with(Wirelet...)}.
-     */
-    @Nullable
-    private final WireletPack wirelets;
-
     /** The type of bundle used to create this image. */
     private final Class<? extends Bundle<?>> bundleType;
 
@@ -49,17 +41,14 @@ public final class PackedArtifactImage implements ArtifactImage {
      * 
      * @param pcc
      *            the container configuration to wrap
-     * @param wirelets
-     *            any wirelets specified when creating the image or later via {@link #with(Wirelet...)}
      */
-    private PackedArtifactImage(ComponentNodeConfiguration pcc, Class<? extends Bundle<?>> bundleType, @Nullable WireletPack wirelets) {
+    private PackedArtifactImage(ComponentNodeConfiguration pcc, Class<? extends Bundle<?>> bundleType) {
         this.node = requireNonNull(pcc);
-        this.wirelets = wirelets;
         this.bundleType = requireNonNull(bundleType);
     }
 
     public ArtifactContext newContext(Wirelet... wirelets) {
-        return InstantiationContext.instantiateArtifact(node, WireletPack.fromImage(node.container(), this.wirelets, wirelets));
+        return InstantiationContext.instantiateArtifact(node, WireletPack.fromImage(node.container(), node.wirelets, wirelets));
     }
 
     /** {@inheritDoc} */
@@ -83,7 +72,7 @@ public final class PackedArtifactImage implements ArtifactImage {
         // Only if a name has been explicitly set?
         // Or can we include "FooBar?"
         // Return Optional<String>????
-        return wirelets == null ? node.getName() : wirelets.name(node);
+        return node.getName();
     }
 
     /** {@inheritDoc} */
@@ -96,13 +85,6 @@ public final class PackedArtifactImage implements ArtifactImage {
     @Override
     public ComponentStream stream(ComponentStream.Option... options) {
         return node.adaptToComponent().stream(options);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public PackedArtifactImage with(Wirelet... wirelets) {
-        requireNonNull(wirelets, "wirelets is null");
-        return wirelets.length == 0 ? this : new PackedArtifactImage(node, bundleType, WireletPack.fromImage(node.container(), this.wirelets, wirelets));
     }
 
     /**
@@ -118,9 +100,16 @@ public final class PackedArtifactImage implements ArtifactImage {
     @SuppressWarnings("unchecked")
     public static PackedArtifactImage lazyCreate(Bundle<?> bundle, Wirelet... wirelets) {
         ComponentNodeConfiguration conf = PackedAssemblyContext.assembleImage(bundle, wirelets);
-        return new PackedArtifactImage(conf, (Class<? extends Bundle<?>>) bundle.getClass(), conf.wirelets);
+        return new PackedArtifactImage(conf, (Class<? extends Bundle<?>>) bundle.getClass());
     }
 }
+//
+///** {@inheritDoc} */
+//@Override
+//public PackedArtifactImage with(Wirelet... wirelets) {
+//  requireNonNull(wirelets, "wirelets is null");
+//  return wirelets.length == 0 ? this : new PackedArtifactImage(node, bundleType, WireletPack.fromImage(node.container(), this.wirelets, wirelets));
+//}
 // De kunne jo strength taget vaere metoder paa selve imaged og ikke wirelets.
 // Vi kan jo sagtens internt lave det om til wirelets...
 // Der er bare ingen grund til at lave det public...

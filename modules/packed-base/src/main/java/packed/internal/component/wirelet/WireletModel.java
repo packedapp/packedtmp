@@ -39,8 +39,6 @@ public final class WireletModel extends Model {
         }
     };
 
-    private final boolean inherited;
-
     /** Any extension this wirelet is a member of. */
     @Nullable
     private final Class<? extends Extension> extension;
@@ -64,7 +62,6 @@ public final class WireletModel extends Model {
         // Let's see if the wirelet has an annotation
         WireletSidecar ws = type.getAnnotation(WireletSidecar.class);
         if (ws != null) {
-            this.inherited = false;// ws.inherited();
             this.requireAssemblyTime = ws.failOnImage();
 
             // Find any pipeline this wirelet is part of
@@ -81,19 +78,8 @@ public final class WireletModel extends Model {
             }
         } else { // No annotation, use default values.
             this.pipeline = null;
-            this.inherited = false;
             this.requireAssemblyTime = false;
         }
-    }
-
-    /**
-     * Returns whether or not the wirelet is inherited. This is currently always false. See OneNote Wont Fix - Inherited
-     * Wirelets for details.
-     * 
-     * @return whether or not the wirelet is inherited
-     */
-    public boolean inherited() {
-        return inherited;
     }
 
     /**

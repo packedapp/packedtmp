@@ -15,7 +15,7 @@
  */
 package packed.internal.component.wirelet;
 
-import app.packed.component.ConsumeWirelet;
+import app.packed.component.WireletReceive;
 
 /**
  * You should only change the s
@@ -24,7 +24,7 @@ public enum WireletScope {
 
     /**
      * Wirelets and pipelines are only available for injection at runtime. Trying to inject a wirelet or pipeline using
-     * {@link ConsumeWirelet} at assembly time will fail with an {@link IllegalStateException}.
+     * {@link WireletReceive} at assembly time will fail with an {@link IllegalStateException}.
      */
     RUNTIME, // The default...
 

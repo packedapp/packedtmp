@@ -18,6 +18,7 @@ package app.packed.component;
 /**
  * Thrown by the runtime when a specified wirelet was not consumed.
  */
+// IllegalArgumentException?
 public class UnconsumedWireletException extends RuntimeException {
 
     /** */
