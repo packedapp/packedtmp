@@ -42,25 +42,16 @@ public final class WireletPack {
     // In which we need to different between not-set and set to null
     ComponentNameWirelet newName; // kan komme i map... og saa saetter vi et flag istedet for...
 
-    /** An optional parent. */
-    @Nullable
-    final WireletPack parent;
-
     /**
      * Creates a new pack.
      * 
-     * @param parent
-     *            any parent
      */
-    private WireletPack(@Nullable WireletPack parent) {
-        this.parent = parent;
-    }
+    private WireletPack() {}
 
     /**
      * This method checks that no wirelets have been specified that requires an extensions that have not been used.
      */
     public void checkAllExtensionsAvailable(PackedContainerRole pcc) {
-        assert (parent == null);
         if (!extensions.isEmpty()) {
             extensionFailed(pcc);
         }
@@ -74,7 +65,7 @@ public final class WireletPack {
         WireletPipelineModel pipeline = m.pipeline();
         if (pipeline != null) {
             WireletPipelineContext context = (WireletPipelineContext) map.computeIfAbsent(pipeline.type(), k -> {
-                WireletPipelineContext pc = parent == null ? null : (WireletPipelineContext) parent.getWireletOrPipeline(pipeline.type());
+                WireletPipelineContext pc = null;// parent == null ? null : (WireletPipelineContext) parent.getWireletOrPipeline(pipeline.type());
                 WireletPipelineContext wpc = new WireletPipelineContext(pipeline, pc);
                 Class<? extends Extension> extensionType = pipeline.extension();
                 if (extensionType != null) {
@@ -121,24 +112,12 @@ public final class WireletPack {
 
     @Nullable
     public Object getWireletOrPipeline(Class<?> type) {
-        WireletPack wc = this;
-        do {
-            Object o = wc.map.get(type);
-            if (o != null) {
-                return o;
-            }
-            wc = wc.parent;
-        } while (wc != null);
-        return null;
+        return map.get(type);
     }
 
     public String name(ComponentNodeConfiguration pcc) {
-        WireletPack wc = this;
-        while (wc != null) {
-            if (wc.newName != null) {
-                return newName.name;
-            }
-            wc = wc.parent;
+        if (newName != null) {
+            return newName.name;
         }
         return pcc.getName();
     }
@@ -146,12 +125,8 @@ public final class WireletPack {
     // That name wirelet.. should only be used by the top-container....
     @Nullable
     public ComponentNameWirelet nameWirelet() {
-        WireletPack wc = this;
-        while (wc != null) {
-            if (wc.newName != null) {
-                return newName;
-            }
-            wc = wc.parent;
+        if (newName != null) {
+            return newName;
         }
         return null;
     }
@@ -161,20 +136,18 @@ public final class WireletPack {
      * 
      * @param pcc
      *            the container configuration
-     * @param existing
-     *            an existing pack of wirelets
      * @param wirelets
      *            the wirelets
      * @return stuff
      */
     @Nullable
-    private static WireletPack create(PackedContainerRole pcc, @Nullable WireletPack existing, Wirelet... wirelets) {
+    private static WireletPack create(PackedContainerRole pcc, Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
         if (wirelets.length == 0) {
-            return existing;
+            return null;
         }
 
-        WireletPack wc = new WireletPack(existing);
+        WireletPack wc = new WireletPack();
         for (Wirelet w : wirelets) {
             requireNonNull(w, "wirelets contained a null");
             wc.create0(w);
@@ -187,13 +160,6 @@ public final class WireletPack {
                 Class<? extends Extension> extension = wpc.extension();
                 if (extension == null) {
                     wpc.instantiate(null);
-                } else if (existing != null) {
-                    PackedExtensionConfiguration pec = pcc.getContext(extension);
-                    if (pec == null) {
-                        wc.extensionFailed(pcc);
-                    } else {
-                        wpc.instantiate(pec.instance());
-                    }
                 }
             }
         }
@@ -209,17 +175,17 @@ public final class WireletPack {
     }
 
     @Nullable
-    public static WireletPack fromImage(PackedContainerRole pcc, @Nullable WireletPack existing, Wirelet... wirelets) {
-        return create(pcc, existing, wirelets);
+    public static WireletPack fromImage(PackedContainerRole pcc, Wirelet... wirelets) {
+        return create(pcc, wirelets);
     }
 
     @Nullable
     public static WireletPack fromLink(PackedContainerRole pcc, Wirelet... wirelets) {
-        return create(pcc, null, wirelets);
+        return create(pcc, wirelets);
     }
 
     @Nullable
     public static WireletPack fromRoot(PackedContainerRole pcc, Wirelet... wirelets) {
-        return create(pcc, null, wirelets);
+        return create(pcc, wirelets);
     }
 }

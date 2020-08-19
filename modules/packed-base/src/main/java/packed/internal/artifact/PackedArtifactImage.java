@@ -48,7 +48,7 @@ public final class PackedArtifactImage implements ArtifactImage {
     }
 
     public ArtifactContext newContext(Wirelet... wirelets) {
-        return InstantiationContext.instantiateArtifact(node, WireletPack.fromImage(node.container(), node.wirelets, wirelets));
+        return InstantiationContext.instantiateArtifact(node, WireletPack.fromImage(node.container(), wirelets));
     }
 
     /** {@inheritDoc} */
