@@ -438,23 +438,9 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     @SuppressWarnings("unchecked")
     public <W extends Wirelet> Optional<W> wireletAny(Class<W> type) {
-        WireletModel wm = WireletModel.of(type);
-        boolean inherited = wm.inherited();
         Object wop = null;
         if (wirelets != null) {
             wop = wirelets.getWireletOrPipeline(type);
-        }
-        if (wop == null && inherited) {
-            ComponentNodeConfiguration acc = parent;
-            while (acc != null) {
-                if (acc.wirelets != null) {
-                    wop = acc.wirelets.getWireletOrPipeline(type);
-                    if (wop != null) {
-                        break;
-                    }
-                }
-                acc = acc.parent;
-            }
         }
         if (wop instanceof WireletPipelineContext) {
             wop = ((WireletPipelineContext) wop).instance;
