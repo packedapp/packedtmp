@@ -15,7 +15,7 @@
  */
 package app.packed.service;
 
-import app.packed.artifact.AssembleException;
+import app.packed.lifecycle.AssembleException;
 
 /** This exception is typically thrown when a dependency graph contain cycles (not a DAG). */
 // in app.packed.service.* CyclicServiceDependencyException

@@ -175,6 +175,10 @@ public abstract class Extension {
      */
     protected void added() {}
 
+    protected final <T> SingletonConfiguration<T> install(Class<T> implementation) {
+        return install(Factory.find(implementation));
+    }
+
     protected final <T> SingletonConfiguration<T> install(Factory<T> factory) {
         return configuration().install(factory);
     }

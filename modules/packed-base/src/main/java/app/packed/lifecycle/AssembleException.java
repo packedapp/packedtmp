@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package app.packed.lifecycle;
 
 /**
  * An exception thrown by the runtime when a pod cannot be assembled properly. This exception normally indicates a
  * programmatic error and can usually only be recovered by updating the underlying code.
  */
+// Or in .base/.component??? was in .artifact
 public class AssembleException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */
