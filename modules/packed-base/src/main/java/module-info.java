@@ -13,8 +13,8 @@ module app.packed.base {
     exports app.packed.statemachine;
 
     // Temporary...
-    exports packed.internal.reflect to app.packed.banana, app.packed.function, app.packed.conta;
-    exports packed.internal.reflect.typevariable to app.packed.banana, app.packed.function;
+    exports packed.internal.invoke to app.packed.banana, app.packed.function, app.packed.conta;
+    exports packed.internal.invoke.typevariable to app.packed.banana, app.packed.function;
     exports packed.internal.util to app.packed.configuration, app.packed.cli, app.packed.conta;
 
     exports packed.internal.component to app.packed.errorhandling;

@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 
-import packed.internal.base.reflect.PackedFieldDescriptor;
+import packed.internal.introspection.PackedFieldDescriptor;
 
 /**
  * An immutable field descriptor.

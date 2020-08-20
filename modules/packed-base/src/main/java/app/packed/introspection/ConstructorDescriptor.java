@@ -6,7 +6,7 @@ import static packed.internal.util.StringFormatter.formatSimple;
 import java.lang.reflect.Constructor;
 
 import app.packed.base.TypeLiteral;
-import packed.internal.base.reflect.PackedConstructorDescriptor;
+import packed.internal.introspection.PackedConstructorDescriptor;
 
 /**
  * An immutable constructor descriptor.

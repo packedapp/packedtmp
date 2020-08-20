@@ -30,7 +30,7 @@ import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
 import packed.internal.hook.HookRequest.BaseHookCallback;
 import packed.internal.hook.OnHookModel.Link;
-import packed.internal.reflect.OpenClass;
+import packed.internal.invoke.OpenClass;
 import packed.internal.util.Tiny;
 import packed.internal.util.TinyPair;
 

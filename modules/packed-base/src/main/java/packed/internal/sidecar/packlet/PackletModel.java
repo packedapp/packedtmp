@@ -13,19 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.packlet;
-
-import java.lang.reflect.Method;
+package packed.internal.sidecar.packlet;
 
 /**
  *
  */
-public class PackletMethod {
+//From a real packlet...
+//From a support packlet...
+public class PackletModel {
 
-    class Builder {
-
-        Builder(Method method) {
-
-        }
-    }
 }

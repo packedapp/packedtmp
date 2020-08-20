@@ -2,7 +2,7 @@ package app.packed.introspection;
 
 import java.lang.reflect.Parameter;
 
-import packed.internal.base.reflect.PackedParameterDescriptor;
+import packed.internal.introspection.PackedParameterDescriptor;
 
 /**
  * A parameter descriptor.

@@ -13,25 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.reflect.typevariable;
+package zamples;
 
-import java.lang.reflect.Type;
+import app.packed.artifact.App;
+import app.packed.container.BaseBundle;
 
 /**
  *
  */
-// Replaced by converter project...
-public abstract class TypeConverter<T> {
+public class Doo extends BaseBundle {
 
-    public static final TypeConverter<Type> IDENTITY = new TypeConverter<Type>() {
+    /** {@inheritDoc} */
+    @Override
+    protected void configure() {
+        provideInstance("FooBar");
+    }
 
-        @Override
-        public Type convert(Type t) {
-            return t;
-        }
-    };
-
-    public static final TypeConverter<Class<?>> RAW = null;
-
-    public abstract T convert(Type t);
+    public static void main(String[] args) {
+        App.create(new Doo());
+        System.out.println("Bye");
+    }
 }

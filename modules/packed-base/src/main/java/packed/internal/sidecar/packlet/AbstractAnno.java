@@ -13,24 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.buildtime;
+package packed.internal.sidecar.packlet;
 
-import app.packed.artifact.App;
-import app.packed.container.BaseBundle;
+import java.lang.annotation.Annotation;
+import java.util.HashMap;
+import java.util.Map;
+
+import app.packed.base.Key;
 
 /**
  *
  */
-public class Doo extends BaseBundle {
+abstract class AbstractAnno {
 
-    /** {@inheritDoc} */
-    @Override
-    protected void configure() {
-        provideInstance("FooBar");
-    }
+    final Map<Class<? extends Annotation>, Object> annotations = new HashMap<>();
 
-    public static void main(String[] args) {
-        App.create(new Doo());
-        System.out.println("Bye");
-    }
+    final Map<Key<?>, Object> keys = new HashMap<>();
+
 }

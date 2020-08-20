@@ -26,13 +26,13 @@ import app.packed.component.Bundle;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import packed.internal.component.ComponentModel;
-import packed.internal.container.packlet.PackletMotherShip;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.OnHookModel;
 import packed.internal.inject.factory.ExecutableFactoryHandle;
 import packed.internal.inject.factory.FactoryHandle;
-import packed.internal.reflect.OpenClass;
+import packed.internal.invoke.OpenClass;
 import packed.internal.sidecar.Model;
+import packed.internal.sidecar.packlet.PackletMotherShip;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.LookupValue;
 

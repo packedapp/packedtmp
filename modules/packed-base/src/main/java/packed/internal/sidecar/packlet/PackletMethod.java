@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.packlet;
+package packed.internal.sidecar.packlet;
 
-import java.lang.annotation.Annotation;
-import java.util.HashMap;
-import java.util.Map;
-
-import app.packed.base.Key;
+import java.lang.reflect.Method;
 
 /**
  *
  */
-abstract class AbstractAnno {
+public class PackletMethod {
 
-    final Map<Class<? extends Annotation>, Object> annotations = new HashMap<>();
+    class Builder {
 
-    final Map<Key<?>, Object> keys = new HashMap<>();
+        Builder(Method method) {
 
+        }
+    }
 }

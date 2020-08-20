@@ -34,7 +34,7 @@ import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.OnHookModelBuilder.Node;
-import packed.internal.reflect.OpenClass;
+import packed.internal.invoke.OpenClass;
 import packed.internal.util.TinyPair;
 
 /** A model of a container with {@link OnHook} methods. */

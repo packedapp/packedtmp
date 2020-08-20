@@ -30,9 +30,9 @@ import app.packed.hook.Expose;
 import app.packed.statemachine.Leaving;
 import app.packed.statemachine.StateTransition;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
+import packed.internal.invoke.MethodHandleBuilder;
+import packed.internal.invoke.OpenClass;
 import packed.internal.lifecycle.DefaultLifecycleTransition;
-import packed.internal.reflect.MethodHandleBuilder;
-import packed.internal.reflect.OpenClass;
 import packed.internal.util.ThrowableUtil;
 
 /**

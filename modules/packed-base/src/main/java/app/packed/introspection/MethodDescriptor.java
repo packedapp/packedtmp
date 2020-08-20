@@ -7,7 +7,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 
 import app.packed.base.TypeLiteral;
-import packed.internal.base.reflect.PackedMethodDescriptor;
+import packed.internal.introspection.PackedMethodDescriptor;
 
 /**
  * Provides information about a method, such as its name, parameters, annotations. Unlike {@link Method} this class is

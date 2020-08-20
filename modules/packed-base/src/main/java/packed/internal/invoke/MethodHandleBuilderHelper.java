@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.reflect;
+package packed.internal.invoke;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
@@ -36,7 +36,7 @@ import app.packed.introspection.ParameterDescriptor;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.inject.PackedInjectionContext;
 import packed.internal.inject.ServiceDependency;
-import packed.internal.reflect.MethodHandleBuilder.Entry;
+import packed.internal.invoke.MethodHandleBuilder.Entry;
 import packed.internal.util.MethodHandleUtil;
 
 /**

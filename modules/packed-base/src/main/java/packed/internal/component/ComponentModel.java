@@ -34,7 +34,7 @@ import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.HookRequest;
 import packed.internal.hook.HookRequestBuilder;
 import packed.internal.hook.MemberUnreflector;
-import packed.internal.reflect.OpenClass;
+import packed.internal.invoke.OpenClass;
 import packed.internal.sidecar.Model;
 import packed.internal.util.ThrowableUtil;
 

@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.MemberUnreflector;
-import packed.internal.reflect.OpenClass;
+import packed.internal.invoke.OpenClass;
 import testutil.stubs.annotation.AnnotationInstances;
 import testutil.stubs.annotation.Left;
 

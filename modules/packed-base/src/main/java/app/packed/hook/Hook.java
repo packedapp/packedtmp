@@ -24,7 +24,7 @@ import packed.internal.errorhandling.UncheckedThrowableFactory.AssertionErrorRun
 import packed.internal.hook.HookRequestBuilder;
 import packed.internal.hook.MemberUnreflector;
 import packed.internal.hook.OnHookModel;
-import packed.internal.reflect.OpenClass;
+import packed.internal.invoke.OpenClass;
 import packed.internal.util.ThrowableUtil;
 
 /**
