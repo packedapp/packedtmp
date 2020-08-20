@@ -37,7 +37,7 @@ final class AtProvides {
     @Nullable
     final String description;
 
-    /** The instantiation mode from {@link Provide#isConstant()}. */
+    /** The instantiation mode from {@link Provide#constant()}. */
     final ServiceMode instantionMode;
 
     /** Whether or not the member on which the annotation is present is a static member. */
@@ -64,7 +64,7 @@ final class AtProvides {
         this.provides = requireNonNull(provides);
         this.description = provides.description().length() > 0 ? provides.description() : null;
         this.member = requireNonNull(member);
-        this.instantionMode = provides.isConstant() ? ServiceMode.SINGLETON : ServiceMode.PROTOTYPE;
+        this.instantionMode = provides.constant() ? ServiceMode.SINGLETON : ServiceMode.PROTOTYPE;
         this.isStaticMember = Modifier.isStatic(member.getModifiers());
         this.key = requireNonNull(key);
     }

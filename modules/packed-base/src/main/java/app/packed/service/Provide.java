@@ -106,5 +106,5 @@ public @interface Provide {
     // Service 1, Component another -> each have different
     String description() default "";
 
-    boolean isConstant() default false;
+    boolean constant() default false;
 }

@@ -48,7 +48,7 @@ public final class PackedArtifactImage implements ArtifactImage {
     }
 
     public ArtifactContext newContext(Wirelet... wirelets) {
-        return InstantiationContext.instantiateArtifact(node, WireletPack.fromImage(node.container(), wirelets));
+        return InstantiationContext.instantiateArtifact(node, WireletPack.forImage(node, wirelets));
     }
 
     /** {@inheritDoc} */
@@ -60,7 +60,6 @@ public final class PackedArtifactImage implements ArtifactImage {
     /** {@inheritDoc} */
     @Override
     public ContainerDescriptor descriptor() {
-        // Need to support wirelet context...
         ContainerDescriptor.Builder builder = new ContainerDescriptor.Builder(sourceType());
         node.container().buildDescriptor(builder);
         return builder.build();
@@ -99,8 +98,8 @@ public final class PackedArtifactImage implements ArtifactImage {
      */
     @SuppressWarnings("unchecked")
     public static PackedArtifactImage lazyCreate(Bundle<?> bundle, Wirelet... wirelets) {
-        ComponentNodeConfiguration conf = PackedAssemblyContext.assembleImage(bundle, wirelets);
-        return new PackedArtifactImage(conf, (Class<? extends Bundle<?>>) bundle.getClass());
+        ComponentNodeConfiguration node = PackedAssemblyContext.assembleImage(bundle, wirelets);
+        return new PackedArtifactImage(node, (Class<? extends Bundle<?>>) bundle.getClass());
     }
 }
 //

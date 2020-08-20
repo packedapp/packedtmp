@@ -42,7 +42,7 @@ public class NameGeneratedTest extends AbstractArtifactTest {
         appOf(cs.apply(c -> {})).nameIs(defaultName);
         appOf(cs.apply(c -> {})).nameIs(defaultName);
         // We can override default name
-        appOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.name("Boo")).nameIs("Boo");
+        appOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.named("Boo")).nameIs("Boo");
 
         // Images
         imageOf(cs.apply(c -> {})).nameIs(defaultName);
@@ -50,8 +50,8 @@ public class NameGeneratedTest extends AbstractArtifactTest {
         imageOf(cs.apply(c -> {})).newApp().nameIs(defaultName);
 
         // We can override default name from images
-        imageOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.name("Boo")).nameIs("Boo");
-        imageOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.name("Boo")).newApp().nameIs("Boo");
+        imageOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.named("Boo")).nameIs("Boo");
+        imageOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.named("Boo")).newApp().nameIs("Boo");
 
         // As a child
         appOf(new AbstractConsumableBundle(c -> {

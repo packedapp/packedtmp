@@ -159,6 +159,8 @@ import app.packed.introspection.VariableDescriptor;
 
 //ProvisionContext (If we have InjectionContext)
 //ProvisionPrototypeContext
+
+// Uses attributes?????
 public interface ProvideContext {
 
     // Hvad hvis det ikke er en direkte extension der forsporger???

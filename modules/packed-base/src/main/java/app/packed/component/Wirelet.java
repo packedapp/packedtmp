@@ -15,18 +15,16 @@
  */
 package app.packed.component;
 
-import java.util.function.Function;
-
-import app.packed.base.Nullable;
 import app.packed.container.ContainerBundle;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
+import packed.internal.component.wirelet.InternalWirelet;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletList;
 
 /**
- * Packlets are an umbrella term for small pieces of glue code, that is used to connect, wire, instantiate, debug your
- * applications.
+ * Wirelets are an umbrella term for small pieces of glue code, that is used to wire together the components that make
+ * up your application. connect, wire, instantiate, debug your applications.
  * 
  * A wiring operation is a piece of glue code that wire bundles and/or runtimes together, through operations such as
  * {@link InjectorAssembler#provideAll(Injector, Wirelet...)} or
@@ -52,6 +50,13 @@ import packed.internal.component.wirelet.WireletList;
  */
 public interface Wirelet {
 
+    /**
+     * Combines an array or wirelets
+     * 
+     * @param wirelets
+     *            the wirelets to combine
+     * @return a combined {@code Wirelet}
+     */
     static Wirelet combine(Wirelet... wirelets) {
         return WireletList.of(wirelets);
     }
@@ -66,8 +71,7 @@ public interface Wirelet {
      * 
      * @param w2
      *            the operation to perform after this operation
-     * @return a composed {@code WiringOperation} that performs in sequence this operation followed by the {@code after}
-     *         operation
+     * @return a combined {@code Wirelet} that performs in sequence this operation followed by the {@code after} operation
      */
     static Wirelet combine(Wirelet w1, Wirelet w2) {
         return WireletList.of(w1, w2);
@@ -87,232 +91,44 @@ public interface Wirelet {
     }
 
     /**
-     * Returns a wirelet that will set the name container to the specified value.
+     * Normally a wirelet must be handled. Meaning that the runtime, an extension or some user code must actually receive it
+     * using {@link WireletHandler}. If this is not possible a runtime exception will be thrown when specifying the wirelet.
+     * However, by wrapping the wire
+     * 
+     * @param wirelet
+     *            the wirelet to wrap
+     * @return a new wrapped wirelet
+     */
+    // Handled??? Unhandled (hmmm does not work VarHandle, MethodHandle)
+    static Wirelet ignoreUnhandled(Wirelet... wirelet) {
+        return new InternalWirelet.IgnoreUnhandled(combine(wirelet));
+    }
+
+    static boolean isAllAssignableTo(Class<? extends Wirelet> c, Wirelet... wirelets) {
+        // Ideen er lidt at vi kan bruge den til at teste ting vi wrapper...
+        // Eftersom folk kan smide dem i forskellige wrapper wirelets
+        // such as combine and ignoreUnceceived
+        if (wirelets.length == 0) {
+            return true;
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns a wirelet that will set the name of the component to the specified name.
      * <p>
      * Overriding any default naming scheme, or any name that might already have been set, for example, via
      * {@link ContainerBundle#setName(String)}.
      * 
      * @param name
-     *            the name of the container
-     * @return a wirelet that can be used to set the name of the container
+     *            the name of the component
+     * @return a wirelet that can be used to set the name of the component
      */
-    static Wirelet name(String name) {
+    // String intrapolation?
+    static Wirelet named(String name) {
         return new ComponentNameWirelet(name);
     }
-
-    // If the function returns null. The wirelet will not be processed
-    static Wirelet computeWithName(Function<? super String, @Nullable ? extends Wirelet> function) {
-        return Wirelet.computeWithName(n -> Wirelet.computeWithName(n2 -> Wirelet.name(n2)));
-    }
-
-    // A wirelet must be consumed or wrapped in Wirelet.ignoreIfUnconsumed
-    static Wirelet ignoreIfUnconsumed(Wirelet wirelet) {
-        throw new UnsupportedOperationException();
-    }
-
-    // static Wirelet[] from(Collection<? extends Wirelet> wirelets)
 }
-
-//class XBadIdea {
-//
-//    // void verify();
-//    protected void check() {
-//        // checkApp() for Wirelet.appTimeToLive for example...
-//    }
-//
-//    // For bedre error messages. This operation can only be used if the parent or child bundle
-//    // has installed the XXX extension (As an alternative, annotated the key with
-//    // @RequiresExtension(JMXExtension.class)....)
-//    // Or even better the actual WiringOperation.....
-//    // protected void useAttachment(Key...., Class<?> requiredExtension);
-//
-//    // Bootstrap classes... Classes that are only available for injection.... (Not even initialized....)
-//    // bundleLink.bootstrapWith(StringArgs.of("sdsdsd");
-//    // bundleLink.bootstrapWith(Configuration.read("c:/sdasdasd\'");
-//    // run(new XBundle(), Configuration.read("c:/sdad"));
-//
-
-//    // force start, initialize, await start...
-//    protected final void checkApp() {
-//
-//    }
-//
-//    final Wirelet ifCondition() {
-//        // Or Else
-//
-//        // Igen Predicate<Environment> <- Skal vaere statisk
-//
-//        // conditional(Predicate, Wirelet alt1) //alt1 if true, else no wirelet
-//        // conditional(Predicate, Wirelet alt1, Wirelet alt2). alt1 if true, otherwise alt2
-//        throw new UnsupportedOperationException();
-//    }
-//
-//    // Det er vel mere om den kun bruges i forbindelse med linkage...
-//    // D.v.s.
-//    /**
-//     * Returns whether or not the wirelet can be used with an image
-//     * 
-//     * @return stuff
-//     */
-//    // TODO do we want to differentiate between when we use dem for an image or not???
-//    // Or just whether they can be used outside link()? is only for connecting containers
-//    // within the same artifact.
-//
-//    // Det er vel mere disable on runtime...
-//
-////Wirelets 
-////Image
-////App
-////Image Expand
-////Image + App
-////
-////Expand
-////
-////expandables
-////
-////The wirelet XX cannot be used once the image is created
-////
-////The wirelet XX cannot be used together with an image that have already been created
-//
-//    // Maaske skal vi kun have den paa pipeline wirelets?? Hmmm
-//
-//    final Wirelet onCondition(Predicate<Environment> predicate) {
-//        // Et problem hvis vi laver et image...
-//        // Hvor vi laver en link med saadan en faetter
-//        // Den vil evaluere til en ting naar vi laver imaged og en anden ting paa runtime
-//        // F.eks. en System property der kun er sat paa runtime
-//        throw new UnsupportedOperationException();
-//    }
-//
-//    interface Environment {
-//
-//    }
-//
-//    // Hvor Object er en eller anden context...
-//    // Men hmmm, vi kender jo ikke navnet.
-//
-//    // Ville vaere rart hvis vi f.eks. kunne sige
-//    // Key.of(String.class).withName("$ContainerName$");
-//    /// Nah saa maa folk selv saette navnet via Wirelet.name();
-//
-////    static Wirelet context(Function<Object, Wirelet> contextMapper) {
-////
-////    }
-//}
-// Okay... hvordan klare vi det her med Bundle.lookup()
-// Maaske i foerste omgang ved ikke at supportere det.
-// static Wirelet lookup(MethodHandles.Lookup lookup) {
-// throw new UnsupportedOperationException();
-// }
-// Det er jo i forbindelse med ServiceWirelets vi supportere det.
-// Men tror alt maa wrappes i en injector. Og saa bruge lookup();
-
-// Wire vs link....
 
 // Interface -> kan man let implementere, uden at fucke et nedarvnings hiraki op
 // Klasse -> Vi kan have protected metoder
-
-// https://martinfowler.com/articles/collection-pipeline/
-// A bundling always has a bundle (source) and a target???
-
-// WiringOptions
-/// kunne have en bundle.disableConfigSite()... <- Saa har man den kun paa toplevel app'en....
-//// NoConfiguSite, ForceConfigSite
-
-//// ExportTransient -> Meaning everything is exported out again from the bundle
-//// exportTransient(Filter) <-Kunne ogsaa vaere paa WiredBundle
-
-// Push wirelets down to sub containers...
-//// Should not be supported because it would break encapsulation....
-//// Would be nice with debugging options... For example, enable TOMCAT high debug mode
-// This is implementation detail...
-//// Basically propagation of support options...
-
-// Hierachical composition
-
-// Wiring methods
-// Linked: refering to the process of linking multiple bundles together. Linkages is final
-// Hosted: referers to wiring multiple apps together
-// Detached:
-
-// TODO move to component, if it will see general use...
-// TODO ConfigSite disabled, enabled, hierachical
-
-// Properties
-//// OutputTargetType == App, Injector, Analyze, Image
-
-// Paclet??? Har bare altid syntes det loed lidt dumt naar noget opkaldt efter projektet..
-// Packlet...
-// Plug
-// Arglets...
-
-// However, extensions are not that simple.
-// support for GraalVM
-// Support for Artifact Image generation.
-// Descriptors
-// User Configuration
-// Config Files
-// Lifecycle
-// Relation to other extensions.
-
-//
-/// **
-// * Creates a wiring operation by composing a sequence of zero or more wiring operations.
-// *
-// * @param operations
-// * the operations to combine
-// * @return a new combined operation
-// * @see #andThen(Wirelet)
-// * @see #andThen(Wirelet...)
-// */
-// public static Wirelet compose(Wirelet... operations) {
-// return WireletList.of(operations);
-// }
-
-// Ved ikke om det er noget vi kommer til at bruge...
-// public static Wirelet of(Consumer<BundleLink> consumer) {
-// requireNonNull(consumer, "consumer is null");
-// return new Wirelet() {
-//
-// @Override
-// protected void process(BundleLink link) {
-// consumer.accept(link);
-// }
-// };
-// }
-// Kunne vaere rart, hvis man f.eks. kunne
-// wire(SomeBundle.class, JaxRSSpec.v2_1.wireStrict());
-// wire(SomeBundle.class, JettySpec.v23_1.wireStrict());
-
-// Wirelet.implements)_
-
-/// Ideen er at JettySpec.23_1 kan vaere + JaxRSSpec.2_1
-// ComponentInstanceHook
-// AnnotatedComponentTypeHook
-// AnnotatedComponentMethodHook
-
-/// activeInstance(Startable.class)
-/// activeAnnotatedMethod(onStart.class)...
-//// De skal vaere en del af specifikationen
-// Activators
-// InstanceOfActivator (Component+<T>)
-// AnnotatedTypeActivator
-// AnnotatedMethodActivator
-// ServiceLoader.enabledInvocationOnComponentMethodsAnnotatedWith(xxx.class, ...);
-// Bundling -> import pipeline and an export pipeline where each element of the exposed api is processed through
-
-// protected Configuration onConfiguration(@Nullable Configuration<?> configuration) {} or
-// protected void onConfiguration(ConfigurationBuilder configuration) {} and then we check for overrides.
-// ImportExportStage configuration.extractChild("jetty"); installContainer(XBundle.class, ConfigurationTransformer<>
-// Kan ogsaa vaere en alm service, og saa naa den er der saa blive annoteringerne aktiveret....
-/// Men ihvertfal conf bliver skubbet op fra roden... Man kan aldrig exportere en Configuration.. Eller det kan man vel
-// godt.
-// Optional Configuration-> You may provide a configuration if you want, mandatory you must provide a Confgiuration.
-// A configuration is always bound with singleton scope, not lazy, not prototype
-
-// Fordi vi ikke har en ServiceConfiguration
-// Make public... Vil helst have den i Lifecycle maaske. Saa kan vi ogsaa registere den paa
-// onStart(String name)... skal kunne saette navnet, saa maaske
-// onStart(CompletionStage).setName(); eller
-// onStart(String startingPointName, CompletionStage)
-// men hvis ogsaa skulle kunne vente a.la. onStart("cacheLoader").thenRun(sysout(yeah"));

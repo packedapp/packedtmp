@@ -180,9 +180,15 @@ public final class ServiceExtension extends Extension {
     }
 
     <T> ExportedServiceConfiguration<T> alias(Class<T> key) {
-        //
+        // Hmm maaske vi skal kalde den noget andet...
+        // SingletonService kan sikkert sagtens extende den...
+        // ProtoypeConfiguration has altid en noegle og ikek optional..
         throw new UnsupportedOperationException();
     }
+
+    protected void addAlias(Key<?> existing, Key<?> newKey) {}
+
+    protected void addAlias(Class<?> existing, Class<?> newKey) {}
 
     /**
      * Exports a service of the specified type.
@@ -195,6 +201,8 @@ public final class ServiceExtension extends Extension {
      * @see #export(Key)
      */
     public <T> ExportedServiceConfiguration<T> export(Class<T> key) {
+        // A service can be exported multiple times...
+        // However export must be called for each export...
         return export(Key.of(key));
     }
 
@@ -233,6 +241,8 @@ public final class ServiceExtension extends Extension {
      */
     // Will never export services that are requirements...
     public void exportAll() {
+        // export all _services_.. Also those that are already exported as something else???
+        // I should think not... Det er er en service vel... SelectedAll.keys().export()...
         checkConfigurable();
         node.exports().exportAll(captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
@@ -299,7 +309,8 @@ public final class ServiceExtension extends Extension {
                     "Custom implementations of Injector are currently not supported, injector type = " + injector.getClass().getName());
         }
         checkConfigurable();
-        node.provider().provideAll((AbstractInjector) injector, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL), WireletList.of(wirelets));
+        node.provider().provideAll((AbstractInjector) injector, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL),
+                WireletList.ofAll(wirelets));
     }
 
     public void require(Class<?>... keys) {

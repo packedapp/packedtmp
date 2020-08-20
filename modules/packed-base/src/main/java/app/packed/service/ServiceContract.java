@@ -69,6 +69,8 @@ import app.packed.container.ExtensionMember;
 // Dependencies needed and services provided
 
 // This class is typically used at container level.
+
+// provides -> exports???
 @ExtensionMember(ServiceExtension.class)
 public final class ServiceContract extends Contract {
 
@@ -509,6 +511,8 @@ public final class ServiceContract extends Contract {
 
         // That makes it a view, or an immutable copy.
         // Taenker vi skal vaere konsekvent for buildere...
+
+        // Vil syntes et view er fint???
         public Set<Key<?>> requires() {
             throw new UnsupportedOperationException();
         }

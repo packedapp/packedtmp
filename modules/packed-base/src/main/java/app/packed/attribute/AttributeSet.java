@@ -60,6 +60,8 @@ public interface AttributeSet {
     // If the attribute has a default value this will be returned???
     <T> T get(Attribute<T> attribute);
 
+    boolean isPresent(Attribute<?> attribute);
+
     /**
      * If an attribute is present, performs the given action with the value of the attribute, otherwise does nothing.
      *

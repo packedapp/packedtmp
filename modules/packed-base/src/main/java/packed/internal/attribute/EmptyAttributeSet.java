@@ -68,6 +68,12 @@ public final class EmptyAttributeSet implements AttributeSet {
 
     /** {@inheritDoc} */
     @Override
+    public boolean isPresent(Attribute<?> attribute) {
+        return false;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public <T> T orElse(Attribute<T> attribute, T other) {
         return other;
     }

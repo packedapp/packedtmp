@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfigurationContext;
-import app.packed.component.WireletReceive;
+import app.packed.component.WireletHandler;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionMember;
@@ -377,7 +377,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         protected void addExtensionContextElements(MethodHandleBuilder builder, int index) {
             builder.addKey(ExtensionConfiguration.class, index);
             builder.addKey(LifecycleContext.class, PackedExtensionConfiguration.MH_LIFECYCLE_CONTEXT, index);
-            builder.addAnnoClassMapper(WireletReceive.class, PackedExtensionConfiguration.MH_FIND_WIRELET, index);
+            builder.addAnnoClassMapper(WireletHandler.class, PackedExtensionConfiguration.MH_FIND_WIRELET, index);
         }
 
         /**

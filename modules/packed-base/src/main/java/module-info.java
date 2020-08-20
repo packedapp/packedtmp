@@ -29,6 +29,8 @@ module app.packed.base {
     exports packed.internal.sidecar to app.packed.conta;
     exports packed.internal.hook.applicator to app.packed.errorhandling, app.packed.cli;
 
+    opens app.packed.service to app.packed.service;
+
     requires java.management;
 }
 

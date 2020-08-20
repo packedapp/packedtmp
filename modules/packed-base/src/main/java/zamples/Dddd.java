@@ -52,7 +52,7 @@ public class Dddd extends BaseBundle {
         use(MyExtension.class);
         setName("dd?");
         for (int i = 0; i < 100000; i++) {
-            link(new LinkMe(20), Wirelet.name("Hej" + i));
+            link(new LinkMe(20), Wirelet.named("Hej" + i));
         }
     }
 

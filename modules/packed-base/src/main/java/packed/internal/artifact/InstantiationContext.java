@@ -70,8 +70,8 @@ public final class InstantiationContext {
         return wirelets;
     }
 
-    public static ArtifactContext instantiateArtifact(ComponentNodeConfiguration root, WireletPack wc) {
-        InstantiationContext ic = new InstantiationContext(wc);
+    public static ArtifactContext instantiateArtifact(ComponentNodeConfiguration root, WireletPack wp) {
+        InstantiationContext ic = new InstantiationContext(wp);
         // Will instantiate the whole container hierachy
         ComponentNode node = root.instantiateTree(ic);
 

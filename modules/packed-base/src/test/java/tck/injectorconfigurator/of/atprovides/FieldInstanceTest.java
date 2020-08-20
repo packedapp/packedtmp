@@ -32,10 +32,10 @@ import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
 import app.packed.service.Provide;
 
-/** Tests {@link Provide#isConstant()} on fields. */
+/** Tests {@link Provide#constant()} on fields. */
 public class FieldInstanceTest {
 
-    /** Tests default {@link Provide#isConstant()} on instance fields. */
+    /** Tests default {@link Provide#constant()} on instance fields. */
     @Test
     public void provide() {
         MixedFields.test(c -> c.provideInstance(new MixedFields()));
@@ -144,10 +144,10 @@ public class FieldInstanceTest {
         // @Provide(instantionMode = InstantiationMode.LAZY)
         // Long l = 1L;
 
-        @Provide(isConstant = false)
+        @Provide(constant = false)
         Integer p = 1;
 
-        @Provide(isConstant = true)
+        @Provide(constant = true)
         Short s = 1;
 
         static void test(Consumer<? super InjectorAssembler> configurator) {
@@ -171,7 +171,7 @@ public class FieldInstanceTest {
 
     static class PrototypeField {
 
-        @Provide(isConstant = false)
+        @Provide(constant = false)
         Short s = 1;
 
         PrototypeField(AtomicBoolean b) {
@@ -181,7 +181,7 @@ public class FieldInstanceTest {
 
     static class SingletonField {
 
-        @Provide(isConstant = true)
+        @Provide(constant = true)
         Short s = 1;
 
         SingletonField(AtomicBoolean b) {

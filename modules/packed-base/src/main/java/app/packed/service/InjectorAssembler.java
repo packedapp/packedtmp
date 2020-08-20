@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.Key.Qualifier;
+import app.packed.component.Assembler;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
 import app.packed.component.SingletonConfiguration;
@@ -38,7 +39,7 @@ import app.packed.inject.Factory;
  * The main difference compared to bundles is that there is no concept of encapsulation. All services are exported by
  * default.
  */
-public final class InjectorAssembler {
+public final class InjectorAssembler extends Assembler {
 
     /** The configuration we delegate all calls to. */
     private final ContainerConfiguration configuration;

@@ -32,10 +32,10 @@ import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
 import app.packed.service.Provide;
 
-/** Tests {@link Provide#isConstant()}. */
+/** Tests {@link Provide#constant()}. */
 public class MethodInstanceTest {
 
-    /** Tests default {@link Provide#isConstant()} on instance methods. */
+    /** Tests default {@link Provide#constant()} on instance methods. */
     @Test
     public void provide() {
         MixedMethods.test(c -> c.provideInstance(new MixedMethods()));
@@ -109,12 +109,12 @@ public class MethodInstanceTest {
         // return l;
         // }
 
-        @Provide(isConstant = false)
+        @Provide(constant = false)
         Integer p() {
             return p;
         }
 
-        @Provide(isConstant = true)
+        @Provide(constant = true)
         Short s() {
             return s;
         }
@@ -149,7 +149,7 @@ public class MethodInstanceTest {
             b.set(true);
         }
 
-        @Provide(isConstant = false)
+        @Provide(constant = false)
         public Short s() {
             return s;
         }
@@ -163,7 +163,7 @@ public class MethodInstanceTest {
             b.set(true);
         }
 
-        @Provide(isConstant = true)
+        @Provide(constant = true)
         public Short s() {
             return s;
         }

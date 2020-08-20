@@ -29,12 +29,12 @@ import app.packed.service.InjectorAssembler;
 import app.packed.service.Provide;
 
 /**
- * Tests {@link Provide#isConstant()} on static fields. In general we do not need to create an instance of the parent if
+ * Tests {@link Provide#constant()} on static fields. In general we do not need to create an instance of the parent if
  * we have static {@link Provide} fields. Unlike for instance fields.
  */
 public class FieldStaticTest {
 
-    /** Tests default {@link Provide#isConstant()} on static fields. */
+    /** Tests default {@link Provide#constant()} on static fields. */
     @Test
     public void provide() {
         MixedFieldsInstantiable.test(c -> c.provideInstance(new MixedFieldsInstantiable()));
@@ -52,7 +52,7 @@ public class FieldStaticTest {
     // {})).lazy());
     // }
 
-    /** Tests prototype {@link Provide#isConstant()} on static fields. */
+    /** Tests prototype {@link Provide#constant()} on static fields. */
     @Test
     public void providePrototype() {
         MixedFieldsNoInstantiation.test(c -> c.providePrototype(MixedFieldsNoInstantiation.class));
@@ -66,10 +66,10 @@ public class FieldStaticTest {
         // @Provide(instantionMode = InstantiationMode.LAZY)
         // private static Long L;
 
-        @Provide(isConstant = false)
+        @Provide(constant = false)
         private static Integer P;
 
-        @Provide(isConstant = true)
+        @Provide(constant = true)
         private static Short S;
 
         MixedFieldsInstantiable() {
@@ -112,10 +112,10 @@ public class FieldStaticTest {
         // @Provide(instantionMode = InstantiationMode.LAZY)
         // private static Long L;
 
-        @Provide(isConstant = false)
+        @Provide(constant = false)
         private static Integer P;
 
-        @Provide(isConstant = true)
+        @Provide(constant = true)
         private static Short S;
 
         public MixedFieldsNoInstantiation() {

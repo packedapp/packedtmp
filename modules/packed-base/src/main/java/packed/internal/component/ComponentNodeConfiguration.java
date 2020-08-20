@@ -129,7 +129,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     public static ComponentNodeConfiguration newAssembly(PackedAssemblyContext assembly, PackedComponentDriver<?> driver, ConfigSite configSite,
             PackedRealm realm, WireletPack wirelets) {
-        return new ComponentNodeConfiguration(assembly, realm, null, driver, configSite, wirelets);
+        return new ComponentNodeConfiguration(assembly, realm, driver, configSite, null, wirelets);
     }
 
     @Nullable
@@ -137,8 +137,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         return parent;
     }
 
-    public ComponentNodeConfiguration newChild(PackedComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm, Wirelet... wirelets) {
-        return new ComponentNodeConfiguration(assembly, realm, this, driver, configSite, WireletPack.from(driver, wirelets));
+    public ComponentNodeConfiguration newChild(PackedComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm, @Nullable WireletPack wp) {
+        return new ComponentNodeConfiguration(assembly, realm, driver, configSite, this, wp);
     }
 
     /**
@@ -149,8 +149,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
      * @param parent
      *            the parent of the component
      */
-    private ComponentNodeConfiguration(PackedAssemblyContext assembly, PackedRealm realm, @Nullable ComponentNodeConfiguration parent,
-            PackedComponentDriver<?> driver, ConfigSite configSite, @Nullable WireletPack wirelets) {
+    private ComponentNodeConfiguration(PackedAssemblyContext assembly, PackedRealm realm, PackedComponentDriver<?> driver, ConfigSite configSite,
+            @Nullable ComponentNodeConfiguration parent, @Nullable WireletPack wirelets) {
         this.assembly = requireNonNull(assembly);
         this.realm = requireNonNull(realm);
 
@@ -204,7 +204,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
      * @see StackWalker
      */
     // TODO add stuff about we also ignore non-concrete container sources...
-    public ConfigSite captureStackFrame(String operation) {
+    ConfigSite captureStackFrame(String operation) {
         // API-NOTE This method is not available on ExtensionContext to encourage capturing of stack frames to be limited
         // to the extension class in order to simplify the filtering mechanism.
 
@@ -415,9 +415,10 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         }
         // Create the child node
         // ConfigSite cs = ConfigSiteSupport.captureStackFrame(configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
+        WireletPack wp = WireletPack.from(driver, wirelets);
         ConfigSite cs = ConfigSite.UNKNOWN;
         ComponentNodeConfiguration p = driver().isExtension() ? parent : this;
-        ComponentNodeConfiguration newNode = p.newChild(driver, cs, PackedRealm.fromBundle(bundle), wirelets);
+        ComponentNodeConfiguration newNode = p.newChild(driver, cs, PackedRealm.fromBundle(bundle), wp);
 
         // Invoke Bundle::configure
         BundleConfiguration.configure(bundle, driver.toConfiguration(newNode));
@@ -428,18 +429,20 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     /** {@inheritDoc} */
     @Override
     public <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
+        requireNonNull(driver, "driver is null");
         PackedComponentDriver<C> d = (PackedComponentDriver<C>) driver;
+        WireletPack wp = WireletPack.from(d, wirelets);
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
-        ComponentNodeConfiguration conf = newChild(d, configSite, realm);
+        ComponentNodeConfiguration conf = newChild(d, configSite, realm, wp);
         return driver.toConfiguration(conf);
     }
 
     public <W extends Wirelet> Optional<W> receiveWirelet(Class<W> type) {
-        W wop = null;
-        if (wirelets != null) {
-            wop = wirelets.receiveLast(type);
+        if (wirelets == null) {
+            return Optional.empty();
         }
-        return wop == null ? Optional.empty() : Optional.ofNullable(wop);
+        W w = wirelets.receiveLast(type);
+        return Optional.ofNullable(w);
     }
 
     /**

@@ -91,7 +91,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
         this.container = requireNonNull(container);
         this.model = requireNonNull(model);
         this.realm = PackedRealm.fromExtension(this);
-        this.node = container.node.newChild(model.driver(), container.node.configSite(), realm);
+        this.node = container.node.newChild(model.driver(), container.node.configSite(), realm, null);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })

@@ -28,10 +28,10 @@ import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
 import app.packed.service.Provide;
 
-/** Tests {@link Provide#isConstant()} on static methods. */
+/** Tests {@link Provide#constant()} on static methods. */
 public class MethodStaticTest {
 
-    /** Tests default {@link Provide#isConstant()} on static methods. */
+    /** Tests default {@link Provide#constant()} on static methods. */
     @Test
     public void provide() {
         MixedMethodsInstantiable.test(c -> c.provideInstance(new MixedMethodsInstantiable()));
@@ -49,7 +49,7 @@ public class MethodStaticTest {
     // {})).lazy());
     // }
 
-    /** Tests prototype {@link Provide#isConstant()} on static methods. */
+    /** Tests prototype {@link Provide#constant()} on static methods. */
     @Test
     public void providePrototype() {
         MixedMethodsNoInstantiation.test(c -> c.providePrototype(MixedMethodsNoInstantiation.class));
@@ -77,12 +77,12 @@ public class MethodStaticTest {
         // return L;
         // }
 
-        @Provide(isConstant = false)
+        @Provide(constant = false)
         static Integer p() {
             return P;
         }
 
-        @Provide(isConstant = true)
+        @Provide(constant = true)
         static Short s() {
             return S;
         }
@@ -133,12 +133,12 @@ public class MethodStaticTest {
         // return L;
         // }
 
-        @Provide(isConstant = false)
+        @Provide(constant = false)
         static Integer p() {
             return P;
         }
 
-        @Provide(isConstant = true)
+        @Provide(constant = true)
         static Short s() {
             return S;
         }

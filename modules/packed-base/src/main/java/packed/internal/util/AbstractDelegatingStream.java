@@ -50,7 +50,7 @@ public abstract class AbstractDelegatingStream<T> implements Stream<T> {
      * @param stream
      *            the stream to delegate to
      */
-    public AbstractDelegatingStream(Stream<T> stream) {
+    protected AbstractDelegatingStream(Stream<T> stream) {
         this.stream = requireNonNull(stream);
     }
 

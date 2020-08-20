@@ -42,7 +42,7 @@ public final class WireletList implements Wirelet {
     private static final WireletList EMPTY = new WireletList();
 
     /** The wirelets we are wrapping. */
-    public final Wirelet[] wirelets;
+    final Wirelet[] wirelets;
 
     private WireletList(Wirelet... wirelets) {
         int size = wirelets.length;
@@ -65,7 +65,6 @@ public final class WireletList implements Wirelet {
                 tmp[c++] = w;
             }
         }
-        // If wirelet instanceof WireletList -> Extract
         this.wirelets = tmp;
     }
 
@@ -90,9 +89,8 @@ public final class WireletList implements Wirelet {
         }
     }
 
-    int size() {
-        // We should maintain this number. So we can easy create an non-growing array in WireletPack
-        return -1;
+    public int size() {
+        return wirelets.length;
     }
 
     /**
@@ -204,10 +202,21 @@ public final class WireletList implements Wirelet {
         return sb.toString();
     }
 
-    public static WireletList of(Wirelet... wirelets) {
+    public static WireletList ofAll(Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
         if (wirelets.length == 0) {
             return EMPTY;
+        }
+        return new WireletList(wirelets);
+    }
+
+    public static Wirelet of(Wirelet... wirelets) {
+        requireNonNull(wirelets, "wirelets is null");
+        if (wirelets.length == 0) {
+            return EMPTY;
+        }
+        if (wirelets.length == 1) {
+            return wirelets[0];
         }
         return new WireletList(wirelets);
     }
@@ -226,6 +235,7 @@ public final class WireletList implements Wirelet {
     }
 
     public static WireletList of(Wirelet w1, Wirelet[] wirelets) {
+        requireNonNull(w1, "w1 is null");
         requireNonNull(wirelets, "wirelets is null");
         ArrayList<Wirelet> l = new ArrayList<>();
         // Maaden vi rekursiv processere them betyder at jeg ikke tror vi behoever at pakke dem ud....
@@ -235,6 +245,6 @@ public final class WireletList implements Wirelet {
             l.add(w1);
         }
         l.addAll(List.of(wirelets));
-        return WireletList.of(l.toArray(i -> new Wirelet[i]));
+        return WireletList.ofAll(l.toArray(i -> new Wirelet[i]));
     }
 }

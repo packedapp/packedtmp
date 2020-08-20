@@ -110,7 +110,7 @@ public final class PackedInjector extends AbstractInjector {
             cs = sf.isPresent() ? configSite.thenStackFrame("Injector.Spawn", sf.get()) : ConfigSite.UNKNOWN;
         }
         LinkedHashMap<Key<?>, InjectorEntry<?>> newServices = new LinkedHashMap<>(entries);
-        WireletList wl = WireletList.of(wirelets);
+        WireletList wl = WireletList.ofAll(wirelets);
         ConfigSite ccs = cs;
         wl.forEach(PackedDownstreamInjectionWirelet.class, w -> w.process(ccs, newServices));
         // TODO Auto-generated method stub

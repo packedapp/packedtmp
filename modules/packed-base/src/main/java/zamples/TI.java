@@ -17,7 +17,7 @@ package zamples;
 
 import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
-import app.packed.component.WireletReceive;
+import app.packed.component.WireletHandler;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
@@ -116,7 +116,7 @@ public class TI extends BaseBundle {
         String foo;
         final LifecycleContext lc;
 
-        MyExte(LifecycleContext lc, InjectionContext ic, @WireletReceive MyTestWirelet wc) {
+        MyExte(LifecycleContext lc, InjectionContext ic, @WireletHandler MyTestWirelet wc) {
             // System.out.println("State " + lc.current());
             this.lc = lc;
 

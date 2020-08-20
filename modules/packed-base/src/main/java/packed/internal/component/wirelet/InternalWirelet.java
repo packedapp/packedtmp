@@ -22,25 +22,15 @@ import app.packed.component.Wirelet;
 /**
  *
  */
-// Maybe its just component wirelets....
-// And then we only have Extension wirelets????
-
-//ArchWirelets taenker det maaske mere er en annoteringen man kan bruge paa bundlen...
-// F.eks. alle containeres navn skal starte med "Xyz" hvis der er over 10 componenter...
-// Er det noget dev tools???? Det taenker jeg...
-// Eller er det noget vi gider validere i production???
-// Altsaa det bliver vel smidt vaek naar man har lavet et image....
-
-// Taenker det er noget man kan teste for ArchCheck.check(new DooBundle());
 public abstract class InternalWirelet implements Wirelet {
 
     abstract void process(WireletPack c);
 
-    /** A wirelet that will set the name of the container. Used by {@link Wirelet#name(String)}. */
+    /** A wirelet that will set the name of the container. Used by {@link Wirelet#named(String)}. */
     public static final class ComponentNameWirelet extends InternalWirelet {
 
         /** The (checked) name to override with. */
-        public final String name;
+        final String name;
 
         /**
          * Creates a new option
@@ -55,7 +45,7 @@ public abstract class InternalWirelet implements Wirelet {
         /** {@inheritDoc} */
         @Override
         void process(WireletPack c) {
-            c.newName = name;// will override any set previously
+            c.name = name;// will override any set previously
         }
 
         /**
@@ -71,6 +61,26 @@ public abstract class InternalWirelet implements Wirelet {
 
             }
             return name;
+        }
+    }
+
+    /** A wirelet that will set the name of the container. Used by {@link Wirelet#named(String)}. */
+    public static final class IgnoreUnhandled extends InternalWirelet {
+
+        final Wirelet wirelet;
+
+        /**
+         * Creates a new option
+         * 
+         */
+        public IgnoreUnhandled(Wirelet wirelet) {
+            this.wirelet = requireNonNull(wirelet);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        void process(WireletPack c) {
+
         }
     }
 }

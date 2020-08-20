@@ -40,7 +40,7 @@ public class Dddd extends BaseBundle {
         installInstance("sdfsdf");
         installInstance("sdfsdf");
         if (depth > 0) {
-            link(new Dddd(depth - 1), Wirelet.name("X123123XXX"));
+            link(new Dddd(depth - 1), Wirelet.named("X123123XXX"));
             link(new Dddd(depth - 1));
             link(new Dddd(depth - 1));
         }

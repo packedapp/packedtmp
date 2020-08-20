@@ -18,26 +18,24 @@ package packed.internal.component.wirelet;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
+import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedComponentDriver;
-import packed.internal.container.PackedContainerRole;
 
 /** A holder of wirelets and wirelet pipelines. */
 public final class WireletPack {
 
     // We might at some point, allow the setting of a default name...
     // In which we need to different between not-set and set to null
-    String newName; // kan komme i map... og saa saetter vi et flag istedet for...
+    String name; // kan komme i map... og saa saetter vi et flag istedet for...
 
     private ArrayList<Ent> list = new ArrayList<>();
 
-    /**
-     * Creates a new pack.
-     * 
-     */
+    /** Creates a new pack. */
     private WireletPack() {}
 
     /**
@@ -46,8 +44,6 @@ public final class WireletPack {
     private void create0(Wirelet w) {
         Class<? extends Extension> extensionType = WireletModel.of(w.getClass()).extension;
         if (w instanceof InternalWirelet) {
-            // Hmm skulle vi vente til alle wirelets er succesfuld processeret???
-            // Altsaa hvad hvis den fejler.... Altsaa taenker ikke den maa lavere aendringer i containeren.. kun i wirelet context
             ((InternalWirelet) w).process(this);
         } else if (w instanceof WireletList) {
             for (Wirelet ww : ((WireletList) w).wirelets) {
@@ -71,10 +67,25 @@ public final class WireletPack {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
+    public <W extends Wirelet> List<W> receiveAll(Class<W> type) {
+        ArrayList<W> result = null;
+        for (Ent e : list) {
+            if (type.isAssignableFrom(e.wirelet.getClass())) {
+                e.isReceived = true;
+                if (result == null) {
+                    result = new ArrayList<>(1);
+                }
+                result.add((W) e.wirelet);
+            }
+        }
+        return result == null ? List.of() : List.copyOf(result);
+    }
+
     // That name wirelet.. should only be used by the top-container....
     @Nullable
     public String nameWirelet() {
-        return newName;
+        return name;
     }
 
     /**
@@ -108,7 +119,7 @@ public final class WireletPack {
     }
 
     @Nullable
-    public static WireletPack fromImage(PackedContainerRole pcc, Wirelet... wirelets) {
+    public static WireletPack forImage(ComponentNodeConfiguration cnc, Wirelet... wirelets) {
         return create(wirelets);
     }
 
