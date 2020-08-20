@@ -35,6 +35,8 @@ public interface MethodDescriptor extends ExecutableDescriptor {
 
     boolean overrides(MethodDescriptor supeer);
 
+    boolean isDefault();
+
     /**
      * Returns a {@code Class} object that represents the formal return type of this method .
      *

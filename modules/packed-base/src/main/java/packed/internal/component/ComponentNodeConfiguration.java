@@ -36,12 +36,12 @@ import app.packed.component.Bundle;
 import app.packed.component.ClassSourcedDriver;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfigurationContext;
-import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.component.FactorySourcedDriver;
 import app.packed.component.InstanceSourcedDriver;
+import app.packed.component.WireableComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
@@ -428,13 +428,13 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     /** {@inheritDoc} */
     @Override
-    public <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
+    public <C> C wire(WireableComponentDriver<C> driver, Wirelet... wirelets) {
         requireNonNull(driver, "driver is null");
         PackedComponentDriver<C> d = (PackedComponentDriver<C>) driver;
         WireletPack wp = WireletPack.from(d, wirelets);
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         ComponentNodeConfiguration conf = newChild(d, configSite, realm, wp);
-        return driver.toConfiguration(conf);
+        return d.toConfiguration(conf);
     }
 
     public <W extends Wirelet> Optional<W> receiveWirelet(Class<W> type) {

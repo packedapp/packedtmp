@@ -15,34 +15,43 @@
  */
 package app.packed.component;
 
-import java.lang.invoke.MethodHandles;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 
 /**
- * 
- * 
- * @param <C>
- *            the type of configuration the driver expose to users for configuring the underlying component
- * 
- * @apiNote In the future, if the Java language permits, {@link ComponentDriver} may become a {@code sealed} interface,
- *          which would prohibit subclassing except by explicitly permitted types.
+ *
  */
-// TODO maybe remove all methods...
-// And just retain implementations for internal usage...
 public interface ComponentDriver<C> {
-
-    static <C> ComponentDriver<C> create(MethodHandles.Lookup lookup, Option... options) {
-        throw new UnsupportedOperationException();
-    }
-
-    C toConfiguration(ComponentConfigurationContext cnc);
 
     public interface Option {
 
         /**
          * The component the driver will be a container.
+         * <p>
+         * A container that is a component cannot be sourced??? Yes It can... It can be the actor system
          */
+        // Or Maybe
         static Option container() {
             throw new UnsupportedOperationException();
+        }
+
+        // The parent + the driver
+        //
+        static Option validateWiring(BiConsumer<Component, WireableComponentDriver<?>> validator) {
+            throw new UnsupportedOperationException();
+        }
+
+        static Option validateParentIsContainer() {
+            return validateParent(c -> c.attribute(Component.PROPERTIES).contains(ComponentProperty.CONTAINER),
+                    "This component can only be wired to a container");
+        }
+
+        static Option validateParent(Predicate<? super Component> validator, String msg) {
+            return validateWiring((c, d) -> {
+                if (validator.test(c)) {
+                    throw new IllegalArgumentException(msg);
+                }
+            });
         }
 
         // Option serviceable()
@@ -50,74 +59,3 @@ public interface ComponentDriver<C> {
         // at expose funktionaliteten.
     }
 }
-
-// Error handling top->down and then as a static bundle method as last resort.
-// The bundle XX.... defines a non-static error handler method. But it was never installed
-
-// S spawn();
-// CompletableFuture<S> spawnAsync();
-
-// Stateless, Statefull, DistributedObject, Entity <-
-
-// Requestlets, Scopelets, ...
-
-// Charactariska = How Many Instances, Managaged/ Unmanaged, Dynamic-wire (host)
-
-// Wirelets for components??????? Nej ikke udo
-// install(Doo.class, name("fsdsfd"), description("weweqw));
-
-// install(Role, implementation, wirelets);
-
-// Bundle.setDefaultRole <- On Runtime.
-// F.eks. Actor .withRole(Actor)
-
-// Role -> Pool [5-25 instance, timeout 1 minute]
-
-// I role skulle man kun installere en slags controller...
-
-// Install
-
-// setMaxInstances();
-
-// Role-> PrototypeOptionas. Its a prototype of
-
-// I think there are extra settings on prototype...
-// Such as caching...
-// Because they are unthogonal, lazy has nothing todo with actors.
-
-// But about runtime hotswap, for example, for actors...
-// We kind of swap the type...
-
-// We have a special component implementation for that...
-
-// COMPONENT_DRIVEr definere ingen drivere selv..
-// Skal den vaere here eller paa ComponentDriver????
-// Syntes egentlig ikke den er tilknyttet ComponentDriver...
-// Men hvis folk selv definere for custom defineret vil det maaske give mening.
-// At smide dem paa configurationen... Der er jo ingen
-
-// En anden meget positiv ting er at vi vi har 2 component drivere
-// sourced and unsourced. People shouldn't really need to look at
-// both of the classes two find what they need..
-
-//interface InstanDriver<T, C>
-
-/**
- *
- *
- * @param <C>
- *            the type of configuration that will be returned to the user
- */
-//Noget med scanning....
-
-//Det er jo fucking genialt...
-//Det betyder folk kan lave deres egne "component" systemer...
-
-//Vi supporter kun en surragate taenker jeg
-//Vi supportere ogsaa kun klasse scanning paa registrering tidspunkt.
-//Ikke frit dynamisk taenker jeg. 
-
-//Altsaa er det her maaden at lave prototype service paa???
-
-//Vi vil forresten gerne have en SingletonContext der ogsaa fungere for Funktioner med registrere...
-//Nej de har jo ikke en type....

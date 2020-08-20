@@ -34,13 +34,13 @@ import packed.internal.service.buildtime.ServiceExtensionNode;
  * <p>
  * It it also possible to install components at runtime via {@link Component}.
  */
-public class SingletonConfiguration<T> extends AbstractComponentConfiguration {
+public class BeanConfiguration<T> extends AbstractComponentConfiguration {
 
     public final ComponentNodeConfiguration node;
 
     private BuildEntry<T> buildEntry;
 
-    public SingletonConfiguration(ComponentConfigurationContext node) {
+    public BeanConfiguration(ComponentConfigurationContext node) {
         super(node);
         this.node = (ComponentNodeConfiguration) node;
     }
@@ -54,7 +54,7 @@ public class SingletonConfiguration<T> extends AbstractComponentConfiguration {
      * @return this configuration
      * @see #as(Key)
      */
-    public SingletonConfiguration<T> as(Class<? super T> key) {
+    public BeanConfiguration<T> as(Class<? super T> key) {
         return as(Key.of(key));
     }
 
@@ -67,7 +67,7 @@ public class SingletonConfiguration<T> extends AbstractComponentConfiguration {
      * @return this configuration
      * @see #as(Class)
      */
-    public SingletonConfiguration<T> as(Key<? super T> key) {
+    public BeanConfiguration<T> as(Key<? super T> key) {
         checkConfigurable();
         entry().as(key);
         return this;
@@ -92,7 +92,7 @@ public class SingletonConfiguration<T> extends AbstractComponentConfiguration {
         return buildEntry == null ? Optional.empty() : Optional.of(buildEntry.key());
     }
 
-    public SingletonConfiguration<T> provide() {
+    public BeanConfiguration<T> provide() {
         entry();
         // TODO should provide as the default key
         return this;
@@ -100,7 +100,7 @@ public class SingletonConfiguration<T> extends AbstractComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public SingletonConfiguration<T> setName(String name) {
+    public BeanConfiguration<T> setName(String name) {
         node.setName(name);
         return this;
     }
@@ -110,7 +110,7 @@ public class SingletonConfiguration<T> extends AbstractComponentConfiguration {
         return buildEntry.node.exports().export(buildEntry, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 
-    public static <T> InstanceSourcedDriver<SingletonConfiguration<T>, T> driver() {
+    public static <T> InstanceSourcedDriver<BeanConfiguration<T>, T> driver() {
         return PackedComponentDriver.SingletonComponentDriver.driver();
     }
 }

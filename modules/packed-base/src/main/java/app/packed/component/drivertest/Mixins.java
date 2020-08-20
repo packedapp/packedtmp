@@ -15,7 +15,7 @@
  */
 package app.packed.component.drivertest;
 
-import app.packed.component.SingletonConfiguration;
+import app.packed.component.BeanConfiguration;
 import app.packed.inject.Factory;
 
 /**
@@ -34,7 +34,7 @@ public interface Mixins<T> {
      * @see #addMixin(Factory)
      * @see #addMixin(Object)
      */
-    default SingletonConfiguration<T> addMixin(Class<?> implementation) {
+    default BeanConfiguration<T> addMixin(Class<?> implementation) {
         throw new UnsupportedOperationException();
     }
 
@@ -50,7 +50,7 @@ public interface Mixins<T> {
      * @see #addMixin(Class)
      * @see #addMixin(Object)
      */
-    default SingletonConfiguration<T> addMixin(Factory<?> factory) {
+    default BeanConfiguration<T> addMixin(Factory<?> factory) {
         throw new UnsupportedOperationException();
     }
 
@@ -67,7 +67,7 @@ public interface Mixins<T> {
      * @see #addMixin(Class)
      * @see #addMixin(Factory)
      */
-    default SingletonConfiguration<T> addMixin(Object instance) {
+    default BeanConfiguration<T> addMixin(Object instance) {
         throw new UnsupportedOperationException();
     }
 }

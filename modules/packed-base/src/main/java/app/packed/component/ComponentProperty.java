@@ -13,18 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.base;
-
-import app.packed.base.Key.Qualifier;
+package app.packed.component;
 
 /**
  *
  */
-@Qualifier
-public @interface Name {
+public enum ComponentProperty {
 
+    /** */
+    CONTAINER,
+
+    /** */
+    HOST,
+
+    /** */
+    GUEST;
 }
+// Guest -> Weakly linked.
+// No-Guest -> Strongly linked
 
-// Jaja, vi laver den....
-
-//Key.withName(String name)
+// Resource -> Something that can be shutdown???

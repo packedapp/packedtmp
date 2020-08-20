@@ -20,6 +20,7 @@ import packed.internal.component.PackedComponentDriver;
 /**
  *
  */
+// I don't like the name...
 public interface StatelessConfiguration extends ComponentConfiguration {
 
     /**

@@ -25,6 +25,7 @@ import java.util.function.Function;
 import app.packed.base.TypeLiteral;
 import app.packed.component.ComponentStream;
 import packed.internal.attribute.PackedAttribute;
+import packed.internal.attribute.PackedAttribute.PackedOption;
 
 /**
  * <p>
@@ -37,8 +38,7 @@ import packed.internal.attribute.PackedAttribute;
 // Altsaa det eneste var hvis folk skal ville putte annoteringer paa...
 public interface Attribute<T> /* extends AttributeHolder */ {
 
-    static final Attribute<ComponentStream> CS = Attribute.of(MethodHandles.lookup(), "description", ComponentStream.class,
-            Option.renderAs(cs -> "" + cs.count()));
+    static final Attribute<ComponentStream> CS = Attribute.of(MethodHandles.lookup(), "cs", ComponentStream.class, Option.renderAs(cs -> "" + cs.count()));
 
     static final Attribute<String> DESCRIPTION = Attribute.of(MethodHandles.lookup(), "description", String.class, Option.open());
 
@@ -162,12 +162,13 @@ public interface Attribute<T> /* extends AttributeHolder */ {
         // open() openModule();
         // openModule() open to all in same module...
         static <T> Option<T> open() {
-            return null;
+            return (Option) PackedOption.someSome();
         }
 
         // if (injectionGraph.size>2 ? : 333);
+        @SuppressWarnings({ "rawtypes", "unchecked" })
         static <T> Option<T> renderAs(Function<T, String> toString) {
-            throw new UnsupportedOperationException();
+            return (Option) PackedOption.someSome();
         }
 
 //        static Option permanent() {

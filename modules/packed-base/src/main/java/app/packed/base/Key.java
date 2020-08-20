@@ -272,8 +272,18 @@ public abstract class Key<T> {
      *            the qualifier name
      * @return the new key
      */
+    // rename to named();
+    // If we support Multi qualifiers. The multiplicity of the annotation
+    // Will support whether or not we fx can have multiple names
+    // If its list. We can just keep on adding them
     public final Key<T> withName(String name) {
         requireNonNull(name, "name is null");
+        throw new UnsupportedOperationException();
+    }
+
+    // Takes any qualifier annotation on the typeLiteral
+    // withQualifier(new TypeLiteral<@Named("dddd") Void>() {});
+    public final Key<T> withQualifier(TypeLiteral<Void> typeLiteral) {
         throw new UnsupportedOperationException();
     }
 

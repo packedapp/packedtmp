@@ -20,13 +20,13 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Nullable;
+import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
 import app.packed.component.ClassSourcedDriver;
 import app.packed.component.ComponentConfigurationContext;
-import app.packed.component.ComponentDriver;
 import app.packed.component.InstanceSourcedDriver;
-import app.packed.component.SingletonConfiguration;
 import app.packed.component.StatelessConfiguration;
+import app.packed.component.WireableComponentDriver;
 import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Factory;
 import packed.internal.container.PackedContainerConfiguration;
@@ -37,7 +37,7 @@ import packed.internal.inject.factory.FactoryHandle;
 /**
  *
  */
-public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
+public abstract class PackedComponentDriver<C> implements WireableComponentDriver<C> {
 
     public static final int ROLE_CONTAINER = 1;
     public static final int ROLE_EXTENSION = 32;
@@ -53,6 +53,8 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
     protected PackedComponentDriver(int roles) {
         this.roles = roles;
     }
+
+    public abstract C toConfiguration(ComponentConfigurationContext cnc);
 
     public String defaultName(PackedRealm realm) {
         if (isContainer()) {
@@ -117,7 +119,7 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         }
     }
 
-    public static class SingletonComponentDriver<T> extends PackedComponentDriver<SingletonConfiguration<T>> {
+    public static class SingletonComponentDriver<T> extends PackedComponentDriver<BeanConfiguration<T>> {
         public final ComponentModel model;
         @Nullable
         public final BaseFactory<?> factory;
@@ -151,22 +153,22 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
         }
 
         @Override
-        public SingletonConfiguration<T> toConfiguration(ComponentConfigurationContext context) {
+        public BeanConfiguration<T> toConfiguration(ComponentConfigurationContext context) {
             ComponentNodeConfiguration cnc = (ComponentNodeConfiguration) context;
             model.invokeOnHookOnInstall(cnc);
-            return new SingletonConfiguration<>(cnc);
+            return new BeanConfiguration<>(cnc);
         }
 
-        public static <T> InstanceSourcedDriver<SingletonConfiguration<T>, T> driver() {
-            return new InstanceSourcedDriver<SingletonConfiguration<T>, T>() {
+        public static <T> InstanceSourcedDriver<BeanConfiguration<T>, T> driver() {
+            return new InstanceSourcedDriver<BeanConfiguration<T>, T>() {
 
                 @Override
-                public ComponentDriver<SingletonConfiguration<T>> bindToFactory(PackedRealm realm, Factory<T> factory) {
+                public WireableComponentDriver<BeanConfiguration<T>> bindToFactory(PackedRealm realm, Factory<T> factory) {
                     return new SingletonComponentDriver<>(realm, factory);
                 }
 
                 @Override
-                public ComponentDriver<SingletonConfiguration<T>> bindToInstance(PackedRealm realm, T instance) {
+                public WireableComponentDriver<BeanConfiguration<T>> bindToInstance(PackedRealm realm, T instance) {
                     return new SingletonComponentDriver<>(realm, instance);
                 }
             };
@@ -198,7 +200,7 @@ public abstract class PackedComponentDriver<C> implements ComponentDriver<C> {
             return new ClassSourcedDriver<StatelessConfiguration, T>() {
 
                 @Override
-                public ComponentDriver<StatelessConfiguration> bindToClass(PackedRealm realm, Class<T> implementation) {
+                public WireableComponentDriver<StatelessConfiguration> bindToClass(PackedRealm realm, Class<T> implementation) {
                     return new PackedComponentDriver.StatelessComponentDriver(realm, implementation);
                 }
             };

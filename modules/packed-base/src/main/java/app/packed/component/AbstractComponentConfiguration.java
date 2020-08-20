@@ -166,7 +166,7 @@ public abstract class AbstractComponentConfiguration implements ComponentConfigu
     }
 
     @Override
-    public final <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
+    public final <C> C wire(WireableComponentDriver<C> driver, Wirelet... wirelets) {
         return context.wire(driver, wirelets);
     }
 

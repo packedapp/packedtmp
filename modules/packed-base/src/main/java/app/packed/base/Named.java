@@ -13,13 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.base;
 
-import packed.internal.container.PackedRealm;
+import app.packed.base.Key.Qualifier;
 
 /**
  *
  */
-public interface InstanceSourcedDriver<C, I> extends FactorySourcedDriver<C, I> {
-    WireableComponentDriver<C> bindToInstance(PackedRealm realm, I instance);
+@Qualifier
+public @interface Named {
+    String value();
 }
+
+// Jaja, vi laver den....
+
+//Key.withName(String name)

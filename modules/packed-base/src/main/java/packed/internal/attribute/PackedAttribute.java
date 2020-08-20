@@ -103,8 +103,16 @@ public class PackedAttribute<T> implements Attribute<T> {
     }
 
     // Ideen er at alle options extender denne
-    static abstract class PackedOption implements Attribute.Option<Object> {
+    public static abstract class PackedOption implements Attribute.Option<Object> {
 
         abstract void process(AttributeBuilder builder);
+
+        public static PackedOption someSome() {
+            return new PackedOption() {
+
+                @Override
+                void process(AttributeBuilder builder) {}
+            };
+        }
     }
 }

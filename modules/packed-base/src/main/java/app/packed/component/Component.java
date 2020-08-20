@@ -15,11 +15,15 @@
  */
 package app.packed.component;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import app.packed.attribute.Attribute;
 import app.packed.attribute.AttributeHolder;
+import app.packed.base.TypeLiteral;
 import app.packed.config.ConfigSite;
 
 /**
@@ -27,6 +31,9 @@ import app.packed.config.ConfigSite;
  * derivatives. In packed everything is a component.
  */
 public interface Component extends AttributeHolder {
+
+    public static Attribute<EnumSet<ComponentProperty>> PROPERTIES = Attribute.of(MethodHandles.lookup(), "properties",
+            new TypeLiteral<EnumSet<ComponentProperty>>() {});
 
     /**
      * Returns an unmodifiable view of all of this component's children.

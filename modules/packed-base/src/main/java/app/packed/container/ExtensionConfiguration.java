@@ -25,7 +25,7 @@ import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.Component;
 import app.packed.component.ComponentPath;
-import app.packed.component.SingletonConfiguration;
+import app.packed.component.BeanConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension.Subtension;
@@ -87,7 +87,7 @@ public interface ExtensionConfiguration {
      */
     Class<? extends Extension> extensionType(); // replace with descriptor???
 
-    <T> SingletonConfiguration<T> install(Factory<T> factory);
+    <T> BeanConfiguration<T> install(Factory<T> factory);
 
     /**
      * @param <T>
@@ -97,7 +97,7 @@ public interface ExtensionConfiguration {
      * @return the configuration of the component
      * @see ContainerConfiguration#installInstance(Object)
      */
-    <T> SingletonConfiguration<T> installInstance(T instance);
+    <T> BeanConfiguration<T> installInstance(T instance);
 
     /**
      * Creates a new container with this extensions container as its parent by linking the specified bundle. The new

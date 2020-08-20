@@ -170,6 +170,12 @@ public final class PackedMethodDescriptor extends PackedExecutableDescriptor imp
     public static PackedMethodDescriptor cast(MethodDescriptor md) {
         return (PackedMethodDescriptor) md;
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isDefault() {
+        return isDefault();
+    }
 }
 //
 // /** {@inheritDoc} */

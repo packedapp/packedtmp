@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 
 import app.packed.component.Bundle;
-import app.packed.component.ComponentDriver;
+import app.packed.component.WireableComponentDriver;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -33,7 +33,7 @@ public final class BundleConfiguration {
     private static final VarHandle VH_BUNDLE_CONFIGURATION = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Bundle.class, "configuration", Object.class);
 
     /** A VarHandle used from {@link #driverOf(Bundle)} to access the driver field of a bundle. */
-    private static final VarHandle VH_BUNDLE_DRIVER = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Bundle.class, "driver", ComponentDriver.class);
+    private static final VarHandle VH_BUNDLE_DRIVER = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Bundle.class, "driver", WireableComponentDriver.class);
 
     /** A MethodHandle that can invoke Bundle#configure. */
     private static final MethodHandle MH_BUNDLE_CONFIGURE = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), Bundle.class, "configure", void.class);

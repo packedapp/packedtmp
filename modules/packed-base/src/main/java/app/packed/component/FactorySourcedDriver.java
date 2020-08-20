@@ -24,9 +24,9 @@ import packed.internal.container.PackedRealm;
 public interface FactorySourcedDriver<C, I> extends ClassSourcedDriver<C, I> {
 
     @Override
-    default ComponentDriver<C> bindToClass(PackedRealm realm, Class<I> implementation) {
+    default WireableComponentDriver<C> bindToClass(PackedRealm realm, Class<I> implementation) {
         return bindToFactory(realm, Factory.find(implementation));
     }
 
-    ComponentDriver<C> bindToFactory(PackedRealm realm, Factory<I> factory);
+    WireableComponentDriver<C> bindToFactory(PackedRealm realm, Factory<I> factory);
 }

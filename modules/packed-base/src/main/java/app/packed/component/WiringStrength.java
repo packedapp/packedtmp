@@ -15,11 +15,9 @@
  */
 package app.packed.component;
 
-import packed.internal.container.PackedRealm;
-
 /**
  *
  */
-public interface InstanceSourcedDriver<C, I> extends FactorySourcedDriver<C, I> {
-    WireableComponentDriver<C> bindToInstance(PackedRealm realm, I instance);
+public enum WiringStrength {
+    WEAK, STRONG;
 }

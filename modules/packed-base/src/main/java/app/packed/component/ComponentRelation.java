@@ -80,6 +80,10 @@ public interface ComponentRelation extends Iterable<Component> {
 
     boolean isStronglyConnected();
 
+    default WiringStrength wiringStrength() {
+        return isStronglyConnected() ? WiringStrength.STRONG : WiringStrength.WEAK;
+    }
+
     boolean isWeaklyConnected();
 
     // is empty for components that are not in the same system

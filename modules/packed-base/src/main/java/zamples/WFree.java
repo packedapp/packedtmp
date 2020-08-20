@@ -19,6 +19,8 @@ import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 
 import app.packed.artifact.App;
+import app.packed.component.Component;
+import app.packed.component.ComponentProperty;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseBundle;
 
@@ -33,6 +35,13 @@ public class WFree extends BaseBundle {
         lookup(MethodHandles.lookup());
         provide(MyComp.class);
         link(new DDD());
+    }
+
+    public void cc(Component c) {
+        c.attribute(Component.PROPERTIES).contains(ComponentProperty.CONTAINER);
+
+        // Would be so nice with a default value... I think
+        c.attributes().orStuff(Component.PROPERTIES, f -> f.contains(ComponentProperty.CONTAINER), false);
     }
 
     public static void main(String[] args) {

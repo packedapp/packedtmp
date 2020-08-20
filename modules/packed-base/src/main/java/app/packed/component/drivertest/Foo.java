@@ -18,8 +18,8 @@ package app.packed.component.drivertest;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.artifact.App;
-import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentDriver.Option;
+import app.packed.component.WireableComponentDriver;
 import app.packed.container.BaseBundle;
 
 /**
@@ -28,7 +28,7 @@ import app.packed.container.BaseBundle;
 public class Foo {
 
     public static void main(String[] args) {
-        ComponentDriver<Foo> create = ComponentDriver.create(MethodHandles.lookup(), Option.container());
+        WireableComponentDriver<Foo> create = WireableComponentDriver.create(MethodHandles.lookup(), Option.container());
 
         BaseBundle bb = new BaseBundle() {
 

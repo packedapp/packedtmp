@@ -23,7 +23,7 @@ import app.packed.container.ContainerBundle;
 import packed.internal.component.BundleConfiguration;
 
 /**
- * A bundle is a thin wrapper that encapsulates a {@link ComponentDriver} and the configuration of a component. This
+ * A bundle is a thin wrapper that encapsulates a {@link WireableComponentDriver} and the configuration of a component. This
  * class is primary used through one of its subclasses such as {@link ContainerBundle}.
  * <p>
  * This class is not meant to be extended by ordinary users. But provides means for power users to extend the basic
@@ -51,7 +51,7 @@ public abstract class Bundle<C> implements ArtifactSource {
     // Bundle: States-> Ready -> Assembling|Composing -> Consumed|Composed... Ready | Using | Used... Usable | Using | Used
     // Unconfigured/Configuring/Configured (Failed??? well et can't bee Configured if it's failed)
     // [afdf, state = Unusued]consuming|consumed]
-    private final ComponentDriver<? extends C> driver; // TODO maybe use for tostring??? Include state
+    private final WireableComponentDriver<? extends C> driver; // TODO maybe use for tostring??? Include state
 
     /**
      * Creates a new bundle using the specified driver.
@@ -59,7 +59,7 @@ public abstract class Bundle<C> implements ArtifactSource {
      * @param driver
      *            the driver to use for constructing this bundle's configuration object
      */
-    protected Bundle(ComponentDriver<? extends C> driver) {
+    protected Bundle(WireableComponentDriver<? extends C> driver) {
         this.driver = requireNonNull(driver, "driver is null");
     }
 

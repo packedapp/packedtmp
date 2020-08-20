@@ -16,8 +16,8 @@
 package app.packed.component.drivertest;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentDriver;
-import app.packed.component.SingletonConfiguration;
+import app.packed.component.WireableComponentDriver;
+import app.packed.component.BeanConfiguration;
 import app.packed.inject.Factory;
 
 /**
@@ -25,11 +25,11 @@ import app.packed.inject.Factory;
  */
 public interface SourcedComponentDriver<T, X extends ComponentConfiguration> {
 
-    ComponentDriver<X> bindToInstance(T instance);
+    WireableComponentDriver<X> bindToInstance(T instance);
 
-    ComponentDriver<X> bindToFactory(Factory<T> factory);
+    WireableComponentDriver<X> bindToFactory(Factory<T> factory);
 
-    static <T> SourcedComponentDriver<T, SingletonConfiguration<T>> singleton() {
+    static <T> SourcedComponentDriver<T, BeanConfiguration<T>> singleton() {
         throw new UnsupportedOperationException();
     }
 }

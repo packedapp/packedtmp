@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.component.ComponentPath;
-import app.packed.component.SingletonConfiguration;
+import app.packed.component.BeanConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
@@ -67,8 +67,8 @@ public class ContainerConfigurationTester {
         return conf;
     }
 
-    public <T> SingletonConfiguration<T> installInstance(T instance) {
-        SingletonConfiguration<T> conf = cc.installInstance(instance);
+    public <T> BeanConfiguration<T> installInstance(T instance) {
+        BeanConfiguration<T> conf = cc.installInstance(instance);
         assertThat(conf).isNotNull();
         return conf;
     }

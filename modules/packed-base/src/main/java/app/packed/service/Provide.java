@@ -106,5 +106,20 @@ public @interface Provide {
     // Service 1, Component another -> each have different
     String description() default "";
 
+    /**
+     * Whether or not the provided instance is a constant.
+     * 
+     * Constants may be cached by the runtime... I think we need to make some strong guarantees.
+     * 
+     * The provided does not have to be an constant in the way t. But from the perspectiv of the runtime. The instance
+     * 
+     * 
+     * Constants may be cached
+     * 
+     * <p>
+     * The default value is <code>false</code>
+     * 
+     * @return whether or not the provided value is a constant
+     */
     boolean constant() default false;
 }

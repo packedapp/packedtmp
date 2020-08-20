@@ -16,7 +16,7 @@
 package packed.internal.component;
 
 import app.packed.artifact.ArtifactImage;
-import app.packed.component.SingletonConfiguration;
+import app.packed.component.BeanConfiguration;
 import app.packed.container.BaseBundle;
 
 /**
@@ -27,7 +27,7 @@ public class Ztes extends BaseBundle {
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-        SingletonConfiguration<?> sc = install(DD.class);
+        BeanConfiguration<?> sc = install(DD.class);
 
         System.out.println(sc.key());
         sc.provide();

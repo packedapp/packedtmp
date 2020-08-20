@@ -32,7 +32,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.component.Packlet;
-import app.packed.component.SingletonConfiguration;
+import app.packed.component.BeanConfiguration;
 import app.packed.container.Extension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
@@ -124,9 +124,9 @@ public class HookOnExtensionActivationMicro {
 
     public static class HookActivateExtension extends Extension {
 
-        public void process(SingletonConfiguration<?> cc, AnnotatedFieldHook<HookActivateAnnotation> hook) {}
+        public void process(BeanConfiguration<?> cc, AnnotatedFieldHook<HookActivateAnnotation> hook) {}
 
-        public void process(SingletonConfiguration<?> cc, AnnotatedMethodHook<HookActivateAnnotation> hook) {}
+        public void process(BeanConfiguration<?> cc, AnnotatedMethodHook<HookActivateAnnotation> hook) {}
     }
 
 }

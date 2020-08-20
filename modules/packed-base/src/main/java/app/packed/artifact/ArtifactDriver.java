@@ -23,7 +23,7 @@ import java.lang.invoke.MethodType;
 import java.util.function.Function;
 
 import app.packed.component.Bundle;
-import app.packed.component.ComponentDriver;
+import app.packed.component.WireableComponentDriver;
 import app.packed.component.CustomConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
@@ -90,11 +90,11 @@ public final class ArtifactDriver<A> {
         this.mh = requireNonNull(mh);
     }
 
-    public final <D> A configure(ComponentDriver<D> driver, CustomConfigurator<D> consumer, Wirelet... wirelets) {
+    public final <D> A configure(WireableComponentDriver<D> driver, CustomConfigurator<D> consumer, Wirelet... wirelets) {
         return configure(driver, e -> e, consumer, wirelets);
     }
 
-    public final <C, D> A configure(ComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
+    public final <C, D> A configure(WireableComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.configure(this, (PackedComponentDriver<D>) driver, factory, consumer, wirelets);
         ArtifactContext ac = InstantiationContext.instantiateArtifact(node, node.wirelets);
         return newArtifact(ac);

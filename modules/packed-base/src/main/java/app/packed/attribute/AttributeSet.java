@@ -20,6 +20,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import packed.internal.attribute.EmptyAttributeSet;
 
@@ -61,6 +62,10 @@ public interface AttributeSet {
     <T> T get(Attribute<T> attribute);
 
     boolean isPresent(Attribute<?> attribute);
+
+    default <T, S> S orStuff(Attribute<T> attribute, Function<T, S> f, S defaultValue) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * If an attribute is present, performs the given action with the value of the attribute, otherwise does nothing.

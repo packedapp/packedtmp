@@ -22,8 +22,8 @@ import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentDriver;
-import app.packed.component.SingletonConfiguration;
+import app.packed.component.WireableComponentDriver;
+import app.packed.component.BeanConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
@@ -60,7 +60,7 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      *            the type of instantiate and use as the component instance
      * @return the configuration of the component
      */
-    default <T> SingletonConfiguration<T> install(Class<T> implementation) {
+    default <T> BeanConfiguration<T> install(Class<T> implementation) {
         return install(Factory.find(implementation));
     }
 
@@ -76,8 +76,8 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      * @return the configuration of the component
      * @see ContainerBundle#install(Factory)
      */
-    default <T> SingletonConfiguration<T> install(Factory<T> factory) {
-        return wire(SingletonConfiguration.driver(), factory);
+    default <T> BeanConfiguration<T> install(Factory<T> factory) {
+        return wire(BeanConfiguration.driver(), factory);
     }
 
     /**
@@ -88,8 +88,8 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      * @return the configuration of the component
      * @see ContainerBundle#installInstance(Object)
      */
-    default <T> SingletonConfiguration<T> installInstance(T instance) {
-        return wireInstance(SingletonConfiguration.driver(), instance);
+    default <T> BeanConfiguration<T> installInstance(T instance) {
+        return wireInstance(BeanConfiguration.driver(), instance);
     }
 
     /**
@@ -154,7 +154,7 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      * 
      * @return the default driver for containers
      */
-    static ComponentDriver<ContainerConfiguration> driver() {
+    static WireableComponentDriver<ContainerConfiguration> driver() {
         return ContainerComponentDriver.INSTANCE;
     }
 }
