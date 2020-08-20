@@ -29,7 +29,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import app.packed.attribute.AttributeSet;
+import app.packed.base.AttributeSet;
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.ClassSourcedDriver;

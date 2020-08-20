@@ -25,7 +25,7 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.util.function.Supplier;
 
-import app.packed.base.invoke.InaccessibleMemberException;
+import app.packed.base.InaccessibleMemberException;
 import app.packed.container.Extension;
 import packed.internal.util.StringFormatter;
 

@@ -19,8 +19,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Modifier;
 
+import app.packed.base.InaccessibleMemberException;
 import app.packed.base.TypeLiteral;
-import app.packed.base.invoke.InaccessibleMemberException;
 import app.packed.inject.Factory;
 import app.packed.introspection.ExecutableDescriptor;
 import app.packed.introspection.MethodDescriptor;

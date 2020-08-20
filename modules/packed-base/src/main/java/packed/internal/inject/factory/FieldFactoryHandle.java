@@ -23,9 +23,9 @@ import java.lang.invoke.VarHandle;
 import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Modifier;
 
+import app.packed.base.InaccessibleMemberException;
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
-import app.packed.base.invoke.InaccessibleMemberException;
 import app.packed.introspection.FieldDescriptor;
 
 /** An invoker that can read and write fields. */

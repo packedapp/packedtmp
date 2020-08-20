@@ -21,10 +21,10 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import app.packed.base.InaccessibleMemberException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
-import app.packed.base.invoke.InaccessibleMemberException;
 import app.packed.introspection.VariableDescriptor;
 import packed.internal.inject.factory.BaseFactory;
 

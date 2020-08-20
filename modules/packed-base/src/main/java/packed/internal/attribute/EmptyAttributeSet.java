@@ -20,8 +20,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.attribute.Attribute;
-import app.packed.attribute.AttributeSet;
+import app.packed.base.Attribute;
+import app.packed.base.AttributeSet;
 
 /**
  *

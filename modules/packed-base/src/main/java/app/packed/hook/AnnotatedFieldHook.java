@@ -25,9 +25,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import app.packed.base.InaccessibleMemberException;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Nullable;
-import app.packed.base.invoke.InaccessibleMemberException;
 import app.packed.introspection.FieldDescriptor;
 import packed.internal.hook.AppPackedHookAccess;
 import packed.internal.hook.MemberUnreflector;

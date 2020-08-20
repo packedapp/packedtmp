@@ -27,7 +27,7 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import app.packed.base.invoke.InaccessibleMemberException;
+import app.packed.base.InaccessibleMemberException;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.util.NativeImage;

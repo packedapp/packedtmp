@@ -15,9 +15,9 @@
  */
 package app.packed.lifecycle;
 
-import app.packed.base.invoke.InvokableDescriptor;
 import app.packed.component.Component;
 import app.packed.container.Extension;
+import app.packed.sidecar.InvokableDescriptor;
 
 /**
  *

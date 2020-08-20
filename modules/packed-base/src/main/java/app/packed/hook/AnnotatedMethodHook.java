@@ -23,9 +23,9 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import app.packed.base.InaccessibleMemberException;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Nullable;
-import app.packed.base.invoke.InaccessibleMemberException;
 import app.packed.introspection.MethodDescriptor;
 import packed.internal.hook.MemberUnreflector;
 import packed.internal.hook.applicator.MethodOperator;

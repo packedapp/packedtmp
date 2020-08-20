@@ -1,7 +1,7 @@
 package app.packed.service;
 
-import app.packed.attribute.AttributeHolder;
-import app.packed.attribute.AttributeSet;
+import app.packed.base.AttributeHolder;
+import app.packed.base.AttributeSet;
 import app.packed.base.Key;
 import app.packed.config.ConfigSite;
 

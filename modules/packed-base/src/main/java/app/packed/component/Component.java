@@ -21,8 +21,8 @@ import java.util.EnumSet;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import app.packed.attribute.Attribute;
-import app.packed.attribute.AttributeHolder;
+import app.packed.base.Attribute;
+import app.packed.base.AttributeHolder;
 import app.packed.base.TypeLiteral;
 import app.packed.config.ConfigSite;
 

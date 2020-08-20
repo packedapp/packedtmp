@@ -15,8 +15,8 @@
  */
 package app.packed.inject;
 
-import static app.packed.base.invoke.OpenMode.FIELD_GET;
-import static app.packed.base.invoke.OpenMode.METHOD_INVOKE;
+import static app.packed.base.OpenMode.FIELD_GET;
+import static app.packed.base.OpenMode.METHOD_INVOKE;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -24,7 +24,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.base.invoke.Opens;
+import app.packed.base.Opens;
 import app.packed.component.Packlet;
 import app.packed.service.ServiceExtension;
 

@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Contract;
-import app.packed.sidecar.Expose;
+import app.packed.hook.Expose;
 
 /** Tests {@link PackedExtensionDescriptor}. */
 public class ExtensionDescriptorTest {
