@@ -30,7 +30,7 @@ public class Doo extends BaseBundle {
     }
 
     public static void main(String[] args) {
-        App.of(new Doo());
+        App.create(new Doo());
         System.out.println("Bye");
     }
 }

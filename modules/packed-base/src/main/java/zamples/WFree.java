@@ -45,8 +45,8 @@ public class WFree extends BaseBundle {
     }
 
     public static void main(String[] args) {
-        App.of(new WFree(), new SomeWirelet("Saturday"), new SomeWirelet("Sundday"));
-        App.of(new WFree());
+        App.create(new WFree(), new SomeWirelet("Saturday"), new SomeWirelet("Sundday"));
+        App.create(new WFree());
         System.out.println("Nye");
     }
 

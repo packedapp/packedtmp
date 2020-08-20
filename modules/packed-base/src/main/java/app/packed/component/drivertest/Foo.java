@@ -39,6 +39,6 @@ public class Foo {
             }
         };
 
-        App.of(bb);
+        App.create(bb);
     }
 }

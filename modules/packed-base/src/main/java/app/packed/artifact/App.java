@@ -18,6 +18,7 @@ package app.packed.artifact;
 import java.util.concurrent.CompletableFuture;
 
 import app.packed.base.Key;
+import app.packed.component.Bundle;
 import app.packed.component.Component;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
@@ -156,6 +157,32 @@ public interface App extends AutoCloseable {
     Component useComponent(CharSequence path);
 
     /**
+     * Create an application (but does not start it) from the specified source. The state of the returned application is
+     * {@link RunState#INITIALIZED}. The returned application will lazily start itself when needed. For example, on first
+     * invocation of {@link #use(Class)}.
+     *
+     * @param source
+     *            the source of the application
+     * @param wirelets
+     *            any wirelets to use in the construction of the application
+     * @return the new application
+     * @throws RuntimeException
+     *             if the application could not be initialized properly
+     */
+    // Create???
+    static App create(ArtifactSource source, Wirelet... wirelets) {
+        // Rename fordi vi gerne vil have at ArtifactDriver hedder det samme og
+        // AppHost.xxx() .. Dumt det hedder App.of og AppHost.instantiate
+
+        // Muligheder -> build... instantiate... create... initialize
+
+        // Build -> Image.of -> App.build() hmmm Image.Build <- kun assemble delen...
+
+        // Maaske build,,, you build an artifact...
+        return driver().instantiate(source, wirelets);
+    }
+
+    /**
      * Returns an the default artifact driver for producing {@link App} instances.
      * <p>
      * This method is mainly used by advanced users.
@@ -192,29 +219,8 @@ public interface App extends AutoCloseable {
         driver().execute(source, wirelets);
     }
 
-    /**
-     * Create an application (but does not start it) from the specified source. The state of the returned application is
-     * {@link RunState#INITIALIZED}. The returned application will lazily start itself when needed. For example, on first
-     * invocation of {@link #use(Class)}.
-     *
-     * @param source
-     *            the source of the application
-     * @param wirelets
-     *            any wirelets to use in the construction of the application
-     * @return the new application
-     * @throws RuntimeException
-     *             if the application could not be initialized properly
-     */
-    static App of(ArtifactSource source, Wirelet... wirelets) {
-        // Rename fordi vi gerne vil have at ArtifactDriver hedder det samme og
-        // AppHost.xxx() .. Dumt det hedder App.of og AppHost.instantiate
-
-        // Muligheder -> build... instantiate... create... initialize
-
-        // Build -> Image.of -> App.build() hmmm Image.Build <- kun assemble delen...
-
-        // Maaske build,,, you build an artifact...
-        return driver().instantiate(source, wirelets);
+    static TakeImage<App> newImage(Bundle<?> bundle, Wirelet... wirelets) {
+        return driver().newImage(bundle, wirelets);
     }
 
     /**
@@ -233,12 +239,9 @@ public interface App extends AutoCloseable {
         return driver().start(source, wirelets);
         // 10 seconds is from start.. Otherwise people must use an exact deadline
         // start(new SomeBundle(), LifecycleWirelets.stopAfter(10, TimeUnit.SECONDS));
-        // start(new SomeBundle(), LifecycleWirelets.stopAfter(10, TimeUnit.SECONDS), ()-> New CancelledException()); (failure)
-    }
+        // sart(new SomeBundle(), LifecycleWirelets.stopAfter(10, TimeUnit.SECONDS), ()-> New CancelledException()); (failure)
 
-//    static App start2(ArtifactSource source, Wirelet... wirelets) {
-//        return ArtifactDriver.start(PackedApp.class, source, wirelets);
-//    }
+    }
 }
 
 ///**

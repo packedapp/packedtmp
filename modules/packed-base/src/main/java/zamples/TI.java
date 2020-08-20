@@ -17,8 +17,8 @@ package zamples;
 
 import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
-import app.packed.component.WireletHandler;
 import app.packed.component.Wirelet;
+import app.packed.component.WireletHandler;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
@@ -35,7 +35,7 @@ import app.packed.statemachine.Leaving;
 public class TI extends BaseBundle {
 
     public static void mains(String[] args) {
-        App.of(new TI(), new MyTestWirelet("fofoof XXXXXXXXXX"));
+        App.create(new TI(), new MyTestWirelet("fofoof XXXXXXXXXX"));
 //        long currentTime = System.currentTimeMillis();
 //        long vmStartTime = ManagementFactory.getRuntimeMXBean().getStartTime();
 //        System.out.println("STARTED Application started: " + (currentTime - vmStartTime));
@@ -43,24 +43,24 @@ public class TI extends BaseBundle {
 
     public static void main(String[] args) throws InterruptedException {
         long start = System.nanoTime();
-        App.of(new TI(), new MyTestWirelet("fofoof XXXXXXXXXX"));
+        App.create(new TI(), new MyTestWirelet("fofoof XXXXXXXXXX"));
         long stop = System.nanoTime();
         System.out.println(((stop - start) / 1000000) + " ms");
-        App.of(new TI(), new MyTestWirelet("fofoof XXXXXXXXXX"));
+        App.create(new TI(), new MyTestWirelet("fofoof XXXXXXXXXX"));
         long stop2 = System.nanoTime();
         System.out.println(((stop2 - stop) / 1000) + " us");
 
-        App.of(new TI(), new MyTestWirelet("fofoof XXXXXXXXXX"));
+        App.create(new TI(), new MyTestWirelet("fofoof XXXXXXXXXX"));
         long stop3 = System.nanoTime();
         System.out.println(((stop3 - stop2) / 1000) + " us");
 
         ArtifactImage si = ArtifactImage.of(new TI(), new MyTestWirelet("fofoof XXXXXXXXXX"));
         for (int i = 0; i < 1000; i++) {
-            App.of(si, new MyTestWirelet("fofoof XXXXXXXXXX"));
+            App.create(si, new MyTestWirelet("fofoof XXXXXXXXXX"));
         }
         Thread.sleep(50);
         stop3 = System.nanoTime();
-        App.of(si, new MyTestWirelet("fofoof XXXXXXXXXX"));
+        App.create(si, new MyTestWirelet("fofoof XXXXXXXXXX"));
         long stop4 = System.nanoTime();
         System.out.println(((stop4 - stop3) / 1000) + " us");
 

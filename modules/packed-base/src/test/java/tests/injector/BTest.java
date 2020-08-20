@@ -29,7 +29,7 @@ import app.packed.service.ServiceDescriptor;
 public class BTest {
 
     public static void main(String[] args) {
-        Injector i = Injector.of(new MyBundle());
+        Injector i = Injector.create(new MyBundle());
 
         i.getDescriptor(PrivateImplementation.class).get().configSite().print();
 

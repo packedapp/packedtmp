@@ -26,8 +26,7 @@ import app.packed.artifact.ArtifactSource;
 import app.packed.component.Wirelet;
 
 /**
- * Wirelets that can be used when wiring containers. For example, via {@link App#start(ArtifactSource, Wirelet...)} or
- * {@link App#execute(ArtifactSource, Wirelet...)}.
+ * Wirelets that can be used when wiring containers. For example, via {@link App#start(ArtifactSource, Wirelet...)}
  */
 
 // InvalidWireletScopeExtension extends IAE

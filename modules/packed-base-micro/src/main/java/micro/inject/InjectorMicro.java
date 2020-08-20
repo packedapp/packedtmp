@@ -55,12 +55,12 @@ public class InjectorMicro {
 
     @Benchmark
     public Injector injectorStringExportedInstance() {
-        return Injector.of(new SimpleInjector());
+        return Injector.create(new SimpleInjector());
     }
 
     @Benchmark
     public String injectorStringInstanceUse() {
-        return Injector.of(new SimpleInjector()).use(String.class);
+        return Injector.create(new SimpleInjector()).use(String.class);
     }
 
     @Benchmark

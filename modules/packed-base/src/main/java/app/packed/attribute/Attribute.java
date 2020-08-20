@@ -161,6 +161,7 @@ public interface Attribute<T> /* extends AttributeHolder */ {
 
         // open() openModule();
         // openModule() open to all in same module...
+        @SuppressWarnings({ "rawtypes", "unchecked" })
         static <T> Option<T> open() {
             return (Option) PackedOption.someSome();
         }

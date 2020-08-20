@@ -195,6 +195,10 @@ public final class ArtifactDriver<A> {
         return newArtifact(context);
     }
 
+    public TakeImage<A> newImage(Bundle<?> bundle, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
     public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, Class<? extends A> implementation) {
         // Vi vil gerne bruge artifact type som navnet paa artifacten... istedet for implementationen
         MethodType mt = MethodType.methodType(void.class, ArtifactContext.class);

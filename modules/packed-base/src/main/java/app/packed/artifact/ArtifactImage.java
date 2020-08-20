@@ -49,7 +49,7 @@ import packed.internal.artifact.PackedArtifactImage;
  *          which would prohibit subclassing except by explicitly permitted types.
  * 
  */
-public interface ArtifactImage extends ArtifactSource {
+public interface ArtifactImage<T> extends ArtifactSource {
 
     /**
      * Returns the configuration site of this image.
@@ -108,19 +108,6 @@ public interface ArtifactImage extends ArtifactSource {
     // descriptor().stream()...
     ComponentStream stream(ComponentStream.Option... options);
 
-//    /**
-//     * Returns a new artifact image by applying the specified wirelets.
-//     * 
-//     * @param wirelets
-//     *            the wirelets to apply
-//     * @return the new image
-//     */
-//    // f.eks. applyPartialConfiguration(SomeConf)... Vi aendrer schemaet..
-//    // withFixedConf(app.threads = 123)... withDefaultConf(app.threads = 123)
-//    // Vi fejler hvis det ikke kan bruges??? Pure static solution...
-//    // rename to prefixWith() <--- no validation...
-//    ArtifactImage with(Wirelet... wirelets);
-
     /**
      * Creates a new image from the specified bundle.
      *
@@ -132,7 +119,21 @@ public interface ArtifactImage extends ArtifactSource {
      * @throws RuntimeException
      *             if the image could not be constructed
      */
-    static ArtifactImage of(ContainerBundle bundle, Wirelet... wirelets) {
+    @Deprecated
+    static ArtifactImage of(Bundle<?> bundle, Wirelet... wirelets) {
         return PackedArtifactImage.lazyCreate(bundle, wirelets);
     }
 }
+
+///**
+//* Returns a new artifact image by applying the specified wirelets.
+//* 
+//* @param wirelets
+//*            the wirelets to apply
+//* @return the new image
+//*/
+//// f.eks. applyPartialConfiguration(SomeConf)... Vi aendrer schemaet..
+//// withFixedConf(app.threads = 123)... withDefaultConf(app.threads = 123)
+//// Vi fejler hvis det ikke kan bruges??? Pure static solution...
+//// rename to prefixWith() <--- no validation...
+//ArtifactImage with(Wirelet... wirelets);

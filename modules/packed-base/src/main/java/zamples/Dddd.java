@@ -37,7 +37,7 @@ public class Dddd extends BaseBundle {
 
         System.out.println("------ run time");
         System.out.println(System.currentTimeMillis() - now);
-        App a = App.of(ai /* , Wirelet.name("HejHej"), Wirelet.name("HjX") */);
+        App a = App.create(ai /* , Wirelet.name("HejHej"), Wirelet.name("HjX") */);
 
         // a.stream().forEach(e -> System.out.println(e.path() + " " + e.name()));
 

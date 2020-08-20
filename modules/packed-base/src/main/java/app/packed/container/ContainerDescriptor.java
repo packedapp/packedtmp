@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.artifact.ArtifactImage;
 import app.packed.base.Contract;
 import app.packed.base.ContractSet;
 import app.packed.base.Key;
@@ -226,8 +225,6 @@ public class ContainerDescriptor {
      * @param bundle
      *            the bundle to create a descriptor for
      * @return a descriptor for the specified bundle
-     * 
-     * @see ArtifactImage#descriptor()
      */
     public static ContainerDescriptor of(ContainerBundle bundle) {
         requireNonNull(bundle, "bundle is null");

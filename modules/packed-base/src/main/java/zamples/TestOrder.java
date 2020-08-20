@@ -70,7 +70,7 @@ public class TestOrder extends BaseBundle {
     }
 
     public static void main(String[] args) {
-        App.of(new TestOrder());
+        App.create(new TestOrder());
     }
 
     public static class SomeBundle extends BaseBundle {
