@@ -15,11 +15,15 @@
  */
 package app.packed.base;
 
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-/**
- *
- */
+/** A stream of elements that hold attributes. */
 public interface AttributeStream<T extends AttributeHolder> extends Stream<T> {
+
+    <A extends Iterable<B>, B> AttributeStream<T> contains(Attribute<A> attribute, B element);
+
+    <A> AttributeStream<T> filter(Attribute<A> attribute, Predicate<? super A> predicate);
+
     AttributeStream<T> ifPresent(Attribute<?> attribute);
 }

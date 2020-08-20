@@ -29,6 +29,17 @@ public enum ComponentProperty {
     /** */
     GUEST;
 }
+
+enum Others {
+    ARTIFACT, // FOREIGN???
+
+    WIRELET,
+
+    FOREIGN, // Wirelets, Artifacts are also FOREIGN...
+
+    SYNTHETIC
+
+}
 // Guest -> Weakly linked.
 // No-Guest -> Strongly linked
 

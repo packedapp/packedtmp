@@ -18,6 +18,7 @@ package app.packed.artifact;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.component.Bundle;
+import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
@@ -28,6 +29,8 @@ import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletPack;
 
 /** The default implementation of {@link ArtifactImage}. */
+// Taenker vi maaske skal flytte den internt?
+// Altsaa ved ikke lige hvordan det hosted image kommer til at fungere...
 final class PackedArtifactImage<A> implements ArtifactImage<A> {
 
     /** The type of bundle used to create this image. */
@@ -76,7 +79,8 @@ final class PackedArtifactImage<A> implements ArtifactImage<A> {
 
     /** {@inheritDoc} */
     @Override
-    public String name() {
+    public String artifactName() {
+        // Ahhh det er
         // Only if a name has been explicitly set?
         // Or can we include "FooBar?"
         // Return Optional<String>????
@@ -89,7 +93,14 @@ final class PackedArtifactImage<A> implements ArtifactImage<A> {
 
     /** {@inheritDoc} */
     @Override
-    public Class<?> rawType() {
+    public ComponentPath path() {
+        // Hmm
+        return ComponentPath.ROOT;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<?> rawArtifactType() {
         return driver.rawType();
     }
 

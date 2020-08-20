@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 
 import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
+import app.packed.base.AttributeStream;
 import app.packed.container.Extension;
 import packed.internal.component.PackedComponentStreamOption;
 
@@ -63,7 +64,7 @@ import packed.internal.component.PackedComponentStreamOption;
 // ComponentStream<T extends Component> extends Stream<T> ????
 // Vi har mere eller mindre aldrig brug for at gemm
 // Men der skal lige lidt mere guf paa Component sub interfaces...Foerend jeg gider lave det
-public interface ComponentStream extends Stream<Component> {
+public interface ComponentStream extends AttributeStream<Component> {
 
 //    /**
 //     * Returns a stream that only contains containers.

@@ -89,11 +89,11 @@ public final class ArtifactDriver<A> {
         this.mh = requireNonNull(mh);
     }
 
-    public final <D> A configure(WireableComponentDriver<D> driver, CustomConfigurator<D> consumer, Wirelet... wirelets) {
+    public <D> A configure(WireableComponentDriver<D> driver, CustomConfigurator<D> consumer, Wirelet... wirelets) {
         return configure(driver, e -> e, consumer, wirelets);
     }
 
-    public final <C, D> A configure(WireableComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
+    public <C, D> A configure(WireableComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.configure(this, (PackedComponentDriver<D>) driver, factory, consumer, wirelets);
         ArtifactContext ac = InstantiationContext.instantiateArtifact(node, node.wirelets);
         return newArtifact(ac);
@@ -140,13 +140,6 @@ public final class ArtifactDriver<A> {
         ArtifactContext context = createArtifactContext(source, wirelets);
         return newArtifact(context);
     }
-
-//    <E extends A> ArtifactDriver<A> mapTo(Class<E> decoratingType, Function<A, E> decorator) {
-//        // Ideen er egentlig at f.eks. kunne wrappe App, og tilfoeje en metode...
-//        // Men altsaa, maaske er det bare at kalde metoderne direkte i context...
-//        // PackedApp kalder jo bare direkte igennem
-//        throw new UnsupportedOperationException();
-//    }
 
     /**
      * Create a new artifact using a previously supplied method handle.
@@ -216,6 +209,14 @@ public final class ArtifactDriver<A> {
         // TODO validate type
         return new ArtifactDriver<>(artifactType, mh);
     }
+
+//  <E extends A> ArtifactDriver<A> mapTo(Class<E> decoratingType, Function<A, E> decorator) {
+//      // Ideen er egentlig at f.eks. kunne wrappe App, og tilfoeje en metode...
+//      // Men altsaa, maaske er det bare at kalde metoderne direkte i context...
+//      // PackedApp kalder jo bare direkte igennem
+//      throw new UnsupportedOperationException();
+//  }
+
 //
 //    static <A> A start(Class<A> artifactType, ArtifactSource source, Wirelet... wirelets) {
 //        // The only thing we save is defining a driver..
@@ -251,6 +252,10 @@ public final class ArtifactDriver<A> {
     // Men ikke paavirke hvordan de bliver lavet...
 
     static class Option {
+
+        // Normally we just check if App.iface extends AutoClosable...
+        // But might want to override this.
+        // forceManaged, forceUnmanaged
 
         // String Reason??? This extension has been blacklisted
         @SafeVarargs

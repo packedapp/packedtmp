@@ -185,11 +185,11 @@ public interface App extends AutoCloseable {
     }
 
     /**
-     * Returns an the default artifact driver for producing {@link App} instances.
+     * Returns a artifact driver that produces {@link App} artifacts.
      * <p>
      * This method is mainly used by advanced users.
      * 
-     * @return a driver for producing App instances
+     * @return a driver for producing App artifacts
      */
     static ArtifactDriver<App> driver() {
         return PackedApp.DRIVER;

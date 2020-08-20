@@ -43,7 +43,7 @@ public class ContainerImageTester {
     }
 
     public ContainerImageTester nameIs(String expected) {
-        assertThat(image.name()).isEqualTo(expected);
+        assertThat(image.artifactName()).isEqualTo(expected);
         return this;
     }
 }

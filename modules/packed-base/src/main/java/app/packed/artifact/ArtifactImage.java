@@ -15,10 +15,14 @@
  */
 package app.packed.artifact;
 
+import java.lang.invoke.MethodHandles;
 import java.util.concurrent.CompletableFuture;
 
+import app.packed.base.Attribute;
+import app.packed.base.TypeLiteral;
 import app.packed.component.Bundle;
 import app.packed.component.Component;
+import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
@@ -50,14 +54,27 @@ import app.packed.container.ContainerDescriptor;
  *          which would prohibit subclassing except by explicitly permitted types.
  * 
  */
+// isRoot??
+// Path -> / or /.dd.img
 public interface ArtifactImage<A> {
 
+    Attribute<Class<? extends Bundle<?>>> BUNDLE = Attribute.of(MethodHandles.lookup(), "bundle", new TypeLiteral<Class<? extends Bundle<?>>>() {});
+
     /**
-     * Returns the raw type of what the image creates
+     * Returns the name of this artifact.
+     * <p>
+     * The returned name is always identical to the name of the artifact's root container.
+     * <p>
+     * If no name is explicitly set when creating the artifact, the runtime will generate a name that guaranteed to be
+     * unique among any of the artifact'ssiblings.**@return the name of this artifact
+     * <p>
+     * The name can be overridden by using {@link Wirelet#named(String)} when instantiating the image.
      * 
-     * @return the raw type
+     * @return the name
      */
-    Class<?> rawType();
+    // Only if a name has been explicitly set? Or can we include "FooBar?" Ja det taenker jeg
+    // Non-null
+    String artifactName();
 
     /**
      * Returns the configuration site of this image.
@@ -65,6 +82,15 @@ public interface ArtifactImage<A> {
      * @return the configuration site of this image
      */
     ConfigSite configSite();
+
+    /**
+     * Creates a new artifact using this image.
+     * 
+     * @param wirelets
+     *            wirelets used to create the artifact
+     * @return the new artifact
+     */
+    A create(Wirelet... wirelets);
 
     /**
      * Returns a bundle descriptor for this image.
@@ -82,18 +108,18 @@ public interface ArtifactImage<A> {
     ContainerDescriptor descriptor();
 
     /**
-     * Returns the name of this artifact.
-     * <p>
-     * The returned name is always identical to the name of the artifact's root container.
-     * <p>
-     * If no name is explicitly set when creating the artifact, the runtime will generate a name that guaranteed to be
-     * unique among any of the artifact'ssiblings.**@return the name of this artifact
+     * Returns the path of the image.
      * 
-     * @return the name
+     * @return the path of the image
      */
-    // Only if a name has been explicitly set?
-    // Or can we include "FooBar?" Ja det taenker jeg
-    String name();
+    ComponentPath path();
+
+    /**
+     * Returns the raw type of what the image creates
+     * 
+     * @return the raw type
+     */
+    Class<?> rawArtifactType();
 
     /**
      * Returns the type of bundle that was used to create this image.
@@ -102,7 +128,16 @@ public interface ArtifactImage<A> {
      * 
      * @return the type of bundle that was used to create this image
      */
+    // Taenker vi dropper den her, og smider som en attribute???
+    // Hvem ved maaske er det andet end bundles der kan bruges en dag..
     Class<? extends Bundle<?>> sourceType();
+
+    // Create And start()
+    A start(Wirelet... wirelets);
+
+    default CompletableFuture<A> startAsync(Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Returns a component stream consisting of all the components in this image.
@@ -115,22 +150,6 @@ public interface ArtifactImage<A> {
     /// Hmmmm. Altsaa vi skal maaske heller have en descriptor plug
     // descriptor().stream()...
     ComponentStream stream(ComponentStream.Option... options);
-
-    /**
-     * Creates a new artifact using this image.
-     * 
-     * @param wirelets
-     *            wirelets used to create the artifact
-     * @return the new artifact
-     */
-    A create(Wirelet... wirelets);
-
-    // Create And start()
-    A start(Wirelet... wirelets);
-
-    default CompletableFuture<A> startAsync(Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
 }
 //Contains
 

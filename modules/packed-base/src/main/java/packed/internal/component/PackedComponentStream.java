@@ -22,10 +22,10 @@ import java.util.stream.Stream;
 
 import app.packed.component.Component;
 import app.packed.component.ComponentStream;
-import packed.internal.util.AbstractDelegatingStream;
+import packed.internal.util.AbstractAttributeHolderStream;
 
 /** The default implementation of {@link ComponentStream}. */
-final class PackedComponentStream extends AbstractDelegatingStream<Component> implements ComponentStream {
+final class PackedComponentStream extends AbstractAttributeHolderStream<Component> implements ComponentStream {
 
     /**
      * Creates a new internal component stream.
@@ -84,4 +84,5 @@ final class PackedComponentStream extends AbstractDelegatingStream<Component> im
     protected PackedComponentStream with(Stream<Component> s) {
         return new PackedComponentStream(s);
     }
+
 }
