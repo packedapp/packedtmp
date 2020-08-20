@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 /**
  *
  */
-public final class PackedExtensionOrdering implements ExtensionOrdering {
+final class PackedExtensionOrdering implements ExtensionOrdering {
 
     static final PackedExtensionOrdering EMPTY = new PackedExtensionOrdering(List.of());
 
