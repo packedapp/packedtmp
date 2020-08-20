@@ -22,10 +22,10 @@ import java.util.Optional;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.Component;
+import app.packed.inject.ProvideContext;
 import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import app.packed.service.Injector;
-import app.packed.service.ProvideContext;
 
 /**
  * An implementation of injection site used, when requesting a service directly through an injector, for example, via

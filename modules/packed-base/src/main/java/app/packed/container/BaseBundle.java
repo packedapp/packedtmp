@@ -20,13 +20,13 @@ import app.packed.base.Key.Qualifier;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
+import app.packed.inject.Provide;
 import app.packed.lifecycle.LifecycleExtension;
 import app.packed.lifecycleold.OnStart;
 import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
 import app.packed.service.PrototypeConfiguration;
-import app.packed.service.Provide;
 import app.packed.service.ServiceExtension;
 
 /**

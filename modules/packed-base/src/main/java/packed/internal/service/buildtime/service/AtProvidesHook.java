@@ -25,10 +25,10 @@ import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
+import app.packed.inject.Provide;
 import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.MethodDescriptor;
-import app.packed.service.Provide;
 import packed.internal.errorhandling.ErrorMessageBuilder;
 import packed.internal.inject.ServiceDependency;
 

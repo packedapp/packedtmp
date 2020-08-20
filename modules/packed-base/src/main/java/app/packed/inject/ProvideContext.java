@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.inject;
 
 import java.util.Optional;
 
@@ -26,6 +26,7 @@ import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.MethodDescriptor;
 import app.packed.introspection.ParameterDescriptor;
 import app.packed.introspection.VariableDescriptor;
+import app.packed.service.Injector;
 
 /**
  * An instance of this interface can be injected into methods annotated with {@link Provide}.

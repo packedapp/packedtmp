@@ -5,8 +5,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import app.packed.base.Key;
+import app.packed.inject.Provide;
 import app.packed.lifecycleold.OnStart;
-import app.packed.service.Provide;
 import packed.internal.inject.ServiceDependency;
 
 /** An factory support class. */

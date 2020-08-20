@@ -22,7 +22,6 @@ import app.packed.component.Component;
 import app.packed.component.ComponentStream;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import app.packed.container.BaseBundle;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerDescriptor;
 
@@ -131,24 +130,6 @@ public interface ArtifactImage<A> {
 
     default CompletableFuture<A> startAsync(Wirelet... wirelets) {
         throw new UnsupportedOperationException();
-    }
-
-    static class Doo extends BaseBundle {
-        public static void main(String[] args) {
-            try (App a = App.start(new Doo())) {
-                System.out.println(a.path());
-            }
-
-            ArtifactImage<App> img = App.newImage(new Doo());
-            try (App a = img.start()) {
-                System.out.println(a.path());
-            }
-
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        protected void configure() {}
     }
 }
 //Contains

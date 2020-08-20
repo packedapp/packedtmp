@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.concurrent.Semaphore;
 
+import app.packed.inject.ProvideContext;
 import app.packed.inject.Provider;
-import app.packed.service.ProvideContext;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceMode;

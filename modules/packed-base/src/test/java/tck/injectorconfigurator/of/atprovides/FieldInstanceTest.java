@@ -28,9 +28,9 @@ import org.junit.jupiter.api.Test;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
+import app.packed.inject.Provide;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
-import app.packed.service.Provide;
 
 /** Tests {@link Provide#constant()} on fields. */
 public class FieldInstanceTest {

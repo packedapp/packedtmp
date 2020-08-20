@@ -17,9 +17,9 @@ package packed.internal.service.runtime;
 
 import java.lang.invoke.MethodHandle;
 
+import app.packed.inject.ProvideContext;
 import app.packed.inject.Provider;
 import app.packed.inject.ProvisionException;
-import app.packed.service.ProvideContext;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceMode;
 import packed.internal.service.buildtime.service.ComponentFactoryBuildEntry;

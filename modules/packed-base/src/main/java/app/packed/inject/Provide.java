@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.inject;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -25,6 +25,7 @@ import app.packed.base.OpenMode;
 import app.packed.base.Opens;
 import app.packed.component.Packlet;
 import app.packed.container.ExtensionMember;
+import app.packed.service.ServiceExtension;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a service of some kind. A field

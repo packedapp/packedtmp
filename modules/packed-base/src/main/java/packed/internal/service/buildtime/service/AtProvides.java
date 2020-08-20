@@ -23,10 +23,10 @@ import java.util.List;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.inject.Provide;
 import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.MethodDescriptor;
-import app.packed.service.Provide;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.ServiceMode;
 

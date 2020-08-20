@@ -17,8 +17,8 @@ package packed.internal.util;
 
 import app.packed.base.Key;
 import app.packed.inject.Inject;
+import app.packed.inject.ProvideContext;
 import app.packed.service.Injector;
-import app.packed.service.ProvideContext;
 
 /** A builder of keys, mainly useful for creating proper error messages. */
 public final class KeyBuilder {

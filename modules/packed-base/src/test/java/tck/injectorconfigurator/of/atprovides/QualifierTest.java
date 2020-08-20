@@ -26,9 +26,9 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Key;
+import app.packed.inject.Provide;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
-import app.packed.service.Provide;
 import testutil.stubs.annotation.StringQualifier;
 
 /**

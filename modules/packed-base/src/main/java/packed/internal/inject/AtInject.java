@@ -20,10 +20,10 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.util.List;
 
+import app.packed.inject.Provide;
 import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.MethodDescriptor;
-import app.packed.service.Provide;
 
 /** A descriptor for a member annotated with {@link Provide}. */
 public final class AtInject {

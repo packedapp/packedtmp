@@ -30,6 +30,7 @@ import app.packed.container.ExtensionWired;
 import app.packed.hook.Expose;
 import app.packed.hook.OnHook;
 import app.packed.inject.Factory;
+import app.packed.inject.Provide;
 import app.packed.statemachine.Leaving;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletList;
