@@ -1,4 +1,4 @@
-package packed.internal.artifact;
+package packed.internal.assembly;
 
 import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;

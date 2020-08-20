@@ -33,7 +33,7 @@ import app.packed.component.CustomConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
-import packed.internal.artifact.InstantiationContext;
+import packed.internal.assembly.InstantiationContext;
 import packed.internal.util.LookupUtil;
 
 /**

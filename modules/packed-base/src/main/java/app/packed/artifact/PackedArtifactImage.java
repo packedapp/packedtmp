@@ -13,31 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.artifact;
+package app.packed.artifact;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.artifact.ArtifactContext;
-import app.packed.artifact.ArtifactDriver;
-import app.packed.artifact.ArtifactImage;
 import app.packed.component.Bundle;
 import app.packed.component.ComponentStream;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerDescriptor;
+import packed.internal.assembly.InstantiationContext;
+import packed.internal.assembly.PackedAssemblyContext;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletPack;
 
 /** The default implementation of {@link ArtifactImage}. */
-public final class PackedArtifactImage<A> implements ArtifactImage<A> {
-
-    /** The configuration of the root container. */
-    private final ComponentNodeConfiguration node;
+final class PackedArtifactImage<A> implements ArtifactImage<A> {
 
     /** The type of bundle used to create this image. */
     private final Class<? extends Bundle<?>> bundleType;
 
     private final ArtifactDriver<A> driver;
+
+    /** The configuration of the root container. */
+    private final ComponentNodeConfiguration node;
 
     /**
      * Creates a new image from the specified configuration and wirelets.
@@ -52,14 +51,16 @@ public final class PackedArtifactImage<A> implements ArtifactImage<A> {
         this.bundleType = (Class<? extends Bundle<?>>) requireNonNull(bundleType);
     }
 
-    public ArtifactContext newContext(Wirelet... wirelets) {
-        return InstantiationContext.instantiateArtifact(node, WireletPack.forImage(node, wirelets));
-    }
-
     /** {@inheritDoc} */
     @Override
     public ConfigSite configSite() {
         return node.configSite();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public A create(Wirelet... wirelets) {
+        return driver.newArtifact(newContext(wirelets));
     }
 
     /** {@inheritDoc} */
@@ -79,10 +80,26 @@ public final class PackedArtifactImage<A> implements ArtifactImage<A> {
         return node.getName();
     }
 
+    public ArtifactContext newContext(Wirelet... wirelets) {
+        return InstantiationContext.instantiateArtifact(node, WireletPack.forImage(node, wirelets));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<?> rawType() {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@inheritDoc} */
     @Override
     public Class<? extends Bundle<?>> sourceType() {
         return bundleType; // images can only be created from bundles
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public A start(Wirelet... wirelets) {
+        return driver.newArtifact(newContext(wirelets));
     }
 
     /** {@inheritDoc} */
@@ -103,27 +120,9 @@ public final class PackedArtifactImage<A> implements ArtifactImage<A> {
      *            any wirelet
      * @return the image
      */
-    public static <A> PackedArtifactImage<A> lazyCreate(ArtifactDriver<A> driver, Bundle<?> bundle, Wirelet... wirelets) {
+    static <A> PackedArtifactImage<A> newImage(ArtifactDriver<A> driver, Bundle<?> bundle, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.assembleImage(bundle, wirelets);
         return new PackedArtifactImage<A>(node, driver, bundle.getClass());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public A create(Wirelet... wirelets) {
-        return driver.newArtifact(newContext(wirelets));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public A start(Wirelet... wirelets) {
-        return driver.newArtifact(newContext(wirelets));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Class<?> rawType() {
-        throw new UnsupportedOperationException();
     }
 }
 //

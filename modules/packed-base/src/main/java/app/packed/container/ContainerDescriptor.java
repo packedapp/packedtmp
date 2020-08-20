@@ -35,7 +35,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.service.ServiceDescriptor;
-import packed.internal.artifact.PackedAssemblyContext;
+import packed.internal.assembly.PackedAssemblyContext;
 import packed.internal.component.ComponentNodeConfiguration;
 
 /**

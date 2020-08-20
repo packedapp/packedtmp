@@ -36,7 +36,7 @@ import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
-import packed.internal.artifact.InstantiationContext;
+import packed.internal.assembly.InstantiationContext;
 import packed.internal.container.PackedContainerRole;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.service.buildtime.ServiceExtensionNode;

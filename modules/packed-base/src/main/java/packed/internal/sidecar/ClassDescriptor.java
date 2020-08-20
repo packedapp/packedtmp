@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.base.reflectM1;
+package packed.internal.sidecar;
 
 import java.lang.invoke.MethodHandles.Lookup;
 

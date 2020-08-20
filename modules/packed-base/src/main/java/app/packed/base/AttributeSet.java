@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import packed.internal.attribute.EmptyAttributeSet;
+import packed.internal.base.attribute.EmptyAttributeSet;
 
 /**
  *

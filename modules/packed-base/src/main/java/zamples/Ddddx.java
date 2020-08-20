@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.base.reflectM1;
+package zamples;
 
 import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
@@ -23,11 +23,11 @@ import app.packed.container.BaseBundle;
 /**
  *
  */
-public class Dddd extends BaseBundle {
+public class Ddddx extends BaseBundle {
 
     int depth;
 
-    Dddd(int depth) {
+    Ddddx(int depth) {
         this.depth = depth;
     }
 
@@ -41,9 +41,9 @@ public class Dddd extends BaseBundle {
         installInstance("sdfsdf");
         installInstance("sdfsdf");
         if (depth > 0) {
-            link(new Dddd(depth - 1), Wirelet.named("X123123XXX"));
-            link(new Dddd(depth - 1));
-            link(new Dddd(depth - 1));
+            link(new Ddddx(depth - 1), Wirelet.named("X123123XXX"));
+            link(new Ddddx(depth - 1));
+            link(new Ddddx(depth - 1));
         }
     }
 //    505
@@ -53,10 +53,10 @@ public class Dddd extends BaseBundle {
 
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        ArtifactImage<App> img = App.newImage(new Dddd(10));
+        ArtifactImage<App> img = App.newImage(new Ddddx(10));
         System.out.println(System.currentTimeMillis() - start);
         start = System.currentTimeMillis();
-        img = App.newImage(new Dddd(10));
+        img = App.newImage(new Ddddx(10));
         System.out.println(System.currentTimeMillis() - start);
         // BundleValidator.assertValid(new Dddd(4));
 

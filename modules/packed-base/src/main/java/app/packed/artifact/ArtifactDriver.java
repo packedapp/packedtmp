@@ -28,9 +28,8 @@ import app.packed.component.WireableComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import app.packed.service.Injector;
-import packed.internal.artifact.InstantiationContext;
-import packed.internal.artifact.PackedArtifactImage;
-import packed.internal.artifact.PackedAssemblyContext;
+import packed.internal.assembly.InstantiationContext;
+import packed.internal.assembly.PackedAssemblyContext;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.util.ThrowableUtil;
@@ -193,7 +192,7 @@ public final class ArtifactDriver<A> {
     }
 
     public ArtifactImage<A> newImage(Bundle<?> bundle, Wirelet... wirelets) {
-        return PackedArtifactImage.lazyCreate(this, bundle, wirelets);
+        return PackedArtifactImage.newImage(this, bundle, wirelets);
     }
 
     public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, Class<? extends A> implementation) {

@@ -23,8 +23,8 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import app.packed.component.ComponentStream;
-import packed.internal.attribute.PackedAttribute;
-import packed.internal.attribute.PackedAttribute.PackedOption;
+import packed.internal.base.attribute.PackedAttribute;
+import packed.internal.base.attribute.PackedAttribute.PackedOption;
 
 /**
  * <p>
