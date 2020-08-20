@@ -33,6 +33,9 @@ final class PackedArtifactImage<A> implements ArtifactImage<A> {
     /** The type of bundle used to create this image. */
     private final Class<? extends Bundle<?>> bundleType;
 
+    /** The driver used to create the artifact. */
+    // We should use the driver when creating the actual root node...
+    // I'm not sure we should need to store it.
     private final ArtifactDriver<A> driver;
 
     /** The configuration of the root container. */
@@ -87,7 +90,7 @@ final class PackedArtifactImage<A> implements ArtifactImage<A> {
     /** {@inheritDoc} */
     @Override
     public Class<?> rawType() {
-        throw new UnsupportedOperationException();
+        return driver.rawType();
     }
 
     /** {@inheritDoc} */

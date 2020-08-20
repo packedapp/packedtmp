@@ -53,7 +53,11 @@ public interface AttributeSet {
     /**
      * If the specified attribute is present, returns the value of the attribute, otherwise throws
      * {@code NoSuchElementException}.
-     *
+     * 
+     * @param <T>
+     *            the attribute value type
+     * @param attribute
+     *            the attribute
      * @return the non-{@code null} value of the specified attribute
      * @throws NoSuchElementException
      *             if the specified attribute is not present
@@ -69,7 +73,11 @@ public interface AttributeSet {
 
     /**
      * If an attribute is present, performs the given action with the value of the attribute, otherwise does nothing.
-     *
+     * 
+     * @param <T>
+     *            the type of attribute value
+     * @param attribute
+     *            the attribute
      * @param action
      *            the action to be performed, if an attribute is present
      */

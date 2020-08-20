@@ -45,7 +45,7 @@ import app.packed.container.ContainerDescriptor;
  * <p>
  * An image can be used to create new instances of {@link app.packed.artifact.App}, {@link ContainerDescriptor} or other
  * artifact images. Artifact images can not be used as a part of other containers, for example, via
- * {@link ContainerBundle#link(ContainerBundle, Wirelet...)}.
+ * 
  * 
  * @apiNote In the future, if the Java language permits, {@link ArtifactImage} may become a {@code sealed} interface,
  *          which would prohibit subclassing except by explicitly permitted types.

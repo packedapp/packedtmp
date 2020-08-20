@@ -371,6 +371,10 @@ public abstract class Key<T> {
     /**
      * Returns a key with no qualifier and the same type as this instance.
      * 
+     * @param <T>
+     *            the type of key
+     * @param typeLiteral
+     *            the type literal
      * @return a key with no qualifier and the same type as this instance
      * @throws InvalidDeclarationException
      *             if the type literal could not be converted to a key, for example, if it is an {@link Optional}. Or if the
@@ -383,6 +387,8 @@ public abstract class Key<T> {
     /**
      * Returns a key with the specified qualifier and the same type as this instance.
      * 
+     * @param <T>
+     *            the type of key
      * @param typeLiteral
      *            the typeLiteral of the new
      * @param qualifier

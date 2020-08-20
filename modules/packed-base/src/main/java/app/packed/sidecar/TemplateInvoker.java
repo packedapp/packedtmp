@@ -59,6 +59,7 @@ public interface TemplateInvoker<T> {
     // Invoker.retryWith(RetryPolicy, Throwable on these Exceptions...)
     /**
      * @param template
+     *            the template
      * @return the new invoker
      * 
      * @throws ClassCastException
@@ -70,6 +71,7 @@ public interface TemplateInvoker<T> {
 
     /**
      * @param <T>
+     *            the template type
      * @param lookup
      *            a lookup of object for the template type
      * @param templateType

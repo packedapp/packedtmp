@@ -52,8 +52,6 @@ public interface MemberDescriptor {
      * Returns {@code true} if this member was introduced by the compiler; returns {@code false} otherwise.
      *
      * @return true if and only if this member was introduced by the compiler.
-     * @jls 13.1 The Form of a Binary
-     * @since 1.5
      */
     boolean isSynthetic();
 }

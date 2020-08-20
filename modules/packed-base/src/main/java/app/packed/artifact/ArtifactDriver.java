@@ -155,7 +155,7 @@ public final class ArtifactDriver<A> {
      *            the artifact context to use for instantiating the artifact
      * @return the new artifact
      */
-    public A newArtifact(ArtifactContext context) {
+    A newArtifact(ArtifactContext context) {
         try {
             return (A) mh.invoke(context);
         } catch (Throwable e) {

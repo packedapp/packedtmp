@@ -20,7 +20,9 @@ public interface ConstructorDescriptor<T> extends ExecutableDescriptor {
 
     /**
      * Returns a constructor descriptor representing the specified constructor.
-     *
+     * 
+     * @param <T>
+     *            some type
      * @param constructor
      *            the constructor for which to return a descriptor for
      * @return the descriptor

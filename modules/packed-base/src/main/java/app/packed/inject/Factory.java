@@ -245,7 +245,6 @@ public interface Factory<T> {
 
     /**
      * Tries to find a single static method or constructor on the specified class using the following rules:
-     * <p>
      * <ul>
      * <li>If a single static method (non-static methods are ignored) annotated with {@link Inject} is present a factory
      * wrapping the method will be returned. If there are multiple static methods annotated with Inject this method will

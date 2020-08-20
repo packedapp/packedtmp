@@ -65,7 +65,7 @@ public interface Attribute<T> /* extends AttributeHolder */ {
     String displayAs();
 
     /**
-     * Returns whether or not the attribute is hidden. Attributes whose name start with <code>.<.code> are automatically
+     * Returns whether or not the attribute is hidden. Attributes whose name start with <code>.</code> are automatically
      * hidden.
      * <p>
      * Hidden attributes will never show in {@link AttributeSet#attributes()} or {@link AttributeSet#entrySet()},

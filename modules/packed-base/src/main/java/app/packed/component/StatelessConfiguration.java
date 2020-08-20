@@ -37,6 +37,8 @@ public interface StatelessConfiguration extends ComponentConfiguration {
     /**
      * Returns a driver that can be used to create stateless components.
      * 
+     * @param <T>
+     *            the type
      * @return a driver
      */
     static <T> ClassSourcedDriver<StatelessConfiguration, T> driver() {

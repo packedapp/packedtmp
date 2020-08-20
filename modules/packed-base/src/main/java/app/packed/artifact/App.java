@@ -70,7 +70,7 @@ public interface App extends AutoCloseable {
 
     /**
      * Returns the path of this application. Unless the app is installed as a guest, this method always returns
-     * <code>"{@literal /}"<code>.
+     * <code>"{@literal /}"</code>.
      *
      * @return the path of this application
      * @see Component#path()
@@ -90,6 +90,8 @@ public interface App extends AutoCloseable {
      * Initiates an orderly asynchronously shutdown of the application. In which currently running tasks will be executed,
      * but no new tasks will be started. Invocation has no additional effect if the application has already been shut down.
      *
+     * @param options
+     *            options
      * @return a future that can be used to query whether the application has completed shutdown (terminated). Or is still
      *         in the process of being shut down
      */

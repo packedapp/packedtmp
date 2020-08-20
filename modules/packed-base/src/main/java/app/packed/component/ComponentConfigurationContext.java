@@ -19,7 +19,6 @@ import java.util.Set;
 
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundle;
-import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
 
@@ -67,7 +66,9 @@ public interface ComponentConfigurationContext {
 
     /**
      * @param bundle
+     *            the bundle
      * @param wirelets
+     *            wirelets
      * 
      * @apiNote Previously this method returned the specified bundle. However, to encourage people to configure the bundle
      *          before calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have
@@ -137,12 +138,5 @@ public interface ComponentConfigurationContext {
     // Maybe an attribute.. component.with(Extension.USED_EXTENSIONS)
     Set<Class<? extends Extension>> containerExtensions();
 
-    /**
-     * @param <T>
-     * @param extensionType
-     * @return the extension
-     * @throws UnsupportedOperationException
-     * @see ContainerConfiguration#use(Class)
-     */
     <T extends Extension> T containerUse(Class<T> extensionType);
 }
