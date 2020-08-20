@@ -38,12 +38,13 @@ import packed.internal.container.ExtensionModel;
 // specials --> ExtensionX before ExtensionY
 
 /**
- * A deterministic ordering of a set of extension types.
+ * An immutable ordered set of extensions that are deterministic ordering of a set of extension types.
  * <p>
  * An extension ordering will not accept extension types that identical names but different identities. This can happen
  * fx if they the same extension is loaded with multiple different class loaders.
  */
-public interface ExtensionOrdering extends Iterable<Class<? extends Extension>> {
+// ExtensionSet or ExtensionList
+public interface ExtensionSet extends Iterable<Class<? extends Extension>> {
 
     /**
      * Returns whether or not this ordering contains the specified extension type.
@@ -79,22 +80,22 @@ public interface ExtensionOrdering extends Iterable<Class<? extends Extension>> 
      * 
      * @return an ordering that contains no extensions
      */
-    static ExtensionOrdering empty() {
-        return PackedExtensionOrdering.EMPTY;
+    static ExtensionSet empty() {
+        return PackedExtensionSet.EMPTY;
     }
 
     @SafeVarargs
-    static ExtensionOrdering of(Class<? extends Extension>... extensions) {
+    static ExtensionSet of(Class<? extends Extension>... extensions) {
         return of(List.of(extensions));
     }
 
     @SuppressWarnings("unchecked")
-    static ExtensionOrdering of(Collection<Class<? extends Extension>> extensions) {
+    static ExtensionSet of(Collection<Class<? extends Extension>> extensions) {
         List<?> l = extensions.stream().map(c -> ExtensionModel.of(c)).sorted().map(m -> m.type()).collect(Collectors.toList());
-        return new PackedExtensionOrdering((List<Class<? extends Extension>>) l);
+        return new PackedExtensionSet((List<Class<? extends Extension>>) l);
     }
 
-    static ExtensionOrdering findAll(Component c) {
+    static ExtensionSet findAll(Component c) {
         // Recursive
         throw new UnsupportedOperationException();
     }

@@ -24,13 +24,13 @@ import java.util.stream.Stream;
 /**
  *
  */
-final class PackedExtensionOrdering implements ExtensionOrdering {
+final class PackedExtensionSet implements ExtensionSet {
 
-    static final PackedExtensionOrdering EMPTY = new PackedExtensionOrdering(List.of());
+    static final PackedExtensionSet EMPTY = new PackedExtensionSet(List.of());
 
     private final List<Class<? extends Extension>> extensions;
 
-    PackedExtensionOrdering(List<Class<? extends Extension>> extensions) {
+    PackedExtensionSet(List<Class<? extends Extension>> extensions) {
         this.extensions = requireNonNull(extensions);
     }
 

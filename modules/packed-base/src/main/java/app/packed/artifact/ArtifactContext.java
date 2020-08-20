@@ -23,7 +23,7 @@ import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.component.ComponentStream.Option;
 import app.packed.config.ConfigSite;
-import app.packed.container.ExtensionOrdering;
+import app.packed.container.ExtensionSet;
 import app.packed.lifecycleold.StopOption;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
@@ -61,8 +61,8 @@ public interface ArtifactContext /* extends System */ {
      * @return the extensions that are used
      */
     // Maaske en attribute istedet for...
-    default ExtensionOrdering extensions() {
-        return ExtensionOrdering.empty();
+    default ExtensionSet extensions() {
+        return ExtensionSet.empty();
     }
 
     /**

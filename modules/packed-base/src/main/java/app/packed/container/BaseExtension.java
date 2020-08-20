@@ -47,8 +47,8 @@ public final class BaseExtension extends Extension {
      * 
      * @return all the extensions that are currently in use
      */
-    public ExtensionOrdering extensions() {
-        return ExtensionOrdering.of(pcc.extensions()); // view/not-view?
+    public ExtensionSet extensions() {
+        return ExtensionSet.of(pcc.extensions()); // view/not-view?
     }
 }
 
