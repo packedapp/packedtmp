@@ -22,11 +22,12 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.component.Bundle;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseBundle;
 import app.packed.container.ContainerConfiguration;
 
-/** Tests {@link App#start(ArtifactSource, Wirelet...)} */
+/** Tests {@link App#start(Bundle, Wirelet...)} */
 public class AppOfTest {
 
     /** Tests an empty app. */

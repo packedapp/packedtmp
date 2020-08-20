@@ -15,6 +15,7 @@
  */
 package micro.app;
 
+import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
 import app.packed.container.BaseBundle;
 
@@ -23,10 +24,10 @@ import app.packed.container.BaseBundle;
  */
 public class VariousBundles {
 
-    public static final ArtifactImage EMPTY_IMAGE = ArtifactImage.of(empty());
-    public static final ArtifactImage ONE_COMPONENT_IMAGE = ArtifactImage.of(oneComponent());
-    public static final ArtifactImage FIVE_CONTAINER_IMAGE = ArtifactImage.of(fiveComponents());
-    public static final ArtifactImage ONE_CONTAINER_IMAGE = ArtifactImage.of(oneContainer());
+    public static final ArtifactImage<App> EMPTY_IMAGE = App.newImage(empty());
+    public static final ArtifactImage<App> ONE_COMPONENT_IMAGE = App.newImage(oneComponent());
+    public static final ArtifactImage<App> FIVE_CONTAINER_IMAGE = App.newImage(fiveComponents());
+    public static final ArtifactImage<App> ONE_CONTAINER_IMAGE = App.newImage(oneContainer());
 
     public static BaseBundle empty() {
         return new BaseBundle() {

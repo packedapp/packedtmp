@@ -31,6 +31,7 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
+import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
 import app.packed.component.Packlet;
 import app.packed.container.BaseBundle;
@@ -51,38 +52,38 @@ import app.packed.hook.OnHook;
 public class ExtensionActivation {
 
     @Benchmark
-    public ArtifactImage empty() {
+    public ArtifactImage<App> empty() {
         BaseBundle b = new BaseBundle() {
             @Override
             protected void configure() {}
         };
-        return ArtifactImage.of(b);
+        return App.newImage(b);
     }
 
     @Benchmark
-    public ArtifactImage useExtension() {
+    public ArtifactImage<App> useExtension() {
         BaseBundle b = new BaseBundle() {
             @Override
             public void configure() {
                 use(MyExtension.class);
             }
         };
-        return ArtifactImage.of(b);
+        return App.newImage(b);
     }
 
     @Benchmark
-    public ArtifactImage install() {
+    public ArtifactImage<App> install() {
         BaseBundle b = new BaseBundle() {
             @Override
             public void configure() {
                 installInstance("foo");
             }
         };
-        return ArtifactImage.of(b);
+        return App.newImage(b);
     }
 
     @Benchmark
-    public ArtifactImage newExtensionUseInstall() {
+    public ArtifactImage<App> newExtensionUseInstall() {
         BaseBundle b = new BaseBundle() {
             @Override
             public void configure() {
@@ -90,18 +91,18 @@ public class ExtensionActivation {
                 installInstance("foo");
             }
         };
-        return ArtifactImage.of(b);
+        return App.newImage(b);
     }
 
     @Benchmark
-    public ArtifactImage newExtensionAutoActivate() {
+    public ArtifactImage<App> newExtensionAutoActivate() {
         BaseBundle b = new BaseBundle() {
             @Override
             public void configure() {
                 installInstance(new MyStuff());
             }
         };
-        return ArtifactImage.of(b);
+        return App.newImage(b);
     }
 
     static class MyStuff {

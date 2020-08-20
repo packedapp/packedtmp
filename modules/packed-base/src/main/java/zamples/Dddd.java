@@ -31,13 +31,13 @@ public class Dddd extends BaseBundle {
 
     public static void main(String[] args) throws IOException {
         long now = System.currentTimeMillis();
-        ArtifactImage ai = ArtifactImage.of(new Dddd());
+        ArtifactImage<App> ai = App.newImage(new Dddd());
 
         // ai.stream().forEach(e -> System.out.println(e.path() + " - " + e.name()));
 
         System.out.println("------ run time");
         System.out.println(System.currentTimeMillis() - now);
-        App a = App.create(ai /* , Wirelet.name("HejHej"), Wirelet.name("HjX") */);
+        App a = ai.create(/* , Wirelet.name("HejHej"), Wirelet.name("HjX") */);
 
         // a.stream().forEach(e -> System.out.println(e.path() + " " + e.name()));
 

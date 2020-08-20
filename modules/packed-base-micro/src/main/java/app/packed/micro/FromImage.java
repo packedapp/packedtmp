@@ -33,8 +33,8 @@ import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
-import app.packed.component.Packlet;
 import app.packed.component.BeanConfiguration;
+import app.packed.component.Packlet;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.hook.AnnotatedMethodHook;
@@ -52,24 +52,24 @@ import app.packed.hook.OnHook;
 @State(Scope.Benchmark)
 public class FromImage {
 
-    static final ArtifactImage EMPTY = ArtifactImage.of(new BaseBundle() {
+    static final ArtifactImage<App> EMPTY = App.newImage(new BaseBundle() {
         @Override
         protected void configure() {}
     });
 
-    static final ArtifactImage USE_EXTENSION = ArtifactImage.of(new BaseBundle() {
+    static final ArtifactImage<App> USE_EXTENSION = App.newImage(new BaseBundle() {
         @Override
         public void configure() {
             use(MyExtension.class);
         }
     });
-    static final ArtifactImage INSTALL = ArtifactImage.of(new BaseBundle() {
+    static final ArtifactImage<App> INSTALL = App.newImage(new BaseBundle() {
         @Override
         public void configure() {
             installInstance("foo");
         }
     });
-    static final ArtifactImage INSTALL_AUTO_ACTIVATE = ArtifactImage.of(new BaseBundle() {
+    static final ArtifactImage<App> INSTALL_AUTO_ACTIVATE = App.newImage(new BaseBundle() {
         @Override
         public void configure() {
             installInstance(new MyStuff());
@@ -78,22 +78,22 @@ public class FromImage {
 
     @Benchmark
     public App empty() {
-        return App.start(EMPTY);
+        return EMPTY.start();
     }
 
     @Benchmark
     public App useExtension() {
-        return App.start(USE_EXTENSION);
+        return USE_EXTENSION.start();
     }
 
     @Benchmark
     public App install() {
-        return App.start(INSTALL);
+        return INSTALL.start();
     }
 
     @Benchmark
     public App newExtensionAutoActivate() {
-        return App.start(INSTALL_AUTO_ACTIVATE);
+        return INSTALL_AUTO_ACTIVATE.start();
     }
 
     static class MyStuff {

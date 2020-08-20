@@ -26,8 +26,7 @@ import java.util.stream.Stream;
 import app.packed.artifact.App;
 import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.ArtifactDriver;
-import app.packed.artifact.ArtifactSource;
-import app.packed.artifact.TakeImage;
+import app.packed.artifact.ArtifactImage;
 import app.packed.base.Key;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
@@ -302,7 +301,7 @@ public interface Injector {
         return t.get();
     }
 
-    static TakeImage<Injector> newImage(Bundle<?> bundle, Wirelet... wirelets) {
+    static ArtifactImage<Injector> newImage(Bundle<?> bundle, Wirelet... wirelets) {
         return driver().newImage(bundle, wirelets);
     }
 
@@ -339,7 +338,7 @@ public interface Injector {
      *             if the injector could not be created for some reason. For example, if the source defines any components
      *             that requires a lifecycle
      */
-    static Injector create(ArtifactSource source, Wirelet... wirelets) {
+    static Injector create(Bundle<?> source, Wirelet... wirelets) {
         return driver().instantiate(source, wirelets);
     }
 }

@@ -23,8 +23,8 @@ import java.lang.invoke.MethodType;
 import java.util.function.Function;
 
 import app.packed.component.Bundle;
-import app.packed.component.WireableComponentDriver;
 import app.packed.component.CustomConfigurator;
+import app.packed.component.WireableComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import app.packed.service.Injector;
@@ -100,15 +100,12 @@ public final class ArtifactDriver<A> {
         return newArtifact(ac);
     }
 
-    private ArtifactContext createArtifactContext(ArtifactSource source, Wirelet... wirelets) {
-        if (source instanceof PackedArtifactImage) {
-            return ((PackedArtifactImage) source).newContext(wirelets);
-        }
-        ComponentNodeConfiguration node = PackedAssemblyContext.assembleArtifact(this, (Bundle<?>) source, wirelets);
+    private ArtifactContext createArtifactContext(Bundle<?> source, Wirelet... wirelets) {
+        ComponentNodeConfiguration node = PackedAssemblyContext.assembleArtifact(this, source, wirelets);
         return InstantiationContext.instantiateArtifact(node, node.wirelets);
     }
 
-    public Object execute(ArtifactSource source, Wirelet... wirelets) {
+    public Object execute(Bundle<?> source, Wirelet... wirelets) {
         ArtifactContext context = createArtifactContext(source, wirelets);
         context.start();
         return null;
@@ -140,7 +137,7 @@ public final class ArtifactDriver<A> {
     // VIL MENE at sourcen i saa fald det er en bundle
     // Skal kunne lave en container...
     // Maaske laver vi implicit en container og smider den i...
-    public A instantiate(ArtifactSource source, Wirelet... wirelets) {
+    public A instantiate(Bundle<?> source, Wirelet... wirelets) {
         ArtifactContext context = createArtifactContext(source, wirelets);
         return newArtifact(context);
     }
@@ -159,7 +156,7 @@ public final class ArtifactDriver<A> {
      *            the artifact context to use for instantiating the artifact
      * @return the new artifact
      */
-    private A newArtifact(ArtifactContext context) {
+    public A newArtifact(ArtifactContext context) {
         try {
             return (A) mh.invoke(context);
         } catch (Throwable e) {
@@ -189,14 +186,14 @@ public final class ArtifactDriver<A> {
      * @throws UnsupportedOperationException
      *             if the driver does not produce an artifact with an execution phase
      */
-    public A start(ArtifactSource source, Wirelet... wirelets) {
+    public A start(Bundle<?> source, Wirelet... wirelets) {
         ArtifactContext context = createArtifactContext(source, wirelets);
         context.start();
         return newArtifact(context);
     }
 
-    public TakeImage<A> newImage(Bundle<?> bundle, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
+    public ArtifactImage<A> newImage(Bundle<?> bundle, Wirelet... wirelets) {
+        return PackedArtifactImage.lazyCreate(this, bundle, wirelets);
     }
 
     public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, Class<? extends A> implementation) {

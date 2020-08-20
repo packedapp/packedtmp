@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
-import app.packed.artifact.ArtifactSource;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
@@ -48,7 +47,7 @@ public final class ContainerModel extends Model implements ComponentLookup {
         @Override
         protected ContainerModel computeValue(Class<?> type) {
             // Is either a bundle, or a ContainerConfigurator subclass
-            return new ContainerModel((Class<? extends ArtifactSource>) type);
+            return new ContainerModel((Class<? extends Bundle<?>>) type);
         }
     };
 
@@ -89,7 +88,7 @@ public final class ContainerModel extends Model implements ComponentLookup {
      * @param sourceType
      *            the source type
      */
-    private ContainerModel(Class<? extends ArtifactSource> sourceType) {
+    private ContainerModel(Class<? extends Bundle<?>> sourceType) {
         super(sourceType);
         if (Hook.class.isAssignableFrom(sourceType)) {
             throw new InvalidDeclarationException(sourceType + " must not implement/extend " + Hook.class);

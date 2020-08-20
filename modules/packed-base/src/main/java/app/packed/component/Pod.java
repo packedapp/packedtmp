@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package app.packed.component;
 
 /**
  * Atomic unit. Normally an artifact. But can be multiple artifacts with a single root. Or it can be just a component

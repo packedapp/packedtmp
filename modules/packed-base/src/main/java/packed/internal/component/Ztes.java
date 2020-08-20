@@ -15,6 +15,7 @@
  */
 package packed.internal.component;
 
+import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
 import app.packed.component.BeanConfiguration;
 import app.packed.container.BaseBundle;
@@ -36,7 +37,7 @@ public class Ztes extends BaseBundle {
     }
 
     public static void main(String[] args) {
-        ArtifactImage ai = ArtifactImage.of(new Ztes());
+        ArtifactImage<App> ai = App.newImage(new Ztes());
         ai.stream().forEach(e -> System.out.println(e.path() + " - " + e.name()));
         // App.of(new Ztes());
     }

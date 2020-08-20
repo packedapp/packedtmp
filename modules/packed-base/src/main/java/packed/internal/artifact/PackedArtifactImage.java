@@ -18,6 +18,7 @@ package packed.internal.artifact;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.artifact.ArtifactContext;
+import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactImage;
 import app.packed.component.Bundle;
 import app.packed.component.ComponentStream;
@@ -28,7 +29,7 @@ import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletPack;
 
 /** The default implementation of {@link ArtifactImage}. */
-public final class PackedArtifactImage implements ArtifactImage {
+public final class PackedArtifactImage<A> implements ArtifactImage<A> {
 
     /** The configuration of the root container. */
     private final ComponentNodeConfiguration node;
@@ -36,15 +37,19 @@ public final class PackedArtifactImage implements ArtifactImage {
     /** The type of bundle used to create this image. */
     private final Class<? extends Bundle<?>> bundleType;
 
+    private final ArtifactDriver<A> driver;
+
     /**
      * Creates a new image from the specified configuration and wirelets.
      * 
      * @param pcc
      *            the container configuration to wrap
      */
-    private PackedArtifactImage(ComponentNodeConfiguration pcc, Class<? extends Bundle<?>> bundleType) {
+    @SuppressWarnings("unchecked")
+    private PackedArtifactImage(ComponentNodeConfiguration pcc, ArtifactDriver<A> driver, Class<?> bundleType) {
         this.node = requireNonNull(pcc);
-        this.bundleType = requireNonNull(bundleType);
+        this.driver = driver;
+        this.bundleType = (Class<? extends Bundle<?>>) requireNonNull(bundleType);
     }
 
     public ArtifactContext newContext(Wirelet... wirelets) {
@@ -90,16 +95,35 @@ public final class PackedArtifactImage implements ArtifactImage {
      * If the specified source is an image returns the image with any specified wirelets applied. If the specified source is
      * a bundle creates and returns a new image from the specified bundle.
      * 
+     * @param driver
+     *            the artifact driver
      * @param bundle
      *            the artifact source
      * @param wirelets
      *            any wirelet
      * @return the image
      */
-    @SuppressWarnings("unchecked")
-    public static PackedArtifactImage lazyCreate(Bundle<?> bundle, Wirelet... wirelets) {
+    public static <A> PackedArtifactImage<A> lazyCreate(ArtifactDriver<A> driver, Bundle<?> bundle, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.assembleImage(bundle, wirelets);
-        return new PackedArtifactImage(node, (Class<? extends Bundle<?>>) bundle.getClass());
+        return new PackedArtifactImage<A>(node, driver, bundle.getClass());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public A create(Wirelet... wirelets) {
+        return driver.newArtifact(newContext(wirelets));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public A start(Wirelet... wirelets) {
+        return driver.newArtifact(newContext(wirelets));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<?> rawType() {
+        throw new UnsupportedOperationException();
     }
 }
 //

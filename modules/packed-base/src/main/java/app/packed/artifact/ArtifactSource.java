@@ -19,7 +19,7 @@ import app.packed.component.Bundle;
 import app.packed.component.Wirelet;
 
 /**
- * A source for creating artifacts. For example, via {@link App#start(ArtifactSource, Wirelet...)}.
+ * A source for creating artifacts. For example, via {@link App#start(Bundle, Wirelet...)}.
  * <p>
  * There An source is used to create an artifact. Currently the following types of sources are supported:
  * 
@@ -36,4 +36,5 @@ import app.packed.component.Wirelet;
  */
 
 // An artifact is an object that can be used to access a system or part of it, from outside of the system.
+@Deprecated
 public interface ArtifactSource {}

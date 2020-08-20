@@ -19,7 +19,8 @@ import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import app.packed.artifact.App;
-import app.packed.artifact.ArtifactSource;
+import app.packed.artifact.ArtifactImage;
+import app.packed.component.Bundle;
 import app.packed.component.Component;
 import app.packed.component.ComponentStream;
 import app.packed.component.Wirelet;
@@ -35,8 +36,12 @@ public class AppTester {
         this.app = requireNonNull(app);
     }
 
-    public AppTester(ArtifactSource source, Wirelet... wirelets) {
+    public AppTester(Bundle<?> source, Wirelet... wirelets) {
         this(App.start(source, wirelets));
+    }
+
+    public AppTester(ArtifactImage<App> img, Wirelet... wirelets) {
+        this(img.start(wirelets));
     }
 
     public void assertPathExist(CharSequence s) {
@@ -56,7 +61,7 @@ public class AppTester {
         return app.stream();
     }
 
-    public static AppTester of(ArtifactSource source, Wirelet... wirelets) {
+    public static AppTester of(Bundle<?> source, Wirelet... wirelets) {
         return new AppTester(App.start(source, wirelets));
     }
 }

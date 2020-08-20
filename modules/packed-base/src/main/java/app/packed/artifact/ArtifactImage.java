@@ -15,14 +15,16 @@
  */
 package app.packed.artifact;
 
+import java.util.concurrent.CompletableFuture;
+
 import app.packed.component.Bundle;
 import app.packed.component.Component;
 import app.packed.component.ComponentStream;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
+import app.packed.container.BaseBundle;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerDescriptor;
-import packed.internal.artifact.PackedArtifactImage;
 
 /**
  * Artifact images are immutable ahead-of-time configured artifacts. By configuring an artifact ahead of time, the
@@ -49,7 +51,14 @@ import packed.internal.artifact.PackedArtifactImage;
  *          which would prohibit subclassing except by explicitly permitted types.
  * 
  */
-public interface ArtifactImage<T> extends ArtifactSource {
+public interface ArtifactImage<A> {
+
+    /**
+     * Returns the raw type of what the image creates
+     * 
+     * @return the raw type
+     */
+    Class<?> rawType();
 
     /**
      * Returns the configuration site of this image.
@@ -109,22 +118,59 @@ public interface ArtifactImage<T> extends ArtifactSource {
     ComponentStream stream(ComponentStream.Option... options);
 
     /**
-     * Creates a new image from the specified bundle.
-     *
-     * @param bundle
-     *            the bundle to use for image creation
+     * Creates a new artifact using this image.
+     * 
      * @param wirelets
-     *            wirelets used for the construction of the image.
-     * @return the new image
-     * @throws RuntimeException
-     *             if the image could not be constructed
+     *            wirelets used to create the artifact
+     * @return the new artifact
      */
-    @Deprecated
-    static ArtifactImage of(Bundle<?> bundle, Wirelet... wirelets) {
-        return PackedArtifactImage.lazyCreate(bundle, wirelets);
+    A create(Wirelet... wirelets);
+
+    // Create And start()
+    A start(Wirelet... wirelets);
+
+    default CompletableFuture<A> startAsync(Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
+    static class Doo extends BaseBundle {
+        public static void main(String[] args) {
+            try (App a = App.start(new Doo())) {
+                System.out.println(a.path());
+            }
+
+            ArtifactImage<App> img = App.newImage(new Doo());
+            try (App a = img.start()) {
+                System.out.println(a.path());
+            }
+
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        protected void configure() {}
     }
 }
+//Contains
 
+//Ways to initialize, start, stop, execute, ect...
+//Ways to query the image... in the same way as a Bundle...
+////Tror dog det betyder vi skal have noget a.la. 
+//ArtifactImage -> SystemDescribable, saa metoder, f.eks.,
+//ServiceContract.from(Image|new XBundle()); -> 
+////SystemInspector.find(iOrB, ServiceContract.class); <-- SC exposed as a contract
+
+//Image<App> app = App.newImage(new MyApp());
+//Image app = Image.of(new MyApp());
+
+// App.driver().image(Bundle b);
+
+//Man kan ikke lave et Image via Image...
+//Fordi det maaske ikke kun er Artifact drivers der kan lave images...
+//Kunne sagtens forstille mig en dag
+// Nej... syntes ikke alle skal kunne noedvendig bruge den driver...
+// Maaske har vi en hemlig driver...
+// ArtifactDriver<A> driver();
 ///**
 //* Returns a new artifact image by applying the specified wirelets.
 //* 

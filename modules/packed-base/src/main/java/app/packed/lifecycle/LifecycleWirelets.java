@@ -22,11 +22,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import app.packed.artifact.App;
-import app.packed.artifact.ArtifactSource;
+import app.packed.component.Bundle;
 import app.packed.component.Wirelet;
 
 /**
- * Wirelets that can be used when wiring containers. For example, via {@link App#start(ArtifactSource, Wirelet...)}
+ * Wirelets that can be used when wiring containers. For example, via {@link App#start(Bundle, Wirelet...)}
  */
 
 // InvalidWireletScopeExtension extends IAE

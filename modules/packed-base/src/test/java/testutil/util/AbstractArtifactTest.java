@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
-import app.packed.artifact.ArtifactSource;
+import app.packed.component.Bundle;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseBundle;
 
@@ -34,7 +34,7 @@ public abstract class AbstractArtifactTest {
         };
     }
 
-    public static AppTester appOf(ArtifactSource source, Wirelet... wirelets) {
+    public static AppTester appOf(Bundle<?> source, Wirelet... wirelets) {
         return new AppTester(source, wirelets);
     }
 

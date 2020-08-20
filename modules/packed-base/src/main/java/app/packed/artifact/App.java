@@ -170,7 +170,7 @@ public interface App extends AutoCloseable {
      *             if the application could not be initialized properly
      */
     // Create???
-    static App create(ArtifactSource source, Wirelet... wirelets) {
+    static App create(Bundle<?> source, Wirelet... wirelets) {
         // Rename fordi vi gerne vil have at ArtifactDriver hedder det samme og
         // AppHost.xxx() .. Dumt det hedder App.of og AppHost.instantiate
 
@@ -209,17 +209,17 @@ public interface App extends AutoCloseable {
     // add exitOnEnter() <--- so useful for tests
     // exitable daemon...
     // https://github.com/patriknw/akka-typed-blog/blob/master/src/main/java/blog/typed/javadsl/ImmutableRoundRobinApp.java3
-    static void execute(ArtifactSource source, Wirelet... wirelets) {
+    static void execute(Bundle<?> source, Wirelet... wirelets) {
         driver().execute(source, wirelets);
     }
 
     // sync deamon???????
     // App.main(new Goo(), args);
-    static void main(ArtifactSource source, String[] args, Wirelet... wirelets) {
+    static void main(Bundle<?> source, String[] args, Wirelet... wirelets) {
         driver().execute(source, wirelets);
     }
 
-    static TakeImage<App> newImage(Bundle<?> bundle, Wirelet... wirelets) {
+    static ArtifactImage<App> newImage(Bundle<?> bundle, Wirelet... wirelets) {
         return driver().newImage(bundle, wirelets);
     }
 
@@ -235,7 +235,7 @@ public interface App extends AutoCloseable {
      * @throws RuntimeException
      *             if the application could not be initialized or started properly
      */
-    static App start(ArtifactSource source, Wirelet... wirelets) {
+    static App start(Bundle<?> source, Wirelet... wirelets) {
         return driver().start(source, wirelets);
         // 10 seconds is from start.. Otherwise people must use an exact deadline
         // start(new SomeBundle(), LifecycleWirelets.stopAfter(10, TimeUnit.SECONDS));

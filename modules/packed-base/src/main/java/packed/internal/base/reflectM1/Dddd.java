@@ -15,6 +15,7 @@
  */
 package packed.internal.base.reflectM1;
 
+import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseBundle;
@@ -45,13 +46,17 @@ public class Dddd extends BaseBundle {
             link(new Dddd(depth - 1));
         }
     }
+//    505
+//    394
+//    --------------
+//    531438
 
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        ArtifactImage img = ArtifactImage.of(new Dddd(10));
+        ArtifactImage<App> img = App.newImage(new Dddd(10));
         System.out.println(System.currentTimeMillis() - start);
         start = System.currentTimeMillis();
-        img = ArtifactImage.of(new Dddd(10));
+        img = App.newImage(new Dddd(10));
         System.out.println(System.currentTimeMillis() - start);
         // BundleValidator.assertValid(new Dddd(4));
 

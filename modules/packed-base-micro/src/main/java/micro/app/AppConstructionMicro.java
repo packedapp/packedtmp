@@ -62,17 +62,17 @@ public class AppConstructionMicro {
 
     @Benchmark
     public App emptyAppFromImage() {
-        return App.start(VariousBundles.EMPTY_IMAGE);
+        return VariousBundles.EMPTY_IMAGE.start();
     }
 
     @Benchmark
     public App oneComponentFromImage() {
-        return App.start(VariousBundles.ONE_COMPONENT_IMAGE);
+        return VariousBundles.ONE_COMPONENT_IMAGE.start();
     }
 
     @Benchmark
     public App fiveComponentsFromImage() {
-        return App.start(VariousBundles.FIVE_CONTAINER_IMAGE);
+        return VariousBundles.FIVE_CONTAINER_IMAGE.start();
     }
 }
 // 18 may 2020

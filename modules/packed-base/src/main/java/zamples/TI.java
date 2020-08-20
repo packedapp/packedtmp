@@ -54,13 +54,13 @@ public class TI extends BaseBundle {
         long stop3 = System.nanoTime();
         System.out.println(((stop3 - stop2) / 1000) + " us");
 
-        ArtifactImage si = ArtifactImage.of(new TI(), new MyTestWirelet("fofoof XXXXXXXXXX"));
+        ArtifactImage<App> si = App.newImage(new TI(), new MyTestWirelet("fofoof XXXXXXXXXX"));
         for (int i = 0; i < 1000; i++) {
-            App.create(si, new MyTestWirelet("fofoof XXXXXXXXXX"));
+            si.create(new MyTestWirelet("fofoof XXXXXXXXXX"));
         }
         Thread.sleep(50);
         stop3 = System.nanoTime();
-        App.create(si, new MyTestWirelet("fofoof XXXXXXXXXX"));
+        si.create(new MyTestWirelet("fofoof XXXXXXXXXX"));
         long stop4 = System.nanoTime();
         System.out.println(((stop4 - stop3) / 1000) + " us");
 
