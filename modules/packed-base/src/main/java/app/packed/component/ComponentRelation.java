@@ -48,45 +48,47 @@ import java.util.Optional;
 // Altsaa den walk man kan lave via Iterable... ville det vaere rart at kunne beskrive relationsship
 // for den.. Altsaa cr[4] er foraeldre til cr[3] og saa 
 
+// A component in a runtime system is not the same as in the build time system.
+
+// I would say the restartable image of one system is not in the same system as
+// the same restartable image when we have restarted.
+
 // https://en.wikipedia.org/wiki/Path_(graph_theory)
+// ComponentConnection
+
+// A ComponentRelation is directed
+// Can we have attributes??
 public interface ComponentRelation extends Iterable<Component> {
 
     /**
-     * -1 if they are not in the same system. 0 if identical
+     * -1 if {@link #source()} and {@link #target()} are not in the same system. 0 if source and target are identical.
      * 
      * @return the distance between the two components
      */
     int distance();
-
-    Component from();
 
     /**
      * Returns whether or not the two components are in the same container.
      * 
      * @return whether or not the two components are in the same container
      */
-    // ContainerRelations.isInSameContainer(rel);
-    // from().attributes.get(container) == to().attributes.get(container);
-    boolean isInSameContainer();
+    boolean hasSameContainer();
+
+    /**
+     * Whether or not {@link #source()} and {@link #target()} belongs to the same guest. Or in other words whether or not
+     * they are strongly connected.
+     * 
+     * @return whether or not source and target belongs to the same guest
+     */
+    boolean hasSameGuest();
 
     /**
      * Returns whether or not the two components are in the same system.
      * 
      * @return whether or not the two components are in the same system
      */
-    boolean isInSameSystem();
+    boolean hasSameSystem();
 
-    // The container itself and
-
-    boolean isStronglyConnected();
-
-    default WiringStrength wiringStrength() {
-        return isStronglyConnected() ? WiringStrength.STRONG : WiringStrength.WEAK;
-    }
-
-    boolean isWeaklyConnected();
-
-    // is empty for components that are not in the same system
     /**
      * The lowest common ancestor for the two components. Or {@link Optional#empty()} if not in the same system.
      * 
@@ -94,11 +96,27 @@ public interface ComponentRelation extends Iterable<Component> {
      */
     Optional<Component> lowestCommonAncestor();
 
-    Component to();
+    /**
+     * The source of the relation.
+     * 
+     * @return the source of the relation
+     */
+    Component source();
+
+    /**
+     * The target of the relation.
+     * 
+     * @return the target of the relation
+     */
+    Component target();
 
     // https://en.wikipedia.org/wiki/Tree_structure
     // description()? -> Same, parent, child, descendend, ancestor,
 }
+
+//default WiringStrength wiringStrength() {
+//    return hasSameGuest() ? WiringStrength.STRONG : WiringStrength.WEAK;
+//}
 
 //interface InterExtensionRelationship {
 // from, to

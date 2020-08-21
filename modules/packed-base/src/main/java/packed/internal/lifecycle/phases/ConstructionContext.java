@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.assembly;
+package packed.internal.lifecycle.phases;
 
 import static java.util.Objects.requireNonNull;
 
@@ -52,11 +52,11 @@ import packed.internal.component.wirelet.WireletPack;
 // Per container, er sgu for besvaergeligt med de der get stuff...
 // Altsaa med mindre vi har behov for at access dem fra andet sted fra
 
-public final class InstantiationContext {
+public final class ConstructionContext {
 
     private final WireletPack wirelets;
 
-    private InstantiationContext(WireletPack wirelets) {
+    private ConstructionContext(WireletPack wirelets) {
         this.wirelets = wirelets;
     }
 
@@ -70,8 +70,8 @@ public final class InstantiationContext {
         return wirelets;
     }
 
-    public static ArtifactContext instantiateArtifact(ComponentNodeConfiguration root, WireletPack wp) {
-        InstantiationContext ic = new InstantiationContext(wp);
+    public static ArtifactContext constructArtifact(ComponentNodeConfiguration root, WireletPack wp) {
+        ConstructionContext ic = new ConstructionContext(wp);
         // Will instantiate the whole container hierachy
         ComponentNode node = root.instantiateTree(ic);
 

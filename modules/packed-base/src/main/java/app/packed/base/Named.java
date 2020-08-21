@@ -15,12 +15,17 @@
  */
 package app.packed.base;
 
-import app.packed.base.Key.Qualifier;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  *
  */
-@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+@Key.Qualifier
+@Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
 public @interface Named {
     String value();
 }

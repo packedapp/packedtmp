@@ -15,29 +15,30 @@
  */
 package packed.internal.component;
 
-import java.util.concurrent.ConcurrentHashMap;
+import static java.util.Objects.requireNonNull;
 
 /**
- * All strongly connected components relate to the same pod.
+ *
  */
-// Taenker den er inline
-// Skal jo godt nok vaere lille for Actors...
-public final class PackedPod {
+final class PackedGuestConfigurationContext {
 
-    PackedPod parent; // Vi kan vel bare smide den i instances...
+    int index;
 
-    RuntimeComponentModel[] descriptors;// packed descriptors...
+    /** The pod used at runtime. */
+    private PackedGuest pod;
 
-    Object[] instances; // May contain f.eks. CHM.. ?? Maybe hosts are also there...
-    // If non-root instances[0] always is the parent...
+    final ComponentNodeConfiguration node;
 
-    ConcurrentHashMap<Integer, PackedPod>[] hosts;
+    PackedGuestConfigurationContext(ComponentNodeConfiguration node) {
+        this.node = requireNonNull(node);
+    }
 
-    PackedPod() {
-
+    PackedGuest pod() {
+        // Lazy create the runtime pod.
+        PackedGuest p = pod;
+        if (p == null) {
+            p = pod = new PackedGuest();
+        }
+        return p;
     }
 }
-
-/// GUESTS (
-
-// En guest kunne mere eller mindre vaere 10 objects

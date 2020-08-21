@@ -21,7 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A class cannot define more than one method annotated with {@link ExtensionWired}.
+ * A class cannot define more than one method annotated with {@link ComponentLinked}.
  * <p>
  * This annotation can be used on subclasses of {@link Extension} or any singleton services that is annotated with
  * {@link ExtensionMember}. In which case the extension can be injected
@@ -29,8 +29,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 
-// @OnWiring
-public @interface ExtensionWired {
+// Problemet er lidt sidecars....
+
+public @interface ComponentLinked {
 
     // Only children not anything farther removed...
     // If not only direct children. Only the closest ancestor will have its
@@ -46,6 +47,14 @@ public @interface ExtensionWired {
 
     // boolean crossArtifacts default ???
 }
+
+// Altsaa det fx. hvis vi ikke har naaet at starte... 
+interface Unlinkable {
+
+    // Invoked by the runtime
+    void failed(Throwable t);
+}
+
 //Or ExtensionWired if linked=strong, ... onExtensionLinked  (Separate naming for lifecycle and events at,on,post,pre, when)
 
 //Er den generisk?? Hvad med runtime??? Vi skal jo paa en eller anden maade have fat i en webserver...
@@ -67,16 +76,16 @@ public @interface ExtensionWired {
 
 // Det kan ogsaa vaere vi laver noget generisk her..
 // I virkeligheden er det jo bare en ContainerRelation (ikke en component relation)
-interface ExtensionLinkedContext {
-
-    default boolean isChild() {
-        return distance() == 1;
-    }
-
-    // isInSameArticact
-
-    int distance();
-}
+//interface ExtensionLinkedContext {
+//
+//    default boolean isChild() {
+//        return distance() == 1;
+//    }
+//
+//    // isInSameArticact
+//
+//    int distance();
+//}
 
 // ServiceExtension bliver noedt til at have
 
@@ -89,11 +98,6 @@ interface ExtensionLinkedContext {
 // Can be returned by a method annotated with DescendentAdded...
 // Iff they maintain a reference to the child...
 // Otherwise we don't care at all. It can 
-interface ExtensionDescendtStateMachine {
-
-    // Invoked by the runtime
-    void failed(Throwable t);
-}
 
 ///// Okay so service mesh......
 ///// Skal vi have en Pod integration paa en eller anden maade....

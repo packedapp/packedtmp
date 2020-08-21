@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 
+import app.packed.base.TypeLiteral;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
 import app.packed.config.ConfigSite;
@@ -69,6 +70,8 @@ import packed.internal.config.ConfigSiteSupport;
 // "InjectorExtension:" Activate
 //// Her er der noget vi gerne vil have viral.
 public abstract class Extension {
+
+    static final TypeLiteral<Class<? extends Extension>> TL = new TypeLiteral<Class<? extends Extension>>() {};
 
     /** A stack walker used by {@link #captureStackFrame(String)}. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);

@@ -50,32 +50,26 @@ public final class PackedComponentRelation implements ComponentRelation {
 
     /** {@inheritDoc} */
     @Override
-    public Component from() {
+    public Component source() {
         return from;
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean isInSameContainer() {
+    public boolean hasSameContainer() {
         throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean isInSameSystem() {
+    public boolean hasSameSystem() {
         return true;
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean isStronglyConnected() {
+    public boolean hasSameGuest() {
         return true;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isWeaklyConnected() {
-        return false;
     }
 
     /** {@inheritDoc} */
@@ -113,7 +107,7 @@ public final class PackedComponentRelation implements ComponentRelation {
 
     /** {@inheritDoc} */
     @Override
-    public Component to() {
+    public Component target() {
         return to;
     }
 

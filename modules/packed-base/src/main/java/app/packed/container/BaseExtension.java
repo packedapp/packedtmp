@@ -29,6 +29,8 @@ import packed.internal.container.PackedContainerRole;
  * Other extensions should never depend on this extension via {@link ExtensionSettings#dependencies()}. Doing so will
  * fail with a runtime exception.
  */
+// If it proves strange that it is not in the component tree.
+// We can always say Container is a member of BaseExtensions... Nahh
 public final class BaseExtension extends Extension {
 
     /** The container configuration. This extension is the only extension that can use it. */

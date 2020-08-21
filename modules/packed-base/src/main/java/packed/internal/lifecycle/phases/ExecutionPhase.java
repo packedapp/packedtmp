@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.lifecycle;
+package packed.internal.lifecycle.phases;
 
 /**
  *
  */
-// We are not going to have this class at runtime..
-// Because it is going to be confusing with LifecycleState also
-public enum LifecyclePhase {
-    ASSEMBLY, INITIALIZATION, OPERATION;
+
+//Information is stored across execution..
+// Do we have 1 per pod???
+public interface ExecutionPhase {
+
 }

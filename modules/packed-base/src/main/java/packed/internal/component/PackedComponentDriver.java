@@ -24,6 +24,7 @@ import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
 import app.packed.component.ClassSourcedDriver;
 import app.packed.component.ComponentConfigurationContext;
+import app.packed.component.ComponentProperty;
 import app.packed.component.InstanceSourcedDriver;
 import app.packed.component.StatelessConfiguration;
 import app.packed.component.WireableComponentDriver;
@@ -39,19 +40,23 @@ import packed.internal.inject.factory.FactoryHandle;
  */
 public abstract class PackedComponentDriver<C> implements WireableComponentDriver<C> {
 
-    public static final int ROLE_CONTAINER = 1;
-    public static final int ROLE_EXTENSION = 32;
-    public static final int ROLE_GUEST = 2;
-    public static final int ROLE_HOST = 4;
-    public static final int ROLE_SINGLETON = 8;
-    public static final int ROLE_STATELESS = 16;
+    public static final int ROLE_CONTAINER = 1 << ComponentProperty.CONTAINER.ordinal();
+    public static final int ROLE_EXTENSION = 1 << ComponentProperty.EXTENSION.ordinal();
+    public static final int ROLE_GUEST = 1 << ComponentProperty.GUEST.ordinal();
+    public static final int ROLE_HOST = 1 << ComponentProperty.HOST.ordinal();
+    public static final int ROLE_SINGLETON = 1 << 28;
+    public static final int ROLE_STATELESS = 1 << 29;
 
     // Statemanagement... A function is kind of just a singleton...
 
-    private final int roles;
+    private final int properties;
 
-    protected PackedComponentDriver(int roles) {
-        this.roles = roles;
+    protected PackedComponentDriver(int properties) {
+        this.properties = properties;
+    }
+
+    protected PackedComponentDriver(ComponentProperty... properties) {
+        this.properties = ComponentPropertyHelper.setProperty(0, properties);
     }
 
     public abstract C toConfiguration(ComponentConfigurationContext cnc);
@@ -81,7 +86,7 @@ public abstract class PackedComponentDriver<C> implements WireableComponentDrive
     }
 
     public final boolean hasRole(int role) {
-        return (roles & role) != 0;
+        return (properties & role) != 0;
     }
 
     public final boolean hasRuntimeRepresentation() {
@@ -110,7 +115,7 @@ public abstract class PackedComponentDriver<C> implements WireableComponentDrive
         public static ContainerComponentDriver INSTANCE = new ContainerComponentDriver();
 
         ContainerComponentDriver() {
-            super(ROLE_CONTAINER);
+            super(ComponentProperty.CONTAINER);
         }
 
         @Override

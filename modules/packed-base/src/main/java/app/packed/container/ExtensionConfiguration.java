@@ -21,11 +21,12 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Optional;
 
+import app.packed.base.Attribute;
 import app.packed.base.Nullable;
+import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
 import app.packed.component.Component;
 import app.packed.component.ComponentPath;
-import app.packed.component.BeanConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension.Subtension;
@@ -47,6 +48,10 @@ import packed.internal.container.PackedExtensionConfiguration;
  */
 // Does not extend CC as install/installinstance used parent as target
 public interface ExtensionConfiguration {
+
+    public static final Attribute<Class<? extends Extension>> TYPE = Attribute.of(MethodHandles.lookup(), "type", Extension.TL);
+
+    public static final Attribute<Class<? extends Extension>> EXTENSION_MEMBER = Attribute.of(MethodHandles.lookup(), "extension-member", Extension.TL);
 
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
@@ -115,8 +120,8 @@ public interface ExtensionConfiguration {
      * specified via.... Otherwise an {@link InternalExtensionException} is thrown.
      * <p>
      * This method works similar to {@link ContainerConfiguration#use(Class)}. However, this method checks that only
-     * extensions that have been declared as dependencies via {@link ExtensionSettings#dependencies()} are specified. This is
-     * done in order to make sure that no extensions ever depend on each other.
+     * extensions that have been declared as dependencies via {@link ExtensionSettings#dependencies()} are specified. This
+     * is done in order to make sure that no extensions ever depend on each other.
      * 
      * @param <E>
      *            the type of extension to return

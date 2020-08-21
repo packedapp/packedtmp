@@ -23,10 +23,10 @@ import app.packed.component.ComponentStream;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerDescriptor;
-import packed.internal.assembly.InstantiationContext;
-import packed.internal.assembly.PackedAssemblyContext;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletPack;
+import packed.internal.lifecycle.phases.ConstructionContext;
+import packed.internal.lifecycle.phases.PackedAssemblyContext;
 
 /** The default implementation of {@link ArtifactImage}. */
 // Taenker vi maaske skal flytte den internt?
@@ -85,7 +85,7 @@ final class PackedArtifactImage<A> implements ArtifactImage<A> {
     }
 
     public ArtifactContext newContext(Wirelet... wirelets) {
-        return InstantiationContext.instantiateArtifact(node, WireletPack.forImage(node, wirelets));
+        return ConstructionContext.constructArtifact(node, WireletPack.forImage(node, wirelets));
     }
 
     /** {@inheritDoc} */

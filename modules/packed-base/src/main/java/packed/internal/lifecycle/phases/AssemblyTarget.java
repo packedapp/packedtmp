@@ -1,4 +1,4 @@
-package packed.internal.assembly;
+package packed.internal.lifecycle.phases;
 
 import app.packed.artifact.App;
 import app.packed.artifact.ArtifactImage;
@@ -23,7 +23,7 @@ import app.packed.container.ContainerDescriptor;
 
 //AssembleReason
 
-public enum AssembleTarget {
+public enum AssemblyTarget {
 
     /** Create a report of some kind, for example a {@link Contract} or a {@link ContainerDescriptor}. */
     // May throw exceptions

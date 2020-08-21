@@ -35,8 +35,8 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.service.ServiceDescriptor;
-import packed.internal.assembly.PackedAssemblyContext;
 import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.lifecycle.phases.PackedAssemblyContext;
 
 /**
  * A bundle descriptor.

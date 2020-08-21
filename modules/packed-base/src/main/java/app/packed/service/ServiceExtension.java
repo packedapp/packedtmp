@@ -26,7 +26,7 @@ import app.packed.container.ContainerDescriptor;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionSettings;
-import app.packed.container.ExtensionWired;
+import app.packed.container.ComponentLinked;
 import app.packed.hook.Expose;
 import app.packed.hook.OnHook;
 import app.packed.inject.Factory;
@@ -395,7 +395,7 @@ public final class ServiceExtension extends Extension {
         node.buildDescriptor(builder);
     }
 
-    @ExtensionWired(onlyDirectLink = true)
+    @ComponentLinked(onlyDirectLink = true)
     private void linkChild(ServiceExtension childExtension /* , @WireletSupply Optional<ServiceWireletPipeline> wirelets */) {
         childExtension.configuration();
         // if(configuration.isStronglyAttachedTo(childExtension.configuation())

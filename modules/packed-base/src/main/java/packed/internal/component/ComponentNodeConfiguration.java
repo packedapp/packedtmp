@@ -36,6 +36,7 @@ import app.packed.component.ClassSourcedDriver;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentPath;
+import app.packed.component.ComponentProperty;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.component.FactorySourcedDriver;
@@ -45,14 +46,14 @@ import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
-import packed.internal.assembly.InstantiationContext;
-import packed.internal.assembly.PackedAssemblyContext;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.PackedContainerRole;
 import packed.internal.container.PackedRealm;
 import packed.internal.inject.ConfigSiteInjectOperations;
+import packed.internal.lifecycle.phases.ConstructionContext;
+import packed.internal.lifecycle.phases.PackedAssemblyContext;
 
 /** The build time representation of a component. */
 public final class ComponentNodeConfiguration implements ComponentConfigurationContext {
@@ -74,8 +75,9 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     public final WireletPack wirelets;
 
     /** The pod the component belongs to. */
-    final PackedPodConfigurationContext pod;
+    final PackedGuestConfigurationContext pod;
 
+    final int properties = 0;
     /** The name of the component. */
     String name;
 
@@ -157,7 +159,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         this.depth = parent == null ? 0 : parent.depth + 1;
 
         this.driver = requireNonNull(driver);
-        this.pod = parent == null || driver.isGuest() ? new PackedPodConfigurationContext(this) : parent.pod;
+        this.pod = parent == null || driver.isGuest() ? new PackedGuestConfigurationContext(this) : parent.pod;
         this.container = driver.isContainer() ? new PackedContainerRole(this) : parent.container;
 
         this.configSite = requireNonNull(configSite);
@@ -249,7 +251,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         }
     }
 
-    public ComponentNode instantiateTree(InstantiationContext ic) {
+    public ComponentNode instantiateTree(ConstructionContext ic) {
         return new ComponentNode(null, this, ic);
     }
 
@@ -551,6 +553,12 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             } else {
                 return isRoot && option.excludeOrigin() ? Stream.empty() : Stream.of(this);
             }
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean hasProperty(ComponentProperty property) {
+            return false;
         }
     }
 

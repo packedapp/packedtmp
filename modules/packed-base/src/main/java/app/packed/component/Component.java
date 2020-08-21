@@ -19,6 +19,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.base.Attribute;
@@ -34,6 +35,14 @@ public interface Component extends AttributeHolder {
 
     public static Attribute<EnumSet<ComponentProperty>> PROPERTIES = Attribute.of(MethodHandles.lookup(), "properties",
             new TypeLiteral<EnumSet<ComponentProperty>>() {});
+
+    // Syntes ikke det skal vaere en attribute
+    // stream.hasProperty()..
+    default Set<ComponentProperty> properties() {
+        return Set.of();
+    }
+
+    boolean hasProperty(ComponentProperty property);
 
     /**
      * Returns an unmodifiable view of all of this component's children.

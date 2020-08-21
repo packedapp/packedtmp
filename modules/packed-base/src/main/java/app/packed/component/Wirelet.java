@@ -128,6 +128,10 @@ public interface Wirelet {
     static Wirelet named(String name) {
         return new ComponentNameWirelet(name);
     }
+
+    static Wirelet requireProperty(Wirelet wirelet, ComponentProperty property) {
+        return wirelet;
+    }
 }
 
 // Interface -> kan man let implementere, uden at fucke et nedarvnings hiraki op

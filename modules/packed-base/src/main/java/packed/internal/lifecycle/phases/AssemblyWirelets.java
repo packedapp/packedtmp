@@ -13,33 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.lifecycle.phases;
 
-import static java.util.Objects.requireNonNull;
+import app.packed.component.Wirelet;
 
 /**
  *
  */
-// Taenker 
-final class PackedPodConfigurationContext {
+// Wirelet assemblyTimeOnly(Wirelet w); Hmmm idk if useful
+public final class AssemblyWirelets {
 
-    int index;
-
-    /** The pod used at runtime. */
-    private PackedPod pod;
-
-    final ComponentNodeConfiguration node;
-
-    PackedPodConfigurationContext(ComponentNodeConfiguration node) {
-        this.node = requireNonNull(node);
+    // Additional to people overridding artifacts, bundles, ect.
+    public static Wirelet checkRuleset(Object... ruleset) {
+        throw new UnsupportedOperationException();
     }
 
-    PackedPod pod() {
-        // Lazy create the runtime pod.
-        PackedPod p = pod;
-        if (p == null) {
-            p = pod = new PackedPod();
-        }
-        return p;
-    }
+    // Disable Host <--- Nej, det er et ruleset....
 }
+/// Interface with only static methods are

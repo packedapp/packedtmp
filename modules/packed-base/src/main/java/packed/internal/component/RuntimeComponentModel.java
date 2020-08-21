@@ -50,11 +50,14 @@ public final class RuntimeComponentModel {
 
     final PackedComponentDriver<?> driver; // tmp
 
+    final int properties;
+
     RuntimeComponentModel(ComponentNodeConfiguration context) {
         this.depth = context.depth;
         this.configSite = requireNonNull(context.configSite());
         this.extension = context.extension();
         this.driver = context.driver();
+        this.properties = context.properties;
     }
 
     public boolean isContainer() {

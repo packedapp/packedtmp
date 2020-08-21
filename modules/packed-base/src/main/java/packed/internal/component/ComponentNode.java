@@ -31,14 +31,15 @@ import app.packed.base.AttributeSet;
 import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.component.ComponentPath;
+import app.packed.component.ComponentProperty;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
-import packed.internal.assembly.InstantiationContext;
 import packed.internal.container.PackedContainerRole;
 import packed.internal.container.PackedExtensionConfiguration;
+import packed.internal.lifecycle.phases.ConstructionContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.runtime.PackedInjector;
 
@@ -62,7 +63,7 @@ public final class ComponentNode implements Component {
     final ComponentNode parent;
 
     /** The pod the component is a part of, components that are strongly connected are all in the same pod. */
-    final PackedPod pod;
+    final PackedGuest pod;
 
     /** The index into the pod. */
     final int podIndex = 0;// Index into... name() return (String) pod[podIndex+model.nameIndex]
@@ -75,7 +76,7 @@ public final class ComponentNode implements Component {
      * @param configuration
      *            the configuration used to create this node
      */
-    ComponentNode(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, InstantiationContext ic) {
+    ComponentNode(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, ConstructionContext ic) {
         this.parent = parent;
         this.model = RuntimeComponentModel.of(configuration);
         this.pod = requireNonNull(configuration.pod.pod());
@@ -276,5 +277,11 @@ public final class ComponentNode implements Component {
             throw new IllegalArgumentException("Could not find component with path: " + path + " avilable components:" + list);
         }
         return c;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean hasProperty(ComponentProperty property) {
+        return ComponentPropertyHelper.isPropertySet(model.properties, property);
     }
 }

@@ -37,7 +37,7 @@ import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionMember;
 import app.packed.container.ExtensionSet;
 import app.packed.container.ExtensionSettings;
-import app.packed.container.ExtensionWired;
+import app.packed.container.ComponentLinked;
 import app.packed.container.InternalExtensionException;
 import app.packed.hook.OnHook;
 import app.packed.lifecycle.LifecycleContext;
@@ -138,7 +138,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
     /** Whether or not is is only any immediately parent that will be linked. */
     final boolean extensionLinkedDirectChildrenOnly;
 
-    /** A method handle to an optional method annotated with {@link ExtensionWired} on the extension. */
+    /** A method handle to an optional method annotated with {@link ComponentLinked} on the extension. */
     @Nullable
     final MethodHandle extensionLinkedToAncestorExtension; // will have an extensionLinkedToAncestorService in the future
 
@@ -430,11 +430,11 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
 
         @Override
         protected void onMethod(Method m) {
-            ExtensionWired da = m.getAnnotation(ExtensionWired.class);
+            ComponentLinked da = m.getAnnotation(ComponentLinked.class);
             if (da != null) {
                 if (linked != null) {
                     throw new IllegalStateException(
-                            "Multiple methods annotated with " + ExtensionWired.class + " on " + m.getDeclaringClass() + ", only 1 allowed.");
+                            "Multiple methods annotated with " + ComponentLinked.class + " on " + m.getDeclaringClass() + ", only 1 allowed.");
                 }
                 linked = m;
                 callbackOnlyDirectChildren = da.onlyDirectLink();

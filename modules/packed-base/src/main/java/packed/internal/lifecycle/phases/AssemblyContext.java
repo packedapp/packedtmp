@@ -13,25 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.assembly;
+package packed.internal.lifecycle.phases;
 
 import packed.internal.errorhandling.ErrorMessage;
 
 /**
- * An artifact build context is created every time an build context is create .
+ * An assembly context is created every time an build context is create .
  * 
  * A build context is never available when we build something from an image. Or is it???
  */
-// Hmm, Naar vi laver et image eller en descriptor, syntes jeg egentlig ikke vi laver en Artifact
-// Saa burde vi jo heller ikke have en build context....
 
-// Der hvor den ikke fungere er f.eks. artifactType....
-// Det er ikke til at vide foerend paa instantierings tidspunkt...
+// Can faas fra extension context, Component Context.
+// Men f.eks. addError() bliver noedt til at smide ISE hvis folk kalder metoder
+// Efter assembly is done
+
+// Nu naar vi kompilere en artifact med ind... kan vi jo ret set have en Artifact med
+// Det eneste problem er hvis vi har host/guest... Saa er PodContext jo altsaa lidt bedre til at have det.
 
 // addSuccessProcess(Runnable r);
 // addFailureProcess(Runnable r);
 // addCompletionProcesser(Consumer<@Nullable Throwable> d);
-public interface AssembleContext {
+
+// Boer vaere i component ikke artifact...
+
+// Kan ikke sige
+public interface AssemblyContext {
+
+    default boolean isActive() {
+        return true;
+    }
 
     void addError(ErrorMessage message);
 
@@ -61,16 +71,6 @@ public interface AssembleContext {
         INSTANTIATE;
     }
 }
-
-/// **
-// * Returns whether or not an artifact image is being built.
-// *
-// * @return whether or not an artifact image is being built
-// */
-// default boolean isImage() {
-// return artifactType() == ArtifactImage.class;
-// }
-//
 
 // We could add ComponentPath path();
 //// But it will freeze the name of the top level. Which we don't want.

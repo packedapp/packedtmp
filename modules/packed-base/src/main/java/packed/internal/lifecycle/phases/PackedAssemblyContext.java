@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.assembly;
+package packed.internal.lifecycle.phases;
 
 import static java.util.Objects.requireNonNull;
 
@@ -33,13 +33,16 @@ import packed.internal.container.PackedRealm;
 import packed.internal.errorhandling.ErrorMessage;
 import packed.internal.inject.ConfigSiteInjectOperations;
 
-/** The default implementation of {@link AssembleContext} */
-public final class PackedAssemblyContext implements AssembleContext {
+/** The default implementation of {@link AssemblyContext} */
+public final class PackedAssemblyContext implements AssemblyContext {
 
     /** The build output. */
     final PackedOutput output;
 
     /** The thread that is assembling the system. */
+    // This should not be permanently..
+    // What if we create an image in one thread. Passes it to another thread.
+
     private final Thread thread = Thread.currentThread();
 
     // Bruges ikke lige endnu

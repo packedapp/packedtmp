@@ -28,10 +28,10 @@ import app.packed.component.WireableComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import app.packed.service.Injector;
-import packed.internal.assembly.InstantiationContext;
-import packed.internal.assembly.PackedAssemblyContext;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedComponentDriver;
+import packed.internal.lifecycle.phases.ConstructionContext;
+import packed.internal.lifecycle.phases.PackedAssemblyContext;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -95,13 +95,13 @@ public final class ArtifactDriver<A> {
 
     public <C, D> A configure(WireableComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.configure(this, (PackedComponentDriver<D>) driver, factory, consumer, wirelets);
-        ArtifactContext ac = InstantiationContext.instantiateArtifact(node, node.wirelets);
+        ArtifactContext ac = ConstructionContext.constructArtifact(node, node.wirelets);
         return newArtifact(ac);
     }
 
     private ArtifactContext createArtifactContext(Bundle<?> source, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.assembleArtifact(this, source, wirelets);
-        return InstantiationContext.instantiateArtifact(node, node.wirelets);
+        return ConstructionContext.constructArtifact(node, node.wirelets);
     }
 
     public Object execute(Bundle<?> source, Wirelet... wirelets) {
