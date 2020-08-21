@@ -44,8 +44,16 @@ final class ComponentPropertySet extends AbstractSet<ComponentProperty> {
         return properties | (1 << property.ordinal());
     }
 
+    public static int unsetProperty(int properties, ComponentProperty property) {
+        return properties & ~(1 << property.ordinal());
+    }
+
     public static int setPropertyConditional(int properties, boolean setIt, ComponentProperty property) {
         return setIt ? setProperty(properties, property) : properties;
+    }
+
+    public static int unsetPropertyConditional(int properties, boolean setIt, ComponentProperty property) {
+        return setIt ? unsetProperty(properties, property) : properties;
     }
 
     public static int setProperty(int properties, ComponentProperty... props) {

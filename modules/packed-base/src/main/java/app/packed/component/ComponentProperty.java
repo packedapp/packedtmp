@@ -27,9 +27,15 @@ import app.packed.container.ExtensionConfiguration;
 public enum ComponentProperty {
 
     /**
-     * Every system has exactly one system component which is the root of the component tree.
+     * Every component system has exactly one system component which is always the root of the component tree. This
+     * component is also always automatically a {@link #GUEST}.
      */
     SYSTEM,
+
+    /**
+     * Indicates that the component is the root of an image.
+     */
+    IMAGE,
 
     /** */
     // Components this property are the component that are allowed to extensions as children.
@@ -51,8 +57,6 @@ public enum ComponentProperty {
 
     /** */
     HOST,
-
-    IMAGE,
 
     /**
      * Indicates that the component is an {@link Extension}.

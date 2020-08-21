@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
+import app.packed.component.ComponentProperty;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 
@@ -57,7 +58,9 @@ public final class RuntimeComponentModel {
         this.configSite = requireNonNull(context.configSite());
         this.extension = context.extension();
         this.driver = context.driver();
-        this.properties = context.properties;
+        int p = context.properties;
+        p = ComponentPropertySet.unsetPropertyConditional(p, depth == 0, ComponentProperty.IMAGE);
+        this.properties = p;
     }
 
     public boolean isContainer() {

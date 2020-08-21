@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -91,7 +92,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     /** Children of this node (lazily initialized). Order maintained by {@link #nextSibling} and friends. */
     @Nullable
-    HashMap<String, ComponentNodeConfiguration> children;
+    Map<String, ComponentNodeConfiguration> children;
 
     /** The first child of this component. */
     @Nullable
@@ -168,7 +169,11 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
         setName0(null); // initialize name
 
-        this.properties = ComponentPropertySet.setPropertyConditional(driver.properties, parent == null, ComponentProperty.SYSTEM);
+        int p = driver.properties;
+        p = ComponentPropertySet.setPropertyConditional(p, parent == null, ComponentProperty.SYSTEM);
+        p = ComponentPropertySet.setPropertyConditional(p, parent == null, ComponentProperty.GUEST);
+        p = ComponentPropertySet.setPropertyConditional(p, parent == null && assembly.isImage(), ComponentProperty.IMAGE);
+        this.properties = p;
     }
 
     /**

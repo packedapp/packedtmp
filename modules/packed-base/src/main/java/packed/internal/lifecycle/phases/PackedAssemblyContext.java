@@ -74,6 +74,10 @@ public final class PackedAssemblyContext implements AssemblyContext {
         return false;
     }
 
+    public boolean isImage() {
+        return output.isImage;
+    }
+
     /**
      * Returns the build output.
      * 
@@ -125,21 +129,22 @@ public final class PackedAssemblyContext implements AssemblyContext {
     }
 
     static class PackedOutput {
+        final boolean isImage;
 
-        PackedOutput() {
-
+        PackedOutput(boolean isImage) {
+            this.isImage = isImage;
         }
 
         public static PackedOutput image() {
-            return new PackedOutput();
+            return new PackedOutput(true);
         }
 
         public static PackedOutput descriptor(Class<?> type) {
-            return new PackedOutput();
+            return new PackedOutput(false);
         }
 
         public static PackedOutput artifact(ArtifactDriver<?> driver) {
-            return new PackedOutput();
+            return new PackedOutput(false);
         }
     }
 }

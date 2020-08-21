@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,7 +124,7 @@ public final class ComponentNode implements Component {
         Map<String, ComponentNode> c = null;
         if (configuration.firstChild != null) {
             // Maybe ordered is the default...
-            HashMap<String, ComponentNode> result = new HashMap<>(configuration.children.size());
+            LinkedHashMap<String, ComponentNode> result = new LinkedHashMap<>(configuration.children.size());
 
             for (ComponentNodeConfiguration cc = configuration.firstChild; cc != null; cc = cc.nextSibling) {
                 if (cc.driver().hasRuntimeRepresentation()) {
