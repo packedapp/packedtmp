@@ -81,6 +81,12 @@ public abstract class Extension {
     private ExtensionConfiguration configuration; // = PEC.CONFIGURED
 
     /**
+     * Invoked by the runtime immediately after the constructor has returned, Unlike the constructor, {@link #configuration}
+     * can be invoked from this method. Is typically used to add new runtime components.
+     */
+    protected void add() {}
+
+    /**
      * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
      * not located on any subclasses of {@link Extension} or any class that implements
      * <p>
@@ -143,37 +149,26 @@ public abstract class Extension {
     }
 
     /**
-     * Returns the configuration of this extension.
+     * Returns a configuration for this extension. This is useful, for example, if the extension delegates some
+     * responsibility to classes that are not define in the same package as the extension.
      * <p>
-     * This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension. If you
-     * need access to {@link ExtensionConfiguration} you can have it dependency injected into the constructor instead.
+     * An instance of this class can also be dependency injected into any subclass. This is useful, for example, if you want
+     * to setup some external classes in the constructor that needs access to the configuration object.
+     * <p>
+     * This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension.
      * 
      * @throws IllegalStateException
      *             if invoked from the constructor of the extension
-     * @return an extension configuration object
+     * @return a configuration object for the extension
      */
     protected final ExtensionConfiguration configuration() {
         ExtensionConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension. If you need to perform "
                     + "initialization before returning the extension to the user, override " + Extension.class.getSimpleName() + "#added()");
-//            * 
-//            * @apiNote Original this method was protected. But extension is really the only sidecar that works this way. So to
-//            *          streamline with other sidecars we only allow it to be dependency injected into subclasses.
-            // TODO fix with actual annotation type
-//            throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension. As an alternative "
-//                    + Extension.class.getSimpleName() + "#onAdd(action) can used to perform initialization");
-            // Er lidt tilhaenger af initialize()... istedet for annoteringer
-            // Annoteringer er gode for ikke abstract basis klasser
         }
         return c;
     }
-
-    /**
-     * Invoked by the runtime immediately after the constructor has returned, Unlike the constructor, {@link #configuration}
-     * can be invoked from this method.
-     */
-    protected void added() {}
 
     protected final <T> BeanConfiguration<T> install(Class<T> implementation) {
         return install(Factory.find(implementation));
@@ -200,11 +195,15 @@ public abstract class Extension {
         // Her har vi selve extension'en som
     }
 
+    protected final <E extends Subtension> E use(Class<E> extensionType) {
+        return configuration().use(extensionType);
+    }
+
     /**
      * Returns an extension of the specified type.
      * <p>
-     * Only extension types that have been explicitly registered using {@link ExtensionSidecar#dependencies()} or
-     * {@link ExtensionSidecar#optionalDependencies()} may be specified as arguments to this method.
+     * Only extension types that have been explicitly registered using {@link ExtensionSettings#dependencies()} or
+     * {@link ExtensionSettings#optionalDependencies()} may be specified as arguments to this method.
      * <p>
      * Invoking this method is similar to calling {@link ContainerConfiguration#use(Class)}. However, this method also keeps
      * track of which extensions uses other extensions. And forming any kind of circle in the dependency graph will fail
@@ -219,16 +218,12 @@ public abstract class Extension {
      *             If invoked from the constructor of the extension. Or if the underlying container is no longer
      *             configurable and an extension of the specified type has not already been installed
      * @throws UnsupportedOperationException
-     *             if the specified extension type has not been specified via {@link ExtensionSidecar}
+     *             if the specified extension type has not been specified via {@link ExtensionSettings}
      * @see ExtensionConfiguration#useOld(Class)
      */
     // This will be removed..
     protected final <E extends Extension> E useOld(Class<E> extensionType) {
         return configuration().useOld(extensionType);
-    }
-
-    protected final <E extends Subtension> E use(Class<E> extensionType) {
-        return configuration().use(extensionType);
     }
 
     // Naah, taenker vi tillader at lave inline klasser her...
@@ -249,26 +244,22 @@ public abstract class Extension {
     // I really think people need to store there own Class
     public static abstract class Subtension {
 
-        // User...
-        Class<? extends Extension> user;
-
         protected void initialize() {}
-
-        protected final Class<? extends Extension> user() {
-            if (user == null) {
-                // ISE exception...
-                throw new InternalExtensionException("Cannot call this method from the constructor of " + getClass().getSimpleName());
-            }
-            return user;
-        }
-
-        // realm() <--zx- public final????
-        // Vi kan sagtens lave nogle ting final paa sub extensions...
-        // Det er jo bare andre extensions der kalde den.
+//
+//        // realm() <--zx- public final????
+//        // Vi kan sagtens lave nogle ting final paa sub extensions...
+//        // Det er jo bare andre extensions der kalde den.
     }
 
 }
-
+//* 
+//* @apiNote Original this method was protected. But extension is really the only sidecar that works this way. So to
+//*          streamline with other sidecars we only allow it to be dependency injected into subclasses.
+// TODO fix with actual annotation type
+//throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension. As an alternative "
+//      + Extension.class.getSimpleName() + "#onAdd(action) can used to perform initialization");
+// Er lidt tilhaenger af initialize()... istedet for annoteringer
+// Annoteringer er gode for ikke abstract basis klasser
 //
 // final void runWithLookup(Lookup lookup, Runnable runnable) {
 // // Extensions bliver bare noedt til at vaere aabne for

@@ -20,26 +20,28 @@ import static java.util.Objects.requireNonNull;
 import packed.internal.container.PackedContainerRole;
 
 /**
- * An extension that is always automatically added whenever a new container is configured. Even while the
+ * An extension that is always available from any container. Even while the Every other extension implicitly has this
+ * extension as a mandatory dependency.
  * 
- * Every other extension implicitly has this extension as a mandatory dependency.
  * <p>
- * It is an error to depend on this via {@link ExtensionSidecar#dependencies()}. Not sure you can with subtensions and
- * stuff.
+ * 
+ * <p>
+ * Other extensions should never depend on this extension via {@link ExtensionSettings#dependencies()}. Doing so will
+ * fail with a runtime exception.
  */
 public final class BaseExtension extends Extension {
 
     /** The container configuration. This extension is the only extension that can use it. */
-    private final PackedContainerRole pcc;
+    private final PackedContainerRole container;
 
     /**
-     * Creates a new extension.
+     * Creates a new base extension.
      * 
-     * @param pcc
-     *            the container's configuration context.
+     * @param container
+     *            the configuration of the container.
      */
-    /* package-private */ BaseExtension(PackedContainerRole pcc) {
-        this.pcc = requireNonNull(pcc, "pcc is null");
+    /* package-private */ BaseExtension(PackedContainerRole container) {
+        this.container = requireNonNull(container, "container is null");
     }
 
     /**
@@ -47,8 +49,26 @@ public final class BaseExtension extends Extension {
      * 
      * @return all the extensions that are currently in use
      */
+    // ExtensionSet is never a view???
     public ExtensionSet extensions() {
-        return ExtensionSet.of(pcc.extensions()); // view/not-view?
+        return ExtensionSet.of(container.extensions()); // view/not-view?
+    }
+
+    /**
+     * Returns whether or not the specified extension type is in use
+     * 
+     * @param extensionType
+     *            the extension type to test
+     * @return whether or not the specified extension is in use
+     * @throws IllegalArgumentException
+     *             if the specified extension type is {@link Extension}
+     */
+    public boolean isUsed(Class<? extends Extension> extensionType) {
+        requireNonNull(extensionType, "extensionType is null");
+        if (extensionType == Extension.class) {
+            throw new IllegalArgumentException("Extension is never used");
+        }
+        return container.extensions.keySet().contains(extensionType);
     }
 }
 

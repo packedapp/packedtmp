@@ -49,7 +49,7 @@ public class ExtensionDescriptorTest {
         assertThatThrownBy(() -> ed.contracts().clear()).isExactlyInstanceOf(UnsupportedOperationException.class);
     }
 
-    @ExtensionSidecar(dependencies = EmptyExtension.class)
+    @ExtensionSettings(dependencies = EmptyExtension.class)
     static class VariousExtension extends Extension {
 
         @Expose

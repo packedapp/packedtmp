@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.Extension;
-import app.packed.container.ExtensionSidecar;
+import app.packed.container.ExtensionSettings;
 import testutil.util.AbstractArtifactTest;
 
 /**
@@ -49,18 +49,18 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
         });
     }
 
-    @ExtensionSidecar(dependencies = Ex2.class)
+    @ExtensionSettings(dependencies = Ex2.class)
     static final class Ex1 extends Extension {
         @Override
-        protected void added() {
+        protected void add() {
             useOld(Ex2.class);
         }
     }
 
-    @ExtensionSidecar(dependencies = Ex3.class)
+    @ExtensionSettings(dependencies = Ex3.class)
     static final class Ex2 extends Extension {
         @Override
-        protected void added() {
+        protected void add() {
             useOld(Ex3.class);
         }
     }
@@ -69,17 +69,17 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
 
     }
 
-    @ExtensionSidecar(dependencies = ExRecursive2.class)
+    @ExtensionSettings(dependencies = ExRecursive2.class)
     static final class ExRecursive1 extends Extension {
         @Override
-        protected void added() {
+        protected void add() {
             useOld(ExRecursive2.class);
         }
     }
 
     static final class ExRecursive2 extends Extension {
         @Override
-        protected void added() {
+        protected void add() {
             useOld(ExRecursive1.class);
         }
     }

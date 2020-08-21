@@ -27,16 +27,16 @@ import java.util.function.Function;
 
 import app.packed.base.Contract;
 import app.packed.base.Nullable;
+import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
 import app.packed.component.ComponentPath;
-import app.packed.component.BeanConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerDescriptor;
 import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionConfiguration;
-import app.packed.container.ExtensionSidecar;
+import app.packed.container.ExtensionSettings;
 import app.packed.inject.Factory;
 import app.packed.lifecycle.LifecycleContext;
 import packed.internal.component.ComponentNodeConfiguration;
@@ -54,7 +54,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     static final MethodHandle MH_LIFECYCLE_CONTEXT = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "lifecycle", LifecycleContext.class);
 
     /** A MethodHandle for invoking {@link #lifecycle()} used by {@link ExtensionModel}. */
-    private static final MethodHandle MH_EXTENSION_ADDED = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), Extension.class, "added", void.class);
+    private static final MethodHandle MH_EXTENSION_ADDED = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), Extension.class, "add", void.class);
 
     /** A VarHandle used by {@link #of(PackedContainerRole, Class)} to access the field Extension#configuration. */
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Extension.class, "configuration",
@@ -244,16 +244,16 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
 
     /** Invoked by the container configuration, whenever the extension is configured. */
     void onChildrenConfigured() {
-        checkState(ExtensionSidecar.CHILD_LINKING);
+        checkState(ExtensionSettings.CHILD_LINKING);
         model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_2_CHILDREN_DONE, instance, this);
     }
 
     /** Invoked by the container configuration, whenever the extension is configured. */
     void onConfigured() {
-        checkState(ExtensionSidecar.NORMAL_USAGE);
+        checkState(ExtensionSettings.NORMAL_USAGE);
         model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_1_MAIN, instance, this);
         isConfigured = true;
-        checkState(ExtensionSidecar.CHILD_LINKING);
+        checkState(ExtensionSettings.CHILD_LINKING);
     }
 
     /**
@@ -323,9 +323,9 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
         // Create extension context and instantiate extension
         ExtensionModel model = ExtensionModel.of(extensionType);
         PackedExtensionConfiguration pec = new PackedExtensionConfiguration(container, model);
-        pec.checkState(ExtensionSidecar.INSTANTIATING);
+        pec.checkState(ExtensionSettings.INSTANTIATING);
         Extension e = pec.instance = model.newInstance(pec); // Creates a new XXExtension instance
-        pec.checkState(ExtensionSidecar.NORMAL_USAGE);
+        pec.checkState(ExtensionSettings.NORMAL_USAGE);
 
         // Sets Extension.configuration = pec
         VH_EXTENSION_CONFIGURATION.set(e, pec); // field is package-private in a public package

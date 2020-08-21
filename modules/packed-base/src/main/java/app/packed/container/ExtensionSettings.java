@@ -36,7 +36,9 @@ import app.packed.statemachine.Leaving;
 
 // Skal vi dele dem op i mandatory og optional og optionalNamed
 // Er mest taenkt for descriptors. F.eks. kan man se om en given extension er optional
-public @interface ExtensionSidecar {
+
+// TODO we need a new name now that sidecars are no longer annotations
+public @interface ExtensionSettings {
 
     /**
      * Used together with the {@link Leaving} annotation to indicate that an {@link Extension}method should be executed as
@@ -72,6 +74,7 @@ public @interface ExtensionSidecar {
      * 
      * @return extensions that the extension may use
      */
+    // Should we use Sub instead??? Giver god mening.. Da man ikke kan depend paa extensions der ikke har en sub
     Class<? extends Extension>[] dependencies() default {};
 
     /**
@@ -92,5 +95,6 @@ public @interface ExtensionSidecar {
      * 
      * @return any runtime sidecar representations
      */
+    // wtf is this
     Class<?>[] runtime() default {};
 }

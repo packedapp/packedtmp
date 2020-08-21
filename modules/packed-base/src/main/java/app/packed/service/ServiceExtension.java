@@ -25,7 +25,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.ContainerDescriptor;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
-import app.packed.container.ExtensionSidecar;
+import app.packed.container.ExtensionSettings;
 import app.packed.container.ExtensionWired;
 import app.packed.hook.Expose;
 import app.packed.hook.OnHook;
@@ -369,7 +369,7 @@ public final class ServiceExtension extends Extension {
         throw new UnsupportedOperationException();
     }
 
-    @Leaving(state = ExtensionSidecar.NORMAL_USAGE)
+    @Leaving(state = ExtensionSettings.NORMAL_USAGE)
     void assemble() {
         node.buildBundle();
     }
@@ -378,7 +378,7 @@ public final class ServiceExtension extends Extension {
      * This method is invoked by the runtime after all children have been configured. But before any guests might have been
      * defined.
      */
-    @Leaving(state = ExtensionSidecar.CHILD_LINKING)
+    @Leaving(state = ExtensionSettings.CHILD_LINKING)
     void childenLinked() {
         node.buildTree();
     }
@@ -425,7 +425,7 @@ public final class ServiceExtension extends Extension {
         }
 
         public void exportd() {
-            export(user());
+            export(extensionType);
         }
     }
 }

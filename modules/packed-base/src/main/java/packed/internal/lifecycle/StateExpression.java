@@ -17,7 +17,7 @@ package packed.internal.lifecycle;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.container.ExtensionSidecar;
+import app.packed.container.ExtensionSettings;
 
 /**
  *
@@ -37,7 +37,7 @@ public class StateExpression {
         return expression.equals(expression);
     }
 
-    public static String foo = ExtensionSidecar.ASSEMBLED + "|" + ExtensionSidecar.INSTANTIATING;
+    public static String foo = ExtensionSettings.ASSEMBLED + "|" + ExtensionSettings.INSTANTIATING;
 
     public static StateExpression of(String expression) {
         return new StateExpression(expression);

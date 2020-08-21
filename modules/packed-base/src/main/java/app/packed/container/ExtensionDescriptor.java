@@ -59,7 +59,7 @@ public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
      * Returns an immutable set of other extensions this extension depends on. The returned set does not include transitive
      * dependencies.
      * <p>
-     * The returned set includes all optional dependencies specified via {@link ExtensionSidecar#optionalDependencies()}
+     * The returned set includes all optional dependencies specified via {@link ExtensionSettings#optionalDependencies()}
      * that could be successfully resolved.
      * 
      * @return any other extensions this extension depends on
@@ -115,11 +115,11 @@ public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
     Class<? extends Extension> type();
 
     /**
-     * Returns a set of all dependencies defined in {@link ExtensionSidecar#optionalDependencies()} that could not be
+     * Returns a set of all dependencies defined in {@link ExtensionSettings#optionalDependencies()} that could not be
      * resolved.
      * 
      * @return a set of all unresolved dependencies
-     * @see ExtensionSidecar#optionalDependencies()
+     * @see ExtensionSettings#optionalDependencies()
      */
     Set<String> unresolvedDependencies();
 

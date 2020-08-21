@@ -115,7 +115,7 @@ public interface ExtensionConfiguration {
      * specified via.... Otherwise an {@link InternalExtensionException} is thrown.
      * <p>
      * This method works similar to {@link ContainerConfiguration#use(Class)}. However, this method checks that only
-     * extensions that have been declared as dependencies via {@link ExtensionSidecar#dependencies()} are specified. This is
+     * extensions that have been declared as dependencies via {@link ExtensionSettings#dependencies()} are specified. This is
      * done in order to make sure that no extensions ever depend on each other.
      * 
      * @param <E>
@@ -127,7 +127,7 @@ public interface ExtensionConfiguration {
      *             If invoked from the constructor of the extension. Or if the underlying container is no longer
      *             configurable and an extension of the specified type has not already been installed
      * @throws UnsupportedOperationException
-     *             if the specified extension type is not specified via {@link ExtensionSidecar} on this extension.
+     *             if the specified extension type is not specified via {@link ExtensionSettings} on this extension.
      * 
      * @see ContainerConfiguration#use(Class)
      */

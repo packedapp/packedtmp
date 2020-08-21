@@ -88,6 +88,7 @@ public final class PackedContainerRole {
         builder.extensions.addAll(extensions.keySet());
     }
 
+    // A View not a copy
     public Set<Class<? extends Extension>> extensions() {
         return Collections.unmodifiableSet(extensions.keySet());
     }

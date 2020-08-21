@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import app.packed.component.Component;
 import packed.internal.container.ExtensionModel;
 
 /**
@@ -36,9 +35,13 @@ import packed.internal.container.ExtensionModel;
 // relationships at runtime.
 
 // specials --> ExtensionX before ExtensionY
+// Altsaa hvad hvis vi explicit laver en order fx via BaeExtension???
 
 /**
  * An immutable ordered set of extensions that are deterministic ordering of a set of extension types.
+ * <p>
+ * This set never includes BaseExtension.
+ * 
  * <p>
  * An extension ordering will not accept extension types that identical names but different identities. This can happen
  * fx if they the same extension is loaded with multiple different class loaders.
@@ -55,6 +58,11 @@ public interface ExtensionSet extends Iterable<Class<? extends Extension>> {
      */
     boolean contains(Class<? extends Extension> extensionType);
 
+    /**
+     * Returns a stream containing a descriptor of every extension type in this set.
+     * 
+     * @return a stream containing a descriptor of every extension type in this set
+     */
     default Stream<ExtensionDescriptor> descriptors() {
         return stream().map(ExtensionDescriptor::of);
     }
@@ -73,6 +81,11 @@ public interface ExtensionSet extends Iterable<Class<? extends Extension>> {
      */
     int size();
 
+    /**
+     * Returns a stream containing all the extension types in this set.
+     * 
+     * @return a stream containing all the extension types in this set
+     */
     Stream<Class<? extends Extension>> stream();
 
     /**
@@ -84,20 +97,29 @@ public interface ExtensionSet extends Iterable<Class<? extends Extension>> {
         return PackedExtensionSet.EMPTY;
     }
 
+    /**
+     * Returns an ordered extension set containing an arbitrary number of extension types.
+     * 
+     * @param extensions
+     *            the extension types to include
+     * @return a new set
+     * @throws IllegalArgumentException
+     *             if trying to add BaseExtension
+     */
     @SafeVarargs
     static ExtensionSet of(Class<? extends Extension>... extensions) {
         return of(List.of(extensions));
     }
 
+    /**
+     * @param extensions
+     * @return a new ordered extension set
+     * @throws IllegalArgumentException
+     *             if trying to add BaseExtension
+     */
     @SuppressWarnings("unchecked")
     static ExtensionSet of(Collection<Class<? extends Extension>> extensions) {
         List<?> l = extensions.stream().map(c -> ExtensionModel.of(c)).sorted().map(m -> m.type()).collect(Collectors.toList());
         return new PackedExtensionSet((List<Class<? extends Extension>>) l);
     }
-
-    static ExtensionSet findAll(Component c) {
-        // Recursive
-        throw new UnsupportedOperationException();
-    }
-
 }
