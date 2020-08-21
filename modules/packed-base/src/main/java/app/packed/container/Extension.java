@@ -81,8 +81,21 @@ public abstract class Extension {
     private ExtensionConfiguration configuration; // = PEC.CONFIGURED
 
     /**
-     * Invoked by the runtime immediately after the constructor has returned, Unlike the constructor, {@link #configuration}
-     * can be invoked from this method. Is typically used to add new runtime components.
+     * Invoked by the runtime immediately after the extension's constructor has returned successfully. Since most methods on
+     * this class cannot be invoked from within the constructor. This method can be used as an alternative to set up things.
+     * <p>
+     * The reason for prohibiting configuration from the constructor. Is that users might then link other components that in
+     * turn requires access to the actual extension instance. Which is not possible since it is still being instantiated.
+     * While this is rare in practice. Too be on the safe side we prohibit it.
+     * <p>
+     * Should we just use a ThreadLocal??? I mean we can initialize it when Assembling... And I don't think there is
+     * anywhere where we can get a hold of the actual extension instance...
+     * 
+     * But let's say we use another extension from within the constructor. We can only use direct dependencies... But say it
+     * installed a component that uses other extensions....????? IDK
+     * 
+     * most As most methods in this class is unavailable Unlike the constructor, {@link #configuration} can be invoked from
+     * this method. Is typically used to add new runtime components.
      */
     protected void add() {}
 
@@ -170,6 +183,10 @@ public abstract class Extension {
         return c;
     }
 
+    // TODO skal vi have andre metoder, hvis vi wrapper componenter fra brugeren???
+    // Vil mene det, her bliver vi jo ogsaa noedt til at checke man ikke bruger
+    // annoteringer fra andre extensions...
+    // Saa bliver noedt til at holde
     protected final <T> BeanConfiguration<T> install(Class<T> implementation) {
         return install(Factory.find(implementation));
     }
