@@ -97,18 +97,18 @@ public final class PackedAssemblyContext implements AssembleContext {
     }
 
     public static ComponentNodeConfiguration assembleArtifact(ArtifactDriver<?> driver, Bundle<?> bundle, Wirelet[] wirelets) {
-        return assemble(new PackedAssemblyContext(PackedOutput.artifact(driver)), bundle, wirelets);
+        return assemble(driver, new PackedAssemblyContext(PackedOutput.artifact(driver)), bundle, wirelets);
     }
 
-    public static ComponentNodeConfiguration assembleImage(Bundle<?> bundle, Wirelet[] wirelets) {
-        return assemble(new PackedAssemblyContext(PackedOutput.image()), bundle, wirelets);
+    public static ComponentNodeConfiguration assembleImage(ArtifactDriver<?> driver, Bundle<?> bundle, Wirelet[] wirelets) {
+        return assemble(driver, new PackedAssemblyContext(PackedOutput.image()), bundle, wirelets);
     }
 
     public static ComponentNodeConfiguration assembleDescriptor(Class<?> descriptorType, Bundle<?> bundle, Wirelet... wirelets) {
-        return assemble(new PackedAssemblyContext(PackedOutput.descriptor(descriptorType)), bundle, wirelets);
+        return assemble(null, new PackedAssemblyContext(PackedOutput.descriptor(descriptorType)), bundle, wirelets);
     }
 
-    public static ComponentNodeConfiguration assemble(PackedAssemblyContext assembly, Bundle<?> bundle, Wirelet... wirelets) {
+    public static ComponentNodeConfiguration assemble(ArtifactDriver<?> ad, PackedAssemblyContext assembly, Bundle<?> bundle, Wirelet... wirelets) {
         PackedComponentDriver<?> driver = BundleConfiguration.driverOf(bundle);
         WireletPack wp = WireletPack.from(driver, wirelets);
 

@@ -32,11 +32,21 @@ import app.packed.container.Extension.Subtension;
  */
 public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
 
-    // Beskriv algorithme
-    // Throws IAE if the full name of two descriptors are identical. But the extension type is not the same
-    // This can only happen in weird classloader situations.
+    /**
+     * Beskriv algorithme
+     * 
+     * @param descriptor
+     *            the descriptor to be compared.
+     * 
+     * @return a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the
+     *         specified object.
+     *
+     * @throws IllegalArgumentException
+     *             if the depth and full name of this descriptor and the the specified descriptor are equal. But they are
+     *             loaded by different class loaders.
+     */
     @Override
-    int compareTo(ExtensionDescriptor o);
+    int compareTo(ExtensionDescriptor descriptor);
 
     /**
      * Returns all the different types of contracts the extension exposes.
@@ -46,29 +56,34 @@ public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
     Set<Class<? extends Contract>> contracts();
 
     /**
-     * Returns an immutable set of any other extensions this extension depends on. The returned set does not include
-     * transitive dependencies.
+     * Returns an immutable set of other extensions this extension depends on. The returned set does not include transitive
+     * dependencies.
      * <p>
      * The returned set includes all optional dependencies specified via {@link ExtensionSidecar#optionalDependencies()}
      * that could be successfully resolved.
      * 
      * @return any other extensions this extension depends on
      */
-    Set<Class<? extends Extension>> dependencies();
+    ExtensionSet dependencies();
 
     /**
-     * Returns the depth of the extension. The depth is defined as 0 for {@link BaseExtension}. For all dependencies it is
-     * the maximum depth of of its dependencies plus one. This has the nice property, that any dependency of an extension
-     * will always have a depth that is less than the extension itself.
+     * Returns the depth of the extension. The depth of an extension is defined as 0 for {@link BaseExtension}. Or for all
+     * other extensions as the maximum depth of of any of its direct dependencies plus one.
+     * <p>
+     * This has the nice property, that any dependency (including transitive extensions) of an extension will always have a
+     * depth that is less than the depth of the extension itself.
      * 
      * @return the depth of the extension
      */
     int depth();
 
-    default String fullName() {
-        //
-        return type().getCanonicalName();
-    }
+    /**
+     * Returns the full name of the extension.
+     * 
+     * @return the full name of the extension
+     * @see Class#getCanonicalName()
+     */
+    String fullName();
 
     /**
      * Returns the module that the extension belongs to.
@@ -100,14 +115,13 @@ public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
     Class<? extends Extension> type();
 
     /**
-     * Returns a set of all dependencies that could not be resolved.
+     * Returns a set of all dependencies defined in {@link ExtensionSidecar#optionalDependencies()} that could not be
+     * resolved.
      * 
-     * @return a set
+     * @return a set of all unresolved dependencies
      * @see ExtensionSidecar#optionalDependencies()
      */
-    default Set<String> unresolvedDependencies() {
-        return Set.of();// Dependencies that could not be resolved.
-    }
+    Set<String> unresolvedDependencies();
 
     /**
      * Returns a descriptor for the specified extension type.
@@ -124,7 +138,6 @@ public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
     }
 }
 // 
-
 // requiresExecution() // usesResources // ResourceUser
 //
 //default Set<Class<? extends Extension>> dependenciesWithTransitiveDependencies() {

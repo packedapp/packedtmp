@@ -156,6 +156,10 @@ public final class ArtifactDriver<A> {
         }
     }
 
+    public ArtifactImage<A> newImage(Bundle<?> bundle, Wirelet... wirelets) {
+        return PackedArtifactImage.newImage(this, bundle, wirelets);
+    }
+
     /**
      * Returns the raw type of artifacts this driver produces.
      * 
@@ -182,10 +186,6 @@ public final class ArtifactDriver<A> {
         ArtifactContext context = createArtifactContext(source, wirelets);
         context.start();
         return newArtifact(context);
-    }
-
-    public ArtifactImage<A> newImage(Bundle<?> bundle, Wirelet... wirelets) {
-        return PackedArtifactImage.newImage(this, bundle, wirelets);
     }
 
     public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, Class<? extends A> implementation) {

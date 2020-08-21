@@ -33,9 +33,6 @@ import packed.internal.component.wirelet.WireletPack;
 // Altsaa ved ikke lige hvordan det hosted image kommer til at fungere...
 final class PackedArtifactImage<A> implements ArtifactImage<A> {
 
-    /** The type of bundle used to create this image. */
-    private final Class<? extends Bundle<?>> bundleType;
-
     /** The driver used to create the artifact. */
     // We should use the driver when creating the actual root node...
     // I'm not sure we should need to store it.
@@ -47,14 +44,13 @@ final class PackedArtifactImage<A> implements ArtifactImage<A> {
     /**
      * Creates a new image from the specified configuration and wirelets.
      * 
-     * @param pcc
+     * @param node
      *            the container configuration to wrap
      */
-    @SuppressWarnings("unchecked")
-    private PackedArtifactImage(ComponentNodeConfiguration pcc, ArtifactDriver<A> driver, Class<?> bundleType) {
-        this.node = requireNonNull(pcc);
+    private PackedArtifactImage(ComponentNodeConfiguration node, ArtifactDriver<A> driver) {
+        this.node = requireNonNull(node);
         this.driver = driver;
-        this.bundleType = (Class<? extends Bundle<?>>) requireNonNull(bundleType);
+        // this.bundleType = (Class<? extends Bundle<?>>) requireNonNull(bundleType);
     }
 
     /** {@inheritDoc} */
@@ -72,7 +68,8 @@ final class PackedArtifactImage<A> implements ArtifactImage<A> {
     /** {@inheritDoc} */
     @Override
     public ContainerDescriptor descriptor() {
-        ContainerDescriptor.Builder builder = new ContainerDescriptor.Builder(sourceType());
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        ContainerDescriptor.Builder builder = new ContainerDescriptor.Builder((Class) Bundle.class);
         node.container().buildDescriptor(builder);
         return builder.build();
     }
@@ -106,12 +103,6 @@ final class PackedArtifactImage<A> implements ArtifactImage<A> {
 
     /** {@inheritDoc} */
     @Override
-    public Class<? extends Bundle<?>> sourceType() {
-        return bundleType; // images can only be created from bundles
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public A start(Wirelet... wirelets) {
         return driver.newArtifact(newContext(wirelets));
     }
@@ -135,8 +126,8 @@ final class PackedArtifactImage<A> implements ArtifactImage<A> {
      * @return the image
      */
     static <A> PackedArtifactImage<A> newImage(ArtifactDriver<A> driver, Bundle<?> bundle, Wirelet... wirelets) {
-        ComponentNodeConfiguration node = PackedAssemblyContext.assembleImage(bundle, wirelets);
-        return new PackedArtifactImage<A>(node, driver, bundle.getClass());
+        ComponentNodeConfiguration node = PackedAssemblyContext.assembleImage(driver, bundle, wirelets);
+        return new PackedArtifactImage<A>(node, driver);
     }
 }
 //

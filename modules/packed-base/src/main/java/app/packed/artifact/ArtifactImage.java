@@ -121,17 +121,6 @@ public interface ArtifactImage<A> {
      */
     Class<?> rawArtifactType();
 
-    /**
-     * Returns the type of bundle that was used to create this image.
-     * <p>
-     * An image created from another image, will retain the source type of the source image.
-     * 
-     * @return the type of bundle that was used to create this image
-     */
-    // Taenker vi dropper den her, og smider som en attribute???
-    // Hvem ved maaske er det andet end bundles der kan bruges en dag..
-    Class<? extends Bundle<?>> sourceType();
-
     // Create And start()
     A start(Wirelet... wirelets);
 
@@ -151,6 +140,18 @@ public interface ArtifactImage<A> {
     // descriptor().stream()...
     ComponentStream stream(ComponentStream.Option... options);
 }
+
+/**
+ * Returns the type of bundle that was used to create this image.
+ * <p>
+ * An image created from another image, will retain the source type of the source image.
+ * 
+ * @return the type of bundle that was used to create this image
+ */
+// Taenker vi dropper den her, og smider som en attribute???
+// Hvem ved maaske er det andet end bundles der kan bruges en dag..
+//Class<? extends Bundle<?>> sourceType();
+
 //Contains
 
 //Ways to initialize, start, stop, execute, ect...

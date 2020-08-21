@@ -54,7 +54,7 @@ final class PackedExtensionDescriptor implements ExtensionDescriptor {
 
     /** {@inheritDoc} */
     @Override
-    public Set<Class<? extends Extension>> dependencies() {
+    public ExtensionSet dependencies() {
         return model.directDependencies();
     }
 
@@ -86,6 +86,18 @@ final class PackedExtensionDescriptor implements ExtensionDescriptor {
     static ExtensionDescriptor of(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         return new PackedExtensionDescriptor(ExtensionModel.of(extensionType));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<String> unresolvedDependencies() {
+        return Set.of();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String fullName() {
+        return type().getCanonicalName();
     }
 }
 

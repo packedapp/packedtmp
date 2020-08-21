@@ -59,7 +59,7 @@ public interface App extends AutoCloseable {
     /**
      * Returns the name of this application.
      * <p>
-     * The returned name is identical to the name of the application's top container.
+     * The returned name is identical to the name of the application's top component.
      * <p>
      * If no name is explicitly set when creating the application, the runtime will generate a name. If the applications has
      * siblings the name is guaranteed to be unique among them.

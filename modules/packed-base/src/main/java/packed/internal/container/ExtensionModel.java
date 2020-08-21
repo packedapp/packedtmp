@@ -35,6 +35,7 @@ import app.packed.component.WireletHandler;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionMember;
+import app.packed.container.ExtensionSet;
 import app.packed.container.ExtensionSidecar;
 import app.packed.container.ExtensionWired;
 import app.packed.container.InternalExtensionException;
@@ -132,7 +133,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
     private final int depth;
 
     /** This extension's direct dependencies (on other extensions). */
-    private final Set<Class<? extends Extension>> directDependencies;
+    private final ExtensionSet directDependencies;
 
     /** Whether or not is is only any immediately parent that will be linked. */
     final boolean extensionLinkedDirectChildrenOnly;
@@ -171,7 +172,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         this.id = builder.id;
         this.depth = builder.depth;
         this.bundleBuilderMethod = builder.builderMethod;
-        this.directDependencies = Set.copyOf(builder.dependenciesDirect);
+        this.directDependencies = ExtensionSet.of(builder.dependenciesDirect);// Set.copyOf(builder.dependenciesDirect);
         this.optional = Optional.of(extensionType()); // No need to create an optional every time we need this
         this.nameUsedForSorting = requireNonNull(extensionType().getCanonicalName());
         this.driver = new ExtensionComponentDriver(this);
@@ -217,7 +218,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
      * 
      * @return a set of all the direct dependencies of this extension
      */
-    public Set<Class<? extends Extension>> directDependencies() {
+    public ExtensionSet directDependencies() {
         return directDependencies;
     }
 

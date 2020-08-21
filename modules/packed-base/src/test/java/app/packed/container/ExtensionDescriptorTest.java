@@ -47,7 +47,6 @@ public class ExtensionDescriptorTest {
     public void unmodifiable() {
         ExtensionDescriptor ed = ExtensionDescriptor.of(VariousExtension.class);
         assertThatThrownBy(() -> ed.contracts().clear()).isExactlyInstanceOf(UnsupportedOperationException.class);
-        assertThatThrownBy(() -> ed.dependencies().clear()).isExactlyInstanceOf(UnsupportedOperationException.class);
     }
 
     @ExtensionSidecar(dependencies = EmptyExtension.class)
