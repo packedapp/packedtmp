@@ -77,7 +77,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     /** The pod the component belongs to. */
     final PackedGuestConfigurationContext pod;
 
-    final int properties = 0;
+    final int properties;
+
     /** The name of the component. */
     String name;
 
@@ -166,6 +167,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         this.wirelets = wirelets;
 
         setName0(null); // initialize name
+
+        this.properties = ComponentPropertySet.setPropertyConditional(driver.properties, parent == null, ComponentProperty.SYSTEM);
     }
 
     /**
@@ -558,7 +561,14 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         /** {@inheritDoc} */
         @Override
         public boolean hasProperty(ComponentProperty property) {
-            return false;
+            return ComponentPropertySet.isPropertySet(conf.properties, property);
+
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Set<ComponentProperty> properties() {
+            return new ComponentPropertySet(conf.properties);
         }
     }
 

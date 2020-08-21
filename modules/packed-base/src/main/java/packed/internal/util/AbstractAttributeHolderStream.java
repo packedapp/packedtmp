@@ -15,6 +15,7 @@
  */
 package packed.internal.util;
 
+import java.util.Collection;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -36,7 +37,7 @@ public abstract class AbstractAttributeHolderStream<T extends AttributeHolder> e
 
     @Override
     public <A> AttributeStream<T> filter(Attribute<A> attribute, Predicate<? super A> predicate) {
-        return with(filter(e -> predicate.test(e.attributes().get(attribute))));
+        return with(filter(e -> e.attributes().testIfPresent(attribute, predicate, false)));
     }
 
     @Override
@@ -46,8 +47,8 @@ public abstract class AbstractAttributeHolderStream<T extends AttributeHolder> e
 
     /** {@inheritDoc} */
     @Override
-    public <A extends Iterable<B>, B> AttributeStream<T> contains(Attribute<A> attribute, B element) {
-        throw new UnsupportedOperationException();
+    public <A extends Collection<B>, B> AttributeStream<T> contains(Attribute<A> attribute, B element) {
+        return with(filter(e -> e.attributes().testIfPresent(attribute, f -> f.contains(element), false)));
     }
 
     @Override

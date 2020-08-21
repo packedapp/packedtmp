@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import packed.internal.base.attribute.EmptyAttributeSet;
 
@@ -64,6 +65,8 @@ public interface AttributeSet {
      */
     // If the attribute has a default value this will be returned???
     <T> T get(Attribute<T> attribute);
+
+    <T> boolean testIfPresent(Attribute<T> attribute, Predicate<? super T> predicate, boolean defaultValue);
 
     boolean isPresent(Attribute<?> attribute);
 

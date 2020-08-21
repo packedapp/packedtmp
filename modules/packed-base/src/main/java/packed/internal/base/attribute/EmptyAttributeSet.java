@@ -19,6 +19,7 @@ import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import app.packed.base.Attribute;
 import app.packed.base.AttributeSet;
@@ -76,5 +77,11 @@ public final class EmptyAttributeSet implements AttributeSet {
     @Override
     public <T> T orElse(Attribute<T> attribute, T other) {
         return other;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T> boolean testIfPresent(Attribute<T> attribute, Predicate<? super T> predicate, boolean defaultValue) {
+        return defaultValue;
     }
 }

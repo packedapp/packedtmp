@@ -16,6 +16,8 @@
  */
 package app.packed.component;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -75,8 +77,9 @@ public interface ComponentStream extends AttributeStream<Component> {
 //        return filterOnType(ComponentDescriptor.CONTAINER);
 //    }
 
-    default <A> Stream<A> feature(Class<A> faetures) {
-        throw new UnsupportedOperationException();
+    default ComponentStream hasProperty(ComponentProperty property) {
+        requireNonNull(property, "property is null");
+        return filter(c -> c.hasProperty(property));
     }
 //
 //    default <T extends AFeature<?, ?>> Stream<T> feature(T feature) {

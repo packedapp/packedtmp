@@ -44,19 +44,25 @@ public abstract class PackedComponentDriver<C> implements WireableComponentDrive
     public static final int ROLE_EXTENSION = 1 << ComponentProperty.EXTENSION.ordinal();
     public static final int ROLE_GUEST = 1 << ComponentProperty.GUEST.ordinal();
     public static final int ROLE_HOST = 1 << ComponentProperty.HOST.ordinal();
-    public static final int ROLE_SINGLETON = 1 << 28;
-    public static final int ROLE_STATELESS = 1 << 29;
+    public static final int ROLE_SINGLETON = 1 << ComponentProperty.SINGLETON.ordinal();
+    public static final int ROLE_STATELESS = 1 << ComponentProperty.STATELESS.ordinal();
 
     // Statemanagement... A function is kind of just a singleton...
 
-    private final int properties;
+    final int properties;
+
+    public static void main(String[] args) {
+        System.out.println(ROLE_EXTENSION);
+        System.out.println(ROLE_CONTAINER);
+        System.out.println(new ComponentPropertySet(ROLE_CONTAINER));
+    }
 
     protected PackedComponentDriver(int properties) {
         this.properties = properties;
     }
 
     protected PackedComponentDriver(ComponentProperty... properties) {
-        this.properties = ComponentPropertyHelper.setProperty(0, properties);
+        this.properties = ComponentPropertySet.setProperty(0, properties);
     }
 
     public abstract C toConfiguration(ComponentConfigurationContext cnc);

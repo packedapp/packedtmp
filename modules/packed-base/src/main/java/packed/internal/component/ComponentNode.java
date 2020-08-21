@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -206,6 +207,12 @@ public final class ComponentNode implements Component {
         return c;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean hasProperty(ComponentProperty property) {
+        return ComponentPropertySet.isPropertySet(model.properties, property);
+    }
+
     public boolean isInSameContainer(ComponentNode other) {
         return isInSameContainer0() == other.isInSameContainer0();
     }
@@ -238,6 +245,12 @@ public final class ComponentNode implements Component {
     @Override
     public ComponentPath path() {
         return PackedComponentPath.of(this);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<ComponentProperty> properties() {
+        return new ComponentPropertySet(model.properties);
     }
 
     /** {@inheritDoc} */
@@ -277,11 +290,5 @@ public final class ComponentNode implements Component {
             throw new IllegalArgumentException("Could not find component with path: " + path + " avilable components:" + list);
         }
         return c;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean hasProperty(ComponentProperty property) {
-        return ComponentPropertyHelper.isPropertySet(model.properties, property);
     }
 }

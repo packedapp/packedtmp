@@ -27,6 +27,15 @@ import app.packed.container.ExtensionConfiguration;
 public enum ComponentProperty {
 
     /**
+     * Every system has exactly one system component which is the root of the component tree.
+     */
+    SYSTEM,
+
+    /** */
+    // Components this property are the component that are allowed to extensions as children.
+    CONTAINER,
+
+    /**
      * Indicates that the component represents a subclass of {@link Extension}.
      * <p>
      * Components with this property:
@@ -41,16 +50,7 @@ public enum ComponentProperty {
     EXTENSION,
 
     /** */
-    // Components this property are the component that are allowed to extensions as children.
-    CONTAINER,
-
-    /** */
     HOST,
-
-    /**
-     * Every system has exactly one system component which is the root of the component tree.
-     */
-    SYSTEM,
 
     IMAGE,
 
@@ -66,7 +66,11 @@ public enum ComponentProperty {
      * the type of the extension the component represents.</li>
      * </ul>
      */
-    GUEST;
+    GUEST,
+
+    SINGLETON,
+
+    STATELESS;
 }
 
 //Components.isPartOfImage() <--- look recursively in parents and see if any has the Image 

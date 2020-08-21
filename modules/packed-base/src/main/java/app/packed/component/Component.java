@@ -15,16 +15,12 @@
  */
 package app.packed.component;
 
-import java.lang.invoke.MethodHandles;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.base.Attribute;
 import app.packed.base.AttributeHolder;
-import app.packed.base.TypeLiteral;
 import app.packed.config.ConfigSite;
 
 /**
@@ -32,17 +28,6 @@ import app.packed.config.ConfigSite;
  * derivatives. In packed everything is a component.
  */
 public interface Component extends AttributeHolder {
-
-    public static Attribute<EnumSet<ComponentProperty>> PROPERTIES = Attribute.of(MethodHandles.lookup(), "properties",
-            new TypeLiteral<EnumSet<ComponentProperty>>() {});
-
-    // Syntes ikke det skal vaere en attribute
-    // stream.hasProperty()..
-    default Set<ComponentProperty> properties() {
-        return Set.of();
-    }
-
-    boolean hasProperty(ComponentProperty property);
 
     /**
      * Returns an unmodifiable view of all of this component's children.
@@ -64,6 +49,8 @@ public interface Component extends AttributeHolder {
      * @return the distance to the root component
      */
     int depth();
+
+    boolean hasProperty(ComponentProperty property);
 
     /**
      * Returns the name of this component.
@@ -88,6 +75,15 @@ public interface Component extends AttributeHolder {
      * @return the path of this component
      */
     ComponentPath path();
+
+    // Syntes ikke det skal vaere en attribute
+    // stream.hasProperty()..
+    /**
+     * Returns a set containing all the properties of this component.
+     * 
+     * @return a set containing all the properties of this component
+     */
+    Set<ComponentProperty> properties();
 
     /**
      * Returns the relation from this component to the specified component.

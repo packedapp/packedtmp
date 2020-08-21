@@ -44,8 +44,7 @@ public interface ComponentDriver<C> {
         }
 
         static Option validateParentIsContainer() {
-            return validateParent(c -> c.attribute(Component.PROPERTIES).contains(ComponentProperty.CONTAINER),
-                    "This component can only be wired to a container");
+            return validateParent(c -> c.hasProperty(ComponentProperty.CONTAINER), "This component can only be wired to a container");
         }
 
         static Option validateParent(Predicate<? super Component> validator, String msg) {
