@@ -26,5 +26,11 @@ public interface AttributeStream<T extends AttributeHolder> extends Stream<T> {
 
     <A> AttributeStream<T> filter(Attribute<A> attribute, Predicate<? super A> predicate);
 
+    // Kunne ogsaa returnere Stream<A>????
+    // mapTo
     AttributeStream<T> ifPresent(Attribute<?> attribute);
+
+    default <A> Stream<A> mapTo(Attribute<A> attribute) {
+        return flatMap(c -> c.attributes().orStuff(attribute, t -> Stream.of(t), Stream.empty()));
+    }
 }

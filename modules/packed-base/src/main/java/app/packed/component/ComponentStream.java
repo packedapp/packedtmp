@@ -134,9 +134,9 @@ public interface ComponentStream extends AttributeStream<Component> {
     // });
     // }
 
-    default ComponentStream onPath(String regexp) {
-        return this;
-    }
+//    default ComponentStream onPath(String regexp) {
+//        return this;
+//    }
 
     /**
      * Returns a new list containing all of the components in this stream in the order they where encountered. Invoking this
@@ -286,12 +286,14 @@ public interface ComponentStream extends AttributeStream<Component> {
             throw new UnsupportedOperationException();
         }
 
+        //
         public static ComponentStream.Option inSameArtifact() {
             throw new UnsupportedOperationException();
         }
 
         /**
-         * Only process components that are in the same container as the stream origin.
+         * Only process components that are in the same container as the stream origin. If the origin is not in a container?
+         * Fail???
          * 
          * @return the option
          */

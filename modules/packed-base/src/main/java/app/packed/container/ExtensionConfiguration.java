@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Optional;
 
-import app.packed.base.Attribute;
 import app.packed.base.Nullable;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
@@ -49,9 +48,7 @@ import packed.internal.container.PackedExtensionConfiguration;
 // Does not extend CC as install/installinstance used parent as target
 public interface ExtensionConfiguration {
 
-    public static final Attribute<Class<? extends Extension>> TYPE = Attribute.of(MethodHandles.lookup(), "type", Extension.TL);
-
-    public static final Attribute<Class<? extends Extension>> EXTENSION_MEMBER = Attribute.of(MethodHandles.lookup(), "extension-member", Extension.TL);
+    // ComponentAttributes
 
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.

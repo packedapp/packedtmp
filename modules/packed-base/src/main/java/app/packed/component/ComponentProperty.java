@@ -16,7 +16,6 @@
 package app.packed.component;
 
 import app.packed.container.Extension;
-import app.packed.container.ExtensionConfiguration;
 
 /**
  * Component properties are permanent for a component
@@ -24,6 +23,7 @@ import app.packed.container.ExtensionConfiguration;
 // ComponentTag??
 // Hmm taenker de er saa brugt at vi skal have en 
 // ComponentProperties are fixed
+// ComponentRole? SYNTHETIC/FOREIGN/ARTIFACT er en daarlig rolle
 public enum ComponentProperty {
 
     /**
@@ -49,7 +49,7 @@ public enum ComponentProperty {
      * <li>Always has a parent that has the {@link #CONTAINER} property set.</li>
      * <li>Are always leaf components (they have no children).</li>
      * <li>Are only present at runtime if they are part of an embedded image.</li>
-     * <li>Has the {@link ExtensionConfiguration#TYPE} and {@link ExtensionConfiguration#EXTENSION_MEMBER} attribute set to
+     * <li>Has the {@link ComponentAttributes#SOURCE_TYPE} and {@link ComponentAttributes#EXTENSION_MEMBER} attribute set to
      * the type of the extension the component represents.</li>
      * </ul>
      */
@@ -66,20 +66,27 @@ public enum ComponentProperty {
      * <li>Are either the {@link System} component or has a parent that has the {@link #HOST} property set.</li>
      * <li>Are always leaf components (they have no children).</li>
      * <li>Are only present at runtime if they are part of an embedded image.</li>
-     * <li>Has the {@link ExtensionConfiguration#TYPE} and {@link ExtensionConfiguration#EXTENSION_MEMBER} attribute set to
+     * <li>Has the {@link ComponentAttributes#SOURCE_TYPE} and {@link ComponentAttributes#EXTENSION_MEMBER} attribute set to
      * the type of the extension the component represents.</li>
      * </ul>
      */
     GUEST,
 
+    // A single java based instance that is strongly bound to lifecycle of the component.
+    // Cannot be replaced. As such this instance is co-terminus with the guest
     SINGLETON,
 
+    // Stateless, but we inject new stuff...
     STATELESS;
 }
 
 //Components.isPartOfImage() <--- look recursively in parents and see if any has the Image 
 
 enum Others {
+
+    SOURCED, // All components that are sourced have an SOURCE_TYPE attribute
+    // SOURCED_TYPE... We don't need EXTENSION TYPE THEN????
+
     ARTIFACT, // FOREIGN???
 
     WIRELET, // Wirelet as in t I think instead it is a forerign component

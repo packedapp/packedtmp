@@ -31,6 +31,13 @@ import java.lang.annotation.Target;
 
 // @Nullable, Optional, List
 // VarHandle, MethodHandle doesn't really work with WireletHandle...
+
+// methods are conditional invoked.....
+
+// Hmm Hvad hvis jeg har foo(Optional<EEE>)
+// Skal den virkelig invokes alligevel???
+
+// @WireletLink...  Nah @WireletLink Optional<>
 public @interface WireletHandler {}
 
 // Grunden til jeg ikke kan WireletInject er den kan puttes paa en parameter...
