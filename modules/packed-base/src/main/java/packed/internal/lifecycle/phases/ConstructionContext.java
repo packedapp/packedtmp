@@ -19,13 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.concurrent.CompletableFuture;
 
-import app.packed.artifact.ArtifactContext;
+import app.packed.artifact.GuestContext;
 import app.packed.base.Key;
 import app.packed.component.Component;
-import app.packed.component.ComponentPath;
-import app.packed.component.ComponentStream;
-import app.packed.component.ComponentStream.Option;
-import app.packed.config.ConfigSite;
 import app.packed.lifecycleold.StopOption;
 import app.packed.service.Injector;
 import packed.internal.component.ComponentNode;
@@ -70,48 +66,30 @@ public final class ConstructionContext {
         return wirelets;
     }
 
-    public static ArtifactContext constructArtifact(ComponentNodeConfiguration root, WireletPack wp) {
+    public static GuestContext constructArtifact(ComponentNodeConfiguration root, WireletPack wp) {
         ConstructionContext ic = new ConstructionContext(wp);
         // Will instantiate the whole container hierachy
         ComponentNode node = root.instantiateTree(ic);
 
         // TODO run initialization
 
-        return new PackedArtifactContext(node);
+        return new PackedGuestContext(node);
     }
 
     /** Used to expose a container as an ArtifactContext. */
-    public static final class PackedArtifactContext implements ArtifactContext {
+    public static final class PackedGuestContext implements GuestContext {
 
         /** The component node we are wrapping. */
-        private final ComponentNode component;
+        private final ComponentNode node;
 
-        private PackedArtifactContext(ComponentNode container) {
-            this.component = requireNonNull(container);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ConfigSite configSite() {
-            return component.configSite();
+        private PackedGuestContext(ComponentNode node) {
+            this.node = requireNonNull(node);
         }
 
         /** {@inheritDoc} */
         @Override
         public Injector injector() {
-            return (Injector) component.data[0];
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public String name() {
-            return component.name();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentPath path() {
-            return component.path();
+            return (Injector) node.data[0];
         }
 
         /** {@inheritDoc} */
@@ -128,12 +106,6 @@ public final class ConstructionContext {
 
         /** {@inheritDoc} */
         @Override
-        public ComponentStream stream(Option... options) {
-            return component.stream(options);
-        }
-
-        /** {@inheritDoc} */
-        @Override
         public <T> T use(Key<T> key) {
             return injector().use(key);
         }
@@ -141,7 +113,13 @@ public final class ConstructionContext {
         /** {@inheritDoc} */
         @Override
         public Component useComponent(CharSequence path) {
-            return component.useComponent(path);
+            return node.useComponent(path);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Component guest() {
+            return node;
         }
     }
 

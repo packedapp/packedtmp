@@ -32,7 +32,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.artifact.App;
-import app.packed.artifact.ArtifactImage;
+import app.packed.artifact.GuestImage;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.Packlet;
 import app.packed.container.BaseBundle;
@@ -52,24 +52,24 @@ import app.packed.hook.OnHook;
 @State(Scope.Benchmark)
 public class FromImage {
 
-    static final ArtifactImage<App> EMPTY = App.newImage(new BaseBundle() {
+    static final GuestImage<App> EMPTY = App.newImage(new BaseBundle() {
         @Override
         protected void configure() {}
     });
 
-    static final ArtifactImage<App> USE_EXTENSION = App.newImage(new BaseBundle() {
+    static final GuestImage<App> USE_EXTENSION = App.newImage(new BaseBundle() {
         @Override
         public void configure() {
             use(MyExtension.class);
         }
     });
-    static final ArtifactImage<App> INSTALL = App.newImage(new BaseBundle() {
+    static final GuestImage<App> INSTALL = App.newImage(new BaseBundle() {
         @Override
         public void configure() {
             installInstance("foo");
         }
     });
-    static final ArtifactImage<App> INSTALL_AUTO_ACTIVATE = App.newImage(new BaseBundle() {
+    static final GuestImage<App> INSTALL_AUTO_ACTIVATE = App.newImage(new BaseBundle() {
         @Override
         public void configure() {
             installInstance(new MyStuff());

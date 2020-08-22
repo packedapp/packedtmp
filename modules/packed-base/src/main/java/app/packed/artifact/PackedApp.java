@@ -21,7 +21,7 @@ final class PackedApp implements App {
     static final ArtifactDriver<App> DRIVER = ArtifactDriver.of(MethodHandles.lookup(), App.class, PackedApp.class);
 
     /** The artifact context we are wrapping. */
-    private final ArtifactContext context;
+    private final GuestContext context;
 
     /**
      * Creates a new app.
@@ -29,7 +29,7 @@ final class PackedApp implements App {
      * @param context
      *            the context to wrap
      */
-    private PackedApp(ArtifactContext context) {
+    private PackedApp(GuestContext context) {
         this.context = requireNonNull(context);
     }
 
@@ -42,13 +42,13 @@ final class PackedApp implements App {
     /** {@inheritDoc} */
     @Override
     public String name() {
-        return context.name();
+        return context.guest().name();
     }
 
     /** {@inheritDoc} */
     @Override
     public ComponentPath path() {
-        return context.path();
+        return context.guest().path();
     }
 
     /** {@inheritDoc} */

@@ -32,7 +32,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.artifact.App;
-import app.packed.artifact.ArtifactImage;
+import app.packed.artifact.GuestImage;
 import app.packed.component.Packlet;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
@@ -52,7 +52,7 @@ import app.packed.hook.OnHook;
 public class ExtensionActivation {
 
     @Benchmark
-    public ArtifactImage<App> empty() {
+    public GuestImage<App> empty() {
         BaseBundle b = new BaseBundle() {
             @Override
             protected void configure() {}
@@ -61,7 +61,7 @@ public class ExtensionActivation {
     }
 
     @Benchmark
-    public ArtifactImage<App> useExtension() {
+    public GuestImage<App> useExtension() {
         BaseBundle b = new BaseBundle() {
             @Override
             public void configure() {
@@ -72,7 +72,7 @@ public class ExtensionActivation {
     }
 
     @Benchmark
-    public ArtifactImage<App> install() {
+    public GuestImage<App> install() {
         BaseBundle b = new BaseBundle() {
             @Override
             public void configure() {
@@ -83,7 +83,7 @@ public class ExtensionActivation {
     }
 
     @Benchmark
-    public ArtifactImage<App> newExtensionUseInstall() {
+    public GuestImage<App> newExtensionUseInstall() {
         BaseBundle b = new BaseBundle() {
             @Override
             public void configure() {
@@ -95,7 +95,7 @@ public class ExtensionActivation {
     }
 
     @Benchmark
-    public ArtifactImage<App> newExtensionAutoActivate() {
+    public GuestImage<App> newExtensionAutoActivate() {
         BaseBundle b = new BaseBundle() {
             @Override
             public void configure() {

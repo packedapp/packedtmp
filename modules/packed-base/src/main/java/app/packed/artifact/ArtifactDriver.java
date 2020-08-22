@@ -35,11 +35,11 @@ import packed.internal.lifecycle.phases.PackedAssemblyContext;
 import packed.internal.util.ThrowableUtil;
 
 /**
- * Artifact drivers are responsible for creating new artifacts by wrapping instances of {@link ArtifactContext}.
+ * Artifact drivers are responsible for creating new artifacts by wrapping instances of {@link GuestContext}.
  * <p>
  * This class can be extended to create custom artifact types if the built-in artifact types such as {@link App} and
  * {@link Injector} are not sufficient. In fact, the default implementations of both {@link App} and {@link Injector}
- * are just thin facade that delegates all calls to an {@link ArtifactContext} instance.
+ * are just thin facade that delegates all calls to an {@link GuestContext} instance.
  * <p>
  * Normally, you should never instantiate more then a single instance of driver for any artifact implementation.
  * <p>
@@ -95,17 +95,17 @@ public final class ArtifactDriver<A> {
 
     public <C, D> A configure(WireableComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.configure(this, (PackedComponentDriver<D>) driver, factory, consumer, wirelets);
-        ArtifactContext ac = ConstructionContext.constructArtifact(node, node.wirelets);
+        GuestContext ac = ConstructionContext.constructArtifact(node, node.wirelets);
         return newArtifact(ac);
     }
 
-    private ArtifactContext createArtifactContext(Bundle<?> source, Wirelet... wirelets) {
+    private GuestContext createArtifactContext(Bundle<?> source, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.assembleArtifact(this, source, wirelets);
         return ConstructionContext.constructArtifact(node, node.wirelets);
     }
 
     public Object execute(Bundle<?> source, Wirelet... wirelets) {
-        ArtifactContext context = createArtifactContext(source, wirelets);
+        GuestContext context = createArtifactContext(source, wirelets);
         context.start();
         return null;
     }
@@ -123,7 +123,7 @@ public final class ArtifactDriver<A> {
     /**
      * Creates and initializes a new artifact using the specified source.
      * <p>
-     * This method will invoke {@link #newArtifact(ArtifactContext)} to create the actual artifact.
+     * This method will invoke {@link #newArtifact(GuestContext)} to create the actual artifact.
      * 
      * @param source
      *            the source of the top-level container
@@ -137,7 +137,7 @@ public final class ArtifactDriver<A> {
     // Skal kunne lave en container...
     // Maaske laver vi implicit en container og smider den i...
     public A instantiate(Bundle<?> source, Wirelet... wirelets) {
-        ArtifactContext context = createArtifactContext(source, wirelets);
+        GuestContext context = createArtifactContext(source, wirelets);
         return newArtifact(context);
     }
 
@@ -148,7 +148,7 @@ public final class ArtifactDriver<A> {
      *            the artifact context to use for instantiating the artifact
      * @return the new artifact
      */
-    A newArtifact(ArtifactContext context) {
+    A newArtifact(GuestContext context) {
         try {
             return (A) mh.invoke(context);
         } catch (Throwable e) {
@@ -156,8 +156,8 @@ public final class ArtifactDriver<A> {
         }
     }
 
-    public ArtifactImage<A> newImage(Bundle<?> bundle, Wirelet... wirelets) {
-        return PackedArtifactImage.newImage(this, bundle, wirelets);
+    public GuestImage<A> newImage(Bundle<?> bundle, Wirelet... wirelets) {
+        return PackedGuestImage.newImage(this, bundle, wirelets);
     }
 
     /**
@@ -183,14 +183,14 @@ public final class ArtifactDriver<A> {
      *             if the driver does not produce an artifact with an execution phase
      */
     public A start(Bundle<?> source, Wirelet... wirelets) {
-        ArtifactContext context = createArtifactContext(source, wirelets);
+        GuestContext context = createArtifactContext(source, wirelets);
         context.start();
         return newArtifact(context);
     }
 
     public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, Class<? extends A> implementation) {
         // Vi vil gerne bruge artifact type som navnet paa artifacten... istedet for implementationen
-        MethodType mt = MethodType.methodType(void.class, ArtifactContext.class);
+        MethodType mt = MethodType.methodType(void.class, GuestContext.class);
         final MethodHandle mh;
         try {
             mh = caller.findConstructor(implementation, mt);

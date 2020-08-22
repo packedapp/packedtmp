@@ -24,9 +24,9 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.artifact.App;
-import app.packed.artifact.ArtifactContext;
+import app.packed.artifact.GuestContext;
 import app.packed.artifact.ArtifactDriver;
-import app.packed.artifact.ArtifactImage;
+import app.packed.artifact.GuestImage;
 import app.packed.base.Key;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
@@ -301,7 +301,7 @@ public interface Injector {
         return t.get();
     }
 
-    static ArtifactImage<Injector> newImage(Bundle<?> bundle, Wirelet... wirelets) {
+    static GuestImage<Injector> newImage(Bundle<?> bundle, Wirelet... wirelets) {
         return driver().newImage(bundle, wirelets);
     }
 
@@ -353,11 +353,11 @@ public interface Injector {
 /** An artifact driver for creating {@link App} instances. */
 final class InjectorArtifactHelper {
 
-    static final MethodHandle CONV = LookupUtil.mhStaticSelf(MethodHandles.lookup(), "convert", Injector.class, ArtifactContext.class);
+    static final MethodHandle CONV = LookupUtil.mhStaticSelf(MethodHandles.lookup(), "convert", Injector.class, GuestContext.class);
 
     static final ArtifactDriver<Injector> DRIVER = ArtifactDriver.of(MethodHandles.lookup(), Injector.class, CONV);
 
-    static Injector convert(ArtifactContext container) {
-        return ((ConstructionContext.PackedArtifactContext) container).injector();
+    static Injector convert(GuestContext container) {
+        return ((ConstructionContext.PackedGuestContext) container).injector();
     }
 }

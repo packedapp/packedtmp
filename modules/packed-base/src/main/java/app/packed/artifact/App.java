@@ -49,7 +49,7 @@ public interface App extends AutoCloseable {
     /**
      * Returns the configuration site of this application.
      * <p>
-     * If this application was created from an {@link ArtifactImage image}, this method will return the site where the image
+     * If this application was created from an {@link GuestImage image}, this method will return the site where the image
      * was created. Unless the AI.Wiring option is used when construction the application.
      * 
      * @return the configuration site of this application
@@ -221,7 +221,7 @@ public interface App extends AutoCloseable {
         driver().execute(source, wirelets);
     }
 
-    static ArtifactImage<App> newImage(Bundle<?> bundle, Wirelet... wirelets) {
+    static GuestImage<App> newImage(Bundle<?> bundle, Wirelet... wirelets) {
         return driver().newImage(bundle, wirelets);
     }
 

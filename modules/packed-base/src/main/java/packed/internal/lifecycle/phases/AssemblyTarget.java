@@ -1,7 +1,7 @@
 package packed.internal.lifecycle.phases;
 
 import app.packed.artifact.App;
-import app.packed.artifact.ArtifactImage;
+import app.packed.artifact.GuestImage;
 import app.packed.base.Contract;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerDescriptor;
@@ -43,7 +43,7 @@ public enum AssemblyTarget {
 
     // Problemet med denne er at roden kan vaere en artifact.
     // Men de enkelte
-    /** Create a new {@link ArtifactImage} from a {@link ContainerBundle} (or an existing image). */
+    /** Create a new {@link GuestImage} from a {@link ContainerBundle} (or an existing image). */
     IMAGE;
 }
 

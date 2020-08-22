@@ -16,6 +16,7 @@
 package app.packed.artifact;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import app.packed.base.Attribute;
@@ -50,15 +51,22 @@ import app.packed.container.ContainerDescriptor;
  * artifact images. Artifact images can not be used as a part of other containers, for example, via
  * 
  * 
- * @apiNote In the future, if the Java language permits, {@link ArtifactImage} may become a {@code sealed} interface,
- *          which would prohibit subclassing except by explicitly permitted types.
+ * @apiNote In the future, if the Java language permits, {@link GuestImage} may become a {@code sealed} interface, which
+ *          would prohibit subclassing except by explicitly permitted types.
  * 
  */
 // isRoot??
 // Path -> / or /.dd.img
-public interface ArtifactImage<A> {
+public interface GuestImage<A> {
 
-    Attribute<Class<? extends Bundle<?>>> BUNDLE = Attribute.of(MethodHandles.lookup(), "bundle", new TypeLiteral<Class<? extends Bundle<?>>>() {});
+    static final Attribute<Class<? extends Bundle<?>>> BUNDLE_TYPE = Attribute.of(MethodHandles.lookup(), "bundle",
+            new TypeLiteral<Class<? extends Bundle<?>>>() {});
+
+    // Altsaa hvis den er null.. Giver det vel kun mening at man
+    // bruger et image til at execute???
+    default Optional<Component> artifact() {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Returns the name of this artifact.
@@ -74,6 +82,8 @@ public interface ArtifactImage<A> {
      */
     // Only if a name has been explicitly set? Or can we include "FooBar?" Ja det taenker jeg
     // Non-null
+    // Optional<Component> artifact(); <-- If the image defines an artifact
+    // rawArtifactType = artifact.get().attribute(ComponentProperties.SOURCE_TYPE);
     String artifactName();
 
     /**
@@ -128,6 +138,8 @@ public interface ArtifactImage<A> {
         throw new UnsupportedOperationException();
     }
 
+    Component image(); // or guest???
+
     /**
      * Returns a component stream consisting of all the components in this image.
      * 
@@ -138,7 +150,9 @@ public interface ArtifactImage<A> {
      */
     /// Hmmmm. Altsaa vi skal maaske heller have en descriptor plug
     // descriptor().stream()...
-    ComponentStream stream(ComponentStream.Option... options);
+    default ComponentStream stream(ComponentStream.Option... options) {
+        return image().stream(options);
+    }
 }
 
 /**

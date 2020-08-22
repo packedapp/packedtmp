@@ -19,7 +19,6 @@ import java.util.concurrent.CompletableFuture;
 
 import app.packed.base.Key;
 import app.packed.component.Component;
-import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.component.ComponentStream.Option;
 import app.packed.config.ConfigSite;
@@ -37,12 +36,12 @@ import app.packed.service.ServiceExtension;
  * <p>
  * Unless otherwise specified, implementations of this interface are safe for use by multiple concurrent threads.
  * 
- * @apiNote In the future, if the Java language permits, {@link ArtifactContext} may become a {@code sealed} interface,
+ * @apiNote In the future, if the Java language permits, {@link GuestContext} may become a {@code sealed} interface,
  *          which would prohibit subclassing except by explicitly permitted types.
  */
 // ArtifactContext does not extends ContainerContext??? Fordi ContainerContext er privat
 // til en container. Og en artifact er mere udefar
-public interface ArtifactContext /* extends System */ {
+public interface GuestContext {
 
     /**
      * Returns the config site of this artifact.
@@ -50,7 +49,7 @@ public interface ArtifactContext /* extends System */ {
      * @return the config site of this artifact
      */
     default ConfigSite configSite() {
-        return top().configSite();
+        return guest().configSite();
     }
 
     /**
@@ -66,30 +65,19 @@ public interface ArtifactContext /* extends System */ {
     }
 
     /**
+     * Returns the guest component of this artifact.
+     * 
+     * @return the guest component of this artifact
+     */
+    Component guest();
+
+    /**
      * Returns an injector with any services that the underlying container has exported. If the underlying does not export
      * any services or not does not use the {@link ServiceExtension} at all. The injector will be empty.
      * 
      * @return an injector for the underlying container
      */
     Injector injector();
-
-    /**
-     * Returns the name of the top component of this artifact.
-     * 
-     * @return the name of the top component of this artifact
-     */
-    default String name() {
-        return top().name();
-    }
-
-    /**
-     * Returns the path of the top component of this artifact.
-     * 
-     * @return the path of the top component of this artifact
-     */
-    default ComponentPath path() {
-        return top().path();
-    }
 
     // start() osv smider UnsupportedOperationException hvis LifeycleExtension ikke er installeret???
     // Naeh syntes bare man returnere oejeblikligt
@@ -106,6 +94,8 @@ public interface ArtifactContext /* extends System */ {
 
     // Noget med entrypoint?? Nej tror ikke vi har behov for at expose dett..
 
+    // TypeLiteral??? Maaske returnere execute() et object...
+
     // Optional<?>??? Maybe a ResultClass
     default Object result() {
         // awaitResult()...
@@ -113,8 +103,6 @@ public interface ArtifactContext /* extends System */ {
         // Ideen er lidt at vi kan vente paa det...
         return null;
     }
-
-    // TypeLiteral??? Maaske returnere execute() et object...
 
     // En Attribute????
     default Class<?> resultType() {
@@ -134,17 +122,7 @@ public interface ArtifactContext /* extends System */ {
     <T> CompletableFuture<T> stopAsync(T result, StopOption... options);
 
     default ComponentStream stream(Option... options) {
-        return top().stream(options);
-    }
-
-    /**
-     * Returns the top component of this artifact.
-     * 
-     * @return the top component of this artifact
-     */
-    // component(), root()
-    default Component top() {
-        throw new UnsupportedOperationException();
+        return guest().stream(options);
     }
 
     default <T> T use(Class<T> key) {
