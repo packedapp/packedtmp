@@ -15,7 +15,7 @@
  */
 package app.packed.component;
 
-import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.PackedWireableComponentDriver;
 
 /**
  *
@@ -42,6 +42,6 @@ public interface StatelessConfiguration extends ComponentConfiguration {
      * @return a driver
      */
     static <T> ClassSourcedDriver<StatelessConfiguration, T> driver() {
-        return PackedComponentDriver.StatelessComponentDriver.driver();
+        return PackedWireableComponentDriver.StatelessComponentDriver.driver();
     }
 }

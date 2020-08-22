@@ -26,7 +26,7 @@ import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import packed.internal.component.BundleConfiguration;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.PackedWireableComponentDriver;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.PackedRealm;
@@ -87,7 +87,7 @@ public final class PackedAssemblyContext implements AssemblyContext {
         return thread;
     }
 
-    public static <C, D> ComponentNodeConfiguration configure(ArtifactDriver<?> ad, PackedComponentDriver<D> driver, Function<D, C> factory,
+    public static <C, D> ComponentNodeConfiguration configure(ArtifactDriver<?> ad, PackedWireableComponentDriver<D> driver, Function<D, C> factory,
             CustomConfigurator<C> consumer, Wirelet... wirelets) {
         WireletPack wp = WireletPack.from(driver, wirelets);
         // Vil gerne parse nogle wirelets some det allerfoerste
@@ -116,7 +116,7 @@ public final class PackedAssemblyContext implements AssemblyContext {
     }
 
     public static ComponentNodeConfiguration assemble(ArtifactDriver<?> ad, PackedAssemblyContext assembly, Bundle<?> bundle, Wirelet... wirelets) {
-        PackedComponentDriver<?> driver = BundleConfiguration.driverOf(bundle);
+        PackedWireableComponentDriver<?> driver = BundleConfiguration.driverOf(bundle);
         WireletPack wp = WireletPack.from(driver, wirelets);
 
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);

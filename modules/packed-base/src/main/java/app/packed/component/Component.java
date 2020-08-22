@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.base.AttributeHolder;
+import app.packed.component.ComponentStream.Option;
 import app.packed.config.ConfigSite;
 
 /**
@@ -140,7 +141,7 @@ public interface Component extends AttributeHolder, NavigableSystem {
     // Tror vi laver options om til en klasse. Og saa har to metoder.
     // Og dropper varargs..
     default void traverse(Consumer<? super Component> action) {
-        throw new UnsupportedOperationException();
+        stream(Option.maxDepth(1)).forEach(action);
     }
 }
 

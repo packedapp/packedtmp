@@ -29,7 +29,7 @@ import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import app.packed.service.Injector;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.PackedWireableComponentDriver;
 import packed.internal.lifecycle.phases.ConstructionContext;
 import packed.internal.lifecycle.phases.PackedAssemblyContext;
 import packed.internal.util.ThrowableUtil;
@@ -94,7 +94,7 @@ public final class ArtifactDriver<A> {
     }
 
     public <C, D> A configure(WireableComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
-        ComponentNodeConfiguration node = PackedAssemblyContext.configure(this, (PackedComponentDriver<D>) driver, factory, consumer, wirelets);
+        ComponentNodeConfiguration node = PackedAssemblyContext.configure(this, (PackedWireableComponentDriver<D>) driver, factory, consumer, wirelets);
         GuestContext ac = ConstructionContext.constructArtifact(node, node.wirelets);
         return newArtifact(ac);
     }

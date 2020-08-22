@@ -33,7 +33,7 @@ import app.packed.inject.Provide;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.PackedComponentDriver.SingletonComponentDriver;
+import packed.internal.component.PackedWireableComponentDriver.SingletonComponentDriver;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.ServiceDependency;

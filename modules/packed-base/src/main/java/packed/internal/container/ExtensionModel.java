@@ -31,17 +31,18 @@ import java.util.stream.Collectors;
 
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfigurationContext;
+import app.packed.component.ComponentProperty;
 import app.packed.component.WireletHandler;
+import app.packed.container.ComponentLinked;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionMember;
 import app.packed.container.ExtensionSet;
 import app.packed.container.ExtensionSettings;
-import app.packed.container.ComponentLinked;
 import app.packed.container.InternalExtensionException;
 import app.packed.hook.OnHook;
 import app.packed.lifecycle.LifecycleContext;
-import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.PackedWireableComponentDriver;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
@@ -159,7 +160,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
     /** The default component name of the extension. */
     public final String defaultComponentName;
 
-    private final PackedComponentDriver<?> driver;
+    private final PackedWireableComponentDriver<?> driver;
 
     /**
      * Creates a new extension model from the specified builder.
@@ -184,7 +185,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         this.hooksNonActivating = hooksOnHookModel == null ? null : LazyExtensionActivationMap.findNonExtending(hooksOnHookModel);
     }
 
-    public PackedComponentDriver<?> driver() {
+    public PackedWireableComponentDriver<?> driver() {
         return driver;
     }
 
@@ -305,12 +306,12 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         return ThrowableUtil.throwReturn((Throwable) result);
     }
 
-    public static class ExtensionComponentDriver extends PackedComponentDriver<ExtensionConfiguration> {
+    public static class ExtensionComponentDriver extends PackedWireableComponentDriver<ExtensionConfiguration> {
 
         private final ExtensionModel model;
 
         public ExtensionComponentDriver(ExtensionModel ed) {
-            super(ROLE_EXTENSION);
+            super(ComponentProperty.EXTENSION);
             this.model = requireNonNull(ed);
         }
 

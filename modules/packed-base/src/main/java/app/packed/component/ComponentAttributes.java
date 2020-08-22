@@ -24,6 +24,8 @@ import app.packed.container.Extension;
 /**
  *
  */
+// Tilbage paa components??
+// Eller man kunne jo bruge et Lookup object for method handle???
 public class ComponentAttributes {
 
     // Save this on TypeLiteral??
@@ -37,5 +39,6 @@ public class ComponentAttributes {
     // When something is created from an image, it will have the image path set
     // What Aboun generation?? MAYBE an IMAGE_GENERATION as well?? Or maybe Image names are never reused???
     // A root image will have "/" or /.system.image if restartable...
+    // Maybe on GuestImage instead???
     public static final Attribute<ComponentPath> IMAGE_PATH = Attribute.of(MethodHandles.lookup(), "image-path", ComponentPath.class);
 }

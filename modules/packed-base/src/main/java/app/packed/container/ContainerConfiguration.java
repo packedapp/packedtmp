@@ -27,7 +27,7 @@ import app.packed.component.BeanConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
-import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
+import packed.internal.component.PackedWireableComponentDriver.ContainerComponentDriver;
 
 /**
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by

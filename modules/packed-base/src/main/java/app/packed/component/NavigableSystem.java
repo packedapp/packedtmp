@@ -21,6 +21,9 @@ import app.packed.artifact.App;
  *
  */
 // Sealed, Bundle, Component, ComponentHolder
+
+// ComponentSystem?? Det eneste der lidt afholder mig
+// Er det man consumer en bundle...
 public interface NavigableSystem {
 
     // Maybe on Component???

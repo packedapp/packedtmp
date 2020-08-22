@@ -66,7 +66,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     private final PackedAssemblyContext assembly;
 
     /** The driver used to create this component. */
-    private final PackedComponentDriver<?> driver;
+    private final PackedWireableComponentDriver<?> driver;
 
     /** The realm the component belongs to. */
     private final PackedRealm realm;
@@ -130,7 +130,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     private static final int NAME_GETSET_MASK = NAME_SET + NAME_GET + NAME_GET_PATH + NAME_CHILD_GOT_PATH;
 
-    public static ComponentNodeConfiguration newAssembly(PackedAssemblyContext assembly, PackedComponentDriver<?> driver, ConfigSite configSite,
+    public static ComponentNodeConfiguration newAssembly(PackedAssemblyContext assembly, PackedWireableComponentDriver<?> driver, ConfigSite configSite,
             PackedRealm realm, WireletPack wirelets) {
         return new ComponentNodeConfiguration(assembly, realm, driver, configSite, null, wirelets);
     }
@@ -140,7 +140,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         return parent;
     }
 
-    public ComponentNodeConfiguration newChild(PackedComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm, @Nullable WireletPack wp) {
+    public ComponentNodeConfiguration newChild(PackedWireableComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm, @Nullable WireletPack wp) {
         return new ComponentNodeConfiguration(assembly, realm, driver, configSite, this, wp);
     }
 
@@ -152,7 +152,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
      * @param parent
      *            the parent of the component
      */
-    private ComponentNodeConfiguration(PackedAssemblyContext assembly, PackedRealm realm, PackedComponentDriver<?> driver, ConfigSite configSite,
+    private ComponentNodeConfiguration(PackedAssemblyContext assembly, PackedRealm realm, PackedWireableComponentDriver<?> driver, ConfigSite configSite,
             @Nullable ComponentNodeConfiguration parent, @Nullable WireletPack wirelets) {
         this.assembly = requireNonNull(assembly);
         this.realm = requireNonNull(realm);
@@ -161,8 +161,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         this.depth = parent == null ? 0 : parent.depth + 1;
 
         this.driver = requireNonNull(driver);
-        this.pod = parent == null || driver.isGuest() ? new PackedGuestConfigurationContext(this) : parent.pod;
-        this.container = driver.isContainer() ? new PackedContainerRole(this) : parent.container;
+        this.pod = parent == null || driver.hasProperty(ComponentProperty.GUEST) ? new PackedGuestConfigurationContext(this) : parent.pod;
+        this.container = driver.hasProperty(ComponentProperty.CONTAINER) ? new PackedContainerRole(this) : parent.container;
 
         this.configSite = requireNonNull(configSite);
         this.wirelets = wirelets;
@@ -274,7 +274,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
      * 
      * @return the driver of this component
      */
-    public PackedComponentDriver<?> driver() {
+    public PackedWireableComponentDriver<?> driver() {
         return driver;
     }
 
@@ -408,7 +408,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         requireNonNull(bundle, "bundle is null");
 
         // Extract the driver from the bundle
-        PackedComponentDriver<?> driver = BundleConfiguration.driverOf(bundle);
+        PackedWireableComponentDriver<?> driver = BundleConfiguration.driverOf(bundle);
 
         // check if container
 
@@ -426,7 +426,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         // ConfigSite cs = ConfigSiteSupport.captureStackFrame(configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
         WireletPack wp = WireletPack.from(driver, wirelets);
         ConfigSite cs = ConfigSite.UNKNOWN;
-        ComponentNodeConfiguration p = driver().isExtension() ? parent : this;
+        ComponentNodeConfiguration p = driver().hasProperty(ComponentProperty.EXTENSION) ? parent : this;
         ComponentNodeConfiguration newNode = p.newChild(driver, cs, PackedRealm.fromBundle(bundle), wp);
 
         // Invoke Bundle::configure
@@ -439,7 +439,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     @Override
     public <C> C wire(WireableComponentDriver<C> driver, Wirelet... wirelets) {
         requireNonNull(driver, "driver is null");
-        PackedComponentDriver<C> d = (PackedComponentDriver<C>) driver;
+        PackedWireableComponentDriver<C> d = (PackedWireableComponentDriver<C>) driver;
         WireletPack wp = WireletPack.from(d, wirelets);
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         ComponentNodeConfiguration conf = newChild(d, configSite, realm, wp);

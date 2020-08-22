@@ -21,10 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.base.Nullable;
+import app.packed.component.ComponentProperty;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.PackedWireableComponentDriver;
 
 /** A holder of wirelets and wirelet pipelines. */
 public final class WireletPack {
@@ -111,8 +112,8 @@ public final class WireletPack {
     }
 
     @Nullable
-    public static WireletPack from(PackedComponentDriver<?> driver, Wirelet... wirelets) {
-        if (driver.isContainer()) {
+    public static WireletPack from(PackedWireableComponentDriver<?> driver, Wirelet... wirelets) {
+        if (driver.hasProperty(ComponentProperty.CONTAINER)) {
             return create(wirelets);
         }
         return null;

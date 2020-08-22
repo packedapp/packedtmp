@@ -18,6 +18,7 @@ package app.packed.component;
 /**
  *
  */
-public enum WiringStrength {
+// Nahhh.
+enum WiringStrength {
     WEAK, STRONG;
 }

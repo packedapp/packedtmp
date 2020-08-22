@@ -56,19 +56,19 @@ public final class PackedComponentRelation implements ComponentRelation {
 
     /** {@inheritDoc} */
     @Override
-    public boolean hasSameContainer() {
+    public boolean inSameContainer() {
         throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean hasSameSystem() {
+    public boolean inSameSystem() {
         return true;
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean hasSameGuest() {
+    public boolean inSameGuest() {
         return true;
     }
 

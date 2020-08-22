@@ -58,6 +58,8 @@ import java.util.Optional;
 
 // A ComponentRelation is directed
 // Can we have attributes??
+
+// if (rel.inSameContainer()) 
 public interface ComponentRelation extends Iterable<Component> {
 
     /**
@@ -72,7 +74,7 @@ public interface ComponentRelation extends Iterable<Component> {
      * 
      * @return whether or not the two components are in the same container
      */
-    boolean hasSameContainer();
+    boolean inSameContainer();
 
     /**
      * Whether or not {@link #source()} and {@link #target()} belongs to the same guest. Or in other words whether or not
@@ -80,14 +82,23 @@ public interface ComponentRelation extends Iterable<Component> {
      * 
      * @return whether or not source and target belongs to the same guest
      */
-    boolean hasSameGuest();
+    boolean inSameGuest();
 
     /**
      * Returns whether or not the two components are in the same system.
      * 
      * @return whether or not the two components are in the same system
      */
-    boolean hasSameSystem();
+    boolean inSameSystem();
+
+    // Just here because it might be easier to remember...
+    default boolean isStronglyConnected() {
+        return inSameGuest();
+    }
+
+    default boolean isWeaklyConnected() {
+        return !inSameGuest();
+    }
 
     /**
      * The lowest common ancestor for the two components. Or {@link Optional#empty()} if not in the same system.

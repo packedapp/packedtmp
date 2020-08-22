@@ -24,7 +24,7 @@ package app.packed.component;
 // Og hvorfor kan Component ikke have det???
 
 // Forskellen er lidt at 
-public interface ComponentSystem {
+public interface OldComponentSystem {
 
     // origin/base/source
     Component origin();

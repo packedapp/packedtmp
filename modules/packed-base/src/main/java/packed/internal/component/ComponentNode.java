@@ -101,7 +101,7 @@ public final class ComponentNode implements Component {
         }
 
         // Initialize Container
-        if (configuration.driver().isContainer()) {
+        if (configuration.driver().hasProperty(ComponentProperty.CONTAINER)) {
             // I think this injector is only available for the top of an assembly
             PackedContainerRole container = configuration.container;
             Injector i = null;
@@ -127,7 +127,7 @@ public final class ComponentNode implements Component {
             LinkedHashMap<String, ComponentNode> result = new LinkedHashMap<>(configuration.children.size());
 
             for (ComponentNodeConfiguration cc = configuration.firstChild; cc != null; cc = cc.nextSibling) {
-                if (cc.driver().hasRuntimeRepresentation()) {
+                if (!cc.driver().hasProperty(ComponentProperty.EXTENSION)) {
                     ComponentNode ac = new ComponentNode(this, cc, ic);
                     result.put(ac.name(), ac);
                 }
@@ -281,6 +281,7 @@ public final class ComponentNode implements Component {
     /**
      * @param path
      */
+    @Override
     public Component resolve(CharSequence path) {
         Component c = findComponent(path);
         if (c == null) {

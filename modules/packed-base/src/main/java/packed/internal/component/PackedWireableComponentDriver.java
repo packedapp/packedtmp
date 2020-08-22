@@ -18,6 +18,7 @@ package packed.internal.component;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.component.BeanConfiguration;
@@ -38,7 +39,7 @@ import packed.internal.inject.factory.FactoryHandle;
 /**
  *
  */
-public abstract class PackedComponentDriver<C> implements WireableComponentDriver<C> {
+public abstract class PackedWireableComponentDriver<C> implements WireableComponentDriver<C> {
 
     public static final int ROLE_CONTAINER = 1 << ComponentProperty.CONTAINER.ordinal();
     public static final int ROLE_EXTENSION = 1 << ComponentProperty.EXTENSION.ordinal();
@@ -51,24 +52,16 @@ public abstract class PackedComponentDriver<C> implements WireableComponentDrive
 
     final int properties;
 
-    public static void main(String[] args) {
-        System.out.println(ROLE_EXTENSION);
-        System.out.println(ROLE_CONTAINER);
-        System.out.println(new ComponentPropertySet(ROLE_CONTAINER));
-    }
-
-    protected PackedComponentDriver(int properties) {
-        this.properties = properties;
-    }
-
-    protected PackedComponentDriver(ComponentProperty... properties) {
+    protected PackedWireableComponentDriver(ComponentProperty... properties) {
         this.properties = ComponentPropertySet.setProperty(0, properties);
     }
 
-    public abstract C toConfiguration(ComponentConfigurationContext cnc);
+    protected PackedWireableComponentDriver(int properties) {
+        this.properties = properties;
+    }
 
     public String defaultName(PackedRealm realm) {
-        if (isContainer()) {
+        if (hasProperty(ComponentProperty.CONTAINER)) {
             // I think try and move some of this to ComponentNameWirelet
             @Nullable
             Class<?> source = realm.type();
@@ -95,28 +88,28 @@ public abstract class PackedComponentDriver<C> implements WireableComponentDrive
         return (properties & role) != 0;
     }
 
-    public final boolean hasRuntimeRepresentation() {
-        return !isExtension();
-    }
-
     /**
      * Returns whether or not this driver creates a component with container role.
      * 
      * @return whether or not this driver creates a component with container role
      */
     public final boolean isContainer() {
-        return hasRole(ROLE_CONTAINER);
-    }
-
-    public final boolean isExtension() {
-        return hasRole(ROLE_EXTENSION);
+        return hasProperty(ComponentProperty.CONTAINER);
     }
 
     public final boolean isGuest() {
         return hasRole(ROLE_GUEST);
     }
 
-    public static class ContainerComponentDriver extends PackedComponentDriver<ContainerConfiguration> {
+    /** {@inheritDoc} */
+    @Override
+    public Set<ComponentProperty> properties() {
+        return new ComponentPropertySet(properties);
+    }
+
+    public abstract C toConfiguration(ComponentConfigurationContext cnc);
+
+    public static class ContainerComponentDriver extends PackedWireableComponentDriver<ContainerConfiguration> {
 
         public static ContainerComponentDriver INSTANCE = new ContainerComponentDriver();
 
@@ -130,32 +123,32 @@ public abstract class PackedComponentDriver<C> implements WireableComponentDrive
         }
     }
 
-    public static class SingletonComponentDriver<T> extends PackedComponentDriver<BeanConfiguration<T>> {
-        public final ComponentModel model;
+    public static class SingletonComponentDriver<T> extends PackedWireableComponentDriver<BeanConfiguration<T>> {
         @Nullable
         public final BaseFactory<?> factory;
-
         @Nullable
         public final T instance;
 
+        public final ComponentModel model;
+
         public SingletonComponentDriver(PackedRealm realm, Factory<?> factory) {
-            super(PackedComponentDriver.ROLE_SINGLETON);
+            super(PackedWireableComponentDriver.ROLE_SINGLETON);
             requireNonNull(factory, "factory is null");
             this.model = realm.componentModelOf(factory.rawType());
             this.factory = (@Nullable BaseFactory<?>) factory;
             this.instance = null;
         }
 
-        @Override
-        public String defaultName(PackedRealm realm) {
-            return model.defaultPrefix();
-        }
-
         public SingletonComponentDriver(PackedRealm realm, T instance) {
-            super(PackedComponentDriver.ROLE_SINGLETON);
+            super(PackedWireableComponentDriver.ROLE_SINGLETON);
             this.instance = requireNonNull(instance, "instance is null");
             this.model = realm.componentModelOf(instance.getClass());
             this.factory = null;
+        }
+
+        @Override
+        public String defaultName(PackedRealm realm) {
+            return model.defaultPrefix();
         }
 
         public MethodHandle fromFactory(ComponentNodeConfiguration context) {
@@ -186,11 +179,11 @@ public abstract class PackedComponentDriver<C> implements WireableComponentDrive
         }
     }
 
-    public static class StatelessComponentDriver extends PackedComponentDriver<StatelessConfiguration> {
+    public static class StatelessComponentDriver extends PackedWireableComponentDriver<StatelessConfiguration> {
         public final ComponentModel model;
 
         private StatelessComponentDriver(PackedRealm lookup, Class<?> implementation) {
-            super(PackedComponentDriver.ROLE_STATELESS);
+            super(PackedWireableComponentDriver.ROLE_STATELESS);
             this.model = lookup.componentModelOf(requireNonNull(implementation, "implementation is null"));
             requireNonNull(implementation, "implementation is null");
         }
@@ -212,7 +205,7 @@ public abstract class PackedComponentDriver<C> implements WireableComponentDrive
 
                 @Override
                 public WireableComponentDriver<StatelessConfiguration> bindToClass(PackedRealm realm, Class<T> implementation) {
-                    return new PackedComponentDriver.StatelessComponentDriver(realm, implementation);
+                    return new PackedWireableComponentDriver.StatelessComponentDriver(realm, implementation);
                 }
             };
         }

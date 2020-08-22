@@ -49,7 +49,7 @@ public final class RuntimeComponentModel {
     /** Any extension the component belongs to. */ // Generic Extension Table?
     final Optional<Class<? extends Extension>> extension;
 
-    final PackedComponentDriver<?> driver; // tmp
+    final PackedWireableComponentDriver<?> driver; // tmp
 
     final int properties;
 

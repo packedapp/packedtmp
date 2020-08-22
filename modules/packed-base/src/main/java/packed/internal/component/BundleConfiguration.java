@@ -80,7 +80,7 @@ public final class BundleConfiguration {
      *            the bundle to extract a component driver from
      * @return the specified bundle's component driver
      */
-    public static PackedComponentDriver<?> driverOf(Bundle<?> bundle) {
-        return (PackedComponentDriver<?>) VH_BUNDLE_DRIVER.get(bundle);
+    public static PackedWireableComponentDriver<?> driverOf(Bundle<?> bundle) {
+        return (PackedWireableComponentDriver<?>) VH_BUNDLE_DRIVER.get(bundle);
     }
 }
