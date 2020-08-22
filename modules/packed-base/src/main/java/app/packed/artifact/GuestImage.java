@@ -23,8 +23,7 @@ import app.packed.base.Attribute;
 import app.packed.base.TypeLiteral;
 import app.packed.component.Bundle;
 import app.packed.component.Component;
-import app.packed.component.ComponentPath;
-import app.packed.component.ComponentStream;
+import app.packed.component.ComponentHolder;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundle;
@@ -57,7 +56,7 @@ import app.packed.container.ContainerDescriptor;
  */
 // isRoot??
 // Path -> / or /.dd.img
-public interface GuestImage<A> {
+public interface GuestImage<A> extends ComponentHolder {
 
     static final Attribute<Class<? extends Bundle<?>>> BUNDLE_TYPE = Attribute.of(MethodHandles.lookup(), "bundle",
             new TypeLiteral<Class<? extends Bundle<?>>>() {});
@@ -69,29 +68,13 @@ public interface GuestImage<A> {
     }
 
     /**
-     * Returns the name of this artifact.
-     * <p>
-     * The returned name is always identical to the name of the artifact's root container.
-     * <p>
-     * If no name is explicitly set when creating the artifact, the runtime will generate a name that guaranteed to be
-     * unique among any of the artifact'ssiblings.**@return the name of this artifact
-     * <p>
-     * The name can be overridden by using {@link Wirelet#named(String)} when instantiating the image.
-     * 
-     * @return the name
-     */
-    // Only if a name has been explicitly set? Or can we include "FooBar?" Ja det taenker jeg
-    // Non-null
-    // Optional<Component> artifact(); <-- If the image defines an artifact
-    // rawArtifactType = artifact.get().attribute(ComponentProperties.SOURCE_TYPE);
-    String artifactName();
-
-    /**
      * Returns the configuration site of this image.
      * 
      * @return the configuration site of this image
      */
-    ConfigSite configSite();
+    default ConfigSite configSite() {
+        return component().configSite();
+    }
 
     /**
      * Creates a new artifact using this image.
@@ -118,11 +101,12 @@ public interface GuestImage<A> {
     ContainerDescriptor descriptor();
 
     /**
-     * Returns the path of the image.
+     * Returns the component representation of this image.
      * 
-     * @return the path of the image
+     * @return the component representation of this image
      */
-    ComponentPath path();
+    @Override
+    Component component();
 
     /**
      * Returns the raw type of what the image creates
@@ -137,23 +121,26 @@ public interface GuestImage<A> {
     default CompletableFuture<A> startAsync(Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
-
-    Component image(); // or guest???
-
-    /**
-     * Returns a component stream consisting of all the components in this image.
-     * 
-     * @param options
-     *            stream options
-     * @return the component stream
-     * @see Component#stream(app.packed.component.ComponentStream.Option...)
-     */
-    /// Hmmmm. Altsaa vi skal maaske heller have en descriptor plug
-    // descriptor().stream()...
-    default ComponentStream stream(ComponentStream.Option... options) {
-        return image().stream(options);
-    }
 }
+//
+///**
+// * Returns the path of the image.
+// * 
+// * @return the path of the image
+// */
+//ComponentPath path();
+/**
+ * Returns the name of this artifact.
+ * <p>
+ * The returned name is always identical to the name of the artifact's root container.
+ * <p>
+ * If no name is explicitly set when creating the artifact, the runtime will generate a name that guaranteed to be
+ * unique among any of the artifact'ssiblings.**@return the name of this artifact
+ * <p>
+ * The name can be overridden by using {@link Wirelet#named(String)} when instantiating the image.
+ * 
+ * @return the name
+ */
 
 /**
  * Returns the type of bundle that was used to create this image.

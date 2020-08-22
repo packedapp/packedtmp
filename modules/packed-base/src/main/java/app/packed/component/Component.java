@@ -27,7 +27,7 @@ import app.packed.config.ConfigSite;
  * A component is the basic entity in Packed. Much like everything is a is one of the defining features of Unix, and its
  * derivatives. In packed everything is a component.
  */
-public interface Component extends AttributeHolder {
+public interface Component extends AttributeHolder, NavigableSystem {
 
     /**
      * Returns an unmodifiable view of all of this component's children.
@@ -103,6 +103,27 @@ public interface Component extends AttributeHolder {
      * @return a component stream consisting of this component and all of its descendants in any order
      */
     ComponentStream stream(ComponentStream.Option... options);
+
+    // Now that we have parents...
+    // add Optional<Component> tryResolve(CharSequence path);
+    Component resolve(CharSequence path);
+
+    default Optional<Component> tryResolve(CharSequence path) {
+        throw new UnsupportedOperationException();
+    }
+
+    default Component viewAs(Object options) {
+        // F.eks. tage et system. Og saa sige vi kun vil
+        // se paa den aktuelle container
+
+        // Ideen er lidt at vi kan taege en component
+        // Og f.eks. lave den om til en rod...
+        // IDK. F.eks. hvis jeg har guests app.
+        // Saa vil jeg gerne kunne sige til brugere...
+        // Her er en clean Guest... Og du kan ikke se hvad
+        // der sker internt...
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * 

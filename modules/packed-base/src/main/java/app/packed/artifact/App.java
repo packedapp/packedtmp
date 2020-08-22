@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import app.packed.base.Key;
 import app.packed.component.Bundle;
 import app.packed.component.Component;
+import app.packed.component.ComponentHolder;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.component.ComponentStream.Option;
@@ -35,7 +36,7 @@ import app.packed.service.ServiceExtension;
  * <p>
  * Applications are low overhead not using more then a few kilobytes.
  */
-public interface App extends AutoCloseable {
+public interface App extends AutoCloseable, ComponentHolder {
 
     /**
      * Closes the app (synchronously). Calling this method is equivalent to calling {@code app.stop()}, but this method is
@@ -108,6 +109,7 @@ public interface App extends AutoCloseable {
      */
     ComponentStream stream();
 
+    @Override
     ComponentStream stream(ComponentStream.Option... options);
 
     /**

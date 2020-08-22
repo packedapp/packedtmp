@@ -42,13 +42,13 @@ final class PackedApp implements App {
     /** {@inheritDoc} */
     @Override
     public String name() {
-        return context.guest().name();
+        return context.component().name();
     }
 
     /** {@inheritDoc} */
     @Override
     public ComponentPath path() {
-        return context.guest().path();
+        return context.component().path();
     }
 
     /** {@inheritDoc} */
@@ -97,6 +97,12 @@ final class PackedApp implements App {
     /** {@inheritDoc} */
     @Override
     public Component useComponent(CharSequence path) {
-        return context.useComponent(path);
+        return context.resolve(path);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Component component() {
+        return context.component();
     }
 }

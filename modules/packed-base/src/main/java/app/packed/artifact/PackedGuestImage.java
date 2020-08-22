@@ -19,9 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.component.Bundle;
 import app.packed.component.Component;
-import app.packed.component.ComponentPath;
 import app.packed.component.Wirelet;
-import app.packed.config.ConfigSite;
 import app.packed.container.ContainerDescriptor;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletPack;
@@ -50,23 +48,6 @@ final class PackedGuestImage<A> implements GuestImage<A> {
     private PackedGuestImage(ComponentNodeConfiguration node, ArtifactDriver<A> driver) {
         this.node = requireNonNull(node);
         this.driver = driver;
-        // this.bundleType = (Class<? extends Bundle<?>>) requireNonNull(bundleType);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String artifactName() {
-        // Ahhh det er
-        // Only if a name has been explicitly set?
-        // Or can we include "FooBar?"
-        // Return Optional<String>????
-        return node.getName();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ConfigSite configSite() {
-        return node.configSite();
     }
 
     /** {@inheritDoc} */
@@ -86,19 +67,12 @@ final class PackedGuestImage<A> implements GuestImage<A> {
 
     /** {@inheritDoc} */
     @Override
-    public Component image() {
+    public Component component() {
         return node.adaptToComponent();
     }
 
     public GuestContext newContext(Wirelet... wirelets) {
         return ConstructionContext.constructArtifact(node, WireletPack.forImage(node, wirelets));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentPath path() {
-        // Hmm
-        return ComponentPath.ROOT;
     }
 
     /** {@inheritDoc} */

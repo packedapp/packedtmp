@@ -281,7 +281,7 @@ public final class ComponentNode implements Component {
     /**
      * @param path
      */
-    public Component useComponent(CharSequence path) {
+    public Component resolve(CharSequence path) {
         Component c = findComponent(path);
         if (c == null) {
             // Maybe try an match with some fuzzy logic, if children is a resonable size)

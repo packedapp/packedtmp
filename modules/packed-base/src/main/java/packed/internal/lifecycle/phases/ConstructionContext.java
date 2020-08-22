@@ -112,13 +112,7 @@ public final class ConstructionContext {
 
         /** {@inheritDoc} */
         @Override
-        public Component useComponent(CharSequence path) {
-            return node.useComponent(path);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Component guest() {
+        public Component component() {
             return node;
         }
     }

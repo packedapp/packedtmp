@@ -19,10 +19,8 @@ import java.util.concurrent.CompletableFuture;
 
 import app.packed.base.Key;
 import app.packed.component.Component;
-import app.packed.component.ComponentStream;
-import app.packed.component.ComponentStream.Option;
+import app.packed.component.ComponentHolder;
 import app.packed.config.ConfigSite;
-import app.packed.container.ExtensionSet;
 import app.packed.lifecycleold.StopOption;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
@@ -41,7 +39,8 @@ import app.packed.service.ServiceExtension;
  */
 // ArtifactContext does not extends ContainerContext??? Fordi ContainerContext er privat
 // til en container. Og en artifact er mere udefar
-public interface GuestContext {
+
+public interface GuestContext extends ComponentHolder {
 
     /**
      * Returns the config site of this artifact.
@@ -49,27 +48,16 @@ public interface GuestContext {
      * @return the config site of this artifact
      */
     default ConfigSite configSite() {
-        return guest().configSite();
+        return component().configSite();
     }
 
     /**
-     * Returns a set of all the extension that are available to the top component. If the top component is a container it is
-     * all the extensions that are registered with container when it is assembled. If it is not a container. The set
-     * contains all extensions that are registered with the container to which the top container belongs to.
+     * Returns the component representation of this guest.
      * 
-     * @return the extensions that are used
+     * @return the component representation of this guest
      */
-    // Maaske en attribute istedet for...
-    default ExtensionSet extensions() {
-        return ExtensionSet.empty();
-    }
-
-    /**
-     * Returns the guest component of this artifact.
-     * 
-     * @return the guest component of this artifact
-     */
-    Component guest();
+    @Override
+    Component component();
 
     /**
      * Returns an injector with any services that the underlying container has exported. If the underlying does not export
@@ -121,10 +109,6 @@ public interface GuestContext {
 
     <T> CompletableFuture<T> stopAsync(T result, StopOption... options);
 
-    default ComponentStream stream(Option... options) {
-        return guest().stream(options);
-    }
-
     default <T> T use(Class<T> key) {
         return injector().use(key);
     }
@@ -158,10 +142,23 @@ public interface GuestContext {
     default <T> T use(Key<T> key) {
         return injector().use(key);
     }
-
-    // Usecase???
-    Component useComponent(CharSequence path);
 }
+
+//
+///**
+// * Returns a set of all the extension that are available to the top component. If the top component is a container it is
+// * all the extensions that are registered with container when it is assembled. If it is not a container. The set
+// * contains all extensions that are registered with the container to which the top container belongs to.
+// * 
+// * @return the extensions that are used
+// */
+//// Maaske en attribute istedet for..
+//// Altsaa extensions har jo noget med en container at goere og ikke en guest...
+//// Du maa lede recursivt op...
+//default ExtensionSet extensions() {
+//    return ExtensionSet.empty();
+//}
+
 //// Det er jo i virkeligheden ContainerContext uden lifecycle... + lidt ekstra
 //
 //// Er det tilgaengelig paa runtime?????? Nej det syntes jeg ikke...

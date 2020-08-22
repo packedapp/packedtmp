@@ -273,6 +273,10 @@ public interface ComponentStream extends AttributeStream<Component> {
             return PackedComponentStreamOption.INCLUDE_EXTENSION_OPTION;
         }
 
+        public static ComponentStream.Option maxDepth(int depth) {
+            return PackedComponentStreamOption.INCLUDE_EXTENSION_OPTION;
+        }
+
         /**
          * Include components that belongs to any of the specified extension types is non-empty and contained in the specified
          * varargs).

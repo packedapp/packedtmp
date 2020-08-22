@@ -31,7 +31,7 @@ import packed.internal.component.BundleConfiguration;
  * @param <C>
  *            the underlying configuration this bundle wraps
  */
-public abstract class Bundle<C> {
+public abstract class Bundle<C> implements NavigableSystem {
 
     /**
      * The configuration of this bundle. This field is "magically" set via a var handle from {@link BundleConfiguration}.

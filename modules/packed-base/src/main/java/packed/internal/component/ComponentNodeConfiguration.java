@@ -575,6 +575,12 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         public Set<ComponentProperty> properties() {
             return new ComponentPropertySet(conf.properties);
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public Component resolve(CharSequence path) {
+            throw new UnsupportedOperationException();
+        }
     }
 
     @Override
