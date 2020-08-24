@@ -27,7 +27,7 @@
     <root.dir>${project.basedir}/..</root.dir>
     
     <!-- Test Dependencies Versions -->
-    <version.test.assertj>3.16.1</version.test.assertj>
+    <version.test.assertj>3.17.0</version.test.assertj>
     <version.test.junit>5.6.2</version.test.junit>
     <version.test.jmh>1.25</version.test.jmh>
     
