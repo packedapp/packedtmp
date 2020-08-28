@@ -24,8 +24,8 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.artifact.App;
-import app.packed.artifact.GuestContext;
-import app.packed.artifact.ArtifactDriver;
+import app.packed.artifact.ShellContext;
+import app.packed.artifact.ShellDriver;
 import app.packed.artifact.GuestImage;
 import app.packed.base.Key;
 import app.packed.component.Bundle;
@@ -121,12 +121,12 @@ public interface Injector {
 
     /**
      * Returns the service contract of this injector. The returned contract will only have
-     * {@link ServiceContract#services()} filled out.
+     * {@link ServiceContract#provides()} filled out.
      * 
      * @return the service contract of this injector
      */
     default ServiceContract contract() {
-        return ServiceContract.newContract(c -> services().forEach(s -> c.addProvides(s.key())));
+        return ServiceContract.newContract(c -> services().forEach(s -> c.provides(s.key())));
     }
 
     /**
@@ -305,7 +305,7 @@ public interface Injector {
         return driver().newImage(bundle, wirelets);
     }
 
-    static ArtifactDriver<Injector> driver() {
+    static ShellDriver<Injector> driver() {
         return InjectorArtifactHelper.DRIVER;
     }
 
@@ -353,11 +353,11 @@ public interface Injector {
 /** An artifact driver for creating {@link App} instances. */
 final class InjectorArtifactHelper {
 
-    static final MethodHandle CONV = LookupUtil.mhStaticSelf(MethodHandles.lookup(), "convert", Injector.class, GuestContext.class);
+    static final MethodHandle CONV = LookupUtil.mhStaticSelf(MethodHandles.lookup(), "convert", Injector.class, ShellContext.class);
 
-    static final ArtifactDriver<Injector> DRIVER = ArtifactDriver.of(MethodHandles.lookup(), Injector.class, CONV);
+    static final ShellDriver<Injector> DRIVER = ShellDriver.of(MethodHandles.lookup(), Injector.class, CONV);
 
-    static Injector convert(GuestContext container) {
+    static Injector convert(ShellContext container) {
         return ((ConstructionContext.PackedGuestContext) container).injector();
     }
 }

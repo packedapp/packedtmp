@@ -51,13 +51,20 @@ public interface Component extends AttributeHolder, NavigableSystem {
      */
     int depth();
 
-    boolean hasProperty(ComponentProperty property);
+    boolean hasModifier(ComponentModifier property);
+
+    /**
+     * Returns an immutable set containing all the modifiers of this component.
+     * 
+     * @return an immutable set containing all the modifiers of this component
+     */
+    Set<ComponentModifier> modifiers();
 
     /**
      * Returns the name of this component.
      * <p>
      * If no name is explicitly set by the user when configuring the component. The runtime will automatically generate a
-     * unique name (among other components with the same parent).
+     * name that is unique among other components with the same parent.
      *
      * @return the name of this component
      */
@@ -77,23 +84,18 @@ public interface Component extends AttributeHolder, NavigableSystem {
      */
     ComponentPath path();
 
-    // Syntes ikke det skal vaere en attribute
-    // stream.hasProperty()..
     /**
-     * Returns a set containing all the properties of this component.
-     * 
-     * @return a set containing all the properties of this component
-     */
-    Set<ComponentProperty> properties();
-
-    /**
-     * Returns the relation from this component to the specified component.
+     * Computes the relation from this component to the specified component.
      * 
      * @param other
      *            the other component
      * @return the relation to the other component
      */
     ComponentRelation relationTo(Component other);
+
+    // Now that we have parents...
+    // add Optional<Component> tryResolve(CharSequence path);
+    Component resolve(CharSequence path);
 
     /**
      * Returns a stream consisting of this component and all of its descendants in any order.
@@ -105,25 +107,18 @@ public interface Component extends AttributeHolder, NavigableSystem {
      */
     ComponentStream stream(ComponentStream.Option... options);
 
-    // Now that we have parents...
-    // add Optional<Component> tryResolve(CharSequence path);
-    Component resolve(CharSequence path);
-
-    default Optional<Component> tryResolve(CharSequence path) {
-        throw new UnsupportedOperationException();
-    }
-
-    default Component viewAs(Object options) {
-        // F.eks. tage et system. Og saa sige vi kun vil
-        // se paa den aktuelle container
-
-        // Ideen er lidt at vi kan taege en component
-        // Og f.eks. lave den om til en rod...
-        // IDK. F.eks. hvis jeg har guests app.
-        // Saa vil jeg gerne kunne sige til brugere...
-        // Her er en clean Guest... Og du kan ikke se hvad
-        // der sker internt...
-        throw new UnsupportedOperationException();
+    /**
+     * Returns the system component. The system component always is always the single component having the
+     * {@link ComponentModifier#SYSTEM} modifier in a component system.
+     * 
+     * @return the system component
+     */
+    default Component system() {
+        Optional<Component> p = parent();
+        while (!p.isEmpty()) {
+            p = p.get().parent();
+        }
+        return this;
     }
 
     /**
@@ -142,6 +137,24 @@ public interface Component extends AttributeHolder, NavigableSystem {
     // Og dropper varargs..
     default void traverse(Consumer<? super Component> action) {
         stream(Option.maxDepth(1)).forEach(action);
+    }
+
+    default Optional<Component> tryResolve(CharSequence path) {
+        throw new UnsupportedOperationException();
+    }
+
+    // The returned component is always a system component
+    default Component viewAs(Object options) {
+        // F.eks. tage et system. Og saa sige vi kun vil
+        // se paa den aktuelle container
+
+        // Ideen er lidt at vi kan taege en component
+        // Og f.eks. lave den om til en rod...
+        // IDK. F.eks. hvis jeg har guests app.
+        // Saa vil jeg gerne kunne sige til brugere...
+        // Her er en clean Guest... Og du kan ikke se hvad
+        // der sker internt...
+        throw new UnsupportedOperationException();
     }
 }
 

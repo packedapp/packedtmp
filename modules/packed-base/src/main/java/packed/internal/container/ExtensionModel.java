@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfigurationContext;
-import app.packed.component.ComponentProperty;
+import app.packed.component.ComponentModifier;
 import app.packed.component.WireletHandler;
 import app.packed.container.ComponentLinked;
 import app.packed.container.Extension;
@@ -49,8 +49,8 @@ import packed.internal.hook.OnHookModel;
 import packed.internal.invoke.MethodHandleBuilder;
 import packed.internal.invoke.OpenClass;
 import packed.internal.lifecycle.LifecycleDefinition;
-import packed.internal.sidecar.SidecarModel;
-import packed.internal.sidecar.SidecarTypeMeta;
+import packed.internal.sidecar.old.SidecarModel;
+import packed.internal.sidecar.old.SidecarTypeMeta;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 
@@ -70,6 +70,10 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
             } else if (!Extension.class.isAssignableFrom(type)) {
                 throw new IllegalArgumentException(
                         "The specified type '" + StringFormatter.format(type) + "' must extend '" + StringFormatter.format(Extension.class) + "'");
+            }
+            if (type.isAnnotationPresent(ExtensionMember.class)) {
+                throw new IllegalArgumentException("An extension is trivially member of itself, so cannot use @" + ExtensionMember.class.getSimpleName()
+                        + " annotation, for  '" + StringFormatter.format(type));
             }
             return Loader.load((Class<? extends Extension>) type, null);
         }
@@ -311,7 +315,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         private final ExtensionModel model;
 
         public ExtensionComponentDriver(ExtensionModel ed) {
-            super(ComponentProperty.EXTENSION);
+            super(ComponentModifier.EXTENSION);
             this.model = requireNonNull(ed);
         }
 

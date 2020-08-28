@@ -51,7 +51,7 @@ public class ProvisionContractTest {
         ServiceContract ic = c.use(ServiceContract.class);
         assertThat(ic).isNotNull();
         assertThat(ic).isSameAs(ServiceContract.EMPTY);
-        assertThat(ic.services()).isEmpty();
+        assertThat(ic.provides()).isEmpty();
         assertThat(ic.optional()).isEmpty();
         assertThat(ic.requires()).isEmpty();
     }
@@ -70,7 +70,7 @@ public class ProvisionContractTest {
         });
 
         ServiceContract ic = c.use(ServiceContract.class);
-        assertThat(ic.services()).containsExactly(Key.of(A.class));
+        assertThat(ic.provides()).containsExactly(Key.of(A.class));
         assertThat(ic.optional()).isEmpty();
         assertThat(ic.requires()).isEmpty();
     }
@@ -90,7 +90,7 @@ public class ProvisionContractTest {
         ServiceContract ic = c.use(ServiceContract.class);
         assertThat(ic.requires()).containsExactly(Key.of(A.class));
         assertThat(ic.optional()).isEmpty();
-        assertThat(ic.services()).isEmpty();
+        assertThat(ic.provides()).isEmpty();
     }
 
     @Test
@@ -107,7 +107,7 @@ public class ProvisionContractTest {
 
         ServiceContract ic = c.use(ServiceContract.class);
         assertThat(ic.requires()).isEmpty();
-        assertThat(ic.services()).isEmpty();
+        assertThat(ic.provides()).isEmpty();
         assertThat(ic.optional()).containsExactly(Key.of(A.class));
     }
 
@@ -128,7 +128,7 @@ public class ProvisionContractTest {
         ServiceContract ic = c.use(ServiceContract.class);
         assertThat(ic.requires()).containsExactly(Key.of(A.class));
         assertThat(ic.optional()).isEmpty();
-        assertThat(ic.services()).isEmpty();
+        assertThat(ic.provides()).isEmpty();
     }
 
     @Test
@@ -148,6 +148,6 @@ public class ProvisionContractTest {
 
         assertThat(ic.optional()).containsExactly(Key.of(A.class));
         assertThat(ic.requires()).containsExactly(Key.of(B.class));
-        assertThat(ic.services()).containsExactly(Key.of(C.class));
+        assertThat(ic.provides()).containsExactly(Key.of(C.class));
     }
 }

@@ -20,7 +20,7 @@ package app.packed.component;
  */
 public interface ComponentHolder extends NavigableSystem {
 
-    Component component();
+    Component component();// root/ system
 
     // Det ene problem er alle de artifact der nu arver alle de her ting..
 

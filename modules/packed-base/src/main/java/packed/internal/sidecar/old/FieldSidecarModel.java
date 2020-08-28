@@ -13,26 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.sidecar;
+package packed.internal.sidecar.old;
 
-import app.packed.sidecar.MethodSidecar;
 import packed.internal.lifecycle.LifecycleDefinition;
 
-/**
- *
- */
-// Naar man har en Function sidecar... Laver vi i virkeligheden en MethodSidecarModel 
-// Maaske har vi kun en faelles ClassDataSidecar...
-
-// Uniqueness -> [SidecarType_X_MethodType_X_Name] 
-//MethodType kan maaske paa et tidspunkt bliver genericfiet..
-// Jamen saa skal vi jo bruge generiske typer... Optional<String> er forskellige for Optional<Long>
-// Selvom method typerne ender ens...
-/** A model of {@link MethodSidecar}. */
-public final class MethodSidecarModel extends SidecarModel {
+/** A model of {@link OldFieldSidecar}. */
+public final class FieldSidecarModel extends SidecarModel {
 
     /** Meta data about the extension sidecar. */
-    private static final SidecarTypeMeta STM = new SidecarTypeMeta(MethodSidecar.class, LifecycleDefinition.of(MethodSidecar.INSTANTIATION));
+    private static final SidecarTypeMeta STM = new SidecarTypeMeta(OldFieldSidecar.class, LifecycleDefinition.of(OldFieldSidecar.INSTANTIATION));
 
     /** The instance id into {@link ClassInstance#data}. */
     final int instanceId;
@@ -45,7 +34,7 @@ public final class MethodSidecarModel extends SidecarModel {
      * @param builder
      *            the builder used to construct the model
      */
-    protected MethodSidecarModel(Builder builder) {
+    protected FieldSidecarModel(Builder builder) {
         super(builder);
         this.instanceId = builder.instanceId;
         // MethodHandles.insertArguments(target, pos, values)

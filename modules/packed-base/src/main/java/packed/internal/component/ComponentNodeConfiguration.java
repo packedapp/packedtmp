@@ -36,8 +36,8 @@ import app.packed.component.Bundle;
 import app.packed.component.ClassSourcedDriver;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfigurationContext;
+import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentPath;
-import app.packed.component.ComponentProperty;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.component.FactorySourcedDriver;
@@ -65,34 +65,19 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     /** The assembly this component is a part of. */
     private final PackedAssemblyContext assembly;
 
-    /** The driver used to create this component. */
-    private final PackedWireableComponentDriver<?> driver;
-
-    /** The realm the component belongs to. */
-    private final PackedRealm realm;
-
-    /** Any wirelets that was specified by the user when creating this configuration. */
+    /** Children of this node (lazily initialized). Order maintained by {@link #nextSibling} and friends. */
     @Nullable
-    public final WireletPack wirelets;
-
-    /** The pod the component belongs to. */
-    final PackedGuestConfigurationContext pod;
-
-    final int properties;
-
-    /** The name of the component. */
-    String name;
-
-    /** The depth of the component in the hierarchy (including any parent artifacts). */
-    final int depth;
+    Map<String, ComponentNodeConfiguration> children;
 
     /** Any container this component is part of. A container is part of it self */
     @Nullable
     final PackedContainerRole container;
 
-    /** Children of this node (lazily initialized). Order maintained by {@link #nextSibling} and friends. */
-    @Nullable
-    Map<String, ComponentNodeConfiguration> children;
+    /** The depth of the component in the hierarchy (including any parent artifacts). */
+    final int depth;
+
+    /** The driver used to create this component. */
+    private final PackedWireableComponentDriver<?> driver;
 
     /** The first child of this component. */
     @Nullable
@@ -105,6 +90,11 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     @Nullable
     private ComponentNodeConfiguration lastChild;
 
+    final int modifiers;
+
+    /** The name of the component. */
+    String name;
+
     /** The next sibling, in insertion order */
     @Nullable
     public ComponentNodeConfiguration nextSibling;
@@ -112,6 +102,16 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     /** The parent of this component, or null for a root component. */
     @Nullable
     final ComponentNodeConfiguration parent;
+
+    /** The pod the component belongs to. */
+    final PackedGuestConfiguration pod;
+
+    /** The realm the component belongs to. */
+    private final PackedRealm realm;
+
+    /** Any wirelets that was specified by the user when creating this configuration. */
+    @Nullable
+    public final WireletPack wirelets;
 
     /**************** See how much of this we can get rid of. *****************/
 
@@ -130,20 +130,6 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     private static final int NAME_GETSET_MASK = NAME_SET + NAME_GET + NAME_GET_PATH + NAME_CHILD_GOT_PATH;
 
-    public static ComponentNodeConfiguration newAssembly(PackedAssemblyContext assembly, PackedWireableComponentDriver<?> driver, ConfigSite configSite,
-            PackedRealm realm, WireletPack wirelets) {
-        return new ComponentNodeConfiguration(assembly, realm, driver, configSite, null, wirelets);
-    }
-
-    @Nullable
-    public ComponentNodeConfiguration parentOrNull() {
-        return parent;
-    }
-
-    public ComponentNodeConfiguration newChild(PackedWireableComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm, @Nullable WireletPack wp) {
-        return new ComponentNodeConfiguration(assembly, realm, driver, configSite, this, wp);
-    }
-
     /**
      * Creates a new instance of this class
      * 
@@ -161,8 +147,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         this.depth = parent == null ? 0 : parent.depth + 1;
 
         this.driver = requireNonNull(driver);
-        this.pod = parent == null || driver.hasProperty(ComponentProperty.GUEST) ? new PackedGuestConfigurationContext(this) : parent.pod;
-        this.container = driver.hasProperty(ComponentProperty.CONTAINER) ? new PackedContainerRole(this) : parent.container;
+        this.pod = parent == null || driver.hasProperty(ComponentModifier.GUEST) ? new PackedGuestConfiguration(this) : parent.pod;
+        this.container = driver.hasProperty(ComponentModifier.CONTAINER) ? new PackedContainerRole(this) : parent.container;
 
         this.configSite = requireNonNull(configSite);
         this.wirelets = wirelets;
@@ -170,32 +156,19 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         setName0(null); // initialize name
 
         int p = driver.properties;
-        p = ComponentPropertySet.setPropertyConditional(p, parent == null, ComponentProperty.SYSTEM);
-        p = ComponentPropertySet.setPropertyConditional(p, parent == null, ComponentProperty.GUEST);
-        p = ComponentPropertySet.setPropertyConditional(p, parent == null && assembly.isImage(), ComponentProperty.IMAGE);
-        this.properties = p;
+        p = ComponentModifierSet.setPropertyConditional(p, parent == null, ComponentModifier.SYSTEM);
+        p = ComponentModifierSet.setPropertyConditional(p, parent == null, ComponentModifier.GUEST);
+        p = ComponentModifierSet.setPropertyConditional(p, parent == null && assembly.isImage(), ComponentModifier.IMAGE);
+        this.modifiers = p;
     }
 
     /**
-     * Returns the container this component is a part of. Or null if this component is the top level container.
+     * Returns a {@link Component} adaptor of this node.
      * 
-     * @return the container this component is a part of
+     * @return a component adaptor
      */
-    @Nullable
-    public PackedContainerRole container() {
-        return container;
-    }
-
-    public PackedRealm realm() {
-        return realm;
-    }
-
-    public ComponentNodeConfiguration closeAssembly() {
-        finalState = true;
-        if (container != null) {
-            container.advanceTo(PackedContainerRole.LS_3_FINISHED);
-        }
-        return this;
+    public Component adaptToComponent() {
+        return new ComponentAdaptor(this);
     }
 
     /**
@@ -247,10 +220,6 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
                 || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && Bundle.class.isAssignableFrom(c));
     }
 
-    public int depth() {
-        return depth;
-    }
-
     /** {@inheritDoc} */
     @Override
     public void checkConfigurable() {
@@ -259,14 +228,50 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         }
     }
 
-    public ComponentNode instantiateTree(ConstructionContext ic) {
-        return new ComponentNode(null, this, ic);
+    public ComponentNodeConfiguration closeAssembly() {
+        finalState = true;
+        if (container != null) {
+            container.advanceTo(PackedContainerRole.LS_3_FINISHED);
+        }
+        return this;
     }
 
     /** {@inheritDoc} */
     @Override
     public ConfigSite configSite() {
         return configSite;
+    }
+
+    /**
+     * Returns the container this component is a part of. Or null if this component is the top level container.
+     * 
+     * @return the container this component is a part of
+     */
+    @Nullable
+    public PackedContainerRole container() {
+        return container;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<Class<? extends Extension>> containerExtensions() {
+        if (container == null || container.node != this) {
+            throw new UnsupportedOperationException("This method can only be used by a component has ComponentDriver.Option.container() enabled");
+        }
+        return container.extensions();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T extends Extension> T containerUse(Class<T> extensionType) {
+        if (container == null || container.node != this) {
+            throw new UnsupportedOperationException("This method can only be used by a component has ComponentDriver.Option.container() enabled");
+        }
+        return container.use(extensionType);
+    }
+
+    public int depth() {
+        return depth;
     }
 
     /**
@@ -281,6 +286,133 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Extension>> extension() {
         return Extension.class.isAssignableFrom(realm.type()) ? Optional.empty() : Optional.of((Class<? extends Extension>) realm.type());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String getName() {
+        // Only update with NAME_GET if no prev set/get op
+        nameState = (nameState & ~NAME_GETSET_MASK) | NAME_GET;
+        return name;
+    }
+
+    public ComponentNode instantiateTree(ConstructionContext ic) {
+        return new ComponentNode(null, this, ic);
+    }
+
+    // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
+    // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return
+    // type. Maybe in the future LinkedBundle<- (LinkableContainerSource)
+    // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
+    // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
+    // loop situations, for example, if a bundle recursively links itself which fails by throwing
+    // java.lang.StackOverflowError instead of an infinite loop.
+    @Override
+    public void link(Bundle<?> bundle, Wirelet... wirelets) {
+        requireNonNull(bundle, "bundle is null");
+
+        // Extract the driver from the bundle
+        PackedWireableComponentDriver<?> driver = BundleConfiguration.driverOf(bundle);
+
+        // check if container
+
+        if (driver.isContainer()) {
+            // IDK do we want to progress to next stage just in case...
+            if (container.containerState == PackedContainerRole.LS_0_MAINL) {
+                container.advanceTo(PackedContainerRole.LS_1_LINKING);
+            } else if (container.containerState == PackedContainerRole.LS_2_HOSTING) {
+                throw new IllegalStateException("Was hosting");
+            } else if (container.containerState == PackedContainerRole.LS_3_FINISHED) {
+                throw new IllegalStateException("Was Assembled");
+            }
+        }
+        // Create the child node
+        // ConfigSite cs = ConfigSiteSupport.captureStackFrame(configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
+        WireletPack wp = WireletPack.from(driver, wirelets);
+        ConfigSite cs = ConfigSite.UNKNOWN;
+        ComponentNodeConfiguration p = driver().hasProperty(ComponentModifier.EXTENSION) ? parent : this;
+        ComponentNodeConfiguration newNode = p.newChild(driver, cs, PackedRealm.fromBundle(bundle), wp);
+
+        // Invoke Bundle::configure
+        BundleConfiguration.configure(bundle, driver.toConfiguration(newNode));
+
+        newNode.finalState = true;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<ComponentModifier> modifiers() {
+        return new ComponentModifierSet(modifiers);
+    }
+
+    public ComponentNodeConfiguration newChild(PackedWireableComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm, @Nullable WireletPack wp) {
+        return new ComponentNodeConfiguration(assembly, realm, driver, configSite, this, wp);
+    }
+
+    @Nullable
+    public ComponentNodeConfiguration parentOrNull() {
+        return parent;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath path() {
+        int anyPathMask = NAME_GET_PATH + NAME_CHILD_GOT_PATH;
+        if ((nameState & anyPathMask) != 0) {
+            ComponentNodeConfiguration p = parent;
+            while (p != null && ((p.nameState & anyPathMask) == 0)) {
+                p.nameState = (p.nameState & ~NAME_GETSET_MASK) | NAME_GET_PATH;
+            }
+        }
+        nameState = (nameState & ~NAME_GETSET_MASK) | NAME_GET_PATH;
+        return PackedComponentPath.of(this); // show we weak intern them????
+    }
+
+    public PackedRealm realm() {
+        return realm;
+    }
+
+    public <W extends Wirelet> Optional<W> receiveWirelet(Class<W> type) {
+        if (wirelets == null) {
+            return Optional.empty();
+        }
+        W w = wirelets.receiveLast(type);
+        return Optional.ofNullable(w);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setName(String name) {
+        // First lets check the name is valid
+        ComponentNameWirelet.checkName(name);
+        int s = nameState;
+
+        checkConfigurable();
+
+        if ((s & NAME_SET) != 0) {
+            throw new IllegalStateException("#setName(String) can only be called once");
+        }
+
+        if ((s & NAME_GET) != 0) {
+            throw new IllegalStateException("#setName(String) cannot be called after #getName() has been invoked");
+        }
+
+        if ((s & NAME_GET_PATH) != 0) {
+            throw new IllegalStateException("#setName(String) cannot be called after #path() has been invoked");
+        }
+
+        if ((s & NAME_CHILD_GOT_PATH) != 0) {
+            throw new IllegalStateException("#setName(String) cannot be called after #path() has been invoked on a child component");
+        }
+
+        // Maaske kan vi godt saette to gange...
+        nameState |= NAME_SET;
+
+        if ((s & NAME_INITIALIZED_WITH_WIRELET) != 0) {
+            return;// We never set override a name set by a wirelet
+        }
+
+        setName0(name);
     }
 
     private void setName0(String newName) {
@@ -339,100 +471,14 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         name = n;
     }
 
-    /** {@inheritDoc} */
     @Override
-    public String getName() {
-        // Only update with NAME_GET if no prev set/get op
-        nameState = (nameState & ~NAME_GETSET_MASK) | NAME_GET;
-        return name;
+    public <C, I> C wire(ClassSourcedDriver<C, I> driver, Class<I> implementation, Wirelet... wirelets) {
+        return wire(driver.bindToClass(realm, implementation), wirelets);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public ComponentPath path() {
-        int anyPathMask = NAME_GET_PATH + NAME_CHILD_GOT_PATH;
-        if ((nameState & anyPathMask) != 0) {
-            ComponentNodeConfiguration p = parent;
-            while (p != null && ((p.nameState & anyPathMask) == 0)) {
-                p.nameState = (p.nameState & ~NAME_GETSET_MASK) | NAME_GET_PATH;
-            }
-        }
-        nameState = (nameState & ~NAME_GETSET_MASK) | NAME_GET_PATH;
-        return PackedComponentPath.of(this); // show we weak intern them????
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setName(String name) {
-        // First lets check the name is valid
-        ComponentNameWirelet.checkName(name);
-        int s = nameState;
-
-        checkConfigurable();
-
-        if ((s & NAME_SET) != 0) {
-            throw new IllegalStateException("#setName(String) can only be called once");
-        }
-
-        if ((s & NAME_GET) != 0) {
-            throw new IllegalStateException("#setName(String) cannot be called after #getName() has been invoked");
-        }
-
-        if ((s & NAME_GET_PATH) != 0) {
-            throw new IllegalStateException("#setName(String) cannot be called after #path() has been invoked");
-        }
-
-        if ((s & NAME_CHILD_GOT_PATH) != 0) {
-            throw new IllegalStateException("#setName(String) cannot be called after #path() has been invoked on a child component");
-        }
-
-        // Maaske kan vi godt saette to gange...
-        nameState |= NAME_SET;
-
-        if ((s & NAME_INITIALIZED_WITH_WIRELET) != 0) {
-            return;// We never set override a name set by a wirelet
-        }
-
-        setName0(name);
-    }
-
-    // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
-    // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return
-    // type. Maybe in the future LinkedBundle<- (LinkableContainerSource)
-    // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
-    // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
-    // loop situations, for example, if a bundle recursively links itself which fails by throwing
-    // java.lang.StackOverflowError instead of an infinite loop.
-    @Override
-    public void link(Bundle<?> bundle, Wirelet... wirelets) {
-        requireNonNull(bundle, "bundle is null");
-
-        // Extract the driver from the bundle
-        PackedWireableComponentDriver<?> driver = BundleConfiguration.driverOf(bundle);
-
-        // check if container
-
-        if (driver.isContainer()) {
-            // IDK do we want to progress to next stage just in case...
-            if (container.containerState == PackedContainerRole.LS_0_MAINL) {
-                container.advanceTo(PackedContainerRole.LS_1_LINKING);
-            } else if (container.containerState == PackedContainerRole.LS_2_HOSTING) {
-                throw new IllegalStateException("Was hosting");
-            } else if (container.containerState == PackedContainerRole.LS_3_FINISHED) {
-                throw new IllegalStateException("Was Assembled");
-            }
-        }
-        // Create the child node
-        // ConfigSite cs = ConfigSiteSupport.captureStackFrame(configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
-        WireletPack wp = WireletPack.from(driver, wirelets);
-        ConfigSite cs = ConfigSite.UNKNOWN;
-        ComponentNodeConfiguration p = driver().hasProperty(ComponentProperty.EXTENSION) ? parent : this;
-        ComponentNodeConfiguration newNode = p.newChild(driver, cs, PackedRealm.fromBundle(bundle), wp);
-
-        // Invoke Bundle::configure
-        BundleConfiguration.configure(bundle, driver.toConfiguration(newNode));
-
-        newNode.finalState = true;
+    public <C, I> C wire(FactorySourcedDriver<C, I> driver, Factory<I> implementation, Wirelet... wirelets) {
+        return wire(driver.bindToFactory(realm, implementation), wirelets);
     }
 
     /** {@inheritDoc} */
@@ -446,21 +492,14 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         return d.toConfiguration(conf);
     }
 
-    public <W extends Wirelet> Optional<W> receiveWirelet(Class<W> type) {
-        if (wirelets == null) {
-            return Optional.empty();
-        }
-        W w = wirelets.receiveLast(type);
-        return Optional.ofNullable(w);
+    @Override
+    public <C, I> C wireInstance(InstanceSourcedDriver<C, I> driver, I instance, Wirelet... wirelets) {
+        return wire(driver.bindToInstance(realm, instance), wirelets);
     }
 
-    /**
-     * Returns a {@link Component} adaptor of this node.
-     * 
-     * @return a component adaptor
-     */
-    public Component adaptToComponent() {
-        return new ComponentAdaptor(this);
+    public static ComponentNodeConfiguration newAssembly(PackedAssemblyContext assembly, PackedWireableComponentDriver<?> driver, ConfigSite configSite,
+            PackedRealm realm, WireletPack wirelets) {
+        return new ComponentNodeConfiguration(assembly, realm, driver, configSite, null, wirelets);
     }
 
     // This should only be called by special methods
@@ -518,6 +557,19 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
         /** {@inheritDoc} */
         @Override
+        public boolean hasModifier(ComponentModifier property) {
+            return ComponentModifierSet.isPropertySet(conf.modifiers, property);
+
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Set<ComponentModifier> modifiers() {
+            return new ComponentModifierSet(conf.modifiers);
+        }
+
+        /** {@inheritDoc} */
+        @Override
         public String name() {
             return conf.getName();
         }
@@ -543,6 +595,12 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
         /** {@inheritDoc} */
         @Override
+        public Component resolve(CharSequence path) {
+            throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
         public ComponentStream stream(ComponentStream.Option... options) {
             return new PackedComponentStream(stream0(conf, true, PackedComponentStreamOption.of(options)));
         }
@@ -562,57 +620,5 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
                 return isRoot && option.excludeOrigin() ? Stream.empty() : Stream.of(this);
             }
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public boolean hasProperty(ComponentProperty property) {
-            return ComponentPropertySet.isPropertySet(conf.properties, property);
-
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Set<ComponentProperty> properties() {
-            return new ComponentPropertySet(conf.properties);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Component resolve(CharSequence path) {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    @Override
-    public <C, I> C wire(ClassSourcedDriver<C, I> driver, Class<I> implementation, Wirelet... wirelets) {
-        return wire(driver.bindToClass(realm, implementation), wirelets);
-    }
-
-    @Override
-    public <C, I> C wire(FactorySourcedDriver<C, I> driver, Factory<I> implementation, Wirelet... wirelets) {
-        return wire(driver.bindToFactory(realm, implementation), wirelets);
-    }
-
-    @Override
-    public <C, I> C wireInstance(InstanceSourcedDriver<C, I> driver, I instance, Wirelet... wirelets) {
-        return wire(driver.bindToInstance(realm, instance), wirelets);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T extends Extension> T containerUse(Class<T> extensionType) {
-        if (container == null || container.node != this) {
-            throw new UnsupportedOperationException("This method can only be used by a component has ComponentDriver.Option.container() enabled");
-        }
-        return container.use(extensionType);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Set<Class<? extends Extension>> containerExtensions() {
-        if (container == null || container.node != this) {
-            throw new UnsupportedOperationException("This method can only be used by a component has ComponentDriver.Option.container() enabled");
-        }
-        return container.extensions();
     }
 }

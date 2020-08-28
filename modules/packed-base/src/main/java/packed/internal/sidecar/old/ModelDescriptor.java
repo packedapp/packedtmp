@@ -13,23 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.sidecar;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package packed.internal.sidecar.old;
 
 /**
- * A sidecar annotation that can be applied to fields.
+ *
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface FieldSidecar {
+// Skal vi have en descriptor eller paa model???
+// Altsaa hvis vi skal kunne tage hensyn til Bundle typen 
+// Skal vi vel ligge have en separat klasse...
+public class ModelDescriptor {
 
-    /**
-     * An sidecar lifecycle event that the sidecar has been successfully instantiated by the runtime. But the instance has
-     * not yet been returned to the user.
-     */
-    String INSTANTIATION = "Instantiation";
 }

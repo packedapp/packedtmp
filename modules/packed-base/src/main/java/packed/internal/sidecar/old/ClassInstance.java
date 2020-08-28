@@ -13,29 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.sidecar;
+package packed.internal.sidecar.old;
 
 import static java.util.Objects.requireNonNull;
 
 /**
- * An abstract class for the various models we have in Packed. A model is typically build upon a class provided by the
- * user. Where we need to analyze constructors/methods/fields.
+ *
  */
-public abstract class Model {
 
-    /** The type this is a model for. */
-    private final Class<?> type;
+// Det er vel naermest bare et sidecar instance array
+public class ClassInstance {
 
-    protected Model(Class<?> type) {
-        this.type = requireNonNull(type);
-    }
+    final ClassModel model;
 
-    /**
-     * Returns the type this is a model for
-     * 
-     * @return the type this is a model for
-     */
-    public final Class<?> type() {
-        return type;
+    // Primarily sidecar instances... and/or invokers? Nah invokers er kun paa runtime...
+    final Object[] data;
+
+    ClassInstance(ClassModel model, int size) {
+        this.model = requireNonNull(model);
+        this.data = new Object[size];
     }
 }

@@ -13,24 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.sidecar;
+package app.packed.component;
 
-import java.lang.invoke.MethodHandles.Lookup;
-
-import app.packed.base.Nullable;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  *
  */
+interface TreeNode<N> {
+    Set<N> children();
 
-// Problemet er lidt caching taenker jeg...
-interface ClazzAnalyzer<T> {
+    int depth();
 
-    T analyze(Lookup lookup, Class<?> clazz);
+    Optional<N> parent();
 
-    T analyzeWithCaching(@Nullable Lookup lookup, Class<?> clazz);
+    void traverse(Consumer<? super N> action);
+}
 
-    static <T> ClazzAnalyzer<T> of(Lookup lookup, Class<T> builderType) {
+interface NamedTreeNode<N> extends TreeNode<N> {
+    String name();
+
+    ComponentPath path();
+
+    // Now that we have parents...
+    // add Optional<Component> tryResolve(CharSequence path);
+    N resolve(CharSequence path);
+
+    default Optional<N> tryResolve(CharSequence path) {
         throw new UnsupportedOperationException();
     }
 }
+
+//configSite()
+
+//hasModifier(ComponentModifier)
+//modifiers()
+//relationTo(Component)
+//stream(Option...)
+//viewAs(Object)

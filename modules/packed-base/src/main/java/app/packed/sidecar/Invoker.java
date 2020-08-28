@@ -27,6 +27,8 @@ import app.packed.base.Nullable;
 // PreCompiler en Invoker der burger indy...
 // Saa laver vi en ny instant hver gang.. 
 // Og har en bootstrap metode der bruger noget thread local..
+
+// Vi bliver noedt til at have denne fordi vi ikke kan lave method handles paa runtime...
 public interface Invoker {
 
     /**
@@ -45,6 +47,8 @@ public interface Invoker {
      * 
      * @return the method handle
      */
+    // Kan ikke se hvordan den kan virke med graal....
+    // Da vi ikke kan binde paa runtime...
     MethodHandle toMethodHandle();
 }
 

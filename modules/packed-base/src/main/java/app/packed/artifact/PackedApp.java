@@ -18,10 +18,10 @@ import app.packed.lifecycleold.StopOption;
 final class PackedApp implements App {
 
     /** An driver for creating PackedApp instances. */
-    static final ArtifactDriver<App> DRIVER = ArtifactDriver.of(MethodHandles.lookup(), App.class, PackedApp.class);
+    static final ShellDriver<App> DRIVER = ShellDriver.of(MethodHandles.lookup(), App.class, PackedApp.class);
 
     /** The artifact context we are wrapping. */
-    private final GuestContext context;
+    private final ShellContext context;
 
     /**
      * Creates a new app.
@@ -29,7 +29,7 @@ final class PackedApp implements App {
      * @param context
      *            the context to wrap
      */
-    private PackedApp(GuestContext context) {
+    private PackedApp(ShellContext context) {
         this.context = requireNonNull(context);
     }
 

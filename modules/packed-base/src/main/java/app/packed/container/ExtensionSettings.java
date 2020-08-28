@@ -38,6 +38,10 @@ import app.packed.statemachine.Leaving;
 // Er mest taenkt for descriptors. F.eks. kan man se om en given extension er optional
 
 // TODO we need a new name now that sidecars are no longer annotations
+// Alternativ Settings
+// ExtensionDependencies er vi vel tilbage i....
+
+// transitive... Altsaa kan vi forstille os at extensions of extension skal bruge dem...
 public @interface ExtensionSettings {
 
     /**
@@ -90,11 +94,14 @@ public @interface ExtensionSettings {
      */
     String[] optionalDependencies() default {};
 
-    /**
-     * Returns any runtime sidecar representations.
-     * 
-     * @return any runtime sidecar representations
-     */
-    // wtf is this
-    Class<?>[] runtime() default {};
 }
+//
+///**
+//* Returns any runtime sidecar representations.
+//* 
+//* @return any runtime sidecar representations
+//*/
+//// wtf is this
+//// Ahh, det maa vaere en ide om at vi skal definere runtime componenterne foer vi bruger dem...
+//// Vi dropper det...
+//Class<?>[] runtime() default {};

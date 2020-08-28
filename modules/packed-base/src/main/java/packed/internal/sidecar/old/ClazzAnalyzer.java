@@ -13,12 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package packed.internal.sidecar.old;
+
+import java.lang.invoke.MethodHandles.Lookup;
+
+import app.packed.base.Nullable;
 
 /**
  *
  */
-// Nahhh.
-enum WiringStrength {
-    WEAK, STRONG;
+
+// Problemet er lidt caching taenker jeg...
+interface ClazzAnalyzer<T> {
+
+    T analyze(Lookup lookup, Class<?> clazz);
+
+    T analyzeWithCaching(@Nullable Lookup lookup, Class<?> clazz);
+
+    static <T> ClazzAnalyzer<T> of(Lookup lookup, Class<T> builderType) {
+        throw new UnsupportedOperationException();
+    }
 }

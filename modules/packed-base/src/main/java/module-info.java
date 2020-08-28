@@ -24,7 +24,7 @@ module app.packed.base {
     exports packed.internal.lifecycle.phases to app.packed.errorhandling;
     exports packed.internal.errorhandling to app.packed.errorhandling;
     exports packed.internal.base.attribute to app.packed.attribute;
-    exports packed.internal.sidecar to app.packed.conta;
+    exports packed.internal.sidecar.old to app.packed.conta;
     exports packed.internal.hook.applicator to app.packed.errorhandling, app.packed.cli;
 
     opens app.packed.service to app.packed.service;

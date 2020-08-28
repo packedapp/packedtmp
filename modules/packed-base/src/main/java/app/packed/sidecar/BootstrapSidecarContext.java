@@ -25,6 +25,7 @@ import app.packed.component.Wirelet;
  *
  */
 interface BootstrapSidecarContext {
+
     void singleton(Class<?> cl);
 
     void link(Supplier<Map.Entry<Bundle<?>, Wirelet[]>> e);// ugly.. Need a delaylink

@@ -29,11 +29,23 @@ import app.packed.container.Extension;
 public class ComponentAttributes {
 
     // Save this on TypeLiteral??
+    static final TypeLiteral<TypeLiteral<?>> TL_ANY = new TypeLiteral<TypeLiteral<?>>() {};
     static final TypeLiteral<Class<?>> TL_C = new TypeLiteral<Class<?>>() {};
     static final TypeLiteral<Class<? extends Extension>> TL_E = new TypeLiteral<Class<? extends Extension>>() {};
 
-    public static final Attribute<Class<?>> SOURCE_TYPE = Attribute.of(MethodHandles.lookup(), "type", TL_C);
+    // HMM ER DET IKKE BARE SOURCE_TYPE???? Nej, fordi hvis man laver en singleton fra en bundle type har den begge.
+    static final Attribute<Class<? extends Bundle<?>>> BUNDLE_TYPE = Attribute.of(MethodHandles.lookup(), "bundle",
+            new TypeLiteral<Class<? extends Bundle<?>>>() {});
 
+    /**
+     * 
+     * @see ComponentModifier#FUNCTION
+     */
+    public static final Attribute<TypeLiteral<?>> FUNCTION_TYPE = Attribute.of(MethodHandles.lookup(), "function-type", TL_ANY);
+
+    public static final Attribute<Class<?>> SOURCE_TYPE = Attribute.of(MethodHandles.lookup(), "source-type", TL_C);
+
+    // An extension is trivial member of itself... (TODO test, that you cannot use ExtensionMember on an extension...)
     public static final Attribute<Class<? extends Extension>> EXTENSION_MEMBER = Attribute.of(MethodHandles.lookup(), "extension-member", TL_E);
 
     // When something is created from an image, it will have the image path set

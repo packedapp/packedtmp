@@ -36,7 +36,7 @@ import app.packed.component.Wirelet;
  */
 // See hvor den bliver brugt fra ServiceExtension...
 // Maaske den skal vaere public alligevel...
-public final class WireletList implements Wirelet {
+public final class WireletList extends Wirelet {
 
     /** An empty wirelet list. */
     private static final WireletList EMPTY = new WireletList();

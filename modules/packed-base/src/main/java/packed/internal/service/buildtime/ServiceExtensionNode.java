@@ -180,7 +180,7 @@ public final class ServiceExtensionNode {
         return ServiceContract.newContract(c -> {
             if (exporter != null) {
                 for (ExportedBuildEntry<?> n : exporter) {
-                    c.addProvides(n.key());
+                    c.provides(n.key());
                 }
             }
             dependencies().buildContract(c);

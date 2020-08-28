@@ -35,11 +35,11 @@ import packed.internal.lifecycle.phases.PackedAssemblyContext;
 import packed.internal.util.ThrowableUtil;
 
 /**
- * Artifact drivers are responsible for creating new artifacts by wrapping instances of {@link GuestContext}.
+ * Artifact drivers are responsible for creating new artifacts by wrapping instances of {@link ShellContext}.
  * <p>
  * This class can be extended to create custom artifact types if the built-in artifact types such as {@link App} and
  * {@link Injector} are not sufficient. In fact, the default implementations of both {@link App} and {@link Injector}
- * are just thin facade that delegates all calls to an {@link GuestContext} instance.
+ * are just thin facade that delegates all calls to an {@link ShellContext} instance.
  * <p>
  * Normally, you should never instantiate more then a single instance of driver for any artifact implementation.
  * <p>
@@ -63,7 +63,7 @@ import packed.internal.util.ThrowableUtil;
 
 // Non-Executable : Initialize
 // Executable : Initialize | Start | Execute
-public final class ArtifactDriver<A> {
+public final class ShellDriver<A> {
 
     /** The type of artifact this driver produces. */
     private final Class<A> artifactType;
@@ -83,7 +83,7 @@ public final class ArtifactDriver<A> {
      *            the method handle that creates the actual artifact
      */
     @SuppressWarnings("unchecked")
-    private ArtifactDriver(Class<?> artifactType, MethodHandle mh) {
+    private ShellDriver(Class<?> artifactType, MethodHandle mh) {
         this.artifactType = (Class<A>) requireNonNull(artifactType);
         this.hasExecutionPhase = AutoCloseable.class.isAssignableFrom(artifactType);
         this.mh = requireNonNull(mh);
@@ -95,17 +95,17 @@ public final class ArtifactDriver<A> {
 
     public <C, D> A configure(WireableComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.configure(this, (PackedWireableComponentDriver<D>) driver, factory, consumer, wirelets);
-        GuestContext ac = ConstructionContext.constructArtifact(node, node.wirelets);
+        ShellContext ac = ConstructionContext.constructArtifact(node, node.wirelets);
         return newArtifact(ac);
     }
 
-    private GuestContext createArtifactContext(Bundle<?> source, Wirelet... wirelets) {
+    private ShellContext createArtifactContext(Bundle<?> source, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.assembleArtifact(this, source, wirelets);
         return ConstructionContext.constructArtifact(node, node.wirelets);
     }
 
     public Object execute(Bundle<?> source, Wirelet... wirelets) {
-        GuestContext context = createArtifactContext(source, wirelets);
+        ShellContext context = createArtifactContext(source, wirelets);
         context.start();
         return null;
     }
@@ -123,7 +123,7 @@ public final class ArtifactDriver<A> {
     /**
      * Creates and initializes a new artifact using the specified source.
      * <p>
-     * This method will invoke {@link #newArtifact(GuestContext)} to create the actual artifact.
+     * This method will invoke {@link #newArtifact(ShellContext)} to create the actual artifact.
      * 
      * @param source
      *            the source of the top-level container
@@ -137,7 +137,7 @@ public final class ArtifactDriver<A> {
     // Skal kunne lave en container...
     // Maaske laver vi implicit en container og smider den i...
     public A instantiate(Bundle<?> source, Wirelet... wirelets) {
-        GuestContext context = createArtifactContext(source, wirelets);
+        ShellContext context = createArtifactContext(source, wirelets);
         return newArtifact(context);
     }
 
@@ -148,7 +148,7 @@ public final class ArtifactDriver<A> {
      *            the artifact context to use for instantiating the artifact
      * @return the new artifact
      */
-    A newArtifact(GuestContext context) {
+    A newArtifact(ShellContext context) {
         try {
             return (A) mh.invoke(context);
         } catch (Throwable e) {
@@ -157,7 +157,7 @@ public final class ArtifactDriver<A> {
     }
 
     public GuestImage<A> newImage(Bundle<?> bundle, Wirelet... wirelets) {
-        return PackedGuestImage.newImage(this, bundle, wirelets);
+        return new PackedGuestImage<>(this, bundle, wirelets);
     }
 
     /**
@@ -183,21 +183,21 @@ public final class ArtifactDriver<A> {
      *             if the driver does not produce an artifact with an execution phase
      */
     public A start(Bundle<?> source, Wirelet... wirelets) {
-        GuestContext context = createArtifactContext(source, wirelets);
+        ShellContext context = createArtifactContext(source, wirelets);
         context.start();
         return newArtifact(context);
     }
 
-    public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, Class<? extends A> implementation) {
+    public static <A> ShellDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, Class<? extends A> implementation) {
         // Vi vil gerne bruge artifact type som navnet paa artifacten... istedet for implementationen
-        MethodType mt = MethodType.methodType(void.class, GuestContext.class);
+        MethodType mt = MethodType.methodType(void.class, ShellContext.class);
         final MethodHandle mh;
         try {
             mh = caller.findConstructor(implementation, mt);
         } catch (NoSuchMethodException | IllegalAccessException e) {
             throw ThrowableUtil.orUndeclared(e);
         }
-        return new ArtifactDriver<>(artifactType, mh);
+        return new ShellDriver<>(artifactType, mh);
     }
 
 //    public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, Factory<? extends A> implementation) {
@@ -205,9 +205,9 @@ public final class ArtifactDriver<A> {
 //    }
 
     // A method handle that takes an ArtifactContext and produces something that is compatible with A
-    public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh) {
+    public static <A> ShellDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh) {
         // TODO validate type
-        return new ArtifactDriver<>(artifactType, mh);
+        return new ShellDriver<>(artifactType, mh);
     }
 
 //  <E extends A> ArtifactDriver<A> mapTo(Class<E> decoratingType, Function<A, E> decorator) {

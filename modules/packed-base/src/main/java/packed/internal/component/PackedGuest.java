@@ -20,8 +20,6 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * All strongly connected components relate to the same pod.
  */
-// Taenker den er inline
-// Skal jo godt nok vaere lille for Actors...
 public final class PackedGuest {
 
     PackedGuest parent; // Vi kan vel bare smide den i instances...
@@ -37,6 +35,8 @@ public final class PackedGuest {
 
     }
 }
+//Taenker den er inline
+//Skal jo godt nok vaere lille for Actors...
 
 /// GUESTS (
 

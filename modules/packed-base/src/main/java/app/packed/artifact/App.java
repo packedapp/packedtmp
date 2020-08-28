@@ -32,7 +32,7 @@ import app.packed.lifecycleold.StopOption;
 import app.packed.service.ServiceExtension;
 
 /**
- * An App (application) is the main type of artifact available in Packed and should cover must usages for people.
+ * An App (application) is the main type of shell available in Packed and should cover must usages for people.
  * <p>
  * Applications are low overhead not using more then a few kilobytes.
  */
@@ -174,7 +174,8 @@ public interface App extends AutoCloseable, ComponentHolder {
      *             if the application could not be initialized properly
      */
     // Create???
-    static App create(Bundle<?> source, Wirelet... wirelets) {
+    // construct because we are in the construction phase
+    static App construct(Bundle<?> source, Wirelet... wirelets) {
         // Rename fordi vi gerne vil have at ArtifactDriver hedder det samme og
         // AppHost.xxx() .. Dumt det hedder App.of og AppHost.instantiate
 
@@ -193,7 +194,7 @@ public interface App extends AutoCloseable, ComponentHolder {
      * 
      * @return a driver for producing App artifacts
      */
-    static ArtifactDriver<App> driver() {
+    static ShellDriver<App> driver() {
         return PackedApp.DRIVER;
     }
 

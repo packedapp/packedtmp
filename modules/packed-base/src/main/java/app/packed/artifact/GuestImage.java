@@ -15,18 +15,12 @@
  */
 package app.packed.artifact;
 
-import java.lang.invoke.MethodHandles;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-import app.packed.base.Attribute;
-import app.packed.base.TypeLiteral;
-import app.packed.component.Bundle;
 import app.packed.component.Component;
 import app.packed.component.ComponentHolder;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerDescriptor;
 
 /**
@@ -56,16 +50,10 @@ import app.packed.container.ContainerDescriptor;
  */
 // isRoot??
 // Path -> / or /.dd.img
+
+// Hvis Guest == Closeable
+// Saa er et image noget andet...
 public interface GuestImage<A> extends ComponentHolder {
-
-    static final Attribute<Class<? extends Bundle<?>>> BUNDLE_TYPE = Attribute.of(MethodHandles.lookup(), "bundle",
-            new TypeLiteral<Class<? extends Bundle<?>>>() {});
-
-    // Altsaa hvis den er null.. Giver det vel kun mening at man
-    // bruger et image til at execute???
-    default Optional<Component> artifact() {
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * Returns the configuration site of this image.
@@ -83,22 +71,7 @@ public interface GuestImage<A> extends ComponentHolder {
      *            wirelets used to create the artifact
      * @return the new artifact
      */
-    A create(Wirelet... wirelets);
-
-    /**
-     * Returns a bundle descriptor for this image.
-     * 
-     * @return the bundle descriptor
-     * 
-     * @see ContainerDescriptor#of(ContainerBundle)
-     */
-    // ImageDescriptor with all wirelets????? Eller bare med i BundleDescriptor???
-    // Vi har jo feks anderledes contract... Og kan vi se alt???
-    // AssemblyDescriptor?
-
-    // Altsaa helt sikker med contracts saa skal det jo vaere whatever der er appliet...
-    /// Saa det gaelder jo saadan set ogsaa med #name()
-    ContainerDescriptor descriptor();
+    A construct(Wirelet... wirelets);
 
     /**
      * Returns the component representation of this image.
@@ -108,12 +81,6 @@ public interface GuestImage<A> extends ComponentHolder {
     @Override
     Component component();
 
-    /**
-     * Returns the raw type of what the image creates
-     * 
-     * @return the raw type
-     */
-    Class<?> rawArtifactType();
 
     // Create And start()
     A start(Wirelet... wirelets);
@@ -122,6 +89,36 @@ public interface GuestImage<A> extends ComponentHolder {
         throw new UnsupportedOperationException();
     }
 }
+
+///**
+// * Returns the raw type of what the image creates
+// * 
+// * @return the raw type
+// */
+//// And what are we going to use this for???
+//Class<?> rawShellType();
+// Altsaa hvis den er null.. Giver det vel kun mening at man
+// bruger et image til at execute???
+// Root = Shell now, its not a component
+//default Optional<Component> artifact() {
+//    throw new UnsupportedOperationException();
+//}
+
+///**
+// * Returns a bundle descriptor for this image.
+// * 
+// * @return the bundle descriptor
+// * 
+// * @see ContainerDescriptor#of(ContainerBundle)
+// */
+//// ImageDescriptor with all wirelets????? Eller bare med i BundleDescriptor???
+//// Vi har jo feks anderledes contract... Og kan vi se alt???
+//// AssemblyDescriptor?
+//
+//// Altsaa helt sikker med contracts saa skal det jo vaere whatever der er appliet...
+///// Saa det gaelder jo saadan set ogsaa med #name()
+//ContainerDescriptor descriptor();
+
 //
 ///**
 // * Returns the path of the image.

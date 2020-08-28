@@ -13,32 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.sidecar;
+package packed.internal.sidecar.old;
 
-import java.lang.invoke.MethodHandle;
-
-import app.packed.base.Nullable;
+import static java.util.Objects.requireNonNull;
 
 /**
- *
+ * An abstract class for the various models we have in Packed. A model is typically build upon a class provided by the
+ * user. Where we need to analyze constructors/methods/fields.
  */
-public interface Getter<T> {
+public abstract class Model {
+
+    /** The type this is a model for. */
+    private final Class<?> type;
+
+    protected Model(Class<?> type) {
+        this.type = requireNonNull(type);
+    }
 
     /**
-     * Gets the value.
+     * Returns the type this is a model for
      * 
-     * @return the value
+     * @return the type this is a model for
      */
-    @Nullable
-    T get(); // getNullable
-
-    Class<?> type();
-
-    /**
-     * Returns a new parameter-less method handle. The return type of the method handle will be the exact return type of the
-     * underlying executable.
-     * 
-     * @return the method handle
-     */
-    MethodHandle toMethodHandle();
+    public final Class<?> type() {
+        return type;
+    }
 }

@@ -77,9 +77,9 @@ public interface ComponentStream extends AttributeStream<Component> {
 //        return filterOnType(ComponentDescriptor.CONTAINER);
 //    }
 
-    default ComponentStream hasProperty(ComponentProperty property) {
+    default ComponentStream hasProperty(ComponentModifier property) {
         requireNonNull(property, "property is null");
-        return filter(c -> c.hasProperty(property));
+        return filter(c -> c.hasModifier(property));
     }
 //
 //    default <T extends AFeature<?, ?>> Stream<T> feature(T feature) {
@@ -241,6 +241,7 @@ public interface ComponentStream extends AttributeStream<Component> {
      * @see App#stream(Option...)
      * @see GuestImage#stream(Option...)
      */
+    // I virkeligheden er det system view options.
     public interface Option {
         // hideOrigin?
         // showExtensions

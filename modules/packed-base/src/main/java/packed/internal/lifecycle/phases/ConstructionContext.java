@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.concurrent.CompletableFuture;
 
-import app.packed.artifact.GuestContext;
+import app.packed.artifact.ShellContext;
 import app.packed.base.Key;
 import app.packed.component.Component;
 import app.packed.lifecycleold.StopOption;
@@ -66,7 +66,7 @@ public final class ConstructionContext {
         return wirelets;
     }
 
-    public static GuestContext constructArtifact(ComponentNodeConfiguration root, WireletPack wp) {
+    public static ShellContext constructArtifact(ComponentNodeConfiguration root, WireletPack wp) {
         ConstructionContext ic = new ConstructionContext(wp);
         // Will instantiate the whole container hierachy
         ComponentNode node = root.instantiateTree(ic);
@@ -77,7 +77,7 @@ public final class ConstructionContext {
     }
 
     /** Used to expose a container as an ArtifactContext. */
-    public static final class PackedGuestContext implements GuestContext {
+    public static final class PackedGuestContext implements ShellContext {
 
         /** The component node we are wrapping. */
         private final ComponentNode node;

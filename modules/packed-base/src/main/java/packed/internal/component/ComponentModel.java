@@ -35,7 +35,7 @@ import packed.internal.hook.HookRequest;
 import packed.internal.hook.HookRequestBuilder;
 import packed.internal.hook.MemberUnreflector;
 import packed.internal.invoke.OpenClass;
-import packed.internal.sidecar.Model;
+import packed.internal.sidecar.old.Model;
 import packed.internal.util.ThrowableUtil;
 
 /**

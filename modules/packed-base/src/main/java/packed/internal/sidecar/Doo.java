@@ -15,22 +15,9 @@
  */
 package packed.internal.sidecar;
 
-import static java.util.Objects.requireNonNull;
-
 /**
  *
  */
+public class Doo {
 
-// Det er vel naermest bare et sidecar instance array
-public class ClassInstance {
-
-    final ClassModel model;
-
-    // Primarily sidecar instances... and/or invokers? Nah invokers er kun paa runtime...
-    final Object[] data;
-
-    ClassInstance(ClassModel model, int size) {
-        this.model = requireNonNull(model);
-        this.data = new Object[size];
-    }
 }

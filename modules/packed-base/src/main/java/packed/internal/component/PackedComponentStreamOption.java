@@ -29,7 +29,6 @@ import app.packed.container.Extension;
 /**
  *
  */
-
 // Kopiere lidt paenere kode fra jdk.nashorn.internal.runtime.regexp.joni.Option
 public final class PackedComponentStreamOption implements ComponentStream.Option {
 

@@ -33,14 +33,14 @@ import packed.internal.service.buildtime.wirelets.PackedDownstreamInjectionWirel
 import packed.internal.service.buildtime.wirelets.PackedUpstreamInjectionWirelet;
 
 /**
- * Various wirelets that can be used to transform and filter services being pull and pushed into containers.
+ * This class provide various wirelets that can be used to transform and filter services being pull and pushed into
+ * containers.
  */
 
-// Syntes det giver mening kun at prefixe have upstream....
-// Eller evt mapTo, og mapFrom.... ddd.mapTo og ma
+//Syntes det giver mening kun at prefixe have upstream....
+//Eller evt mapTo, og mapFrom.... ddd.mapTo og ma
 
-// peekTo.. peekFrom
-/// link(new SomeBundle()
+//peekTo.. peekFrom, /// link(new SomeBundle()
 public final class ServiceWirelets {
 
     /** No instantiation. */

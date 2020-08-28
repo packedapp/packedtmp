@@ -62,12 +62,6 @@ public final class PackedComponentRelation implements ComponentRelation {
 
     /** {@inheritDoc} */
     @Override
-    public boolean inSameSystem() {
-        return true;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public boolean inSameGuest() {
         return true;
     }

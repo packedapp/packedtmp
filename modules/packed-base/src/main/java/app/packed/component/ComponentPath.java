@@ -39,6 +39,8 @@ public interface ComponentPath extends Comparable<ComponentPath>, /* , Iterable<
     /** A component path representing the root of a hierarchy. */
     static final ComponentPath ROOT = PackedComponentPath.ROOT;
 
+    ComponentPath add(ComponentPath other);
+
     /**
      * Returns the number of elements in this path.
      *
@@ -47,9 +49,9 @@ public interface ComponentPath extends Comparable<ComponentPath>, /* , Iterable<
     int depth();
 
     /**
-     * Returns whether or not this component is the root component in a container hierarchy.
+     * Returns whether or not this path represent the root in a component system.
      *
-     * @return whether or not this component is the root component
+     * @return whether or not this path represent the root
      */
     boolean isRoot();
 
@@ -60,8 +62,6 @@ public interface ComponentPath extends Comparable<ComponentPath>, /* , Iterable<
      */
     @Nullable
     ComponentPath parent();// Should probably be optional??? Or for performance reasons nullable... hmm
-
-    ComponentPath add(ComponentPath other);
 
     /**
      * Returns the string representation of this component path.

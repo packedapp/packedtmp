@@ -13,32 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.sidecar.old;
 
-import static java.util.Objects.requireNonNull;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- *
+ * A sidecar annotation that can be applied to fields.
  */
-final class PackedGuestConfigurationContext {
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface OldFieldSidecar {
 
-    int index;
-
-    /** The pod used at runtime. */
-    private PackedGuest pod;
-
-    final ComponentNodeConfiguration node;
-
-    PackedGuestConfigurationContext(ComponentNodeConfiguration node) {
-        this.node = requireNonNull(node);
-    }
-
-    PackedGuest pod() {
-        // Lazy create the runtime pod.
-        PackedGuest p = pod;
-        if (p == null) {
-            p = pod = new PackedGuest();
-        }
-        return p;
-    }
+    /**
+     * An sidecar lifecycle event that the sidecar has been successfully instantiated by the runtime. But the instance has
+     * not yet been returned to the user.
+     */
+    String INSTANTIATION = "Instantiation";
 }

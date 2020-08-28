@@ -18,6 +18,7 @@ package app.packed.component;
 import app.packed.container.ContainerBundle;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
+import packed.internal.component.ComponentModifierSet;
 import packed.internal.component.wirelet.InternalWirelet;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletList;
@@ -48,7 +49,20 @@ import packed.internal.component.wirelet.WireletList;
  * specified wirelets are reusable.
  * 
  */
-public interface Wirelet {
+// Maaske soerger containeren for at videre delegere extension wirelets...
+// Saa man skal stadig haves Extension??? IDK
+// Giver mere mening med at det skal vaere det intermediate element.
+public abstract class Wirelet {
+
+    final int modifiers;
+
+    protected Wirelet() {
+        modifiers = 0;
+    }
+
+    protected Wirelet(ComponentModifier modifier) {
+        this.modifiers = ComponentModifierSet.setProperty(0, modifier);
+    }
 
     /**
      * Combines an array or wirelets
@@ -57,7 +71,7 @@ public interface Wirelet {
      *            the wirelets to combine
      * @return a combined {@code Wirelet}
      */
-    static Wirelet combine(Wirelet... wirelets) {
+    public static Wirelet combine(Wirelet... wirelets) {
         return WireletList.of(wirelets);
     }
 
@@ -73,7 +87,7 @@ public interface Wirelet {
      *            the operation to perform after this operation
      * @return a combined {@code Wirelet} that performs in sequence this operation followed by the {@code after} operation
      */
-    static Wirelet combine(Wirelet w1, Wirelet w2) {
+    public static Wirelet combine(Wirelet w1, Wirelet w2) {
         return WireletList.of(w1, w2);
     }
 
@@ -86,7 +100,7 @@ public interface Wirelet {
      *            stuff
      * @return stuff
      */
-    static Wirelet combine(Wirelet wirelet, Wirelet[] others) {
+    public static Wirelet combine(Wirelet wirelet, Wirelet[] others) {
         return WireletList.of(wirelet, others);
     }
 
@@ -100,11 +114,11 @@ public interface Wirelet {
      * @return a new wrapped wirelet
      */
     // Handled??? Unhandled (hmmm does not work VarHandle, MethodHandle)
-    static Wirelet ignoreUnhandled(Wirelet... wirelet) {
+    public static Wirelet ignoreUnhandled(Wirelet... wirelet) {
         return new InternalWirelet.IgnoreUnhandled(combine(wirelet));
     }
 
-    static boolean isAllAssignableTo(Class<? extends Wirelet> c, Wirelet... wirelets) {
+    public static boolean isAllAssignableTo(Class<? extends Wirelet> c, Wirelet... wirelets) {
         // Ideen er lidt at vi kan bruge den til at teste ting vi wrapper...
         // Eftersom folk kan smide dem i forskellige wrapper wirelets
         // such as combine and ignoreUnceceived
@@ -125,14 +139,30 @@ public interface Wirelet {
      * @return a wirelet that can be used to set the name of the component
      */
     // String intrapolation?
-    static Wirelet named(String name) {
+    public static Wirelet named(String name) {
         return new ComponentNameWirelet(name);
     }
 
-    static Wirelet requireProperty(Wirelet wirelet, ComponentProperty property) {
-        return wirelet;
-    }
-}
+    // Skal vi tage en Component???
+    // Eller kan vi kun validere med modifiers...
+    protected final void validate() {
 
-// Interface -> kan man let implementere, uden at fucke et nedarvnings hiraki op
-// Klasse -> Vi kan have protected metoder
+    }
+
+    protected void unhandled() {
+
+    }
+
+//    /**
+//     * @param wirelet
+//     *            the wirelet to wrap
+//     * @param property
+//     *            the property that is required of the component
+//     * @return the wrapped wirelet
+//     */
+//    // Det betyder at vi vel skal starte med kalkulere properties som noget af det foerste?
+//    // Eller ogsaa at vi Wirelet skal vaere abstract
+//    public static Wirelet requireModifier(Wirelet wirelet, ComponentModifier property) {
+//        return wirelet;
+//    }
+}

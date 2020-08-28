@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Function;
 
-import app.packed.artifact.ArtifactDriver;
+import app.packed.artifact.ShellDriver;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
 import app.packed.component.Wirelet;
@@ -87,7 +87,7 @@ public final class PackedAssemblyContext implements AssemblyContext {
         return thread;
     }
 
-    public static <C, D> ComponentNodeConfiguration configure(ArtifactDriver<?> ad, PackedWireableComponentDriver<D> driver, Function<D, C> factory,
+    public static <C, D> ComponentNodeConfiguration configure(ShellDriver<?> ad, PackedWireableComponentDriver<D> driver, Function<D, C> factory,
             CustomConfigurator<C> consumer, Wirelet... wirelets) {
         WireletPack wp = WireletPack.from(driver, wirelets);
         // Vil gerne parse nogle wirelets some det allerfoerste
@@ -103,11 +103,11 @@ public final class PackedAssemblyContext implements AssemblyContext {
         return node.closeAssembly();
     }
 
-    public static ComponentNodeConfiguration assembleArtifact(ArtifactDriver<?> driver, Bundle<?> bundle, Wirelet[] wirelets) {
+    public static ComponentNodeConfiguration assembleArtifact(ShellDriver<?> driver, Bundle<?> bundle, Wirelet[] wirelets) {
         return assemble(driver, new PackedAssemblyContext(PackedOutput.artifact(driver)), bundle, wirelets);
     }
 
-    public static ComponentNodeConfiguration assembleImage(ArtifactDriver<?> driver, Bundle<?> bundle, Wirelet[] wirelets) {
+    public static ComponentNodeConfiguration assembleImage(ShellDriver<?> driver, Bundle<?> bundle, Wirelet[] wirelets) {
         return assemble(driver, new PackedAssemblyContext(PackedOutput.image()), bundle, wirelets);
     }
 
@@ -115,7 +115,7 @@ public final class PackedAssemblyContext implements AssemblyContext {
         return assemble(null, new PackedAssemblyContext(PackedOutput.descriptor(descriptorType)), bundle, wirelets);
     }
 
-    public static ComponentNodeConfiguration assemble(ArtifactDriver<?> ad, PackedAssemblyContext assembly, Bundle<?> bundle, Wirelet... wirelets) {
+    public static ComponentNodeConfiguration assemble(ShellDriver<?> ad, PackedAssemblyContext assembly, Bundle<?> bundle, Wirelet... wirelets) {
         PackedWireableComponentDriver<?> driver = BundleConfiguration.driverOf(bundle);
         WireletPack wp = WireletPack.from(driver, wirelets);
 
@@ -143,7 +143,7 @@ public final class PackedAssemblyContext implements AssemblyContext {
             return new PackedOutput(false);
         }
 
-        public static PackedOutput artifact(ArtifactDriver<?> driver) {
+        public static PackedOutput artifact(ShellDriver<?> driver) {
             return new PackedOutput(false);
         }
     }

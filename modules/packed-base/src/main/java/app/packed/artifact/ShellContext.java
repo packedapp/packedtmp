@@ -34,13 +34,12 @@ import app.packed.service.ServiceExtension;
  * <p>
  * Unless otherwise specified, implementations of this interface are safe for use by multiple concurrent threads.
  * 
- * @apiNote In the future, if the Java language permits, {@link GuestContext} may become a {@code sealed} interface,
+ * @apiNote In the future, if the Java language permits, {@link ShellContext} may become a {@code sealed} interface,
  *          which would prohibit subclassing except by explicitly permitted types.
  */
 // ArtifactContext does not extends ContainerContext??? Fordi ContainerContext er privat
 // til en container. Og en artifact er mere udefar
-
-public interface GuestContext extends ComponentHolder {
+public interface ShellContext extends ComponentHolder {
 
     /**
      * Returns the config site of this artifact.

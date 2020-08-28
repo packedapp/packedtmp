@@ -25,7 +25,7 @@ import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
 import app.packed.component.ClassSourcedDriver;
 import app.packed.component.ComponentConfigurationContext;
-import app.packed.component.ComponentProperty;
+import app.packed.component.ComponentModifier;
 import app.packed.component.InstanceSourcedDriver;
 import app.packed.component.StatelessConfiguration;
 import app.packed.component.WireableComponentDriver;
@@ -41,19 +41,16 @@ import packed.internal.inject.factory.FactoryHandle;
  */
 public abstract class PackedWireableComponentDriver<C> implements WireableComponentDriver<C> {
 
-    public static final int ROLE_CONTAINER = 1 << ComponentProperty.CONTAINER.ordinal();
-    public static final int ROLE_EXTENSION = 1 << ComponentProperty.EXTENSION.ordinal();
-    public static final int ROLE_GUEST = 1 << ComponentProperty.GUEST.ordinal();
-    public static final int ROLE_HOST = 1 << ComponentProperty.HOST.ordinal();
-    public static final int ROLE_SINGLETON = 1 << ComponentProperty.SINGLETON.ordinal();
-    public static final int ROLE_STATELESS = 1 << ComponentProperty.STATELESS.ordinal();
+    public static WireableComponentDriver<ContainerConfiguration> CONTAINER_DRIVER = new ContainerComponentDriver();
+    public static final int ROLE_SINGLETON = 1 << ComponentModifier.SINGLETON.ordinal();
+    public static final int ROLE_STATELESS = 1 << ComponentModifier.UNSCOPED.ordinal();
 
     // Statemanagement... A function is kind of just a singleton...
 
     final int properties;
 
-    protected PackedWireableComponentDriver(ComponentProperty... properties) {
-        this.properties = ComponentPropertySet.setProperty(0, properties);
+    protected PackedWireableComponentDriver(ComponentModifier... properties) {
+        this.properties = ComponentModifierSet.setProperty(0, properties);
     }
 
     protected PackedWireableComponentDriver(int properties) {
@@ -61,7 +58,7 @@ public abstract class PackedWireableComponentDriver<C> implements WireableCompon
     }
 
     public String defaultName(PackedRealm realm) {
-        if (hasProperty(ComponentProperty.CONTAINER)) {
+        if (hasProperty(ComponentModifier.CONTAINER)) {
             // I think try and move some of this to ComponentNameWirelet
             @Nullable
             Class<?> source = realm.type();
@@ -84,37 +81,28 @@ public abstract class PackedWireableComponentDriver<C> implements WireableCompon
         return "Unknown";
     }
 
-    public final boolean hasRole(int role) {
-        return (properties & role) != 0;
-    }
-
     /**
      * Returns whether or not this driver creates a component with container role.
      * 
      * @return whether or not this driver creates a component with container role
      */
     public final boolean isContainer() {
-        return hasProperty(ComponentProperty.CONTAINER);
-    }
-
-    public final boolean isGuest() {
-        return hasRole(ROLE_GUEST);
+        return hasProperty(ComponentModifier.CONTAINER);
     }
 
     /** {@inheritDoc} */
     @Override
-    public Set<ComponentProperty> properties() {
-        return new ComponentPropertySet(properties);
+    public Set<ComponentModifier> properties() {
+        return new ComponentModifierSet(properties);
     }
 
     public abstract C toConfiguration(ComponentConfigurationContext cnc);
 
-    public static class ContainerComponentDriver extends PackedWireableComponentDriver<ContainerConfiguration> {
+    /** The default driver for creating new containers. */
+    private static class ContainerComponentDriver extends PackedWireableComponentDriver<ContainerConfiguration> {
 
-        public static ContainerComponentDriver INSTANCE = new ContainerComponentDriver();
-
-        ContainerComponentDriver() {
-            super(ComponentProperty.CONTAINER);
+        private ContainerComponentDriver() {
+            super(ComponentModifier.CONTAINER);
         }
 
         @Override
@@ -124,8 +112,10 @@ public abstract class PackedWireableComponentDriver<C> implements WireableCompon
     }
 
     public static class SingletonComponentDriver<T> extends PackedWireableComponentDriver<BeanConfiguration<T>> {
+
         @Nullable
         public final BaseFactory<?> factory;
+
         @Nullable
         public final T instance;
 

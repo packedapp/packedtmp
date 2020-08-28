@@ -8,4 +8,6 @@
 /**
  * Provides support for bundling applications into reusable entities.
  */
+//@java.lang.Deprecated
+//@InitializeAttributes()<----
 package app.packed.component;

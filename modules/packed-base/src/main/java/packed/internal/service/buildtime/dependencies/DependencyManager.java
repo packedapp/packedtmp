@@ -198,10 +198,10 @@ public final class DependencyManager {
      */
     public void buildContract(ServiceContract.Builder builder) {
         if (requiredOptionally != null) {
-            requiredOptionally.forEach(k -> builder.addOptional(k));
+            requiredOptionally.forEach(k -> builder.optional(k));
         }
         if (required != null) {
-            required.forEach(k -> builder.addRequires(k));
+            required.forEach(k -> builder.requires(k));
         }
     }
 

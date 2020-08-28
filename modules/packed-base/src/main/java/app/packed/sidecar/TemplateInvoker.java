@@ -52,6 +52,9 @@ public interface TemplateInvoker<T> {
      *             anything thrown by the underlying member propagates unchanged through the call
      */
     @Nullable
+    // Template context??? Taenker vi laver en template...
+    // Og dog, teankte paa f.eks. en WebTemplate...
+    // Men den er vel manual extraction af brugeren, mens invoker er lige omvendt???
     Object invoke(T template) throws Throwable;
 
     // Taenkt paa at man kan tage Invoker paa nogle metoder...

@@ -13,14 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.sidecar;
+package packed.internal.component;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  *
  */
-// Skal vi have en descriptor eller paa model???
-// Altsaa hvis vi skal kunne tage hensyn til Bundle typen 
-// Skal vi vel ligge have en separat klasse...
-public class ModelDescriptor {
+final class PackedGuestConfiguration {
 
+    int index;
+
+    /** The pod used at runtime. */
+    private PackedGuest pod;
+
+    final ComponentNodeConfiguration root;
+
+    PackedGuestConfiguration(ComponentNodeConfiguration root) {
+        this.root = requireNonNull(root);
+    }
+
+    PackedGuest pod() {
+        // Lazy create the runtime pod.
+        PackedGuest p = pod;
+        if (p == null) {
+            p = pod = new PackedGuest();
+        }
+        return p;
+    }
 }

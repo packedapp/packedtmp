@@ -15,29 +15,21 @@
  */
 package app.packed.component;
 
-import app.packed.artifact.App;
-
 /**
  *
- *
  */
-// Sealed, Bundle, Component, ComponentHolder
+public class Dddd {
 
-// ComponentSystem?? Det eneste der lidt afholder mig
-// Er det man consumer en bundle...
+    public static final String D = fff();
 
-// ComponentSystemView???
+    public static void main(String[] args) throws Exception {
+        Package pkg = Class.forName("app.packed.component" + ".package-info").getPackage();
+        System.out.println(pkg.isAnnotationPresent(Deprecated.class));
+        // PackageOwner packageOwner = pkg.getAnnotation(PackageOwner.class);
+    }
 
-public interface NavigableSystem {
-
-    // Maybe on Component???
-    static Component of(NavigableSystem e) {
-        if (e instanceof Component) {
-            return (Component) e;
-        } else if (e instanceof ComponentHolder) {
-            return ((ComponentHolder) e).component();
-        } else {
-            return (App.newImage(((Bundle<?>) e)).component());
-        }
+    public static String fff() {
+        new Exception().printStackTrace();
+        return "asd";
     }
 }

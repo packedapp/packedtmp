@@ -16,11 +16,12 @@
 package app.packed.sidecar;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodType;
 
 import app.packed.base.Nullable;
 
 /**
- *  a setter is a method that updates the value of a variable
+ * a setter is a method that updates the value of a variable
  */
 public interface Setter<T> {
 
@@ -31,10 +32,16 @@ public interface Setter<T> {
      *            the value to set
      */
     void set(@Nullable T value);
-    
+
+    void setNullable(T value);// IDK
+
+    Class<?> type();
+
     /**
-     * Returns a new parameter-less method handle. The return type of the method handle will be the exact return type of the
-     * underlying executable.
+     * Returns a new parameter-less method handle.
+     * <p>
+     * The {@link MethodType} of the method handle returned by this method is always
+     * {@code MethodType.methodType(void.class, type())}.
      * 
      * @return the method handle
      */

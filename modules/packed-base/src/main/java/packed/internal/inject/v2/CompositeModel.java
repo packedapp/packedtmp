@@ -1,6 +1,6 @@
 package packed.internal.inject.v2;
 
-import packed.internal.sidecar.Model;
+import packed.internal.sidecar.old.Model;
 
 //Composite kan have composites i sig.
 //De kan ogsaa bruge prime annoteringer paa lige maade som alle andre

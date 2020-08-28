@@ -21,13 +21,13 @@ import java.lang.invoke.VarHandle;
 import java.util.Set;
 
 import app.packed.base.Nullable;
-import app.packed.component.ComponentConfiguration;
-import app.packed.component.WireableComponentDriver;
 import app.packed.component.BeanConfiguration;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.StatelessConfiguration;
+import app.packed.component.WireableComponentDriver;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
-import packed.internal.component.PackedWireableComponentDriver.ContainerComponentDriver;
+import packed.internal.component.PackedWireableComponentDriver;
 
 /**
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
@@ -155,7 +155,7 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      * @return the default driver for containers
      */
     static WireableComponentDriver<ContainerConfiguration> driver() {
-        return ContainerComponentDriver.INSTANCE;
+        return PackedWireableComponentDriver.CONTAINER_DRIVER;
     }
 }
 

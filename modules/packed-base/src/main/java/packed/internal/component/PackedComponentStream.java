@@ -24,14 +24,14 @@ import app.packed.component.Component;
 import app.packed.component.ComponentStream;
 import packed.internal.util.AbstractAttributeHolderStream;
 
-/** The default implementation of {@link ComponentStream}. */
+/** Implementation of {@link ComponentStream}. */
 final class PackedComponentStream extends AbstractAttributeHolderStream<Component> implements ComponentStream {
 
     /**
-     * Creates a new internal component stream.
+     * Creates a new component stream.
      *
      * @param stream
-     *            the stream of all components that we wrap.
+     *            the stream that we wrap.
      */
     PackedComponentStream(Stream<Component> stream) {
         super(stream);
@@ -84,5 +84,4 @@ final class PackedComponentStream extends AbstractAttributeHolderStream<Componen
     protected PackedComponentStream with(Stream<Component> s) {
         return new PackedComponentStream(s);
     }
-
 }

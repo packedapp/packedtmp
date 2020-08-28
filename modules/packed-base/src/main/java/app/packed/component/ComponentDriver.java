@@ -27,9 +27,9 @@ public interface ComponentDriver<C> {
     // The runtime may add further attributes when applying this driver.
     // For example, the root component of a system always has the SYSTEM property.
     // Irrecspectively of the component driver that was used
-    Set<ComponentProperty> properties();
+    Set<ComponentModifier> properties();
 
-    default boolean hasProperty(ComponentProperty property) {
+    default boolean hasProperty(ComponentModifier property) {
         return properties().contains(property);
     }
 
@@ -54,7 +54,7 @@ public interface ComponentDriver<C> {
         }
 
         static Option validateParentIsContainer() {
-            return validateParent(c -> c.hasProperty(ComponentProperty.CONTAINER), "This component can only be wired to a container");
+            return validateParent(c -> c.hasModifier(ComponentModifier.CONTAINER), "This component can only be wired to a container");
         }
 
         static Option validateParent(Predicate<? super Component> validator, String msg) {

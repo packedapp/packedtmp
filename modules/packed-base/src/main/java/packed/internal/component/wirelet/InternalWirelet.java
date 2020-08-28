@@ -22,7 +22,8 @@ import app.packed.component.Wirelet;
 /**
  *
  */
-public abstract class InternalWirelet implements Wirelet {
+// Tror meningen er at smide ind i .component igen...
+public abstract class InternalWirelet extends Wirelet {
 
     abstract void process(WireletPack c);
 

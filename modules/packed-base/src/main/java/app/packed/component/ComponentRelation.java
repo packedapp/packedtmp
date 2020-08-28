@@ -58,8 +58,11 @@ import java.util.Optional;
 
 // A ComponentRelation is directed
 // Can we have attributes??
-
 // if (rel.inSameContainer()) 
+
+// En relation er jo mere end topology... Syntes
+
+// walkFromSource(); Syntes maaske ikke den skal extende Iteralble...
 public interface ComponentRelation extends Iterable<Component> {
 
     /**
@@ -82,14 +85,19 @@ public interface ComponentRelation extends Iterable<Component> {
      * 
      * @return whether or not source and target belongs to the same guest
      */
+    // Maaske har vi kun de to andre...
     boolean inSameGuest();
 
     /**
-     * Returns whether or not the two components are in the same system.
+     * Returns whether or not the two components are in the same system. Two components are in the same system, iff they
+     * have the same {@link Component#system() system component}.
      * 
      * @return whether or not the two components are in the same system
+     * @see Component#system()
      */
-    boolean inSameSystem();
+    default boolean inSameSystem() {
+        return source().system() == target().system();
+    }
 
     // Just here because it might be easier to remember...
     default boolean isStronglyConnected() {

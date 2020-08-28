@@ -30,8 +30,8 @@ import java.util.stream.Stream;
 import app.packed.base.AttributeSet;
 import app.packed.base.Nullable;
 import app.packed.component.Component;
+import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentPath;
-import app.packed.component.ComponentProperty;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
@@ -101,7 +101,7 @@ public final class ComponentNode implements Component {
         }
 
         // Initialize Container
-        if (configuration.driver().hasProperty(ComponentProperty.CONTAINER)) {
+        if (configuration.driver().hasProperty(ComponentModifier.CONTAINER)) {
             // I think this injector is only available for the top of an assembly
             PackedContainerRole container = configuration.container;
             Injector i = null;
@@ -127,7 +127,7 @@ public final class ComponentNode implements Component {
             LinkedHashMap<String, ComponentNode> result = new LinkedHashMap<>(configuration.children.size());
 
             for (ComponentNodeConfiguration cc = configuration.firstChild; cc != null; cc = cc.nextSibling) {
-                if (!cc.driver().hasProperty(ComponentProperty.EXTENSION)) {
+                if (!cc.driver().hasProperty(ComponentModifier.EXTENSION)) {
                     ComponentNode ac = new ComponentNode(this, cc, ic);
                     result.put(ac.name(), ac);
                 }
@@ -208,8 +208,8 @@ public final class ComponentNode implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public boolean hasProperty(ComponentProperty property) {
-        return ComponentPropertySet.isPropertySet(model.properties, property);
+    public boolean hasModifier(ComponentModifier property) {
+        return ComponentModifierSet.isPropertySet(model.properties, property);
     }
 
     public boolean isInSameContainer(ComponentNode other) {
@@ -226,6 +226,12 @@ public final class ComponentNode implements Component {
 
     public RuntimeComponentModel model() {
         return model;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<ComponentModifier> modifiers() {
+        return new ComponentModifierSet(model.properties);
     }
 
     /** {@inheritDoc} */
@@ -248,14 +254,22 @@ public final class ComponentNode implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public Set<ComponentProperty> properties() {
-        return new ComponentPropertySet(model.properties);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public ComponentRelation relationTo(Component other) {
         return PackedComponentRelation.find(this, other);
+    }
+
+    /**
+     * @param path
+     */
+    @Override
+    public Component resolve(CharSequence path) {
+        Component c = findComponent(path);
+        if (c == null) {
+            // Maybe try an match with some fuzzy logic, if children is a resonable size)
+            List<?> list = stream().map(e -> e.path()).collect(Collectors.toList());
+            throw new IllegalArgumentException("Could not find component with path: " + path + " avilable components:" + list);
+        }
+        return c;
     }
 
     /** {@inheritDoc} */
@@ -278,17 +292,12 @@ public final class ComponentNode implements Component {
         }
     }
 
-    /**
-     * @param path
-     */
     @Override
-    public Component resolve(CharSequence path) {
-        Component c = findComponent(path);
-        if (c == null) {
-            // Maybe try an match with some fuzzy logic, if children is a resonable size)
-            List<?> list = stream().map(e -> e.path()).collect(Collectors.toList());
-            throw new IllegalArgumentException("Could not find component with path: " + path + " avilable components:" + list);
+    public Component system() {
+        ComponentNode p = parent;
+        while (p.parent != null) {
+            p = p.parent;
         }
-        return c;
+        return p;
     }
 }

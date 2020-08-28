@@ -15,12 +15,9 @@
  */
 package app.packed.artifact;
 
-import static java.util.Objects.requireNonNull;
-
 import app.packed.component.Bundle;
 import app.packed.component.Component;
 import app.packed.component.Wirelet;
-import app.packed.container.ContainerDescriptor;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.lifecycle.phases.ConstructionContext;
@@ -31,10 +28,10 @@ import packed.internal.lifecycle.phases.PackedAssemblyContext;
 // Altsaa ved ikke lige hvordan det hosted image kommer til at fungere...
 final class PackedGuestImage<A> implements GuestImage<A> {
 
-    /** The driver used to create the artifact. */
+    /** The driver used to create the any shell. */
     // We should use the driver when creating the actual root node...
     // I'm not sure we should need to store it.
-    private final ArtifactDriver<A> driver;
+    private final ShellDriver<A> driver;
 
     /** The configuration of the root container. */
     private final ComponentNodeConfiguration node;
@@ -42,27 +39,16 @@ final class PackedGuestImage<A> implements GuestImage<A> {
     /**
      * Creates a new image from the specified configuration and wirelets.
      * 
-     * @param node
-     *            the container configuration to wrap
+     * @param driver
+     *            the artifact driver
+     * @param bundle
+     *            the artifact source
+     * @param wirelets
+     *            any wirelet
      */
-    private PackedGuestImage(ComponentNodeConfiguration node, ArtifactDriver<A> driver) {
-        this.node = requireNonNull(node);
+    PackedGuestImage(ShellDriver<A> driver, Bundle<?> bundle, Wirelet... wirelets) {
+        this.node = PackedAssemblyContext.assembleImage(driver, bundle, wirelets);
         this.driver = driver;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public A create(Wirelet... wirelets) {
-        return driver.newArtifact(newContext(wirelets));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ContainerDescriptor descriptor() {
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        ContainerDescriptor.Builder builder = new ContainerDescriptor.Builder((Class) Bundle.class);
-        node.container().buildDescriptor(builder);
-        return builder.build();
     }
 
     /** {@inheritDoc} */
@@ -71,39 +57,34 @@ final class PackedGuestImage<A> implements GuestImage<A> {
         return node.adaptToComponent();
     }
 
-    public GuestContext newContext(Wirelet... wirelets) {
-        return ConstructionContext.constructArtifact(node, WireletPack.forImage(node, wirelets));
-    }
-
     /** {@inheritDoc} */
     @Override
-    public Class<?> rawArtifactType() {
-        return driver.rawType();
+    public A construct(Wirelet... wirelets) {
+        ShellContext context = ConstructionContext.constructArtifact(node, WireletPack.forImage(node, wirelets));
+        return driver.newArtifact(context);
     }
 
     /** {@inheritDoc} */
     @Override
     public A start(Wirelet... wirelets) {
-        return driver.newArtifact(newContext(wirelets));
-    }
-
-    /**
-     * If the specified source is an image returns the image with any specified wirelets applied. If the specified source is
-     * a bundle creates and returns a new image from the specified bundle.
-     * 
-     * @param driver
-     *            the artifact driver
-     * @param bundle
-     *            the artifact source
-     * @param wirelets
-     *            any wirelet
-     * @return the image
-     */
-    static <A> PackedGuestImage<A> newImage(ArtifactDriver<A> driver, Bundle<?> bundle, Wirelet... wirelets) {
-        ComponentNodeConfiguration node = PackedAssemblyContext.assembleImage(driver, bundle, wirelets);
-        return new PackedGuestImage<A>(node, driver);
+        return construct(wirelets);
     }
 }
+//
+///** {@inheritDoc} */
+//@Override
+//public Class<?> rawShellType() {
+//  return driver.rawType();
+//}
+//
+///** {@inheritDoc} */
+//@Override
+//public ContainerDescriptor descriptor() {
+//  @SuppressWarnings({ "unchecked", "rawtypes" })
+//  ContainerDescriptor.Builder builder = new ContainerDescriptor.Builder((Class) Bundle.class);
+//  node.container().buildDescriptor(builder);
+//  return builder.build();
+//}
 //
 ///** {@inheritDoc} */
 //@Override

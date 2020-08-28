@@ -22,7 +22,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import app.packed.base.Nullable;
-import packed.internal.sidecar.Model;
+import packed.internal.sidecar.old.Model;
 
 /**
  *
