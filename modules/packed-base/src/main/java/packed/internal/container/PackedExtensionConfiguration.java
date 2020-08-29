@@ -36,7 +36,7 @@ import app.packed.container.ContainerDescriptor;
 import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionConfiguration;
-import app.packed.container.ExtensionSettings;
+import app.packed.container.ExtensionSetup;
 import app.packed.inject.Factory;
 import app.packed.lifecycle.AssemblyContext;
 import app.packed.lifecycle3.LifecycleContext;
@@ -251,16 +251,16 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
 
     /** Invoked by the container configuration, whenever the extension is configured. */
     void onChildrenConfigured() {
-        checkState(ExtensionSettings.CHILD_LINKING);
+        checkState(ExtensionSetup.CHILD_LINKING);
         model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_2_CHILDREN_DONE, instance, this);
     }
 
     /** Invoked by the container configuration, whenever the extension is configured. */
     void onConfigured() {
-        checkState(ExtensionSettings.NORMAL_USAGE);
+        checkState(ExtensionSetup.NORMAL_USAGE);
         model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_1_MAIN, instance, this);
         isConfigured = true;
-        checkState(ExtensionSettings.CHILD_LINKING);
+        checkState(ExtensionSetup.CHILD_LINKING);
     }
 
     /**
@@ -343,9 +343,9 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
         // Create extension context and instantiate extension
         ExtensionModel model = ExtensionModel.of(extensionType);
         PackedExtensionConfiguration pec = new PackedExtensionConfiguration(container, model);
-        pec.checkState(ExtensionSettings.INSTANTIATING);
+        pec.checkState(ExtensionSetup.INSTANTIATING);
         Extension e = pec.instance = model.newInstance(pec); // Creates a new XXExtension instance
-        pec.checkState(ExtensionSettings.NORMAL_USAGE);
+        pec.checkState(ExtensionSetup.NORMAL_USAGE);
 
         // Sets Extension.configuration = pec
         VH_EXTENSION_CONFIGURATION.set(e, pec); // field is package-private in a public package

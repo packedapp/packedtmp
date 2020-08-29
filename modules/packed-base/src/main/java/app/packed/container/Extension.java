@@ -234,8 +234,8 @@ public abstract class Extension {
     /**
      * Returns an extension of the specified type.
      * <p>
-     * Only extension types that have been explicitly registered using {@link ExtensionSettings#dependencies()} or
-     * {@link ExtensionSettings#optionalDependencies()} may be specified as arguments to this method.
+     * Only extension types that have been explicitly registered using {@link ExtensionSetup#dependencies()} or
+     * {@link ExtensionSetup#optionalDependencies()} may be specified as arguments to this method.
      * <p>
      * Invoking this method is similar to calling {@link ContainerConfiguration#use(Class)}. However, this method also keeps
      * track of which extensions uses other extensions. And forming any kind of circle in the dependency graph will fail
@@ -250,7 +250,7 @@ public abstract class Extension {
      *             If invoked from the constructor of the extension. Or if the underlying container is no longer
      *             configurable and an extension of the specified type has not already been installed
      * @throws UnsupportedOperationException
-     *             if the specified extension type has not been specified via {@link ExtensionSettings}
+     *             if the specified extension type has not been specified via {@link ExtensionSetup}
      * @see ExtensionConfiguration#useOld(Class)
      */
     // This will be removed..

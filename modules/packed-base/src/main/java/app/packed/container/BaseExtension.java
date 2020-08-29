@@ -26,7 +26,7 @@ import packed.internal.container.PackedContainerRole;
  * <p>
  * 
  * <p>
- * Other extensions should never depend on this extension via {@link ExtensionSettings#dependencies()}. Doing so will
+ * Other extensions should never depend on this extension via {@link ExtensionSetup#dependencies()}. Doing so will
  * fail with a runtime exception.
  */
 // If it proves strange that it is not in the component tree.

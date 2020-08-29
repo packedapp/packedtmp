@@ -38,7 +38,7 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionMember;
 import app.packed.container.ExtensionSet;
-import app.packed.container.ExtensionSettings;
+import app.packed.container.ExtensionSetup;
 import app.packed.container.InternalExtensionException;
 import app.packed.hook.OnHook;
 import app.packed.lifecycle3.LifecycleContext;
@@ -99,7 +99,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
 
         @SuppressWarnings("unchecked")
         private List<Class<? extends Extension>> computeValue0(Class<?> type) {
-            String[] dependencies = type.getAnnotation(ExtensionSettings.class).optionalDependencies();
+            String[] dependencies = type.getAnnotation(ExtensionSetup.class).optionalDependencies();
 
             ArrayList<Class<? extends Extension>> result = new ArrayList<>();
             ClassLoader cl = type.getClassLoader(); // PrividligeAction???
@@ -111,10 +111,10 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
                 if (c != null) {
                     // We check this in models also...
                     if (Extension.class == c) {
-                        throw new InternalExtensionException("@" + ExtensionSettings.class.getSimpleName() + " " + StringFormatter.format(type)
+                        throw new InternalExtensionException("@" + ExtensionSetup.class.getSimpleName() + " " + StringFormatter.format(type)
                                 + " cannot specify Extension.class as an optional dependency, for " + StringFormatter.format(c));
                     } else if (!Extension.class.isAssignableFrom(c)) {
-                        throw new InternalExtensionException("@" + ExtensionSettings.class.getSimpleName() + " " + StringFormatter.format(type)
+                        throw new InternalExtensionException("@" + ExtensionSetup.class.getSimpleName() + " " + StringFormatter.format(type)
                                 + " specified an invalid extension " + StringFormatter.format(c));
                     }
 
@@ -219,7 +219,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
     }
 
     /**
-     * Returns a set of all the direct dependencies of this extension as specified via {@link ExtensionSettings}.
+     * Returns a set of all the direct dependencies of this extension as specified via {@link ExtensionSetup}.
      * 
      * @return a set of all the direct dependencies of this extension
      */
@@ -335,8 +335,8 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
     static final class Builder extends SidecarModel.Builder {
 
         /** Meta data about the extension sidecar. */
-        public static final SidecarTypeMeta STM = new SidecarTypeMeta(ExtensionSettings.class, LifecycleDefinition.of(ExtensionSettings.INSTANTIATING,
-                ExtensionSettings.NORMAL_USAGE, ExtensionSettings.CHILD_LINKING, ExtensionSettings.GUESTS_DEFINITIONS));
+        public static final SidecarTypeMeta STM = new SidecarTypeMeta(ExtensionSetup.class, LifecycleDefinition.of(ExtensionSetup.INSTANTIATING,
+                ExtensionSetup.NORMAL_USAGE, ExtensionSetup.CHILD_LINKING, ExtensionSetup.GUESTS_DEFINITIONS));
 
         // Whether or not it is only children... Or all ancestors
         private boolean callbackOnlyDirectChildren;
@@ -373,7 +373,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
 
         private void addDependency(Class<? extends Extension> dependencyType) {
             if (dependencyType == sidecarType) {
-                throw new InternalExtensionException("Extension " + sidecarType + " cannot depend on itself via " + ExtensionSettings.class);
+                throw new InternalExtensionException("Extension " + sidecarType + " cannot depend on itself via " + ExtensionSetup.class);
             }
             ExtensionModel model = Loader.load(dependencyType, loader);
             depth = Math.max(depth, model.depth + 1);
@@ -393,7 +393,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
          */
         ExtensionModel build() {
             // See if the extension is annotated with @ExtensionSidecar
-            ExtensionSettings em = sidecarType.getAnnotation(ExtensionSettings.class);
+            ExtensionSetup em = sidecarType.getAnnotation(ExtensionSetup.class);
             if (em != null) {
                 for (Class<? extends Extension> dependencyType : em.dependencies()) {
                     addDependency(dependencyType);

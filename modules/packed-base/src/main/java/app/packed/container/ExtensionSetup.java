@@ -42,7 +42,7 @@ import app.packed.statemachine.Leaving;
 // ExtensionDependencies er vi vel tilbage i....
 
 // transitive... Altsaa kan vi forstille os at extensions of extension skal bruge dem...
-public @interface ExtensionSettings {
+public @interface ExtensionSetup {
 
     /**
      * Used together with the {@link Leaving} annotation to indicate that an {@link Extension}method should be executed as
