@@ -47,6 +47,7 @@ public final class PackedAssemblyContext implements AssemblyContext {
     // This should not be permanently..
     // What if we create an image in one thread. Passes it to another thread.
 
+    // Skal bruges
     private final Thread thread = Thread.currentThread();
 
     // Bruges ikke lige endnu. Ved heller ikke om vi har lyst til at gemme dem permanent...

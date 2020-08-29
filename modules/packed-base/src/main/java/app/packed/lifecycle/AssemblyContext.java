@@ -43,6 +43,8 @@ public interface AssemblyContext {
     // F.eks. via Extension, eller bundle...
 
     // ServiceExtension.failed()
+
+    // Throws IAE if post construct
     void addError(ErrorMessage message);
 
     default boolean isActive() {

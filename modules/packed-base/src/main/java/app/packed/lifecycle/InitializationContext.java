@@ -34,6 +34,8 @@ public interface InitializationContext {
     // assembly.modifiers().isImage()... to see if we are created from an image...
     AssemblyContext assembly();
 
+    // path
+
     // modifiers.isGuest()
     ComponentModifierSet modifiers();
 }

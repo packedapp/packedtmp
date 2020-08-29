@@ -236,18 +236,17 @@ public abstract class BaseBundle extends ContainerBundle {
     protected final ServiceExtension service() {
         return use(ServiceExtension.class);
     }
-
-    /**
-     * Prints the contract of the specified bundle.
-     * 
-     * @param bundle
-     *            the bundle to print the contract for
-     */
-    protected static void printContract(ContainerBundle bundle) {
-        // BaseBundleContract.of(bundle).print();
-    }
-
-    protected static void printDescriptor(ContainerBundle bundle) {
-        ContainerDescriptor.of(bundle).print();
-    }
 }
+///**
+//* Prints the contract of the specified bundle.
+//* 
+//* @param bundle
+//*            the bundle to print the contract for
+//*/
+//protected static void printContract(ContainerBundle bundle) {
+// // BaseBundleContract.of(bundle).print();
+//}
+//
+//protected static void printDescriptor(ContainerBundle bundle) {
+// ContainerDescriptor.of(bundle).print();
+//}
