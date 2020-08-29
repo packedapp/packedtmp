@@ -19,8 +19,8 @@ import app.packed.component.Bundle;
 import app.packed.component.Wirelet;
 import app.packed.lifecycleold.RunState;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.lifecycle.phases.ConstructionContext;
-import packed.internal.lifecycle.phases.PackedAssemblyContext;
+import packed.internal.lifecycle.PackedAssemblyContext;
+import packed.internal.lifecycle.PackedInitializationContext;
 
 /**
  *
@@ -56,7 +56,7 @@ public class Main {
     // Maybe more a.la. Main.execute()
     static void execute0(Bundle<?> source, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.assemble(source, 0, null, wirelets);
-        ShellContext context = ConstructionContext.constructArtifact(node, node.wirelets);
+        ShellContext context = PackedInitializationContext.newShellContext(node, node.wirelets);
         context.start();
     }
 }

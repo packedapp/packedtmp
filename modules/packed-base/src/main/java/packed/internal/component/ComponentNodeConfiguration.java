@@ -53,8 +53,8 @@ import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.PackedContainerRole;
 import packed.internal.container.PackedRealm;
 import packed.internal.inject.ConfigSiteInjectOperations;
-import packed.internal.lifecycle.phases.ConstructionContext;
-import packed.internal.lifecycle.phases.PackedAssemblyContext;
+import packed.internal.lifecycle.PackedAssemblyContext;
+import packed.internal.lifecycle.PackedInitializationContext;
 
 /** The build time representation of a component. */
 public final class ComponentNodeConfiguration implements ComponentConfigurationContext {
@@ -309,7 +309,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         return name;
     }
 
-    public ComponentNode instantiateTree(ConstructionContext ic) {
+    public ComponentNode instantiateTree(PackedInitializationContext ic) {
         return new ComponentNode(null, this, ic);
     }
 

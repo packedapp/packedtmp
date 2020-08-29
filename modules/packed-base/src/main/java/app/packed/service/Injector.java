@@ -33,7 +33,7 @@ import app.packed.component.CustomConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
-import packed.internal.lifecycle.phases.ConstructionContext;
+import packed.internal.lifecycle.PackedInitializationContext;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -358,6 +358,6 @@ final class InjectorArtifactHelper {
     static final ShellDriver<Injector> DRIVER = ShellDriver.of(MethodHandles.lookup(), Injector.class, CONV);
 
     static Injector convert(ShellContext container) {
-        return ((ConstructionContext.PackedGuestContext) container).injector();
+        return ((PackedInitializationContext.PackedShellContext) container).injector();
     }
 }

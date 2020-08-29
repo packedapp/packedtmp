@@ -48,7 +48,7 @@ import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
 import packed.internal.invoke.MethodHandleBuilder;
 import packed.internal.invoke.OpenClass;
-import packed.internal.lifecycle.LifecycleDefinition;
+import packed.internal.lifecycle.old.LifecycleDefinition;
 import packed.internal.sidecar.old.SidecarModel;
 import packed.internal.sidecar.old.SidecarTypeMeta;
 import packed.internal.util.StringFormatter;

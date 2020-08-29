@@ -13,11 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.lifecycle;
+package packed.internal.lifecycle.old;
 
 /**
  *
  */
-public class LifecycleState {
+// Skal vi have en per lifecycle??? . f.eks. onInitialize.treee
+// OnStart(Before)
+public class AtLifecycle /* extends AdDependable */ {
 
+    // invokable
+
+    // dependencies...
 }

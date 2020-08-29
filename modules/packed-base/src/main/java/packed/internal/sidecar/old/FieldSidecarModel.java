@@ -15,7 +15,7 @@
  */
 package packed.internal.sidecar.old;
 
-import packed.internal.lifecycle.LifecycleDefinition;
+import packed.internal.lifecycle.old.LifecycleDefinition;
 
 /** A model of {@link OldFieldSidecar}. */
 public final class FieldSidecarModel extends SidecarModel {

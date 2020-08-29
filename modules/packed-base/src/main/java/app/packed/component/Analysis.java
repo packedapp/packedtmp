@@ -16,7 +16,7 @@
 package app.packed.component;
 
 import packed.internal.component.PackedComponentModifierSet;
-import packed.internal.lifecycle.phases.PackedAssemblyContext;
+import packed.internal.lifecycle.PackedAssemblyContext;
 
 /**
  * Analysis servers 2 main purposes

@@ -32,7 +32,7 @@ import app.packed.statemachine.StateTransition;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.invoke.MethodHandleBuilder;
 import packed.internal.invoke.OpenClass;
-import packed.internal.lifecycle.DefaultLifecycleTransition;
+import packed.internal.lifecycle.old.DefaultLifecycleTransition;
 import packed.internal.util.ThrowableUtil;
 
 /**

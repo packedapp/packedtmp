@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.lifecycle;
+package app.packed.lifecycle;
 
 /**
  *
  */
-// We are not going to have this class at runtime..
-// Because it is going to be confusing with LifecycleState also
-public enum LifecyclePhase {
-    ASSEMBLY, INITIALIZATION, OPERATION;
+public class InitializationException {
+
 }

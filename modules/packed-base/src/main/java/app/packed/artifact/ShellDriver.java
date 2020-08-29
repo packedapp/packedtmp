@@ -30,8 +30,8 @@ import app.packed.container.Extension;
 import app.packed.service.Injector;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedWireableComponentDriver;
-import packed.internal.lifecycle.phases.ConstructionContext;
-import packed.internal.lifecycle.phases.PackedAssemblyContext;
+import packed.internal.lifecycle.PackedAssemblyContext;
+import packed.internal.lifecycle.PackedInitializationContext;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -95,7 +95,7 @@ public final class ShellDriver<A> {
 
     public <C, D> A configure(WireableComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.configure(this, (PackedWireableComponentDriver<D>) driver, factory, consumer, wirelets);
-        ShellContext ac = ConstructionContext.constructArtifact(node, node.wirelets);
+        ShellContext ac = PackedInitializationContext.newShellContext(node, node.wirelets);
         return newArtifact(ac);
     }
 
@@ -114,7 +114,7 @@ public final class ShellDriver<A> {
      */
     public A initialize(Bundle<?> bundle, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.assemble(bundle, 0, this, wirelets);
-        ShellContext context = ConstructionContext.constructArtifact(node, node.wirelets);
+        ShellContext context = PackedInitializationContext.newShellContext(node, node.wirelets);
         return newArtifact(context);
     }
 
@@ -171,7 +171,7 @@ public final class ShellDriver<A> {
      */
     public A start(Bundle<?> bundle, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.assemble(bundle, 0, this, wirelets);
-        ShellContext context = ConstructionContext.constructArtifact(node, node.wirelets);
+        ShellContext context = PackedInitializationContext.newShellContext(node, node.wirelets);
         context.start();
         return newArtifact(context);
     }

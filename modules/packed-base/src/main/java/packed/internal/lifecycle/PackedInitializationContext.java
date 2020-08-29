@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.lifecycle.phases;
+package packed.internal.lifecycle;
 
 import static java.util.Objects.requireNonNull;
 
@@ -48,11 +48,11 @@ import packed.internal.component.wirelet.WireletPack;
 // Per container, er sgu for besvaergeligt med de der get stuff...
 // Altsaa med mindre vi har behov for at access dem fra andet sted fra
 
-public final class ConstructionContext {
+public final class PackedInitializationContext {
 
     private final WireletPack wirelets;
 
-    private ConstructionContext(WireletPack wirelets) {
+    private PackedInitializationContext(WireletPack wirelets) {
         this.wirelets = wirelets;
     }
 
@@ -66,23 +66,23 @@ public final class ConstructionContext {
         return wirelets;
     }
 
-    public static ShellContext constructArtifact(ComponentNodeConfiguration root, WireletPack wp) {
-        ConstructionContext ic = new ConstructionContext(wp);
+    public static ShellContext newShellContext(ComponentNodeConfiguration root, WireletPack wp) {
+        PackedInitializationContext ic = new PackedInitializationContext(wp);
         // Will instantiate the whole container hierachy
         ComponentNode node = root.instantiateTree(ic);
 
         // TODO run initialization
 
-        return new PackedGuestContext(node);
+        return new PackedShellContext(node);
     }
 
     /** Used to expose a container as an ArtifactContext. */
-    public static final class PackedGuestContext implements ShellContext {
+    public static final class PackedShellContext implements ShellContext {
 
         /** The component node we are wrapping. */
         private final ComponentNode node;
 
-        private PackedGuestContext(ComponentNode node) {
+        private PackedShellContext(ComponentNode node) {
             this.node = requireNonNull(node);
         }
 

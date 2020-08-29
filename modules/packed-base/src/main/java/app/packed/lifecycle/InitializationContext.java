@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle2;
+package app.packed.lifecycle;
 
 import app.packed.component.ComponentModifierSet;
-import app.packed.lifecycle.AssemblyContext;
 
 /**
  *

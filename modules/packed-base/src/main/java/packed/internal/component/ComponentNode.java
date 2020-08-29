@@ -39,7 +39,7 @@ import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
 import packed.internal.container.PackedContainerRole;
 import packed.internal.container.PackedExtensionConfiguration;
-import packed.internal.lifecycle.phases.ConstructionContext;
+import packed.internal.lifecycle.PackedInitializationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.runtime.PackedInjector;
 
@@ -76,7 +76,7 @@ public final class ComponentNode implements Component {
      * @param configuration
      *            the configuration used to create this node
      */
-    ComponentNode(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, ConstructionContext ic) {
+    ComponentNode(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, PackedInitializationContext ic) {
         this.parent = parent;
         this.model = RuntimeComponentModel.of(configuration);
         this.pod = requireNonNull(configuration.pod.pod());
