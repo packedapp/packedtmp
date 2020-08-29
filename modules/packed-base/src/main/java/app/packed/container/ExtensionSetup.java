@@ -42,6 +42,8 @@ import app.packed.statemachine.Leaving;
 // ExtensionDependencies er vi vel tilbage i....
 
 // transitive... Altsaa kan vi forstille os at extensions of extension skal bruge dem...
+
+// Was ExtensionSettings
 public @interface ExtensionSetup {
 
     /**

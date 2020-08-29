@@ -17,12 +17,14 @@ package app.packed.component;
 
 import java.util.Set;
 
+import packed.internal.component.PackedComponentModifierSet;
+
 /**
  *
  */
 public interface ComponentModifierSet extends Set<ComponentModifier> {
 
-    boolean is(ComponentModifier modifier);
+    boolean contains(ComponentModifier modifier);
 
     /**
      * Returns whether or not this set contains the {@link ComponentModifier#CONTAINER} modifier.
@@ -30,10 +32,39 @@ public interface ComponentModifierSet extends Set<ComponentModifier> {
      * @return true if this set contains the container modifier, otherwise false
      */
     default boolean isContainer() {
-        return is(ComponentModifier.CONTAINER);
+        return contains(ComponentModifier.CONTAINER);
     }
 
+    /**
+     * Returns whether or not this set contains the {@link ComponentModifier#IMAGE} modifier.
+     * 
+     * @return true if this set contains the container modifier, otherwise false
+     */
     default boolean isImage() {
-        return is(ComponentModifier.IMAGE);
+        return contains(ComponentModifier.IMAGE);
+    }
+
+    // THESE METHODS DO NOT GUARANTEE to return the same int across versions
+    // Eneste problem er, lad os nu sige vi lige pludselig faar mere en 32 properties...
+    // Hvilket jeg ikke regner med er realistisk, men vi har lige pludselig exposed det
+    // i vores API.
+    public static int toBits(ComponentModifier p) {
+        return 1 << p.ordinal();
+    }
+
+    public static int toBits(ComponentModifier p1, ComponentModifier p2) {
+        return 1 << p1.ordinal() + 1 << p2.ordinal();
+    }
+
+    public static Set<ComponentModifier> fromBits(int bits) {
+        throw new UnsupportedOperationException();
+    }
+
+    static ComponentModifierSet of() {
+        return new PackedComponentModifierSet(0);
+    }
+
+    static ComponentModifierSet of(ComponentModifier m) {
+        return new PackedComponentModifierSet(toBits(m));
     }
 }

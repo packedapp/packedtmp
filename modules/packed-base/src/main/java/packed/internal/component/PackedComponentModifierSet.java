@@ -104,7 +104,7 @@ public final class PackedComponentModifierSet extends AbstractSet<ComponentModif
 
     /** {@inheritDoc} */
     @Override
-    public boolean is(ComponentModifier modifier) {
+    public boolean contains(ComponentModifier modifier) {
         return isPropertySet(modifiers, modifier);
     }
 }
