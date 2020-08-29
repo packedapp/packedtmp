@@ -65,7 +65,9 @@ public interface App extends AutoCloseable, ComponentHolder {
      * 
      * @return the name of this application
      */
-    String name();
+    default String name() {
+        return component().name();
+    }
 
     /**
      * Returns the path of this application. Unless the app is installed as a guest, this method always returns
@@ -74,7 +76,9 @@ public interface App extends AutoCloseable, ComponentHolder {
      * @return the path of this application
      * @see Component#path()
      */
-    ComponentPath path();
+    default ComponentPath path() {
+        return component().path();
+    }
 
     /**
      * Returns the state of application.

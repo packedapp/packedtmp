@@ -228,6 +228,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
                 || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && Bundle.class.isAssignableFrom(c));
     }
 
+    @Override
     public PackedAssemblyContext assembly() {
         return assembly;
     }
@@ -451,7 +452,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
         // maybe just putIfAbsent, under the assumption that we will rarely need to override.
         if (parent != null) {
-            if (parent != null && parent.children != null && parent.children.containsKey(n)) {
+            if (parent.children != null && parent.children.containsKey(n)) {
                 // If name exists. Lets keep a counter (maybe if bigger than 5). For people trying to
                 // insert a given component 1 million times...
                 if (!isFree) {

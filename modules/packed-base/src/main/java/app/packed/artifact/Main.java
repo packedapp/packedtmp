@@ -49,8 +49,8 @@ public class Main {
 
     // sync deamon???????
     // App.main(new Goo(), args);
-    static void main(Bundle<?> source, String[] args, Wirelet... wirelets) {
-        execute0(source, wirelets);
+    static void main(Bundle<?> bundle, String[] args, Wirelet... wirelets) {
+        execute0(bundle, wirelets);
     }
 
     // Maybe more a.la. Main.execute()

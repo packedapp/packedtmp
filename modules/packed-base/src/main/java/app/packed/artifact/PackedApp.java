@@ -7,7 +7,6 @@ import java.util.concurrent.CompletableFuture;
 
 import app.packed.base.Key;
 import app.packed.component.Component;
-import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.component.ComponentStream.Option;
 import app.packed.config.ConfigSite;
@@ -43,18 +42,6 @@ final class PackedApp implements App {
     @Override
     public ConfigSite configSite() {
         return context.configSite();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String name() {
-        return component().name();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentPath path() {
-        return component().path();
     }
 
     /** {@inheritDoc} */
