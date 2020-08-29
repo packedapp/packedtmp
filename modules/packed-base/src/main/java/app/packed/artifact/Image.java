@@ -44,7 +44,7 @@ import app.packed.container.ContainerDescriptor;
  * artifact images. Artifact images can not be used as a part of other containers, for example, via
  * 
  * 
- * @apiNote In the future, if the Java language permits, {@link GuestImage} may become a {@code sealed} interface, which
+ * @apiNote In the future, if the Java language permits, {@link Image} may become a {@code sealed} interface, which
  *          would prohibit subclassing except by explicitly permitted types.
  * 
  */
@@ -53,7 +53,7 @@ import app.packed.container.ContainerDescriptor;
 
 // Hvis Guest == Closeable
 // Saa er et image noget andet...
-public interface GuestImage<A> extends ComponentHolder {
+public interface Image<A> extends ComponentHolder {
 
     /**
      * Returns the configuration site of this image.
@@ -80,7 +80,6 @@ public interface GuestImage<A> extends ComponentHolder {
      */
     @Override
     Component component();
-
 
     // Create And start()
     A start(Wirelet... wirelets);

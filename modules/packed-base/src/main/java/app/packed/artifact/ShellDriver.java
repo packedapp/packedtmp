@@ -156,8 +156,8 @@ public final class ShellDriver<A> {
         }
     }
 
-    public GuestImage<A> newImage(Bundle<?> bundle, Wirelet... wirelets) {
-        return new PackedGuestImage<>(this, bundle, wirelets);
+    public Image<A> newImage(Bundle<?> bundle, Wirelet... wirelets) {
+        return new PackedImage<>(this, bundle, wirelets);
     }
 
     /**

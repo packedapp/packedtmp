@@ -15,7 +15,7 @@
  */
 package app.packed.service;
 
-import app.packed.lifecycle.AssembleException;
+import app.packed.lifecycle.AssemblyException;
 
 /** This exception is typically thrown when a dependency graph contain cycles (not a DAG). */
 // in app.packed.service.* CyclicServiceDependencyException
@@ -28,7 +28,7 @@ import app.packed.lifecycle.AssembleException;
 
 // IStedet for en EXception kunne AssembleException have en AttributeSet??
 // Hmm whatever graph er ikke serializable ligesom Extension
-public class CyclicDependencyGraphException extends AssembleException {
+public class CyclicDependencyGraphException extends AssemblyException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;

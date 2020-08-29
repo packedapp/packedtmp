@@ -23,10 +23,10 @@ import packed.internal.component.wirelet.WireletPack;
 import packed.internal.lifecycle.phases.ConstructionContext;
 import packed.internal.lifecycle.phases.PackedAssemblyContext;
 
-/** The default implementation of {@link GuestImage}. */
+/** The default implementation of {@link Image}. */
 // Taenker vi maaske skal flytte den internt?
 // Altsaa ved ikke lige hvordan det hosted image kommer til at fungere...
-final class PackedGuestImage<A> implements GuestImage<A> {
+final class PackedImage<A> implements Image<A> {
 
     /** The driver used to create the any shell. */
     // We should use the driver when creating the actual root node...
@@ -46,7 +46,7 @@ final class PackedGuestImage<A> implements GuestImage<A> {
      * @param wirelets
      *            any wirelet
      */
-    PackedGuestImage(ShellDriver<A> driver, Bundle<?> bundle, Wirelet... wirelets) {
+    PackedImage(ShellDriver<A> driver, Bundle<?> bundle, Wirelet... wirelets) {
         this.node = PackedAssemblyContext.assembleImage(driver, bundle, wirelets);
         this.driver = driver;
     }

@@ -55,6 +55,8 @@ public enum ComponentModifier {
     /**
      * Indicates that the component is the root of an image.
      */
+    // An image always either has a host as a parent
+    // Or is the root
     IMAGE,
 
     /** */

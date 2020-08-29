@@ -26,14 +26,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import app.packed.artifact.App;
-import app.packed.artifact.GuestImage;
+import app.packed.artifact.Image;
 import app.packed.base.AttributeStream;
 import app.packed.container.Extension;
 import packed.internal.component.PackedComponentStreamOption;
 
 /**
  * A specialization of the {@link Stream} interface that deals with streams of {@link Component components}. An instance
- * of this class is normally acquired by {@link App#stream(Option...)} or {@link GuestImage#stream(Option...)}.
+ * of this class is normally acquired by {@link App#stream(Option...)} or {@link Image#stream(Option...)}.
  *
  * <pre>
  * App app  = ...
@@ -239,7 +239,7 @@ public interface ComponentStream extends AttributeStream<Component> {
      * 
      * @see Component#stream(Option...)
      * @see App#stream(Option...)
-     * @see GuestImage#stream(Option...)
+     * @see Image#stream(Option...)
      */
     // I virkeligheden er det system view options.
     public interface Option {

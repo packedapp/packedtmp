@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import app.packed.artifact.GuestImage;
+import app.packed.artifact.Image;
 import app.packed.base.Contract;
 import app.packed.base.Key;
 import app.packed.container.ContainerBundle;
@@ -253,7 +253,7 @@ public final class ServiceContract extends Contract {
     // I Think optional, jeg kunne godt forstille mig en contract som ikke har noget der svarer til empty.
     // Men det er ogsaa fint.. Det her gaelder kun for ServiceContract...
     @Deprecated
-    public static ServiceContract of(GuestImage<?> image) {
+    public static ServiceContract of(Image<?> image) {
         throw new UnsupportedOperationException();
     }
 

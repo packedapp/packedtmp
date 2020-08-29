@@ -53,6 +53,15 @@ public interface AssemblyContext {
     boolean isInstantiating();
 
     /**
+     * Returns whether or not the assembly is generating an image.
+     * 
+     * @return whether or not the assembly is generating an image
+     */
+    default boolean isGeneratingImage() {
+        return false;
+    }
+
+    /**
      * The action is mainly used.
      * 
      * For example, for image to clean up ressources that are not after stuff has been resolved...
@@ -62,7 +71,7 @@ public interface AssemblyContext {
      */
     public enum Mode {
 
-        GENERATE_IMAGE,
+        IMAGE_GENERATION,
 
         /** Performs an introspection of some kind. */
         INTROSPECT,

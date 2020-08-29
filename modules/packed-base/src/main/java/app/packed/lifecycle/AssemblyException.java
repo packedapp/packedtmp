@@ -20,7 +20,7 @@ package app.packed.lifecycle;
  * programmatic error and can usually only be recovered by updating the underlying code.
  */
 // Or in .base/.component??? was in .artifact
-public class AssembleException extends RuntimeException {
+public class AssemblyException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
@@ -33,7 +33,7 @@ public class AssembleException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public AssembleException(String message) {
+    public AssemblyException(String message) {
         super(message);
     }
 
@@ -47,7 +47,7 @@ public class AssembleException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public AssembleException(String message, Throwable cause) {
+    public AssemblyException(String message, Throwable cause) {
         super(message, cause);
     }
 }

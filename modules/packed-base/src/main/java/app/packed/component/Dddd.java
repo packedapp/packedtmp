@@ -15,21 +15,34 @@
  */
 package app.packed.component;
 
+import app.packed.artifact.App;
+import app.packed.container.BaseBundle;
+
 /**
  *
  */
-public class Dddd {
+public class Dddd extends BaseBundle {
 
     public static final String D = fff();
+
+    /** {@inheritDoc} */
+    @Override
+    protected void configure() {}
+
+    public static String fff() {
+        new Exception().printStackTrace();
+        return "asd";
+    }
 
     public static void main(String[] args) throws Exception {
         Package pkg = Class.forName("app.packed.component" + ".package-info").getPackage();
         System.out.println(pkg.isAnnotationPresent(Deprecated.class));
         // PackageOwner packageOwner = pkg.getAnnotation(PackageOwner.class);
-    }
 
-    public static String fff() {
-        new Exception().printStackTrace();
-        return "asd";
+        String s;
+        try (App a = App.start(new Dddd())) {
+            s = a.use(String.class);
+        }
+        System.out.println(s);
     }
 }

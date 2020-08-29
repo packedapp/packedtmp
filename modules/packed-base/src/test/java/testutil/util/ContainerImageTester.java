@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import app.packed.artifact.App;
-import app.packed.artifact.GuestImage;
+import app.packed.artifact.Image;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseBundle;
 
@@ -28,7 +28,7 @@ import app.packed.container.BaseBundle;
  */
 public class ContainerImageTester {
 
-    private final GuestImage<App> image;
+    private final Image<App> image;
 
     public ContainerImageTester(BaseBundle source, Wirelet... wirelets) {
         this(App.newImage(source, wirelets));
@@ -38,7 +38,7 @@ public class ContainerImageTester {
         return new AppTester(image, wirelets);
     }
 
-    public ContainerImageTester(GuestImage<App> image) {
+    public ContainerImageTester(Image<App> image) {
         this.image = requireNonNull(image);
     }
 

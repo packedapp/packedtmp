@@ -21,10 +21,12 @@ import java.util.function.Function;
 
 import app.packed.artifact.ShellDriver;
 import app.packed.component.Bundle;
+import app.packed.component.ComponentModifier;
 import app.packed.component.CustomConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import packed.internal.component.BundleConfiguration;
+import packed.internal.component.ComponentModifierSet;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedWireableComponentDriver;
 import packed.internal.component.wirelet.WireletPack;
@@ -36,8 +38,10 @@ import packed.internal.inject.ConfigSiteInjectOperations;
 /** The default implementation of {@link AssemblyContext} */
 public final class PackedAssemblyContext implements AssemblyContext {
 
+    private static final int IMAGE = ComponentModifierSet.setProperty(0, ComponentModifier.IMAGE);
+
     /** The build output. */
-    final PackedOutput output;
+    final int modifiers;
 
     /** The thread that is assembling the system. */
     // This should not be permanently..
@@ -51,11 +55,11 @@ public final class PackedAssemblyContext implements AssemblyContext {
     /**
      * Creates a new build context object.
      * 
-     * @param output
+     * @param modifiers
      *            the output of the build process
      */
-    PackedAssemblyContext(PackedOutput output, Wirelet... wirelets) {
-        this.output = requireNonNull(output);
+    PackedAssemblyContext(int modifiers, Wirelet... wirelets) {
+        this.modifiers = modifiers;
         this.wirelets = wirelets;
 
     }
@@ -75,7 +79,7 @@ public final class PackedAssemblyContext implements AssemblyContext {
     }
 
     public boolean isImage() {
-        return output.isImage;
+        return ComponentModifierSet.isPropertySet(modifiers, ComponentModifier.IMAGE);
     }
 
     /**
@@ -93,7 +97,7 @@ public final class PackedAssemblyContext implements AssemblyContext {
         // Vil gerne parse nogle wirelets some det allerfoerste
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
 
-        ComponentNodeConfiguration node = ComponentNodeConfiguration.newAssembly(new PackedAssemblyContext(PackedOutput.artifact(ad)), driver, cs,
+        ComponentNodeConfiguration node = ComponentNodeConfiguration.newAssembly(new PackedAssemblyContext(0), driver, cs,
                 PackedRealm.fromConfigurator(consumer), wp);
 
         D conf = driver.toConfiguration(node);
@@ -104,15 +108,15 @@ public final class PackedAssemblyContext implements AssemblyContext {
     }
 
     public static ComponentNodeConfiguration assembleArtifact(ShellDriver<?> driver, Bundle<?> bundle, Wirelet[] wirelets) {
-        return assemble(driver, new PackedAssemblyContext(PackedOutput.artifact(driver)), bundle, wirelets);
+        return assemble(driver, new PackedAssemblyContext(0), bundle, wirelets);
     }
 
     public static ComponentNodeConfiguration assembleImage(ShellDriver<?> driver, Bundle<?> bundle, Wirelet[] wirelets) {
-        return assemble(driver, new PackedAssemblyContext(PackedOutput.image()), bundle, wirelets);
+        return assemble(driver, new PackedAssemblyContext(IMAGE), bundle, wirelets);
     }
 
     public static ComponentNodeConfiguration assembleDescriptor(Class<?> descriptorType, Bundle<?> bundle, Wirelet... wirelets) {
-        return assemble(null, new PackedAssemblyContext(PackedOutput.descriptor(descriptorType)), bundle, wirelets);
+        return assemble(null, new PackedAssemblyContext(0), bundle, wirelets);
     }
 
     public static ComponentNodeConfiguration assemble(ShellDriver<?> ad, PackedAssemblyContext assembly, Bundle<?> bundle, Wirelet... wirelets) {
@@ -126,25 +130,5 @@ public final class PackedAssemblyContext implements AssemblyContext {
         BundleConfiguration.configure(bundle, conf); // in-try-finally. So we can call PAC.fail() and have them run callbacks for dynamic nodes
 
         return node.closeAssembly();
-    }
-
-    static class PackedOutput {
-        final boolean isImage;
-
-        PackedOutput(boolean isImage) {
-            this.isImage = isImage;
-        }
-
-        public static PackedOutput image() {
-            return new PackedOutput(true);
-        }
-
-        public static PackedOutput descriptor(Class<?> type) {
-            return new PackedOutput(false);
-        }
-
-        public static PackedOutput artifact(ShellDriver<?> driver) {
-            return new PackedOutput(false);
-        }
     }
 }

@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import app.packed.artifact.App;
-import app.packed.artifact.GuestImage;
+import app.packed.artifact.Image;
 import app.packed.component.Bundle;
 import app.packed.component.Component;
 import app.packed.component.ComponentStream;
@@ -40,7 +40,7 @@ public class AppTester {
         this(App.start(source, wirelets));
     }
 
-    public AppTester(GuestImage<App> img, Wirelet... wirelets) {
+    public AppTester(Image<App> img, Wirelet... wirelets) {
         this(img.start(wirelets));
     }
 

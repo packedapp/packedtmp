@@ -15,6 +15,8 @@
  */
 package app.packed.component;
 
+import java.util.Set;
+
 import app.packed.container.ContainerBundle;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
@@ -149,8 +151,9 @@ public abstract class Wirelet {
 
     }
 
-    protected void unhandled() {
-
+    protected void unhandled(Set<ComponentModifier> modifiers) {
+        // if package does not start with app.packed
+        // Did you remember to annotated with @ExtensionMember
     }
 
 //    /**

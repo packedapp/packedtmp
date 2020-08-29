@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 import app.packed.artifact.App;
 import app.packed.artifact.ShellContext;
 import app.packed.artifact.ShellDriver;
-import app.packed.artifact.GuestImage;
+import app.packed.artifact.Image;
 import app.packed.base.Key;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
@@ -301,7 +301,7 @@ public interface Injector {
         return t.get();
     }
 
-    static GuestImage<Injector> newImage(Bundle<?> bundle, Wirelet... wirelets) {
+    static Image<Injector> newImage(Bundle<?> bundle, Wirelet... wirelets) {
         return driver().newImage(bundle, wirelets);
     }
 
