@@ -17,27 +17,25 @@ package packed.internal.base.attribute;
 
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import app.packed.base.Attribute;
-import app.packed.base.AttributeSet;
+import app.packed.base.AttributeMap;
+import app.packed.base.Nullable;
 
 /**
  *
  */
-public final class EmptyAttributeSet implements AttributeSet {
+public final class EmptyAttributeSet implements AttributeMap {
 
     public static final EmptyAttributeSet EMPTY = new EmptyAttributeSet();
 
     private EmptyAttributeSet() {}
-
-    /** {@inheritDoc} */
-    @Override
-    public Set<Attribute<?>> attributes() {
-        return Set.of();
-    }
 
     /** {@inheritDoc} */
     @Override
@@ -53,7 +51,7 @@ public final class EmptyAttributeSet implements AttributeSet {
 
     /** {@inheritDoc} */
     @Override
-    public <T> void ifPresent(Attribute<T> attribute, Consumer<T> action) {}
+    public <T> void ifPresent(Attribute<T> attribute, Consumer<? super T> action) {}
 
     /** {@inheritDoc} */
     @Override
@@ -75,8 +73,28 @@ public final class EmptyAttributeSet implements AttributeSet {
 
     /** {@inheritDoc} */
     @Override
-    public <T> T orElse(Attribute<T> attribute, T other) {
+    public Set<Attribute<?>> keys() {
+        return Set.of();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T, U> Optional<U> map(Attribute<T> attribute, Function<? super T, ? extends U> mapper) {
+        return Optional.empty();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    @Nullable
+    public <T> T orElse(Attribute<T> attribute, @Nullable T other) {
         return other;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    @Nullable
+    public <T> T orElseGet(Attribute<T> attribute, Supplier<? extends T> supplier) {
+        return supplier.get();
     }
 
     /** {@inheritDoc} */

@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.lifecycle.phases;
+package app.packed.lifecycle;
 
+import java.util.Set;
+
+import app.packed.component.ComponentModifier;
 import packed.internal.errorhandling.ErrorMessage;
 
 /**
@@ -35,52 +38,73 @@ import packed.internal.errorhandling.ErrorMessage;
 // addCompletionProcesser(Consumer<@Nullable Throwable> d);
 
 // Boer vaere i component ikke artifact...
-
-// Kan ikke sige
 public interface AssemblyContext {
+
+    // Maaske vi hellere vil tilfoeje det lokalt???
+    // F.eks. via Extension, eller bundle...
+
+    // ServiceExtension.failed()
+    void addError(ErrorMessage message);
 
     default boolean isActive() {
         return true;
     }
-
-    void addError(ErrorMessage message);
-
-    /**
-     * Returns whether or not we are instantiating an actual artifact. Or if we are just producing an image or a descriptor.
-     *
-     * @return whether or not we are instantiating an actual artifact
-     */
-    boolean isInstantiating();
 
     /**
      * Returns whether or not the assembly is generating an image.
      * 
      * @return whether or not the assembly is generating an image
      */
-    default boolean isGeneratingImage() {
-        return false;
+    default boolean isImage() {
+        return modifiers().contains(ComponentModifier.IMAGE);
     }
 
     /**
-     * The action is mainly used.
-     * 
-     * For example, for image to clean up ressources that are not after stuff has been resolved...
-     * 
-     * Introspect, Stuff that is not needed if we know we are never going to instantiate anything... (for example, method
-     * handles)
+     * Returns whether or not we are instantiating an actual artifact. Or if we are just producing an image or a descriptor.
+     *
+     * @return whether or not we are instantiating an actual artifact
      */
-    public enum Mode {
+    default boolean isInstantiating() {
+        return !(modifiers().contains(ComponentModifier.IMAGE) || modifiers().contains(ComponentModifier.ANALYSIS));
+    }
 
-        IMAGE_GENERATION,
+    /**
+     * Returns the set of modifiers used for the system component.
+     * <p>
+     * The {@link ComponentModifier#ASSEMBLY} modifier is always set in the returned set.
+     * 
+     * @return a set of modifiers
+     */
+    Set<ComponentModifier> modifiers();
 
-        /** Performs an introspection of some kind. */
-        INTROSPECT,
+    // isDone
+    // isFailed
+    // isSuccess
 
-        /** Instantiates a new artifact. */
-        INSTANTIATE;
+    // It can be on error path...
+    enum State {
+        IN_PROCESS, FAILED, SUCCES;
     }
 }
 
+///**
+//* The action is mainly used.
+//* 
+//* For example, for image to clean up ressources that are not after stuff has been resolved...
+//* 
+//* Introspect, Stuff that is not needed if we know we are never going to instantiate anything... (for example, method
+//* handles)
+//*/
+//public enum Mode {
+//
+//  IMAGE_GENERATION,
+//
+//  /** Performs an introspection of some kind. */
+//  INTROSPECT,
+//
+//  /** Instantiates a new artifact. */
+//  INSTANTIATE;
+//}
 // We could add ComponentPath path();
 //// But it will freeze the name of the top level. Which we don't want.
 

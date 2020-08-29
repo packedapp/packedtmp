@@ -30,7 +30,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import app.packed.base.AttributeSet;
+import app.packed.base.AttributeMap;
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.ClassSourcedDriver;
@@ -62,10 +62,10 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     /** A stack walker used from {@link #captureStackFrame(String)}. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
-    /** The assembly this component is a part of. */
+    /** The assembly this configuration is a part of. */
     private final PackedAssemblyContext assembly;
 
-    /** Children of this node (lazily initialized). Order maintained by {@link #nextSibling} and friends. */
+    /** Children of this node (lazily initialized). Insertion order maintained by {@link #nextSibling} and friends. */
     @Nullable
     Map<String, ComponentNodeConfiguration> children;
 
@@ -199,6 +199,14 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         return sf.isPresent() ? configSite().thenStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
     }
 
+    AttributeMap attributes() {
+        if (ComponentModifierSet.isPropertySet(modifiers, ComponentModifier.EXTENSION)) {
+            throw new UnsupportedOperationException();
+        } else {
+            return AttributeMap.of();
+        }
+    }
+
     /**
      * @param frame
      *            the frame to filter
@@ -218,6 +226,10 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         // Dvs ourContainerSource
         return Extension.class.isAssignableFrom(c)
                 || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && Bundle.class.isAssignableFrom(c));
+    }
+
+    public PackedAssemblyContext assembly() {
+        return assembly;
     }
 
     /** {@inheritDoc} */
@@ -524,8 +536,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
         /** {@inheritDoc} */
         @Override
-        public AttributeSet attributes() {
-            return AttributeSet.of();
+        public AttributeMap attributes() {
+            return conf.attributes();
         }
 
         /** {@inheritDoc} */

@@ -24,7 +24,7 @@ import java.util.List;
 import app.packed.component.ComponentModifier;
 
 /**
- *
+ * A (possible empty) set of {@link ComponentModifier component modifiers}.
  */
 public final class ComponentModifierSet extends AbstractSet<ComponentModifier> {
 
@@ -39,6 +39,10 @@ public final class ComponentModifierSet extends AbstractSet<ComponentModifier> {
     public static boolean isPropertySet(int modifiers, ComponentModifier property) {
         requireNonNull(property, "property is null");
         return (modifiers & (1 << property.ordinal())) != 0;
+    }
+
+    public boolean isContainer() {
+        return isPropertySet(modifiers, ComponentModifier.CONTAINER);
     }
 
     public static int setProperty(int modifiers, ComponentModifier property) {

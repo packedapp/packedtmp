@@ -15,8 +15,6 @@
  */
 package app.packed.component;
 
-import app.packed.artifact.App;
-
 /**
  *
  *
@@ -27,17 +25,4 @@ import app.packed.artifact.App;
 // Er det man consumer en bundle...
 
 // ComponentSystemView???
-
-public interface NavigableSystem {
-
-    // Maybe on Component???
-    static Component of(NavigableSystem e) {
-        if (e instanceof Component) {
-            return (Component) e;
-        } else if (e instanceof ComponentHolder) {
-            return ((ComponentHolder) e).component();
-        } else {
-            return (App.newImage(((Bundle<?>) e)).component());
-        }
-    }
-}
+public interface AnalysableSystem {}

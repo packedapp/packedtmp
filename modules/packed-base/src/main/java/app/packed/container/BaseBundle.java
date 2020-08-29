@@ -66,9 +66,9 @@ import app.packed.service.ServiceExtension;
 public abstract class BaseBundle extends ContainerBundle {
 
     /**
-     * Returns a {@link BaseExtension} instance.
+     * Returns a {@link BaseExtension}.
      * 
-     * @return a base extension instance
+     * @return a base extension
      */
     protected final BaseExtension base() {
         return use(BaseExtension.class);

@@ -23,7 +23,7 @@ import app.packed.container.ContainerDescriptor;
 
 //AssembleReason
 
-public enum AssemblyTarget {
+enum AssemblyTarget {
 
     /** Create a report of some kind, for example a {@link Contract} or a {@link ContainerDescriptor}. */
     // May throw exceptions

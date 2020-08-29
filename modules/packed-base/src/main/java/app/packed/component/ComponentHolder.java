@@ -18,7 +18,7 @@ package app.packed.component;
 /**
  *
  */
-public interface ComponentHolder extends NavigableSystem {
+public interface ComponentHolder extends AnalysableSystem {
 
     Component component();// root/ system
 

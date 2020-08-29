@@ -68,8 +68,8 @@ public interface Attribute<T> /* extends AttributeHolder */ {
      * Returns whether or not the attribute is hidden. Attributes whose name start with <code>.</code> are automatically
      * hidden.
      * <p>
-     * Hidden attributes will never show in {@link AttributeSet#attributes()} or {@link AttributeSet#entrySet()},
-     * {@link AttributeSet#isEmpty()}. All other methods work as normal.
+     * Hidden attributes will never show in {@link AttributeMap#keys()} or {@link AttributeMap#entrySet()},
+     * {@link AttributeMap#isEmpty()}. All other methods work as normal.
      * 
      * @return whether or not the attribute is hidden.
      */
@@ -141,6 +141,10 @@ public interface Attribute<T> /* extends AttributeHolder */ {
         // Tror ikke vi behoever denne... vi soerger for de steder vi har brug det at der ikke kan registreres ting for sent...
 
         //// Hmm IDK.. Optional<T> Attribute.defaultValue();
+        // Syntes aergelig talt ikke der skal vaere default vaedier...
+        // Det bliver super rodet, fordi vi hver gang er saadan lidt.
+        // Skal vi bare returne default vaerdien. Eller skal vi fejle
+        // Eller skal vi xyz
         static <T> Option<T> defaultValue(T value) {
             throw new UnsupportedOperationException();
         }

@@ -30,6 +30,7 @@ import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension.Subtension;
 import app.packed.inject.Factory;
+import app.packed.lifecycle.AssemblyContext;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.container.PackedContainerRole;
 import packed.internal.container.PackedExtensionConfiguration;
@@ -59,6 +60,8 @@ public interface ExtensionConfiguration {
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
     void checkConfigurable();
+
+    AssemblyContext assembly();
 
     default void checkPreemble() {
         // Ideen er at man kan checke at der ikke er blevet installeret boern...

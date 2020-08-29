@@ -20,13 +20,13 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import app.packed.base.Attribute;
-import app.packed.base.AttributeHolder;
-import app.packed.base.AttributeStream;
+import app.packed.base.AttributedElement;
+import app.packed.base.AttributedElementStream;
 
 /**
  *
  */
-public abstract class AbstractAttributeHolderStream<T extends AttributeHolder> extends AbstractDelegatingStream<T> implements AttributeStream<T> {
+public abstract class AbstractAttributeHolderStream<T extends AttributedElement> extends AbstractDelegatingStream<T> implements AttributedElementStream<T> {
 
     /**
      * @param stream
@@ -36,19 +36,20 @@ public abstract class AbstractAttributeHolderStream<T extends AttributeHolder> e
     }
 
     @Override
-    public <A> AttributeStream<T> filter(Attribute<A> attribute, Predicate<? super A> predicate) {
+    public <A> AttributedElementStream<T> filter(Attribute<A> attribute, Predicate<? super A> predicate) {
         return with(filter(e -> e.attributes().testIfPresent(attribute, predicate, false)));
     }
 
     @Override
-    public AttributeStream<T> ifPresent(Attribute<?> attribute) {
+    public AttributedElementStream<T> ifPresent(Attribute<?> attribute) {
         return with(filter(e -> e.attributes().isPresent(attribute)));
     }
 
     /** {@inheritDoc} */
     @Override
-    public <A extends Collection<B>, B> AttributeStream<T> contains(Attribute<A> attribute, B element) {
-        return with(filter(e -> e.attributes().testIfPresent(attribute, f -> f.contains(element), false)));
+    public <A extends Collection<E>, E> AttributedElementStream<T> valueContains(Attribute<A> attribute, E element) {
+        return with(filter(e -> e.attributes().valueContains(attribute, element)));
+        // return with(filter(e -> e.attributes().testIfPresent(attribute, f -> f.contains(element), false)));
     }
 
     @Override

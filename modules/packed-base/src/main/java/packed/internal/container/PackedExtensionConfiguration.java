@@ -38,6 +38,7 @@ import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionSettings;
 import app.packed.inject.Factory;
+import app.packed.lifecycle.AssemblyContext;
 import app.packed.lifecycle.LifecycleContext;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.lifecycle.LifecycleContextHelper;
@@ -47,18 +48,21 @@ import packed.internal.util.ThrowableUtil;
 /** Implementation of {@link ExtensionConfiguration}. */
 public final class PackedExtensionConfiguration implements ExtensionConfiguration, Comparable<PackedExtensionConfiguration> {
 
+    /** A MethodHandle for invoking {@link #lifecycle()} used by {@link ExtensionModel}. */
+    private static final MethodHandle MH_EXTENSION_ADDED = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), Extension.class, "add", void.class);
+
     /** A MethodHandle for invoking {@link #findWirelet(Class)} used by {@link ExtensionModel}. */
     static final MethodHandle MH_FIND_WIRELET = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "findWirelet", Object.class, Class.class);
 
     /** A MethodHandle for invoking {@link #lifecycle()} used by {@link ExtensionModel}. */
     static final MethodHandle MH_LIFECYCLE_CONTEXT = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "lifecycle", LifecycleContext.class);
 
-    /** A MethodHandle for invoking {@link #lifecycle()} used by {@link ExtensionModel}. */
-    private static final MethodHandle MH_EXTENSION_ADDED = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), Extension.class, "add", void.class);
-
     /** A VarHandle used by {@link #of(PackedContainerRole, Class)} to access the field Extension#configuration. */
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
+
+    /** The container this extension belongs to. */
+    private final PackedContainerRole container;
 
     /** The extension instance this configuration wraps, initialized in {@link #of(PackedContainerRole, Class)}. */
     @Nullable
@@ -70,14 +74,11 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     /** The sidecar model of the extension. */
     private final ExtensionModel model;
 
-    /** The container this extension belongs to. */
-    private final PackedContainerRole container;
+    /** The component node of the extension. */
+    final ComponentNodeConfiguration node;
 
     /** The realm of this extension. */
     private final PackedRealm realm;
-
-    /** The component node of the extension. */
-    final ComponentNodeConfiguration node;
 
     /**
      * Creates a new configuration.
@@ -92,6 +93,12 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
         this.model = requireNonNull(model);
         this.realm = PackedRealm.fromExtension(this);
         this.node = container.node.newChild(model.driver(), container.node.configSite(), realm, null);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public AssemblyContext assembly() {
+        return node.assembly();
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -265,6 +272,13 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
         return model.optional;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath path() {
+        // TODO return path of this component.
+        return node.path();
+    }
+
     /**
      * Returns the realm this extension belongs to.
      * 
@@ -276,9 +290,15 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
 
     /** {@inheritDoc} */
     @Override
-    public ComponentPath path() {
-        // TODO return path of this component.
-        return node.path();
+    public <E extends Subtension> E use(Class<E> extensionType) {
+        requireNonNull(extensionType, "extensionType is null");
+
+        // This check is done in a class value
+        @SuppressWarnings("unchecked")
+        Class<? extends Extension> declaringClass = (Class<? extends Extension>) extensionType.getDeclaringClass();
+        System.out.println(declaringClass);
+        // Need to find injection
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -381,18 +401,5 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
             // container.activeExtension = existing;
         }
         return pec; // Return extension to users
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <E extends Subtension> E use(Class<E> extensionType) {
-        requireNonNull(extensionType, "extensionType is null");
-
-        // This check is done in a class value
-        @SuppressWarnings("unchecked")
-        Class<? extends Extension> declaringClass = (Class<? extends Extension>) extensionType.getDeclaringClass();
-        System.out.println(declaringClass);
-        // Need to find injection
-        throw new UnsupportedOperationException();
     }
 }

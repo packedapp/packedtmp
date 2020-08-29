@@ -33,10 +33,10 @@ import app.packed.base.Contract;
 import app.packed.base.ContractSet;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.component.Analysis;
 import app.packed.component.Bundle;
 import app.packed.service.ServiceDescriptor;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.lifecycle.phases.PackedAssemblyContext;
 
 /**
  * A bundle descriptor.
@@ -228,7 +228,7 @@ public class ContainerDescriptor {
      */
     public static ContainerDescriptor of(ContainerBundle bundle) {
         requireNonNull(bundle, "bundle is null");
-        ComponentNodeConfiguration pcc = PackedAssemblyContext.assembleDescriptor(ContainerDescriptor.class, bundle);
+        ComponentNodeConfiguration pcc = ComponentNodeConfiguration.unadapt(null, Analysis.analyze(bundle));
         ContainerDescriptor.Builder builder = new ContainerDescriptor.Builder(bundle.getClass());
         pcc.container().buildDescriptor(builder);
         return builder.build();

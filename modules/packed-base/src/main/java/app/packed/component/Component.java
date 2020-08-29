@@ -20,7 +20,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.base.AttributeHolder;
+import app.packed.base.AttributedElement;
 import app.packed.component.ComponentStream.Option;
 import app.packed.config.ConfigSite;
 
@@ -28,7 +28,7 @@ import app.packed.config.ConfigSite;
  * A component is the basic entity in Packed. Much like everything is a is one of the defining features of Unix, and its
  * derivatives. In packed everything is a component.
  */
-public interface Component extends AttributeHolder, NavigableSystem {
+public interface Component extends AttributedElement, AnalysableSystem {
 
     /**
      * Returns an unmodifiable view of all of this component's children.

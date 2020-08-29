@@ -13,21 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.lifecycle.phases;
-
-import app.packed.component.Wirelet;
+package app.packed.base;
 
 /**
- *
+ * 
  */
-// Wirelet assemblyTimeOnly(Wirelet w); Hmmm idk if useful
-public final class AssemblyWirelets {
+// something that holds attributes
 
-    // Additional to people overridding artifacts, bundles, ect.
-    public static Wirelet checkRuleset(Object... ruleset) {
-        throw new UnsupportedOperationException();
+// AttributeContainer
+// AttributeSource
+
+// https://docs.gradle.org/current/javadoc/org/gradle/api/attributes/AttributeContainer.html
+public interface AttributedElement {
+
+    default <T> T attribute(Attribute<T> attribute) {
+        return attributes().get(attribute);
     }
 
-    // Disable Host <--- Nej, det er et ruleset....
+    AttributeMap attributes();
 }
-/// Interface with only static methods are

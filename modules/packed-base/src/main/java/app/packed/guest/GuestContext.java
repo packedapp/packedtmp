@@ -13,17 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.base;
+package app.packed.guest;
 
 /**
- * 
+ * Available to all components within a guest.
  */
-// something that holds attributes
-public interface AttributeHolder {
+//Available to all guests... The top level component only though...
+// And I think stereotypes can remove it for their surragate objects.   
+// Can remove itself...
+// shutdown itself
+// replace itself / restart itself
 
-    default <T> T attribute(Attribute<T> attribute) {
-        return attributes().get(attribute);
-    }
+// Guest Context er kun noget med start/stop, restart osv at goere...
+public interface GuestContext {
 
-    AttributeSet attributes();
 }
+//info
+
+// State, initialization, startup reason, 

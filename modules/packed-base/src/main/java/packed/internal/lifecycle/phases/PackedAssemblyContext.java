@@ -17,14 +17,17 @@ package packed.internal.lifecycle.phases;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Set;
 import java.util.function.Function;
 
 import app.packed.artifact.ShellDriver;
+import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.ComponentModifier;
 import app.packed.component.CustomConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
+import app.packed.lifecycle.AssemblyContext;
 import packed.internal.component.BundleConfiguration;
 import packed.internal.component.ComponentModifierSet;
 import packed.internal.component.ComponentNodeConfiguration;
@@ -38,8 +41,6 @@ import packed.internal.inject.ConfigSiteInjectOperations;
 /** The default implementation of {@link AssemblyContext} */
 public final class PackedAssemblyContext implements AssemblyContext {
 
-    private static final int IMAGE = ComponentModifierSet.setProperty(0, ComponentModifier.IMAGE);
-
     /** The build output. */
     final int modifiers;
 
@@ -49,7 +50,7 @@ public final class PackedAssemblyContext implements AssemblyContext {
 
     private final Thread thread = Thread.currentThread();
 
-    // Bruges ikke lige endnu
+    // Bruges ikke lige endnu. Ved heller ikke om vi har lyst til at gemme dem permanent...
     private final Wirelet[] wirelets;
 
     /**
@@ -68,18 +69,10 @@ public final class PackedAssemblyContext implements AssemblyContext {
     @Override
     public void addError(ErrorMessage message) {}
 
-    public Wirelet[] wirelets() {
-        return wirelets;
-    }
-
     /** {@inheritDoc} */
     @Override
-    public boolean isInstantiating() {
-        return false;
-    }
-
-    public boolean isImage() {
-        return ComponentModifierSet.isPropertySet(modifiers, ComponentModifier.IMAGE);
+    public Set<ComponentModifier> modifiers() {
+        return new ComponentModifierSet(modifiers);
     }
 
     /**
@@ -89,6 +82,24 @@ public final class PackedAssemblyContext implements AssemblyContext {
      */
     public Thread thread() {
         return thread;
+    }
+
+    public Wirelet[] wirelets() {
+        return wirelets;
+    }
+
+    public static ComponentNodeConfiguration assemble(Bundle<?> bundle, int modifiers, @Nullable ShellDriver<?> shellDriver, Wirelet... wirelets) {
+        PackedAssemblyContext assembly = new PackedAssemblyContext(modifiers);
+        PackedWireableComponentDriver<?> driver = BundleConfiguration.driverOf(bundle);
+        WireletPack wp = WireletPack.from(driver, wirelets);
+
+        ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
+        ComponentNodeConfiguration node = ComponentNodeConfiguration.newAssembly(assembly, driver, cs, PackedRealm.fromBundle(bundle), wp);
+
+        Object conf = driver.toConfiguration(node);
+        BundleConfiguration.configure(bundle, conf); // in-try-finally. So we can call PAC.fail() and have them run callbacks for dynamic nodes
+
+        return node.closeAssembly();
     }
 
     public static <C, D> ComponentNodeConfiguration configure(ShellDriver<?> ad, PackedWireableComponentDriver<D> driver, Function<D, C> factory,
@@ -103,31 +114,6 @@ public final class PackedAssemblyContext implements AssemblyContext {
         D conf = driver.toConfiguration(node);
         C cc = requireNonNull(factory.apply(conf));
         consumer.configure(cc);
-
-        return node.closeAssembly();
-    }
-
-    public static ComponentNodeConfiguration assembleArtifact(ShellDriver<?> driver, Bundle<?> bundle, Wirelet[] wirelets) {
-        return assemble(driver, new PackedAssemblyContext(0), bundle, wirelets);
-    }
-
-    public static ComponentNodeConfiguration assembleImage(ShellDriver<?> driver, Bundle<?> bundle, Wirelet[] wirelets) {
-        return assemble(driver, new PackedAssemblyContext(IMAGE), bundle, wirelets);
-    }
-
-    public static ComponentNodeConfiguration assembleDescriptor(Class<?> descriptorType, Bundle<?> bundle, Wirelet... wirelets) {
-        return assemble(null, new PackedAssemblyContext(0), bundle, wirelets);
-    }
-
-    public static ComponentNodeConfiguration assemble(ShellDriver<?> ad, PackedAssemblyContext assembly, Bundle<?> bundle, Wirelet... wirelets) {
-        PackedWireableComponentDriver<?> driver = BundleConfiguration.driverOf(bundle);
-        WireletPack wp = WireletPack.from(driver, wirelets);
-
-        ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
-        ComponentNodeConfiguration node = ComponentNodeConfiguration.newAssembly(assembly, driver, cs, PackedRealm.fromBundle(bundle), wp);
-
-        Object conf = driver.toConfiguration(node);
-        BundleConfiguration.configure(bundle, conf); // in-try-finally. So we can call PAC.fail() and have them run callbacks for dynamic nodes
 
         return node.closeAssembly();
     }

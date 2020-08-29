@@ -16,7 +16,6 @@
 package app.packed.component;
 
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerBundle;
 import app.packed.inject.Factory;
 
 /**
@@ -27,7 +26,7 @@ public interface ComponentConfiguration {
     /**
      * Checks that the component is still configurable or throws an {@link IllegalStateException}.
      * <p>
-     * A component is typically only configurable inside of {@link ContainerBundle#configure()}.
+     * A component is typically only configurable inside of {@link Bundle#configure()}.
      * 
      * @throws IllegalStateException
      *             if the component is no long configurable.

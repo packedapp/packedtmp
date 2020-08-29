@@ -21,6 +21,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundle;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
+import app.packed.lifecycle.AssemblyContext;
 
 /**
  * Component configuration context objects used by {@link AbstractComponentConfiguration}.
@@ -35,10 +36,12 @@ import app.packed.inject.Factory;
 //If we have that we can also navigate?? I guess thats okay
 public interface ComponentConfigurationContext {
 
+    AssemblyContext assembly();
+
     /**
      * Checks that the component is still configurable. Throwing an {@link IllegalStateException} if it is not.
      * <p>
-     * A component is typically only configurable inside of {@link ContainerBundle#configure()}.
+     * A component is typically only configurable inside of {@link Bundle#configure()}.
      * 
      * @throws IllegalStateException
      *             if the component is no longer configurable.
@@ -53,11 +56,16 @@ public interface ComponentConfigurationContext {
     ConfigSite configSite();
 
     /**
-     * Returns an immutable set containing all the modifiers of this component.
+     * Returns an unmodifiable view of the extensions that are currently used.
      * 
-     * @return a immutable set containing all the modifiers of this component
+     * @return an unmodifiable view of the extensions that are currently used
+     * 
+     * @see ContainerBundle#extensions()
      */
-    Set<ComponentModifier> modifiers();
+    // Maybe an attribute.. component.with(Extension.USED_EXTENSIONS)
+    Set<Class<? extends Extension>> containerExtensions();
+
+    <T extends Extension> T containerUse(Class<T> extensionType);
 
     /**
      * Returns the name of the component. If no name has previously been set via {@link #setName(String)} a name is
@@ -83,6 +91,13 @@ public interface ComponentConfigurationContext {
      */
     // Why not just wire... or maybe link and linklist
     void link(Bundle<?> bundle, Wirelet... wirelets);
+
+    /**
+     * Returns an immutable set containing all the modifiers of this component.
+     * 
+     * @return a immutable set containing all the modifiers of this component
+     */
+    Set<ComponentModifier> modifiers();
 
     /**
      * Returns the full path of the component.
@@ -116,6 +131,10 @@ public interface ComponentConfigurationContext {
      */
     void setName(String name);
 
+    <C, I> C wire(ClassSourcedDriver<C, I> driver, Class<I> implementation, Wirelet... wirelets);
+
+    <C, I> C wire(FactorySourcedDriver<C, I> driver, Factory<I> implementation, Wirelet... wirelets);
+
     /**
      * Wires a new child component using the specified driver
      * 
@@ -129,21 +148,5 @@ public interface ComponentConfigurationContext {
      */
     <C> C wire(WireableComponentDriver<C> driver, Wirelet... wirelets);
 
-    <C, I> C wire(ClassSourcedDriver<C, I> driver, Class<I> implementation, Wirelet... wirelets);
-
-    <C, I> C wire(FactorySourcedDriver<C, I> driver, Factory<I> implementation, Wirelet... wirelets);
-
     <C, I> C wireInstance(InstanceSourcedDriver<C, I> driver, I instance, Wirelet... wirelets);
-
-    /**
-     * Returns an unmodifiable view of the extensions that are currently used.
-     * 
-     * @return an unmodifiable view of the extensions that are currently used
-     * 
-     * @see ContainerBundle#extensions()
-     */
-    // Maybe an attribute.. component.with(Extension.USED_EXTENSIONS)
-    Set<Class<? extends Extension>> containerExtensions();
-
-    <T extends Extension> T containerUse(Class<T> extensionType);
 }

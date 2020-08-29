@@ -41,7 +41,8 @@ public enum ComponentModifier {
     // System wide.. what is part of the system and what is part of the environment
     // System boundary
     // Bondary vs Environment...
-    ENVIRONMENT, // Wirelets, Artifacts are also FOREIGN...
+    // Maybe Environment is bad because of overloaded meaning
+    ENVIRONMENT, // Wirelets, Artifacts are also FOREIGN or EXTERNAL...
 
     /**
      * Every component system has exactly one system component which is always the root of the component tree.
@@ -114,6 +115,19 @@ public enum ComponentModifier {
     SHELL, // FOREIGN???
 
     /**
+     * Indicates that a system has been created for the sole reason of being analyzed. The system will never move from the
+     * assembly phase.
+     * 
+     * This modifier is set when using any of the methods on Analysis. Extensions may use this information to avoid invoking
+     * processes that are only needed if the extension is to be instantiated. Or keep extra information...
+     * 
+     * I think it is only available for the root/system component...
+     * 
+     * Nej systes sagtens man have en analyze(Bundle) paa en host
+     */
+    ANALYSIS,
+
+    /**
      * Indicates that the component has been added by the runtime.
      * <p>
      * A good example is the an artifact. The user itself does not add this component.
@@ -155,7 +169,7 @@ public enum ComponentModifier {
 
 //Components.isPartOfImage() <--- look recursively in parents and see if any has the Image 
 
-enum Others {
+enum Sandbox {
 
     // IDK if we will ever use it... But just a reminder.
     EPHEMERAL, // https://kubernetes.io/docs/concepts/workloads/pods/ephemeral-containers/

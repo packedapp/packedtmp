@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 import app.packed.component.Wirelet;
 
 /**
- * Indicates that a type is a member of an extension in some way. This annotation can be applied to. subclasses of
+ * Indicates that the annotated element is a member of an extension. This annotation can be applied to. subclasses of
  * {@link Wirelet}. In which case the pipeline implementation can have an instance of the extension injected its
  * constructor.
  * <p>
@@ -37,9 +37,9 @@ import app.packed.component.Wirelet;
 public @interface ExtensionMember {
 
     /**
-     * Returns the extension the annotated type is a member of.
+     * Returns the extension the annotated element is a member of.
      * 
-     * @return the extension the annotated type is a member of
+     * @return the extension the annotated element is a member of
      */
     Class<? extends Extension> value();
 }

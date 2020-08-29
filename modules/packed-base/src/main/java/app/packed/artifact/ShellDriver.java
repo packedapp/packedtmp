@@ -100,7 +100,7 @@ public final class ShellDriver<A> {
     }
 
     private ShellContext createArtifactContext(Bundle<?> source, Wirelet... wirelets) {
-        ComponentNodeConfiguration node = PackedAssemblyContext.assembleArtifact(this, source, wirelets);
+        ComponentNodeConfiguration node = PackedAssemblyContext.assemble(source, 0, this, wirelets);
         return ConstructionContext.constructArtifact(node, node.wirelets);
     }
 

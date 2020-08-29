@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 
 import app.packed.artifact.App;
 import app.packed.artifact.Image;
-import app.packed.base.AttributeStream;
+import app.packed.base.AttributedElementStream;
 import app.packed.container.Extension;
 import packed.internal.component.PackedComponentStreamOption;
 
@@ -66,7 +66,7 @@ import packed.internal.component.PackedComponentStreamOption;
 // ComponentStream<T extends Component> extends Stream<T> ????
 // Vi har mere eller mindre aldrig brug for at gemm
 // Men der skal lige lidt mere guf paa Component sub interfaces...Foerend jeg gider lave det
-public interface ComponentStream extends AttributeStream<Component> {
+public interface ComponentStream extends AttributedElementStream<Component> {
 
 //    /**
 //     * Returns a stream that only contains containers.
@@ -77,9 +77,9 @@ public interface ComponentStream extends AttributeStream<Component> {
 //        return filterOnType(ComponentDescriptor.CONTAINER);
 //    }
 
-    default ComponentStream hasProperty(ComponentModifier property) {
-        requireNonNull(property, "property is null");
-        return filter(c -> c.hasModifier(property));
+    default ComponentStream hasModifier(ComponentModifier modifier) {
+        requireNonNull(modifier, "modifier is null");
+        return filter(c -> c.hasModifier(modifier));
     }
 //
 //    default <T extends AFeature<?, ?>> Stream<T> feature(T feature) {
@@ -242,6 +242,7 @@ public interface ComponentStream extends AttributeStream<Component> {
      * @see Image#stream(Option...)
      */
     // I virkeligheden er det system view options.
+    // Noget af det vil jeg mene..
     public interface Option {
         // hideOrigin?
         // showExtensions
@@ -252,9 +253,9 @@ public interface ComponentStream extends AttributeStream<Component> {
 
         // Vil vel ogsaa gerne bruge den paa component.traversel
 
-        default ComponentStream.Option andInSameArtifact() {
-            throw new UnsupportedOperationException();
-        }
+//        default ComponentStream.Option andInSameArtifact() {
+//            throw new UnsupportedOperationException();
+//        }
 
         default ComponentStream.Option andInSameContainer() {
             return PackedComponentStreamOption.IN_SAME_CONTAINER_OPTION;
@@ -291,10 +292,10 @@ public interface ComponentStream extends AttributeStream<Component> {
             throw new UnsupportedOperationException();
         }
 
-        //
-        public static ComponentStream.Option inSameArtifact() {
-            throw new UnsupportedOperationException();
-        }
+//        //
+//        public static ComponentStream.Option inSameArtifact() {
+//            throw new UnsupportedOperationException();
+//        }
 
         /**
          * Only process components that are in the same container as the stream origin. If the origin is not in a container?

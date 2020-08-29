@@ -18,12 +18,11 @@ package app.packed.component;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Nullable;
-import app.packed.container.ContainerBundle;
 import packed.internal.component.BundleConfiguration;
 
 /**
  * A bundle is a thin wrapper that encapsulates a {@link WireableComponentDriver} and the configuration of a component.
- * This class is primary used through one of its subclasses such as {@link ContainerBundle}.
+ * This class is primary used through one of its subclasses such as .
  * <p>
  * This class is not meant to be extended by ordinary users. But provides means for power users to extend the basic
  * functionality of Packed.
@@ -31,7 +30,7 @@ import packed.internal.component.BundleConfiguration;
  * @param <C>
  *            the underlying configuration this bundle wraps
  */
-public abstract class Bundle<C> implements NavigableSystem {
+public abstract class Bundle<C> implements AnalysableSystem {
 
     /**
      * The configuration of this bundle. This field is "magically" set via a var handle from {@link BundleConfiguration}.

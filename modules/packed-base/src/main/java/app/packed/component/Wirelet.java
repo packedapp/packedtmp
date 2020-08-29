@@ -17,7 +17,6 @@ package app.packed.component;
 
 import java.util.Set;
 
-import app.packed.container.ContainerBundle;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
 import packed.internal.component.ComponentModifierSet;
@@ -134,7 +133,7 @@ public abstract class Wirelet {
      * Returns a wirelet that will set the name of the component to the specified name.
      * <p>
      * Overriding any default naming scheme, or any name that might already have been set, for example, via
-     * {@link ContainerBundle#setName(String)}.
+     * {@link ComponentBundle#setName(String)}.
      * 
      * @param name
      *            the name of the component

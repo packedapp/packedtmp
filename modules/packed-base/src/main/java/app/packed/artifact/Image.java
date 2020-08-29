@@ -21,7 +21,6 @@ import app.packed.component.Component;
 import app.packed.component.ComponentHolder;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerDescriptor;
 
 /**
  * Artifact images are immutable ahead-of-time configured artifacts. By configuring an artifact ahead of time, the
@@ -40,8 +39,8 @@ import app.packed.container.ContainerDescriptor;
  * No structural changes... Only whole artifacts
  * 
  * <p>
- * An image can be used to create new instances of {@link app.packed.artifact.App}, {@link ContainerDescriptor} or other
- * artifact images. Artifact images can not be used as a part of other containers, for example, via
+ * An image can be used to create new instances of {@link app.packed.artifact.App} or other artifact images. Artifact
+ * images can not be used as a part of other containers, for example, via
  * 
  * 
  * @apiNote In the future, if the Java language permits, {@link Image} may become a {@code sealed} interface, which

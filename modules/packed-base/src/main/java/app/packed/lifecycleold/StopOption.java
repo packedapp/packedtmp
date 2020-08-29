@@ -37,6 +37,8 @@ import app.packed.component.Wirelet;
 // https://twitter.github.io/util/docs/com/twitter/app/App.html
 
 // ER HELT SIKKER IKKE EN DEL AF LIFECYCLE VIL JEG MENE
+// Som udgangspunkt er det noget med Guest og goere..
+// Med mindre instanser lige pludselig kan bruge det.
 public interface StopOption {
 
     static StopOption erroneous(Throwable cause) {

@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import app.packed.base.AttributeSet;
+import app.packed.base.AttributeMap;
 import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.component.ComponentModifier;
@@ -140,8 +140,8 @@ public final class ComponentNode implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public AttributeSet attributes() {
-        return AttributeSet.of();
+    public AttributeMap attributes() {
+        return AttributeMap.of();
     }
 
     /** {@inheritDoc} */

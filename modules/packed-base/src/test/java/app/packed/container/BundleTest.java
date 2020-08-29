@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.artifact.App;
 import testutil.util.AbstractArtifactTest;
 
 /** Various Bundle tests. */
@@ -33,8 +34,8 @@ public class BundleTest extends AbstractArtifactTest {
             protected void configure() {}
         };
 
-        ContainerDescriptor.of(empty);
-        assertThatThrownBy(() -> ContainerDescriptor.of(empty)).isExactlyInstanceOf(IllegalStateException.class);
+        App.construct(empty);
+        assertThatThrownBy(() -> App.construct(empty)).isExactlyInstanceOf(IllegalStateException.class);
     }
 
     /** Tests that a bundle cannot be reused. */
@@ -47,6 +48,6 @@ public class BundleTest extends AbstractArtifactTest {
                 link(this);
             }
         };
-        assertThatThrownBy(() -> ContainerDescriptor.of(b)).isExactlyInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> App.construct(b)).isExactlyInstanceOf(IllegalStateException.class);
     }
 }

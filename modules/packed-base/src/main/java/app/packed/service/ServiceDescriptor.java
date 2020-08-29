@@ -1,16 +1,16 @@
 package app.packed.service;
 
-import app.packed.base.AttributeHolder;
-import app.packed.base.AttributeSet;
+import app.packed.base.AttributedElement;
+import app.packed.base.AttributeMap;
 import app.packed.base.Key;
 import app.packed.config.ConfigSite;
 
 /** An immutable description of a service provided by an injector or similar entity. */
 // Skal omnavngives til service hvis vi får en context...
-public interface ServiceDescriptor extends AttributeHolder {
+public interface ServiceDescriptor extends AttributedElement {
 
     @Override
-    default AttributeSet attributes() {
+    default AttributeMap attributes() {
         throw new UnsupportedOperationException();
     }
 

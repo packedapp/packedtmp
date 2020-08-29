@@ -22,19 +22,25 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The type of the field or the return type of the method must match the type of attribute.
- * Packed makes no check if any of the types are generic. 
+ * The type of the field or the return type of the method must match the type of attribute. Packed makes no check if any
+ * of the types are generic.
  */
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Opens(to = { OpenMode.METHOD_INVOKE, OpenMode.FIELD_SET })
+// declared by extension, vi kan vel bare tage @ExtensionMember value??
+
+// Must map the exact type of attribute
+// T, Optional<T>, Optional<Supplier<T>>
+
 public @interface AttributeProvide {
-    
+
     Class<?> declaredBy();
-    
+
     /**
-     * The name of the attribute that the member provides a value for.
+     * The name of the attribute that the annotated member provides a value for.
+     * 
      * @return the name of the attribute that the member provides a value for
      */
     String name();
@@ -42,5 +48,5 @@ public @interface AttributeProvide {
 // Meningen man kan bruge den paa sidecars...
 
 // Eneste grund til vi kalder den AttributeProvide istedet for provideAttribute
-// code completion...
+// er code completion...
 // No concept of permanent anymore  The specified attribute must be {@link Attribute.Option#permanent() permanent}
