@@ -15,9 +15,40 @@
  */
 package app.packed.lifecycle2;
 
+import app.packed.component.ComponentModifierSet;
+import app.packed.lifecycle.AssemblyContext;
+
 /**
  *
  */
+// InitializationContext <= AssemblyContext
+// Vi kan sagtens kun instantiere en guest...
+
+// Super identical to AssemblyContext
 public interface InitializationContext {
 
+    /**
+     * Returns the assembly context that we are now initializing.
+     * 
+     * @return the assembly context
+     */
+    // assembly.modifiers().isImage()... to see if we are created from an image...
+    AssemblyContext assembly();
+
+    // modifiers.isGuest()
+    ComponentModifierSet modifiers();
 }
+
+// Main Purpose
+
+// Instantiate stuff
+// Inject Stuff
+// Run @OnInitialize
+
+// AssemblyContext bliver holdt
+
+// Initialization context kan bliver splittet op per guest. Men ikke andre...
+// Ideet guests altid har identisk lifecycle
+
+// Guest, NoneRootIEnAssemblyContext?? <--idk how to express this
+// GuestWirelets.delayInitialization() <--- only makes sense 

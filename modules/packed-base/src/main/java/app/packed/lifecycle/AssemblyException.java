@@ -20,6 +20,7 @@ package app.packed.lifecycle;
  * programmatic error and can usually only be recovered by updating the underlying code.
  */
 // Or in .base/.component??? was in .artifact
+// Skal vi have en liste af errors???
 public class AssemblyException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */

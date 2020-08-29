@@ -156,9 +156,9 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         setName0(null); // initialize name
 
         int p = driver.properties;
-        p = ComponentModifierSet.setPropertyConditional(p, parent == null, ComponentModifier.SYSTEM);
-        p = ComponentModifierSet.setPropertyConditional(p, parent == null, ComponentModifier.GUEST);
-        p = ComponentModifierSet.setPropertyConditional(p, parent == null && assembly.isImage(), ComponentModifier.IMAGE);
+        p = PackedComponentModifierSet.setPropertyConditional(p, parent == null, ComponentModifier.SYSTEM);
+        p = PackedComponentModifierSet.setPropertyConditional(p, parent == null, ComponentModifier.GUEST);
+        p = PackedComponentModifierSet.setPropertyConditional(p, parent == null && assembly.isImage(), ComponentModifier.IMAGE);
         this.modifiers = p;
     }
 
@@ -200,7 +200,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     }
 
     AttributeMap attributes() {
-        if (ComponentModifierSet.isPropertySet(modifiers, ComponentModifier.EXTENSION)) {
+        if (PackedComponentModifierSet.isPropertySet(modifiers, ComponentModifier.EXTENSION)) {
             throw new UnsupportedOperationException();
         } else {
             return AttributeMap.of();
@@ -354,7 +354,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     /** {@inheritDoc} */
     @Override
     public Set<ComponentModifier> modifiers() {
-        return new ComponentModifierSet(modifiers);
+        return new PackedComponentModifierSet(modifiers);
     }
 
     public ComponentNodeConfiguration newChild(PackedWireableComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm, @Nullable WireletPack wp) {
@@ -570,14 +570,14 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         /** {@inheritDoc} */
         @Override
         public boolean hasModifier(ComponentModifier property) {
-            return ComponentModifierSet.isPropertySet(conf.modifiers, property);
+            return PackedComponentModifierSet.isPropertySet(conf.modifiers, property);
 
         }
 
         /** {@inheritDoc} */
         @Override
         public Set<ComponentModifier> modifiers() {
-            return new ComponentModifierSet(conf.modifiers);
+            return new PackedComponentModifierSet(conf.modifiers);
         }
 
         /** {@inheritDoc} */

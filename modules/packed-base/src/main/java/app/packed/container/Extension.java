@@ -26,6 +26,7 @@ import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
+import app.packed.lifecycle.AssemblyContext;
 import packed.internal.config.ConfigSiteSupport;
 
 /**
@@ -71,10 +72,10 @@ import packed.internal.config.ConfigSiteSupport;
 //// Her er der noget vi gerne vil have viral.
 public abstract class Extension {
 
-    static final TypeLiteral<Class<? extends Extension>> TL = new TypeLiteral<Class<? extends Extension>>() {};
-
     /** A stack walker used by {@link #captureStackFrame(String)}. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
+
+    static final TypeLiteral<Class<? extends Extension>> TL = new TypeLiteral<Class<? extends Extension>>() {};
 
     /** The configuration of this extension. Should never be read directly, but accessed via {@link #configuration()}. */
     // I think we should have a value representing configured. In this way people can store the extension
@@ -101,6 +102,17 @@ public abstract class Extension {
      * this method. Is typically used to add new runtime components.
      */
     protected void add() {}
+
+    /**
+     * Returns the assembly context the extension is a part of.
+     * 
+     * @return the assembly context
+     * @throws IllegalStateException
+     *             if invoked from the constructor of the extension
+     */
+    protected final AssemblyContext assembly() {
+        return configuration().assembly();
+    }
 
     /**
      * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is

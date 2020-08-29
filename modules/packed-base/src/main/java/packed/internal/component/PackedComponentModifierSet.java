@@ -22,17 +22,18 @@ import java.util.Iterator;
 import java.util.List;
 
 import app.packed.component.ComponentModifier;
+import app.packed.component.ComponentModifierSet;
 
 /**
  * A (possible empty) set of {@link ComponentModifier component modifiers}.
  */
-public final class ComponentModifierSet extends AbstractSet<ComponentModifier> {
+public final class PackedComponentModifierSet extends AbstractSet<ComponentModifier> implements ComponentModifierSet {
 
     private final static ComponentModifier[] MODIFIERS = ComponentModifier.values();
 
     private final int modifiers;
 
-    public ComponentModifierSet(int modifiers) {
+    public PackedComponentModifierSet(int modifiers) {
         this.modifiers = modifiers;
     }
 
@@ -41,6 +42,7 @@ public final class ComponentModifierSet extends AbstractSet<ComponentModifier> {
         return (modifiers & (1 << property.ordinal())) != 0;
     }
 
+    @Override
     public boolean isContainer() {
         return isPropertySet(modifiers, ComponentModifier.CONTAINER);
     }
@@ -98,5 +100,11 @@ public final class ComponentModifierSet extends AbstractSet<ComponentModifier> {
     @Override
     public int size() {
         return Integer.bitCount(modifiers);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean is(ComponentModifier modifier) {
+        return isPropertySet(modifiers, modifier);
     }
 }

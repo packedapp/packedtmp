@@ -70,7 +70,7 @@ public interface Image<A> extends ComponentHolder {
      *            wirelets used to create the artifact
      * @return the new artifact
      */
-    A construct(Wirelet... wirelets);
+    A initialize(Wirelet... wirelets);
 
     /**
      * Returns the component representation of this image.

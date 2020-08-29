@@ -15,6 +15,8 @@
  */
 package app.packed.guest;
 
+import app.packed.component.ComponentModifierSet;
+
 /**
  * Available to all components within a guest.
  */
@@ -27,7 +29,11 @@ package app.packed.guest;
 // Guest Context er kun noget med start/stop, restart osv at goere...
 public interface GuestContext {
 
+    ComponentModifierSet modifiers();
 }
 //info
 
-// State, initialization, startup reason, 
+// State, initialization, startup reason,
+
+// We don't point back to assembly context or initialization context
+// because then we cannot gc

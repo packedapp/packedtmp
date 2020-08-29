@@ -32,9 +32,7 @@ import app.packed.lifecycleold.StopOption;
 import app.packed.service.ServiceExtension;
 
 /**
- * An App (application) is the main type of shell available in Packed and should cover must usages for people.
- * <p>
- * Applications are low overhead not using more then a few kilobytes.
+ * An App (application) is the main type of shell available in Packed and should cover must usages.
  */
 public interface App extends AutoCloseable, ComponentHolder {
 
@@ -50,8 +48,8 @@ public interface App extends AutoCloseable, ComponentHolder {
     /**
      * Returns the configuration site of this application.
      * <p>
-     * If this application was created from an {@link Image image}, this method will return the site where the image
-     * was created. Unless the AI.Wiring option is used when construction the application.
+     * If this application was created from an {@link Image image}, this method will return the site where the image was
+     * created. Unless the AI.Wiring option is used when construction the application.
      * 
      * @return the configuration site of this application
      */
@@ -161,67 +159,31 @@ public interface App extends AutoCloseable, ComponentHolder {
     Component useComponent(CharSequence path);
 
     /**
-     * Create an application (but does not start it) from the specified source. The state of the returned application is
-     * {@link RunState#INITIALIZED}. The returned application will lazily start itself when needed. For example, on first
-     * invocation of {@link #use(Class)}.
-     *
-     * @param source
-     *            the source of the application
-     * @param wirelets
-     *            any wirelets to use in the construction of the application
-     * @return the new application
-     * @throws RuntimeException
-     *             if the application could not be initialized properly
-     */
-    // Create???
-    // construct because we are in the construction phase
-    static App construct(Bundle<?> source, Wirelet... wirelets) {
-        // Rename fordi vi gerne vil have at ArtifactDriver hedder det samme og
-        // AppHost.xxx() .. Dumt det hedder App.of og AppHost.instantiate
-
-        // Muligheder -> build... instantiate... create... initialize
-
-        // Build -> Image.of -> App.build() hmmm Image.Build <- kun assemble delen...
-
-        // Maaske build,,, you build an artifact...
-        return driver().instantiate(source, wirelets);
-    }
-
-    /**
-     * Returns a artifact driver that produces {@link App} artifacts.
+     * Returns a driver that produces {@link App} instances.
      * <p>
      * This method is mainly used by advanced users.
      * 
-     * @return a driver for producing App artifacts
+     * @return a driver that produces App instances
      */
     static ShellDriver<App> driver() {
         return PackedApp.DRIVER;
     }
 
     /**
-     * This method will create and start an {@link App application} from the specified source. Blocking until the run state
-     * of the application is {@link RunState#TERMINATED}.
-     * <p>
-     * Entry point or run to termination
-     * 
-     * @param source
+     * Create an application (but does not start it) from the specified source. The state of the returned application is
+     * {@link RunState#INITIALIZED}. The returned application will lazily start itself when needed. For example, on first
+     * invocation of {@link #use(Class)}.
+     *
+     * @param bundle
      *            the source of the application
      * @param wirelets
-     *            wirelets
+     *            any wirelets to use in the construction of the application
+     * @return the new application
      * @throws RuntimeException
-     *             if the application did not execute properly
+     *             if the application could not be assembled or initialized
      */
-    // add exitOnEnter() <--- so useful for tests
-    // exitable daemon...
-    // https://github.com/patriknw/akka-typed-blog/blob/master/src/main/java/blog/typed/javadsl/ImmutableRoundRobinApp.java3
-    static void execute(Bundle<?> source, Wirelet... wirelets) {
-        driver().execute(source, wirelets);
-    }
-
-    // sync deamon???????
-    // App.main(new Goo(), args);
-    static void main(Bundle<?> source, String[] args, Wirelet... wirelets) {
-        driver().execute(source, wirelets);
+    static App initialize(Bundle<?> bundle, Wirelet... wirelets) {
+        return driver().initialize(bundle, wirelets);
     }
 
     static Image<App> newImage(Bundle<?> bundle, Wirelet... wirelets) {
@@ -232,7 +194,7 @@ public interface App extends AutoCloseable, ComponentHolder {
      * Create and start an application from the specified source. The state of the returned application is
      * {@link RunState#RUNNING}.
      *
-     * @param source
+     * @param bundle
      *            the source of the application
      * @param wirelets
      *            any wirelets to use in the construction of the application
@@ -240,14 +202,22 @@ public interface App extends AutoCloseable, ComponentHolder {
      * @throws RuntimeException
      *             if the application could not be initialized or started properly
      */
-    static App start(Bundle<?> source, Wirelet... wirelets) {
-        return driver().start(source, wirelets);
+    static App start(Bundle<?> bundle, Wirelet... wirelets) {
+        return driver().start(bundle, wirelets);
         // 10 seconds is from start.. Otherwise people must use an exact deadline
         // start(new SomeBundle(), LifecycleWirelets.stopAfter(10, TimeUnit.SECONDS));
         // sart(new SomeBundle(), LifecycleWirelets.stopAfter(10, TimeUnit.SECONDS), ()-> New CancelledException()); (failure)
 
     }
 }
+// Rename fordi vi gerne vil have at ArtifactDriver hedder det samme og
+// AppHost.xxx() .. Dumt det hedder App.of og AppHost.instantiate
+
+// Muligheder -> build... instantiate... create... initialize
+
+// Build -> Image.of -> App.build() hmmm Image.Build <- kun assemble delen...
+
+// Maaske build,,, you build an artifact...
 
 ///**
 // * Returns the description of this application. Or an empty optional if no description has been set.

@@ -19,7 +19,7 @@ import java.util.Set;
 
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
-import packed.internal.component.ComponentModifierSet;
+import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.wirelet.InternalWirelet;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletList;
@@ -62,7 +62,7 @@ public abstract class Wirelet {
     }
 
     protected Wirelet(ComponentModifier modifier) {
-        this.modifiers = ComponentModifierSet.setProperty(0, modifier);
+        this.modifiers = PackedComponentModifierSet.setProperty(0, modifier);
     }
 
     /**

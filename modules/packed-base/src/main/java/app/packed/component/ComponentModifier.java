@@ -18,7 +18,7 @@ package app.packed.component;
 import java.util.Set;
 
 import app.packed.container.Extension;
-import packed.internal.component.ComponentModifierSet;
+import packed.internal.component.PackedComponentModifierSet;
 
 /**
  * Component properties are permanent for a component
@@ -163,7 +163,7 @@ public enum ComponentModifier {
     }
 
     public static Set<ComponentModifier> setOf(ComponentModifier m) {
-        return new ComponentModifierSet(toBits(m));
+        return new PackedComponentModifierSet(toBits(m));
     }
 }
 

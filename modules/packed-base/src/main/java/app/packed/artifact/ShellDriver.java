@@ -69,7 +69,7 @@ public final class ShellDriver<A> {
     private final Class<A> artifactType;
 
     /** Whether or not the created artifact has an execution phase. */
-    private final boolean hasExecutionPhase;
+    private final boolean isGuest;
 
     /** The method handle responsible for creating the new artifact. */
     private final MethodHandle mh;
@@ -85,7 +85,7 @@ public final class ShellDriver<A> {
     @SuppressWarnings("unchecked")
     private ShellDriver(Class<?> artifactType, MethodHandle mh) {
         this.artifactType = (Class<A>) requireNonNull(artifactType);
-        this.hasExecutionPhase = AutoCloseable.class.isAssignableFrom(artifactType);
+        this.isGuest = AutoCloseable.class.isAssignableFrom(artifactType);
         this.mh = requireNonNull(mh);
     }
 
@@ -99,15 +99,23 @@ public final class ShellDriver<A> {
         return newArtifact(ac);
     }
 
-    private ShellContext createArtifactContext(Bundle<?> source, Wirelet... wirelets) {
-        ComponentNodeConfiguration node = PackedAssemblyContext.assemble(source, 0, this, wirelets);
-        return ConstructionContext.constructArtifact(node, node.wirelets);
-    }
-
-    public Object execute(Bundle<?> source, Wirelet... wirelets) {
-        ShellContext context = createArtifactContext(source, wirelets);
-        context.start();
-        return null;
+    /**
+     * Creates and initializes a new shell (and system) using the specified bundle.
+     * <p>
+     * This method will invoke {@link #newArtifact(ShellContext)} to create the actual artifact.
+     * 
+     * @param bundle
+     *            the system bundle
+     * @param wirelets
+     *            any wirelets that should be used when assembling or initializing the system
+     * @return the new shell
+     * @throws RuntimeException
+     *             if the artifact could not be created
+     */
+    public A initialize(Bundle<?> bundle, Wirelet... wirelets) {
+        ComponentNodeConfiguration node = PackedAssemblyContext.assemble(bundle, 0, this, wirelets);
+        ShellContext context = ConstructionContext.constructArtifact(node, node.wirelets);
+        return newArtifact(context);
     }
 
     /**
@@ -116,29 +124,8 @@ public final class ShellDriver<A> {
      * 
      * @return whether or not the artifact being produced by this driver has an execution phase
      */
-    public boolean hasExecutionPhase() {
-        return hasExecutionPhase;
-    }
-
-    /**
-     * Creates and initializes a new artifact using the specified source.
-     * <p>
-     * This method will invoke {@link #newArtifact(ShellContext)} to create the actual artifact.
-     * 
-     * @param source
-     *            the source of the top-level container
-     * @param wirelets
-     *            any wirelets that should be used to create the artifact
-     * @return the new artifact
-     * @throws RuntimeException
-     *             if the artifact could not be created
-     */
-    // VIL MENE at sourcen i saa fald det er en bundle
-    // Skal kunne lave en container...
-    // Maaske laver vi implicit en container og smider den i...
-    public A instantiate(Bundle<?> source, Wirelet... wirelets) {
-        ShellContext context = createArtifactContext(source, wirelets);
-        return newArtifact(context);
+    public boolean isGuest() {
+        return isGuest;
     }
 
     /**
@@ -174,7 +161,7 @@ public final class ShellDriver<A> {
     /**
      * Create, initialize and start a new artifact using the specified source.
      * 
-     * @param source
+     * @param bundle
      *            the source of the top-level container
      * @param wirelets
      *            any wirelets that should be used to create the artifact
@@ -182,8 +169,9 @@ public final class ShellDriver<A> {
      * @throws UnsupportedOperationException
      *             if the driver does not produce an artifact with an execution phase
      */
-    public A start(Bundle<?> source, Wirelet... wirelets) {
-        ShellContext context = createArtifactContext(source, wirelets);
+    public A start(Bundle<?> bundle, Wirelet... wirelets) {
+        ComponentNodeConfiguration node = PackedAssemblyContext.assemble(bundle, 0, this, wirelets);
+        ShellContext context = ConstructionContext.constructArtifact(node, node.wirelets);
         context.start();
         return newArtifact(context);
     }

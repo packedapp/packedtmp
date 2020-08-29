@@ -19,7 +19,7 @@ import app.packed.component.Bundle;
 import app.packed.component.Component;
 import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
-import packed.internal.component.ComponentModifierSet;
+import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.lifecycle.phases.ConstructionContext;
@@ -29,7 +29,7 @@ import packed.internal.lifecycle.phases.PackedAssemblyContext;
 // Taenker vi maaske skal flytte den internt?
 // Altsaa ved ikke lige hvordan det hosted image kommer til at fungere...
 final class PackedImage<A> implements Image<A> {
-    private static final int IMAGE = ComponentModifierSet.setProperty(0, ComponentModifier.IMAGE);
+    private static final int IMAGE = PackedComponentModifierSet.setProperty(0, ComponentModifier.IMAGE);
 
     /** The driver used to create the any shell. */
     // We should use the driver when creating the actual root node...
@@ -62,7 +62,7 @@ final class PackedImage<A> implements Image<A> {
 
     /** {@inheritDoc} */
     @Override
-    public A construct(Wirelet... wirelets) {
+    public A initialize(Wirelet... wirelets) {
         ShellContext context = ConstructionContext.constructArtifact(node, WireletPack.forImage(node, wirelets));
         return driver.newArtifact(context);
     }
@@ -70,7 +70,7 @@ final class PackedImage<A> implements Image<A> {
     /** {@inheritDoc} */
     @Override
     public A start(Wirelet... wirelets) {
-        return construct(wirelets);
+        return initialize(wirelets);
     }
 }
 //

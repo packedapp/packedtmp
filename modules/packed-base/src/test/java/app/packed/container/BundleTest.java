@@ -34,8 +34,8 @@ public class BundleTest extends AbstractArtifactTest {
             protected void configure() {}
         };
 
-        App.construct(empty);
-        assertThatThrownBy(() -> App.construct(empty)).isExactlyInstanceOf(IllegalStateException.class);
+        App.initialize(empty);
+        assertThatThrownBy(() -> App.initialize(empty)).isExactlyInstanceOf(IllegalStateException.class);
     }
 
     /** Tests that a bundle cannot be reused. */
@@ -48,6 +48,6 @@ public class BundleTest extends AbstractArtifactTest {
                 link(this);
             }
         };
-        assertThatThrownBy(() -> App.construct(b)).isExactlyInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> App.initialize(b)).isExactlyInstanceOf(IllegalStateException.class);
     }
 }

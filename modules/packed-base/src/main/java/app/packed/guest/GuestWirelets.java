@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle;
+package app.packed.guest;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -24,6 +24,7 @@ import java.util.function.Supplier;
 import app.packed.artifact.App;
 import app.packed.component.Bundle;
 import app.packed.component.Wirelet;
+import app.packed.lifecycle3.LifecycleState;
 
 /**
  * Wirelets that can be used when wiring containers. For example, via {@link App#start(Bundle, Wirelet...)}
@@ -42,7 +43,9 @@ import app.packed.component.Wirelet;
 //Runables -> InVirtualThread
 
 // Take a ThreadBuilder???
-public interface LifecycleWirelets {
+
+// GuestWirelets?????
+public interface GuestWirelets {
 
     /**
      * @param state

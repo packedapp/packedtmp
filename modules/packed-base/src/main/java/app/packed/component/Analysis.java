@@ -15,10 +15,15 @@
  */
 package app.packed.component;
 
-import packed.internal.component.ComponentModifierSet;
+import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.lifecycle.phases.PackedAssemblyContext;
 
 /**
+ * Analysis servers 2 main purposes
+ * 
+ * Verification
+ * 
+ * Reporting
  *
  */
 // Taenker 2 hovedformaal
@@ -34,7 +39,7 @@ import packed.internal.lifecycle.phases.PackedAssemblyContext;
 
 public final class Analysis {
 
-    private static final int ANLYSIS = ComponentModifierSet.setProperty(0, ComponentModifier.ANALYSIS);
+    private static final int ANLYSIS = PackedComponentModifierSet.setProperty(0, ComponentModifier.ANALYSIS);
 
     // Maybe on Component???
 

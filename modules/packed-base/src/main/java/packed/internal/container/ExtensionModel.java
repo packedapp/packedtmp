@@ -41,7 +41,7 @@ import app.packed.container.ExtensionSet;
 import app.packed.container.ExtensionSettings;
 import app.packed.container.InternalExtensionException;
 import app.packed.hook.OnHook;
-import app.packed.lifecycle.LifecycleContext;
+import app.packed.lifecycle3.LifecycleContext;
 import packed.internal.component.PackedWireableComponentDriver;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.BaseHookQualifierList;

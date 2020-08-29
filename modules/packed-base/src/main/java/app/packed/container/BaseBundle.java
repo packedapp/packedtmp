@@ -21,7 +21,7 @@ import app.packed.component.BeanConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
-import app.packed.lifecycle.LifecycleExtension;
+import app.packed.lifecycle3.LifecycleExtension;
 import app.packed.lifecycleold.OnStart;
 import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.Injector;

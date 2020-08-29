@@ -15,9 +15,8 @@
  */
 package app.packed.lifecycle;
 
-import java.util.Set;
-
 import app.packed.component.ComponentModifier;
+import app.packed.component.ComponentModifierSet;
 import packed.internal.errorhandling.ErrorMessage;
 
 /**
@@ -75,7 +74,7 @@ public interface AssemblyContext {
      * 
      * @return a set of modifiers
      */
-    Set<ComponentModifier> modifiers();
+    ComponentModifierSet modifiers();
 
     // isDone
     // isFailed

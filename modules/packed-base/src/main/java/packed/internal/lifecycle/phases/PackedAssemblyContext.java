@@ -17,20 +17,19 @@ package packed.internal.lifecycle.phases;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Set;
 import java.util.function.Function;
 
 import app.packed.artifact.ShellDriver;
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
-import app.packed.component.ComponentModifier;
+import app.packed.component.ComponentModifierSet;
 import app.packed.component.CustomConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.lifecycle.AssemblyContext;
 import packed.internal.component.BundleConfiguration;
-import packed.internal.component.ComponentModifierSet;
 import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.PackedWireableComponentDriver;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteSupport;
@@ -62,7 +61,6 @@ public final class PackedAssemblyContext implements AssemblyContext {
     PackedAssemblyContext(int modifiers, Wirelet... wirelets) {
         this.modifiers = modifiers;
         this.wirelets = wirelets;
-
     }
 
     /** {@inheritDoc} */
@@ -71,8 +69,8 @@ public final class PackedAssemblyContext implements AssemblyContext {
 
     /** {@inheritDoc} */
     @Override
-    public Set<ComponentModifier> modifiers() {
-        return new ComponentModifierSet(modifiers);
+    public ComponentModifierSet modifiers() {
+        return new PackedComponentModifierSet(modifiers);
     }
 
     /**

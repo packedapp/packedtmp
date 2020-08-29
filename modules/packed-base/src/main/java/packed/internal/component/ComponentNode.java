@@ -209,7 +209,7 @@ public final class ComponentNode implements Component {
     /** {@inheritDoc} */
     @Override
     public boolean hasModifier(ComponentModifier property) {
-        return ComponentModifierSet.isPropertySet(model.properties, property);
+        return PackedComponentModifierSet.isPropertySet(model.properties, property);
     }
 
     public boolean isInSameContainer(ComponentNode other) {
@@ -231,7 +231,7 @@ public final class ComponentNode implements Component {
     /** {@inheritDoc} */
     @Override
     public Set<ComponentModifier> modifiers() {
-        return new ComponentModifierSet(model.properties);
+        return new PackedComponentModifierSet(model.properties);
     }
 
     /** {@inheritDoc} */

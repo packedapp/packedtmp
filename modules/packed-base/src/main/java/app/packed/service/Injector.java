@@ -339,7 +339,7 @@ public interface Injector {
      *             that requires a lifecycle
      */
     static Injector create(Bundle<?> source, Wirelet... wirelets) {
-        return driver().instantiate(source, wirelets);
+        return driver().initialize(source, wirelets);
     }
 }
 

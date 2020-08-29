@@ -116,5 +116,4 @@ public final class ConstructionContext {
             return node;
         }
     }
-
 }

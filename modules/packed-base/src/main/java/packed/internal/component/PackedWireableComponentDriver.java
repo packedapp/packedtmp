@@ -50,7 +50,7 @@ public abstract class PackedWireableComponentDriver<C> implements WireableCompon
     final int properties;
 
     protected PackedWireableComponentDriver(ComponentModifier... properties) {
-        this.properties = ComponentModifierSet.setProperty(0, properties);
+        this.properties = PackedComponentModifierSet.setProperty(0, properties);
     }
 
     protected PackedWireableComponentDriver(int properties) {
@@ -93,7 +93,7 @@ public abstract class PackedWireableComponentDriver<C> implements WireableCompon
     /** {@inheritDoc} */
     @Override
     public Set<ComponentModifier> properties() {
-        return new ComponentModifierSet(properties);
+        return new PackedComponentModifierSet(properties);
     }
 
     public abstract C toConfiguration(ComponentConfigurationContext cnc);

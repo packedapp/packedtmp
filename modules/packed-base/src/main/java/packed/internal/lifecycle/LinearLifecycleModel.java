@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.util.Set;
 
-import app.packed.lifecycle.LifecycleContext;
+import app.packed.lifecycle3.LifecycleContext;
 import packed.internal.util.ThrowableUtil;
 
 /**
