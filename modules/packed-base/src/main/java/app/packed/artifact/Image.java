@@ -86,6 +86,12 @@ public interface Image<A> extends ComponentHolder {
     default CompletableFuture<A> startAsync(Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
+
+    // Uses this image...
+    // appImage.use(DDD.class)
+    default A use(Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
 }
 
 ///**

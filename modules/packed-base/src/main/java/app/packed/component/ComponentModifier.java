@@ -144,6 +144,14 @@ public enum ComponentModifier {
 
 enum Sandbox {
 
+    NATIVE_IMAGE, // if built using GRAAL
+
+    JOB,
+
+    TASK,
+
+    REQUEST,
+
     // IDK if we will ever use it... But just a reminder.
     EPHEMERAL, // https://kubernetes.io/docs/concepts/workloads/pods/ephemeral-containers/
 
