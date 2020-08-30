@@ -15,7 +15,7 @@
  */
 package packed.internal.component;
 
-import app.packed.component.Analysis;
+import app.packed.component.ComponentAnalyzer;
 import app.packed.container.BaseBundle;
 
 /**
@@ -30,7 +30,7 @@ public class Zzz extends BaseBundle {
     }
 
     public static void main(String[] args) {
-        Analysis.stream(new Zzz()).forEach(c -> {
+        ComponentAnalyzer.stream(new Zzz()).forEach(c -> {
             System.out.println(c.path() + "  " + c.modifiers() + "  " + c.attributes());
         });
     }

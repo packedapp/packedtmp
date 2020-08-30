@@ -89,7 +89,7 @@ final class PackedApp implements App {
 
     /** {@inheritDoc} */
     @Override
-    public Component useComponent(CharSequence path) {
+    public Component resolve(CharSequence path) {
         return context.resolve(path);
     }
 }

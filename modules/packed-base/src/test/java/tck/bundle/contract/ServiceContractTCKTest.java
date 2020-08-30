@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.base.Key;
+import app.packed.component.ComponentSystem;
 import app.packed.container.BaseBundle;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
@@ -33,31 +33,47 @@ import testutil.stubs.Letters.NeedsAOptional;
 import testutil.stubs.Letters.NeedsB;
 
 /**
- * 
+ *
  */
-public class ServicesTest {
+public class ServiceContractTCKTest {
 
+    /** Tests that we return an empty contract even if we do not use {@link ServiceExtension}. */
     @Test
-    public void empty() {
-        ServiceContract ic = ServiceContract.of(new BaseBundle() {
+    public void empty1() {
+        check(ServiceContract.EMPTY, new BaseBundle() {
+            @Override
+            protected void configure() {}
+        });
+    }
 
+    /** Tests that we return an empty contract. */
+    @Test
+    public void empty2() {
+        check(ServiceContract.EMPTY, new BaseBundle() {
             @Override
             protected void configure() {
                 use(ServiceExtension.class);
             }
         });
-
-        assertThat(ic).isNotNull();
-        assertThat(ic).isSameAs(ic);
-        assertThat(ic.provides()).isEmpty();
-        assertThat(ic.optional()).isEmpty();
-        assertThat(ic.requires()).isEmpty();
     }
 
+    /** Tests that services that are not exported are not included. */
+    @Test
+    public void empty3() {
+        check(ServiceContract.EMPTY, new BaseBundle() {
+            @Override
+            protected void configure() {
+                lookup(MethodHandles.lookup());
+                provide(A.class);
+            }
+        });
+    }
+
+    /** Tests that exported services are part of the contract. */
     @Test
     public void provides() {
-        ServiceContract ic = ServiceContract.of(new BaseBundle() {
-
+        ServiceContract expected = ServiceContract.newContract(b -> b.provides(A.class));
+        check(expected, new BaseBundle() {
             @Override
             protected void configure() {
                 lookup(MethodHandles.lookup());
@@ -66,32 +82,26 @@ public class ServicesTest {
                 export(A.class);
             }
         });
-
-        assertThat(ic.provides()).containsExactly(Key.of(A.class));
-        assertThat(ic.optional()).isEmpty();
-        assertThat(ic.requires()).isEmpty();
     }
 
+    /** Checks that registering a service */
     @Test
     public void requires() {
-        ServiceContract ic = ServiceContract.of(new BaseBundle() {
-
+        ServiceContract expected = ServiceContract.newContract(b -> b.requires(A.class));
+        check(expected, new BaseBundle() {
             @Override
             protected void configure() {
                 lookup(MethodHandles.lookup());
-                provide(NeedsA.class);
+                provide(NeedsA.class); // TODO fix, this should work for install
                 provide(B.class);
             }
         });
-
-        assertThat(ic.requires()).containsExactly(Key.of(A.class));
-        assertThat(ic.optional()).isEmpty();
-        assertThat(ic.provides()).isEmpty();
     }
 
     @Test
     public void optional() {
-        ServiceContract ic = ServiceContract.of(new BaseBundle() {
+        ServiceContract expected = ServiceContract.newContract(b -> b.optional(A.class));
+        check(expected, new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -100,17 +110,13 @@ public class ServicesTest {
                 provide(B.class);
             }
         });
-
-        assertThat(ic.requires()).isEmpty();
-        assertThat(ic.provides()).isEmpty();
-        assertThat(ic.optional()).containsExactly(Key.of(A.class));
     }
 
     /** A service will never be both requires and optional. */
     @Test
     public void requiresOverrideOptional() {
-        ServiceContract ic = ServiceContract.of(new BaseBundle() {
-
+        ServiceContract expected = ServiceContract.newContract(b -> b.requires(A.class));
+        check(expected, new BaseBundle() {
             @Override
             protected void configure() {
                 lookup(MethodHandles.lookup());
@@ -119,15 +125,12 @@ public class ServicesTest {
                 provide(B.class);
             }
         });
-
-        assertThat(ic.requires()).containsExactly(Key.of(A.class));
-        assertThat(ic.optional()).isEmpty();
-        assertThat(ic.provides()).isEmpty();
     }
 
     @Test
     public void all() {
-        ServiceContract ic = ServiceContract.of(new BaseBundle() {
+        ServiceContract expected = ServiceContract.newContract(b -> b.optional(A.class).requires(B.class).provides(C.class));
+        check(expected, new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -137,9 +140,9 @@ public class ServicesTest {
                 provide(C.class).export();
             }
         });
+    }
 
-        assertThat(ic.optional()).containsExactly(Key.of(A.class));
-        assertThat(ic.requires()).containsExactly(Key.of(B.class));
-        assertThat(ic.provides()).containsExactly(Key.of(C.class));
+    static void check(ServiceContract expected, ComponentSystem s) {
+        assertThat(ServiceContract.of(s)).isEqualTo(expected);
     }
 }

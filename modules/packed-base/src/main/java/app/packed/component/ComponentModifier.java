@@ -151,8 +151,8 @@ public enum ComponentModifier {
      * <p>
      * This modifier is normally checked in the assembly phase via {@link AssemblyContext#modifiers()}.
      * <p>
-     * The modifier is set by the various methods in {@link Analysis} when specifying a bundle. Systems that are already
-     * running will not have this modifier set when they are analysed.
+     * The modifier is set by the various methods in {@link ComponentAnalyzer} when specifying a bundle. Systems that are
+     * already running will not have this modifier set when they are analysed.
      */
     ANALYSIS,
 

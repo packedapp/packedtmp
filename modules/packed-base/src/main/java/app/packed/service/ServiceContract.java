@@ -26,9 +26,9 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import app.packed.base.Key;
-import app.packed.component.AnalysableSystem;
-import app.packed.component.Analysis;
 import app.packed.component.Component;
+import app.packed.component.ComponentAnalyzer;
+import app.packed.component.ComponentSystem;
 import app.packed.container.ExtensionMember;
 
 /**
@@ -175,6 +175,10 @@ public final class ServiceContract {
         return provides;
     }
 
+    public boolean isEmpty() {
+        return optional.isEmpty() && provides.isEmpty() && requires.isEmpty();
+    }
+
     /**
      * Returns an immutable set of keys for which a service <b>must</b> be made by the owning entity.
      * 
@@ -232,8 +236,8 @@ public final class ServiceContract {
         return b.build();
     }
 
-    public static ServiceContract of(AnalysableSystem bundle) {
-        Optional<Component> o = Analysis.findExtension(bundle, ServiceExtensionAttributes.SERVICE_CONTRACT);
+    public static ServiceContract of(ComponentSystem bundle) {
+        Optional<Component> o = ComponentAnalyzer.findExtension(bundle, ServiceExtensionAttributes.SERVICE_CONTRACT);
         if (o.isEmpty()) {
             return ServiceContract.EMPTY;
         }

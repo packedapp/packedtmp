@@ -20,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import app.packed.base.Key;
 import app.packed.component.Bundle;
 import app.packed.component.Component;
-import app.packed.component.ComponentHolder;
+import app.packed.component.ComponentDelegate;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.component.ComponentStream.Option;
@@ -34,7 +34,7 @@ import app.packed.service.ServiceExtension;
 /**
  * An App (application) is the main type of shell available in Packed and should cover must usages.
  */
-public interface App extends AutoCloseable, ComponentHolder {
+public interface App extends AutoCloseable, ComponentDelegate {
 
     /**
      * Closes the app (synchronously). Calling this method is equivalent to calling {@code app.stop()}, but this method is
@@ -79,6 +79,22 @@ public interface App extends AutoCloseable, ComponentHolder {
     default ComponentPath path() {
         return component().path();
     }
+
+    /**
+     * <p>
+     * This method takes a {@link CharSequence} as parameter, so it is easy to passe either a {@link String} or a
+     * {@link ComponentPath}.
+     * 
+     * @param path
+     *            the path of the component to return
+     * @throws IllegalArgumentException
+     *             if no component exists with the specified path
+     * @return a component with the specified path
+     */
+    // TODO throw UnknownPathException();;
+    // componentAt
+    // Altsaa maaske har vi mere et slags SystemView?
+    Component resolve(CharSequence path);
 
     /**
      * Returns the state of application.
@@ -145,22 +161,6 @@ public interface App extends AutoCloseable, ComponentHolder {
      *             if a service with the specified key exist. Or if the application does not use {@link ServiceExtension}.
      */
     <T> T use(Key<T> key);
-
-    /**
-     * <p>
-     * This method takes a {@link CharSequence} as parameter, so it is easy to passe either a {@link String} or a
-     * {@link ComponentPath}.
-     * 
-     * @param path
-     *            the path of the component to return
-     * @throws IllegalArgumentException
-     *             if no component exists with the specified path
-     * @return a component with the specified path
-     */
-    // TODO throw UnknownPathException();;
-    // componentAt
-    // Altsaa maaske har vi mere et slags SystemView?
-    Component useComponent(CharSequence path);
 
     /**
      * Returns a driver that produces {@link App} instances.

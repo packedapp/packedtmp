@@ -67,9 +67,9 @@ public class AppConfigSiteTest {
             }
         });
 
-        Component container = app.useComponent("/");
-        Component component1 = app.useComponent("foo");
-        Component component2 = app.useComponent("doo");
+        Component container = app.resolve("/");
+        Component component1 = app.resolve("foo");
+        Component component2 = app.resolve("doo");
 
         // Test Container
         assertThat(container.configSite()).isSameAs(app.configSite());
@@ -114,9 +114,9 @@ public class AppConfigSiteTest {
             }
         });
 
-        Component root = app.useComponent("/");
-        Component container = app.useComponent("/woo");
-        Component component = app.useComponent("/woo/foo");
+        Component root = app.resolve("/");
+        Component container = app.resolve("/woo");
+        Component component = app.resolve("/woo/foo");
 
         // Test Root
         assertThat(root.configSite()).isSameAs(app.configSite());

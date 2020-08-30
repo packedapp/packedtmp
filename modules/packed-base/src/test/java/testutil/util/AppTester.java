@@ -45,7 +45,7 @@ public class AppTester {
     }
 
     public void assertPathExist(CharSequence s) {
-        Component cc = app.useComponent(s);
+        Component cc = app.resolve(s);
         assertThat(cc).isNotNull();
         if (s.toString().startsWith("/")) {
             assertThat(cc.path().toString()).isEqualTo(s.toString());

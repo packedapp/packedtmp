@@ -18,7 +18,7 @@ package app.packed.artifact;
 import java.util.concurrent.CompletableFuture;
 
 import app.packed.component.Component;
-import app.packed.component.ComponentHolder;
+import app.packed.component.ComponentDelegate;
 import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
@@ -53,7 +53,7 @@ import app.packed.config.ConfigSite;
 
 // Hvis Guest == Closeable
 // Saa er et image noget andet...
-public interface Image<A> extends ComponentHolder {
+public interface Image<A> extends ComponentDelegate {
 
     /**
      * Returns the component representation of this image.

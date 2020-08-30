@@ -40,7 +40,7 @@ import packed.internal.lifecycle.PackedAssemblyContext;
 // Svaret er det kan give mening naar vi vil analysere...
 // F.eks. AssemblyWirelets... printStuff()
 
-public final class Analysis {
+public final class ComponentAnalyzer {
 
     private static final int ANLYSIS = PackedComponentModifierSet.setProperty(0, ComponentModifier.ANALYSIS);
 
@@ -49,23 +49,23 @@ public final class Analysis {
     // If the specified system is a bundle. The bundle will be consumed
     // And ComponentModifier.Analysis will be set
 
-    public static ComponentStream stream(AnalysableSystem s) {
+    public static ComponentStream stream(ComponentSystem s) {
         // Should we take options??? Again I don't know if
         // options is more a system transform.
         return analyze(s).stream();
     }
 
-    public static Component analyze(AnalysableSystem s) {
+    public static Component analyze(ComponentSystem s) {
         if (s instanceof Component) {
             return (Component) s;
-        } else if (s instanceof ComponentHolder) {
-            return ((ComponentHolder) s).component();
+        } else if (s instanceof ComponentDelegate) {
+            return ((ComponentDelegate) s).component();
         } else {
             return PackedAssemblyContext.assemble((Bundle<?>) s, ANLYSIS, null).adaptToComponent();
         }
     }
 
-    public static Optional<Component> findExtension(AnalysableSystem s, Attribute<?> attribute) {
+    public static Optional<Component> findExtension(ComponentSystem s, Attribute<?> attribute) {
         return stream(s).filter(c -> c.attributes().isPresent(attribute)).findAny();
     }
 
@@ -76,11 +76,11 @@ public final class Analysis {
      * @throws IllegalStateException
      *             if the system is not in an assembled state.
      */
-    public static Component analyzeAssembly(AnalysableSystem s) {
+    public static Component analyzeAssembly(ComponentSystem s) {
         throw new UnsupportedOperationException();
     }
 
-    static void validate(AnalysableSystem s, Object ruleset) {
+    static void validate(ComponentSystem s, Object ruleset) {
 
     }
 

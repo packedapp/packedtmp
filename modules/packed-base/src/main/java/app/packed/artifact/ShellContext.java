@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 
 import app.packed.base.Key;
 import app.packed.component.Component;
-import app.packed.component.ComponentHolder;
+import app.packed.component.ComponentDelegate;
 import app.packed.config.ConfigSite;
 import app.packed.lifecycleold.StopOption;
 import app.packed.service.Injector;
@@ -39,7 +39,7 @@ import app.packed.service.ServiceExtension;
  */
 // ArtifactContext does not extends ContainerContext??? Fordi ContainerContext er privat
 // til en container. Og en artifact er mere udefar
-public interface ShellContext extends ComponentHolder {
+public interface ShellContext extends ComponentDelegate {
 
     /**
      * Returns the config site of this artifact.

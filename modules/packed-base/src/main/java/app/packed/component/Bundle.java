@@ -31,7 +31,7 @@ import packed.internal.component.PackedWireableComponentDriver;
  * @param <C>
  *            the underlying configuration this bundle wraps
  */
-public abstract class Bundle<C> implements AnalysableSystem {
+public abstract class Bundle<C> implements ComponentSystem {
 
     /**
      * The configuration of this bundle. This field is "magically" set via a var handle from {@link BundleHelper}.

@@ -17,12 +17,11 @@ package app.packed.component;
 
 /**
  *
- *
+ * <p>
+ * In general if you specify a {@link Bundle} to a method that takes a {@link ComponentSystem} you can assume that the
+ * method will consume the bundle.
  */
 // Sealed, Bundle, Component, ComponentHolder
 
-// ComponentSystem?? Det eneste der lidt afholder mig
-// Er det man consumer en bundle...
-
 // ComponentSystemView???
-public interface AnalysableSystem {}
+public interface ComponentSystem {}

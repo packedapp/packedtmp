@@ -18,11 +18,18 @@ package app.packed.component;
 /**
  *
  */
-public interface ComponentHolder extends AnalysableSystem {
+public interface ComponentDelegate extends ComponentSystem {
 
-    Component component();// root/ system
+    /**
+     * The component this is delegating
+     * 
+     * @return the component
+     */
+    Component component();
 
-    // Det ene problem er alle de artifact der nu arver alle de her ting..
+    default Component resolve(CharSequence path) {
+        return component().resolve(path);
+    }
 
     /**
      * Returns a component stream consisting of all the components in this image.
@@ -34,9 +41,5 @@ public interface ComponentHolder extends AnalysableSystem {
      */
     default ComponentStream stream(ComponentStream.Option... options) {
         return component().stream(options);
-    }
-
-    default Component resolve(CharSequence path) {
-        return component().resolve(path);
     }
 }
