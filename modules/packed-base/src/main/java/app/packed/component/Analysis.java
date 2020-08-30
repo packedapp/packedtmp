@@ -15,6 +15,9 @@
  */
 package app.packed.component;
 
+import java.util.Optional;
+
+import app.packed.base.Attribute;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.lifecycle.PackedAssemblyContext;
 
@@ -60,6 +63,10 @@ public final class Analysis {
         } else {
             return PackedAssemblyContext.assemble((Bundle<?>) s, ANLYSIS, null).adaptToComponent();
         }
+    }
+
+    public static Optional<Component> findExtension(AnalysableSystem s, Attribute<?> attribute) {
+        return stream(s).filter(c -> c.attributes().isPresent(attribute)).findAny();
     }
 
     /**

@@ -28,8 +28,9 @@ import java.util.stream.Collectors;
 import app.packed.artifact.Image;
 import app.packed.base.Contract;
 import app.packed.base.Key;
+import app.packed.component.Analysis;
+import app.packed.component.Component;
 import app.packed.container.ContainerBundle;
-import app.packed.container.ContainerDescriptor;
 import app.packed.container.ExtensionMember;
 
 /**
@@ -234,8 +235,11 @@ public final class ServiceContract extends Contract {
     }
 
     public static ServiceContract of(ContainerBundle bundle) {
-        Optional<ServiceContract> o = Contract.get(ContainerDescriptor.of(bundle).contracts(), ServiceContract.class);
-        return o.orElse(ServiceContract.EMPTY);
+        Optional<Component> o = Analysis.findExtension(bundle, ServiceExtensionAttributes.SERVICE_CONTRACT);
+        if (o.isEmpty()) {
+            return ServiceContract.EMPTY;
+        }
+        return o.get().attribute(ServiceExtensionAttributes.SERVICE_CONTRACT);
     }
 
     /**

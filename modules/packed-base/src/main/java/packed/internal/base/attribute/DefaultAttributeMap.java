@@ -70,7 +70,7 @@ public class DefaultAttributeMap implements AttributeMap {
     /** {@inheritDoc} */
     @Override
     public boolean isPresent(Attribute<?> attribute) {
-        return getOpt(attribute).isEmpty();
+        return !getOpt(attribute).isEmpty();
     }
 
     /** {@inheritDoc} */

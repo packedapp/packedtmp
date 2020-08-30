@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.base.ContractSet;
 import app.packed.base.Key;
 import app.packed.container.BaseBundle;
 import app.packed.service.ServiceContract;
@@ -40,7 +39,7 @@ public class ProvisionContractTest {
 
     @Test
     public void empty() {
-        ContractSet c = ContractSet.contractsOf(new BaseBundle() {
+        ServiceContract ic = ServiceContract.of(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -48,7 +47,6 @@ public class ProvisionContractTest {
             }
         });
 
-        ServiceContract ic = c.use(ServiceContract.class);
         assertThat(ic).isNotNull();
         assertThat(ic).isSameAs(ServiceContract.EMPTY);
         assertThat(ic.provides()).isEmpty();
@@ -58,7 +56,7 @@ public class ProvisionContractTest {
 
     @Test
     public void provides() {
-        ContractSet c = ContractSet.contractsOf(new BaseBundle() {
+        ServiceContract ic = ServiceContract.of(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -69,7 +67,6 @@ public class ProvisionContractTest {
             }
         });
 
-        ServiceContract ic = c.use(ServiceContract.class);
         assertThat(ic.provides()).containsExactly(Key.of(A.class));
         assertThat(ic.optional()).isEmpty();
         assertThat(ic.requires()).isEmpty();
@@ -77,7 +74,7 @@ public class ProvisionContractTest {
 
     @Test
     public void requires() {
-        ContractSet c = ContractSet.contractsOf(new BaseBundle() {
+        ServiceContract ic = ServiceContract.of(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -87,7 +84,6 @@ public class ProvisionContractTest {
             }
         });
 
-        ServiceContract ic = c.use(ServiceContract.class);
         assertThat(ic.requires()).containsExactly(Key.of(A.class));
         assertThat(ic.optional()).isEmpty();
         assertThat(ic.provides()).isEmpty();
@@ -95,7 +91,7 @@ public class ProvisionContractTest {
 
     @Test
     public void optional() {
-        ContractSet c = ContractSet.contractsOf(new BaseBundle() {
+        ServiceContract ic = ServiceContract.of(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -105,7 +101,6 @@ public class ProvisionContractTest {
             }
         });
 
-        ServiceContract ic = c.use(ServiceContract.class);
         assertThat(ic.requires()).isEmpty();
         assertThat(ic.provides()).isEmpty();
         assertThat(ic.optional()).containsExactly(Key.of(A.class));
@@ -114,7 +109,7 @@ public class ProvisionContractTest {
     /** A service will never be both requires and optional. */
     @Test
     public void requiresOverrideOptional() {
-        ContractSet c = ContractSet.contractsOf(new BaseBundle() {
+        ServiceContract ic = ServiceContract.of(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -125,7 +120,6 @@ public class ProvisionContractTest {
             }
         });
 
-        ServiceContract ic = c.use(ServiceContract.class);
         assertThat(ic.requires()).containsExactly(Key.of(A.class));
         assertThat(ic.optional()).isEmpty();
         assertThat(ic.provides()).isEmpty();
@@ -133,7 +127,7 @@ public class ProvisionContractTest {
 
     @Test
     public void all() {
-        ContractSet c = ContractSet.contractsOf(new BaseBundle() {
+        ServiceContract ic = ServiceContract.of(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -143,8 +137,6 @@ public class ProvisionContractTest {
                 provide(C.class).export();
             }
         });
-
-        ServiceContract ic = c.use(ServiceContract.class);
 
         assertThat(ic.optional()).containsExactly(Key.of(A.class));
         assertThat(ic.requires()).containsExactly(Key.of(B.class));
