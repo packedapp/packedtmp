@@ -37,41 +37,41 @@ import packed.internal.lifecycle.PackedInitializationContext;
 import packed.internal.util.ThrowableUtil;
 
 /**
- * Artifact drivers are responsible for creating new artifacts by wrapping instances of {@link ShellContext}.
+ * Shell drivers are responsible for creating new shells by wrapping instances of {@link ShellContext}.
  * <p>
- * This class can be extended to create custom artifact types if the built-in artifact types such as {@link App} and
+ * This class can be extended to create custom shell types if the built-in shell types such as {@link App} and
  * {@link Injector} are not sufficient. In fact, the default implementations of both {@link App} and {@link Injector}
  * are just thin facade that delegates all calls to an {@link ShellContext} instance.
  * <p>
- * Normally, you should never instantiate more then a single instance of driver for any artifact implementation.
+ * Normally, you should never instantiate more then a single instance of driver for any shell implementation.
  * <p>
- * Iff a driver creates artifacts with an execution phase. The artifact must implement {@link AutoCloseable}.
+ * Iff a driver creates shells with an execution phase. The shell must implement {@link AutoCloseable}.
  * 
- * @param <A>
- *            The type of artifact this driver creates.
+ * @param <S>
+ *            The type of shell this driver creates.
  * @see App#driver()
  */
 
 //Tror bare vi laver om til et interface.... 
 
-// Tror ikke artifacts kan bruge annoteringer??? Altsaa maaske paa surragates???
+// Tror ikke shells kan bruge annoteringer??? Altsaa maaske paa surragates???
 // Ville maaske vaere fedt nok bare at kunne sige
 // @OnShutdown()
 // sysout "FooBar was removed"
 
-// Support of injection of the artifact into the Container...
-// We do not generally support this, as people are free to any artifact they may like.
+// Support of injection of the shell into the Container...
+// We do not generally support this, as people are free to any shell they may like.
 // Which would break encapsulation
 
 // Non-Executable : Initialize
 // Executable : Initialize | Start | Execute
-public final class ShellDriver<A> {
+public final class ShellDriver<S> {
 
-    /** The type of artifact this driver produces. */
-    private final Class<A> artifactType;
+    /** The type of shell this driver produces. */
+    private final Class<S> shellType;
 
-    /** The method handle responsible for creating the new artifact. */
-    private final MethodHandle mh;
+    /** The method handle responsible for creating the new shell. */
+    private final MethodHandle instantiatior;
 
     /** A set of modifiers that the component to which this shell is attached will have as a minimum. */
     private final ComponentModifierSet modifiers;
@@ -79,33 +79,35 @@ public final class ShellDriver<A> {
     /**
      * Creates a new driver.
      * 
-     * @param artifactType
-     *            the type of artifact that is created
+     * @param shellType
+     *            the type of shell that is created
      * @param mh
-     *            the method handle that creates the actual artifact
+     *            the method handle that creates the actual shell
      */
     @SuppressWarnings("unchecked")
-    private ShellDriver(Class<?> artifactType, MethodHandle mh) {
-        this.artifactType = (Class<A>) requireNonNull(artifactType);
-        boolean isGuest = AutoCloseable.class.isAssignableFrom(artifactType);
+    private ShellDriver(Class<?> shellType, MethodHandle mh) {
+        this.shellType = (Class<S>) requireNonNull(shellType);
+        boolean isGuest = AutoCloseable.class.isAssignableFrom(shellType);
         this.modifiers = ComponentModifier.SHELL.toSet().with(isGuest, ComponentModifier.GUEST);
-        this.mh = requireNonNull(mh);
+        this.instantiatior = requireNonNull(mh);
     }
 
-    public <D> A configure(WireableComponentDriver<D> driver, CustomConfigurator<D> consumer, Wirelet... wirelets) {
+    // Set<Class<?>> <-- available contexts... IDK
+
+    public <D> S configure(WireableComponentDriver<D> driver, CustomConfigurator<D> consumer, Wirelet... wirelets) {
         return configure(driver, e -> e, consumer, wirelets);
     }
 
-    public <C, D> A configure(WireableComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
+    public <C, D> S configure(WireableComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.configure(this, (PackedWireableComponentDriver<D>) driver, factory, consumer, wirelets);
         ShellContext ac = PackedInitializationContext.newShellContext(node, node.wirelets);
-        return newArtifact(ac);
+        return newShell(ac);
     }
 
     /**
      * Creates and initializes a new shell (and system) using the specified bundle.
      * <p>
-     * This method will invoke {@link #newArtifact(ShellContext)} to create the actual artifact.
+     * This method will invoke {@link #newShell(ShellContext)} to create the actual shell.
      * 
      * @param bundle
      *            the system bundle
@@ -113,74 +115,83 @@ public final class ShellDriver<A> {
      *            any wirelets that should be used when assembling or initializing the system
      * @return the new shell
      * @throws RuntimeException
-     *             if the artifact could not be created
+     *             if the shell could not be created
      */
-    public A initialize(Bundle<?> bundle, Wirelet... wirelets) {
+    public S initialize(Bundle<?> bundle, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.assemble(bundle, 0, this, wirelets);
         ShellContext context = PackedInitializationContext.newShellContext(node, node.wirelets);
-        return newArtifact(context);
+        return newShell(context);
     }
 
     /**
-     * Returns whether or not the type of artifact being created by this driver has an execution phase. This is determined
-     * by whether or not the artifact implements {@link AutoCloseable}.
+     * Returns whether or not the type of shell being created by this driver has an execution phase. This is determined by
+     * whether or not the shell implements {@link AutoCloseable}.
      * 
-     * @return whether or not the artifact being produced by this driver has an execution phase
+     * @return whether or not the shell being produced by this driver has an execution phase
      */
     public ComponentModifierSet modifiers() {
         return modifiers;
     }
 
     /**
-     * Create a new artifact using a previously supplied method handle.
+     * Instantiates a new shell.
      * 
      * @param context
-     *            the artifact context to use for instantiating the artifact
-     * @return the new artifact
+     *            the context to use for instantiating the shell
+     * @return the new shell
      */
-    A newArtifact(ShellContext context) {
+    S newShell(ShellContext context) {
         try {
-            return (A) mh.invoke(context);
+            return (S) instantiatior.invoke(context);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
     }
 
-    public Image<A> newImage(Bundle<?> bundle, Wirelet... wirelets) {
+    /**
+     * Creates a new image using the specified bundle and this shell driver.
+     * 
+     * @param bundle
+     *            the bundle to use when creating the image
+     * @param wirelets
+     *            optional wirelets
+     * @return a new image
+     */
+    public Image<S> newImage(Bundle<?> bundle, Wirelet... wirelets) {
         return new PackedImage<>(this, bundle, wirelets);
     }
 
     /**
-     * Returns the raw type of artifacts this driver produces.
+     * Returns the raw type of shells this driver produces.
      * 
-     * @return the raw type of artifacts this driver produces
+     * @return the raw type of shells this driver produces
      */
-    public Class<A> rawType() {
+    public Class<S> rawType() {
         // Should we have a TypeLiteral as well???
         // For example, if we create BigMap<String, Long>
-        return artifactType;
+        return shellType;
     }
 
     /**
-     * Create, initialize and start a new artifact using the specified source.
+     * Create, initialize and start a new shell using the specified source.
      * 
      * @param bundle
      *            the source of the top-level container
      * @param wirelets
-     *            any wirelets that should be used to create the artifact
-     * @return the new artifact
+     *            any wirelets that should be used to create the shell
+     * @return the new shell
      * @throws UnsupportedOperationException
-     *             if the driver does not produce an artifact with an execution phase
+     *             if the driver does not produce an shell with an execution phase
      */
-    public A start(Bundle<?> bundle, Wirelet... wirelets) {
+    public S start(Bundle<?> bundle, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.assemble(bundle, 0, this, wirelets);
         ShellContext context = PackedInitializationContext.newShellContext(node, node.wirelets);
         context.start();
-        return newArtifact(context);
+        return newShell(context);
     }
 
-    public static <A> ShellDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, Class<? extends A> implementation) {
-        // Vi vil gerne bruge artifact type som navnet paa artifacten... istedet for implementationen
+    public static <A> ShellDriver<A> of(MethodHandles.Lookup caller, Class<A> shellType, Class<? extends A> implementation) {
+        // Vi vil gerne bruge shell type som navnet paa shellen... istedet for implementationen
         MethodType mt = MethodType.methodType(void.class, ShellContext.class);
         final MethodHandle mh;
         try {
@@ -188,17 +199,17 @@ public final class ShellDriver<A> {
         } catch (NoSuchMethodException | IllegalAccessException e) {
             throw ThrowableUtil.orUndeclared(e);
         }
-        return new ShellDriver<>(artifactType, mh);
+        return new ShellDriver<>(shellType, mh);
     }
 
-//    public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, Factory<? extends A> implementation) {
+//    public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> shellType, Factory<? extends A> implementation) {
 //        throw new UnsupportedOperationException();
 //    }
 
     // A method handle that takes an ArtifactContext and produces something that is compatible with A
-    public static <A> ShellDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh) {
+    public static <A> ShellDriver<A> of(MethodHandles.Lookup caller, Class<A> shellType, MethodHandle mh) {
         // TODO validate type
-        return new ShellDriver<>(artifactType, mh);
+        return new ShellDriver<>(shellType, mh);
     }
 
 //  <E extends A> ArtifactDriver<A> mapTo(Class<E> decoratingType, Function<A, E> decorator) {
@@ -209,7 +220,7 @@ public final class ShellDriver<A> {
 //  }
 
 //
-//    static <A> A start(Class<A> artifactType, ArtifactSource source, Wirelet... wirelets) {
+//    static <A> A start(Class<A> shellType, ArtifactSource source, Wirelet... wirelets) {
 //        // The only thing we save is defining a driver..
 //        // But we need the driver for App#driver... so not much saved
 //        throw new UnsupportedOperationException();
@@ -227,7 +238,7 @@ public final class ShellDriver<A> {
     // F.eks. black liste ting...
 
     // Invoked by each driver??
-    // List<ArtifactDriver.Option> BaseEnvironment.defaultOptions(Class<?> artifactDriver);
+    // List<ArtifactDriver.Option> BaseEnvironment.defaultOptions(Class<?> shellDriver);
     // BaseEnvironment via service loader. Exactly one... Extensions should never create one.
     // Users
     // Men skal man kunne overskriver den forstaaet paa den maade at stramme den...
@@ -243,6 +254,15 @@ public final class ShellDriver<A> {
     // Men ikke paavirke hvordan de bliver lavet...
 
     static class Option {
+
+        // If not autoclosable
+        public Option forceGuest() {
+            throw new UnsupportedOperationException();
+        }
+
+        public Option forceNonGuest() {
+            throw new UnsupportedOperationException();
+        }
 
         // Normally we just check if App.iface extends AutoClosable...
         // But might want to override this.
@@ -297,11 +317,11 @@ public final class ShellDriver<A> {
 
         // non execution -> Create...
 
-        // Ideen var man skulle kunne angive nogle prefix wirelets naar man lavede en artifact...
+        // Ideen var man skulle kunne angive nogle prefix wirelets naar man lavede en shell...
         // Men det er nu lavet om til options pre and post wirelets
         // executing -> Create (and initialize), start, startAsync, Execute, executeAsync
         // StartExecutor ?
-        // final T create(Assembly source, Wirelet... artifactWirelets) {
+        // final T create(Assembly source, Wirelet... shellWirelets) {
         //
 //         // Ideen er lidt at Artifact Implementering, kan kalde med dens egen wirelets...
 //         // ala
@@ -317,7 +337,7 @@ public final class ShellDriver<A> {
     }
 
     // Ideen er lidt at vi har en OptionList som aggregere alle options
-    // Det er en public klasse i packedapp.internal.artifact.OptionAggregate
+    // Det er en public klasse i packedapp.internal.shell.OptionAggregate
     // Den har en PackedContainerConfiguration saa adgang til. og f.eks. kalder
     // aggregate.addExtension(Class<? extends Extension>) <- may throw....
 //    static class ArtifactOptionAggregate {

@@ -23,12 +23,10 @@ import java.util.List;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 
-/**
- * A (possible empty) set of {@link ComponentModifier component modifiers}.
- */
+/** Implementation of {@link ComponentModifierSet}. */
 public final class PackedComponentModifierSet implements ComponentModifierSet {
 
-    /** A emoty modifier set. */
+    /** An empty modifier set. */
     public static final PackedComponentModifierSet EMPTY = new PackedComponentModifierSet(0);
 
     /** An array containing all modifiers. */
@@ -113,6 +111,43 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
         return sb.append(']').toString();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public ComponentModifierSet with(boolean conditional, ComponentModifier modifier) {
+        if (!conditional || isPropertySet(modifiers, modifier)) {
+            return this;
+        }
+        return new PackedComponentModifierSet(setProperty(modifiers, modifier));
+
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentModifierSet with(ComponentModifier modifier) {
+        if (isPropertySet(modifiers, modifier)) {
+            return this;
+        }
+        return new PackedComponentModifierSet(setProperty(modifiers, modifier));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentModifierSet without(boolean conditional, ComponentModifier modifier) {
+        if (!conditional || !isPropertySet(modifiers, modifier)) {
+            return this;
+        }
+        return new PackedComponentModifierSet(unsetProperty(modifiers, modifier));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentModifierSet without(ComponentModifier modifier) {
+        if (!isPropertySet(modifiers, modifier)) {
+            return this;
+        }
+        return new PackedComponentModifierSet(unsetProperty(modifiers, modifier));
+    }
+
     public static boolean isPropertySet(int modifiers, ComponentModifier property) {
         requireNonNull(property, "property is null");
         return (modifiers & (1 << property.ordinal())) != 0;
@@ -139,42 +174,5 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
 
     public static int unsetPropertyConditional(int modifiers, boolean setIt, ComponentModifier property) {
         return setIt ? unsetProperty(modifiers, property) : modifiers;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentModifierSet with(ComponentModifier modifier) {
-        if (isPropertySet(modifiers, modifier)) {
-            return this;
-        }
-        return new PackedComponentModifierSet(setProperty(modifiers, modifier));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentModifierSet with(boolean conditional, ComponentModifier modifier) {
-        if (!conditional || isPropertySet(modifiers, modifier)) {
-            return this;
-        }
-        return new PackedComponentModifierSet(setProperty(modifiers, modifier));
-
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentModifierSet without(ComponentModifier modifier) {
-        if (!isPropertySet(modifiers, modifier)) {
-            return this;
-        }
-        return new PackedComponentModifierSet(unsetProperty(modifiers, modifier));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentModifierSet without(boolean conditional, ComponentModifier modifier) {
-        if (!conditional || !isPropertySet(modifiers, modifier)) {
-            return this;
-        }
-        return new PackedComponentModifierSet(unsetProperty(modifiers, modifier));
     }
 }
