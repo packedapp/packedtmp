@@ -37,6 +37,7 @@ import app.packed.component.ClassSourcedDriver;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentModifier;
+import app.packed.component.ComponentModifierSet;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
@@ -147,8 +148,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         this.depth = parent == null ? 0 : parent.depth + 1;
 
         this.driver = requireNonNull(driver);
-        this.pod = parent == null || driver.hasProperty(ComponentModifier.GUEST) ? new PackedGuestConfiguration(this) : parent.pod;
-        this.container = driver.hasProperty(ComponentModifier.CONTAINER) ? new PackedContainerRole(this) : parent.container;
+        this.pod = parent == null || driver.modifiers().isGuest() ? new PackedGuestConfiguration(this) : parent.pod;
+        this.container = driver.modifiers().isContainer() ? new PackedContainerRole(this) : parent.container;
 
         this.configSite = requireNonNull(configSite);
         this.wirelets = wirelets;
@@ -329,7 +330,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
         // check if container
 
-        if (driver.isContainer()) {
+        if (driver.modifiers().isContainer()) {
             // IDK do we want to progress to next stage just in case...
             if (container.containerState == PackedContainerRole.LS_0_MAINL) {
                 container.advanceTo(PackedContainerRole.LS_1_LINKING);
@@ -343,7 +344,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         // ConfigSite cs = ConfigSiteSupport.captureStackFrame(configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
         WireletPack wp = WireletPack.from(driver, wirelets);
         ConfigSite cs = ConfigSite.UNKNOWN;
-        ComponentNodeConfiguration p = driver().hasProperty(ComponentModifier.EXTENSION) ? parent : this;
+        ComponentNodeConfiguration p = driver().modifiers().isExtension() ? parent : this;
         ComponentNodeConfiguration newNode = p.newChild(driver, cs, PackedRealm.fromBundle(bundle), wp);
 
         // Invoke Bundle::configure
@@ -354,7 +355,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     /** {@inheritDoc} */
     @Override
-    public Set<ComponentModifier> modifiers() {
+    public ComponentModifierSet modifiers() {
         return new PackedComponentModifierSet(modifiers);
     }
 
@@ -577,7 +578,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
         /** {@inheritDoc} */
         @Override
-        public Set<ComponentModifier> modifiers() {
+        public ComponentModifierSet modifiers() {
             return new PackedComponentModifierSet(conf.modifiers);
         }
 

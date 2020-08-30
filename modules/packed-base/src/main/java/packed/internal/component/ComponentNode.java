@@ -23,7 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -31,6 +30,7 @@ import app.packed.base.AttributeMap;
 import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.component.ComponentModifier;
+import app.packed.component.ComponentModifierSet;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
@@ -101,7 +101,7 @@ public final class ComponentNode implements Component {
         }
 
         // Initialize Container
-        if (configuration.driver().hasProperty(ComponentModifier.CONTAINER)) {
+        if (configuration.driver().modifiers().isContainer()) {
             // I think this injector is only available for the top of an assembly
             PackedContainerRole container = configuration.container;
             Injector i = null;
@@ -127,7 +127,7 @@ public final class ComponentNode implements Component {
             LinkedHashMap<String, ComponentNode> result = new LinkedHashMap<>(configuration.children.size());
 
             for (ComponentNodeConfiguration cc = configuration.firstChild; cc != null; cc = cc.nextSibling) {
-                if (!cc.driver().hasProperty(ComponentModifier.EXTENSION)) {
+                if (!cc.driver().modifiers().isExtension()) {
                     ComponentNode ac = new ComponentNode(this, cc, ic);
                     result.put(ac.name(), ac);
                 }
@@ -230,7 +230,7 @@ public final class ComponentNode implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public Set<ComponentModifier> modifiers() {
+    public ComponentModifierSet modifiers() {
         return new PackedComponentModifierSet(model.properties);
     }
 

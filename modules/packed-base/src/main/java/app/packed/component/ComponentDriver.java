@@ -15,7 +15,6 @@
  */
 package app.packed.component;
 
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
@@ -27,10 +26,11 @@ public interface ComponentDriver<C> {
     // The runtime may add further attributes when applying this driver.
     // For example, the root component of a system always has the SYSTEM property.
     // Irrecspectively of the component driver that was used
-    Set<ComponentModifier> properties();
+    ComponentModifierSet modifiers();
 
+    @Deprecated
     default boolean hasProperty(ComponentModifier property) {
-        return properties().contains(property);
+        return modifiers().contains(property);
     }
 
     public interface Option {

@@ -64,7 +64,7 @@ public final class RuntimeComponentModel {
     }
 
     public boolean isContainer() {
-        return driver.isContainer();
+        return driver.modifiers().isContainer();
     }
 
     public Optional<Class<? extends Extension>> extension() {

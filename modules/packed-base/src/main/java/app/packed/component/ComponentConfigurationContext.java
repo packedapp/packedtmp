@@ -97,7 +97,7 @@ public interface ComponentConfigurationContext {
      * 
      * @return a immutable set containing all the modifiers of this component
      */
-    Set<ComponentModifier> modifiers();
+    ComponentModifierSet modifiers();
 
     /**
      * Returns the full path of the component.

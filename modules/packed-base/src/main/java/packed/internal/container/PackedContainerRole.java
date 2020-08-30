@@ -70,7 +70,7 @@ public final class PackedContainerRole {
 
         if (containerState == LS_1_LINKING && newState > LS_1_LINKING) {
             for (ComponentNodeConfiguration cc = node.firstChild; cc != null; cc = cc.nextSibling) {
-                if (cc.driver().isContainer()) {
+                if (cc.driver().modifiers().isContainer()) {
                     cc.container().advanceTo(LS_3_FINISHED);
                 }
             }

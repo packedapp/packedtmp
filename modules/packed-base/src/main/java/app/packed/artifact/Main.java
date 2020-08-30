@@ -43,18 +43,18 @@ public class Main {
     // add exitOnEnter() <--- so useful for tests
     // exitable daemon...
     // https://github.com/patriknw/akka-typed-blog/blob/master/src/main/java/blog/typed/javadsl/ImmutableRoundRobinApp.java3
-    static void execute(Bundle<?> source, Wirelet... wirelets) {
+    public static void execute(Bundle<?> source, Wirelet... wirelets) {
         execute0(source, wirelets);
     }
 
     // sync deamon???????
     // App.main(new Goo(), args);
-    static void main(Bundle<?> bundle, String[] args, Wirelet... wirelets) {
+    public static void main(Bundle<?> bundle, String[] args, Wirelet... wirelets) {
         execute0(bundle, wirelets);
     }
 
     // Maybe more a.la. Main.execute()
-    static void execute0(Bundle<?> source, Wirelet... wirelets) {
+    public static void execute0(Bundle<?> source, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.assemble(source, 0, null, wirelets);
         ShellContext context = PackedInitializationContext.newShellContext(node, node.wirelets);
         context.start();

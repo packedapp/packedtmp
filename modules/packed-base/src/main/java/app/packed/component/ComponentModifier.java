@@ -15,25 +15,37 @@
  */
 package app.packed.component;
 
+import java.lang.reflect.Modifier;
+
+import app.packed.artifact.App;
+import app.packed.artifact.Image;
+import app.packed.artifact.Main;
 import app.packed.container.Extension;
+import app.packed.lifecycle.AssemblyContext;
 
 /**
- * Component properties are permanent for a component
+ * A component modifier indicates a permanent property of a component.
+ * <p>
+ * Modifiers are typically returned in a {@link ComponentModifierSet}.
+ * <p>
+ * The order in which these modifier are defined may change from release to release.
+ * 
+ * @apiNote Packed uses a enum modifier similar to how Java uses {@link Modifier} to indicate access properties of
+ *          members and types. The alternative would be
  */
-// ComponentTag??
-// Hmm taenker de er saa brugt at vi skal have en 
-// ComponentProperties are fixed
-// ComponentRole? SYNTHETIC/FOREIGN/ARTIFACT er en daarlig rolle
-
-// ComponentModifier??? They are pretty similar
-// Components can have more than 1, they are fixed once constructed
-// certain combinations don't mix
-// Altsaa det minder mere om modifiers. 
-// Properties plejer at vaere key value
-// Modifier er ogsaa mere forskelligt fra attribute end property 
 public enum ComponentModifier {
 
-    ASSEMBLY, // Not a runtime-system
+    /**
+     * Indicates that the system is in the assembly phase.
+     * <p>
+     * When a assembled system is initialized. A new system is created retained the structure of the assembled system but
+     * without this modifier.
+     * <p>
+     * A system that has the {@link #IMAGE} modifier set is always in an assembled state.
+     * <p>
+     * The modifier set returned by {@link AssemblyContext#modifiers()} always contain this modifier.
+     **/
+    ASSEMBLY,
 
     // System wide.. what is part of the system and what is part of the environment
     // System boundary
@@ -51,31 +63,43 @@ public enum ComponentModifier {
     SYSTEM,
 
     /**
-     * Indicates that the component is the root of an image.
+     * Indicates that the component holds an image.
+     * 
+     * Components with this modifier:
+     * <ul>
+     * <li>Always has a parent component with the {@link #ASSEMBLY} modifier set.</li>
+     * <li>Either have the {@link #SYSTEM} modifier set, or has a parent component with {@link #HOST} modifier set.</li>
+     * <li>The subtree of an image is always immutable once constructed. A {@link #HOST} modifier on a sub component. Merely
+     * indicates that a runtime spawn of the image can add guests.</li>
+     * </ul>
      */
-    // An image always either has a host as a parent
-    // Or is the root
     IMAGE,
 
-    /** */
-    // Components this property are the component that are allowed to extensions as children.
+    /**
+     * Indicates that the component is a container.
+     * 
+     * <p>
+     * * Components with this modifier:
+     * <ul>
+     * <li>Are allowed to have children with the {@link #EXTENSION} modifier set.</li>
+     * <li>Are never sourced???.</li>
+     * </ul>
+     */
     CONTAINER,
 
     /**
      * Indicates that the component represents a subclass of {@link Extension}.
      * <p>
-     * Components with this property:
+     * Components with this modifier:
      * <ul>
-     * <li>Always has a parent that has the {@link #CONTAINER} property set.</li>
+     * <li>Always has a parent component with the {@link #CONTAINER} modifier set.</li>
      * <li>Are always leaf components (they have no children).</li>
-     * <li>Are only present at runtime if they are part of an embedded image.</li>
+     * <li>Are only present at runtime in a system if it is part of an {@link Image}.</li>
+     * <li>Never has any other modifiers set.</li>
      * <li>Has the {@link ComponentAttributes#EXTENSION_MEMBER} attribute set to the type of the extension the component
      * represents.</li>
      * </ul>
      */
-    // {@link ComponentAttributes#SOURCE_TYPE} var tidligere sat...
-    // Men syntes det er en runtime ting... Og angiver at man bliver analyseret...
-    // Nej syntes ikke den skal have SOURCE_TYPE sat, med mindre den har en source...
     EXTENSION,
 
     /**
@@ -109,27 +133,38 @@ public enum ComponentModifier {
     SOURCED, // All components that are sourced have an SOURCE_TYPE attribute
     // SOURCED_TYPE... We don't need EXTENSION TYPE THEN????
 
+    /**
+     * Indicates that a component has a shell attached that can interact with it. One such examples, is by using
+     * {@link App#initialize(Bundle, Wirelet...)} to create a shell.
+     * <p>
+     * Shells that are attached to a guest are co-terminus with the guest. Restarting the guest will create a new shell. And
+     * users make
+     * <p>
+     * Systems that are created via the various methods on {@link Main} never has a shell.
+     */
     SHELL, // FOREIGN???
 
     /**
-     * Indicates that a system has been created for the sole reason of being analyzed. The system will never move from the
-     * assembly phase.
-     * 
-     * This modifier is set when using any of the methods on Analysis. Extensions may use this information to avoid invoking
-     * processes that are only needed if the extension is to be instantiated. Or keep extra information...
-     * 
-     * I think it is only available for the root/system component...
-     * 
-     * Nej systes sagtens man have en analyze(Bundle) paa en host
+     * Indicates that a system has been created for the sole reason of being analyzed is some way. A system with this
+     * modifier will never go through its initialization phase. Extensions may use this information to avoid work that is
+     * not needed if the system is never initialized.
+     * <p>
+     * This modifier is normally checked in the assembly phase via {@link AssemblyContext#modifiers()}.
+     * <p>
+     * The modifier is set by the various methods in {@link Analysis} when specifying a bundle. Systems that are already
+     * running will not have this modifier set when they are analysed.
      */
     ANALYSIS,
 
     /**
-     * Indicates that the component has been added by the runtime.
+     * Indicates that a component is added by the runtime but is not explicitly or implicitly declared by the user.
      * <p>
      * A good example is the an artifact. The user itself does not add this component.
-     * 
+     * <p>
+     * Server a similar purpose as Java's synthetic access modifier.
      */
+    // Maaske er alle foreign components, synthetiske...
+    // Taenker ihvertfald ikke det er noget med specifikt tilfoejer...
     SYNTHETIC,
 
     // A single java based instance that is strongly bound to lifecycle of the component.
@@ -138,6 +173,10 @@ public enum ComponentModifier {
 
     // Stateless, but we inject new stuff...
     UNSCOPED;
+
+    int bits() {
+        return 1 << ordinal();
+    }
 }
 
 //Components.isPartOfImage() <--- look recursively in parents and see if any has the Image 
@@ -179,3 +218,19 @@ enum Sandbox {
 // No-Guest -> Strongly linked
 
 // Resource -> Something that can be shutdown???
+
+// Should extension have the source set...
+// {@link ComponentAttributes#SOURCE_TYPE} var tidligere sat...
+// Men syntes det er en runtime ting... Og angiver at man bliver analyseret...
+// Nej syntes ikke den skal have SOURCE_TYPE sat, med mindre den har en source...
+//ComponentTag??
+//Hmm taenker de er saa brugt at vi skal have en 
+//ComponentProperties are fixed
+//ComponentRole? SYNTHETIC/FOREIGN/ARTIFACT er en daarlig rolle
+
+//ComponentModifier??? They are pretty similar
+//Components can have more than 1, they are fixed once constructed
+//certain combinations don't mix
+//Altsaa det minder mere om modifiers. 
+//Properties plejer at vaere key value
+//Modifier er ogsaa mere forskelligt fra attribute end property 

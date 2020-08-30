@@ -55,6 +55,14 @@ import app.packed.config.ConfigSite;
 public interface Image<A> extends ComponentHolder {
 
     /**
+     * Returns the component representation of this image.
+     * 
+     * @return the component representation of this image
+     */
+    @Override
+    Component component();
+
+    /**
      * Returns the configuration site of this image.
      * 
      * @return the configuration site of this image
@@ -71,14 +79,6 @@ public interface Image<A> extends ComponentHolder {
      * @return the new artifact
      */
     A initialize(Wirelet... wirelets);
-
-    /**
-     * Returns the component representation of this image.
-     * 
-     * @return the component representation of this image
-     */
-    @Override
-    Component component();
 
     // Create And start()
     A start(Wirelet... wirelets);

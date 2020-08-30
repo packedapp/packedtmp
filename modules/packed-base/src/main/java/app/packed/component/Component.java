@@ -17,7 +17,6 @@ package app.packed.component;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.base.AttributedElement;
@@ -58,7 +57,7 @@ public interface Component extends AttributedElement, AnalysableSystem {
      * 
      * @return an immutable set containing all the modifiers of this component
      */
-    Set<ComponentModifier> modifiers();
+    ComponentModifierSet modifiers();
 
     /**
      * Returns the name of this component.

@@ -18,7 +18,6 @@ package packed.internal.component;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.component.BeanConfiguration;
@@ -26,6 +25,7 @@ import app.packed.component.Bundle;
 import app.packed.component.ClassSourcedDriver;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentModifier;
+import app.packed.component.ComponentModifierSet;
 import app.packed.component.InstanceSourcedDriver;
 import app.packed.component.StatelessConfiguration;
 import app.packed.component.WireableComponentDriver;
@@ -58,7 +58,7 @@ public abstract class PackedWireableComponentDriver<C> implements WireableCompon
     }
 
     public String defaultName(PackedRealm realm) {
-        if (hasProperty(ComponentModifier.CONTAINER)) {
+        if (modifiers().isContainer()) {
             // I think try and move some of this to ComponentNameWirelet
             @Nullable
             Class<?> source = realm.type();
@@ -86,13 +86,14 @@ public abstract class PackedWireableComponentDriver<C> implements WireableCompon
      * 
      * @return whether or not this driver creates a component with container role
      */
+    @Deprecated
     public final boolean isContainer() {
         return hasProperty(ComponentModifier.CONTAINER);
     }
 
     /** {@inheritDoc} */
     @Override
-    public Set<ComponentModifier> properties() {
+    public ComponentModifierSet modifiers() {
         return new PackedComponentModifierSet(properties);
     }
 

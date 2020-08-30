@@ -17,7 +17,6 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,8 +26,9 @@ import app.packed.component.ComponentModifierSet;
 /**
  * A (possible empty) set of {@link ComponentModifier component modifiers}.
  */
-public final class PackedComponentModifierSet extends AbstractSet<ComponentModifier> implements ComponentModifierSet {
+public final class PackedComponentModifierSet implements ComponentModifierSet {
 
+    public static final PackedComponentModifierSet EMPTY = new PackedComponentModifierSet(0);
     private final static ComponentModifier[] MODIFIERS = ComponentModifier.values();
 
     private final int modifiers;
@@ -37,9 +37,10 @@ public final class PackedComponentModifierSet extends AbstractSet<ComponentModif
         this.modifiers = modifiers;
     }
 
-    public static boolean isPropertySet(int modifiers, ComponentModifier property) {
-        requireNonNull(property, "property is null");
-        return (modifiers & (1 << property.ordinal())) != 0;
+    /** {@inheritDoc} */
+    @Override
+    public boolean contains(ComponentModifier modifier) {
+        return isPropertySet(modifiers, modifier);
     }
 
     @Override
@@ -47,27 +48,10 @@ public final class PackedComponentModifierSet extends AbstractSet<ComponentModif
         return isPropertySet(modifiers, ComponentModifier.CONTAINER);
     }
 
-    public static int setProperty(int modifiers, ComponentModifier property) {
-        return modifiers | (1 << property.ordinal());
-    }
-
-    public static int unsetProperty(int modifiers, ComponentModifier property) {
-        return modifiers & ~(1 << property.ordinal());
-    }
-
-    public static int setPropertyConditional(int modifiers, boolean setIt, ComponentModifier property) {
-        return setIt ? setProperty(modifiers, property) : modifiers;
-    }
-
-    public static int unsetPropertyConditional(int modifiers, boolean setIt, ComponentModifier property) {
-        return setIt ? unsetProperty(modifiers, property) : modifiers;
-    }
-
-    public static int setProperty(int modifiers, ComponentModifier... props) {
-        for (ComponentModifier cp : props) {
-            modifiers |= (1 << cp.ordinal());
-        }
-        return modifiers;
+    /** {@inheritDoc} */
+    @Override
+    public boolean isEmpty() {
+        return modifiers == 0;
     }
 
     /** {@inheritDoc} */
@@ -104,7 +88,53 @@ public final class PackedComponentModifierSet extends AbstractSet<ComponentModif
 
     /** {@inheritDoc} */
     @Override
-    public boolean contains(ComponentModifier modifier) {
-        return isPropertySet(modifiers, modifier);
+    public ComponentModifier[] toArray() {
+        ComponentModifier[] m = new ComponentModifier[size()];
+        int i = 0;
+        for (ComponentModifier cm : this) {
+            m[i++] = cm;
+        }
+        return m;
+    }
+
+    @Override
+    public String toString() {
+        if (isEmpty()) {
+            return "[]";
+        }
+        ComponentModifier[] cms = toArray();
+        StringBuilder sb = new StringBuilder().append("[").append(cms[0]);
+        for (int i = 1; i < cms.length; i++) {
+            sb.append(", ").append(cms[i]);
+        }
+        return sb.append(']').toString();
+    }
+
+    public static boolean isPropertySet(int modifiers, ComponentModifier property) {
+        requireNonNull(property, "property is null");
+        return (modifiers & (1 << property.ordinal())) != 0;
+    }
+
+    public static int setProperty(int modifiers, ComponentModifier property) {
+        return modifiers | (1 << property.ordinal());
+    }
+
+    public static int setProperty(int modifiers, ComponentModifier... props) {
+        for (ComponentModifier cp : props) {
+            modifiers |= (1 << cp.ordinal());
+        }
+        return modifiers;
+    }
+
+    public static int setPropertyConditional(int modifiers, boolean setIt, ComponentModifier property) {
+        return setIt ? setProperty(modifiers, property) : modifiers;
+    }
+
+    public static int unsetProperty(int modifiers, ComponentModifier property) {
+        return modifiers & ~(1 << property.ordinal());
+    }
+
+    public static int unsetPropertyConditional(int modifiers, boolean setIt, ComponentModifier property) {
+        return setIt ? unsetProperty(modifiers, property) : modifiers;
     }
 }

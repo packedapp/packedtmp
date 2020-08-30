@@ -15,16 +15,24 @@
  */
 package app.packed.component;
 
-import java.util.Set;
-
 import packed.internal.component.PackedComponentModifierSet;
 
 /**
- *
+ * An immutable set of component modifiers.
  */
-public interface ComponentModifierSet extends Set<ComponentModifier> {
+public interface ComponentModifierSet extends Iterable<ComponentModifier> {
 
     boolean contains(ComponentModifier modifier);
+
+    // boolean containsAll(Collection<ComponentModifier> c);
+    /**
+     * Returns whether or not this set contains the {@link ComponentModifier#GUEST} modifier.
+     * 
+     * @return true if this set contains the guest modifier, otherwise false
+     */
+    default boolean isGuest() {
+        return contains(ComponentModifier.GUEST);
+    }
 
     /**
      * Returns whether or not this set contains the {@link ComponentModifier#CONTAINER} modifier.
@@ -36,35 +44,55 @@ public interface ComponentModifierSet extends Set<ComponentModifier> {
     }
 
     /**
+     * Returns whether or not this set contains the {@link ComponentModifier#EXTENSION} modifier.
+     * 
+     * @return true if this set contains the extension modifier, otherwise false
+     */
+    default boolean isExtension() {
+        return contains(ComponentModifier.EXTENSION);
+    }
+
+    boolean isEmpty();
+
+    /**
      * Returns whether or not this set contains the {@link ComponentModifier#IMAGE} modifier.
      * 
-     * @return true if this set contains the container modifier, otherwise false
+     * @return true if this set contains the image modifier, otherwise false
      */
     default boolean isImage() {
         return contains(ComponentModifier.IMAGE);
     }
 
-    // THESE METHODS DO NOT GUARANTEE to return the same int across versions
-    // Eneste problem er, lad os nu sige vi lige pludselig faar mere en 32 properties...
-    // Hvilket jeg ikke regner med er realistisk, men vi har lige pludselig exposed det
-    // i vores API.
-    public static int toBits(ComponentModifier p) {
-        return 1 << p.ordinal();
-    }
+    int size();
 
-    public static int toBits(ComponentModifier p1, ComponentModifier p2) {
-        return 1 << p1.ordinal() + 1 << p2.ordinal();
-    }
+    /**
+     * Returns an array containing all of the modifiers in this set.
+     * <p>
+     * The returned array will be "safe" in that no references to it are maintained by this set. The caller is thus free to
+     * modify the returned array.
+     *
+     * @return an array containing all the modifiers in this set
+     */
+    ComponentModifier[] toArray();
 
-    public static Set<ComponentModifier> fromBits(int bits) {
-        throw new UnsupportedOperationException();
-    }
-
+    /**
+     * Returns an empty component modifier set.
+     * 
+     * @return an empty component modifier set
+     */
     static ComponentModifierSet of() {
-        return new PackedComponentModifierSet(0);
+        return PackedComponentModifierSet.EMPTY;
     }
 
     static ComponentModifierSet of(ComponentModifier m) {
-        return new PackedComponentModifierSet(toBits(m));
+        return new PackedComponentModifierSet(m.bits());
+    }
+
+    static ComponentModifierSet of(ComponentModifier m1, ComponentModifier m2) {
+        return new PackedComponentModifierSet(m1.bits() | m2.bits());
+    }
+
+    static ComponentModifierSet of(ComponentModifier m1, ComponentModifier m2, ComponentModifier m3) {
+        return new PackedComponentModifierSet(m1.bits() | m2.bits() | m3.bits());
     }
 }
