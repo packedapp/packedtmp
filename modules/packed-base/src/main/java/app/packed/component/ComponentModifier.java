@@ -174,6 +174,10 @@ public enum ComponentModifier {
     // Stateless, but we inject new stuff...
     UNSCOPED;
 
+    public ComponentModifierSet toSet() {
+        return ComponentModifierSet.of(this);
+    }
+
     int bits() {
         return 1 << ordinal();
     }

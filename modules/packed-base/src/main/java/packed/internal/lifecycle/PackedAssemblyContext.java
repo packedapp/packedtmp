@@ -27,7 +27,7 @@ import app.packed.component.CustomConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.lifecycle.AssemblyContext;
-import packed.internal.component.BundleConfiguration;
+import packed.internal.component.BundleHelper;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.PackedWireableComponentDriver;
@@ -87,18 +87,22 @@ public final class PackedAssemblyContext implements AssemblyContext {
         return wirelets;
     }
 
+    // Modifiers = Modifers for the bundle + modifiers for the shell + modifiers from specific usage...
     public static ComponentNodeConfiguration assemble(Bundle<?> bundle, int modifiers, @Nullable ShellDriver<?> shellDriver, Wirelet... wirelets) {
+        // Get the driver from the bundle
+        PackedWireableComponentDriver<?> componentDriver = BundleHelper.getDriver(bundle);
+
+        WireletPack wp = WireletPack.from(componentDriver, wirelets);
+
         PackedAssemblyContext assembly = new PackedAssemblyContext(modifiers);
-        PackedWireableComponentDriver<?> driver = BundleConfiguration.driverOf(bundle);
-        WireletPack wp = WireletPack.from(driver, wirelets);
 
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
-        ComponentNodeConfiguration node = ComponentNodeConfiguration.newAssembly(assembly, driver, cs, PackedRealm.fromBundle(bundle), wp);
+        ComponentNodeConfiguration node = ComponentNodeConfiguration.newAssembly(assembly, componentDriver, cs, PackedRealm.fromBundle(bundle), wp);
 
-        Object conf = driver.toConfiguration(node);
-        BundleConfiguration.configure(bundle, conf); // in-try-finally. So we can call PAC.fail() and have them run callbacks for dynamic nodes
+        Object conf = componentDriver.toConfiguration(node);
+        BundleHelper.configure(bundle, conf); // in-try-finally. So we can call PAC.fail() and have them run callbacks for dynamic nodes
 
-        return node.closeAssembly();
+        return node.assembledSuccesfully();
     }
 
     public static <C, D> ComponentNodeConfiguration configure(ShellDriver<?> ad, PackedWireableComponentDriver<D> driver, Function<D, C> factory,
@@ -114,6 +118,6 @@ public final class PackedAssemblyContext implements AssemblyContext {
         C cc = requireNonNull(factory.apply(conf));
         consumer.configure(cc);
 
-        return node.closeAssembly();
+        return node.assembledSuccesfully();
     }
 }

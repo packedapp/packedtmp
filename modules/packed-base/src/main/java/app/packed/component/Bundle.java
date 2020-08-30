@@ -18,7 +18,8 @@ package app.packed.component;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Nullable;
-import packed.internal.component.BundleConfiguration;
+import packed.internal.component.BundleHelper;
+import packed.internal.component.PackedWireableComponentDriver;
 
 /**
  * A bundle is a thin wrapper that encapsulates a {@link WireableComponentDriver} and the configuration of a component.
@@ -33,7 +34,7 @@ import packed.internal.component.BundleConfiguration;
 public abstract class Bundle<C> implements AnalysableSystem {
 
     /**
-     * The configuration of this bundle. This field is "magically" set via a var handle from {@link BundleConfiguration}.
+     * The configuration of this bundle. This field is "magically" set via a var handle from {@link BundleHelper}.
      * <p>
      * <ul>
      * <li>Initially, this field is null, indicating that the bundle has not yet been consumed.
@@ -44,12 +45,12 @@ public abstract class Bundle<C> implements AnalysableSystem {
     @Nullable
     private Object configuration;
 
-    /** The driver of this bundle. Is "magically" read via a var handle from {@link BundleConfiguration}. */
+    /** The driver of this bundle. Is "magically" read via a var handle from {@link BundleHelper}. */
     @SuppressWarnings("unused")
     // Bundle: States-> Ready -> Assembling|Composing -> Consumed|Composed... Ready | Using | Used... Usable | Using | Used
     // Unconfigured/Configuring/Configured (Failed??? well et can't bee Configured if it's failed)
     // [afdf, state = Unusued]consuming|consumed]
-    private final WireableComponentDriver<? extends C> driver; // TODO maybe use for tostring??? Include state
+    private final PackedWireableComponentDriver<? extends C> driver; // TODO maybe use for tostring??? Include state
 
     /**
      * Creates a new bundle using the specified driver.
@@ -58,7 +59,7 @@ public abstract class Bundle<C> implements AnalysableSystem {
      *            the driver to use for constructing this bundle's configuration object
      */
     protected Bundle(WireableComponentDriver<? extends C> driver) {
-        this.driver = requireNonNull(driver, "driver is null");
+        this.driver = requireNonNull((PackedWireableComponentDriver<? extends C>) driver, "driver is null");
     }
 
     /**
@@ -75,7 +76,7 @@ public abstract class Bundle<C> implements AnalysableSystem {
         Object c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
-        } else if (c == BundleConfiguration.CONSUMED_SUCCESFULLY) {
+        } else if (c == BundleHelper.CONSUMED_SUCCESFULLY) {
             throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
         } else {
             return (C) c;

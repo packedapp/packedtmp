@@ -36,7 +36,6 @@ import packed.internal.errorhandling.ErrorMessage;
 // addFailureProcess(Runnable r);
 // addCompletionProcesser(Consumer<@Nullable Throwable> d);
 
-// Boer vaere i component ikke artifact...
 public interface AssemblyContext {
 
     // Maaske vi hellere vil tilfoeje det lokalt???
@@ -52,27 +51,9 @@ public interface AssemblyContext {
     }
 
     /**
-     * Returns whether or not the assembly is generating an image.
-     * 
-     * @return whether or not the assembly is generating an image
-     */
-    default boolean isImage() {
-        return modifiers().contains(ComponentModifier.IMAGE);
-    }
-
-    /**
-     * Returns whether or not we are instantiating an actual artifact. Or if we are just producing an image or a descriptor.
-     *
-     * @return whether or not we are instantiating an actual artifact
-     */
-    default boolean isInstantiating() {
-        return !(modifiers().contains(ComponentModifier.IMAGE) || modifiers().contains(ComponentModifier.ANALYSIS));
-    }
-
-    /**
      * Returns the set of modifiers used for the system component.
      * <p>
-     * The {@link ComponentModifier#ASSEMBLY} modifier is always set in the returned set.
+     * The returned set will always contain the {@link ComponentModifier#ASSEMBLY} modifier.
      * 
      * @return a set of modifiers
      */
@@ -87,6 +68,15 @@ public interface AssemblyContext {
         IN_PROCESS, FAILED, SUCCES;
     }
 }
+// Tror denne skaber mere forvirring end hjaelper
+///**
+//* Returns whether or not we are instantiating an actual artifact. Or if we are just producing an image or a descriptor.
+//*
+//* @return whether or not we are instantiating an actual artifact
+//*/
+//default boolean isInstantiating() {
+//  return !(modifiers().contains(ComponentModifier.IMAGE) || modifiers().contains(ComponentModifier.ANALYSIS));
+//}
 
 ///**
 //* The action is mainly used.

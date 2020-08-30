@@ -34,6 +34,12 @@ public final class AssemblyWirelets {
         throw new UnsupportedOperationException();
     }
 
+    // Taenker vi printer dem...
+    // Og er det kun roden der kan disable dem???
+    public static Wirelet disableWarnings() {
+        throw new UnsupportedOperationException();
+    }
+
     // Disable Host <--- Nej, det er et ruleset....
 }
 /// Interface with only static methods are

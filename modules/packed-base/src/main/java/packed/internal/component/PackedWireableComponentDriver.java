@@ -47,14 +47,14 @@ public abstract class PackedWireableComponentDriver<C> implements WireableCompon
 
     // Statemanagement... A function is kind of just a singleton...
 
-    final int properties;
+    final int modifiers;
 
     protected PackedWireableComponentDriver(ComponentModifier... properties) {
-        this.properties = PackedComponentModifierSet.setProperty(0, properties);
+        this.modifiers = PackedComponentModifierSet.setProperty(0, properties);
     }
 
-    protected PackedWireableComponentDriver(int properties) {
-        this.properties = properties;
+    protected PackedWireableComponentDriver(int modifiers) {
+        this.modifiers = modifiers;
     }
 
     public String defaultName(PackedRealm realm) {
@@ -81,20 +81,10 @@ public abstract class PackedWireableComponentDriver<C> implements WireableCompon
         return "Unknown";
     }
 
-    /**
-     * Returns whether or not this driver creates a component with container role.
-     * 
-     * @return whether or not this driver creates a component with container role
-     */
-    @Deprecated
-    public final boolean isContainer() {
-        return hasProperty(ComponentModifier.CONTAINER);
-    }
-
     /** {@inheritDoc} */
     @Override
     public ComponentModifierSet modifiers() {
-        return new PackedComponentModifierSet(properties);
+        return new PackedComponentModifierSet(modifiers);
     }
 
     public abstract C toConfiguration(ComponentConfigurationContext cnc);

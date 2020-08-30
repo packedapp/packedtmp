@@ -15,30 +15,33 @@
  */
 package packed.internal.component;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 
 import app.packed.component.Bundle;
-import app.packed.component.WireableComponentDriver;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** Helper class to access non-public members in {@link Bundle}. */
-public final class BundleConfiguration {
+public final class BundleHelper {
 
-    public static final BundleConfiguration CONSUMED_SUCCESFULLY = new BundleConfiguration();
+    public static final BundleHelper CONSUMED_SUCCESFULLY = new BundleHelper();
 
     /** A VarHandle that can access Bundle#configuration. */
     private static final VarHandle VH_BUNDLE_CONFIGURATION = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Bundle.class, "configuration", Object.class);
 
-    /** A VarHandle used from {@link #driverOf(Bundle)} to access the driver field of a bundle. */
-    private static final VarHandle VH_BUNDLE_DRIVER = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Bundle.class, "driver", WireableComponentDriver.class);
+    /** A VarHandle used from {@link #getDriver(Bundle)} to access the driver field from a {@link Bundle}. */
+    private static final VarHandle VH_BUNDLE_DRIVER = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Bundle.class, "driver",
+            PackedWireableComponentDriver.class);
 
     /** A MethodHandle that can invoke Bundle#configure. */
     private static final MethodHandle MH_BUNDLE_CONFIGURE = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), Bundle.class, "configure", void.class);
 
-    private BundleConfiguration() {}
+    /** No instances for you. */
+    private BundleHelper() {}
 
     // Maaske skal den tage en driver og en node???
     // Configuration
@@ -54,9 +57,9 @@ public final class BundleConfiguration {
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             } finally {
-                VH_BUNDLE_CONFIGURATION.setVolatile(bundle, BundleConfiguration.CONSUMED_SUCCESFULLY);
+                VH_BUNDLE_CONFIGURATION.setVolatile(bundle, BundleHelper.CONSUMED_SUCCESFULLY);
             }
-        } else if (existing instanceof BundleConfiguration) {
+        } else if (existing instanceof BundleHelper) {
             // Bundle has already been used succesfullly or unsuccesfully
             throw new IllegalStateException("This bundle has already been used, type = " + bundle.getClass());
         } else {
@@ -74,13 +77,15 @@ public final class BundleConfiguration {
     }
 
     /**
-     * Returns the component driver the specified bundle wraps.
+     * Extracts the component driver from the specified bundle.
      * 
      * @param bundle
-     *            the bundle to extract a component driver from
+     *            the bundle to extract the component driver from
      * @return the specified bundle's component driver
+     * @see #VH_BUNDLE_DRIVER
      */
-    public static PackedWireableComponentDriver<?> driverOf(Bundle<?> bundle) {
-        return (PackedWireableComponentDriver<?>) VH_BUNDLE_DRIVER.get(bundle);
+    public static <C> PackedWireableComponentDriver<? extends C> getDriver(Bundle<C> bundle) {
+        requireNonNull(bundle, "bundle is null");
+        return (PackedWireableComponentDriver<? extends C>) VH_BUNDLE_DRIVER.get(bundle);
     }
 }

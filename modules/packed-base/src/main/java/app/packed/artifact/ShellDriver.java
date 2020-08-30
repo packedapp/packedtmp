@@ -88,7 +88,7 @@ public final class ShellDriver<A> {
     private ShellDriver(Class<?> artifactType, MethodHandle mh) {
         this.artifactType = (Class<A>) requireNonNull(artifactType);
         boolean isGuest = AutoCloseable.class.isAssignableFrom(artifactType);
-        this.modifiers = ComponentModifierSet.of(ComponentModifier.SHELL).with(isGuest, ComponentModifier.GUEST);
+        this.modifiers = ComponentModifier.SHELL.toSet().with(isGuest, ComponentModifier.GUEST);
         this.mh = requireNonNull(mh);
     }
 

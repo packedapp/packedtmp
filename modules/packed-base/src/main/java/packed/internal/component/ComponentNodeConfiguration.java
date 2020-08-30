@@ -156,10 +156,10 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
         setName0(null); // initialize name
 
-        int p = driver.properties;
+        int p = driver.modifiers;
         p = PackedComponentModifierSet.setPropertyConditional(p, parent == null, ComponentModifier.SYSTEM);
         p = PackedComponentModifierSet.setPropertyConditional(p, parent == null, ComponentModifier.GUEST);
-        p = PackedComponentModifierSet.setPropertyConditional(p, parent == null && assembly.isImage(), ComponentModifier.IMAGE);
+        p = PackedComponentModifierSet.setPropertyConditional(p, parent == null && assembly.modifiers().isImage(), ComponentModifier.IMAGE);
         this.modifiers = p;
     }
 
@@ -242,7 +242,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         }
     }
 
-    public ComponentNodeConfiguration closeAssembly() {
+    public ComponentNodeConfiguration assembledSuccesfully() {
         finalState = true;
         if (container != null) {
             container.advanceTo(PackedContainerRole.LS_3_FINISHED);
@@ -323,12 +323,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     // java.lang.StackOverflowError instead of an infinite loop.
     @Override
     public void link(Bundle<?> bundle, Wirelet... wirelets) {
-        requireNonNull(bundle, "bundle is null");
-
-        // Extract the driver from the bundle
-        PackedWireableComponentDriver<?> driver = BundleConfiguration.driverOf(bundle);
-
-        // check if container
+        // Get the driver from the bundle
+        PackedWireableComponentDriver<?> driver = BundleHelper.getDriver(bundle);
 
         if (driver.modifiers().isContainer()) {
             // IDK do we want to progress to next stage just in case...
@@ -348,7 +344,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         ComponentNodeConfiguration newNode = p.newChild(driver, cs, PackedRealm.fromBundle(bundle), wp);
 
         // Invoke Bundle::configure
-        BundleConfiguration.configure(bundle, driver.toConfiguration(newNode));
+        BundleHelper.configure(bundle, driver.toConfiguration(newNode));
 
         newNode.finalState = true;
     }

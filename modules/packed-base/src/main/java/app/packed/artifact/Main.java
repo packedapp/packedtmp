@@ -54,8 +54,8 @@ public class Main {
     }
 
     // Maybe more a.la. Main.execute()
-    public static void execute0(Bundle<?> source, Wirelet... wirelets) {
-        ComponentNodeConfiguration node = PackedAssemblyContext.assemble(source, 0, null, wirelets);
+    public static void execute0(Bundle<?> bundle, Wirelet... wirelets) {
+        ComponentNodeConfiguration node = PackedAssemblyContext.assemble(bundle, 0, null, wirelets);
         ShellContext context = PackedInitializationContext.newShellContext(node, node.wirelets);
         context.start();
     }
