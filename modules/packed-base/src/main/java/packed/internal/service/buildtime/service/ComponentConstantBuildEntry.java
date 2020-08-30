@@ -59,7 +59,7 @@ public final class ComponentConstantBuildEntry<T> extends AbstractComponentBuild
     /** {@inheritDoc} */
     @Override
     public ServiceMode instantiationMode() {
-        return ServiceMode.SINGLETON;
+        return ServiceMode.CONSTANT;
     }
 
     /** {@inheritDoc} */

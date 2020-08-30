@@ -63,8 +63,6 @@ import packed.internal.util.ThrowableUtil;
 // We do not generally support this, as people are free to any shell they may like.
 // Which would break encapsulation
 
-// Non-Executable : Initialize
-// Executable : Initialize | Start | Execute
 public final class ShellDriver<S> {
 
     /** The type of shell this driver produces. */

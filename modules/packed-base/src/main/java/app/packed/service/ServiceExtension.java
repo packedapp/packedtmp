@@ -92,6 +92,59 @@ public final class ServiceExtension extends Extension {
 
     // Maaske er det her mere injection then service
 
+    protected void addAlias(Class<?> existing, Class<?> newKey) {}
+
+    protected void addAlias(Key<?> existing, Key<?> newKey) {}
+
+    <T> ExportedServiceConfiguration<T> addOptional(Class<T> optional) {
+        // @Inject is allowed, but other annotations, types und so weiter is not...
+
+        throw new UnsupportedOperationException();
+    }
+
+//    <S, U> void breakCycle(OP2<S, U> op) {
+//        // Denne kraever at vi paa en eller anden maade kan bruge OP2...
+//        // MethodHandle op.invoker() <--- Saa maaske er det bare ikke hemmeligt mere.
+//        // Eller kan bruge det...
+//        throw new UnsupportedOperationException();
+//    }
+
+    <T> ExportedServiceConfiguration<T> alias(Class<T> key) {
+        // Hmm maaske vi skal kalde den noget andet...
+        // SingletonService kan sikkert sagtens extende den...
+        // ProtoypeConfiguration has altid en noegle og ikek optional..
+        throw new UnsupportedOperationException();
+    }
+
+    @Leaving(state = ExtensionSetup.NORMAL_USAGE)
+    void assemble() {
+        node.buildBundle();
+    }
+
+    <S, U> void breakCycle(Key<S> key1, Key<U> key2, BiConsumer<S, U> consumer) {
+        // cycleBreaker
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * This method is invoked by the runtime after all children have been configured. But before any guests might have been
+     * defined.
+     */
+    @Leaving(state = ExtensionSetup.CHILD_LINKING)
+    void childenLinked() {
+        node.buildTree();
+    }
+
+    /**
+     * Creates a service contract for this extension.
+     * 
+     * @return a service contract for this extension
+     */
+    @AttributeProvide(declaredBy = ServiceExtensionAttributes.class, name = "contract")
+    /* package-private */ ServiceContract contract() {
+        return node.newServiceContract();
+    }
+
     // Det er jo i virkeligheden bare en @RunOnInjection klasse
     // LifecycleExtension-> BreakCycle(X,Y) ->
     <S, U> void cycleBreaker(Class<S> keyProducer, Class<U> key2) {
@@ -162,35 +215,6 @@ public final class ServiceExtension extends Extension {
         throw new UnsupportedOperationException();
     }
 
-    <S, U> void breakCycle(Key<S> key1, Key<U> key2, BiConsumer<S, U> consumer) {
-        // cycleBreaker
-        throw new UnsupportedOperationException();
-    }
-
-//    <S, U> void breakCycle(OP2<S, U> op) {
-//        // Denne kraever at vi paa en eller anden maade kan bruge OP2...
-//        // MethodHandle op.invoker() <--- Saa maaske er det bare ikke hemmeligt mere.
-//        // Eller kan bruge det...
-//        throw new UnsupportedOperationException();
-//    }
-
-    <T> ExportedServiceConfiguration<T> addOptional(Class<T> optional) {
-        // @Inject is allowed, but other annotations, types und so weiter is not...
-
-        throw new UnsupportedOperationException();
-    }
-
-    <T> ExportedServiceConfiguration<T> alias(Class<T> key) {
-        // Hmm maaske vi skal kalde den noget andet...
-        // SingletonService kan sikkert sagtens extende den...
-        // ProtoypeConfiguration has altid en noegle og ikek optional..
-        throw new UnsupportedOperationException();
-    }
-
-    protected void addAlias(Key<?> existing, Key<?> newKey) {}
-
-    protected void addAlias(Class<?> existing, Class<?> newKey) {}
-
     /**
      * Exports a service of the specified type.
      * 
@@ -206,6 +230,8 @@ public final class ServiceExtension extends Extension {
         // However export must be called for each export...
         return export(Key.of(key));
     }
+
+    // autoExport
 
     /**
      * Exposes an internal service outside of this bundle.
@@ -248,6 +274,23 @@ public final class ServiceExtension extends Extension {
         node.exports().exportAll(captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 
+    @AttributeProvide(declaredBy = ServiceExtensionAttributes.class, name = "description")
+    public String foo() {
+        return "DU_ER_SET " + Clock.systemDefaultZone().instant();
+    }
+
+    @AttributeProvide(declaredBy = ServiceExtensionAttributes.class, name = "other")
+    public String foos() {
+        return "DU_ER_SET " + Clock.systemDefaultZone().instant();
+    }
+
+    @ComponentLinked(onlyDirectLink = true)
+    private void linkChild(ServiceExtension childExtension /* , @WireletSupply Optional<ServiceWireletPipeline> wirelets */) {
+        childExtension.configuration();
+        // if(configuration.isStronglyAttachedTo(childExtension.configuation())
+        node.link(childExtension.node);
+    }
+
     /**
      * Requires that all requirements are explicitly added via either {@link #requireOptionally(Key...)},
      * {@link #require(Key...)} or via implementing a contract.
@@ -271,8 +314,6 @@ public final class ServiceExtension extends Extension {
         // useContract vs supportContract
     }
 
-    // autoExport
-
     /**
      * Invoked by the runtime for each component using {@link Provide}.
      * 
@@ -284,21 +325,6 @@ public final class ServiceExtension extends Extension {
     @OnHook
     void onHook(AtProvidesHook hook, ComponentNodeConfiguration cc) {
         node.provider().addProvidesHook(hook, cc);
-    }
-
-    @AttributeProvide(declaredBy = ServiceExtensionAttributes.class, name = "description")
-    public String foo() {
-        return "DU_ER_SET " + Clock.systemDefaultZone().instant();
-    }
-
-    @AttributeProvide(declaredBy = ServiceExtensionAttributes.class, name = "other")
-    public String foos() {
-        return "DU_ER_SET " + Clock.systemDefaultZone().instant();
-    }
-
-    // Will install a ServiceStatelessConfiguration...
-    public <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {
-        return node.provider().provideFactory(install(factory).node, true);
     }
 
     /**
@@ -322,6 +348,11 @@ public final class ServiceExtension extends Extension {
         checkConfigurable();
         node.provider().provideAll((AbstractInjector) injector, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL),
                 WireletList.ofAll(wirelets));
+    }
+
+    // Will install a ServiceStatelessConfiguration...
+    public <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {
+        return node.provider().provideFactory(install(factory).node, true);
     }
 
     public void require(Class<?>... keys) {
@@ -357,6 +388,12 @@ public final class ServiceExtension extends Extension {
         }
     }
 
+    // Should be Optional<Pipeline>...
+
+    public void requireOptionally(Class<?>... keys) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Adds the specified key to the list of optional services.
      * <p>
@@ -373,38 +410,6 @@ public final class ServiceExtension extends Extension {
         for (Key<?> key : keys) {
             node.dependencies().require(ServiceDependency.ofOptional(key), cs);
         }
-    }
-
-    public void requireOptionally(Class<?>... keys) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Leaving(state = ExtensionSetup.NORMAL_USAGE)
-    void assemble() {
-        node.buildBundle();
-    }
-
-    /**
-     * This method is invoked by the runtime after all children have been configured. But before any guests might have been
-     * defined.
-     */
-    @Leaving(state = ExtensionSetup.CHILD_LINKING)
-    void childenLinked() {
-        node.buildTree();
-    }
-
-    // Should be Optional<Pipeline>...
-
-    @AttributeProvide(declaredBy = ServiceExtensionAttributes.class, name = "contract")
-    ServiceContract con() {
-        return node.newServiceContract();
-    }
-
-    @ComponentLinked(onlyDirectLink = true)
-    private void linkChild(ServiceExtension childExtension /* , @WireletSupply Optional<ServiceWireletPipeline> wirelets */) {
-        childExtension.configuration();
-        // if(configuration.isStronglyAttachedTo(childExtension.configuation())
-        node.link(childExtension.node);
     }
 
     /** A subtension useable from other extensions. */

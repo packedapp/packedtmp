@@ -64,7 +64,7 @@ final class AtProvides {
         this.provides = requireNonNull(provides);
         this.description = provides.description().length() > 0 ? provides.description() : null;
         this.member = requireNonNull(member);
-        this.instantionMode = provides.constant() ? ServiceMode.SINGLETON : ServiceMode.PROTOTYPE;
+        this.instantionMode = provides.constant() ? ServiceMode.CONSTANT : ServiceMode.PROTOTYPE;
         this.isStaticMember = Modifier.isStatic(member.getModifiers());
         this.key = requireNonNull(key);
     }

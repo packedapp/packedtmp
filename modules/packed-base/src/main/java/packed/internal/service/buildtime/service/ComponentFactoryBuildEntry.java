@@ -80,7 +80,7 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
     @Override
     protected InjectorEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
         switch (instantionMode) {
-        case SINGLETON:
+        case CONSTANT:
             return new CachingPrototypeInjectorEntry<>(this, context);
         default:
             return new PrototypeInjectorEntry<>(this, context);

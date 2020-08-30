@@ -63,7 +63,7 @@ public final class ConstantInjectorEntry<T> extends InjectorEntry<T> {
     /** {@inheritDoc} */
     @Override
     public ServiceMode instantiationMode() {
-        return ServiceMode.SINGLETON;
+        return ServiceMode.CONSTANT;
     }
 
     /** {@inheritDoc} */

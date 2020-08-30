@@ -104,14 +104,6 @@ public final class ServiceExtensionNode {
         // System.out.println("First " + (parent == null));
     }
 
-//    public void buildDescriptor(ContainerDescriptor.Builder builder) {
-//        // need to have resolved successfully
-//        // TODO we should only have build entries here...
-//        for (BuildEntry<?> n : resolvedEntries.values()) {
-//            builder.addServiceDescriptor(((BuildEntry<?>) n).toDescriptor());
-//        }
-//    }
-
     public void buildTree() {
         if (parent == null) {
 //            TreePrinter.print(this, n -> n.children, "", n -> n.context.containerPath().toString());
@@ -174,8 +166,7 @@ public final class ServiceExtensionNode {
         children.add(child);
     }
 
-    public ServiceContract newServiceContract(/* ServiceWireletPipeline swp */) {
-        // requireNonNull(context);
+    public ServiceContract newServiceContract() {
         return ServiceContract.newContract(c -> {
             if (exporter != null) {
                 for (ExportedBuildEntry<?> n : exporter) {
@@ -247,7 +238,7 @@ public final class ServiceExtensionNode {
         for (BuildEntry<?> node : resolvedEntries.values()) {
             if (node instanceof ComponentFactoryBuildEntry) {
                 ComponentFactoryBuildEntry<?> s = (ComponentFactoryBuildEntry<?>) node;
-                if (s.instantiationMode() == ServiceMode.SINGLETON) {
+                if (s.instantiationMode() == ServiceMode.CONSTANT) {
                     s.toRuntimeEntry(con).getInstance(null);
                 }
             }

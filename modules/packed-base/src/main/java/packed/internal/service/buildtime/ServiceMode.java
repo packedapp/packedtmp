@@ -41,7 +41,7 @@ public enum ServiceMode {
      * A single instance of the service is created when the injector or container where the entity is registered is created.
      * This is the default mode used throughout Packed.
      */
-    SINGLETON,
+    CONSTANT,
 
     // /**
     // * A single instance of the service is created the first time it is requested. Concurrent calls by other threads while
@@ -54,12 +54,3 @@ public enum ServiceMode {
     PROTOTYPE;
 
 }
-
-// /**
-// * Returns true if the instantiation mode is either {@link #SINGLETON} or {@link #LAZY}, otherwise false.
-// *
-// * @return true if the instantiation mode is either {@link #SINGLETON} or {@link #LAZY}, otherwise false
-// */
-// public boolean isSingleton() {
-// return this != PROTOTYPE;
-// }

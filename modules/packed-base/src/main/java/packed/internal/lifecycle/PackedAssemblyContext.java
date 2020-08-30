@@ -43,6 +43,9 @@ public final class PackedAssemblyContext implements AssemblyContext {
     /** The build output. */
     final int modifiers;
 
+    @Nullable
+    private final ShellDriver<?> shellDriver;
+
     /** The thread that is assembling the system. */
     // This should not be permanently..
     // What if we create an image in one thread. Passes it to another thread.
@@ -59,8 +62,9 @@ public final class PackedAssemblyContext implements AssemblyContext {
      * @param modifiers
      *            the output of the build process
      */
-    PackedAssemblyContext(int modifiers, Wirelet... wirelets) {
+    PackedAssemblyContext(int modifiers, @Nullable ShellDriver<?> shellDriver, Wirelet... wirelets) {
         this.modifiers = modifiers;
+        this.shellDriver = shellDriver;
         this.wirelets = wirelets;
     }
 
@@ -72,6 +76,11 @@ public final class PackedAssemblyContext implements AssemblyContext {
     @Override
     public ComponentModifierSet modifiers() {
         return new PackedComponentModifierSet(modifiers);
+    }
+
+    @Nullable
+    public ShellDriver<?> shellDriver() {
+        return shellDriver;
     }
 
     /**
@@ -92,9 +101,9 @@ public final class PackedAssemblyContext implements AssemblyContext {
         // Get the driver from the bundle
         PackedWireableComponentDriver<?> componentDriver = BundleHelper.getDriver(bundle);
 
-        WireletPack wp = WireletPack.from(componentDriver, wirelets);
+        PackedAssemblyContext assembly = new PackedAssemblyContext(modifiers, shellDriver);
 
-        PackedAssemblyContext assembly = new PackedAssemblyContext(modifiers);
+        WireletPack wp = WireletPack.from(componentDriver, wirelets);
 
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
         ComponentNodeConfiguration node = ComponentNodeConfiguration.newAssembly(assembly, componentDriver, cs, PackedRealm.fromBundle(bundle), wp);
@@ -111,7 +120,7 @@ public final class PackedAssemblyContext implements AssemblyContext {
         // Vil gerne parse nogle wirelets some det allerfoerste
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
 
-        ComponentNodeConfiguration node = ComponentNodeConfiguration.newAssembly(new PackedAssemblyContext(0), driver, cs,
+        ComponentNodeConfiguration node = ComponentNodeConfiguration.newAssembly(new PackedAssemblyContext(0, ad), driver, cs,
                 PackedRealm.fromConfigurator(consumer), wp);
 
         D conf = driver.toConfiguration(node);
