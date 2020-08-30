@@ -51,12 +51,13 @@ public interface AssemblyContext {
     }
 
     /**
-     * Returns the set of modifiers used for the system component.
+     * Returns the set of modifiers used for this assembling.
      * <p>
      * The returned set will always contain the {@link ComponentModifier#ASSEMBLY} modifier.
      * 
      * @return a set of modifiers
      */
+    // It is not nessesarily the system component. Just the top component of the assembling.
     ComponentModifierSet modifiers();
 
     // isDone

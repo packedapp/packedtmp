@@ -26,7 +26,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import packed.internal.base.attribute.EmptyAttributeSet;
+import packed.internal.base.attribute.EmptyAttributeMap;
 
 /**
  *
@@ -194,7 +194,7 @@ public interface AttributeMap {
      * @return an empty {@code AtttributeMap}
      */
     static AttributeMap of() {
-        return EmptyAttributeSet.EMPTY;
+        return EmptyAttributeMap.INSTANCE;
     }
 }
 

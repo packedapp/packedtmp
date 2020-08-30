@@ -482,12 +482,12 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     }
 
     @Override
-    public <C, I> C wire(ClassSourcedDriver<C, I> driver, Class<I> implementation, Wirelet... wirelets) {
+    public <C, I> C wire(ClassSourcedDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
         return wire(driver.bindToClass(realm, implementation), wirelets);
     }
 
     @Override
-    public <C, I> C wire(FactorySourcedDriver<C, I> driver, Factory<I> implementation, Wirelet... wirelets) {
+    public <C, I> C wire(FactorySourcedDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
         return wire(driver.bindToFactory(realm, implementation), wirelets);
     }
 

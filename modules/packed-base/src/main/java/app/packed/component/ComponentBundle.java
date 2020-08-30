@@ -130,7 +130,7 @@ public abstract class ComponentBundle<T extends ComponentConfiguration> extends 
         return configuration().wire(driver, wirelets);
     }
 
-    protected final <C, I> C wire(ClassSourcedDriver<C, I> driver, Class<I> implementation, Wirelet... wirelets) {
+    protected final <C, I> C wire(ClassSourcedDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
         return configuration().wire(driver, implementation, wirelets);
     }
 

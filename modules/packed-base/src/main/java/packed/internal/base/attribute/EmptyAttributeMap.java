@@ -31,11 +31,11 @@ import app.packed.base.Nullable;
 /**
  *
  */
-public final class EmptyAttributeSet implements AttributeMap {
+public final class EmptyAttributeMap implements AttributeMap {
 
-    public static final EmptyAttributeSet EMPTY = new EmptyAttributeSet();
+    public static final EmptyAttributeMap INSTANCE = new EmptyAttributeMap();
 
-    private EmptyAttributeSet() {}
+    private EmptyAttributeMap() {}
 
     /** {@inheritDoc} */
     @Override

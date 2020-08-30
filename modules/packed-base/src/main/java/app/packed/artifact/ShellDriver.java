@@ -81,15 +81,15 @@ public final class ShellDriver<S> {
      * 
      * @param shellType
      *            the type of shell that is created
-     * @param mh
-     *            the method handle that creates the actual shell
+     * @param instantiatior
+     *            a method handle that create new shell instances
      */
     @SuppressWarnings("unchecked")
-    private ShellDriver(Class<?> shellType, MethodHandle mh) {
+    private ShellDriver(Class<?> shellType, MethodHandle instantiatior) {
         this.shellType = (Class<S>) requireNonNull(shellType);
         boolean isGuest = AutoCloseable.class.isAssignableFrom(shellType);
         this.modifiers = ComponentModifier.SHELL.toSet().with(isGuest, ComponentModifier.GUEST);
-        this.instantiatior = requireNonNull(mh);
+        this.instantiatior = requireNonNull(instantiatior);
     }
 
     // Set<Class<?>> <-- available contexts... IDK

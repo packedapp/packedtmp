@@ -148,7 +148,7 @@ public abstract class PackedWireableComponentDriver<C> implements WireableCompon
             return new InstanceSourcedDriver<BeanConfiguration<T>, T>() {
 
                 @Override
-                public WireableComponentDriver<BeanConfiguration<T>> bindToFactory(PackedRealm realm, Factory<T> factory) {
+                public WireableComponentDriver<BeanConfiguration<T>> bindToFactory(PackedRealm realm, Factory<? extends T> factory) {
                     return new SingletonComponentDriver<>(realm, factory);
                 }
 
@@ -185,7 +185,7 @@ public abstract class PackedWireableComponentDriver<C> implements WireableCompon
             return new ClassSourcedDriver<StatelessConfiguration, T>() {
 
                 @Override
-                public WireableComponentDriver<StatelessConfiguration> bindToClass(PackedRealm realm, Class<T> implementation) {
+                public WireableComponentDriver<StatelessConfiguration> bindToClass(PackedRealm realm, Class<? extends T> implementation) {
                     return new PackedWireableComponentDriver.StatelessComponentDriver(realm, implementation);
                 }
             };

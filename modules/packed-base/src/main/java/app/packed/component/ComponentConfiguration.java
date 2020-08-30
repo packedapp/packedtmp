@@ -108,7 +108,7 @@ public interface ComponentConfiguration {
      */
     <C> C wire(WireableComponentDriver<C> driver, Wirelet... wirelets);
 
-    <C, I> C wire(ClassSourcedDriver<C, I> driver, Class<I> implementation, Wirelet... wirelets);
+    <C, I> C wire(ClassSourcedDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets);
 
     <C, I> C wire(FactorySourcedDriver<C, I> driver, Factory<I> implementation, Wirelet... wirelets);
 

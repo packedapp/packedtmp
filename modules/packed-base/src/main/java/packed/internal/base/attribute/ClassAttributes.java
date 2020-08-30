@@ -18,6 +18,8 @@ package packed.internal.base.attribute;
 import java.util.HashMap;
 import java.util.Map;
 
+import app.packed.base.AttributeProvide;
+
 /**
  *
  */
@@ -43,6 +45,10 @@ public class ClassAttributes {
             return m.get(name);
         }
         return null;
+    }
+
+    public static PackedAttribute<?> find(AttributeProvide ap) {
+        return find(ap.declaredBy(), ap.name());
     }
 
     public static void register(PackedAttribute<?> pa) {

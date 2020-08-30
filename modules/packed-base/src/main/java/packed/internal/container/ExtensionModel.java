@@ -42,6 +42,7 @@ import app.packed.container.ExtensionSetup;
 import app.packed.container.InternalExtensionException;
 import app.packed.hook.OnHook;
 import app.packed.lifecycle3.LifecycleContext;
+import packed.internal.base.attribute.ProvidableAttributeModel;
 import packed.internal.component.PackedWireableComponentDriver;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.BaseHookQualifierList;
@@ -166,6 +167,8 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
 
     private final PackedWireableComponentDriver<?> driver;
 
+    private final ProvidableAttributeModel pam;
+
     /**
      * Creates a new extension model from the specified builder.
      * 
@@ -184,9 +187,14 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         this.defaultComponentName = "." + extensionType().getSimpleName();
         this.extensionLinkedToAncestorExtension = builder.li;
         this.extensionLinkedDirectChildrenOnly = builder.callbackOnlyDirectChildren;
+        this.pam = builder.pam;
 
         this.hooksOnHookModel = builder.onHookModel;
         this.hooksNonActivating = hooksOnHookModel == null ? null : LazyExtensionActivationMap.findNonExtending(hooksOnHookModel);
+    }
+
+    public ProvidableAttributeModel pam() {
+        return pam;
     }
 
     public PackedWireableComponentDriver<?> driver() {
@@ -359,6 +367,8 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         /** A builder for all methods annotated with {@link OnHook} on the extension. */
         private OnHookModel onHookModel;
 
+        private ProvidableAttributeModel pam;
+
         /**
          * Creates a new builder.
          * 
@@ -412,6 +422,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
 
             OpenClass cp = prep(mhbConstructor);
             this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+            this.pam = ProvidableAttributeModel.analyse(cp);
 
             if (linked != null) {
                 // ancestor extension, descendant extension context, descendant extension
@@ -447,9 +458,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         }
     }
 
-    /**
-     * An extension loader is responsible for initializing models for extensions.
-     */
+    /** An (extension) loader is responsible for loading an extension and all of its (unloaded) dependencies. */
     private static final class Loader {
 
         // Maaske skal vi baade have id, og depth... Eller er depth ligegyldigt???

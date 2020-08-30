@@ -13,13 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package packed.internal.invoke;
 
-import packed.internal.container.PackedRealm;
+import java.lang.invoke.MethodHandle;
 
 /**
  *
  */
-public interface ClassSourcedDriver<C, I> {
-    WireableComponentDriver<C> bindToClass(PackedRealm realm, Class<? extends I> implementation);
+public abstract class AbstractAnalyzerTemplate<T> {
+
+    abstract T build();
+
+    @interface forEachMethod {
+        Class<?>[] annotatedWith() default {};
+    }
+
+}
+
+class U extends AbstractAnalyzerTemplate<String> {
+
+    /** {@inheritDoc} */
+    @Override
+    String build() {
+        return "Coo";
+    }
+
+    @forEachMethod(annotatedWith = Deprecated.class)
+    void onM(MethodHandle mh) {
+
+    }
 }

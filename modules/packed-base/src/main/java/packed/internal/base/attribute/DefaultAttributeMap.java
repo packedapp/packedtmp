@@ -13,19 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.base;
+package packed.internal.base.attribute;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
+
+import app.packed.base.Attribute;
+import app.packed.base.AttributeMap;
 
 /**
  *
  */
-public class DefaultAttributeMap {
+public class DefaultAttributeMap implements AttributeMap {
 
     final HashMap<Attribute<?>, Value> m = new HashMap<>();
+
+    public <T> void addSuppliedValue(Attribute<T> atr, Supplier<T> value) {
+        requireNonNull(atr);
+        requireNonNull(value);
+        m.put(atr, new CompValue(value));
+    }
 
     public <T> void addValue(Attribute<T> atr, T value) {
         requireNonNull(atr);
@@ -33,10 +45,33 @@ public class DefaultAttributeMap {
         m.put(atr, new PermValue(value));
     }
 
-    public <T> void addSuppliedValue(Attribute<T> atr, Supplier<T> value) {
-        requireNonNull(atr);
-        requireNonNull(value);
-        m.put(atr, new CompValue(value));
+    /** {@inheritDoc} */
+    @Override
+    public <A> A get(Attribute<A> attribute) {
+        return getOpt(attribute).get();
+    }
+
+    public <T> Optional<T> getOpt(Attribute<T> attribute) {
+        Value v = m.get(attribute);
+        if (v == null) {
+            return Optional.empty();
+        } else {
+            @SuppressWarnings("unchecked")
+            T t = (T) v.get();
+            return Optional.of(t);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isPresent(Attribute<?> attribute) {
+        return getOpt(attribute).isEmpty();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<Attribute<?>> keys() {
+        return Collections.unmodifiableSet(m.keySet());
     }
 
     static class CompValue extends Value {
@@ -69,7 +104,10 @@ public class DefaultAttributeMap {
     }
 
     abstract static class Value {
-
         abstract Object get();
+    }
+
+    public static DefaultAttributeMap from() {
+        throw new UnsupportedOperationException();
     }
 }

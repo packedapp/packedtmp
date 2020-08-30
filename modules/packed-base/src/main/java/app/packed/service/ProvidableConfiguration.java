@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
-
-import packed.internal.container.PackedRealm;
+package app.packed.service;
 
 /**
  *
  */
-public interface ClassSourcedDriver<C, I> {
-    WireableComponentDriver<C> bindToClass(PackedRealm realm, Class<? extends I> implementation);
+// Ideen er lidt at vi tilfoejer
+
+// Bundle.provide(T extends ProvideableConfiguration)
+
+// Saa vi ikke behover altid at koere 
+// wire(driver, class).provide();
+public interface ProvidableConfiguration<T> {
+    T provide();
 }

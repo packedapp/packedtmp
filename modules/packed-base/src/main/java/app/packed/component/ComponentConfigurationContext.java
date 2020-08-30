@@ -131,9 +131,9 @@ public interface ComponentConfigurationContext {
      */
     void setName(String name);
 
-    <C, I> C wire(ClassSourcedDriver<C, I> driver, Class<I> implementation, Wirelet... wirelets);
+    <C, I> C wire(ClassSourcedDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets);
 
-    <C, I> C wire(FactorySourcedDriver<C, I> driver, Factory<I> implementation, Wirelet... wirelets);
+    <C, I> C wire(FactorySourcedDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets);
 
     /**
      * Wires a new child component using the specified driver

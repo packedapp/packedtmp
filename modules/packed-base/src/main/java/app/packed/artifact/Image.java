@@ -19,6 +19,7 @@ import java.util.concurrent.CompletableFuture;
 
 import app.packed.component.Component;
 import app.packed.component.ComponentHolder;
+import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 
@@ -56,6 +57,8 @@ public interface Image<A> extends ComponentHolder {
 
     /**
      * Returns the component representation of this image.
+     * <p>
+     * The returned component always has the {@link ComponentModifier#IMAGE} modifier set.
      * 
      * @return the component representation of this image
      */
