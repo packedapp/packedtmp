@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package features.hook;
+package zeprecated.features.hook;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,8 +25,8 @@ import org.junit.jupiter.api.Test;
 import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
-import features.hook.HookStubs.Aggregate;
 import testutil.stubs.annotation.Left;
+import zeprecated.features.hook.HookStubs.Aggregate;
 
 /**
  *

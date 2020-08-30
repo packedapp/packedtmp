@@ -74,7 +74,5 @@ public class ExtensionDescriptorTest {
         }
     }
 
-    static class EmptyExtension extends Extension {
-
-    }
+    static class EmptyExtension extends Extension {}
 }

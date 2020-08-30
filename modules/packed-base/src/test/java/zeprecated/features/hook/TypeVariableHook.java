@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package features.hook;
+package zeprecated.features.hook;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles;

@@ -42,8 +42,8 @@ public abstract class AbstractArtifactTest {
         return new AppTester(new AbstractConsumableBundle(source) {}, wirelets);
     }
 
-    public static ContainerImageTester imageOf(BaseBundle source, Wirelet... wirelets) {
-        return new ContainerImageTester(source, wirelets);
+    public static ImageTester imageOf(BaseBundle source, Wirelet... wirelets) {
+        return new ImageTester(source, wirelets);
     }
 
     protected static abstract class AbstractConsumableBundle extends BaseBundle {

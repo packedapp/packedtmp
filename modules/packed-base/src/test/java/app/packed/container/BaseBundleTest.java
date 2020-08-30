@@ -23,13 +23,12 @@ import app.packed.artifact.App;
 import testutil.util.AbstractArtifactTest;
 
 /** Various Bundle tests. */
-public class BundleTest extends AbstractArtifactTest {
+public class BaseBundleTest extends AbstractArtifactTest {
 
     /** Tests that a bundle cannot be reused. */
     @Test
     public void notReusable() {
         BaseBundle empty = new BaseBundle() {
-
             @Override
             protected void configure() {}
         };
@@ -42,7 +41,6 @@ public class BundleTest extends AbstractArtifactTest {
     @Test
     public void cannotLinkSelf() {
         BaseBundle b = new BaseBundle() {
-
             @Override
             protected void configure() {
                 link(this);

@@ -26,11 +26,11 @@ import app.packed.container.BaseBundle;
 /**
  *
  */
-public class ContainerImageTester {
+public class ImageTester {
 
     private final Image<App> image;
 
-    public ContainerImageTester(BaseBundle source, Wirelet... wirelets) {
+    public ImageTester(BaseBundle source, Wirelet... wirelets) {
         this(App.newImage(source, wirelets));
     }
 
@@ -38,11 +38,11 @@ public class ContainerImageTester {
         return new AppTester(image, wirelets);
     }
 
-    public ContainerImageTester(Image<App> image) {
+    public ImageTester(Image<App> image) {
         this.image = requireNonNull(image);
     }
 
-    public ContainerImageTester nameIs(String expected) {
+    public ImageTester nameIs(String expected) {
         assertThat(image.component().name()).isEqualTo(expected);
         return this;
     }

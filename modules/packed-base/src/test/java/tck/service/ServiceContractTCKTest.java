@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tck.bundle.contract;
+package tck.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -102,7 +102,6 @@ public class ServiceContractTCKTest {
     public void optional() {
         ServiceContract expected = ServiceContract.newContract(b -> b.optional(A.class));
         check(expected, new BaseBundle() {
-
             @Override
             protected void configure() {
                 lookup(MethodHandles.lookup());
@@ -144,5 +143,7 @@ public class ServiceContractTCKTest {
 
     static void check(ServiceContract expected, ComponentSystem s) {
         assertThat(ServiceContract.of(s)).isEqualTo(expected);
+        // TODO maybe check that runtime is the same. Except
+        // That requires is removed??
     }
 }

@@ -27,7 +27,7 @@ import app.packed.component.ComponentPath;
 /**
  *
  */
-public class PackedComponentTest {
+public class PackedComponentPathTest {
 
     @Test
     public void root() {

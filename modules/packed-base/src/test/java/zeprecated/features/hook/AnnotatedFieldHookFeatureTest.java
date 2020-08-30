@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package features.hook;
+package zeprecated.features.hook;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -24,9 +24,9 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.Hook;
-import features.hook.HookStubs.LeftAnnotatedFields;
 import testutil.stubs.annotation.Left;
 import testutil.stubs.annotation.Right;
+import zeprecated.features.hook.HookStubs.LeftAnnotatedFields;
 
 /** Various tests related to hooks and annotated fields. */
 public class AnnotatedFieldHookFeatureTest {

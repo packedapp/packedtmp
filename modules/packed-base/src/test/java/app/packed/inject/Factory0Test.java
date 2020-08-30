@@ -30,7 +30,7 @@ public class Factory0Test {
 
     /** Tests that we can capture information about a simple factory producing {@link Integer} instances. */
     @Test
-    public void IntegerFactory0() {
+    public void integerFactory0() {
         Factory<Integer> f = new Factory0<>(() -> 1) {};
         checkThat(f).is(Integer.class);
         checkThat(f).hasNoDependencies();
@@ -42,7 +42,7 @@ public class Factory0Test {
 
     /** Tests that we can capture information about a simple factory producing lists of integers instances. */
     @Test
-    public void ListIntegerFactory0() {
+    public void listIntegerFactory0() {
         Factory<List<Integer>> f = new Factory0<>(() -> List.of(1)) {};
         checkThat(f).is(new TypeLiteral<List<Integer>>() {});
         checkThat(f).hasNoDependencies();
