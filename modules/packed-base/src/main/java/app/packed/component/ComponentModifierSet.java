@@ -24,16 +24,6 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
 
     boolean contains(ComponentModifier modifier);
 
-    // boolean containsAll(Collection<ComponentModifier> c);
-    /**
-     * Returns whether or not this set contains the {@link ComponentModifier#GUEST} modifier.
-     * 
-     * @return true if this set contains the guest modifier, otherwise false
-     */
-    default boolean isGuest() {
-        return contains(ComponentModifier.GUEST);
-    }
-
     /**
      * Returns whether or not this set contains the {@link ComponentModifier#CONTAINER} modifier.
      * 
@@ -42,6 +32,8 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
     default boolean isContainer() {
         return contains(ComponentModifier.CONTAINER);
     }
+
+    boolean isEmpty();
 
     /**
      * Returns whether or not this set contains the {@link ComponentModifier#EXTENSION} modifier.
@@ -52,7 +44,15 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
         return contains(ComponentModifier.EXTENSION);
     }
 
-    boolean isEmpty();
+    // boolean containsAll(Collection<ComponentModifier> c);
+    /**
+     * Returns whether or not this set contains the {@link ComponentModifier#GUEST} modifier.
+     * 
+     * @return true if this set contains the guest modifier, otherwise false
+     */
+    default boolean isGuest() {
+        return contains(ComponentModifier.GUEST);
+    }
 
     /**
      * Returns whether or not this set contains the {@link ComponentModifier#IMAGE} modifier.
@@ -74,6 +74,14 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
      * @return an array containing all the modifiers in this set
      */
     ComponentModifier[] toArray();
+
+    ComponentModifierSet with(boolean conditional, ComponentModifier modifier);
+
+    ComponentModifierSet with(ComponentModifier modifier);
+
+    ComponentModifierSet without(boolean conditional, ComponentModifier modifier);
+
+    ComponentModifierSet without(ComponentModifier modifier);
 
     /**
      * Returns an empty component modifier set.

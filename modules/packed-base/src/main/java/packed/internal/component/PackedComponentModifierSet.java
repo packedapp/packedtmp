@@ -28,7 +28,10 @@ import app.packed.component.ComponentModifierSet;
  */
 public final class PackedComponentModifierSet implements ComponentModifierSet {
 
+    /** A emoty modifier set. */
     public static final PackedComponentModifierSet EMPTY = new PackedComponentModifierSet(0);
+
+    /** An array containing all modifiers. */
     private final static ComponentModifier[] MODIFIERS = ComponentModifier.values();
 
     private final int modifiers;
@@ -136,5 +139,42 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
 
     public static int unsetPropertyConditional(int modifiers, boolean setIt, ComponentModifier property) {
         return setIt ? unsetProperty(modifiers, property) : modifiers;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentModifierSet with(ComponentModifier modifier) {
+        if (isPropertySet(modifiers, modifier)) {
+            return this;
+        }
+        return new PackedComponentModifierSet(setProperty(modifiers, modifier));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentModifierSet with(boolean conditional, ComponentModifier modifier) {
+        if (!conditional || isPropertySet(modifiers, modifier)) {
+            return this;
+        }
+        return new PackedComponentModifierSet(setProperty(modifiers, modifier));
+
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentModifierSet without(ComponentModifier modifier) {
+        if (!isPropertySet(modifiers, modifier)) {
+            return this;
+        }
+        return new PackedComponentModifierSet(unsetProperty(modifiers, modifier));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentModifierSet without(boolean conditional, ComponentModifier modifier) {
+        if (!conditional || !isPropertySet(modifiers, modifier)) {
+            return this;
+        }
+        return new PackedComponentModifierSet(unsetProperty(modifiers, modifier));
     }
 }

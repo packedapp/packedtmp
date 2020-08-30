@@ -23,6 +23,8 @@ import java.lang.invoke.MethodType;
 import java.util.function.Function;
 
 import app.packed.component.Bundle;
+import app.packed.component.ComponentModifier;
+import app.packed.component.ComponentModifierSet;
 import app.packed.component.CustomConfigurator;
 import app.packed.component.WireableComponentDriver;
 import app.packed.component.Wirelet;
@@ -68,11 +70,11 @@ public final class ShellDriver<A> {
     /** The type of artifact this driver produces. */
     private final Class<A> artifactType;
 
-    /** Whether or not the created artifact has an execution phase. */
-    private final boolean isGuest;
-
     /** The method handle responsible for creating the new artifact. */
     private final MethodHandle mh;
+
+    /** A set of modifiers that the component to which this shell is attached will have as a minimum. */
+    private final ComponentModifierSet modifiers;
 
     /**
      * Creates a new driver.
@@ -85,7 +87,8 @@ public final class ShellDriver<A> {
     @SuppressWarnings("unchecked")
     private ShellDriver(Class<?> artifactType, MethodHandle mh) {
         this.artifactType = (Class<A>) requireNonNull(artifactType);
-        this.isGuest = AutoCloseable.class.isAssignableFrom(artifactType);
+        boolean isGuest = AutoCloseable.class.isAssignableFrom(artifactType);
+        this.modifiers = ComponentModifierSet.of(ComponentModifier.SHELL).with(isGuest, ComponentModifier.GUEST);
         this.mh = requireNonNull(mh);
     }
 
@@ -124,8 +127,8 @@ public final class ShellDriver<A> {
      * 
      * @return whether or not the artifact being produced by this driver has an execution phase
      */
-    public boolean isGuest() {
-        return isGuest;
+    public ComponentModifierSet modifiers() {
+        return modifiers;
     }
 
     /**
