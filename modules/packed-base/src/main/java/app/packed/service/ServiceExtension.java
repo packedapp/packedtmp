@@ -17,16 +17,18 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
+import java.time.Clock;
 import java.util.function.BiConsumer;
 
+import app.packed.base.AttributeProvide;
 import app.packed.base.Key;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
+import app.packed.container.ComponentLinked;
 import app.packed.container.ContainerDescriptor;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionSetup;
-import app.packed.container.ComponentLinked;
 import app.packed.hook.Expose;
 import app.packed.hook.OnHook;
 import app.packed.inject.Factory;
@@ -286,6 +288,16 @@ public final class ServiceExtension extends Extension {
         node.provider().addProvidesHook(hook, cc);
     }
 
+    @AttributeProvide(declaredBy = ServiceExtensionAttributes.class, name = "description")
+    public String foo() {
+        return "DU_ER_SET " + Clock.systemDefaultZone().instant();
+    }
+
+    @AttributeProvide(declaredBy = ServiceExtensionAttributes.class, name = "other")
+    public String foos() {
+        return "DU_ER_SET " + Clock.systemDefaultZone().instant();
+    }
+
     // Will install a ServiceStatelessConfiguration...
     public <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {
         return node.provider().provideFactory(install(factory).node, true);
@@ -385,6 +397,8 @@ public final class ServiceExtension extends Extension {
 
     @Expose
     // Should be Optional<Pipeline>...
+
+    @AttributeProvide(declaredBy = ServiceExtensionAttributes.class, name = "contract")
     ServiceContract con() {
         return node.newServiceContract();
     }

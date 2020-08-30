@@ -13,11 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.base.attribute;
+package packed.internal.component;
+
+import app.packed.component.Analysis;
+import app.packed.container.BaseBundle;
 
 /**
  *
  */
-public class DefaultAttributeSet {
+public class Zzz extends BaseBundle {
 
+    /** {@inheritDoc} */
+    @Override
+    protected void configure() {
+        service();
+    }
+
+    public static void main(String[] args) {
+        Analysis.stream(new Zzz()).forEach(c -> {
+            System.out.println(c.path() + "  " + c.modifiers() + "  " + c.attributes());
+        });
+    }
 }

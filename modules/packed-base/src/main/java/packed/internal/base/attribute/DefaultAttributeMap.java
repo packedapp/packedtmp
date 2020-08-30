@@ -33,6 +33,11 @@ public class DefaultAttributeMap implements AttributeMap {
 
     final HashMap<Attribute<?>, Value> m = new HashMap<>();
 
+    @Override
+    public String toString() {
+        return m.toString();
+    }
+
     public <T> void addSuppliedValue(Attribute<T> atr, Supplier<T> value) {
         requireNonNull(atr);
         requireNonNull(value);
@@ -86,6 +91,7 @@ public class DefaultAttributeMap implements AttributeMap {
         Object get() {
             return suppler.get();
         }
+
     }
 
     static class PermValue extends Value {
@@ -100,11 +106,15 @@ public class DefaultAttributeMap implements AttributeMap {
         Object get() {
             return o;
         }
-
     }
 
     abstract static class Value {
         abstract Object get();
+
+        @Override
+        public final String toString() {
+            return get().toString();
+        }
     }
 
     public static DefaultAttributeMap from() {

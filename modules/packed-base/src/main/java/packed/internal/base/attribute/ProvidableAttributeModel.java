@@ -15,10 +15,12 @@
  */
 package packed.internal.base.attribute;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.lang.invoke.MethodHandle;
+import java.util.HashMap;
+import java.util.Map;
 
 import app.packed.base.AttributeProvide;
+import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.invoke.OpenClass;
 
 /**
@@ -26,20 +28,21 @@ import packed.internal.invoke.OpenClass;
  */
 public class ProvidableAttributeModel {
 
-    final Set<PackedAttribute<?>> attributeTypes;
+    public final Map<PackedAttribute<?>, MethodHandle> attributeTypes;
 
-    ProvidableAttributeModel(Set<PackedAttribute<?>> attributeTypes) {
+    ProvidableAttributeModel(Map<PackedAttribute<?>, MethodHandle> attributeTypes) {
         this.attributeTypes = attributeTypes;
     }
 
     public static ProvidableAttributeModel analyse(OpenClass oc) {
         // OpenClass oc = new OpenClass(MethodHandles.lookup(), c, true);
-        HashSet<PackedAttribute<?>> types = new HashSet<>();
+        HashMap<PackedAttribute<?>, MethodHandle> types = new HashMap<>();
         oc.findMethods(m -> {
             AttributeProvide ap = m.getAnnotation(AttributeProvide.class);
             if (ap != null) {
                 PackedAttribute<?> pa = ClassAttributes.find(ap);
-                types.add(pa);
+                MethodHandle mh = oc.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                types.put(pa, mh);
             }
         });
         if (types.isEmpty()) {

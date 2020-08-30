@@ -73,6 +73,11 @@ public class PackedAttribute<T> implements Attribute<T> {
         return typeLiteral;
     }
 
+    @Override
+    public String toString() {
+        return owner.getSimpleName() + ":" + name;
+    }
+
     public static <T> Attribute<T> of(Lookup lookup, String name, Class<?> rawType, TypeLiteral<T> type, Option<?>[] options) {
         requireNonNull(lookup, "lookup is null");
         requireNonNull(name, "name is null");

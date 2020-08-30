@@ -109,6 +109,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
                 try {
                     c = Class.forName(s, false, cl);
                 } catch (ClassNotFoundException ignore) {}
+
                 if (c != null) {
                     // We check this in models also...
                     if (Extension.class == c) {
@@ -118,7 +119,6 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
                         throw new InternalExtensionException("@" + ExtensionSetup.class.getSimpleName() + " " + StringFormatter.format(type)
                                 + " specified an invalid extension " + StringFormatter.format(c));
                     }
-
                     result.add((Class<? extends Extension>) c);
                 }
             }

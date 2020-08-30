@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -48,14 +50,19 @@ import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
+import packed.internal.base.attribute.DefaultAttributeMap;
+import packed.internal.base.attribute.PackedAttribute;
+import packed.internal.base.attribute.ProvidableAttributeModel;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.PackedContainerRole;
+import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.container.PackedRealm;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.lifecycle.PackedAssemblyContext;
 import packed.internal.lifecycle.PackedInitializationContext;
+import packed.internal.util.ThrowableUtil;
 
 /** The build time representation of a component. */
 public final class ComponentNodeConfiguration implements ComponentConfigurationContext {
@@ -104,8 +111,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     @Nullable
     final ComponentNodeConfiguration parent;
 
-    /** The pod the component belongs to. */
-    final PackedGuestConfiguration pod;
+    /** The guest the component belongs to. */
+    final PackedGuestConfiguration guest;
 
     /** The realm the component belongs to. */
     private final PackedRealm realm;
@@ -115,6 +122,9 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     public final WireletPack wirelets;
 
     /**************** See how much of this we can get rid of. *****************/
+
+    @Nullable
+    public PackedExtensionConfiguration extension;
 
     /** The configuration site of this component. */
     private final ConfigSite configSite;
@@ -148,7 +158,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         this.depth = parent == null ? 0 : parent.depth + 1;
 
         this.driver = requireNonNull(driver);
-        this.pod = parent == null || driver.modifiers().isGuest() ? new PackedGuestConfiguration(this) : parent.pod;
+        this.guest = parent == null || driver.modifiers().isGuest() ? new PackedGuestConfiguration(this) : parent.guest;
         this.container = driver.modifiers().isContainer() ? new PackedContainerRole(this) : parent.container;
 
         this.configSite = requireNonNull(configSite);
@@ -200,12 +210,28 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         return sf.isPresent() ? configSite().thenStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     AttributeMap attributes() {
         if (PackedComponentModifierSet.isPropertySet(modifiers, ComponentModifier.EXTENSION)) {
-            throw new UnsupportedOperationException();
-        } else {
-            return AttributeMap.of();
+            ProvidableAttributeModel pam = extension.model().pam();
+            if (pam != null) {
+                DefaultAttributeMap dam = new DefaultAttributeMap();
+                for (Entry<PackedAttribute<?>, MethodHandle> e : pam.attributeTypes.entrySet()) {
+                    Extension ex = extension.instance();
+                    Object val;
+                    MethodHandle mh = e.getValue();
+                    try {
+                        val = mh.invoke(ex);
+                    } catch (Throwable e1) {
+                        throw ThrowableUtil.orUndeclared(e1);
+                    }
+                    dam.addValue((PackedAttribute) e.getKey(), val);
+                }
+
+                return dam;
+            }
         }
+        return AttributeMap.of();
     }
 
     /**
@@ -229,6 +255,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
                 || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && Bundle.class.isAssignableFrom(c));
     }
 
+    /** {@inheritDoc} */
     @Override
     public PackedAssemblyContext assembly() {
         return assembly;

@@ -79,7 +79,7 @@ public final class ComponentNode implements Component {
     ComponentNode(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, PackedInitializationContext ic) {
         this.parent = parent;
         this.model = RuntimeComponentModel.of(configuration);
-        this.pod = requireNonNull(configuration.pod.pod());
+        this.pod = requireNonNull(configuration.guest.pod());
 
         // Initialize name, we don't want to override this in Configuration context. We don't want the conf to change if
         // image...

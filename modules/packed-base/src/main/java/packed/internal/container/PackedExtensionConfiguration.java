@@ -93,6 +93,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
         this.model = requireNonNull(model);
         this.realm = PackedRealm.fromExtension(this);
         this.node = container.node.newChild(model.driver(), container.node.configSite(), realm, null);
+        this.node.extension = this;
     }
 
     /** {@inheritDoc} */
@@ -247,6 +248,10 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     @Override
     public void link(Bundle<?> bundle, Wirelet... wirelets) {
         node.link(bundle, wirelets);
+    }
+
+    public ExtensionModel model() {
+        return model;
     }
 
     /** Invoked by the container configuration, whenever the extension is configured. */
