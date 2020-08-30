@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Set;
 
-import app.packed.base.Contract;
 import app.packed.introspection.ExecutableDescriptor;
 import packed.internal.container.ExtensionModel;
 
@@ -44,12 +43,6 @@ final class PackedExtensionDescriptor implements ExtensionDescriptor {
     @Override
     public int compareTo(ExtensionDescriptor o) {
         return model.compareTo(((PackedExtensionDescriptor) o).model);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Set<Class<? extends Contract>> contracts() {
-        return model.contracts().keySet();
     }
 
     /** {@inheritDoc} */

@@ -25,11 +25,9 @@ import app.packed.base.Key;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ComponentLinked;
-import app.packed.container.ContainerDescriptor;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionSetup;
-import app.packed.hook.Expose;
 import app.packed.hook.OnHook;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
@@ -395,18 +393,11 @@ public final class ServiceExtension extends Extension {
         node.buildTree();
     }
 
-    @Expose
     // Should be Optional<Pipeline>...
 
     @AttributeProvide(declaredBy = ServiceExtensionAttributes.class, name = "contract")
     ServiceContract con() {
         return node.newServiceContract();
-    }
-
-    // Use pipeline???
-    @Expose
-    void con(ContainerDescriptor.Builder builder) {
-        node.buildDescriptor(builder);
     }
 
     @ComponentLinked(onlyDirectLink = true)

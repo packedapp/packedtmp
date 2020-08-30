@@ -20,19 +20,14 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
-import app.packed.base.Contract;
 import app.packed.base.Nullable;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
 import app.packed.component.ComponentPath;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerDescriptor;
 import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionConfiguration;
@@ -102,41 +97,41 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
         return node.assembly();
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    void buildDescriptor(ContainerDescriptor.Builder builder) {
-        MethodHandle mha = model.bundleBuilderMethod;
-        if (mha != null) {
-            try {
-                mha.invoke(instance, builder);
-            } catch (Throwable e1) {
-                throw new UndeclaredThrowableException(e1);
-            }
-        }
-
-        for (Object s : model.contracts().values()) {
-            // TODO need a context
-            Contract con;
-            if (s instanceof Function) {
-                con = (Contract) ((Function) s).apply(instance);
-            } else if (s instanceof BiFunction) {
-                con = (Contract) ((BiFunction) s).apply(instance, null);
-            } else {
-                // MethodHandle...
-                try {
-                    MethodHandle mh = (MethodHandle) s;
-                    if (mh.type().parameterCount() == 0) {
-                        con = (Contract) mh.invoke(instance);
-                    } else {
-                        con = (Contract) mh.invoke(instance);
-                    }
-                } catch (Throwable e1) {
-                    throw new UndeclaredThrowableException(e1);
-                }
-            }
-            requireNonNull(con);
-            builder.addContract(con);
-        }
-    }
+//    @SuppressWarnings({ "rawtypes", "unchecked" })
+//    void buildDescriptor(ContainerDescriptor.Builder builder) {
+//        MethodHandle mha = model.bundleBuilderMethod;
+//        if (mha != null) {
+//            try {
+//                mha.invoke(instance, builder);
+//            } catch (Throwable e1) {
+//                throw new UndeclaredThrowableException(e1);
+//            }
+//        }
+//
+//        for (Object s : model.contracts().values()) {
+//            // TODO need a context
+//            Contract con;
+//            if (s instanceof Function) {
+//                con = (Contract) ((Function) s).apply(instance);
+//            } else if (s instanceof BiFunction) {
+//                con = (Contract) ((BiFunction) s).apply(instance, null);
+//            } else {
+//                // MethodHandle...
+//                try {
+//                    MethodHandle mh = (MethodHandle) s;
+//                    if (mh.type().parameterCount() == 0) {
+//                        con = (Contract) mh.invoke(instance);
+//                    } else {
+//                        con = (Contract) mh.invoke(instance);
+//                    }
+//                } catch (Throwable e1) {
+//                    throw new UndeclaredThrowableException(e1);
+//                }
+//            }
+//            requireNonNull(con);
+//            builder.addContract(con);
+//        }
+//    }
 
     /** {@inheritDoc} */
     @Override

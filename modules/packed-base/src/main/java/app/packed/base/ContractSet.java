@@ -22,9 +22,6 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.StreamSupport;
 
-import app.packed.container.ContainerDescriptor;
-import app.packed.container.ContainerBundle;
-
 /**
  * A set of contracts guaranteed to contain no more then a single contract of a particular type.
  */
@@ -106,7 +103,7 @@ public final class ContractSet extends Contract implements Iterable<Contract> {
         return of(StreamSupport.stream(contracts.spliterator(), false).toArray(Contract[]::new));
     }
 
-    public static ContractSet contractsOf(ContainerBundle bundle) {
-        return ContainerDescriptor.of(bundle).contracts();
-    }
+//    public static ContractSet contractsOf(ContainerBundle bundle) {
+//        return ContainerDescriptor.of(bundle).contracts();
+//    }
 }

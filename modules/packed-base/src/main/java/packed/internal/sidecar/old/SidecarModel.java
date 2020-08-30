@@ -26,10 +26,8 @@ import java.util.Map;
 
 import app.packed.base.Contract;
 import app.packed.container.InternalExtensionException;
-import app.packed.hook.Expose;
 import app.packed.statemachine.Leaving;
 import app.packed.statemachine.StateTransition;
-import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.invoke.MethodHandleBuilder;
 import packed.internal.invoke.OpenClass;
 import packed.internal.lifecycle.old.DefaultLifecycleTransition;
@@ -112,7 +110,6 @@ public abstract class SidecarModel extends Model {
 
         protected void onMethod(Method m) {}
 
-        @SuppressWarnings({ "unchecked", "rawtypes" })
         protected OpenClass prep(MethodHandleBuilder spec) {
             OpenClass cp = new OpenClass(MethodHandles.lookup(), sidecarType, true);
 
@@ -145,15 +142,15 @@ public abstract class SidecarModel extends Model {
                     MethodHandle existing = postSidecars[index];
                     postSidecars[index] = existing == null ? mh : MethodHandles.foldArguments(existing, mh);
                 }
-                Expose ex = m.getAnnotation(Expose.class);
-                if (ex != null) {
-                    if (m.getReturnType() == void.class) {
-                        builderMethod = cp.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-                    } else {
-                        MethodHandle mh = cp.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-                        contracts.put((Class) m.getReturnType(), mh);
-                    }
-                }
+//                Expose ex = m.getAnnotation(Expose.class);
+//                if (ex != null) {
+//                    if (m.getReturnType() == void.class) {
+//                        builderMethod = cp.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+//                    } else {
+//                        MethodHandle mh = cp.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+//                        contracts.put((Class) m.getReturnType(), mh);
+//                    }
+//                }
             });
             return cp;
         }

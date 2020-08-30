@@ -25,7 +25,6 @@ import java.util.LinkedHashMap;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.container.ContainerDescriptor;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
@@ -105,13 +104,13 @@ public final class ServiceExtensionNode {
         // System.out.println("First " + (parent == null));
     }
 
-    public void buildDescriptor(ContainerDescriptor.Builder builder) {
-        // need to have resolved successfully
-        // TODO we should only have build entries here...
-        for (BuildEntry<?> n : resolvedEntries.values()) {
-            builder.addServiceDescriptor(((BuildEntry<?>) n).toDescriptor());
-        }
-    }
+//    public void buildDescriptor(ContainerDescriptor.Builder builder) {
+//        // need to have resolved successfully
+//        // TODO we should only have build entries here...
+//        for (BuildEntry<?> n : resolvedEntries.values()) {
+//            builder.addServiceDescriptor(((BuildEntry<?>) n).toDescriptor());
+//        }
+//    }
 
     public void buildTree() {
         if (parent == null) {

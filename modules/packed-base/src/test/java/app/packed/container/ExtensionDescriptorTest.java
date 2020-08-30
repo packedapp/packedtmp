@@ -16,20 +16,23 @@
 package app.packed.container;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.base.Attribute;
+import app.packed.base.AttributeProvide;
 import app.packed.base.Contract;
-import app.packed.hook.Expose;
 
 /** Tests {@link PackedExtensionDescriptor}. */
 public class ExtensionDescriptorTest {
 
+    public static final Attribute<String> DESC = Attribute.of(MethodHandles.lookup(), "description", String.class);
+
     @Test
     public void empty() {
         ExtensionDescriptor ed = ExtensionDescriptor.of(EmptyExtension.class);
-        assertThat(ed.contracts()).isEmpty();
         assertThat(ed.dependencies()).isEmpty();
         assertThat(ed.type()).isSameAs(EmptyExtension.class);
     }
@@ -37,22 +40,14 @@ public class ExtensionDescriptorTest {
     @Test
     public void various() {
         ExtensionDescriptor ed = ExtensionDescriptor.of(VariousExtension.class);
-        assertThat(ed.contracts()).containsExactly(VariousExtension.SomeContract.class);
         assertThat(ed.dependencies()).containsExactly(EmptyExtension.class);
         assertThat(ed.type()).isSameAs(VariousExtension.class);
-    }
-
-    /** Tests that the various collections returned are unmodifiable. */
-    @Test
-    public void unmodifiable() {
-        ExtensionDescriptor ed = ExtensionDescriptor.of(VariousExtension.class);
-        assertThatThrownBy(() -> ed.contracts().clear()).isExactlyInstanceOf(UnsupportedOperationException.class);
     }
 
     @ExtensionSetup(dependencies = EmptyExtension.class)
     static class VariousExtension extends Extension {
 
-        @Expose
+        @AttributeProvide(declaredBy = ExtensionDescriptorTest.class, name = "description")
         SomeContract expose() {
             return new SomeContract();
         }

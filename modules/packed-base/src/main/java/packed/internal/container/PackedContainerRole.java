@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import app.packed.base.Nullable;
-import app.packed.container.ContainerDescriptor;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import packed.internal.component.ComponentNodeConfiguration;
@@ -80,13 +79,13 @@ public final class PackedContainerRole {
         }
     }
 
-    public void buildDescriptor(ContainerDescriptor.Builder builder) {
-        builder.setName(node.getName());
-        for (PackedExtensionConfiguration e : extensions.values()) {
-            e.buildDescriptor(builder);
-        }
-        builder.extensions.addAll(extensions.keySet());
-    }
+//    public void buildDescriptor(ContainerDescriptor.Builder builder) {
+//        builder.setName(node.getName());
+//        for (PackedExtensionConfiguration e : extensions.values()) {
+//            e.buildDescriptor(builder);
+//        }
+//        builder.extensions.addAll(extensions.keySet());
+//    }
 
     // A View not a copy
     public Set<Class<? extends Extension>> extensions() {

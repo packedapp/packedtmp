@@ -25,12 +25,10 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import app.packed.artifact.Image;
-import app.packed.base.Contract;
 import app.packed.base.Key;
+import app.packed.component.AnalysableSystem;
 import app.packed.component.Analysis;
 import app.packed.component.Component;
-import app.packed.container.ContainerBundle;
 import app.packed.container.ExtensionMember;
 
 /**
@@ -73,7 +71,7 @@ import app.packed.container.ExtensionMember;
 
 // provides -> exports???
 @ExtensionMember(ServiceExtension.class)
-public final class ServiceContract extends Contract {
+public final class ServiceContract {
 
     /** A contract with no requirements and no services provided. */
     public static final ServiceContract EMPTY = new ServiceContract(new Builder(), new HashSet<>());
@@ -234,7 +232,7 @@ public final class ServiceContract extends Contract {
         return b.build();
     }
 
-    public static ServiceContract of(ContainerBundle bundle) {
+    public static ServiceContract of(AnalysableSystem bundle) {
         Optional<Component> o = Analysis.findExtension(bundle, ServiceExtensionAttributes.SERVICE_CONTRACT);
         if (o.isEmpty()) {
             return ServiceContract.EMPTY;
@@ -256,10 +254,6 @@ public final class ServiceContract extends Contract {
     // ofElseEmpty();
     // I Think optional, jeg kunne godt forstille mig en contract som ikke har noget der svarer til empty.
     // Men det er ogsaa fint.. Det her gaelder kun for ServiceContract...
-    @Deprecated
-    public static ServiceContract of(Image<?> image) {
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * Since an injector has already been initialized it always has no requirements.

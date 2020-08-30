@@ -18,7 +18,6 @@ package app.packed.container;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.base.Contract;
 import app.packed.container.Extension.Subtension;
 
 /**
@@ -53,14 +52,14 @@ public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
      * 
      * @return all the different types of contracts the extension exposes
      */
-    Set<Class<? extends Contract>> contracts();
+    // Set<Class<? extends Contract>> contracts();
 
     /**
      * Returns an immutable set of other extensions this extension depends on. The returned set does not include transitive
      * dependencies.
      * <p>
-     * The returned set includes all optional dependencies specified via {@link ExtensionSetup#optionalDependencies()}
-     * that could be successfully resolved.
+     * The returned set includes all optional dependencies specified via {@link ExtensionSetup#optionalDependencies()} that
+     * could be successfully resolved.
      * 
      * @return any other extensions this extension depends on
      */
