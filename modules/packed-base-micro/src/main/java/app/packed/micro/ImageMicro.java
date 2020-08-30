@@ -50,7 +50,7 @@ import app.packed.hook.OnHook;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @State(Scope.Benchmark)
-public class FromImage {
+public class ImageMicro {
 
     static final Image<App> EMPTY = App.newImage(new BaseBundle() {
         @Override
@@ -103,9 +103,7 @@ public class FromImage {
     }
 
     public static class MyExtension extends Extension {
-
         public void foo(BeanConfiguration<?> cc, Foo s) {}
-
     }
 
     @Retention(RetentionPolicy.RUNTIME)
