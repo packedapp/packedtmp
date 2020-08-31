@@ -26,11 +26,11 @@ public final class NodeStore {
 
     ConcurrentHashMap<Integer, NodeStore>[] hosts;
 
-    Object[] instances; // May contain f.eks. CHM.. ?? Maybe hosts are also there...
+    final Object[] instances; // May contain f.eks. CHM.. ?? Maybe hosts are also there...
     // If non-root instances[0] always is the parent...
 
-    NodeStore() {
-
+    NodeStore(int i) {
+        instances = new Object[i];
     }
 
 }

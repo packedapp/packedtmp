@@ -19,10 +19,10 @@ import app.packed.component.Bundle;
 import app.packed.component.Component;
 import app.packed.component.Wirelet;
 import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.PackedAssemblyContext;
 import packed.internal.component.PackedComponentModifierSet;
+import packed.internal.component.PackedInitializationContext;
 import packed.internal.component.wirelet.WireletPack;
-import packed.internal.lifecycle.PackedAssemblyContext;
-import packed.internal.lifecycle.PackedInitializationContext;
 
 /** The default implementation of {@link Image}. */
 // Taenker vi maaske skal flytte den internt?

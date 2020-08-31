@@ -33,10 +33,19 @@ final class NodeStoreConfiguration {
         this.root = requireNonNull(node);
     }
 
-    NodeStore pod() {
+    int reserve(int i) {
+        if (store != null) {
+            throw new IllegalStateException();
+        }
+        int current = index;
+        index += i;
+        return current;
+    }
+
+    NodeStore store() {
         NodeStore s = store;
         if (s == null) {
-            s = store = new NodeStore();
+            s = store = new NodeStore(index);
         }
         return s;
     }

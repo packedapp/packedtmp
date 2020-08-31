@@ -39,7 +39,6 @@ import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
 import packed.internal.container.PackedContainerRole;
 import packed.internal.container.PackedExtensionConfiguration;
-import packed.internal.lifecycle.PackedInitializationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.runtime.PackedInjector;
 
@@ -49,8 +48,6 @@ public final class ComponentNode implements Component {
     /** Any child components this component might have. Is null if we know the component will never have any children. */
     @Nullable
     private final Map<String, ComponentNode> children;
-
-    public final Object[] data = new Object[1];
 
     /** The runtime model of the component. */
     final RuntimeComponentModel model;
@@ -63,7 +60,7 @@ public final class ComponentNode implements Component {
     final ComponentNode parent;
 
     /** The index into the pod. */
-    final int storeOffset = 0;
+    final int storeOffset;
 
     /** The pod the component is a part of, components that are strongly connected are all in the same pod. */
     final NodeStore store;
@@ -78,14 +75,9 @@ public final class ComponentNode implements Component {
      */
     ComponentNode(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, PackedInitializationContext pic) {
         this.parent = parent;
+        this.storeOffset = configuration.index;
         this.model = RuntimeComponentModel.of(configuration);
-        this.store = requireNonNull(configuration.guest.pod());
-
-        // Initialize name, we don't want to override this in Configuration context. We don't want the conf to change if
-        // image...
-        // Check for any runtime wirelets that have been specified.
-        // This is probably not the right way to do it. Especially with hosts.. Fix it when we get to hosts...
-        // Maybe this can be written in PodInstantiationContext
+        this.store = requireNonNull(configuration.guest.store());
         if (parent == null) {
             this.name = pic.rootName(configuration);
         } else {
@@ -93,7 +85,7 @@ public final class ComponentNode implements Component {
         }
 
         // Initialize Container
-        if (configuration.driver().modifiers().isContainer()) {
+        if (modifiers().isContainer()) {
             // I think this injector is only available for the top of an assembly
             PackedContainerRole container = configuration.container;
             Injector i = null;
@@ -101,19 +93,19 @@ public final class ComponentNode implements Component {
             if (container.extensions != null) {
                 PackedExtensionConfiguration ee = container.extensions.get(ServiceExtension.class);
                 if (ee != null) {
-                    i = ServiceExtensionNode.fromExtension(((ServiceExtension) ee.instance())).onInstantiate(pic.wirelets());
+                    ServiceExtensionNode node = ServiceExtensionNode.fromExtension(((ServiceExtension) ee.instance()));
+                    i = node.onInstantiate(pic.wirelets());
                 }
             }
             if (i == null) {
-                i = new PackedInjector(configuration.configSite(), new LinkedHashMap<>());
+                i = new PackedInjector(configuration.configSite(), Map.of());
             }
 
-            data[0] = i;
+            store.instances[storeOffset] = i;
         }
 
         // Last but least, initialize all children...
-
-        Map<String, ComponentNode> c = null;
+        Map<String, ComponentNode> children = null;
         if (configuration.firstChild != null) {
             // Maybe ordered is the default...
             LinkedHashMap<String, ComponentNode> result = new LinkedHashMap<>(configuration.children.size());
@@ -125,9 +117,9 @@ public final class ComponentNode implements Component {
                 }
             }
 
-            c = Map.copyOf(result);
+            children = Map.copyOf(result);
         }
-        this.children = c;
+        this.children = children;
     }
 
     /** {@inheritDoc} */

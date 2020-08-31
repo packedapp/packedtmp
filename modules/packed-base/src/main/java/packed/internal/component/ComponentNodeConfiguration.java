@@ -60,8 +60,6 @@ import packed.internal.container.PackedContainerRole;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.container.PackedRealm;
 import packed.internal.inject.ConfigSiteInjectOperations;
-import packed.internal.lifecycle.PackedAssemblyContext;
-import packed.internal.lifecycle.PackedInitializationContext;
 import packed.internal.util.ThrowableUtil;
 
 /** The build time representation of a component. */
@@ -121,6 +119,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     @Nullable
     public final WireletPack wirelets;
 
+    final int index;
+
     /**************** See how much of this we can get rid of. *****************/
 
     @Nullable
@@ -171,6 +171,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         p = PackedComponentModifierSet.setPropertyConditional(p, parent == null, ComponentModifier.GUEST);
         p = PackedComponentModifierSet.setPropertyConditional(p, parent == null && assembly.modifiers().isImage(), ComponentModifier.IMAGE);
         this.modifiers = p;
+
+        index = this.guest.reserve(1);
     }
 
     /**

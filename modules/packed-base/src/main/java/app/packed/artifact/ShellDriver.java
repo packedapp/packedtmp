@@ -33,12 +33,12 @@ import app.packed.guest.Guest;
 import app.packed.service.Injector;
 import app.packed.service.ServiceRegistry;
 import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.PackedAssemblyContext;
 import packed.internal.component.PackedComponentModifierSet;
+import packed.internal.component.PackedInitializationContext;
 import packed.internal.component.PackedWireableComponentDriver;
 import packed.internal.invoke.MethodHandleBuilder;
 import packed.internal.invoke.OpenClass;
-import packed.internal.lifecycle.PackedAssemblyContext;
-import packed.internal.lifecycle.PackedInitializationContext;
 import packed.internal.util.ThrowableUtil;
 
 /**

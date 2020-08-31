@@ -24,7 +24,6 @@ module app.packed.base {
     exports packed.internal.component.wirelet to app.packed.errorhandling;
     exports packed.internal.container to app.packed.errorhandling, app.packed.conta;
     exports packed.internal.hook to app.packed.errorhandling;
-    exports packed.internal.lifecycle to app.packed.errorhandling;
     exports app.packed.lifecycle3 to app.packed.errorhandling;
     exports packed.internal.lifecycle.old to app.packed.errorhandling;
     exports packed.internal.errorhandling to app.packed.errorhandling;

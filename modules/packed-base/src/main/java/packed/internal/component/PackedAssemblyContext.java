@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.lifecycle;
+package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,10 +27,6 @@ import app.packed.component.CustomConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.lifecycle.AssemblyContext;
-import packed.internal.component.BundleHelper;
-import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.PackedComponentModifierSet;
-import packed.internal.component.PackedWireableComponentDriver;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.PackedRealm;

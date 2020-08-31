@@ -19,8 +19,8 @@ import app.packed.component.Bundle;
 import app.packed.component.Wirelet;
 import app.packed.lifecycleold.RunState;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.lifecycle.PackedAssemblyContext;
-import packed.internal.lifecycle.PackedInitializationContext;
+import packed.internal.component.PackedAssemblyContext;
+import packed.internal.component.PackedInitializationContext;
 
 /**
  *

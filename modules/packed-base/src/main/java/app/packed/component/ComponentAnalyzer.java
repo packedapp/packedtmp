@@ -19,8 +19,8 @@ import java.util.Optional;
 
 import app.packed.base.Attribute;
 import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.PackedAssemblyContext;
 import packed.internal.component.PackedComponentModifierSet;
-import packed.internal.lifecycle.PackedAssemblyContext;
 
 /**
  * Analysis servers 2 main purposes

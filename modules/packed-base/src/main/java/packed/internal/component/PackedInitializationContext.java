@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.lifecycle;
+package packed.internal.component;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -23,8 +23,6 @@ import app.packed.component.Component;
 import app.packed.guest.Guest;
 import app.packed.lifecycleold.StopOption;
 import app.packed.service.ServiceRegistry;
-import packed.internal.component.ComponentNode;
-import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.util.LookupUtil;
 
@@ -70,10 +68,15 @@ public final class PackedInitializationContext {
     }
 
     public ServiceRegistry services() {
-        return (ServiceRegistry) node.data[0];
+        return (ServiceRegistry) node.store.instances[node.storeOffset];
     }
 
-    public String rootName(ComponentNodeConfiguration configuration) {
+    // Initialize name, we don't want to override this in Configuration context. We don't want the conf to change if
+    // image...
+    // Check for any runtime wirelets that have been specified.
+    // This is probably not the right way to do it. Especially with hosts.. Fix it when we get to hosts...
+    // Maybe this can be written in PodInstantiationContext
+    String rootName(ComponentNodeConfiguration configuration) {
         String n = configuration.name;
         String ol = wirelets() == null ? null : wirelets().nameWirelet();
         if (ol != null) {
