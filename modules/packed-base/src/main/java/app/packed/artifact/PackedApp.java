@@ -41,7 +41,7 @@ final class PackedApp implements App {
     /** {@inheritDoc} */
     @Override
     public ConfigSite configSite() {
-        return context.configSite();
+        return context.component().configSite();
     }
 
     /** {@inheritDoc} */
@@ -66,30 +66,30 @@ final class PackedApp implements App {
     /** {@inheritDoc} */
     @Override
     public ComponentStream stream() {
-        return context.stream();
+        return context.component().stream();
     }
 
     /** {@inheritDoc} */
     @Override
     public ComponentStream stream(Option... options) {
-        return context.stream(options);
+        return context.component().stream(options);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T> T use(Class<T> key) {
-        return context.use(key);
+        return context.services().use(key);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T> T use(Key<T> key) {
-        return context.use(key);
+        return context.services().use(key);
     }
 
     /** {@inheritDoc} */
     @Override
     public Component resolve(CharSequence path) {
-        return context.resolve(path);
+        return context.component().resolve(path);
     }
 }

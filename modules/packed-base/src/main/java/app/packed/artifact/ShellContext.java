@@ -15,15 +15,10 @@
  */
 package app.packed.artifact;
 
-import java.util.concurrent.CompletableFuture;
-
-import app.packed.base.Key;
 import app.packed.component.Component;
-import app.packed.component.ComponentDelegate;
-import app.packed.config.ConfigSite;
-import app.packed.lifecycleold.StopOption;
-import app.packed.service.Injector;
+import app.packed.guest.Guest;
 import app.packed.service.ServiceExtension;
+import app.packed.service.ServiceRegistry;
 
 /**
  * An artifact context provides control over a single container. Instances of this interface are normally never exposed
@@ -39,23 +34,13 @@ import app.packed.service.ServiceExtension;
  */
 // ArtifactContext does not extends ContainerContext??? Fordi ContainerContext er privat
 // til en container. Og en artifact er mere udefar
-public interface ShellContext extends ComponentDelegate {
-
-    /**
-     * Returns the config site of this artifact.
-     * 
-     * @return the config site of this artifact
-     */
-    default ConfigSite configSite() {
-        return component().configSite();
-    }
+public interface ShellContext extends Guest {
 
     /**
      * Returns the component representation of this guest.
      * 
      * @return the component representation of this guest
      */
-    @Override
     Component component();
 
     /**
@@ -64,7 +49,7 @@ public interface ShellContext extends ComponentDelegate {
      * 
      * @return an injector for the underlying container
      */
-    Injector injector();
+    ServiceRegistry services();
 
     // start() osv smider UnsupportedOperationException hvis LifeycleExtension ikke er installeret???
     // Naeh syntes bare man returnere oejeblikligt
@@ -84,65 +69,57 @@ public interface ShellContext extends ComponentDelegate {
     // TypeLiteral??? Maaske returnere execute() et object...
 
     // Optional<?>??? Maybe a ResultClass
-    default Object result() {
-        // awaitResult()...
-        // awaitResultUninterruptable()...
-        // Ideen er lidt at vi kan vente paa det...
-        return null;
-    }
+//    default Object result() {
+//        // awaitResult()...
+//        // awaitResultUninterruptable()...
+//        // Ideen er lidt at vi kan vente paa det...
+//        return null;
+//    }
+//
+//    // En Attribute????
+//    default Class<?> resultType() {
+//        // Ideen er her taenkt at vi kan bruge den samme med Job...
+//        //// En anden slags entry point annotering...
+//        return void.class;
+//    }
 
-    // En Attribute????
-    default Class<?> resultType() {
-        // Ideen er her taenkt at vi kan bruge den samme med Job...
-        //// En anden slags entry point annotering...
-        return void.class;
-    }
-
-    default void start() {}
-
-    default <T> CompletableFuture<T> startAsync(T result) {
-        throw new UnsupportedOperationException();
-    }
-
-    void stop(StopOption... options);
-
-    <T> CompletableFuture<T> stopAsync(T result, StopOption... options);
-
-    default <T> T use(Class<T> key) {
-        return injector().use(key);
-    }
-
-    /**
-     * Returns a service registered with the specified key, if it exists. Otherwise, fails by throwing
-     * {@link UnsupportedOperationException}.
-     * <p>
-     * If the underlying container has not already been started. Invoking this method will first invoke {@link #start()} and
-     * wait.
-     * <p>
-     * If the underlying container failed to start, every invocation of this method will fail with
-     * {@link IllegalStateException} or UnavailableContainerExtension?
-     * 
-     * @param <T>
-     *            the type of service to return
-     * @param key
-     *            the key of the service to return
-     * @return a service of the specified type
-     * @throws UnsupportedOperationException
-     *             if a service with the specified key does not exist. Or if the application does not use
-     *             {@link ServiceExtension}.
-     * @see #injector()
-     */
-    // If the artifact has an execution phase this method will block while starting.
-    // It can safely be invoked after a container has been shutdown...
-
-    // Det her er ting der er tilgaengelig til componenten med en ren noegle...
-    // Det ser ud som om det er containeren der forspoerger??? Eller udefra???
-    /// Maaske 2 metoder...
-    default <T> T use(Key<T> key) {
-        return injector().use(key);
-    }
 }
-
+//
+//@Deprecated
+//default <T> T use(Class<T> key) {
+//    return services().use(key);
+//}
+//
+///**
+// * Returns a service registered with the specified key, if it exists. Otherwise, fails by throwing
+// * {@link UnsupportedOperationException}.
+// * <p>
+// * If the underlying container has not already been started. Invoking this method will first invoke {@link #start()} and
+// * wait.
+// * <p>
+// * If the underlying container failed to start, every invocation of this method will fail with
+// * {@link IllegalStateException} or UnavailableContainerExtension?
+// * 
+// * @param <T>
+// *            the type of service to return
+// * @param key
+// *            the key of the service to return
+// * @return a service of the specified type
+// * @throws UnsupportedOperationException
+// *             if a service with the specified key does not exist. Or if the application does not use
+// *             {@link ServiceExtension}.
+// * @see #services()
+// */
+//// If the artifact has an execution phase this method will block while starting.
+//// It can safely be invoked after a container has been shutdown...
+//
+//// Det her er ting der er tilgaengelig til componenten med en ren noegle...
+//// Det ser ud som om det er containeren der forspoerger??? Eller udefra???
+///// Maaske 2 metoder...
+//@Deprecated
+//default <T> T use(Key<T> key) {
+//    return services().use(key);
+//}
 //
 ///**
 // * Returns a set of all the extension that are available to the top component. If the top component is a container it is

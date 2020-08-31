@@ -15,10 +15,23 @@
  */
 package app.packed.guest;
 
+import java.util.concurrent.CompletableFuture;
+
+import app.packed.lifecycleold.StopOption;
+
 /**
  *
  */
 // host facing
+
+// Maybe GuestController.... And guest can be a view/readable thingy
 public interface Guest {
 
+    Guest start();
+
+    <T> CompletableFuture<T> startAsync(T result);
+
+    Guest stop(StopOption... options);
+
+    <T> CompletableFuture<T> stopAsync(T result, StopOption... options);
 }

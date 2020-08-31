@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.concurrent.Semaphore;
 
 import app.packed.inject.ProvideContext;
-import app.packed.inject.Provider;
 import packed.internal.service.buildtime.BuildEntry;
+import packed.internal.service.buildtime.Provider;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceMode;
 import packed.internal.service.buildtime.service.ComponentFactoryBuildEntry;

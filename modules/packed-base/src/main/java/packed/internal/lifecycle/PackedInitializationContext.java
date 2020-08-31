@@ -20,10 +20,9 @@ import static java.util.Objects.requireNonNull;
 import java.util.concurrent.CompletableFuture;
 
 import app.packed.artifact.ShellContext;
-import app.packed.base.Key;
 import app.packed.component.Component;
 import app.packed.lifecycleold.StopOption;
-import app.packed.service.Injector;
+import app.packed.service.ServiceRegistry;
 import packed.internal.component.ComponentNode;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletPack;
@@ -88,14 +87,14 @@ public final class PackedInitializationContext {
 
         /** {@inheritDoc} */
         @Override
-        public Injector injector() {
-            return (Injector) node.data[0];
+        public ServiceRegistry services() {
+            return (ServiceRegistry) node.data[0];
         }
 
         /** {@inheritDoc} */
         @Override
-        public void stop(StopOption... options) {
-
+        public ShellContext stop(StopOption... options) {
+            return this;
         }
 
         /** {@inheritDoc} */
@@ -106,14 +105,20 @@ public final class PackedInitializationContext {
 
         /** {@inheritDoc} */
         @Override
-        public <T> T use(Key<T> key) {
-            return injector().use(key);
+        public Component component() {
+            return node;
         }
 
         /** {@inheritDoc} */
         @Override
-        public Component component() {
-            return node;
+        public ShellContext start() {
+            return this;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public <T> CompletableFuture<T> startAsync(T result) {
+            return null;
         }
     }
 }

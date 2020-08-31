@@ -91,6 +91,7 @@ public interface App extends AutoCloseable, ComponentDelegate {
      *             if no component exists with the specified path
      * @return a component with the specified path
      */
+    @Override
     // TODO throw UnknownPathException();;
     // componentAt
     // Altsaa maaske har vi mere et slags SystemView?
@@ -126,9 +127,6 @@ public interface App extends AutoCloseable, ComponentDelegate {
      * @see #stream(Option...)
      */
     ComponentStream stream();
-
-    @Override
-    ComponentStream stream(ComponentStream.Option... options);
 
     /**
      * Returns a service with the specified key, if it exists. Otherwise, fails by throwing

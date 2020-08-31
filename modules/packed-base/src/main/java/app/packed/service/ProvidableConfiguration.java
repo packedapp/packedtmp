@@ -24,6 +24,6 @@ package app.packed.service;
 
 // Saa vi ikke behover altid at koere 
 // wire(driver, class).provide();
-public interface ProvidableConfiguration<T> {
+interface ProvidableConfiguration<T> {
     T provide();
 }

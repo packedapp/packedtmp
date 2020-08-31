@@ -214,6 +214,6 @@ final class InjectorArtifactHelper {
     static final ShellDriver<Injector> DRIVER = ShellDriver.of(MethodHandles.lookup(), Injector.class, CONV);
 
     static Injector convert(ShellContext container) {
-        return ((PackedInitializationContext.PackedShellContext) container).injector();
+        return (Injector) ((PackedInitializationContext.PackedShellContext) container).services();
     }
 }

@@ -22,8 +22,8 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.Optional;
 
-import app.packed.inject.Provider;
 import packed.internal.inject.ServiceDependency;
+import packed.internal.service.buildtime.Provider;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
