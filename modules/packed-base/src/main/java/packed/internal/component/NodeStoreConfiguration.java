@@ -20,25 +20,24 @@ import static java.util.Objects.requireNonNull;
 /**
  *
  */
-final class PackedGuestConfiguration {
+final class NodeStoreConfiguration {
 
     int index;
 
-    /** The pod used at runtime. */
-    private PackedGuest pod;
-
     final ComponentNodeConfiguration root;
 
-    PackedGuestConfiguration(ComponentNodeConfiguration root) {
-        this.root = requireNonNull(root);
+    /** The pod used at runtime. */
+    private NodeStore store;
+
+    NodeStoreConfiguration(ComponentNodeConfiguration node) {
+        this.root = requireNonNull(node);
     }
 
-    PackedGuest pod() {
-        // Lazy create the runtime pod.
-        PackedGuest p = pod;
-        if (p == null) {
-            p = pod = new PackedGuest();
+    NodeStore pod() {
+        NodeStore s = store;
+        if (s == null) {
+            s = store = new NodeStore();
         }
-        return p;
+        return s;
     }
 }

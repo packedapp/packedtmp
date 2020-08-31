@@ -53,14 +53,14 @@ final class PackedApp implements App {
     /** {@inheritDoc} */
     @Override
     public App stop(StopOption... options) {
-        context.stop(options);
+        context.guest().stop(options);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
     public CompletableFuture<App> stopAsync(StopOption... options) {
-        return context.stopAsync(this, options);
+        return context.guest().stopAsync(this, options);
     }
 
     /** {@inheritDoc} */

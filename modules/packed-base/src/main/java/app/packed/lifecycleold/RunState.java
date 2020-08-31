@@ -101,5 +101,4 @@ public enum RunState {
     public boolean isShutdown() {
         return this == STOPPING || this == TERMINATED;
     }
-
 }

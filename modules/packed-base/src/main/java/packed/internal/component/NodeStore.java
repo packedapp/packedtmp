@@ -13,24 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.guest;
+package packed.internal.component;
 
-import java.util.concurrent.CompletableFuture;
-
-import app.packed.lifecycleold.StopOption;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- *
+ * All strongly connected components relate to the same pod.
  */
-// host facing
-// Maybe GuestController.... And guest can be a view/readable thingy
-public interface Guest {
+public final class NodeStore {
 
-    Guest start();
+    RuntimeComponentModel[] descriptors;// packed descriptors...
 
-    <T> CompletableFuture<T> startAsync(T result);
+    ConcurrentHashMap<Integer, NodeStore>[] hosts;
 
-    Guest stop(StopOption... options);
+    Object[] instances; // May contain f.eks. CHM.. ?? Maybe hosts are also there...
+    // If non-root instances[0] always is the parent...
 
-    <T> CompletableFuture<T> stopAsync(T result, StopOption... options);
+    NodeStore() {
+
+    }
+
 }
+//Taenker den er inline
+//Skal jo godt nok vaere lille for Actors...
+
+/// GUESTS (
+
+// En guest kunne mere eller mindre vaere 10 objects

@@ -15,29 +15,46 @@
  */
 package packed.internal.component;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CompletableFuture;
+
+import app.packed.base.Nullable;
+import app.packed.guest.Guest;
+import app.packed.lifecycleold.StopOption;
 
 /**
- * All strongly connected components relate to the same pod.
+ *
  */
-public final class PackedGuest {
+public class PackedGuest implements Guest {
 
-    PackedGuest parent; // Vi kan vel bare smide den i instances...
+    // Hmm, maybe not
+    @Nullable
+    PackedGuest parent;
 
-    RuntimeComponentModel[] descriptors;// packed descriptors...
+    PackedGuest(@Nullable PackedGuest parent) {
+        this.parent = parent;
+    }
 
-    Object[] instances; // May contain f.eks. CHM.. ?? Maybe hosts are also there...
-    // If non-root instances[0] always is the parent...
+    /** {@inheritDoc} */
+    @Override
+    public Guest start() {
+        return null;
+    }
 
-    ConcurrentHashMap<Integer, PackedGuest>[] hosts;
+    /** {@inheritDoc} */
+    @Override
+    public <T> CompletableFuture<T> startAsync(T result) {
+        return null;
+    }
 
-    PackedGuest() {
+    /** {@inheritDoc} */
+    @Override
+    public Guest stop(StopOption... options) {
+        return null;
+    }
 
+    /** {@inheritDoc} */
+    @Override
+    public <T> CompletableFuture<T> stopAsync(T result, StopOption... options) {
+        return null;
     }
 }
-//Taenker den er inline
-//Skal jo godt nok vaere lille for Actors...
-
-/// GUESTS (
-
-// En guest kunne mere eller mindre vaere 10 objects

@@ -112,7 +112,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     final ComponentNodeConfiguration parent;
 
     /** The guest the component belongs to. */
-    final PackedGuestConfiguration guest;
+    final NodeStoreConfiguration guest;
 
     /** The realm the component belongs to. */
     private final PackedRealm realm;
@@ -158,7 +158,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         this.depth = parent == null ? 0 : parent.depth + 1;
 
         this.driver = requireNonNull(driver);
-        this.guest = parent == null || driver.modifiers().isGuest() ? new PackedGuestConfiguration(this) : parent.guest;
+        this.guest = parent == null || driver.modifiers().isGuest() ? new NodeStoreConfiguration(this) : parent.guest;
         this.container = driver.modifiers().isContainer() ? new PackedContainerRole(this) : parent.container;
 
         this.configSite = requireNonNull(configSite);

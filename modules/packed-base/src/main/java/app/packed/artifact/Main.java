@@ -21,6 +21,7 @@ import app.packed.lifecycleold.RunState;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.lifecycle.PackedAssemblyContext;
 import packed.internal.lifecycle.PackedInitializationContext;
+import packed.internal.lifecycle.PackedInitializationContext.PackedShellContext;
 
 /**
  *
@@ -58,7 +59,7 @@ public class Main {
     // Maybe more a.la. Main.execute()
     public static void execute0(Bundle<?> bundle, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.assemble(0, bundle, null, wirelets);
-        ShellContext context = PackedInitializationContext.newShellContext(node, node.wirelets);
-        context.start();
+        PackedShellContext context = PackedInitializationContext.newShellContext(node, node.wirelets);
+        context.guest().start();
     }
 }

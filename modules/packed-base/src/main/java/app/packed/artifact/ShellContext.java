@@ -32,9 +32,7 @@ import app.packed.service.ServiceRegistry;
  * @apiNote In the future, if the Java language permits, {@link ShellContext} may become a {@code sealed} interface,
  *          which would prohibit subclassing except by explicitly permitted types.
  */
-// ArtifactContext does not extends ContainerContext??? Fordi ContainerContext er privat
-// til en container. Og en artifact er mere udefar
-public interface ShellContext extends Guest {
+public interface ShellContext {
 
     /**
      * Returns the component representation of this guest.
@@ -50,6 +48,8 @@ public interface ShellContext extends Guest {
      * @return an injector for the underlying container
      */
     ServiceRegistry services();
+
+    Guest guest();
 
     // start() osv smider UnsupportedOperationException hvis LifeycleExtension ikke er installeret???
     // Naeh syntes bare man returnere oejeblikligt

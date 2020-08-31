@@ -150,6 +150,7 @@ public interface Injector extends ServiceRegistry {
         return driver().newImage(bundle, wirelets);
     }
 
+    // Is this useful outside of hosts???????
     static ShellDriver<Injector> driver() {
         return InjectorArtifactHelper.DRIVER;
     }
@@ -172,20 +173,20 @@ public interface Injector extends ServiceRegistry {
     }
 
     /**
-     * Creates a new injector from the specified source.
+     * Creates a new injector from the specified bundle.
      *
-     * @param source
-     *            the source to create the artifact from
+     * @param bundle
+     *            the bundle to create the injector from
      * @param wirelets
-     *            various operations
+     *            optional wirelets
      * @return the new injector
      * @throws RuntimeException
      *             if the injector could not be created for some reason. For example, if the source defines any components
      *             that requires a lifecycle
      */
     // Of er maaske fin. Saa understreger vi ligesom
-    static Injector create(Bundle<?> source, Wirelet... wirelets) {
-        return driver().initialize(source, wirelets);
+    static Injector create(Bundle<?> bundle, Wirelet... wirelets) {
+        return driver().initialize(bundle, wirelets);
     }
 }
 
@@ -196,16 +197,6 @@ public interface Injector extends ServiceRegistry {
 // throw new UnsupportedOperationException();
 // }
 
-/**
- * Returns a unordered {@code Stream} of all services that this injector provides.
- *
- * @return a unordered {@code Stream} of all services that this injector provides
- */
-// services().service(s();
-//
-//default Set<Service> descriptors() {
-//    throw new UnsupportedOperationException();
-//}
 /** An artifact driver for creating {@link App} instances. */
 final class InjectorArtifactHelper {
 

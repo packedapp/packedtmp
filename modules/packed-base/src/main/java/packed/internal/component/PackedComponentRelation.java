@@ -112,7 +112,7 @@ public final class PackedComponentRelation implements ComponentRelation {
     private static ComponentRelation relation(ComponentNode from, ComponentNode to) {
         int fd = from.depth();
         int td = to.depth();
-        if (from.pod == to.pod) {
+        if (from.store == to.store) {
             if (fd == td) {
                 return new PackedComponentRelation(from, to, 0, from);
             }

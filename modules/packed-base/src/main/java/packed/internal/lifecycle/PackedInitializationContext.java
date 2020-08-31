@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 
 import app.packed.artifact.ShellContext;
 import app.packed.component.Component;
+import app.packed.guest.Guest;
 import app.packed.lifecycleold.StopOption;
 import app.packed.service.ServiceRegistry;
 import packed.internal.component.ComponentNode;
@@ -46,7 +47,6 @@ import packed.internal.component.wirelet.WireletPack;
 // Per Artifact or PerContainer???
 // Per container, er sgu for besvaergeligt med de der get stuff...
 // Altsaa med mindre vi har behov for at access dem fra andet sted fra
-
 public final class PackedInitializationContext {
 
     private final WireletPack wirelets;
@@ -65,7 +65,7 @@ public final class PackedInitializationContext {
         return wirelets;
     }
 
-    public static ShellContext newShellContext(ComponentNodeConfiguration root, WireletPack wp) {
+    public static PackedShellContext newShellContext(ComponentNodeConfiguration root, WireletPack wp) {
         PackedInitializationContext ic = new PackedInitializationContext(wp);
         // Will instantiate the whole container hierachy
         ComponentNode node = root.instantiateTree(ic);
@@ -76,7 +76,7 @@ public final class PackedInitializationContext {
     }
 
     /** Used to expose a container as an ArtifactContext. */
-    public static final class PackedShellContext implements ShellContext {
+    public static final class PackedShellContext implements ShellContext, Guest {
 
         /** The component node we are wrapping. */
         private final ComponentNode node;
@@ -93,7 +93,12 @@ public final class PackedInitializationContext {
 
         /** {@inheritDoc} */
         @Override
-        public ShellContext stop(StopOption... options) {
+        public PackedShellContext stop(StopOption... options) {
+            return this;
+        }
+
+        @Override
+        public Guest guest() {
             return this;
         }
 
@@ -111,7 +116,7 @@ public final class PackedInitializationContext {
 
         /** {@inheritDoc} */
         @Override
-        public ShellContext start() {
+        public PackedShellContext start() {
             return this;
         }
 

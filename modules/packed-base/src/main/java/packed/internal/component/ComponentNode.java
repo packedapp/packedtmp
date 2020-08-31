@@ -48,7 +48,7 @@ public final class ComponentNode implements Component {
 
     /** Any child components this component might have. Is null if we know the component will never have any children. */
     @Nullable
-    public final Map<String, ComponentNode> children;
+    private final Map<String, ComponentNode> children;
 
     public final Object[] data = new Object[1];
 
@@ -62,11 +62,11 @@ public final class ComponentNode implements Component {
     @Nullable
     final ComponentNode parent;
 
-    /** The pod the component is a part of, components that are strongly connected are all in the same pod. */
-    final PackedGuest pod;
-
     /** The index into the pod. */
-    final int podIndex = 0;// Index into... name() return (String) pod[podIndex+model.nameIndex]
+    final int storeOffset = 0;
+
+    /** The pod the component is a part of, components that are strongly connected are all in the same pod. */
+    final NodeStore store;
 
     /**
      * Creates a new component node.
@@ -79,7 +79,7 @@ public final class ComponentNode implements Component {
     ComponentNode(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, PackedInitializationContext pic) {
         this.parent = parent;
         this.model = RuntimeComponentModel.of(configuration);
-        this.pod = requireNonNull(configuration.guest.pod());
+        this.store = requireNonNull(configuration.guest.pod());
 
         // Initialize name, we don't want to override this in Configuration context. We don't want the conf to change if
         // image...

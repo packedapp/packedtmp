@@ -34,6 +34,7 @@ import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.PackedWireableComponentDriver;
 import packed.internal.lifecycle.PackedAssemblyContext;
 import packed.internal.lifecycle.PackedInitializationContext;
+import packed.internal.lifecycle.PackedInitializationContext.PackedShellContext;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -98,7 +99,7 @@ public final class ShellDriver<S> {
 
     public <C, D> S configure(WireableComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.configure(this, (PackedWireableComponentDriver<D>) driver, factory, consumer, wirelets);
-        ShellContext ac = PackedInitializationContext.newShellContext(node, node.wirelets);
+        PackedShellContext ac = PackedInitializationContext.newShellContext(node, node.wirelets);
         return newShell(ac);
     }
 
@@ -117,7 +118,7 @@ public final class ShellDriver<S> {
      */
     public S initialize(Bundle<?> bundle, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.assemble(modifiers, bundle, this, wirelets);
-        ShellContext context = PackedInitializationContext.newShellContext(node, node.wirelets);
+        PackedShellContext context = PackedInitializationContext.newShellContext(node, node.wirelets);
         return newShell(context);
     }
 
@@ -184,7 +185,7 @@ public final class ShellDriver<S> {
     public S start(Bundle<?> bundle, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.assemble(modifiers, bundle, this, wirelets);
         ShellContext context = PackedInitializationContext.newShellContext(node, node.wirelets);
-        context.start();
+        context.guest().start();
         return newShell(context);
     }
 
