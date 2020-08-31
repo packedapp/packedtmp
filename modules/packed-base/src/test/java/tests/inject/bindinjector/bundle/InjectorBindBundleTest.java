@@ -58,7 +58,7 @@ public class InjectorBindBundleTest {
         Injector i = Injector.configure(c -> {
             c.link(b);
         });
-        assertThat(i.services().count()).isEqualTo(0L);
+        assertThat(i.stream().count()).isEqualTo(0L);
     }
 
     /** Tests that we can import no services. */

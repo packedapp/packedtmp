@@ -26,6 +26,12 @@ import app.packed.component.ComponentModifierSet;
 /** Implementation of {@link ComponentModifierSet}. */
 public final class PackedComponentModifierSet implements ComponentModifierSet {
 
+    public static final int I_ANALYSIS = ComponentModifier.ANALYSIS.ordinal() << 1;
+    public static final int I_ASSEMBLY = ComponentModifier.ASSEMBLY.ordinal() << 1;
+    public static final int I_SHELL = ComponentModifier.SHELL.ordinal() << 1;
+    public static final int I_IMAGE = ComponentModifier.IMAGE.ordinal() << 1;
+    public static final int I_GUEST = ComponentModifier.GUEST.ordinal() << 1;
+
     /** An empty modifier set. */
     public static final PackedComponentModifierSet EMPTY = new PackedComponentModifierSet(0);
 
@@ -113,7 +119,7 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
 
     /** {@inheritDoc} */
     @Override
-    public ComponentModifierSet with(boolean conditional, ComponentModifier modifier) {
+    public ComponentModifierSet withIf(boolean conditional, ComponentModifier modifier) {
         if (!conditional || isPropertySet(modifiers, modifier)) {
             return this;
         }
@@ -132,7 +138,7 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
 
     /** {@inheritDoc} */
     @Override
-    public ComponentModifierSet without(boolean conditional, ComponentModifier modifier) {
+    public ComponentModifierSet withoutIf(boolean conditional, ComponentModifier modifier) {
         if (!conditional || !isPropertySet(modifiers, modifier)) {
             return this;
         }

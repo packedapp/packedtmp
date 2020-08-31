@@ -15,6 +15,7 @@
  */
 package packed.internal.service.runtime;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -46,6 +47,18 @@ public abstract class AbstractInjector implements Injector {
      */
     protected void failedGet(Key<?> key) {}
 
+    /** {@inheritDoc} */
+    @Override
+    public final <T> Optional<T> find(Class<T> key) {
+        return Optional.ofNullable(getInstanceOrNull(key));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final <T> Optional<T> find(Key<T> key) {
+        return Optional.ofNullable(getInstanceOrNull(key));
+    }
+
     @Nullable
     protected <T> InjectorEntry<T> findNode(Class<T> key) {
         return findNode(Key.of(key));
@@ -55,18 +68,6 @@ public abstract class AbstractInjector implements Injector {
     protected abstract <T> InjectorEntry<T> findNode(Key<T> key);
 
     public abstract void forEachEntry(Consumer<? super InjectorEntry<?>> action);
-
-    /** {@inheritDoc} */
-    @Override
-    public final <T> Optional<T> get(Class<T> key) {
-        return Optional.ofNullable(getInstanceOrNull(key));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final <T> Optional<T> get(Key<T> key) {
-        return Optional.ofNullable(getInstanceOrNull(key));
-    }
 
     @Nullable
     private <T> T getInstanceOrNull(Class<T> key) {
@@ -80,6 +81,27 @@ public abstract class AbstractInjector implements Injector {
             return null;
         }
         return n.getInstance(ProvideContextImpl.of(key));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final <T> T use(Class<T> key) {
+        T t = getInstanceOrNull(key);
+        if (t != null) {
+            return t;
+        }
+        failedGet(Key.of(key));
+        throw new NoSuchElementException("No service with the specified key could be found, key = " + key);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final <T> T use(Key<T> key) {
+        T t = getInstanceOrNull(key);
+        if (t == null) {
+            throw new NoSuchElementException("No service with the specified key could be found, key = " + key);
+        }
+        return t;
     }
 
     // protected final void injectMembers(OldAtInjectGroup descriptor, Object instance, @Nullable Component component) {
@@ -128,27 +150,6 @@ public abstract class AbstractInjector implements Injector {
     // }
     // }
     // }
-
-    /** {@inheritDoc} */
-    @Override
-    public final <T> T use(Class<T> key) {
-        T t = getInstanceOrNull(key);
-        if (t != null) {
-            return t;
-        }
-        failedGet(Key.of(key));
-        throw new UnsupportedOperationException("No service with the specified key could be found, key = " + key);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final <T> T use(Key<T> key) {
-        T t = getInstanceOrNull(key);
-        if (t == null) {
-            throw new UnsupportedOperationException("No service with the specified key could be found, key = " + key);
-        }
-        return t;
-    }
 }
 /// ** {@inheritDoc} */
 // @Override

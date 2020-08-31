@@ -23,8 +23,6 @@ import app.packed.container.BaseBundle;
  */
 public class Dddd extends BaseBundle {
 
-    public static final String D = fff();
-
     /** {@inheritDoc} */
     @Override
     protected void configure() {}

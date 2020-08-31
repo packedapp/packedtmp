@@ -25,6 +25,8 @@ import packed.internal.lifecycle.PackedInitializationContext;
 /**
  *
  */
+// I don't think this works with passive systems...
+// IDK
 public class Main {
 
     /**
@@ -55,7 +57,7 @@ public class Main {
 
     // Maybe more a.la. Main.execute()
     public static void execute0(Bundle<?> bundle, Wirelet... wirelets) {
-        ComponentNodeConfiguration node = PackedAssemblyContext.assemble(bundle, 0, null, wirelets);
+        ComponentNodeConfiguration node = PackedAssemblyContext.assemble(0, bundle, null, wirelets);
         ShellContext context = PackedInitializationContext.newShellContext(node, node.wirelets);
         context.start();
     }

@@ -63,7 +63,7 @@ public final class PackedAssemblyContext implements AssemblyContext {
      *            the output of the build process
      */
     PackedAssemblyContext(int modifiers, @Nullable ShellDriver<?> shellDriver, Wirelet... wirelets) {
-        this.modifiers = modifiers;
+        this.modifiers = modifiers + PackedComponentModifierSet.I_ASSEMBLY; // we use + to make sure others don't provide ASSEMBLY
         this.shellDriver = shellDriver;
         this.wirelets = wirelets;
     }
@@ -97,7 +97,7 @@ public final class PackedAssemblyContext implements AssemblyContext {
     }
 
     // Modifiers = Modifers for the bundle + modifiers for the shell + modifiers from specific usage...
-    public static ComponentNodeConfiguration assemble(Bundle<?> bundle, int modifiers, @Nullable ShellDriver<?> shellDriver, Wirelet... wirelets) {
+    public static ComponentNodeConfiguration assemble(int modifiers, Bundle<?> bundle, @Nullable ShellDriver<?> shellDriver, Wirelet... wirelets) {
         // Get the driver from the bundle
         PackedWireableComponentDriver<?> componentDriver = BundleHelper.getDriver(bundle);
 

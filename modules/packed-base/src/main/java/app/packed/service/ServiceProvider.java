@@ -15,11 +15,22 @@
  */
 package app.packed.service;
 
-import app.packed.inject.Provider;
+import app.packed.base.Key;
 
 /**
- *
+ * Includes total information about where things come from...
  */
-public interface ServiceProvider<T> extends ServiceDescriptor, Provider<T> {
+public interface ServiceProvider<T> extends Service /* , Provider<T> */ {
 
+    /**
+     * Provides an instance of type {@code T}.
+     *
+     * @return the provided value
+     * @throws RuntimeException
+     *             if an exception is encountered while providing an instance
+     */
+    T provide();
+
+    @Override
+    Key<? super T> key();
 }

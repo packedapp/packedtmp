@@ -17,6 +17,7 @@ package app.packed.artifact;
 
 import java.util.concurrent.CompletableFuture;
 
+import app.packed.cli.MainArgs;
 import app.packed.component.Component;
 import app.packed.component.ComponentDelegate;
 import app.packed.component.ComponentModifier;
@@ -94,6 +95,10 @@ public interface Image<A> extends ComponentDelegate {
     // appImage.use(DDD.class)
     default A use(Wirelet... wirelets) {
         throw new UnsupportedOperationException();
+    }
+
+    default A use(String[] args, Wirelet... wirelets) {
+        return use(Wirelet.combine(MainArgs.wirelet(args), wirelets));
     }
 }
 

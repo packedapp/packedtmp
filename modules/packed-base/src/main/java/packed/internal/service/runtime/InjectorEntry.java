@@ -17,17 +17,18 @@ package packed.internal.service.runtime;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.base.AttributeMap;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ProvideContext;
-import app.packed.service.ServiceDescriptor;
+import app.packed.service.Service;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceMode;
 import packed.internal.util.KeyBuilder;
 
 /** An entry that represents a service at runtime. */
-public abstract class InjectorEntry<T> implements ServiceDescriptor {
+public abstract class InjectorEntry<T> implements Service {
 
     /** The point where this entry was registered. */
     private final ConfigSite configSite;
@@ -54,6 +55,11 @@ public abstract class InjectorEntry<T> implements ServiceDescriptor {
     @Override
     public final ConfigSite configSite() {
         return configSite;
+    }
+
+    @Override
+    public AttributeMap attributes() {
+        throw new UnsupportedOperationException();
     }
 
     /**

@@ -153,6 +153,10 @@ public final class ServiceContract {
         return true;
     }
 
+    public boolean isEmpty() {
+        return optional.isEmpty() && provides.isEmpty() && requires.isEmpty();
+    }
+
     /**
      * Returns an immutable set of all of the optional service keys of the owning entity.
      * 
@@ -173,10 +177,6 @@ public final class ServiceContract {
      */
     public Set<Key<?>> provides() {
         return provides;
-    }
-
-    public boolean isEmpty() {
-        return optional.isEmpty() && provides.isEmpty() && requires.isEmpty();
     }
 
     /**
@@ -237,11 +237,11 @@ public final class ServiceContract {
     }
 
     public static ServiceContract of(ComponentSystem bundle) {
-        Optional<Component> o = ComponentAnalyzer.findExtension(bundle, ServiceExtensionAttributes.SERVICE_CONTRACT);
+        Optional<Component> o = ComponentAnalyzer.findExtension(bundle, ServiceAttributes.SERVICE_CONTRACT);
         if (o.isEmpty()) {
             return ServiceContract.EMPTY;
         }
-        return o.get().attribute(ServiceExtensionAttributes.SERVICE_CONTRACT);
+        return o.get().attribute(ServiceAttributes.SERVICE_CONTRACT);
     }
 
     /**
@@ -262,12 +262,12 @@ public final class ServiceContract {
     /**
      * Since an injector has already been initialized it always has no requirements.
      * 
-     * @param injector
+     * @param serviceSet
      *            the injector to return a contract for
      * @return the service contract for an injector
      */
-    public static ServiceContract of(Injector injector) {
-        return newContract(c -> injector.services().forEach(s -> c.provides(s.key())));
+    public static ServiceContract of(ServiceSet serviceSet) {
+        return newContract(c -> serviceSet.keys().forEach(s -> c.provides(s)));
     }
 
     /**

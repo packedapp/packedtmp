@@ -23,13 +23,13 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
 import app.packed.service.Injector;
-import app.packed.service.ServiceDescriptor;
+import app.packed.service.Service;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
 import testutil.stubs.annotation.Left;
 import testutil.stubs.annotation.Right;
 
-/** Test {@link Injector#getDescriptor(Class)} and {@link Injector#getDescriptor(Key)}. */
+/** Test {@link Injector#findService(Class)} and {@link Injector#findService(Key)}. */
 public class InjectorGetDescriptorTest {
 
     @Test
@@ -40,20 +40,20 @@ public class InjectorGetDescriptorTest {
             c.provide(A.class).as(new Key<@Left A>() {});
         });
 
-        ServiceDescriptor a = i.getDescriptor(A.class).get();
+        Service a = i.findService(A.class).get();
 
         // TODO configSite
         assertThat(a.key()).isEqualTo(Key.of(A.class));
         // assertThat(a.tags()).isEmpty();
 
-        ServiceDescriptor aLeft = i.getDescriptor(new Key<@Left A>() {}).get();
+        Service aLeft = i.findService(new Key<@Left A>() {}).get();
         // TODO configSite
         assertThat(aLeft.key()).isEqualTo(new Key<@Left A>() {});
         // assertThat(aLeft.tags()).isEmpty();
 
-        assertThat(i.getDescriptor(B.class)).isEmpty();
-        assertThat(i.getDescriptor(new Key<@Left B>() {})).isEmpty();
-        assertThat(i.getDescriptor(new Key<@Right A>() {})).isEmpty();
+        assertThat(i.findService(B.class)).isEmpty();
+        assertThat(i.findService(new Key<@Left B>() {})).isEmpty();
+        assertThat(i.findService(new Key<@Right A>() {})).isEmpty();
 
     }
 }

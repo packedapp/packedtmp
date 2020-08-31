@@ -23,7 +23,7 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.container.ExtensionMember;
-import app.packed.service.ServiceDescriptor;
+import app.packed.service.Service;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceWirelets;
 import packed.internal.service.buildtime.BuildEntry;
@@ -112,7 +112,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ServiceWirelet {
     public static class PeekFrom extends PackedUpstreamInjectionWirelet {
 
         /** The peek action to execute. */
-        private final Consumer<? super ServiceDescriptor> action;
+        private final Consumer<? super Service> action;
 
         /**
          * Creates a new upstream peek wirelet.
@@ -120,7 +120,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ServiceWirelet {
          * @param action
          *            the peek action to execute
          */
-        public PeekFrom(Consumer<? super ServiceDescriptor> action) {
+        public PeekFrom(Consumer<? super Service> action) {
             this.action = requireNonNull(action, "action is null");
         }
 

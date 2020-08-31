@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 import app.packed.base.Key;
 import app.packed.config.ConfigSite;
 import app.packed.container.ExtensionMember;
-import app.packed.service.ServiceDescriptor;
+import app.packed.service.Service;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceWirelets;
 import packed.internal.service.buildtime.ServiceExtensionNode;
@@ -62,7 +62,7 @@ public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
     public static class PeekDownstreamWirelet extends PackedDownstreamInjectionWirelet {
 
         /** The peek action to execute. */
-        private final Consumer<? super ServiceDescriptor> action;
+        private final Consumer<? super Service> action;
 
         /**
          * Creates a new downstream peek wirelet.
@@ -70,7 +70,7 @@ public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
          * @param action
          *            the peek action to execute
          */
-        public PeekDownstreamWirelet(Consumer<? super ServiceDescriptor> action) {
+        public PeekDownstreamWirelet(Consumer<? super Service> action) {
             this.action = requireNonNull(action, "action is null");
         }
 

@@ -18,6 +18,7 @@ package app.packed.component;
 import java.util.Optional;
 
 import app.packed.base.Attribute;
+import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.lifecycle.PackedAssemblyContext;
 
@@ -42,8 +43,6 @@ import packed.internal.lifecycle.PackedAssemblyContext;
 
 public final class ComponentAnalyzer {
 
-    private static final int ANLYSIS = PackedComponentModifierSet.setProperty(0, ComponentModifier.ANALYSIS);
-
     // Maybe on Component???
 
     // If the specified system is a bundle. The bundle will be consumed
@@ -61,7 +60,8 @@ public final class ComponentAnalyzer {
         } else if (s instanceof ComponentDelegate) {
             return ((ComponentDelegate) s).component();
         } else {
-            return PackedAssemblyContext.assemble((Bundle<?>) s, ANLYSIS, null).adaptToComponent();
+            ComponentNodeConfiguration node = PackedAssemblyContext.assemble(PackedComponentModifierSet.I_ANALYSIS, (Bundle<?>) s, null);
+            return node.adaptToComponent();
         }
     }
 

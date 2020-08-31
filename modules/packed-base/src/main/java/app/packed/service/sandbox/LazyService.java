@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.service.sandbox;
 
 import app.packed.base.Named;
 
 /**
  *
  */
+
+// Altsaa er det maaske bare
+
+// @Provide ManagedResource<Foo> istedet for
 
 // ServiceType: PROPTOTYPE, CONSTANT, LAZY
 // I mean Singleton is actually okay because there is only a single one of the specified type available in a container

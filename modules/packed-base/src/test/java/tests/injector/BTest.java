@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 import app.packed.container.BaseBundle;
 import app.packed.service.Injector;
-import app.packed.service.ServiceDescriptor;
+import app.packed.service.Service;
 
 /**
  *
@@ -30,7 +30,7 @@ public class BTest {
     public static void main(String[] args) {
         Injector i = Injector.create(new MyBundle());
 
-        i.getDescriptor(PrivateImplementation.class).get().configSite().print();
+        i.findService(PrivateImplementation.class).get().configSite().print();
 
         System.out.println(String.class.getModule().getDescriptor());
 
@@ -40,7 +40,7 @@ public class BTest {
             c.provideInstance("123");
         });
         System.out.println("");
-        for (ServiceDescriptor d : i.services().collect(Collectors.toList())) {
+        for (Service d : i.stream().collect(Collectors.toList())) {
             System.out.println(d);
         }
 

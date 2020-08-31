@@ -63,6 +63,11 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
         return contains(ComponentModifier.IMAGE);
     }
 
+    /**
+     * Returns the number of modifiers in this set.
+     * 
+     * @return the number of modifiers in this set
+     */
     int size();
 
     /**
@@ -75,13 +80,20 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
      */
     ComponentModifier[] toArray();
 
-    ComponentModifierSet with(boolean conditional, ComponentModifier modifier);
-
+    /**
+     * Returns a new
+     * 
+     * @param modifier
+     *            the modifier to set if not already set
+     * @return the modifier set
+     */
     ComponentModifierSet with(ComponentModifier modifier);
 
-    ComponentModifierSet without(boolean conditional, ComponentModifier modifier);
+    ComponentModifierSet withIf(boolean conditional, ComponentModifier modifier);
 
     ComponentModifierSet without(ComponentModifier modifier);
+
+    ComponentModifierSet withoutIf(boolean conditional, ComponentModifier modifier);
 
     /**
      * Returns an empty component modifier set.

@@ -110,11 +110,11 @@ public final class ServiceWirelets {
 
     // An immutable thingy of some kind...
     // Taenker vi godt vil foresporge om nogle ting
-    public static Wirelet peekFrom(Consumer<? super ServiceDescriptor> action) {
+    public static Wirelet peekFrom(Consumer<? super Service> action) {
         return new PackedUpstreamInjectionWirelet.PeekFrom(action);
     }
 
-    public static Wirelet peekTo(Consumer<? super ServiceDescriptor> action) {
+    public static Wirelet peekTo(Consumer<? super Service> action) {
         return new PackedDownstreamInjectionWirelet.PeekDownstreamWirelet(action);
     }
 

@@ -76,25 +76,3 @@ public final class RuntimeComponentModel {
     }
 
 }
-
-//Sealed type....
-
-//SingleLetter
-//H <- Host
-//S <- ActorSystem
-//A <- Actor
-//I <- Instance
-//M <- Many
-//C <- Container
-//V <- VirtualContainer
-
-//Task --> ComponentContext.addTask(Class).
-//Task --> ComponentContext.addTask(Class, Composer<? super TaskConfiguration>)).
-
-//Like ElementType
-
-// configuration tyoe
-// runtime tyoe
-// context type
-
-// Task <------

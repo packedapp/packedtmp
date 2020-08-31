@@ -13,11 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.service.sandbox;
+
+import app.packed.service.Service;
+import app.packed.service.ServiceSet;
 
 /**
  *
  */
-public interface ServiceDescriptorSet extends Iterable<ServiceDescriptor> {
+// Altsaa størstedelen af wirelets kan jo bare wrappe saadan en....
+public interface ServiceTransformer {
 
+    Service rekey(Class<?> from, Class<?> to);
+
+    /**
+     * Returns all services that can be transformed.
+     * 
+     * @return all services that can be transformed
+     */
+    ServiceSet services();
 }

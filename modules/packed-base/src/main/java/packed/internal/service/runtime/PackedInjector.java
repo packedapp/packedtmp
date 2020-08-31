@@ -19,9 +19,12 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -30,7 +33,8 @@ import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.service.Injector;
-import app.packed.service.ServiceDescriptor;
+import app.packed.service.Service;
+import app.packed.service.ServiceProvider;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.service.buildtime.wirelets.PackedDownstreamInjectionWirelet;
@@ -45,12 +49,12 @@ public final class PackedInjector extends AbstractInjector {
     /** The configuration site of this injector. */
     private final ConfigSite configSite;
 
+    /** All services that this injector provides. */
+    private final Map<Key<?>, InjectorEntry<?>> entries;
+
     /** The parent of this injector, or null if this is a top-level injector. */
     @Nullable
     final AbstractInjector parent;
-
-    /** All services that this injector provides. */
-    private final Map<Key<?>, InjectorEntry<?>> entries;
 
     public PackedInjector(ConfigSite configSite, Map<Key<?>, InjectorEntry<?>> services) {
         this.parent = null;
@@ -85,16 +89,27 @@ public final class PackedInjector extends AbstractInjector {
 
     /** {@inheritDoc} */
     @Override
+    public <T> Optional<ServiceProvider<T>> findProvider(Key<T> key) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void forEachEntry(Consumer<? super InjectorEntry<?>> action) {
         entries.values().forEach(action);
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public Stream<ServiceDescriptor> services() {
-        return entries.values().stream().filter(e -> !e.key().equals(KeyBuilder.INJECTOR_KEY)).map(e -> {
-            return e;
-        });
+    public Iterator<Service> iterator() {
+        return (Iterator) Collections.unmodifiableCollection(entries.values()).iterator();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<Key<?>> keys() {
+        return entries.keySet(); // I assume entries are immutable
     }
 
     /** {@inheritDoc} */
@@ -115,5 +130,13 @@ public final class PackedInjector extends AbstractInjector {
         wl.forEach(PackedDownstreamInjectionWirelet.class, w -> w.process(ccs, newServices));
         // TODO Auto-generated method stub
         return new PackedInjector(cs, newServices);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Stream<Service> stream() {
+        return entries.values().stream().filter(e -> !e.key().equals(KeyBuilder.INJECTOR_KEY)).map(e -> {
+            return e;
+        });
     }
 }

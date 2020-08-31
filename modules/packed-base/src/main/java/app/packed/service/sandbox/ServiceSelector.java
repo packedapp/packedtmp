@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.service.sandbox;
 
 import java.util.function.Predicate;
+
+import app.packed.service.Service;
 
 /**
  *
  */
-public interface ServiceSelector<T> extends Predicate<ServiceDescriptor> {
+public interface ServiceSelector<T> extends Predicate<Service> {
 
     /**
      * Returns a service selector that will select every service.

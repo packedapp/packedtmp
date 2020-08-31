@@ -13,29 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.runtime;
+package app.packed.cli;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.lang.invoke.MethodHandles;
-
-import org.junit.jupiter.api.Test;
-
-import app.packed.service.Injector;
-import testutil.stubs.Letters.A;
+import app.packed.component.Wirelet;
 
 /**
- * Tests various things that do not have their own test class.
+ *
  */
-public class InjectorGetServiceTest {
+public class MainArgs {
 
-    @Test
-    public void isRuntimeServices() {
-        Injector i = Injector.configure(c -> {
-            c.lookup(MethodHandles.lookup());
-            c.provide(A.class);
-        });
-
-        assertThat(i.findService(A.class).get()).isInstanceOf(InjectorEntry.class);
+    public static Wirelet wirelet(String... args) {
+        throw new UnsupportedOperationException();
     }
 }

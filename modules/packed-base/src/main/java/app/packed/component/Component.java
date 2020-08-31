@@ -94,6 +94,7 @@ public interface Component extends AttributedElement, ComponentSystem {
 
     // Now that we have parents...
     // add Optional<Component> tryResolve(CharSequence path);
+    // Syntes ikke vi skal have baade tryResolve or resolve...
     Component resolve(CharSequence path);
 
     /**

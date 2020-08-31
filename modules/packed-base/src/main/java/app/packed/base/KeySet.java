@@ -13,24 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
-
-import java.util.Set;
+package app.packed.base;
 
 /**
  *
  */
-// Altsaa størstedelen af wirelets kan jo bare wrappe saadan en....
+// Always immutable...
+// Not super interesting though I think
+interface KeySet {
 
-public interface ServiceTransformer {
+    // Key<?> named();
 
-    //
-    ServiceDescriptor rekey(Class<?> from, Class<?> to);
-
-    /**
-     * Returns all services that can be transformed.
-     * 
-     * @return all services that can be transformed
-     */
-    Set<ServiceDescriptor> descriptors();
+    // Returns all key qualified with
+    // KeySet qualifiedWith(Class<? extends Annotation> qualifierType);
 }

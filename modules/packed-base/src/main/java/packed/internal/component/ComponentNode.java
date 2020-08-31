@@ -76,7 +76,7 @@ public final class ComponentNode implements Component {
      * @param configuration
      *            the configuration used to create this node
      */
-    ComponentNode(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, PackedInitializationContext ic) {
+    ComponentNode(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, PackedInitializationContext pic) {
         this.parent = parent;
         this.model = RuntimeComponentModel.of(configuration);
         this.pod = requireNonNull(configuration.guest.pod());
@@ -88,7 +88,7 @@ public final class ComponentNode implements Component {
         // Maybe this can be written in PodInstantiationContext
         if (parent == null) {
             String n = configuration.name;
-            String ol = ic.wirelets() == null ? null : ic.wirelets().nameWirelet();
+            String ol = pic.wirelets() == null ? null : pic.wirelets().nameWirelet();
             if (ol != null) {
                 n = ol;
                 if (n.endsWith("?")) {
@@ -109,7 +109,7 @@ public final class ComponentNode implements Component {
             if (container.extensions != null) {
                 PackedExtensionConfiguration ee = container.extensions.get(ServiceExtension.class);
                 if (ee != null) {
-                    i = ServiceExtensionNode.fromExtension(((ServiceExtension) ee.instance())).onInstantiate(ic.wirelets());
+                    i = ServiceExtensionNode.fromExtension(((ServiceExtension) ee.instance())).onInstantiate(pic.wirelets());
                 }
             }
             if (i == null) {
@@ -128,7 +128,7 @@ public final class ComponentNode implements Component {
 
             for (ComponentNodeConfiguration cc = configuration.firstChild; cc != null; cc = cc.nextSibling) {
                 if (!cc.driver().modifiers().isExtension()) {
-                    ComponentNode ac = new ComponentNode(this, cc, ic);
+                    ComponentNode ac = new ComponentNode(this, cc, pic);
                     result.put(ac.name(), ac);
                 }
             }

@@ -140,7 +140,7 @@ public final class ServiceExtension extends Extension {
      * 
      * @return a service contract for this extension
      */
-    @AttributeProvide(declaredBy = ServiceExtensionAttributes.class, name = "contract")
+    @AttributeProvide(declaredBy = ServiceAttributes.class, name = "contract")
     /* package-private */ ServiceContract contract() {
         return node.newServiceContract();
     }
@@ -274,12 +274,12 @@ public final class ServiceExtension extends Extension {
         node.exports().exportAll(captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 
-    @AttributeProvide(declaredBy = ServiceExtensionAttributes.class, name = "description")
+    @AttributeProvide(declaredBy = ServiceAttributes.class, name = "description")
     public String foo() {
         return "DU_ER_SET " + Clock.systemDefaultZone().instant();
     }
 
-    @AttributeProvide(declaredBy = ServiceExtensionAttributes.class, name = "other")
+    @AttributeProvide(declaredBy = ServiceAttributes.class, name = "other")
     public String foos() {
         return "DU_ER_SET " + Clock.systemDefaultZone().instant();
     }

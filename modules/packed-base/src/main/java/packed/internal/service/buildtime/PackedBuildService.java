@@ -17,12 +17,13 @@ package packed.internal.service.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.base.AttributeMap;
 import app.packed.base.Key;
 import app.packed.config.ConfigSite;
-import app.packed.service.ServiceDescriptor;
+import app.packed.service.Service;
 
-/** An implementation of {@link ServiceDescriptor} because {@link BuildEntry} is not immutable. */
-final class PackedServiceDescriptor implements ServiceDescriptor {
+/** An implementation of {@link Service} because {@link BuildEntry} is not immutable. */
+final class PackedBuildService implements Service {
 
     /** The configuration site of the service. */
     private final ConfigSite configSite;
@@ -38,9 +39,14 @@ final class PackedServiceDescriptor implements ServiceDescriptor {
      * @param configSite
      *            the config site of the service
      */
-    PackedServiceDescriptor(Key<?> key, ConfigSite configSite) {
+    PackedBuildService(Key<?> key, ConfigSite configSite) {
         this.key = requireNonNull(key);
         this.configSite = requireNonNull(configSite);
+    }
+
+    @Override
+    public AttributeMap attributes() {
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */

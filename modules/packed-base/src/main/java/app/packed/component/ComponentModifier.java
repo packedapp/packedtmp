@@ -21,6 +21,7 @@ import app.packed.artifact.App;
 import app.packed.artifact.Image;
 import app.packed.artifact.Main;
 import app.packed.container.Extension;
+import app.packed.inject.Factory;
 import app.packed.lifecycle.AssemblyContext;
 
 /**
@@ -51,7 +52,16 @@ public enum ComponentModifier {
     // System boundary
     // Bondary vs Environment...
     // Maybe Environment is bad because of overloaded meaning
-    ENVIRONMENT, // Wirelets, Artifacts are also FOREIGN or EXTERNAL...
+    /**
+     * Are components that should not be considered part of the system. But are nonetheless present in order to XXX.
+     * 
+     * A typical example is wirelets specified when starting a system. As they have been provided from the outside... Only
+     * root wirelets????
+     * 
+     * Another example
+     * 
+     */
+    EXTERNAL, // Wirelets, Artifacts are also FOREIGN or EXTERNAL...ENVIRONMENT
 
     /**
      * Every component system has exactly one system component which is always the root of the component tree.
@@ -100,6 +110,8 @@ public enum ComponentModifier {
      * represents.</li>
      * </ul>
      */
+    // Altsaa maaske betyder det bare at noget kommer fra en Extension??? Ogsaa paa runtime
+    // If Extension_Member = SOURCE
     EXTENSION,
 
     /**
@@ -110,7 +122,7 @@ public enum ComponentModifier {
     HOST,
 
     /**
-     * Indicates that the component is an {@link Extension}.
+     * Indicates that the component represents a subclass of {@link Extension}.
      * <p>
      * Components with this property:
      * <ul>
@@ -123,15 +135,26 @@ public enum ComponentModifier {
      */
     GUEST,
 
+    /**
+     * Indicates that the main interaction with the component is through is single abstract method (SAM).
+     * 
+     * FunctionType is type <--- FunctionDescriptor??? istedet for bare en klasse??? Ja taenker den skal tage info fra dem
+     * der har lavet en FunctionComponentType...
+     * 
+     * I think it always have the source type set...
+     */
     FUNCTION,
 
     /**
-     * The component is created on the basis of an instance, a class or a factory.
+     * Indicates that the user has provided an object instance, a {@link Class} or a {@link Factory} when installing the
+     * component.
      * 
-     * {@link ComponentAttributes#SOURCE_TYPE} is set with class source.
+     * Components with this property:
+     * <ul>
+     * <li>Has the {@link ComponentAttributes#SOURCE_TYPE} set to the type used when registrating the component.</li>
+     * </ul>
      */
-    SOURCED, // All components that are sourced have an SOURCE_TYPE attribute
-    // SOURCED_TYPE... We don't need EXTENSION TYPE THEN????
+    SOURCED,
 
     /**
      * Indicates that a component has a shell attached that can interact with it. One such examples, is by using
@@ -153,18 +176,45 @@ public enum ComponentModifier {
      * <p>
      * The modifier is set by the various methods in {@link ComponentAnalyzer} when specifying a bundle. Systems that are
      * already running will not have this modifier set when they are analysed.
+     * 
+     * Components with this property:
+     * <ul>
+     * <li>Always have the {@link #ASSEMBLY} modifier set as well.</li>
+     * <li>Are never present at runtime.</li>
+     * </ul>
      */
     ANALYSIS,
 
     /**
-     * Indicates that a component is added by the runtime but is not explicitly or implicitly declared by the user.
+     * Indicates that the system is PASSIVE. Components with this property:
+     * 
+     * Indicates that once the system is constructed it will never change.
+     * 
+     * <ul>
+     * <li>Always have the {@link #SYSTEM} modifier set as well.</li>
+     * <li>Never has a parent component (is root).</li>
+     * <li>Never has any components with the {@link #HOST} or {@link #GUEST} modifier set.</li>
+     * </ul>
+     * A system is always either stable or a guest.
+     */
+    PASSIVE, // Bliver vi naesten noedt til at have Active ogsaa..
+
+    /**
+     * Indicates that the component has been not explicitly or implicitly installed by the user.
+     * <p>
+     * A typical example is components installed by the extensions that (or are they just hidden???)
+     * 
+     * been added by the runtime but was .
      * <p>
      * A good example is the an artifact. The user itself does not add this component.
      * <p>
-     * Server a similar purpose as Java's synthetic access modifier.
+     * Components with this modifier are typically filtered.
+     * <p>
+     * This modifier serves a similar purpose to Java's synthetic access modifier.
      */
     // Maaske er alle foreign components, synthetiske...
     // Taenker ihvertfald ikke det er noget med specifikt tilfoejer...
+    // Hmm hvad med extensions componeter????? Syntes maaske ikke de er syntetiske... IDK
     SYNTHETIC,
 
     // A single java based instance that is strongly bound to lifecycle of the component.
@@ -187,19 +237,22 @@ public enum ComponentModifier {
 
 enum Sandbox {
 
+    SPAWNED, // ??? Injector from an injector?? IDK can't think of a usercase...
+
+    STABLE, // Not a guest... (Immobile)
+
     NATIVE_IMAGE, // if built using GRAAL
 
-    JOB,
+    JOB, // Why not just an Executor Service??? Because we provide services to the job...
+    // A job provides a result??? Maybe a tracker?
 
-    TASK,
+    TASK, // I don't think Task... A job it split into tasks
+    // Tasks are not present in the system
 
     REQUEST,
 
     // IDK if we will ever use it... But just a reminder.
     EPHEMERAL, // https://kubernetes.io/docs/concepts/workloads/pods/ephemeral-containers/
-
-    // A single function / single instance??
-    // FUNCTION,
 
     WIRELET, // Wirelet as in t I think instead it is a forerign component
 

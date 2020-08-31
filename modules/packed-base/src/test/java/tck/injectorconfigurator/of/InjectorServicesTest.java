@@ -28,7 +28,7 @@ public class InjectorServicesTest {
 
     @Test
     public void services() {
-        assertThat(Injector.configure(c -> {}).services()).isEmpty();
+        assertThat(Injector.configure(c -> {}).stream()).isEmpty();
     }
 
 }

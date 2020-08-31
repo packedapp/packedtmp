@@ -15,19 +15,13 @@
  */
 package app.packed.service;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Stream;
 
 import app.packed.artifact.App;
+import app.packed.artifact.Image;
 import app.packed.artifact.ShellContext;
 import app.packed.artifact.ShellDriver;
-import app.packed.artifact.Image;
-import app.packed.base.Key;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
 import app.packed.component.Wirelet;
@@ -110,7 +104,7 @@ import packed.internal.util.LookupUtil;
 
 // Altsaa den hoerer vel ikke til her...
 // Vi kan jo injecte andre ting en services
-public interface Injector {
+public interface Injector extends ServiceRegistry {
 
     /**
      * Returns the configuration site of this injector.
@@ -118,75 +112,6 @@ public interface Injector {
      * @return the configuration site of this injector
      */
     ConfigSite configSite();
-
-    /**
-     * Returns the service contract of this injector. The returned contract will only have
-     * {@link ServiceContract#provides()} filled out.
-     * 
-     * @return the service contract of this injector
-     */
-    default ServiceContract contract() {
-        return ServiceContract.newContract(c -> services().forEach(s -> c.provides(s.key())));
-    }
-
-    /**
-     * Returns true if the injector contains a service with the specified key.
-     *
-     * @param key
-     *            the key of the service
-     * @return true if a service with the specified key exists.
-     * @see #contains(Key)
-     */
-    default boolean contains(Class<?> key) {
-        return contains(Key.of(key));
-    }
-
-    /**
-     * Returns {@code true} if a service with the specified key exists. Otherwise {@code false}.
-     *
-     * @param key
-     *            the type of service
-     * @return true if a service with the specified key exists. Otherwise false.
-     * @see #contains(Class)
-     */
-    boolean contains(Key<?> key); // We do not call get here, as it might create a value
-
-    /**
-     * Returns a service instance for the given key if available, otherwise an empty optional. As an alternative, if you
-     * know for certain that a service exists for the specified key, use {@link #use(Class)} for more fluent code.
-     *
-     * @param <T>
-     *            the type of service that this method returns
-     * @param key
-     *            the key for which to return a service instance
-     * @return an optional containing the service instance if present, or an empty optional if not present
-     * @see #use(Class)
-     */
-    default <T> Optional<T> get(Class<T> key) {
-        return get(Key.of(key));
-    }
-
-    /**
-     * Returns a service instance for the given key if available, otherwise an empty optional. As an alternative, if you
-     * know for certain that a service exists for the specified key, use {@link #use(Class)} for more fluent code.
-     *
-     * @param <T>
-     *            the type of service that this method returns
-     * @param key
-     *            the key for which to return a service instance
-     * @return an optional containing the service instance if present, or an empty optional if not present
-     * @see #use(Class)
-     */
-    <T> Optional<T> get(Key<T> key);
-
-    default <T> Optional<ServiceDescriptor> getDescriptor(Class<T> key) {
-        return getDescriptor(Key.of(key));
-    }
-
-    default <T> Optional<ServiceDescriptor> getDescriptor(Key<T> key) {
-        requireNonNull(key, "key is null");
-        return services().filter(d -> d.key().equals(key)).findFirst();
-    }
 
     // /**
     // * Injects services into the fields and methods of the specified instance.
@@ -208,19 +133,6 @@ public interface Injector {
     // <T> T injectMembers(T instance, MethodHandles.Lookup lookup);
 
     /**
-     * Returns a unordered {@code Stream} of all services that this injector provides.
-     *
-     * @return a unordered {@code Stream} of all services that this injector provides
-     */
-    // services().service(s();
-
-    default Set<ServiceDescriptor> descriptors() {
-        throw new UnsupportedOperationException();
-    }
-
-    Stream<ServiceDescriptor> services();
-
-    /**
      * Creates a new injector by specifying the downstream wirelets. Transform
      * <p>
      * Returns <code>this</code> if no wirelets are specified.
@@ -233,73 +145,6 @@ public interface Injector {
     // Det er taenkt paa en maade paa at alle Artifacts har et module de høre til...
     // Alternativet, er at man overtager
     Injector spawn(Wirelet... wirelets);
-
-    /**
-     * Returns a service of the specified type. Or throws an {@link UnsupportedOperationException} if this injector does not
-     * provide a service with the specified key. The semantics method is identical to {@link #get(Class)} except that an
-     * exception is thrown instead of returning if the service does not exist.
-     *
-     * @param <T>
-     *            the type of service to return
-     * @param key
-     *            the key of the service to return
-     * @return a service for the specified key
-     * @throws UnsupportedOperationException
-     *             if no service with the specified key exist
-     * @throws IllegalStateException
-     *             if a service with the specified key exist, but the service has not been properly initialized yet. For
-     *             example, if injecting an injector into a constructor of a service and then using the injector to try and
-     *             access other service that have not been properly initialized yet. For example, a service that depends on
-     *             the service being constructed
-     * @see #contains(Class)
-     */
-    default <T> T use(Class<T> key) {
-        Optional<T> t = get(key);
-        if (!t.isPresent()) {
-            throw new UnsupportedOperationException("A service with the specified key could not be found, key = " + key);
-        }
-        return t.get();
-    }
-
-    /**
-     * Returns a service with the specified type, or throws an {@link UnsupportedOperationException} if no such service
-     * exists. This is typically used to create fluent APIs such as:
-     *
-     * <pre>{@code
-     * Key<WebServer> key = Key.of(WebServer.class);
-     * injector.with(WebServer.class).printAllLiveConnections();}
-     * </pre>
-     *
-     * Invoking this method is equivalent to:
-     *
-     * <pre>{@code
-     *  Optional<T> t = get(key);
-     *  if (!t.isPresent()) {
-     *      throw new UnsupportedOperationException();
-     *  }
-     *  return t.get();}
-     * </pre>
-     *
-     * @param <T>
-     *            the type of service this method returns
-     * @param key
-     *            the key of the service to return
-     * @return a service with the specified key
-     * @throws UnsupportedOperationException
-     *             if no service with the specified key could be found
-     * @throws IllegalStateException
-     *             if a service with the specified key exist, but the service is not ready to be consumed yet. For example,
-     *             if injecting an injector into a constructor of a service and then using the injector to try and access
-     *             other service that have not been properly initialized yet. For example, a service that depends on the
-     *             service being constructed
-     */
-    default <T> T use(Key<T> key) {
-        Optional<T> t = get(key);
-        if (!t.isPresent()) {
-            throw new UnsupportedOperationException("A service with the specified key could not be found, key = " + key);
-        }
-        return t.get();
-    }
 
     static Image<Injector> newImage(Bundle<?> bundle, Wirelet... wirelets) {
         return driver().newImage(bundle, wirelets);
@@ -338,6 +183,7 @@ public interface Injector {
      *             if the injector could not be created for some reason. For example, if the source defines any components
      *             that requires a lifecycle
      */
+    // Of er maaske fin. Saa understreger vi ligesom
     static Injector create(Bundle<?> source, Wirelet... wirelets) {
         return driver().initialize(source, wirelets);
     }
@@ -350,6 +196,16 @@ public interface Injector {
 // throw new UnsupportedOperationException();
 // }
 
+/**
+ * Returns a unordered {@code Stream} of all services that this injector provides.
+ *
+ * @return a unordered {@code Stream} of all services that this injector provides
+ */
+// services().service(s();
+//
+//default Set<Service> descriptors() {
+//    throw new UnsupportedOperationException();
+//}
 /** An artifact driver for creating {@link App} instances. */
 final class InjectorArtifactHelper {
 

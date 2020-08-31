@@ -1,21 +1,19 @@
 package app.packed.service;
 
 import app.packed.base.AttributedElement;
-import app.packed.base.AttributeMap;
 import app.packed.base.Key;
 import app.packed.config.ConfigSite;
 
 /** An immutable description of a service provided by an injector or similar entity. */
-// Skal omnavngives til service hvis vi får en context...
-public interface ServiceDescriptor extends AttributedElement {
+public interface Service extends AttributedElement {
 
-    @Override
-    default AttributeMap attributes() {
-        throw new UnsupportedOperationException();
-    }
-
-    // For example, if a SingletonComponent is exposed as a service.
-    // It will always be constant. For
+    /**
+     * Returns whether or not the service being provided is a constant.
+     * <p>
+     * Constant services can always be cached.
+     * 
+     * @return whether or not the service being provided is a constant
+     */
     default boolean isConstant() {
         return false;
     }
@@ -25,6 +23,7 @@ public interface ServiceDescriptor extends AttributedElement {
      * 
      * @return the configuration site of this service
      */
+    // I think this is an attribute...
     ConfigSite configSite();
 
     /**
@@ -34,3 +33,6 @@ public interface ServiceDescriptor extends AttributedElement {
      */
     Key<?> key();
 }
+//Skal omnavngives til service hvis vi får en context...
+//Vi kalder den service ligesom component...
+// Component component(); <-- the component the service belongs to..

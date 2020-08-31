@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.lang.invoke.MethodHandles;
+import java.util.NoSuchElementException;
 
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,7 @@ import testutil.stubs.Letters.B;
 import testutil.stubs.annotation.Left;
 import testutil.stubs.annotation.Right;
 
-/** Test {@link Injector#get(Class)} and {@link Injector#get(Key)}. */
+/** Test {@link Injector#find(Class)} and {@link Injector#find(Key)}. */
 public class InjectorWithTest {
 
     @Test
@@ -43,19 +44,19 @@ public class InjectorWithTest {
 
         assertThat(i.use(A.class)).isInstanceOf(A.class);
         assertThat(i.use(new Key<A>() {})).isInstanceOf(A.class);
-        assertThat(i.use(new Key<A>() {})).isSameAs(i.get(A.class).get());
+        assertThat(i.use(new Key<A>() {})).isSameAs(i.find(A.class).get());
 
         assertThat(i.use(new Key<@Left A>() {})).isInstanceOf(A.class);
 
         assertThat(i.use(new Key<A>() {})).isNotSameAs(i.use(new Key<@Left A>() {}));
 
         AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> i.use(B.class));
-        a.isExactlyInstanceOf(UnsupportedOperationException.class).hasNoCause();
+        a.isExactlyInstanceOf(NoSuchElementException.class).hasNoCause();
 
         a = assertThatThrownBy(() -> i.use(new Key<@Left B>() {}));
-        a.isExactlyInstanceOf(UnsupportedOperationException.class).hasNoCause();
+        a.isExactlyInstanceOf(NoSuchElementException.class).hasNoCause();
 
         a = assertThatThrownBy(() -> i.use(new Key<@Right A>() {}));
-        a.isExactlyInstanceOf(UnsupportedOperationException.class).hasNoCause();
+        a.isExactlyInstanceOf(NoSuchElementException.class).hasNoCause();
     }
 }

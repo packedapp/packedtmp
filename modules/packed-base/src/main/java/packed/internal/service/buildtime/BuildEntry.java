@@ -25,7 +25,7 @@ import app.packed.config.ConfigSite;
 import app.packed.inject.Provide;
 import app.packed.inject.ProvideContext;
 import app.packed.service.ExportedServiceConfiguration;
-import app.packed.service.ServiceDescriptor;
+import app.packed.service.Service;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.service.AbstractComponentBuildEntry;
 import packed.internal.service.runtime.InjectorEntry;
@@ -165,8 +165,8 @@ public abstract class BuildEntry<T> {
 
     public abstract boolean requiresPrototypeRequest();
 
-    public final ServiceDescriptor toDescriptor() {
-        return new PackedServiceDescriptor(key, configSite);
+    public final Service toDescriptor() {
+        return new PackedBuildService(key, configSite);
     }
 
     @SuppressWarnings("unchecked")

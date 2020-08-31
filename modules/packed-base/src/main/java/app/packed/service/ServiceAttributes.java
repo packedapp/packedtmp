@@ -22,10 +22,18 @@ import app.packed.base.Attribute;
 /**
  *
  */
-public class ServiceExtensionAttributes {
+
+// Attributes that are available on a Service, on a ServiceExtension, at Build time, atRuntime...
+
+public final class ServiceAttributes {
+    private ServiceAttributes() {}
+
+    public static final Attribute<ServiceSet> EXPORTED_SERVICES = Attribute.of(MethodHandles.lookup(), "exported-services", ServiceSet.class);
+
     public static final Attribute<String> SERVICE_DESCRIPTION = Attribute.of(MethodHandles.lookup(), "description", String.class);
 
     public static final Attribute<String> SERVICE_OTHER = Attribute.of(MethodHandles.lookup(), "other", String.class);
 
+    // I think we use the exported service
     public static final Attribute<ServiceContract> SERVICE_CONTRACT = Attribute.of(MethodHandles.lookup(), "contract", ServiceContract.class);
 }

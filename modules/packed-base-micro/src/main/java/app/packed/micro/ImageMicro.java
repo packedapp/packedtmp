@@ -15,10 +15,6 @@
  */
 package app.packed.micro;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.Benchmark;
@@ -33,13 +29,8 @@ import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.artifact.App;
 import app.packed.artifact.Image;
-import app.packed.component.BeanConfiguration;
-import app.packed.component.Packlet;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
-import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.Hook;
-import app.packed.hook.OnHook;
 
 /**
  *
@@ -98,42 +89,11 @@ public class ImageMicro {
 
     static class MyStuff {
 
-        @ActivateMyExtension("X")
         public void foo() {}
     }
 
     public static class MyExtension extends Extension {
-        public void foo(BeanConfiguration<?> cc, Foo s) {}
-    }
-
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.METHOD)
-    @Packlet(extension = MyExtension.class)
-    public @interface ActivateMyExtension {
-        String value();
-    }
-
-    static class Foo implements Hook {
-        final String s;
-
-        Foo(String s) {
-            this.s = s;
-        }
-
-        static class Builder implements Hook.Builder<Foo> {
-            ActivateMyExtension e;
-
-            @OnHook
-            public void anno(AnnotatedMethodHook<ActivateMyExtension> h) {
-                e = h.annotation();
-            }
-
-            /** {@inheritDoc} */
-            @Override
-            public Foo build() {
-                return new Foo(e.toString());
-            }
-        }
 
     }
+
 }

@@ -23,7 +23,6 @@ import java.lang.invoke.MethodType;
 import java.util.function.Function;
 
 import app.packed.component.Bundle;
-import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.CustomConfigurator;
 import app.packed.component.WireableComponentDriver;
@@ -31,6 +30,7 @@ import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import app.packed.service.Injector;
 import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.PackedWireableComponentDriver;
 import packed.internal.lifecycle.PackedAssemblyContext;
 import packed.internal.lifecycle.PackedInitializationContext;
@@ -72,7 +72,7 @@ public final class ShellDriver<S> {
     private final MethodHandle instantiatior;
 
     /** A set of modifiers that the component to which this shell is attached will have as a minimum. */
-    private final ComponentModifierSet modifiers;
+    final int modifiers;
 
     /**
      * Creates a new driver.
@@ -86,7 +86,7 @@ public final class ShellDriver<S> {
     private ShellDriver(Class<?> shellType, MethodHandle instantiatior) {
         this.shellType = (Class<S>) requireNonNull(shellType);
         boolean isGuest = AutoCloseable.class.isAssignableFrom(shellType);
-        this.modifiers = ComponentModifier.SHELL.toSet().with(isGuest, ComponentModifier.GUEST);
+        this.modifiers = PackedComponentModifierSet.I_SHELL + (isGuest ? PackedComponentModifierSet.I_GUEST : 0);
         this.instantiatior = requireNonNull(instantiatior);
     }
 
@@ -116,7 +116,7 @@ public final class ShellDriver<S> {
      *             if the shell could not be created
      */
     public S initialize(Bundle<?> bundle, Wirelet... wirelets) {
-        ComponentNodeConfiguration node = PackedAssemblyContext.assemble(bundle, 0, this, wirelets);
+        ComponentNodeConfiguration node = PackedAssemblyContext.assemble(modifiers, bundle, this, wirelets);
         ShellContext context = PackedInitializationContext.newShellContext(node, node.wirelets);
         return newShell(context);
     }
@@ -128,7 +128,7 @@ public final class ShellDriver<S> {
      * @return whether or not the shell being produced by this driver has an execution phase
      */
     public ComponentModifierSet modifiers() {
-        return modifiers;
+        return new PackedComponentModifierSet(modifiers);
     }
 
     /**
@@ -182,7 +182,7 @@ public final class ShellDriver<S> {
      *             if the driver does not produce an shell with an execution phase
      */
     public S start(Bundle<?> bundle, Wirelet... wirelets) {
-        ComponentNodeConfiguration node = PackedAssemblyContext.assemble(bundle, 0, this, wirelets);
+        ComponentNodeConfiguration node = PackedAssemblyContext.assemble(modifiers, bundle, this, wirelets);
         ShellContext context = PackedInitializationContext.newShellContext(node, node.wirelets);
         context.start();
         return newShell(context);
