@@ -15,7 +15,10 @@
  */
 package app.packed.artifact;
 
+import java.lang.invoke.MethodHandles;
+
 import app.packed.container.BaseBundle;
+import app.packed.inject.InjectionContext;
 
 /**
  *
@@ -27,7 +30,19 @@ public class ZTest extends BaseBundle {
     protected void configure() {}
 
     public static void main(String[] args) {
-        App.start(new ZTest());
+        MyArti.d.start(new ZTest());
         System.out.println("NYE");
+    }
+
+    public static class MyArti implements AutoCloseable {
+        static final ShellDriver<MyArti> d = ShellDriver.of(MethodHandles.lookup(), MyArti.class, MyArti.class);
+
+        MyArti(InjectionContext c) {
+            System.out.println(c.keys());
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void close() throws Exception {}
     }
 }

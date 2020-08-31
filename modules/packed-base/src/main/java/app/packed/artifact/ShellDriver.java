@@ -43,11 +43,11 @@ import packed.internal.lifecycle.PackedInitializationContext.PackedShellContext;
 import packed.internal.util.ThrowableUtil;
 
 /**
- * Shell drivers are responsible for creating new shells by wrapping instances of {@link ShellContext}.
+ * Shell drivers are responsible for creating new shells by instantiating stuff.
  * <p>
  * This class can be extended to create custom shell types if the built-in shell types such as {@link App} and
  * {@link Injector} are not sufficient. In fact, the default implementations of both {@link App} and {@link Injector}
- * are just thin facade that delegates all calls to an {@link ShellContext} instance.
+ * are just thin facade that delegates all calls to an stuff instance.
  * <p>
  * Normally, you should never instantiate more then a single instance of driver for any shell implementation.
  * <p>
@@ -71,9 +71,6 @@ import packed.internal.util.ThrowableUtil;
 
 public final class ShellDriver<S> {
 
-    /** The type of shell this driver produces. */
-    private final Class<S> shellType;
-
     /** The method handle responsible for creating the new shell. */
     private final MethodHandle instantiatior;
 
@@ -83,15 +80,12 @@ public final class ShellDriver<S> {
     /**
      * Creates a new driver.
      * 
-     * @param shellType
+     * @param isGuest
      *            the type of shell that is created
      * @param instantiatior
      *            a method handle that create new shell instances
      */
-    @SuppressWarnings("unchecked")
-    private ShellDriver(Class<?> shellType, MethodHandle instantiatior) {
-        this.shellType = (Class<S>) requireNonNull(shellType);
-        boolean isGuest = AutoCloseable.class.isAssignableFrom(shellType);
+    private ShellDriver(boolean isGuest, MethodHandle instantiatior) {
         this.modifiers = PackedComponentModifierSet.I_SHELL + (isGuest ? PackedComponentModifierSet.I_GUEST : 0);
         this.instantiatior = requireNonNull(instantiatior);
     }
@@ -166,17 +160,6 @@ public final class ShellDriver<S> {
     }
 
     /**
-     * Returns the raw type of shells this driver produces.
-     * 
-     * @return the raw type of shells this driver produces
-     */
-    public Class<S> rawType() {
-        // Should we have a TypeLiteral as well???
-        // For example, if we create BigMap<String, Long>
-        return shellType;
-    }
-
-    /**
      * Create, initialize and start a new shell using the specified source.
      * 
      * @param bundle
@@ -195,15 +178,18 @@ public final class ShellDriver<S> {
     }
 
     public static <A> ShellDriver<A> of(MethodHandles.Lookup caller, Class<A> shellType, Class<? extends A> implementation) {
+        boolean isGuest = AutoCloseable.class.isAssignableFrom(implementation);
         Constructor<?> con = implementation.getDeclaredConstructors()[0];
         MethodHandleBuilder builder = MethodHandleBuilder.of(implementation, PackedShellContext.class);
-        builder.addKey(PackedShellContext.class, 0);
-        builder.addKey(Guest.class, PackedShellContext.MH_GUEST, 0);
-        builder.addKey(ServiceRegistry.class, PackedShellContext.MH_SERVICES, 0);
+        builder.addKey(PackedShellContext.class, 0); // TODO remove...
         builder.addKey(Component.class, PackedShellContext.MH_COMPONENT, 0);
+        builder.addKey(ServiceRegistry.class, PackedShellContext.MH_SERVICES, 0);
+        if (isGuest) {
+            builder.addKey(Guest.class, PackedShellContext.MH_GUEST, 0);
+        }
         OpenClass oc = new OpenClass(caller, implementation, true);
         MethodHandle mh2 = builder.build(oc, con);
-        return new ShellDriver<>(shellType, mh2);
+        return new ShellDriver<>(isGuest, mh2);
     }
 
 //    public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> shellType, Factory<? extends A> implementation) {
@@ -213,7 +199,10 @@ public final class ShellDriver<S> {
     // A method handle that takes an ArtifactContext and produces something that is compatible with A
     public static <A> ShellDriver<A> of(MethodHandles.Lookup caller, Class<A> shellType, MethodHandle mh) {
         // TODO validate type
-        return new ShellDriver<>(shellType, mh);
+        boolean isGuest = AutoCloseable.class.isAssignableFrom(shellType);
+        // TODO fix....
+
+        return new ShellDriver<>(isGuest, mh);
     }
 
 //  <E extends A> ArtifactDriver<A> mapTo(Class<E> decoratingType, Function<A, E> decorator) {
@@ -352,3 +341,35 @@ public final class ShellDriver<S> {
 //        }
 //    }
 }
+////// FRA SHELL CONTEXT
+//start() osv smider UnsupportedOperationException hvis LifeycleExtension ikke er installeret???
+//Naeh syntes bare man returnere oejeblikligt
+
+//Noget med lifecycle
+//Noget med Injector // Hvis vi har sidecars.... Er det maaske bare der...
+//Container tillader sidecar... App goer ikke. Saa kan man hvad man vil...
+
+//Entry point koere bare automatisk efter start....
+//Men ville vaere rart at vide
+
+//Distenction mellem business service or infrastructure service....
+//Hmm, problemet er vel at vi gerne vil injecte begge....
+
+//Noget med entrypoint?? Nej tror ikke vi har behov for at expose dett..
+
+//TypeLiteral??? Maaske returnere execute() et object...
+
+//Optional<?>??? Maybe a ResultClass
+//default Object result() {
+// // awaitResult()...
+// // awaitResultUninterruptable()...
+// // Ideen er lidt at vi kan vente paa det...
+// return null;
+//}
+//
+////En Attribute????
+//default Class<?> resultType() {
+// // Ideen er her taenkt at vi kan bruge den samme med Job...
+// //// En anden slags entry point annotering...
+// return void.class;
+//}

@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.concurrent.CompletableFuture;
 
-import app.packed.artifact.ShellContext;
 import app.packed.component.Component;
 import app.packed.guest.Guest;
 import app.packed.lifecycleold.StopOption;
@@ -52,6 +51,8 @@ import packed.internal.util.LookupUtil;
 // Altsaa med mindre vi har behov for at access dem fra andet sted fra
 public final class PackedInitializationContext {
 
+    private ComponentNode node;
+
     private final WireletPack wirelets;
 
     private PackedInitializationContext(WireletPack wirelets) {
@@ -71,42 +72,30 @@ public final class PackedInitializationContext {
     public static PackedShellContext newShellContext(ComponentNodeConfiguration root, WireletPack wp) {
         PackedInitializationContext ic = new PackedInitializationContext(wp);
         // Will instantiate the whole container hierachy
-        ComponentNode node = root.instantiateTree(ic);
+        ic.node = root.instantiateTree(ic);
 
         // TODO run initialization
 
-        return new PackedShellContext(node);
+        return new PackedShellContext(ic.node);
     }
 
-    /** Used to expose a container as an ArtifactContext. */
-    public static final class PackedShellContext implements ShellContext, Guest {
-
-        public static final MethodHandle MH_GUEST = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "guest", Guest.class);
-
-        public static final MethodHandle MH_SERVICES = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "services", ServiceRegistry.class);
-
-        public static final MethodHandle MH_COMPONENT = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "component", Component.class);
-
-        /** The component node we are wrapping. */
-        private final ComponentNode node;
-
-        private PackedShellContext(ComponentNode node) {
-            this.node = requireNonNull(node);
-        }
+    static class DummyGuest implements Guest {
 
         /** {@inheritDoc} */
         @Override
-        public ServiceRegistry services() {
-            return (ServiceRegistry) node.data[0];
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public PackedShellContext stop(StopOption... options) {
+        public Guest start() {
             return this;
         }
 
-        public Guest guest() {
+        /** {@inheritDoc} */
+        @Override
+        public <T> CompletableFuture<T> startAsync(T result) {
+            return null;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Guest stop(StopOption... options) {
             return this;
         }
 
@@ -116,22 +105,35 @@ public final class PackedInitializationContext {
             return null;
         }
 
-        /** {@inheritDoc} */
-        @Override
+    }
+
+    /** Used to expose a container as an ArtifactContext. */
+    public static final class PackedShellContext {
+
+        public static final MethodHandle MH_COMPONENT = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "component", Component.class);
+
+        public static final MethodHandle MH_GUEST = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "guest", Guest.class);
+
+        public static final MethodHandle MH_SERVICES = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "services", ServiceRegistry.class);
+
+        /** The component node we are wrapping. */
+        private final ComponentNode node;
+
+        private PackedShellContext(ComponentNode node) {
+            this.node = requireNonNull(node);
+        }
+
         public Component component() {
             return node;
         }
 
-        /** {@inheritDoc} */
-        @Override
-        public PackedShellContext start() {
-            return this;
+        public Guest guest() {
+            return new DummyGuest();
         }
 
-        /** {@inheritDoc} */
-        @Override
-        public <T> CompletableFuture<T> startAsync(T result) {
-            return null;
+        public ServiceRegistry services() {
+            return (ServiceRegistry) node.data[0];
         }
+
     }
 }
