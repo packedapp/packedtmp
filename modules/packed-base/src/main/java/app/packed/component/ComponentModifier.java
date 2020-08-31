@@ -138,8 +138,8 @@ public enum ComponentModifier {
     /**
      * Indicates that the main interaction with the component is through is single abstract method (SAM).
      * 
-     * FunctionType is type <--- FunctionDescriptor??? istedet for bare en klasse??? Ja taenker den skal tage info fra dem
-     * der har lavet en FunctionComponentType...
+     * FunctionType is type FunctionDescriptor??? istedet for bare en klasse??? Ja taenker den skal tage info fra dem der
+     * har lavet en FunctionComponentType...
      * 
      * I think it always have the source type set...
      */

@@ -25,7 +25,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.base.Opens;
-import app.packed.component.Packlet;
+import app.packed.container.Packlet;
 import app.packed.service.ServiceExtension;
 
 /**

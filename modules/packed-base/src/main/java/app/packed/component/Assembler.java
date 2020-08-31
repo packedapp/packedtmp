@@ -19,6 +19,8 @@ package app.packed.component;
  *
  */
 // Can take a CCC context. And cast it and provide lookup??
+
+// Maaske er det altid en container????
 public abstract class Assembler {
 
 }

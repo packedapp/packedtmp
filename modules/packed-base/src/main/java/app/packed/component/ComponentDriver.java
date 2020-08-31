@@ -26,12 +26,8 @@ public interface ComponentDriver<C> {
     // The runtime may add further attributes when applying this driver.
     // For example, the root component of a system always has the SYSTEM property.
     // Irrecspectively of the component driver that was used
-    ComponentModifierSet modifiers();
 
-    @Deprecated
-    default boolean hasProperty(ComponentModifier property) {
-        return modifiers().contains(property);
-    }
+    ComponentModifierSet modifiers();
 
     public interface Option {
 

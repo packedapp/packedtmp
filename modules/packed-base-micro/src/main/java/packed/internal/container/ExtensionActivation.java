@@ -33,9 +33,9 @@ import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.artifact.App;
 import app.packed.artifact.Image;
-import app.packed.component.Packlet;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
+import app.packed.container.Packlet;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;

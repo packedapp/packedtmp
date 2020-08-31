@@ -23,7 +23,7 @@ package app.packed.component;
 //of a system'senvironment as being made up of those things that are 
 //not part of the system,but can either affect the system or be affected 
 //by it.
-public class SystemBoundary {
+class SystemBoundary {
 
 }
 // filter hvad der skal med.. depths, typer, extensions, hvor skal vi stoppe

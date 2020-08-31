@@ -25,10 +25,12 @@ final class PackedApp implements App {
     /** The system component. */
     private final Component component;
 
+    /** The guest that manages the lifecycle. */
     private final Guest guest;
 
     // TODO I think we need to create a lazy starting service registry...
     // or at least with findInstance/findProvider
+    /** All services that are available for the user. */
     private final ServiceRegistry services;
 
     /**
@@ -106,5 +108,10 @@ final class PackedApp implements App {
     @Override
     public <T> T use(Key<T> key) {
         return services.use(key);
+    }
+
+    @Override
+    public String toString() {
+        return "App " + path() + " Running";
     }
 }

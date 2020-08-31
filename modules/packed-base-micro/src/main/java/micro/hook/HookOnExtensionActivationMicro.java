@@ -31,9 +31,9 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import app.packed.component.Packlet;
 import app.packed.component.BeanConfiguration;
 import app.packed.container.Extension;
+import app.packed.container.Packlet;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 

@@ -193,25 +193,25 @@ public interface App extends AutoCloseable, ComponentDelegate {
     }
 
     /**
-     * Create and start an application from the specified source. The state of the returned application is
+     * Create and start a new application using the specified bundle. The state of the returned application is
      * {@link RunState#RUNNING}.
      *
      * @param bundle
      *            the source of the application
      * @param wirelets
-     *            any wirelets to use in the construction of the application
+     *            optional wirelets
      * @return the new (running) application
      * @throws RuntimeException
-     *             if the application could not be initialized or started properly
+     *             if the application failed to initialize or started properly
      */
     static App start(Bundle<?> bundle, Wirelet... wirelets) {
         return driver().start(bundle, wirelets);
-        // 10 seconds is from start.. Otherwise people must use an exact deadline
-        // start(new SomeBundle(), LifecycleWirelets.stopAfter(10, TimeUnit.SECONDS));
-        // sart(new SomeBundle(), LifecycleWirelets.stopAfter(10, TimeUnit.SECONDS), ()-> New CancelledException()); (failure)
-
     }
 }
+// 10 seconds is from start.. Otherwise people must use an exact deadline
+// start(new SomeBundle(), LifecycleWirelets.stopAfter(10, TimeUnit.SECONDS));
+// sart(new SomeBundle(), LifecycleWirelets.stopAfter(10, TimeUnit.SECONDS), ()-> New CancelledException()); (failure)
+
 // Rename fordi vi gerne vil have at ArtifactDriver hedder det samme og
 // AppHost.xxx() .. Dumt det hedder App.of og AppHost.instantiate
 

@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.service.sandbox;
 
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+
+import app.packed.component.ComponentPath;
 
 /**
  *
