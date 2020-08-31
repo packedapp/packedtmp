@@ -16,7 +16,6 @@
 package app.packed.artifact;
 
 import app.packed.component.Component;
-import app.packed.guest.Guest;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceRegistry;
 
@@ -48,8 +47,6 @@ public interface ShellContext {
      * @return an injector for the underlying container
      */
     ServiceRegistry services();
-
-    Guest guest();
 
     // start() osv smider UnsupportedOperationException hvis LifeycleExtension ikke er installeret???
     // Naeh syntes bare man returnere oejeblikligt

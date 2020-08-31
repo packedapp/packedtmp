@@ -19,19 +19,24 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
+import java.lang.reflect.Constructor;
 import java.util.function.Function;
 
 import app.packed.component.Bundle;
+import app.packed.component.Component;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.CustomConfigurator;
 import app.packed.component.WireableComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
+import app.packed.guest.Guest;
 import app.packed.service.Injector;
+import app.packed.service.ServiceRegistry;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.PackedWireableComponentDriver;
+import packed.internal.invoke.MethodHandleBuilder;
+import packed.internal.invoke.OpenClass;
 import packed.internal.lifecycle.PackedAssemblyContext;
 import packed.internal.lifecycle.PackedInitializationContext;
 import packed.internal.lifecycle.PackedInitializationContext.PackedShellContext;
@@ -106,7 +111,7 @@ public final class ShellDriver<S> {
     /**
      * Creates and initializes a new shell (and system) using the specified bundle.
      * <p>
-     * This method will invoke {@link #newShell(ShellContext)} to create the actual shell.
+     * This method will invoke {@link #newShell(PackedShellContext)} to create the actual shell.
      * 
      * @param bundle
      *            the system bundle
@@ -139,7 +144,7 @@ public final class ShellDriver<S> {
      *            the context to use for instantiating the shell
      * @return the new shell
      */
-    S newShell(ShellContext context) {
+    S newShell(PackedShellContext context) {
         try {
             return (S) instantiatior.invoke(context);
         } catch (Throwable e) {
@@ -184,21 +189,21 @@ public final class ShellDriver<S> {
      */
     public S start(Bundle<?> bundle, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.assemble(modifiers, bundle, this, wirelets);
-        ShellContext context = PackedInitializationContext.newShellContext(node, node.wirelets);
+        PackedShellContext context = PackedInitializationContext.newShellContext(node, node.wirelets);
         context.guest().start();
         return newShell(context);
     }
 
     public static <A> ShellDriver<A> of(MethodHandles.Lookup caller, Class<A> shellType, Class<? extends A> implementation) {
-        // Vi vil gerne bruge shell type som navnet paa shellen... istedet for implementationen
-        MethodType mt = MethodType.methodType(void.class, ShellContext.class);
-        final MethodHandle mh;
-        try {
-            mh = caller.findConstructor(implementation, mt);
-        } catch (NoSuchMethodException | IllegalAccessException e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-        return new ShellDriver<>(shellType, mh);
+        Constructor<?> con = implementation.getDeclaredConstructors()[0];
+        MethodHandleBuilder builder = MethodHandleBuilder.of(implementation, PackedShellContext.class);
+        builder.addKey(PackedShellContext.class, 0);
+        builder.addKey(Guest.class, PackedShellContext.MH_GUEST, 0);
+        builder.addKey(ServiceRegistry.class, PackedShellContext.MH_SERVICES, 0);
+        builder.addKey(Component.class, PackedShellContext.MH_COMPONENT, 0);
+        OpenClass oc = new OpenClass(caller, implementation, true);
+        MethodHandle mh2 = builder.build(oc, con);
+        return new ShellDriver<>(shellType, mh2);
     }
 
 //    public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> shellType, Factory<? extends A> implementation) {

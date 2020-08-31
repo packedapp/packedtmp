@@ -17,6 +17,8 @@ package packed.internal.lifecycle;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.util.concurrent.CompletableFuture;
 
 import app.packed.artifact.ShellContext;
@@ -27,6 +29,7 @@ import app.packed.service.ServiceRegistry;
 import packed.internal.component.ComponentNode;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletPack;
+import packed.internal.util.LookupUtil;
 
 /**
  * An instantiation context is created for every delimited tree hierachy.
@@ -78,6 +81,12 @@ public final class PackedInitializationContext {
     /** Used to expose a container as an ArtifactContext. */
     public static final class PackedShellContext implements ShellContext, Guest {
 
+        public static final MethodHandle MH_GUEST = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "guest", Guest.class);
+
+        public static final MethodHandle MH_SERVICES = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "services", ServiceRegistry.class);
+
+        public static final MethodHandle MH_COMPONENT = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "component", Component.class);
+
         /** The component node we are wrapping. */
         private final ComponentNode node;
 
@@ -97,7 +106,6 @@ public final class PackedInitializationContext {
             return this;
         }
 
-        @Override
         public Guest guest() {
             return this;
         }

@@ -20,14 +20,13 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.artifact.App;
 import app.packed.artifact.Image;
-import app.packed.artifact.ShellContext;
 import app.packed.artifact.ShellDriver;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
-import packed.internal.lifecycle.PackedInitializationContext;
+import packed.internal.lifecycle.PackedInitializationContext.PackedShellContext;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -200,11 +199,11 @@ public interface Injector extends ServiceRegistry {
 /** An artifact driver for creating {@link App} instances. */
 final class InjectorArtifactHelper {
 
-    static final MethodHandle CONV = LookupUtil.mhStaticSelf(MethodHandles.lookup(), "convert", Injector.class, ShellContext.class);
+    static final MethodHandle CONV = LookupUtil.mhStaticSelf(MethodHandles.lookup(), "convert", Injector.class, PackedShellContext.class);
 
     static final ShellDriver<Injector> DRIVER = ShellDriver.of(MethodHandles.lookup(), Injector.class, CONV);
 
-    static Injector convert(ShellContext container) {
-        return (Injector) ((PackedInitializationContext.PackedShellContext) container).services();
+    static Injector convert(PackedShellContext container) {
+        return (Injector) container.services();
     }
 }
