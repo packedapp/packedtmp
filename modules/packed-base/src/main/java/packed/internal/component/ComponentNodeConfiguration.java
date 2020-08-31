@@ -101,7 +101,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     final int modifiers;
 
     /** The name of the component. */
-    String name;
+    public String name;
 
     /** The next sibling, in insertion order */
     @Nullable

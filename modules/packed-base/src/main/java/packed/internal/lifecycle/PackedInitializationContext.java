@@ -44,10 +44,13 @@ import packed.internal.util.LookupUtil;
  */
 public final class PackedInitializationContext {
 
+    /** A MethodHandle that can invoke {@link #component()}. */
     public static final MethodHandle MH_COMPONENT = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "component", Component.class);
 
+    /** A MethodHandle that can invoke {@link #guest()}. */
     public static final MethodHandle MH_GUEST = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "guest", Guest.class);
 
+    /** A MethodHandle that can invoke {@link #services()}. */
     public static final MethodHandle MH_SERVICES = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "services", ServiceRegistry.class);
 
     private ComponentNode node;
@@ -56,16 +59,6 @@ public final class PackedInitializationContext {
 
     private PackedInitializationContext(WireletPack wirelets) {
         this.wirelets = wirelets;
-    }
-
-    /**
-     * Returns a list of wirelets that used to instantiate. This may include wirelets that are not present at build time if
-     * using an image.
-     * 
-     * @return a list of wirelets that used to instantiate
-     */
-    public WireletPack wirelets() {
-        return wirelets;
     }
 
     public Component component() {
@@ -80,8 +73,30 @@ public final class PackedInitializationContext {
         return (ServiceRegistry) node.data[0];
     }
 
-    public static PackedInitializationContext initialize(ComponentNodeConfiguration root, WireletPack wp) {
-        PackedInitializationContext ic = new PackedInitializationContext(wp);
+    public String rootName(ComponentNodeConfiguration configuration) {
+        String n = configuration.name;
+        String ol = wirelets() == null ? null : wirelets().nameWirelet();
+        if (ol != null) {
+            n = ol;
+            if (n.endsWith("?")) {
+                n = n.substring(0, n.length() - 1);
+            }
+        }
+        return n;
+    }
+
+    /**
+     * Returns a list of wirelets that used to instantiate. This may include wirelets that are not present at build time if
+     * using an image.
+     * 
+     * @return a list of wirelets that used to instantiate
+     */
+    public WireletPack wirelets() {
+        return wirelets;
+    }
+
+    public static PackedInitializationContext initialize(ComponentNodeConfiguration root, WireletPack wirelets) {
+        PackedInitializationContext ic = new PackedInitializationContext(wirelets);
         ic.node = root.instantiateTree(ic);
         return ic;
     }
@@ -111,6 +126,5 @@ public final class PackedInitializationContext {
         public <T> CompletableFuture<T> stopAsync(T result, StopOption... options) {
             return null;
         }
-
     }
 }

@@ -87,15 +87,7 @@ public final class ComponentNode implements Component {
         // This is probably not the right way to do it. Especially with hosts.. Fix it when we get to hosts...
         // Maybe this can be written in PodInstantiationContext
         if (parent == null) {
-            String n = configuration.name;
-            String ol = pic.wirelets() == null ? null : pic.wirelets().nameWirelet();
-            if (ol != null) {
-                n = ol;
-                if (n.endsWith("?")) {
-                    n = n.substring(0, n.length() - 1);
-                }
-            }
-            this.name = n;
+            this.name = pic.rootName(configuration);
         } else {
             this.name = requireNonNull(configuration.name);
         }
