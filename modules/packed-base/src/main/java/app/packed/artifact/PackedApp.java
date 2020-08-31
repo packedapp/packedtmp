@@ -27,6 +27,8 @@ final class PackedApp implements App {
 
     private final Guest guest;
 
+    // TODO I think we need to create a lazy starting service registry...
+    // or at least with findInstance/findProvider
     private final ServiceRegistry services;
 
     /**

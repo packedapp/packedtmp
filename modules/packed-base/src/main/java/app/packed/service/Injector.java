@@ -26,7 +26,7 @@ import app.packed.component.CustomConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
-import packed.internal.lifecycle.PackedInitializationContext.PackedShellContext;
+import packed.internal.lifecycle.PackedInitializationContext;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -199,11 +199,11 @@ public interface Injector extends ServiceRegistry {
 /** An artifact driver for creating {@link App} instances. */
 final class InjectorArtifactHelper {
 
-    static final MethodHandle CONV = LookupUtil.mhStaticSelf(MethodHandles.lookup(), "convert", Injector.class, PackedShellContext.class);
+    static final MethodHandle CONV = LookupUtil.mhStaticSelf(MethodHandles.lookup(), "convert", Injector.class, PackedInitializationContext.class);
 
     static final ShellDriver<Injector> DRIVER = ShellDriver.of(MethodHandles.lookup(), Injector.class, CONV);
 
-    static Injector convert(PackedShellContext container) {
+    static Injector convert(PackedInitializationContext container) {
         return (Injector) container.services();
     }
 }

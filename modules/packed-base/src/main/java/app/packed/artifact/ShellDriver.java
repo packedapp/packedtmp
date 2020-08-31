@@ -39,7 +39,6 @@ import packed.internal.invoke.MethodHandleBuilder;
 import packed.internal.invoke.OpenClass;
 import packed.internal.lifecycle.PackedAssemblyContext;
 import packed.internal.lifecycle.PackedInitializationContext;
-import packed.internal.lifecycle.PackedInitializationContext.PackedShellContext;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -68,7 +67,6 @@ import packed.internal.util.ThrowableUtil;
 // Support of injection of the shell into the Container...
 // We do not generally support this, as people are free to any shell they may like.
 // Which would break encapsulation
-
 public final class ShellDriver<S> {
 
     /** The method handle responsible for creating the new shell. */
@@ -90,22 +88,20 @@ public final class ShellDriver<S> {
         this.instantiatior = requireNonNull(instantiatior);
     }
 
-    // Set<Class<?>> <-- available contexts... IDK
-
     public <D> S configure(WireableComponentDriver<D> driver, CustomConfigurator<D> consumer, Wirelet... wirelets) {
         return configure(driver, e -> e, consumer, wirelets);
     }
 
     public <C, D> S configure(WireableComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.configure(this, (PackedWireableComponentDriver<D>) driver, factory, consumer, wirelets);
-        PackedShellContext ac = PackedInitializationContext.newShellContext(node, node.wirelets);
+        PackedInitializationContext ac = PackedInitializationContext.initialize(node, node.wirelets);
         return newShell(ac);
     }
 
     /**
      * Creates and initializes a new shell (and system) using the specified bundle.
      * <p>
-     * This method will invoke {@link #newShell(PackedShellContext)} to create the actual shell.
+     * This method will invoke {@link #newShell(PackedInitializationContext)} to create the actual shell.
      * 
      * @param bundle
      *            the system bundle
@@ -117,7 +113,7 @@ public final class ShellDriver<S> {
      */
     public S initialize(Bundle<?> bundle, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.assemble(modifiers, bundle, this, wirelets);
-        PackedShellContext context = PackedInitializationContext.newShellContext(node, node.wirelets);
+        PackedInitializationContext context = PackedInitializationContext.initialize(node, node.wirelets);
         return newShell(context);
     }
 
@@ -129,21 +125,6 @@ public final class ShellDriver<S> {
      */
     public ComponentModifierSet modifiers() {
         return new PackedComponentModifierSet(modifiers);
-    }
-
-    /**
-     * Instantiates a new shell.
-     * 
-     * @param context
-     *            the context to use for instantiating the shell
-     * @return the new shell
-     */
-    S newShell(PackedShellContext context) {
-        try {
-            return (S) instantiatior.invoke(context);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
     }
 
     /**
@@ -160,6 +141,21 @@ public final class ShellDriver<S> {
     }
 
     /**
+     * Instantiates a new shell.
+     * 
+     * @param context
+     *            the context to use for instantiating the shell
+     * @return the new shell
+     */
+    S newShell(PackedInitializationContext context) {
+        try {
+            return (S) instantiatior.invoke(context);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+    }
+
+    /**
      * Create, initialize and start a new shell using the specified source.
      * 
      * @param bundle
@@ -172,7 +168,7 @@ public final class ShellDriver<S> {
      */
     public S start(Bundle<?> bundle, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.assemble(modifiers, bundle, this, wirelets);
-        PackedShellContext context = PackedInitializationContext.newShellContext(node, node.wirelets);
+        PackedInitializationContext context = PackedInitializationContext.initialize(node, node.wirelets);
         context.guest().start();
         return newShell(context);
     }
@@ -180,12 +176,12 @@ public final class ShellDriver<S> {
     public static <A> ShellDriver<A> of(MethodHandles.Lookup caller, Class<A> shellType, Class<? extends A> implementation) {
         boolean isGuest = AutoCloseable.class.isAssignableFrom(implementation);
         Constructor<?> con = implementation.getDeclaredConstructors()[0];
-        MethodHandleBuilder builder = MethodHandleBuilder.of(implementation, PackedShellContext.class);
-        builder.addKey(PackedShellContext.class, 0); // TODO remove...
-        builder.addKey(Component.class, PackedShellContext.MH_COMPONENT, 0);
-        builder.addKey(ServiceRegistry.class, PackedShellContext.MH_SERVICES, 0);
+        MethodHandleBuilder builder = MethodHandleBuilder.of(implementation, PackedInitializationContext.class);
+        builder.addKey(PackedInitializationContext.class, 0); // TODO remove...
+        builder.addKey(Component.class, PackedInitializationContext.MH_COMPONENT, 0);
+        builder.addKey(ServiceRegistry.class, PackedInitializationContext.MH_SERVICES, 0);
         if (isGuest) {
-            builder.addKey(Guest.class, PackedShellContext.MH_GUEST, 0);
+            builder.addKey(Guest.class, PackedInitializationContext.MH_GUEST, 0);
         }
         OpenClass oc = new OpenClass(caller, implementation, true);
         MethodHandle mh2 = builder.build(oc, con);
@@ -199,6 +195,7 @@ public final class ShellDriver<S> {
     // A method handle that takes an ArtifactContext and produces something that is compatible with A
     public static <A> ShellDriver<A> of(MethodHandles.Lookup caller, Class<A> shellType, MethodHandle mh) {
         // TODO validate type
+        // shellType must match MH
         boolean isGuest = AutoCloseable.class.isAssignableFrom(shellType);
         // TODO fix....
 

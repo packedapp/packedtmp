@@ -23,7 +23,6 @@ import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.lifecycle.PackedAssemblyContext;
 import packed.internal.lifecycle.PackedInitializationContext;
-import packed.internal.lifecycle.PackedInitializationContext.PackedShellContext;
 
 /** The default implementation of {@link Image}. */
 // Taenker vi maaske skal flytte den internt?
@@ -62,7 +61,7 @@ final class PackedImage<A> implements Image<A> {
     /** {@inheritDoc} */
     @Override
     public A initialize(Wirelet... wirelets) {
-        PackedShellContext context = PackedInitializationContext.newShellContext(node, WireletPack.forImage(node, wirelets));
+        PackedInitializationContext context = PackedInitializationContext.initialize(node, WireletPack.forImage(node, wirelets));
         return driver.newShell(context);
     }
 
