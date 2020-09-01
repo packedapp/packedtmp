@@ -51,6 +51,7 @@ public final class PackedInitializationContext {
     /** A MethodHandle that can invoke {@link #services()}. */
     public static final MethodHandle MH_SERVICES = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "services", ServiceRegistry.class);
 
+    /** The component node we are building. */
     private ComponentNode node;
 
     private final WireletPack wirelets;
@@ -98,7 +99,11 @@ public final class PackedInitializationContext {
         return wirelets;
     }
 
-    public static PackedInitializationContext initialize(ComponentNodeConfiguration root, WireletPack wirelets) {
+    public static PackedInitializationContext initialize(ComponentNodeConfiguration root) {
+        return initializeImage(root, root.wirelets); // not technically an image...
+    }
+
+    public static PackedInitializationContext initializeImage(ComponentNodeConfiguration root, WireletPack wirelets) {
         PackedInitializationContext ic = new PackedInitializationContext(wirelets);
         ic.node = root.instantiateTree(ic);
         return ic;

@@ -95,7 +95,7 @@ public final class ShellDriver<S> {
 
     public <C, D> S configure(WireableComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.configure(this, (PackedWireableComponentDriver<D>) driver, factory, consumer, wirelets);
-        PackedInitializationContext ac = PackedInitializationContext.initialize(node, node.wirelets);
+        PackedInitializationContext ac = PackedInitializationContext.initialize(node);
         return newShell(ac);
     }
 
@@ -113,9 +113,13 @@ public final class ShellDriver<S> {
      *             if the shell could not be created
      */
     public S initialize(Bundle<?> bundle, Wirelet... wirelets) {
+        // Assembles the system
         ComponentNodeConfiguration node = PackedAssemblyContext.assemble(modifiers, bundle, this, wirelets);
-        PackedInitializationContext context = PackedInitializationContext.initialize(node, node.wirelets);
-        return newShell(context);
+
+        // Initializes the system
+        PackedInitializationContext pic = PackedInitializationContext.initialize(node);
+
+        return newShell(pic); // Returns a shell to the user
     }
 
     /**
@@ -138,8 +142,10 @@ public final class ShellDriver<S> {
      * @return a new image
      */
     public Image<S> newImage(Bundle<?> bundle, Wirelet... wirelets) {
+        // Assembles a system image
         ComponentNodeConfiguration node = PackedAssemblyContext.assemble(PackedComponentModifierSet.I_IMAGE + modifiers, bundle, this, wirelets);
-        return new ShellImage(node);
+
+        return new ShellImage(node); // Returns a new to the user
     }
 
     /**
@@ -169,10 +175,16 @@ public final class ShellDriver<S> {
      *             if the driver does not produce an shell with an execution phase
      */
     public S start(Bundle<?> bundle, Wirelet... wirelets) {
+        // Assembles the system
         ComponentNodeConfiguration node = PackedAssemblyContext.assemble(modifiers, bundle, this, wirelets);
-        PackedInitializationContext context = PackedInitializationContext.initialize(node, node.wirelets);
-        context.guest().start();
-        return newShell(context);
+
+        // Initializes the system
+        PackedInitializationContext pic = PackedInitializationContext.initialize(node);
+
+        // Starts the system (blocking)
+        pic.guest().start();
+
+        return newShell(pic); // Returns a shell to the user
     }
 
     public Class<?> type() {
@@ -203,7 +215,7 @@ public final class ShellDriver<S> {
         return new ShellDriver<>(isGuest, mh);
     }
 
-    /** The default implementation of {@link Image}. */
+    /** An implementation of {@link Image} uses by {@link ShellDriver#newImage(Bundle, Wirelet...)}. */
     private final class ShellImage implements Image<S> {
 
         /** The assembled image node. */
@@ -228,8 +240,8 @@ public final class ShellDriver<S> {
         /** {@inheritDoc} */
         @Override
         public S initialize(Wirelet... wirelets) {
-            PackedInitializationContext context = PackedInitializationContext.initialize(node, WireletPack.forImage(node, wirelets));
-            return newShell(context);
+            PackedInitializationContext pic = PackedInitializationContext.initializeImage(node, WireletPack.forImage(node, wirelets));
+            return newShell(pic);
         }
 
         /** {@inheritDoc} */

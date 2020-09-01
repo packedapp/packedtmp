@@ -60,7 +60,7 @@ public class Main {
     // Maybe more a.la. Main.execute()
     public static void execute0(Bundle<?> bundle, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.assemble(0, bundle, null, wirelets);
-        PackedInitializationContext context = PackedInitializationContext.initialize(node, node.wirelets);
+        PackedInitializationContext context = PackedInitializationContext.initialize(node);
         context.guest().start();
     }
 }
