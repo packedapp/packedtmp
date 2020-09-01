@@ -59,7 +59,7 @@ public final class RuntimeComponentModel {
         this.extension = context.extension();
         this.driver = context.driver();
         int p = context.modifiers;
-        p = PackedComponentModifierSet.unsetPropertyConditional(p, depth == 0, ComponentModifier.IMAGE);
+        p = PackedComponentModifierSet.removeIf(p, depth == 0, ComponentModifier.IMAGE);
         this.properties = p;
     }
 

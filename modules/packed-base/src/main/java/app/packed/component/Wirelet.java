@@ -60,7 +60,7 @@ public abstract class Wirelet {
     }
 
     protected Wirelet(ComponentModifier modifier) {
-        this.modifiers = PackedComponentModifierSet.setProperty(0, modifier);
+        this.modifiers = PackedComponentModifierSet.intOf(modifier);
     }
 
     /**

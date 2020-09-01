@@ -40,6 +40,17 @@ public final class AssemblyWirelets {
         throw new UnsupportedOperationException();
     }
 
+    public static Wirelet sidecarCacheLess() {
+        throw new UnsupportedOperationException();
+    }
+
+    public static Wirelet sidecarCacheSpecific() {
+        // The wirelet itself contains the cache...
+        // And can be reused (also concurrently)
+        // Maaske kan man styre noget reload praecist...
+        throw new UnsupportedOperationException();
+    }
+
     // Disable Host <--- Nej, det er et ruleset....
 }
 /// Interface with only static methods are

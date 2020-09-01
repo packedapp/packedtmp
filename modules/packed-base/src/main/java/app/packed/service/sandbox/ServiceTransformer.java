@@ -22,6 +22,10 @@ import app.packed.service.ServiceSet;
  *
  */
 // Altsaa størstedelen af wirelets kan jo bare wrappe saadan en....
+
+// Vil sige at hvert skridt i wirelets transfomration.
+// Skal resultere i unikke keys
+
 public interface ServiceTransformer {
 
     Service rekey(Class<?> from, Class<?> to);

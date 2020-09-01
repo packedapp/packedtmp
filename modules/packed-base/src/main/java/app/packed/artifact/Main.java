@@ -29,6 +29,8 @@ import packed.internal.component.PackedInitializationContext;
 // IDK
 public class Main {
 
+    private Main() {}
+
     /**
      * This method will create and start an {@link App application} from the specified source. Blocking until the run state
      * of the application is {@link RunState#TERMINATED}.

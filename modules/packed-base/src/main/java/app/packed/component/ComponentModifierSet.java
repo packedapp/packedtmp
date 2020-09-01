@@ -19,9 +19,17 @@ import packed.internal.component.PackedComponentModifierSet;
 
 /**
  * An immutable set of component modifiers.
+ * 
  */
 public interface ComponentModifierSet extends Iterable<ComponentModifier> {
 
+    /**
+     * Returns whether or not this contains the specified modifier
+     * 
+     * @param modifier
+     *            the modifier to test
+     * @return true if this set contains the specified modifier, otherwise false
+     */
     boolean contains(ComponentModifier modifier);
 
     /**
@@ -33,6 +41,11 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
         return contains(ComponentModifier.CONTAINER);
     }
 
+    /**
+     * Returns whether or not this set contains any modifiers.
+     * 
+     * @return true if this set contains any modifiers, otherwise false
+     */
     boolean isEmpty();
 
     /**
@@ -81,16 +94,25 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
     ComponentModifier[] toArray();
 
     /**
-     * Returns a new
+     * Returns a set that includes both the specified modifier and all modifiers in this set. Implementations should return
+     * this set if the specified modifier is already included in this set.
      * 
      * @param modifier
-     *            the modifier to set if not already set
-     * @return the modifier set
+     *            the modifier to include in the returned set
+     * @return a modifier set with all modifiers in this set as well as the specified modifier
      */
     ComponentModifierSet with(ComponentModifier modifier);
 
     ComponentModifierSet withIf(boolean conditional, ComponentModifier modifier);
 
+    /**
+     * Returns a set that include all modifiers in this set except for the specified modifier. Implementations should return
+     * this set if the specified modifier is not in this set.
+     * 
+     * @param modifier
+     *            the modifier to remove in the returned set
+     * @return a modifier set with all modifiers in this set except for the specified modifier
+     */
     ComponentModifierSet without(ComponentModifier modifier);
 
     ComponentModifierSet withoutIf(boolean conditional, ComponentModifier modifier);
@@ -104,6 +126,13 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
         return PackedComponentModifierSet.EMPTY;
     }
 
+    /**
+     * Returns an set containing the single specified modifier.
+     * 
+     * @return an set containing the single specified modifier
+     * 
+     * @see ComponentModifier#toSet()
+     */
     static ComponentModifierSet of(ComponentModifier m) {
         return new PackedComponentModifierSet(m.bits());
     }
@@ -116,3 +145,7 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
         return new PackedComponentModifierSet(m1.bits() | m2.bits() | m3.bits());
     }
 }
+
+// @apiNote this interface does not have an isEmpty method as we have yet to find any components without modifiers
+// Altsaa 
+//boolean isEmpty();

@@ -137,7 +137,8 @@ public final class ShellDriver<S> {
      * @return a new image
      */
     public Image<S> newImage(Bundle<?> bundle, Wirelet... wirelets) {
-        return new PackedImage<>(this, bundle, wirelets);
+        ComponentNodeConfiguration node = PackedAssemblyContext.assemble(PackedComponentModifierSet.I_IMAGE + modifiers, bundle, this, wirelets);
+        return new PackedImage<>(node, this);
     }
 
     /**

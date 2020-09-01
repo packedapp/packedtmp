@@ -90,6 +90,38 @@ public class ImageBigMicro {
             }
         }
     });
+    static final Image<App> INSTALL253_NOS = App.newImage(new BaseBundle() {
+        @Override
+        public void configure() {
+            for (int i = 0; i < 4; i++) {
+                link(new BaseBundle() {
+                    @Override
+                    public void configure() {
+                        installInstance(new A());
+                        installInstance(new NeedsA(new A()));
+                        for (int i = 0; i < 4; i++) {
+                            link(new BaseBundle() {
+                                @Override
+                                public void configure() {
+                                    installInstance(new A());
+                                    installInstance(new NeedsA(new A()));
+                                    for (int i = 0; i < 4; i++) {
+                                        link(new BaseBundle() {
+                                            @Override
+                                            public void configure() {
+                                                installInstance(new A());
+                                                installInstance(new NeedsA(new A()));
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        }
+    });
 
     @Benchmark
     public App install31() {
@@ -99,6 +131,11 @@ public class ImageBigMicro {
     @Benchmark
     public App install253() {
         return INSTALL253.initialize();
+    }
+
+    @Benchmark
+    public App install253NOS() {
+        return INSTALL253_NOS.initialize();
     }
 }
 // 30 August 2020

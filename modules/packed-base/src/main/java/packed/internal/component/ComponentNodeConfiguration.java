@@ -167,9 +167,9 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         setName0(null); // initialize name
 
         int p = driver.modifiers;
-        p = PackedComponentModifierSet.setPropertyConditional(p, parent == null, ComponentModifier.SYSTEM);
-        p = PackedComponentModifierSet.setPropertyConditional(p, parent == null, ComponentModifier.GUEST);
-        p = PackedComponentModifierSet.setPropertyConditional(p, parent == null && assembly.modifiers().isImage(), ComponentModifier.IMAGE);
+        p = PackedComponentModifierSet.addIf(p, parent == null, ComponentModifier.SYSTEM);
+        p = PackedComponentModifierSet.addIf(p, parent == null, ComponentModifier.GUEST);
+        p = PackedComponentModifierSet.addIf(p, parent == null && assembly.modifiers().isImage(), ComponentModifier.IMAGE);
         this.modifiers = p;
 
         index = this.guest.reserve(1);
@@ -214,7 +214,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     AttributeMap attributes() {
-        if (PackedComponentModifierSet.isPropertySet(modifiers, ComponentModifier.EXTENSION)) {
+        if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.EXTENSION)) {
             ProvidableAttributeModel pam = extension.model().pam();
             if (pam != null) {
                 DefaultAttributeMap dam = new DefaultAttributeMap();
@@ -597,7 +597,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         /** {@inheritDoc} */
         @Override
         public boolean hasModifier(ComponentModifier property) {
-            return PackedComponentModifierSet.isPropertySet(conf.modifiers, property);
+            return PackedComponentModifierSet.isSet(conf.modifiers, property);
 
         }
 

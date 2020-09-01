@@ -50,7 +50,7 @@ public abstract class PackedWireableComponentDriver<C> implements WireableCompon
     final int modifiers;
 
     protected PackedWireableComponentDriver(ComponentModifier... properties) {
-        this.modifiers = PackedComponentModifierSet.setProperty(0, properties);
+        this.modifiers = PackedComponentModifierSet.intOf(properties);
     }
 
     protected PackedWireableComponentDriver(int modifiers) {

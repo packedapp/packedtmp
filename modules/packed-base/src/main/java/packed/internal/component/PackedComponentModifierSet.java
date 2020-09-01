@@ -26,18 +26,20 @@ import app.packed.component.ComponentModifierSet;
 /** Implementation of {@link ComponentModifierSet}. */
 public final class PackedComponentModifierSet implements ComponentModifierSet {
 
-    public static final int I_ANALYSIS = ComponentModifier.ANALYSIS.ordinal() << 1;
-    public static final int I_ASSEMBLY = ComponentModifier.ASSEMBLY.ordinal() << 1;
-    public static final int I_SHELL = ComponentModifier.SHELL.ordinal() << 1;
-    public static final int I_IMAGE = ComponentModifier.IMAGE.ordinal() << 1;
-    public static final int I_GUEST = ComponentModifier.GUEST.ordinal() << 1;
-
     /** An empty modifier set. */
     public static final PackedComponentModifierSet EMPTY = new PackedComponentModifierSet(0);
+
+    public static final int I_ANALYSIS = ComponentModifier.ANALYSIS.ordinal() << 1;
+    public static final int I_ASSEMBLY = ComponentModifier.ASSEMBLY.ordinal() << 1;
+    public static final int I_GUEST = ComponentModifier.GUEST.ordinal() << 1;
+    public static final int I_IMAGE = ComponentModifier.IMAGE.ordinal() << 1;
+
+    public static final int I_SHELL = ComponentModifier.SHELL.ordinal() << 1;
 
     /** An array containing all modifiers. */
     private final static ComponentModifier[] MODIFIERS = ComponentModifier.values();
 
+    /** The modifiers this set wraps. */
     private final int modifiers;
 
     public PackedComponentModifierSet(int modifiers) {
@@ -47,12 +49,7 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
     /** {@inheritDoc} */
     @Override
     public boolean contains(ComponentModifier modifier) {
-        return isPropertySet(modifiers, modifier);
-    }
-
-    @Override
-    public boolean isContainer() {
-        return isPropertySet(modifiers, ComponentModifier.CONTAINER);
+        return isSet(modifiers, modifier);
     }
 
     /** {@inheritDoc} */
@@ -119,66 +116,82 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
 
     /** {@inheritDoc} */
     @Override
-    public ComponentModifierSet withIf(boolean conditional, ComponentModifier modifier) {
-        if (!conditional || isPropertySet(modifiers, modifier)) {
-            return this;
-        }
-        return new PackedComponentModifierSet(setProperty(modifiers, modifier));
-
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public ComponentModifierSet with(ComponentModifier modifier) {
-        if (isPropertySet(modifiers, modifier)) {
+        if (isSet(modifiers, modifier)) {
             return this;
         }
-        return new PackedComponentModifierSet(setProperty(modifiers, modifier));
+        return new PackedComponentModifierSet(add(modifiers, modifier));
     }
 
     /** {@inheritDoc} */
     @Override
-    public ComponentModifierSet withoutIf(boolean conditional, ComponentModifier modifier) {
-        if (!conditional || !isPropertySet(modifiers, modifier)) {
+    public ComponentModifierSet withIf(boolean conditional, ComponentModifier modifier) {
+        if (!conditional || isSet(modifiers, modifier)) {
             return this;
         }
-        return new PackedComponentModifierSet(unsetProperty(modifiers, modifier));
+        return new PackedComponentModifierSet(add(modifiers, modifier));
+
     }
 
     /** {@inheritDoc} */
     @Override
     public ComponentModifierSet without(ComponentModifier modifier) {
-        if (!isPropertySet(modifiers, modifier)) {
+        if (!isSet(modifiers, modifier)) {
             return this;
         }
-        return new PackedComponentModifierSet(unsetProperty(modifiers, modifier));
+        return new PackedComponentModifierSet(remove(modifiers, modifier));
     }
 
-    public static boolean isPropertySet(int modifiers, ComponentModifier property) {
-        requireNonNull(property, "property is null");
-        return (modifiers & (1 << property.ordinal())) != 0;
+    /** {@inheritDoc} */
+    @Override
+    public ComponentModifierSet withoutIf(boolean conditional, ComponentModifier modifier) {
+        if (!conditional || !isSet(modifiers, modifier)) {
+            return this;
+        }
+        return new PackedComponentModifierSet(remove(modifiers, modifier));
     }
 
-    public static int setProperty(int modifiers, ComponentModifier property) {
-        return modifiers | (1 << property.ordinal());
+    public static int add(int modifiers, ComponentModifier m) {
+        return modifiers | intOf(m);
     }
 
-    public static int setProperty(int modifiers, ComponentModifier... props) {
-        for (ComponentModifier cp : props) {
-            modifiers |= (1 << cp.ordinal());
+    public static int add(int modifiers, ComponentModifier... ms) {
+        for (ComponentModifier cm : ms) {
+            modifiers |= intOf(cm);
         }
         return modifiers;
     }
 
-    public static int setPropertyConditional(int modifiers, boolean setIt, ComponentModifier property) {
-        return setIt ? setProperty(modifiers, property) : modifiers;
+    public static int addIf(int modifiers, boolean conditional, ComponentModifier m) {
+        return conditional ? add(modifiers, m) : modifiers;
     }
 
-    public static int unsetProperty(int modifiers, ComponentModifier property) {
-        return modifiers & ~(1 << property.ordinal());
+    public static int intOf(ComponentModifier m) {
+        return (1 << m.ordinal());
     }
 
-    public static int unsetPropertyConditional(int modifiers, boolean setIt, ComponentModifier property) {
-        return setIt ? unsetProperty(modifiers, property) : modifiers;
+    public static int intOf(ComponentModifier... ms) {
+        int m = 0;
+        for (ComponentModifier cm : ms) {
+            m |= intOf(cm);
+        }
+        return m;
+    }
+
+    public static int intOf(ComponentModifier m1, ComponentModifier m2) {
+        return (1 << m1.ordinal());
+    }
+
+    public static boolean isSet(int modifiers, ComponentModifier m) {
+        requireNonNull(m, "modifier is null");
+        return (modifiers & intOf(m)) != 0;
+    }
+
+    public static int remove(int modifiers, ComponentModifier m) {
+        return modifiers & ~intOf(m);
+    }
+
+    public static int removeIf(int modifiers, boolean conditional, ComponentModifier m) {
+        return conditional ? remove(modifiers, m) : modifiers;
     }
 }

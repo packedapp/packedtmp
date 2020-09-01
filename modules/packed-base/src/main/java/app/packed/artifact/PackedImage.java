@@ -15,16 +15,14 @@
  */
 package app.packed.artifact;
 
-import app.packed.component.Bundle;
 import app.packed.component.Component;
 import app.packed.component.Wirelet;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.PackedAssemblyContext;
-import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.component.wirelet.WireletPack;
 
 /** The default implementation of {@link Image}. */
+// Altsaa ved ikke om vi skal have forskellige images...
 // Taenker vi maaske skal flytte den internt?
 // Altsaa ved ikke lige hvordan det hosted image kommer til at fungere...
 final class PackedImage<A> implements Image<A> {
@@ -42,13 +40,9 @@ final class PackedImage<A> implements Image<A> {
      * 
      * @param driver
      *            the artifact driver
-     * @param bundle
-     *            the artifact source
-     * @param wirelets
-     *            any wirelet
      */
-    PackedImage(ShellDriver<A> driver, Bundle<?> bundle, Wirelet... wirelets) {
-        this.node = PackedAssemblyContext.assemble(PackedComponentModifierSet.I_IMAGE + driver.modifiers, bundle, driver, wirelets);
+    PackedImage(ComponentNodeConfiguration node, ShellDriver<A> driver) {
+        this.node = node;
         this.driver = driver;
     }
 

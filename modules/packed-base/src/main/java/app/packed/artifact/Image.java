@@ -54,6 +54,10 @@ import app.packed.config.ConfigSite;
 
 // Hvis Guest == Closeable
 // Saa er et image noget andet...
+
+// AttributeHodelder, modifiers...
+
+// ImageAttribute -> What happens on use()
 public interface Image<A> extends ComponentDelegate {
 
     /**

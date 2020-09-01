@@ -20,6 +20,7 @@ import java.lang.reflect.Modifier;
 import app.packed.artifact.App;
 import app.packed.artifact.Image;
 import app.packed.artifact.Main;
+import app.packed.artifact.ShellDriver;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
 import app.packed.lifecycle.AssemblyContext;
@@ -37,15 +38,14 @@ import app.packed.lifecycle.AssemblyContext;
 public enum ComponentModifier {
 
     /**
-     * Indicates that the system is in the assembly phase.
-     * <p>
-     * When a assembled system is initialized. A new system is created retained the structure of the assembled system but
-     * without this modifier.
+     * Indicates that the component and all of its children is in the assembly phase. When such a system is initialized. A
+     * new system is created retained the structure of the assembled system but without this modifier.
      * <p>
      * A system that has the {@link #IMAGE} modifier set is always in an assembled state.
      * <p>
      * The modifier set returned by {@link AssemblyContext#modifiers()} always contain this modifier.
      **/
+    //
     ASSEMBLY,
 
     // System wide.. what is part of the system and what is part of the environment
@@ -61,6 +61,7 @@ public enum ComponentModifier {
      * Another example
      * 
      */
+    // Hmm, hvad med en exstern database????
     EXTERNAL, // Wirelets, Artifacts are also FOREIGN or EXTERNAL...ENVIRONMENT
 
     /**
@@ -98,7 +99,7 @@ public enum ComponentModifier {
     CONTAINER,
 
     /**
-     * Indicates that the component represents a subclass of {@link Extension}.
+     * Indicates that the component is a part of an extension.
      * <p>
      * Components with this modifier:
      * <ul>
@@ -112,6 +113,10 @@ public enum ComponentModifier {
      */
     // Altsaa maaske betyder det bare at noget kommer fra en Extension??? Ogsaa paa runtime
     // If Extension_Member = SOURCE
+    // Ja det super meget lettere at filtere
+    // SOURCE_TYPE == EXTENSION_MEMBER_TYPE -> Assembly time extension
+    // Reposity JPA generated component er ikke en extension, selvom det maaske er saadan en der
+    // tilfoejer den
     EXTENSION,
 
     /**
@@ -153,26 +158,34 @@ public enum ComponentModifier {
      * <ul>
      * <li>Has the {@link ComponentAttributes#SOURCE_TYPE} set to the type used when registrating the component.</li>
      * </ul>
+     * If we are class generating something this also needs to be a source. As source_type indicates that the type that
+     * should be analyzed
+     * <p>
+     * What about function??? if we support annos paa functions we should have source type
      */
     SOURCED,
 
     /**
-     * Indicates that a component has a shell attached that can interact with it. One such examples, is by using
+     * Indicates that a component has a shell attached. For example, an application created via
      * {@link App#initialize(Bundle, Wirelet...)} to create a shell.
      * <p>
      * Shells that are attached to a guest are co-terminus with the guest. Restarting the guest will create a new shell. And
      * users make
      * <p>
      * Systems that are created via the various methods on {@link Main} never has a shell.
+     * 
+     * @see App
+     * @see ShellDriver
      */
     SHELL, // FOREIGN???
 
     /**
-     * Indicates that a system has been created for the sole reason of being analyzed is some way. A system with this
-     * modifier will never go through its initialization phase. Extensions may use this information to avoid work that is
-     * not needed if the system is never initialized.
+     * Indicates that a system has been created for the sole reason of being analyzed. A system with this modifier will
+     * never go through any initialization phase. Extensions may use this information to avoid work that is not needed if
+     * the system is never initialized.
      * <p>
-     * This modifier is normally checked in the assembly phase via {@link AssemblyContext#modifiers()}.
+     * This modifier is typically checked by accessing {@link AssemblyContext#modifiers()}, for example, via
+     * {@link Extension#assembly()}.
      * <p>
      * The modifier is set by the various methods in {@link ComponentAnalyzer} when specifying a bundle. Systems that are
      * already running will not have this modifier set when they are analysed.
@@ -182,6 +195,8 @@ public enum ComponentModifier {
      * <li>Always have the {@link #ASSEMBLY} modifier set as well.</li>
      * <li>Are never present at runtime.</li>
      * </ul>
+     * 
+     * @see ComponentAnalyzer
      */
     ANALYSIS,
 
@@ -236,6 +251,15 @@ public enum ComponentModifier {
 //Components.isPartOfImage() <--- look recursively in parents and see if any has the Image 
 
 enum Sandbox {
+
+    AOT,
+
+    /**
+     * Indicates that parts of the component has been generated.
+     * <p>
+     * The source was generated (GENERATED_FROM attribute???? nah. RepositoryType = ... fx for JPA
+     */
+    GENERATED,
 
     SPAWNED, // ??? Injector from an injector?? IDK can't think of a usercase...
 

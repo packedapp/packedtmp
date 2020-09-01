@@ -25,6 +25,7 @@ package app.packed.component;
 //by it.
 class SystemBoundary {
 
+    // Traditional in systems theory you would
 }
 // filter hvad der skal med.. depths, typer, extensions, hvor skal vi stoppe
 // Et filter stopper depth traversing
