@@ -69,7 +69,8 @@ public final class PackedInitializationContext {
     }
 
     public ServiceRegistry services() {
-        return (ServiceRegistry) node.store.instances[node.storeOffset];
+        // if !container return empty registry...
+        return node.store.getServiceRegistry(node);
     }
 
     // Initialize name, we don't want to override this in Configuration context. We don't want the conf to change if

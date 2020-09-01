@@ -35,9 +35,9 @@ import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
-import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
-import packed.internal.container.PackedContainerRole;
+import app.packed.service.ServiceRegistry;
+import packed.internal.container.PackedContainerAssembly;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.runtime.PackedInjector;
@@ -77,7 +77,7 @@ public final class ComponentNode implements Component {
         this.parent = parent;
         this.storeOffset = configuration.index;
         this.model = RuntimeComponentModel.of(configuration);
-        this.store = requireNonNull(configuration.guest.store());
+        this.store = requireNonNull(configuration.store.store());
         if (parent == null) {
             this.name = pic.rootName(configuration);
         } else {
@@ -86,25 +86,24 @@ public final class ComponentNode implements Component {
 
         // Initialize Container
         if (modifiers().isContainer()) {
+            ServiceRegistry registry = null;
             // I think this injector is only available for the top of an assembly
-            PackedContainerRole container = configuration.container;
-            Injector i = null;
-
+            PackedContainerAssembly container = configuration.container;
             if (container.extensions != null) {
                 PackedExtensionConfiguration ee = container.extensions.get(ServiceExtension.class);
                 if (ee != null) {
                     ServiceExtensionNode node = ServiceExtensionNode.fromExtension(((ServiceExtension) ee.instance()));
-                    i = node.onInstantiate(pic.wirelets());
+                    registry = node.onInstantiate(pic.wirelets());
                 }
             }
-            if (i == null) {
-                i = new PackedInjector(configuration.configSite(), Map.of());
+            if (registry == null) {
+                registry = new PackedInjector(configuration.configSite(), Map.of());
             }
 
-            store.instances[storeOffset] = i;
+            store.store(this, registry);
         }
 
-        // Last but least, initialize all children...
+        // Last but least, initialize any children the component might have...
         Map<String, ComponentNode> children = null;
         if (configuration.firstChild != null) {
             // Maybe ordered is the default...

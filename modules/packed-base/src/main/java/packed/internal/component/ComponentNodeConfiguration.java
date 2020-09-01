@@ -55,10 +55,11 @@ import packed.internal.base.attribute.DefaultAttributeMap;
 import packed.internal.base.attribute.PackedAttribute;
 import packed.internal.base.attribute.ProvidableAttributeModel;
 import packed.internal.base.attribute.ProvidableAttributeModel.Attt;
+import packed.internal.component.NodeStore.Assembly;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.container.PackedContainerRole;
+import packed.internal.container.PackedContainerAssembly;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.container.PackedRealm;
 import packed.internal.inject.ConfigSiteInjectOperations;
@@ -79,7 +80,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     /** Any container this component is part of. A container is part of it self */
     @Nullable
-    final PackedContainerRole container;
+    final PackedContainerAssembly container;
 
     /** The depth of the component in the hierarchy (including any parent artifacts). */
     final int depth;
@@ -111,8 +112,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     @Nullable
     final ComponentNodeConfiguration parent;
 
-    /** The guest the component belongs to. */
-    final NodeStoreConfiguration guest;
+    /** The store. */
+    final NodeStore.Assembly store;
 
     /** The realm the component belongs to. */
     private final PackedRealm realm;
@@ -160,8 +161,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         this.depth = parent == null ? 0 : parent.depth + 1;
 
         this.driver = requireNonNull(driver);
-        this.guest = parent == null || driver.modifiers().isGuest() ? new NodeStoreConfiguration(this) : parent.guest;
-        this.container = driver.modifiers().isContainer() ? new PackedContainerRole(this) : parent.container;
+        this.store = parent == null || driver.modifiers().isGuest() ? new Assembly(this) : parent.store;
+        this.container = driver.modifiers().isContainer() ? new PackedContainerAssembly(this) : parent.container;
 
         this.configSite = requireNonNull(configSite);
         this.wirelets = wirelets;
@@ -178,7 +179,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         }
         this.modifiers = p;
 
-        index = this.guest.reserve(1);
+        this.index = store.reserve(this); // calculate runtime storage
     }
 
     /**
@@ -294,7 +295,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     public ComponentNodeConfiguration assembledSuccesfully() {
         finalState = true;
         if (container != null) {
-            container.advanceTo(PackedContainerRole.LS_3_FINISHED);
+            container.advanceTo(PackedContainerAssembly.LS_3_FINISHED);
         }
         return this;
     }
@@ -311,14 +312,14 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
      * @return the container this component is a part of
      */
     @Nullable
-    public PackedContainerRole container() {
+    public PackedContainerAssembly container() {
         return container;
     }
 
     /** {@inheritDoc} */
     @Override
     public Set<Class<? extends Extension>> containerExtensions() {
-        if (container == null || container.node != this) {
+        if (container == null || container.component != this) {
             throw new UnsupportedOperationException("This method can only be used by a component has ComponentDriver.Option.container() enabled");
         }
         return container.extensions();
@@ -327,7 +328,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     /** {@inheritDoc} */
     @Override
     public <T extends Extension> T containerUse(Class<T> extensionType) {
-        if (container == null || container.node != this) {
+        if (container == null || container.component != this) {
             throw new UnsupportedOperationException("This method can only be used by a component has ComponentDriver.Option.container() enabled");
         }
         return container.use(extensionType);
@@ -377,11 +378,11 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
         if (driver.modifiers().isContainer()) {
             // IDK do we want to progress to next stage just in case...
-            if (container.containerState == PackedContainerRole.LS_0_MAINL) {
-                container.advanceTo(PackedContainerRole.LS_1_LINKING);
-            } else if (container.containerState == PackedContainerRole.LS_2_HOSTING) {
+            if (container.containerState == PackedContainerAssembly.LS_0_MAINL) {
+                container.advanceTo(PackedContainerAssembly.LS_1_LINKING);
+            } else if (container.containerState == PackedContainerAssembly.LS_2_HOSTING) {
                 throw new IllegalStateException("Was hosting");
-            } else if (container.containerState == PackedContainerRole.LS_3_FINISHED) {
+            } else if (container.containerState == PackedContainerAssembly.LS_3_FINISHED) {
                 throw new IllegalStateException("Was Assembled");
             }
         }

@@ -28,7 +28,7 @@ public class PackedGuest implements Guest {
 
     // Hmm, maybe not
     @Nullable
-    PackedGuest parent;
+    final PackedGuest parent;
 
     PackedGuest(@Nullable PackedGuest parent) {
         this.parent = parent;

@@ -52,14 +52,14 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     /** A MethodHandle for invoking {@link #lifecycle()} used by {@link ExtensionModel}. */
     static final MethodHandle MH_LIFECYCLE_CONTEXT = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "lifecycle", LifecycleContext.class);
 
-    /** A VarHandle used by {@link #of(PackedContainerRole, Class)} to access the field Extension#configuration. */
+    /** A VarHandle used by {@link #of(PackedContainerAssembly, Class)} to access the field Extension#configuration. */
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
     /** The container this extension belongs to. */
-    private final PackedContainerRole container;
+    private final PackedContainerAssembly container;
 
-    /** The extension instance this configuration wraps, initialized in {@link #of(PackedContainerRole, Class)}. */
+    /** The extension instance this configuration wraps, initialized in {@link #of(PackedContainerAssembly, Class)}. */
     @Nullable
     private Extension instance;
 
@@ -83,11 +83,11 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
      * @param model
      *            a model of the extension.
      */
-    private PackedExtensionConfiguration(PackedContainerRole container, ExtensionModel model) {
+    private PackedExtensionConfiguration(PackedContainerAssembly container, ExtensionModel model) {
         this.container = requireNonNull(container);
         this.model = requireNonNull(model);
         this.realm = PackedRealm.fromExtension(this);
-        this.node = container.node.newChild(model.driver(), container.node.configSite(), realm, null);
+        this.node = container.component.newChild(model.driver(), container.component.configSite(), realm, null);
         this.node.extension = this;
     }
 
@@ -163,14 +163,14 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
      * 
      * @return the configuration of the container the extension is registered in
      */
-    public PackedContainerRole container() {
+    public PackedContainerAssembly container() {
         return container;
     }
 
     /** {@inheritDoc} */
     @Override
     public ConfigSite containerConfigSite() {
-        return container.node.configSite();
+        return container.component.configSite();
     }
 
     /** {@inheritDoc} */
@@ -188,19 +188,19 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
      */
     @Nullable
     Object findWirelet(Class<? extends Wirelet> wireletType) {
-        return container.node.receiveWirelet(wireletType).orElse(null);
+        return container.component.receiveWirelet(wireletType).orElse(null);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T> BeanConfiguration<T> install(Factory<T> factory) {
-        return container.node.wire(BeanConfiguration.driver(), factory);
+        return container.component.wire(BeanConfiguration.driver(), factory);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T> BeanConfiguration<T> installInstance(T instance) {
-        return container.node.wireInstance(BeanConfiguration.driver(), instance);
+        return container.component.wireInstance(BeanConfiguration.driver(), instance);
     }
 
     /**
@@ -338,7 +338,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
      *            the type of extension to initialize
      * @return the new extension context
      */
-    static PackedExtensionConfiguration of(PackedContainerRole container, Class<? extends Extension> extensionType) {
+    static PackedExtensionConfiguration of(PackedContainerAssembly container, Class<? extends Extension> extensionType) {
         // I think move to the constructor of this context??? Then extension can be final...
         // Create extension context and instantiate extension
         ExtensionModel model = ExtensionModel.of(extensionType);
@@ -362,11 +362,11 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
             // Should we also set the active extension in the parent???
             if (model.extensionLinkedToAncestorExtension != null) {
                 PackedExtensionConfiguration parentExtension = null;
-                PackedContainerRole parent = container.node.container();
+                PackedContainerAssembly parent = container.component.container();
                 if (!model.extensionLinkedDirectChildrenOnly) {
                     while (parentExtension == null && parent != null) {
                         parentExtension = parent.getContext(extensionType);
-                        parent = parent.node.container();
+                        parent = parent.component.container();
                     }
                 } else if (parent != null) {
                     parentExtension = parent.getContext(extensionType);

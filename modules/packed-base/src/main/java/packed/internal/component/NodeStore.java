@@ -15,11 +15,17 @@
  */
 package packed.internal.component;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.concurrent.ConcurrentHashMap;
+
+import app.packed.service.ServiceRegistry;
 
 /**
  * All strongly connected components relate to the same pod.
  */
+// Passive System -> 1 NodeStore
+// Active System -> 1 NodeStore per guest
 public final class NodeStore {
 
     RuntimeComponentModel[] descriptors;// packed descriptors...
@@ -31,6 +37,62 @@ public final class NodeStore {
 
     NodeStore(int i) {
         instances = new Object[i];
+    }
+
+    enum ThingsToStore {
+
+    }
+
+    public Object getSingletonInstance(ComponentNode node) {
+        throw new UnsupportedOperationException();
+    }
+
+    public PackedGuest getGuest(ComponentNode node) {
+        throw new UnsupportedOperationException();
+    }
+
+    public PackedContainer getContainer(ComponentNode node) {
+        throw new UnsupportedOperationException();
+    }
+
+    public ServiceRegistry getServiceRegistry(ComponentNode node) {
+        return (ServiceRegistry) instances[node.storeOffset];
+    }
+
+    public void store(ComponentNode node, ServiceRegistry registry) {
+        instances[node.storeOffset] = registry;
+    }
+
+    static final class Assembly {
+
+        int index;
+
+        final ComponentNodeConfiguration root;
+
+        /** The pod used at runtime. */
+        private NodeStore store;
+
+        Assembly(ComponentNodeConfiguration node) {
+            this.root = requireNonNull(node);
+        }
+
+        int reserve(ComponentNodeConfiguration c) {
+            int i = 1;
+            if (store != null) {
+                throw new IllegalStateException();
+            }
+            int current = index;
+            index += i;
+            return current;
+        }
+
+        NodeStore store() {
+            NodeStore s = store;
+            if (s == null) {
+                s = store = new NodeStore(index);
+            }
+            return s;
+        }
     }
 
 }

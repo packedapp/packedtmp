@@ -32,7 +32,7 @@ import app.packed.container.Extension.Subtension;
 import app.packed.inject.Factory;
 import app.packed.lifecycle.AssemblyContext;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.container.PackedContainerRole;
+import packed.internal.container.PackedContainerAssembly;
 import packed.internal.container.PackedExtensionConfiguration;
 
 /**
@@ -208,7 +208,7 @@ public interface ExtensionConfiguration {
         }
 
         ComponentNodeConfiguration node = ComponentNodeConfiguration.unadapt(lookup, component);
-        PackedContainerRole container = node.container();
+        PackedContainerAssembly container = node.container();
         return container == null ? null : container.getContext(extensionType);
     }
 }

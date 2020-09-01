@@ -28,7 +28,7 @@ import app.packed.container.InternalExtensionException;
 import packed.internal.component.ComponentNodeConfiguration;
 
 /** The default container context. */
-public final class PackedContainerRole {
+public final class PackedContainerAssembly {
 
     public static final int LS_0_MAINL = 0;
 
@@ -45,15 +45,15 @@ public final class PackedContainerRole {
 
     private TreeSet<PackedExtensionConfiguration> extensionsOrdered;
 
-    /** The component node this container belongs to. */
-    public final ComponentNodeConfiguration node;
+    /** The component this container is a part of. */
+    public final ComponentNodeConfiguration component;
 
     @Nullable
-    public final PackedContainerRole parent;
+    public final PackedContainerAssembly parent;
 
-    public PackedContainerRole(ComponentNodeConfiguration node) {
-        this.node = requireNonNull(node);
-        this.parent = node.parentOrNull() == null ? null : node.parentOrNull().container();
+    public PackedContainerAssembly(ComponentNodeConfiguration component) {
+        this.component = requireNonNull(component);
+        this.parent = component.parentOrNull() == null ? null : component.parentOrNull().container();
     }
 
     public void advanceTo(int newState) {
@@ -68,7 +68,7 @@ public final class PackedContainerRole {
         }
 
         if (containerState == LS_1_LINKING && newState > LS_1_LINKING) {
-            for (ComponentNodeConfiguration cc = node.firstChild; cc != null; cc = cc.nextSibling) {
+            for (ComponentNodeConfiguration cc = component.firstChild; cc != null; cc = cc.nextSibling) {
                 if (cc.driver().modifiers().isContainer()) {
                     cc.container().advanceTo(LS_3_FINISHED);
                 }
@@ -140,7 +140,7 @@ public final class PackedContainerRole {
                     // Cannot perform this operation
                     throw new IllegalStateException("Cannot install new extensions at this point, extensionType = " + extensionType);
                 }
-                node.checkConfigurable();
+                component.checkConfigurable();
             } else {
                 caller.checkConfigurable();
             }
