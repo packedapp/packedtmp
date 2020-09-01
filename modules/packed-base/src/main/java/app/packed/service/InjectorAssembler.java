@@ -22,9 +22,9 @@ import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.Key.Qualifier;
 import app.packed.component.Assembler;
+import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
-import app.packed.component.BeanConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseBundle;
 import app.packed.container.ContainerConfiguration;

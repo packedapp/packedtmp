@@ -19,7 +19,6 @@ import java.util.concurrent.CompletableFuture;
 
 import app.packed.base.Nullable;
 import app.packed.guest.Guest;
-import app.packed.guest.GuestStopOption;
 
 /**
  *

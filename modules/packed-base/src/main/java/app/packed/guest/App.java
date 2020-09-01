@@ -26,6 +26,7 @@ import app.packed.component.Image;
 import app.packed.component.ShellDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
+import app.packed.guest.Guest.GuestStopOption;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceRegistry;
 

@@ -36,7 +36,7 @@ import java.util.Optional;
 //RunState.Snapshot...
 // Altsaa det skal vaere forbundet til
 
-interface GuestStateSnapshot {
+public interface GuestStateSnapshot {
 
     /**
      * Returns the current state of the object.

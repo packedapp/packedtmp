@@ -21,8 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.component.ComponentPath;
 import app.packed.component.BeanConfiguration;
+import app.packed.component.ComponentPath;
 import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;

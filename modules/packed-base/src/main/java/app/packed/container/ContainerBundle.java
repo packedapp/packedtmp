@@ -22,8 +22,8 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import app.packed.component.ComponentBundle;
 import app.packed.component.BeanConfiguration;
+import app.packed.component.ComponentBundle;
 import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
