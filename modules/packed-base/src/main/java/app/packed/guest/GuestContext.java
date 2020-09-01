@@ -16,6 +16,7 @@
 package app.packed.guest;
 
 import app.packed.component.ComponentModifierSet;
+import app.packed.component.ComponentPath;
 
 /**
  * Available to all components within a guest.
@@ -27,8 +28,17 @@ import app.packed.component.ComponentModifierSet;
 // replace itself / restart itself
 
 // Guest Context er kun noget med start/stop, restart osv at goere...
+
+// Ideen var at man kunne injecte den i componenter...
 public interface GuestContext {
 
+    ComponentPath path();
+
+    /**
+     * Returns the set of
+     * 
+     * @return a set of modifiers
+     */
     ComponentModifierSet modifiers();
 }
 //info

@@ -9,9 +9,7 @@ module app.packed.base {
     exports app.packed.hook;
     exports app.packed.inject;
     exports app.packed.lifecycle;
-    exports app.packed.lifecycleold;
     exports app.packed.service;
-    exports app.packed.service.sandbox;
     exports app.packed.sidecar;
     exports app.packed.statemachine;
 

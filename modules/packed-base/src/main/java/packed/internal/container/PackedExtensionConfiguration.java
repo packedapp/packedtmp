@@ -97,42 +97,6 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
         return node.assembly();
     }
 
-//    @SuppressWarnings({ "rawtypes", "unchecked" })
-//    void buildDescriptor(ContainerDescriptor.Builder builder) {
-//        MethodHandle mha = model.bundleBuilderMethod;
-//        if (mha != null) {
-//            try {
-//                mha.invoke(instance, builder);
-//            } catch (Throwable e1) {
-//                throw new UndeclaredThrowableException(e1);
-//            }
-//        }
-//
-//        for (Object s : model.contracts().values()) {
-//            // TODO need a context
-//            Contract con;
-//            if (s instanceof Function) {
-//                con = (Contract) ((Function) s).apply(instance);
-//            } else if (s instanceof BiFunction) {
-//                con = (Contract) ((BiFunction) s).apply(instance, null);
-//            } else {
-//                // MethodHandle...
-//                try {
-//                    MethodHandle mh = (MethodHandle) s;
-//                    if (mh.type().parameterCount() == 0) {
-//                        con = (Contract) mh.invoke(instance);
-//                    } else {
-//                        con = (Contract) mh.invoke(instance);
-//                    }
-//                } catch (Throwable e1) {
-//                    throw new UndeclaredThrowableException(e1);
-//                }
-//            }
-//            requireNonNull(con);
-//            builder.addContract(con);
-//        }
-//    }
-
     /** {@inheritDoc} */
     @Override
     public void checkConfigurable() {
