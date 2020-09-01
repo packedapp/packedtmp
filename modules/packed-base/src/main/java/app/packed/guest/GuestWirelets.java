@@ -21,10 +21,8 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import app.packed.artifact.App;
 import app.packed.component.Bundle;
 import app.packed.component.Wirelet;
-import app.packed.lifecycle3.LifecycleState;
 
 /**
  * Wirelets that can be used when wiring containers. For example, via {@link App#start(Bundle, Wirelet...)}
@@ -61,7 +59,7 @@ public interface GuestWirelets {
     // Users should execute
 
     // Maybe its not a task... More like a callback
-    static Wirelet entering(LifecycleState state, Runnable task) {
+    static Wirelet entering(GuestState state, Runnable task) {
         throw new UnsupportedOperationException();
     }
 
@@ -89,6 +87,7 @@ public interface GuestWirelets {
 //        throw new UnsupportedOperationException();
 //    }
 
+    // after which the guest will be shutdown normally
     static Wirelet deadline(Instant deadline) {
         // Shuts down container normally
         throw new UnsupportedOperationException();

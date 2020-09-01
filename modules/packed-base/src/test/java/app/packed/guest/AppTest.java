@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package app.packed.guest;
 
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.container.BaseBundle;
 import app.packed.container.ContainerConfiguration;
 
-/** Tests {@link App} and {@link PackedApp}. */
+/** Tests {@link App} (PackedApp). */
 public class AppTest {
 
     /** Tests an empty app. */

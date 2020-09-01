@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle3;
+package app.packed.statemachine;
 
 import java.util.Set;
 

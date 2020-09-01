@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycleold;
+package app.packed.guest;
 
 import java.util.Optional;
 
@@ -36,21 +36,21 @@ import java.util.Optional;
 //RunState.Snapshot...
 // Altsaa det skal vaere forbundet til
 
-interface RunStateSnapshot {
+interface GuestStateSnapshot {
 
     /**
      * Returns the current state of the object.
      * 
      * @return the current state of the object
      */
-    RunState actual(); // actual is maybe better???
+    GuestState actual(); // actual is maybe better???
 
     /**
      * Returns the desired state of the object.
      * 
      * @return the desired state of the object
      */
-    RunState desired();
+    GuestState desired();
 
     boolean isFailed();
 

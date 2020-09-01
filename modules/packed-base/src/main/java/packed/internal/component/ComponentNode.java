@@ -57,7 +57,7 @@ public final class ComponentNode implements Component {
 
     /** The parent component if it has one. */
     @Nullable
-    final ComponentNode parent;
+    final ComponentNode parent; // Parent is always stored as the first object in NodeStore...
 
     /** The index into the pod. */
     final int storeOffset;
@@ -104,9 +104,13 @@ public final class ComponentNode implements Component {
 
             store.storeServiceRegistry(this, registry);
         }
+
+        // Initialize if guest
         if (modifiers().isGuest()) {
             store.storeGuest(this, new PackedGuest(null));
         }
+
+        // Should be set by Dependency Injection logic
         if (modifiers().isSingleton()) {
 
         }

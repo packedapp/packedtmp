@@ -34,7 +34,7 @@ import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionSetup;
 import app.packed.inject.Factory;
 import app.packed.lifecycle.AssemblyContext;
-import app.packed.lifecycle3.LifecycleContext;
+import app.packed.statemachine.LifecycleContext;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.lifecycle.old.LifecycleContextHelper;
 import packed.internal.util.LookupUtil;

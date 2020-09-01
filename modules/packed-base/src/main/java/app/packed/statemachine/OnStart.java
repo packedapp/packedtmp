@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycleold;
+package app.packed.statemachine;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.artifact.App;
+import app.packed.guest.App;
+import app.packed.guest.GuestState;
 import app.packed.inject.InjectionContext;
 
 /**
  * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the
- * {@link RunState#STARTING} state.
+ * {@link GuestState#STARTING} state.
  *
  * <p>
  * A simple usage example:

@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycleold;
+package app.packed.statemachine;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.guest.GuestState;
 import app.packed.inject.Inject;
 import app.packed.inject.InjectionContext;
 
 /**
  * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the
- * {@link RunState#INITIALIZING} state.
+ * {@link GuestState#INITIALIZING} state.
  * 
  * <p>
  * This annotation can, for example, be used on a method on a component instance:
@@ -56,7 +57,7 @@ import app.packed.inject.InjectionContext;
  * </pre>
  * <p>
  * If a method annotated with {@code @OnInitialize} throws an exception. The initialization of the entity will normally
- * fail, and the state of the entity change from {@link RunState#INITIALIZING} to {@link RunState#TERMINATED}.
+ * fail, and the state of the entity change from {@link GuestState#INITIALIZING} to {@link GuestState#TERMINATED}.
  * <p>
  * You should never use the {@link Inject} annotation together with the {@link OnInitialize}, as this would mean the
  * method would be invoked twice, once in the entity's <b>injection</b> phase and once in the entity's

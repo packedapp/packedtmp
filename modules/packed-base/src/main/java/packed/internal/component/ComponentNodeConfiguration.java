@@ -251,7 +251,10 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             dam.addValue(ComponentAttributes.SHELL_TYPE, assembly.shellDriver().type());
         }
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.EXTENSION)) {
-            // dam.addValue(ComponentAttributes.SHELL_TYPE, assembly.shellDriver().type());
+            PackedExtensionConfiguration pec = extension;
+            if (pec != null) {
+                dam.addValue(ComponentAttributes.EXTENSION_MEMBER, pec.extensionType());
+            }
         }
         return dam;
     }
@@ -400,7 +403,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     /** {@inheritDoc} */
     @Override
-    public ComponentModifierSet modifiers() {
+    public PackedComponentModifierSet modifiers() {
         return new PackedComponentModifierSet(modifiers);
     }
 

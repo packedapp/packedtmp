@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycleold;
+package app.packed.guest;
 
 /**
  * An enum containing all valid run states.
@@ -36,7 +36,7 @@ package app.packed.lifecycleold;
 // Det betyder maaske ogsaa at restart ikke er en del
 
 // RuntimeState 
-public enum RunState {
+public enum GuestState {
 
     /**
      * The initial state in the lifecycle of an entity. This state is typically used for reading and validating the
@@ -84,8 +84,8 @@ public enum RunState {
      *            the states to check
      * @return true if the entity is in any of the specified states, otherwise false
      */
-    public boolean isAnyOf(RunState... states) {
-        for (RunState s : states) {
+    public boolean isAnyOf(GuestState... states) {
+        for (GuestState s : states) {
             if (s == this) {
                 return true;
             }

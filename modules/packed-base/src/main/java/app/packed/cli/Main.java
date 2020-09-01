@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package app.packed.cli;
 
 import app.packed.component.Bundle;
 import app.packed.component.Wirelet;
-import app.packed.lifecycleold.RunState;
+import app.packed.guest.App;
+import app.packed.guest.GuestState;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedAssemblyContext;
 import packed.internal.component.PackedInitializationContext;
@@ -33,7 +34,7 @@ public class Main {
 
     /**
      * This method will create and start an {@link App application} from the specified source. Blocking until the run state
-     * of the application is {@link RunState#TERMINATED}.
+     * of the application is {@link GuestState#TERMINATED}.
      * <p>
      * Entry point or run to termination
      * 

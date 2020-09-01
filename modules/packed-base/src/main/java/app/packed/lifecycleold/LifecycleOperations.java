@@ -20,8 +20,10 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import app.packed.artifact.App;
 import app.packed.component.Component;
+import app.packed.guest.App;
+import app.packed.guest.GuestState;
+import app.packed.statemachine.OnStart;
 
 /**
  * A lifecycle expansion interface. The main purpose of this interface is to avoid cluttering the interface of entities
@@ -59,25 +61,25 @@ public interface LifecycleOperations<T> {
      * first.
      * <p>
      * If the object has already reached or passed the specified state this method returns immediately. For example, if
-     * attempting to wait on the {@link RunState#RUNNING} state and the object has already been stopped. This method
+     * attempting to wait on the {@link GuestState#RUNNING} state and the object has already been stopped. This method
      * will return immediately with true.
      *
      * @param state
      *            the state to wait on
      * @throws InterruptedException
      *             if interrupted while waiting
-     * @see #await(RunState, long, TimeUnit)
+     * @see #await(GuestState, long, TimeUnit)
      * @see #getState()
-     * @see #whenAt(RunState)
+     * @see #whenAt(GuestState)
      */
-    void await(RunState state) throws InterruptedException;
+    void await(GuestState state) throws InterruptedException;
 
     /**
      * Blocks until the object has reached the requested state, or the timeout occurs, or the current thread is interrupted,
      * whichever happens first.
      * <p>
      * If the object has already reached or passed the specified state this method returns immediately. For example, if
-     * attempting to wait on the {@link RunState#RUNNING} state and the object has already been stopped. This method
+     * attempting to wait on the {@link GuestState#RUNNING} state and the object has already been stopped. This method
      * will return immediately with true.
      *
      * @param state
@@ -90,11 +92,11 @@ public interface LifecycleOperations<T> {
      *         reaching the state
      * @throws InterruptedException
      *             if interrupted while waiting
-     * @see #await(RunState)
+     * @see #await(GuestState)
      * @see #getState()
-     * @see #whenAt(RunState)
+     * @see #whenAt(GuestState)
      */
-    boolean await(RunState state, long timeout, TimeUnit unit) throws InterruptedException;
+    boolean await(GuestState state, long timeout, TimeUnit unit) throws InterruptedException;
 
     /**
      * If the owning object has been shutdown because of a failure, returns the failure. Otherwise returns
@@ -119,10 +121,10 @@ public interface LifecycleOperations<T> {
      * Calling this method will never block the current thread.
      *
      * @return the current state of the component
-     * @see #await(RunState, long, TimeUnit)
-     * @see #whenAt(RunState)
+     * @see #await(GuestState, long, TimeUnit)
+     * @see #whenAt(GuestState)
      */
-    RunState getState();
+    GuestState getState();
 
     /**
      * Returns <code>true</code> if the owning object has been shutdown because of a failture. Otherwise returns
@@ -150,7 +152,7 @@ public interface LifecycleOperations<T> {
     // c.lifecycle().runOn(LifecycleState.STOPPING, () -> System.out.print("Stopping"));
     // }
 
-    default CompletableFuture<?> runOn(RunState state, Runnable action) {
+    default CompletableFuture<?> runOn(GuestState state, Runnable action) {
         throw new UnsupportedOperationException();
     }
 
@@ -168,14 +170,14 @@ public interface LifecycleOperations<T> {
      *            the action to execute
      * @return true if the action was executed, otherwise false
      */
-    boolean runIfStateIs(RunState state, Runnable action);
+    boolean runIfStateIs(GuestState state, Runnable action);
 
     // runUnderLockIfStateIs() //check state, lock, check state igen
     // runUnderLockIf(Predicate) <--- bliver noedt til at eksekvere
     // runUnderLock()
 
     // Maaaske byt them, ud saa kan vi have vargs state
-    default <V> V supplyIfStateAt(RunState state, Supplier<V> action) {
+    default <V> V supplyIfStateAt(GuestState state, Supplier<V> action) {
         throw new UnsupportedOperationException();
     }
 
@@ -195,13 +197,13 @@ public interface LifecycleOperations<T> {
      * @param state
      *            the state for which to return a completion stage
      * @return a completion stage for the specified state
-     * @see #await(RunState, long, TimeUnit)
+     * @see #await(GuestState, long, TimeUnit)
      * @see #getState()
      */
     // Do we want to add this to configuration? ContainerConfiguration.whenAtState(Running.class, print "Yeah");
     // We want a CompletionFuture instead. We want something like join() to be available.
     // whenAt(LifeState.INITIALIZING).then(c->c.install(ccc));
-    CompletionStage<T> whenAt(RunState state);
+    CompletionStage<T> whenAt(GuestState state);
 
     // boolean isRestartable()
     // boolean isRestarting();

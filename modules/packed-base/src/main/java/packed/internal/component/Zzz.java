@@ -17,6 +17,7 @@ package packed.internal.component;
 
 import app.packed.component.ComponentAnalyzer;
 import app.packed.container.BaseBundle;
+import app.packed.container.Extension;
 
 /**
  *
@@ -27,11 +28,16 @@ public class Zzz extends BaseBundle {
     @Override
     protected void configure() {
         service();
+        use(MyEx.class);
     }
 
     public static void main(String[] args) {
         ComponentAnalyzer.stream(new Zzz()).forEach(c -> {
             System.out.println(c.path() + "  " + c.modifiers() + "  " + c.attributes());
         });
+    }
+
+    static class MyEx extends Extension {
+
     }
 }

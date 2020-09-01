@@ -19,10 +19,10 @@ import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import app.packed.artifact.App;
 import app.packed.base.Attribute;
 import app.packed.base.AttributeProvide;
 import app.packed.container.BaseBundle;
+import app.packed.guest.App;
 
 /**
  *

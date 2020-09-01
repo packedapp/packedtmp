@@ -18,6 +18,6 @@ package app.packed.lifecycleold;
 /**
  *
  */
-public interface StopContext {
+interface StopContext {
 
 }

@@ -13,15 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package app.packed.component;
 
 import java.util.concurrent.CompletableFuture;
 
 import app.packed.cli.MainArgs;
-import app.packed.component.Component;
-import app.packed.component.ComponentDelegate;
-import app.packed.component.ComponentModifier;
-import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 
 /**
@@ -41,7 +37,7 @@ import app.packed.config.ConfigSite;
  * No structural changes... Only whole artifacts
  * 
  * <p>
- * An image can be used to create new instances of {@link app.packed.artifact.App} or other artifact images. Artifact
+ * An image can be used to create new instances of {@link app.packed.guest.App} or other artifact images. Artifact
  * images can not be used as a part of other containers, for example, via
  * 
  * 

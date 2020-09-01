@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package app.packed.guest;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -23,12 +23,12 @@ import app.packed.component.Component;
 import app.packed.component.ComponentDelegate;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
+import app.packed.component.Image;
+import app.packed.component.ShellDriver;
 import app.packed.component.ComponentStream.Option;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.lifecycleold.LifecycleOperations;
-import app.packed.lifecycleold.RunState;
-import app.packed.lifecycleold.StopOption;
 import app.packed.service.ServiceExtension;
 
 /**
@@ -104,7 +104,7 @@ public interface App extends AutoCloseable, ComponentDelegate {
      */
     LifecycleOperations<? extends App> state();
 
-    App stop(StopOption... options);
+    App stop(GuestStopOption... options);
 
     /**
      * Initiates an orderly asynchronously shutdown of the application. In which currently running tasks will be executed,
@@ -115,7 +115,7 @@ public interface App extends AutoCloseable, ComponentDelegate {
      * @return a future that can be used to query whether the application has completed shutdown (terminated). Or is still
      *         in the process of being shut down
      */
-    CompletableFuture<App> stopAsync(StopOption... options); // StopOption.async() //OnStop.Option (nah det her er specifikke container options)
+    CompletableFuture<App> stopAsync(GuestStopOption... options); // StopOption.async() //OnStop.Option (nah det her er specifikke container options)
 
     /**
      * Returns a component stream consisting of this applications underlying container and all of its descendants in any
@@ -173,7 +173,7 @@ public interface App extends AutoCloseable, ComponentDelegate {
 
     /**
      * Create an application (but does not start it) from the specified source. The state of the returned application is
-     * {@link RunState#INITIALIZED}. The returned application will lazily start itself when needed. For example, on first
+     * {@link GuestState#INITIALIZED}. The returned application will lazily start itself when needed. For example, on first
      * invocation of {@link #use(Class)}.
      *
      * @param bundle
@@ -194,7 +194,7 @@ public interface App extends AutoCloseable, ComponentDelegate {
 
     /**
      * Create and start a new application using the specified bundle. The state of the returned application is
-     * {@link RunState#RUNNING}.
+     * {@link GuestState#RUNNING}.
      *
      * @param bundle
      *            the source of the application

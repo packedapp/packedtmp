@@ -25,18 +25,12 @@ import packed.internal.component.wirelet.WireletPack;
 import packed.internal.util.LookupUtil;
 
 /**
- * An instantiation context is created for every delimited tree hierachy.
- * <p>
- * <strong>Note that this implementation is not synchronized.</strong>
- */
-
-/**
- * An artifact instantiation context is created every time an artifact is being instantiated.
+ * An instantiation context is created every time an artifact is being instantiated.
  * <p>
  * Describes which phases it is available from
  * <p>
  * <p>
- * <strong>Note that this implementation is not synchronized.</strong> Hmmm what about if use them at startup???
+ * <strong>Note that this implementation is not synchronized.</strong>
  */
 public final class PackedInitializationContext {
 

@@ -25,10 +25,9 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import app.packed.artifact.App;
-import app.packed.artifact.Image;
 import app.packed.base.AttributedElementStream;
 import app.packed.container.Extension;
+import app.packed.guest.App;
 import packed.internal.component.PackedComponentStreamOption;
 
 /**

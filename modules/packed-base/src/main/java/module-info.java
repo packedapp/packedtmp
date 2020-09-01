@@ -1,6 +1,6 @@
 module app.packed.base {
-    exports app.packed.artifact;
     exports app.packed.base; // then have @Preview @DeprecatedWithReason
+    exports app.packed.cli;
     exports app.packed.introspection;
     exports app.packed.component;
     exports app.packed.config;
@@ -24,7 +24,6 @@ module app.packed.base {
     exports packed.internal.component.wirelet to app.packed.errorhandling;
     exports packed.internal.container to app.packed.errorhandling, app.packed.conta;
     exports packed.internal.hook to app.packed.errorhandling;
-    exports app.packed.lifecycle3 to app.packed.errorhandling;
     exports packed.internal.lifecycle.old to app.packed.errorhandling;
     exports packed.internal.errorhandling to app.packed.errorhandling;
     exports packed.internal.base.attribute to app.packed.attribute;

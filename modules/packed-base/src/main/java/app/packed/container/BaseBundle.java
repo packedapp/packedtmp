@@ -21,13 +21,12 @@ import app.packed.component.BeanConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
-import app.packed.lifecycle3.LifecycleExtension;
-import app.packed.lifecycleold.OnStart;
 import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
 import app.packed.service.PrototypeConfiguration;
 import app.packed.service.ServiceExtension;
+import app.packed.statemachine.OnStart;
 
 /**
  * A convenience extension of {@link ContainerBundle} which contains shortcut access to common functionality defined by
@@ -144,10 +143,6 @@ public abstract class BaseBundle extends ContainerBundle {
 
     protected final void exportAll() {
         service().exportAll();
-    }
-
-    protected final LifecycleExtension lifecycle() {
-        return use(LifecycleExtension.class);
     }
 
     /**

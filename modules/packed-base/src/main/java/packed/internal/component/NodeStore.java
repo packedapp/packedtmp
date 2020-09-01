@@ -78,18 +78,12 @@ public final class NodeStore {
 
         final ComponentNodeConfiguration root;
 
-        /** The pod used at runtime. */
-        private NodeStore store;
-
         Assembly(ComponentNodeConfiguration node) {
             this.root = requireNonNull(node);
         }
 
         int reserve(ComponentNodeConfiguration c) {
             int i = 1;
-            if (store != null) {
-                throw new IllegalStateException();
-            }
             int current = index;
             index += i;
             return current;

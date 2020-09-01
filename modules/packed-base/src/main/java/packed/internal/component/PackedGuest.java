@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 
 import app.packed.base.Nullable;
 import app.packed.guest.Guest;
-import app.packed.lifecycleold.StopOption;
+import app.packed.guest.GuestStopOption;
 
 /**
  *
@@ -37,8 +37,8 @@ public class PackedGuest implements Guest {
     /** {@inheritDoc} */
     @Override
     public Guest start() {
-        System.out.println("START");
-        return null;
+        // System.out.println("START");
+        return this;
     }
 
     /** {@inheritDoc} */
@@ -49,13 +49,13 @@ public class PackedGuest implements Guest {
 
     /** {@inheritDoc} */
     @Override
-    public Guest stop(StopOption... options) {
+    public Guest stop(GuestStopOption... options) {
         return null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public <T> CompletableFuture<T> stopAsync(T result, StopOption... options) {
+    public <T> CompletableFuture<T> stopAsync(T result, GuestStopOption... options) {
         return null;
     }
 }

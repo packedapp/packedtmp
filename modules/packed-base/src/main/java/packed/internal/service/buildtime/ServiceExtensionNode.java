@@ -221,9 +221,9 @@ public final class ServiceExtensionNode {
             if (node instanceof ComponentFactoryBuildEntry) {
                 ComponentFactoryBuildEntry<?> s = (ComponentFactoryBuildEntry<?>) node;
                 if (s.instantiationMode() == ServiceMode.CONSTANT) {
-                    Object i = s.toRuntimeEntry(con).getInstance(null);
+                    s.toRuntimeEntry(con).getInstance(null);
                     if (s.component.modifiers().isSingleton()) {
-
+                        // TODO add to singleton
                     }
                 }
             }

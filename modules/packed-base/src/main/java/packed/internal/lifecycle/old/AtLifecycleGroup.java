@@ -17,9 +17,9 @@ package packed.internal.lifecycle.old;
 
 import java.util.List;
 
-import app.packed.lifecycleold.OnInitialize;
-import app.packed.lifecycleold.OnStart;
-import app.packed.lifecycleold.OnStop;
+import app.packed.statemachine.OnInitialize;
+import app.packed.statemachine.OnStart;
+import app.packed.statemachine.OnStop;
 
 /**
  * Information about methods annotated with {@link OnInitialize}, {@link OnStart} and {@link OnStop}, typically on a

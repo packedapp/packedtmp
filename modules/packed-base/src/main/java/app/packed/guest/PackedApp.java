@@ -1,4 +1,4 @@
-package app.packed.artifact;
+package app.packed.guest;
 
 import static java.util.Objects.requireNonNull;
 
@@ -8,11 +8,10 @@ import java.util.concurrent.CompletableFuture;
 import app.packed.base.Key;
 import app.packed.component.Component;
 import app.packed.component.ComponentStream;
+import app.packed.component.ShellDriver;
 import app.packed.component.ComponentStream.Option;
 import app.packed.config.ConfigSite;
-import app.packed.guest.Guest;
 import app.packed.lifecycleold.LifecycleOperations;
-import app.packed.lifecycleold.StopOption;
 import app.packed.service.ServiceRegistry;
 
 /** The default implementation of {@link App}. */
@@ -75,14 +74,14 @@ final class PackedApp implements App {
 
     /** {@inheritDoc} */
     @Override
-    public App stop(StopOption... options) {
+    public App stop(GuestStopOption... options) {
         guest.stop(options);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public CompletableFuture<App> stopAsync(StopOption... options) {
+    public CompletableFuture<App> stopAsync(GuestStopOption... options) {
         return guest.stopAsync(this, options);
     }
 

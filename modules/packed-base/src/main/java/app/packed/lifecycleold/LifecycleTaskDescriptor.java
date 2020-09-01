@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle3;
+package app.packed.lifecycleold;
 
 import app.packed.component.Component;
 import app.packed.container.Extension;
@@ -54,7 +54,7 @@ public interface LifecycleTaskDescriptor {
 
     InvokableDescriptor invokeable();
 
-    LifecycleState state();
+    String state();
 }
 // En metode/executable/field/function
 

@@ -18,14 +18,14 @@ package app.packed.service;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.artifact.App;
-import app.packed.artifact.Image;
-import app.packed.artifact.ShellDriver;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
+import app.packed.component.Image;
+import app.packed.component.ShellDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
+import app.packed.guest.App;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.util.LookupUtil;
 

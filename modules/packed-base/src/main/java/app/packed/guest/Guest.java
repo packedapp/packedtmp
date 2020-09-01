@@ -17,8 +17,6 @@ package app.packed.guest;
 
 import java.util.concurrent.CompletableFuture;
 
-import app.packed.lifecycleold.StopOption;
-
 /**
  *
  */
@@ -30,7 +28,7 @@ public interface Guest {
 
     <T> CompletableFuture<T> startAsync(T result);
 
-    Guest stop(StopOption... options);
+    Guest stop(GuestStopOption... options);
 
-    <T> CompletableFuture<T> stopAsync(T result, StopOption... options);
+    <T> CompletableFuture<T> stopAsync(T result, GuestStopOption... options);
 }

@@ -17,11 +17,9 @@ package app.packed.component;
 
 import java.lang.reflect.Modifier;
 
-import app.packed.artifact.App;
-import app.packed.artifact.Image;
-import app.packed.artifact.Main;
-import app.packed.artifact.ShellDriver;
+import app.packed.cli.Main;
 import app.packed.container.Extension;
+import app.packed.guest.App;
 import app.packed.inject.Factory;
 import app.packed.lifecycle.AssemblyContext;
 
@@ -251,6 +249,8 @@ public enum ComponentModifier {
 //Components.isPartOfImage() <--- look recursively in parents and see if any has the Image 
 
 enum Sandbox {
+
+    RESTARTABLE,
 
     AOT,
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycleold;
+package app.packed.guest;
 
 /**
  *
@@ -24,10 +24,10 @@ package app.packed.lifecycleold;
 // Og stopoptions... Kan vi komme derhen med wirelets??? F.eks. lad os sige vi gerne vil restarte med nogle andre settings???? StopOption.restart(Wirelet... wirelets)
 
 // Jeg vil ikke afvise at vi skal have den... men Wirelets er maaske lidt bedre...
-public interface StartOption {
+public interface GuestStartOption {
 
     // LifecycleTransition
-    static StartOption reason(String reason) {
+    static GuestStartOption reason(String reason) {
         throw new UnsupportedOperationException();
     }
 }

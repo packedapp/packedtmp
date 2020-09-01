@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycleold;
+package app.packed.guest;
 
 import java.util.concurrent.TimeUnit;
 
@@ -39,38 +39,42 @@ import app.packed.component.Wirelet;
 // ER HELT SIKKER IKKE EN DEL AF LIFECYCLE VIL JEG MENE
 // Som udgangspunkt er det noget med Guest og goere..
 // Med mindre instanser lige pludselig kan bruge det.
-public interface StopOption {
+public interface GuestStopOption {
 
-    static StopOption erroneous(Throwable cause) {
+    static GuestStopOption erroneous(Throwable cause) {
         throw new UnsupportedOperationException();
     }
 
-    static StopOption forced() {
+    static GuestStopOption forced() {
         throw new UnsupportedOperationException();
     }
 
-    static StopOption graceTime(long timeout, TimeUnit unit) {
+    // Can be used as wirelet as well...
+    static GuestStopOption graceTime(long timeout, TimeUnit unit) {
         // before forced???
         throw new UnsupportedOperationException();
     }
 
-    static StopOption restart(Wirelet... wirelets) {
+    static GuestStopOption restart(Wirelet... wirelets) {
         // restart(Wirelet.rename("Restart at ....");
         //// Men okay hvad hvis det ikke kan lade sige goere at omnavngive den...
         throw new UnsupportedOperationException();
     }
 
-    static StopOption now() {
+    static GuestStopOption now() {
         // Now == shutdownNow();
         throw new UnsupportedOperationException();
     }
 
-    static StopOption now(Throwable cause) {
+    static GuestStopOption now(Throwable cause) {
         throw new UnsupportedOperationException();
     }
 
     // Will override default settings.
-    static StopOption undeploy() {
+    // linger would be nice
+    // Or maybe somewhere to replace the guest with a tombstone of some kind.
+    // Summarizing everything in the guest...
+    static GuestStopOption undeploy() {
         throw new UnsupportedOperationException();
     }
 

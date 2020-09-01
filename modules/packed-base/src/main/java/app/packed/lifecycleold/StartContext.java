@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 // ContainerStartContext
 // ContainerStopContext
-public interface StartContext<T> {
+interface StartContext<T> {
 
     CompletableFuture<T> now();
 

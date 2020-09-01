@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package app.packed.component;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,13 +22,8 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.util.function.Function;
 
-import app.packed.component.Bundle;
-import app.packed.component.Component;
-import app.packed.component.ComponentModifierSet;
-import app.packed.component.CustomConfigurator;
-import app.packed.component.WireableComponentDriver;
-import app.packed.component.Wirelet;
 import app.packed.container.Extension;
+import app.packed.guest.App;
 import app.packed.guest.Guest;
 import app.packed.service.Injector;
 import app.packed.service.ServiceRegistry;

@@ -20,8 +20,9 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import app.packed.artifact.App;
 import app.packed.component.Component;
+import app.packed.guest.App;
+import app.packed.guest.GuestState;
 
 /**
  * A lifecycle expansion interface. The main purpose of this interface is to avoid cluttering the interface of entities
@@ -70,13 +71,13 @@ interface LifecycleSpecificOperations<T> {
      * first.
      * <p>
      * If the object has already reached or passed the specified state this method returns immediately. For example, if
-     * attempting to wait on the {@link RunState#RUNNING} state and the object has already been stopped. This method
+     * attempting to wait on the {@link GuestState#RUNNING} state and the object has already been stopped. This method
      * will return immediately with true.
      *
      * @throws InterruptedException
      *             if interrupted while waiting
      * @see #await( long, TimeUnit)
-     * @see #whenAt(RunState)
+     * @see #whenAt(GuestState)
      */
     // on(LifecycleState.INITIALIZED).await();
     void await() throws InterruptedException;
@@ -86,7 +87,7 @@ interface LifecycleSpecificOperations<T> {
      * whichever happens first.
      * <p>
      * If the object has already reached or passed the specified state this method returns immediately. For example, if
-     * attempting to wait on the {@link RunState#RUNNING} state and the object has already been stopped. This method
+     * attempting to wait on the {@link GuestState#RUNNING} state and the object has already been stopped. This method
      * will return immediately with true.
      *
      * @param timeout
@@ -97,7 +98,7 @@ interface LifecycleSpecificOperations<T> {
      *         reaching the state
      * @throws InterruptedException
      *             if interrupted while waiting
-     * @see #whenAt(RunState)
+     * @see #whenAt(GuestState)
      */
     boolean await(long timeout, TimeUnit unit) throws InterruptedException;
 
@@ -167,7 +168,7 @@ interface LifecycleSpecificOperations<T> {
     // Do we want to add this to configuration? ContainerConfiguration.whenAtState(Running.class, print "Yeah");
     // We want a CompletionFuture instead. We want something like join() to be available.
     // whenAt(LifeState.INITIALIZING).then(c->c.install(ccc));
-    CompletionStage<T> whenAt(RunState state);
+    CompletionStage<T> whenAt(GuestState state);
 
     // boolean isRestartable()
     // boolean isRestarting();
