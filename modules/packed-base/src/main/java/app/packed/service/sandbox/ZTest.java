@@ -15,8 +15,14 @@
  */
 package app.packed.service.sandbox;
 
+import java.lang.invoke.MethodHandles;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import app.packed.artifact.App;
 import app.packed.artifact.Image;
+import app.packed.base.Attribute;
+import app.packed.base.AttributeProvide;
 import app.packed.component.ComponentAnalyzer;
 import app.packed.container.BaseBundle;
 
@@ -28,10 +34,13 @@ public class ZTest extends BaseBundle {
     /** {@inheritDoc} */
     @Override
     protected void configure() {
+        lookup(MethodHandles.lookup());
         installInstance("asdasd");
+        provide(XX.class);
         provideInstance(123);
 
         export(Integer.class);
+        link(new MM());
     }
 
     public static void main(String[] args) {
@@ -48,5 +57,32 @@ public class ZTest extends BaseBundle {
 
         // Vi kan have en historik over hvad der er blevet deployet i et cluster....
         // Lokalt paa en maskine... OSV...
+
+        App.initialize(new ZTest());
+    }
+
+    static class MM extends BaseBundle {
+
+        /** {@inheritDoc} */
+        @Override
+        protected void configure() {
+            install(XX.class);
+            service();
+            System.out.println("NICE");
+        }
+
+    }
+
+    public static class XX {
+        public static Attribute<LocalDateTime> TIME = Attribute.of(MethodHandles.lookup(), "time", LocalDateTime.class);
+
+        XX() {
+            new Exception().printStackTrace();
+        }
+
+        @AttributeProvide(by = XX.class, name = "time")
+        public LocalDate now() {
+            return LocalDate.now();
+        }
     }
 }

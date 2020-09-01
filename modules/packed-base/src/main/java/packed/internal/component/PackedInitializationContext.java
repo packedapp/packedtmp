@@ -100,12 +100,14 @@ public final class PackedInitializationContext {
     }
 
     public static PackedInitializationContext initialize(ComponentNodeConfiguration root) {
-        return initializeImage(root, root.wirelets); // not technically an image...
+        PackedInitializationContext ic = new PackedInitializationContext(root.wirelets);
+        ic.node = new ComponentNode(null, root, ic);
+        return ic;
     }
 
     public static PackedInitializationContext initializeImage(ComponentNodeConfiguration root, WireletPack wirelets) {
         PackedInitializationContext ic = new PackedInitializationContext(wirelets);
-        ic.node = root.instantiateTree(ic);
+        ic.node = new ComponentNode(null, root, ic);
         return ic;
     }
 

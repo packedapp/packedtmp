@@ -359,7 +359,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         return name;
     }
 
-    public ComponentNode instantiateTree(PackedInitializationContext ic) {
+    ComponentNode instantiateTree(PackedInitializationContext ic) {
         return new ComponentNode(null, this, ic);
     }
 

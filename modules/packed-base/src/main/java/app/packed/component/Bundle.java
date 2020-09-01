@@ -76,7 +76,7 @@ public abstract class Bundle<C> implements ComponentSystem {
         Object c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
-        } else if (c == BundleHelper.CONSUMED_SUCCESFULLY) {
+        } else if (c == BundleHelper.BUNDLE_CONSUMED) {
             throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
         } else {
             return (C) c;

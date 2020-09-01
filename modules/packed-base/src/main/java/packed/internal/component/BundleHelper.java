@@ -28,7 +28,7 @@ import packed.internal.util.ThrowableUtil;
 /** Helper class to access non-public members in {@link Bundle}. */
 public final class BundleHelper {
 
-    public static final BundleHelper CONSUMED_SUCCESFULLY = new BundleHelper();
+    public static final BundleHelper BUNDLE_CONSUMED = new BundleHelper();
 
     /** A VarHandle that can access Bundle#configuration. */
     private static final VarHandle VH_BUNDLE_CONFIGURATION = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Bundle.class, "configuration", Object.class);
@@ -43,28 +43,27 @@ public final class BundleHelper {
     /** No instances for you. */
     private BundleHelper() {}
 
-    // Maaske skal den tage en driver og en node???
-    // Configuration
     public static void configure(Bundle<?> bundle, Object configuration) {
-
         // We perform a compare and exchange with configuration. Guarding against
         // concurrent usage of this bundle.
 
         Object existing = VH_BUNDLE_CONFIGURATION.compareAndExchange(bundle, null, configuration);
         if (existing == null) {
             try {
-                MH_BUNDLE_CONFIGURE.invoke(bundle); // Invokes app.packed.component.Bundle#configure();
+                // Invokes app.packed.component.Bundle#configure()
+                MH_BUNDLE_CONFIGURE.invoke(bundle);
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             } finally {
-                VH_BUNDLE_CONFIGURATION.setVolatile(bundle, BundleHelper.CONSUMED_SUCCESFULLY);
+                // sets Bundle.configuration to a marker that indicates the bundle has been consumed
+                VH_BUNDLE_CONFIGURATION.setVolatile(bundle, BundleHelper.BUNDLE_CONSUMED);
             }
         } else if (existing instanceof BundleHelper) {
-            // Bundle has already been used succesfullly or unsuccesfully
+            // Bundle has already been used successfully or unsuccessfully
             throw new IllegalStateException("This bundle has already been used, type = " + bundle.getClass());
         } else {
             // Can be this thread or another thread that is already using the bundle.
-            throw new IllegalStateException("This bundle is already being used elsewhere, type = " + bundle.getClass());
+            throw new IllegalStateException("This bundle is currently being used elsewhere, type = " + bundle.getClass());
         }
 
         // Do we want to cache exceptions?
