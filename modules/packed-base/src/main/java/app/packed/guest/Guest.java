@@ -22,6 +22,8 @@ import java.util.concurrent.CompletableFuture;
  */
 // host facing
 // Maybe GuestController.... And guest can be a view/readable thingy
+
+// External facing...
 public interface Guest {
 
     Guest start();

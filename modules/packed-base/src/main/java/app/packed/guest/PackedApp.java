@@ -3,14 +3,9 @@ package app.packed.guest;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
-import java.util.concurrent.CompletableFuture;
 
-import app.packed.base.Key;
 import app.packed.component.Component;
-import app.packed.component.ComponentStream;
-import app.packed.component.ComponentStream.Option;
 import app.packed.component.ShellDriver;
-import app.packed.config.ConfigSite;
 import app.packed.service.ServiceRegistry;
 
 /** The default implementation of {@link App}. */
@@ -55,51 +50,14 @@ final class PackedApp implements App {
 
     /** {@inheritDoc} */
     @Override
-    public ConfigSite configSite() {
-        return component.configSite();
+    public Guest guest() {
+        return guest;
     }
 
     /** {@inheritDoc} */
     @Override
-    public Component resolve(CharSequence path) {
-        return component.resolve(path);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public App stop(GuestStopOption... options) {
-        guest.stop(options);
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public CompletableFuture<App> stopAsync(GuestStopOption... options) {
-        return guest.stopAsync(this, options);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentStream stream() {
-        return component.stream();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentStream stream(Option... options) {
-        return component.stream(options);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T> T use(Class<T> key) {
-        return services.use(key);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T> T use(Key<T> key) {
-        return services.use(key);
+    public ServiceRegistry services() {
+        return services;
     }
 
     @Override

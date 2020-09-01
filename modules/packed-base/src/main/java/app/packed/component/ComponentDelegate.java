@@ -15,6 +15,8 @@
  */
 package app.packed.component;
 
+import app.packed.component.ComponentStream.Option;
+
 /**
  *
  */
@@ -27,6 +29,30 @@ public interface ComponentDelegate extends ComponentSystem {
      */
     Component component();
 
+    /**
+     * Returns a component stream consisting of this applications underlying container and all of its descendants in any
+     * order.
+     * <p>
+     * Calling this method does <strong>not</strong> effect the lifecycle state of this application.
+     * 
+     * @return a component stream
+     * @see #stream(Option...)
+     */
+    default ComponentStream stream() {
+        return component().stream();
+    }
+
+    /**
+     * <p>
+     * This method takes a {@link CharSequence} as parameter, so it is easy to passe either a {@link String} or a
+     * {@link ComponentPath}.
+     * 
+     * @param path
+     *            the path of the component to return
+     * @throws IllegalArgumentException
+     *             if no component exists with the specified path
+     * @return a component with the specified path
+     */
     default Component resolve(CharSequence path) {
         return component().resolve(path);
     }

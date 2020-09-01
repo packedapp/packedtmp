@@ -22,13 +22,12 @@ import app.packed.component.Bundle;
 import app.packed.component.Component;
 import app.packed.component.ComponentDelegate;
 import app.packed.component.ComponentPath;
-import app.packed.component.ComponentStream;
-import app.packed.component.ComponentStream.Option;
 import app.packed.component.Image;
 import app.packed.component.ShellDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.service.ServiceExtension;
+import app.packed.service.ServiceRegistry;
 
 /**
  * An App (application) is the main type of shell available in Packed and should cover must usages.
@@ -52,7 +51,9 @@ public interface App extends AutoCloseable, ComponentDelegate {
      * 
      * @return the configuration site of this application
      */
-    ConfigSite configSite();
+    default ConfigSite configSite() {
+        return component().configSite();
+    }
 
     /**
      * Returns the name of this application.
@@ -80,45 +81,36 @@ public interface App extends AutoCloseable, ComponentDelegate {
     }
 
     /**
-     * <p>
-     * This method takes a {@link CharSequence} as parameter, so it is easy to passe either a {@link String} or a
-     * {@link ComponentPath}.
+     * Return the service registry for this app.
      * 
-     * @param path
-     *            the path of the component to return
-     * @throws IllegalArgumentException
-     *             if no component exists with the specified path
-     * @return a component with the specified path
+     * @return the service registry for this app
      */
-    @Override
-    // TODO throw UnknownPathException();;
-    // componentAt
-    // Altsaa maaske har vi mere et slags SystemView?
-    Component resolve(CharSequence path);
+    ServiceRegistry services();
 
-    App stop(GuestStopOption... options);
+    /**
+     * @param options
+     *            optional guest stop options
+     * @return this app
+     */
+    default App stop(GuestStopOption... options) {
+        guest().stop(options);
+        return this;
+    }
 
     /**
      * Initiates an orderly asynchronously shutdown of the application. In which currently running tasks will be executed,
      * but no new tasks will be started. Invocation has no additional effect if the application has already been shut down.
      *
      * @param options
-     *            options
+     *            optional guest stop options
      * @return a future that can be used to query whether the application has completed shutdown (terminated). Or is still
      *         in the process of being shut down
      */
-    CompletableFuture<App> stopAsync(GuestStopOption... options); // StopOption.async() //OnStop.Option (nah det her er specifikke container options)
+    default CompletableFuture<App> stopAsync(GuestStopOption... options) {
+        return guest().stopAsync(this, options);
+    }
 
-    /**
-     * Returns a component stream consisting of this applications underlying container and all of its descendants in any
-     * order.
-     * <p>
-     * Calling this method does <strong>not</strong> effect the lifecycle state of this application.
-     * 
-     * @return a component stream
-     * @see #stream(Option...)
-     */
-    ComponentStream stream();
+    Guest guest();
 
     /**
      * Returns a service with the specified key, if it exists. Otherwise, fails by throwing
@@ -134,7 +126,9 @@ public interface App extends AutoCloseable, ComponentDelegate {
      * @throws UnsupportedOperationException
      *             if a service with the specified key exist. Or if the application does not use {@link ServiceExtension}.
      */
-    <T> T use(Class<T> key);
+    default <T> T use(Class<T> key) {
+        return services().use(key);
+    }
 
     /**
      * Returns a service with the specified key, if it exists. Otherwise, fails by throwing
@@ -150,7 +144,9 @@ public interface App extends AutoCloseable, ComponentDelegate {
      * @throws UnsupportedOperationException
      *             if a service with the specified key exist. Or if the application does not use {@link ServiceExtension}.
      */
-    <T> T use(Key<T> key);
+    default <T> T use(Key<T> key) {
+        return services().use(key);
+    }
 
     /**
      * Returns a driver that produces {@link App} instances.
@@ -212,17 +208,6 @@ public interface App extends AutoCloseable, ComponentDelegate {
 // Build -> Image.of -> App.build() hmmm Image.Build <- kun assemble delen...
 
 // Maaske build,,, you build an artifact...
-
-///**
-// * Returns the description of this application. Or an empty optional if no description has been set.
-// * <p>
-// * The returned description is always identical to the description of the application's root container.
-// *
-// * @return the description of this application
-// *
-// * @see ContainerBundle#setDescription(String)
-// */
-//Optional<String> description();
 
 ///**
 //* Initiates an asynchronously startup of the application. Normally, there is no need to call this methods since most
