@@ -18,7 +18,7 @@ package app.packed.lifecycleold;
 /**
  *
  */
-public @interface When {
+@interface When {
 
     // https://github.com/anomalizer/tungsten-fsm/tree/master/src/java/com/continuent/tungsten/commons/patterns/fsm
     // https://github.com/j-easy/easy-states

@@ -23,12 +23,11 @@ import app.packed.component.Component;
 import app.packed.component.ComponentDelegate;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
+import app.packed.component.ComponentStream.Option;
 import app.packed.component.Image;
 import app.packed.component.ShellDriver;
-import app.packed.component.ComponentStream.Option;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import app.packed.lifecycleold.LifecycleOperations;
 import app.packed.service.ServiceExtension;
 
 /**
@@ -96,13 +95,6 @@ public interface App extends AutoCloseable, ComponentDelegate {
     // componentAt
     // Altsaa maaske har vi mere et slags SystemView?
     Component resolve(CharSequence path);
-
-    /**
-     * Returns the state of application.
-     * 
-     * @return the state of application
-     */
-    LifecycleOperations<? extends App> state();
 
     App stop(GuestStopOption... options);
 

@@ -54,15 +54,15 @@ import app.packed.statemachine.OnStart;
 
 // component.state().of(Initializated).await();
 // then run();
-public interface LifecycleOperations<T> {
+interface LifecycleOperations<T> {
 
     /**
      * Blocks until the object has reached the requested state, or the current thread is interrupted, whichever happens
      * first.
      * <p>
      * If the object has already reached or passed the specified state this method returns immediately. For example, if
-     * attempting to wait on the {@link GuestState#RUNNING} state and the object has already been stopped. This method
-     * will return immediately with true.
+     * attempting to wait on the {@link GuestState#RUNNING} state and the object has already been stopped. This method will
+     * return immediately with true.
      *
      * @param state
      *            the state to wait on
@@ -79,8 +79,8 @@ public interface LifecycleOperations<T> {
      * whichever happens first.
      * <p>
      * If the object has already reached or passed the specified state this method returns immediately. For example, if
-     * attempting to wait on the {@link GuestState#RUNNING} state and the object has already been stopped. This method
-     * will return immediately with true.
+     * attempting to wait on the {@link GuestState#RUNNING} state and the object has already been stopped. This method will
+     * return immediately with true.
      *
      * @param state
      *            the state to wait on

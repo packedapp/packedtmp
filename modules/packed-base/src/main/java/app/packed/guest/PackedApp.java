@@ -8,10 +8,9 @@ import java.util.concurrent.CompletableFuture;
 import app.packed.base.Key;
 import app.packed.component.Component;
 import app.packed.component.ComponentStream;
-import app.packed.component.ShellDriver;
 import app.packed.component.ComponentStream.Option;
+import app.packed.component.ShellDriver;
 import app.packed.config.ConfigSite;
-import app.packed.lifecycleold.LifecycleOperations;
 import app.packed.service.ServiceRegistry;
 
 /** The default implementation of {@link App}. */
@@ -64,12 +63,6 @@ final class PackedApp implements App {
     @Override
     public Component resolve(CharSequence path) {
         return component.resolve(path);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public LifecycleOperations<? extends App> state() {
-        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */

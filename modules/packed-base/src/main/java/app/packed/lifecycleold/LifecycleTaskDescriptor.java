@@ -22,7 +22,7 @@ import app.packed.sidecar.InvokableDescriptor;
 /**
  *
  */
-public interface LifecycleTaskDescriptor {
+interface LifecycleTaskDescriptor {
 
     /**
      * Returns the extension that is performing stuff

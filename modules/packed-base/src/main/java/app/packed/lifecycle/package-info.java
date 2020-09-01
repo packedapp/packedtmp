@@ -22,4 +22,4 @@
  * This package provides 3 annotations that can be used to annotate methods with so they are run when an entity
  *
  */
-package app.packed.lifecycleold;
+package app.packed.lifecycle;
