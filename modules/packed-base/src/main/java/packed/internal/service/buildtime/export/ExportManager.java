@@ -21,15 +21,19 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.service.ExportedServiceConfiguration;
+import app.packed.service.Service;
 import app.packed.service.ServiceExtension;
+import app.packed.service.ServiceSet;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ErrorMessages;
 import packed.internal.service.buildtime.ServiceExtensionNode;
+import packed.internal.service.buildtime.SimpleServiceSet;
 import packed.internal.service.buildtime.service.PackedPrototypeConfiguration;
 
 /**
@@ -153,9 +157,25 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
         // exportAll(Predicate) <- takes key or service configuration???
     }
 
+    @Nullable
+    public ServiceSet exports() {
+        if (resolvedExports == null) {
+            return null;
+        }
+        List<Service> l = new ArrayList<>();
+        for (ExportedBuildEntry<?> e : this) {
+            l.add(e.toDescriptor());
+        }
+        return new SimpleServiceSet(l);
+    }
+
     /** {@inheritDoc} */
     @Override
     public Iterator<ExportedBuildEntry<?>> iterator() {
+        if (resolvedExports == null) {
+            List<ExportedBuildEntry<?>> l = List.of();
+            return l.iterator();
+        }
         return resolvedExports.values().iterator();
     }
 

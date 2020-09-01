@@ -47,7 +47,7 @@ public class ExtensionDescriptorTest {
     @ExtensionSetup(dependencies = EmptyExtension.class)
     static class VariousExtension extends Extension {
 
-        @AttributeProvide(declaredBy = ExtensionDescriptorTest.class, name = "description")
+        @AttributeProvide(by = ExtensionDescriptorTest.class, name = "description")
         SomeContract expose() {
             return new SomeContract();
         }

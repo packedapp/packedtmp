@@ -29,11 +29,28 @@ import app.packed.container.Extension;
 public class ComponentAttributes {
 
     // Save this on TypeLiteral??
-    static final TypeLiteral<TypeLiteral<?>> TL_ANY = new TypeLiteral<TypeLiteral<?>>() {};
-    static final TypeLiteral<Class<?>> TL_C = new TypeLiteral<Class<?>>() {};
-    static final TypeLiteral<Class<? extends Extension>> TL_E = new TypeLiteral<Class<? extends Extension>>() {};
+    static final TypeLiteral<Class<?>> _CLASS = new TypeLiteral<Class<?>>() {};
+    static final TypeLiteral<Class<? extends Extension>> _EXTENSION = new TypeLiteral<Class<? extends Extension>>() {};
+    static final TypeLiteral<TypeLiteral<?>> _TYPE_LITERAL = new TypeLiteral<TypeLiteral<?>>() {};
+
+    /** An attribute that accompanies any component that has the {@link ComponentModifier#SOURCED} modifier. */
+    public static final Attribute<Class<?>> SOURCE_TYPE = Attribute.of(MethodHandles.lookup(), "source-type", _CLASS);
+
+    /**
+     * An attribute that accompanies any component that has the {@link ComponentModifier#EXTENSION} modifier. Subclasses of
+     * {@link Extension} are trivially member of itself.
+     */
+    public static final Attribute<Class<? extends Extension>> EXTENSION_MEMBER = Attribute.of(MethodHandles.lookup(), "extension-member", _EXTENSION);
+
+    /** An attribute that accompanies any component that has the {@link ComponentModifier#SHELL} modifier. */
+    public static final Attribute<Class<?>> SHELL_TYPE = Attribute.of(MethodHandles.lookup(), "shell-type", _CLASS);
+
+    ////////////////////// Think about these for a bit //////////////////////////
 
     // HMM ER DET IKKE BARE SOURCE_TYPE???? Nej, fordi hvis man laver en singleton fra en bundle type har den begge.
+
+    // Er det alle komponenter, ogsaa extensions??? eller kun root komponenten????
+    /** An attribute that accompanies any component that has the {@link ComponentModifier#SOURCED} modifier. */
     static final Attribute<Class<? extends Bundle<?>>> BUNDLE_TYPE = Attribute.of(MethodHandles.lookup(), "bundle",
             new TypeLiteral<Class<? extends Bundle<?>>>() {});
 
@@ -41,12 +58,7 @@ public class ComponentAttributes {
      * 
      * @see ComponentModifier#FUNCTION
      */
-    public static final Attribute<TypeLiteral<?>> FUNCTION_TYPE = Attribute.of(MethodHandles.lookup(), "function-type", TL_ANY);
-
-    public static final Attribute<Class<?>> SOURCE_TYPE = Attribute.of(MethodHandles.lookup(), "source-type", TL_C);
-
-    // An extension is trivial member of itself... (TODO test, that you cannot use ExtensionMember on an extension...)
-    public static final Attribute<Class<? extends Extension>> EXTENSION_MEMBER = Attribute.of(MethodHandles.lookup(), "extension-member", TL_E);
+    public static final Attribute<TypeLiteral<?>> FUNCTION_TYPE = Attribute.of(MethodHandles.lookup(), "function-type", _TYPE_LITERAL);
 
     // When something is created from an image, it will have the image path set
     // What Aboun generation?? MAYBE an IMAGE_GENERATION as well?? Or maybe Image names are never reused???

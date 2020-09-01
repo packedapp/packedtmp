@@ -15,11 +15,14 @@
  */
 package packed.internal.base.attribute;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.util.HashMap;
 import java.util.Map;
 
 import app.packed.base.AttributeProvide;
+import app.packed.base.Nullable;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.invoke.OpenClass;
 
@@ -28,26 +31,38 @@ import packed.internal.invoke.OpenClass;
  */
 public class ProvidableAttributeModel {
 
-    public final Map<PackedAttribute<?>, MethodHandle> attributeTypes;
+    public final Map<PackedAttribute<?>, Attt> attributeTypes;
 
-    ProvidableAttributeModel(Map<PackedAttribute<?>, MethodHandle> attributeTypes) {
+    ProvidableAttributeModel(Map<PackedAttribute<?>, Attt> attributeTypes) {
         this.attributeTypes = attributeTypes;
     }
 
     public static ProvidableAttributeModel analyse(OpenClass oc) {
         // OpenClass oc = new OpenClass(MethodHandles.lookup(), c, true);
-        HashMap<PackedAttribute<?>, MethodHandle> types = new HashMap<>();
+        HashMap<PackedAttribute<?>, Attt> types = new HashMap<>();
         oc.findMethods(m -> {
             AttributeProvide ap = m.getAnnotation(AttributeProvide.class);
             if (ap != null) {
                 PackedAttribute<?> pa = ClassAttributes.find(ap);
+                requireNonNull(pa, "Unknown Attribute " + ap + " on " + oc.type());
                 MethodHandle mh = oc.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-                types.put(pa, mh);
+                types.put(pa, new Attt(mh, m.isAnnotationPresent(Nullable.class)));
             }
         });
         if (types.isEmpty()) {
             return null;
         }
         return new ProvidableAttributeModel(types);
+    }
+
+    public static final class Attt {
+
+        public final MethodHandle mh;
+        public final boolean isNullable;
+
+        Attt(MethodHandle mh, boolean isNullable) {
+            this.mh = requireNonNull(mh);
+            this.isNullable = isNullable;
+        }
     }
 }

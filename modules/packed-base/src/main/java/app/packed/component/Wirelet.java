@@ -24,7 +24,7 @@ import packed.internal.component.wirelet.WireletList;
 
 /**
  * Wirelets are an umbrella term for small pieces of glue code, that is used to wire together the components that make
- * up your application. connect, wire, instantiate, debug your applications.
+ * up your program. connect, wire, instantiate, debug your applications.
  * 
  * A wiring operation is a piece of glue code that wire bundles and/or runtimes together, through operations such as
  * {@link InjectorAssembler#provideAll(Injector, Wirelet...)} or

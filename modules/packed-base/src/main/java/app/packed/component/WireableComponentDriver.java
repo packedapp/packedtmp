@@ -27,7 +27,7 @@ import java.util.Optional;
  * @apiNote In the future, if the Java language permits, {@link WireableComponentDriver} may become a {@code sealed}
  *          interface, which would prohibit subclassing except by explicitly permitted types.
  */
-// TODO maybe remove all methods...
+// TODO maybe remove all methods... And have attributes???
 // And just retain implementations for internal usage...
 public interface WireableComponentDriver<C> extends ComponentDriver<C> {
 

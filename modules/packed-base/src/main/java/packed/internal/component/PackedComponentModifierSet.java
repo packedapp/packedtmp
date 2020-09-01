@@ -29,12 +29,14 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
     /** An empty modifier set. */
     public static final PackedComponentModifierSet EMPTY = new PackedComponentModifierSet(0);
 
-    public static final int I_ANALYSIS = ComponentModifier.ANALYSIS.ordinal() << 1;
-    public static final int I_ASSEMBLY = ComponentModifier.ASSEMBLY.ordinal() << 1;
-    public static final int I_GUEST = ComponentModifier.GUEST.ordinal() << 1;
-    public static final int I_IMAGE = ComponentModifier.IMAGE.ordinal() << 1;
+    public static final int I_ANALYSIS = intOf(ComponentModifier.ANALYSIS);
+    public static final int I_ASSEMBLY = intOf(ComponentModifier.ASSEMBLY);
+    public static final int I_GUEST = intOf(ComponentModifier.GUEST);
+    public static final int I_IMAGE = intOf(ComponentModifier.IMAGE);
 
-    public static final int I_SHELL = ComponentModifier.SHELL.ordinal() << 1;
+    public static final int I_SHELL = intOf(ComponentModifier.SHELL);
+    public static final int I_SINGLETON = intOf(ComponentModifier.SINGLETON);
+    public static final int I_UNSCOPED = intOf(ComponentModifier.UNSCOPED);
 
     /** An array containing all modifiers. */
     private final static ComponentModifier[] MODIFIERS = ComponentModifier.values();

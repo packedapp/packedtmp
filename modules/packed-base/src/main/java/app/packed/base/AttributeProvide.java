@@ -29,14 +29,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Opens(to = { OpenMode.METHOD_INVOKE, OpenMode.FIELD_SET })
-// declared by extension, vi kan vel bare tage @ExtensionMember value??
-
-// Must map the exact type of attribute
-// T, Optional<T>, Optional<Supplier<T>>
-
 public @interface AttributeProvide {
 
-    Class<?> declaredBy();
+    /** The class that declares the attribute. */
+    Class<?> by();
 
     /**
      * The name of the attribute that the annotated member provides a value for.
@@ -45,7 +41,11 @@ public @interface AttributeProvide {
      */
     String name();
 }
-// Meningen man kan bruge den paa sidecars...
+
+//declared by extension, vi kan vel bare tage @ExtensionMember value??
+
+//Must map the exact type of attribute
+//T, Optional<T>, Optional<Supplier<T>>
 
 // Eneste grund til vi kalder den AttributeProvide istedet for provideAttribute
 // er code completion...

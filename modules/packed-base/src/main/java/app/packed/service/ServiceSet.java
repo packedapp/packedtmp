@@ -18,8 +18,10 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import app.packed.base.Key;
@@ -37,6 +39,12 @@ public interface ServiceSet extends Iterable<Service> {
      */
     default boolean contains(Class<?> key) {
         return contains(Key.of(key));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    default Iterator<Service> iterator() {
+        return stream().iterator();
     }
 
     /**
@@ -78,7 +86,9 @@ public interface ServiceSet extends Iterable<Service> {
      * 
      * @return a set of all unique keys in this system
      */
-    Set<Key<?>> keys();
+    default Set<Key<?>> keys() {
+        return stream().map(e -> e.key()).collect(Collectors.toSet());
+    }
 
     /**
      * Returns a unordered {@code Stream} of all services contained in this system.

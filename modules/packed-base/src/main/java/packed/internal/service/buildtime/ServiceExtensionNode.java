@@ -28,6 +28,7 @@ import app.packed.base.Nullable;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
+import app.packed.service.ServiceSet;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.dependencies.DependencyManager;
@@ -164,6 +165,11 @@ public final class ServiceExtensionNode {
             children = new ArrayList<>(5);
         }
         children.add(child);
+    }
+
+    @Nullable
+    public ServiceSet newExportedServiceSet() {
+        return exports().exports();
     }
 
     public ServiceContract newServiceContract() {

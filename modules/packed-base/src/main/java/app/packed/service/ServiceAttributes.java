@@ -28,12 +28,12 @@ import app.packed.base.Attribute;
 public final class ServiceAttributes {
     private ServiceAttributes() {}
 
+    /** An attribute that is present on {@link ServiceExtension} components that have at least 1 exported service. */
     public static final Attribute<ServiceSet> EXPORTED_SERVICES = Attribute.of(MethodHandles.lookup(), "exported-services", ServiceSet.class);
 
-    public static final Attribute<String> SERVICE_DESCRIPTION = Attribute.of(MethodHandles.lookup(), "description", String.class);
-
-    public static final Attribute<String> SERVICE_OTHER = Attribute.of(MethodHandles.lookup(), "other", String.class);
-
     // I think we use the exported service
+
+    // Not so quick we also have requirements..... ARGHHHH
+
     public static final Attribute<ServiceContract> SERVICE_CONTRACT = Attribute.of(MethodHandles.lookup(), "contract", ServiceContract.class);
 }

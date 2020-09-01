@@ -37,6 +37,7 @@ import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.ClassSourcedDriver;
 import app.packed.component.Component;
+import app.packed.component.ComponentAttributes;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
@@ -53,6 +54,7 @@ import app.packed.inject.Factory;
 import packed.internal.base.attribute.DefaultAttributeMap;
 import packed.internal.base.attribute.PackedAttribute;
 import packed.internal.base.attribute.ProvidableAttributeModel;
+import packed.internal.base.attribute.ProvidableAttributeModel.Attt;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteSupport;
@@ -167,9 +169,13 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         setName0(null); // initialize name
 
         int p = driver.modifiers;
-        p = PackedComponentModifierSet.addIf(p, parent == null, ComponentModifier.SYSTEM);
-        p = PackedComponentModifierSet.addIf(p, parent == null, ComponentModifier.GUEST);
-        p = PackedComponentModifierSet.addIf(p, parent == null && assembly.modifiers().isImage(), ComponentModifier.IMAGE);
+        if (parent == null) {
+            p = p | assembly.modifiers;
+            p = PackedComponentModifierSet.addIf(p, parent == null, ComponentModifier.SYSTEM);
+
+            // Is it a guest if we are analyzing??? Well we want the information...
+            p = PackedComponentModifierSet.addIf(p, parent == null, ComponentModifier.GUEST);
+        }
         this.modifiers = p;
 
         index = this.guest.reserve(1);
@@ -214,26 +220,40 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     AttributeMap attributes() {
+        DefaultAttributeMap dam = new DefaultAttributeMap();
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.EXTENSION)) {
             ProvidableAttributeModel pam = extension.model().pam();
             if (pam != null) {
-                DefaultAttributeMap dam = new DefaultAttributeMap();
-                for (Entry<PackedAttribute<?>, MethodHandle> e : pam.attributeTypes.entrySet()) {
+                for (Entry<PackedAttribute<?>, Attt> e : pam.attributeTypes.entrySet()) {
                     Extension ex = extension.instance();
                     Object val;
-                    MethodHandle mh = e.getValue();
+                    MethodHandle mh = e.getValue().mh;
                     try {
                         val = mh.invoke(ex);
                     } catch (Throwable e1) {
                         throw ThrowableUtil.orUndeclared(e1);
                     }
-                    dam.addValue((PackedAttribute) e.getKey(), val);
-                }
 
-                return dam;
+                    if (val == null) {
+                        if (!e.getValue().isNullable) {
+                            throw new IllegalStateException("CANNOT ADD NULL " + e.getKey());
+                        }
+                    } else {
+                        dam.addValue((PackedAttribute) e.getKey(), val);
+                    }
+                }
             }
         }
-        return AttributeMap.of();
+        if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.SOURCED)) {
+            dam.addValue(ComponentAttributes.SOURCE_TYPE, driver.sourceType());
+        }
+        if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.SHELL)) {
+            dam.addValue(ComponentAttributes.SHELL_TYPE, assembly.shellDriver().type());
+        }
+        if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.EXTENSION)) {
+            // dam.addValue(ComponentAttributes.SHELL_TYPE, assembly.shellDriver().type());
+        }
+        return dam;
     }
 
     /**

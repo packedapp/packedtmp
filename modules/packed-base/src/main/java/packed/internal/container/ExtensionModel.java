@@ -323,7 +323,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         private final ExtensionModel model;
 
         public ExtensionComponentDriver(ExtensionModel ed) {
-            super(ComponentModifier.EXTENSION);
+            super(ComponentModifier.EXTENSION, ComponentModifier.SOURCED);
             this.model = requireNonNull(ed);
         }
 
@@ -336,6 +336,11 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         @Override
         public ExtensionConfiguration toConfiguration(ComponentConfigurationContext cnc) {
             throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Class<?> sourceType() {
+            return model.extensionType();
         }
     }
 

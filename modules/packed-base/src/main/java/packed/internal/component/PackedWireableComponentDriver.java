@@ -42,10 +42,6 @@ import packed.internal.inject.factory.FactoryHandle;
 public abstract class PackedWireableComponentDriver<C> implements WireableComponentDriver<C> {
 
     public static WireableComponentDriver<ContainerConfiguration> CONTAINER_DRIVER = new ContainerComponentDriver();
-    public static final int ROLE_SINGLETON = 1 << ComponentModifier.SINGLETON.ordinal();
-    public static final int ROLE_STATELESS = 1 << ComponentModifier.UNSCOPED.ordinal();
-
-    // Statemanagement... A function is kind of just a singleton...
 
     final int modifiers;
 
@@ -53,8 +49,9 @@ public abstract class PackedWireableComponentDriver<C> implements WireableCompon
         this.modifiers = PackedComponentModifierSet.intOf(properties);
     }
 
-    protected PackedWireableComponentDriver(int modifiers) {
-        this.modifiers = modifiers;
+    @Nullable
+    public Class<?> sourceType() {
+        return null;
     }
 
     public String defaultName(PackedRealm realm) {
@@ -113,7 +110,7 @@ public abstract class PackedWireableComponentDriver<C> implements WireableCompon
         public final ComponentModel model;
 
         public SingletonComponentDriver(PackedRealm realm, Factory<?> factory) {
-            super(PackedWireableComponentDriver.ROLE_SINGLETON);
+            super(ComponentModifier.SINGLETON, ComponentModifier.SOURCED);
             requireNonNull(factory, "factory is null");
             this.model = realm.componentModelOf(factory.rawType());
             this.factory = (@Nullable BaseFactory<?>) factory;
@@ -121,7 +118,7 @@ public abstract class PackedWireableComponentDriver<C> implements WireableCompon
         }
 
         public SingletonComponentDriver(PackedRealm realm, T instance) {
-            super(PackedWireableComponentDriver.ROLE_SINGLETON);
+            super(ComponentModifier.SINGLETON, ComponentModifier.SOURCED);
             this.instance = requireNonNull(instance, "instance is null");
             this.model = realm.componentModelOf(instance.getClass());
             this.factory = null;
@@ -135,6 +132,12 @@ public abstract class PackedWireableComponentDriver<C> implements WireableCompon
         public MethodHandle fromFactory(ComponentNodeConfiguration context) {
             FactoryHandle<?> handle = factory.factory.handle;
             return context.realm().fromFactoryHandle(handle);
+        }
+
+        @Override
+        @Nullable
+        public Class<?> sourceType() {
+            return model.type();
         }
 
         @Override
@@ -164,7 +167,7 @@ public abstract class PackedWireableComponentDriver<C> implements WireableCompon
         public final ComponentModel model;
 
         private StatelessComponentDriver(PackedRealm lookup, Class<?> implementation) {
-            super(PackedWireableComponentDriver.ROLE_STATELESS);
+            super(ComponentModifier.UNSCOPED, ComponentModifier.SOURCED);
             this.model = lookup.componentModelOf(requireNonNull(implementation, "implementation is null"));
             requireNonNull(implementation, "implementation is null");
         }
@@ -172,6 +175,12 @@ public abstract class PackedWireableComponentDriver<C> implements WireableCompon
         @Override
         public String defaultName(PackedRealm realm) {
             return model.defaultPrefix();
+        }
+
+        @Override
+        @Nullable
+        public Class<?> sourceType() {
+            return model.type();
         }
 
         @Override

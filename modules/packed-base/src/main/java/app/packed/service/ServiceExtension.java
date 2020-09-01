@@ -17,11 +17,11 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
-import java.time.Clock;
 import java.util.function.BiConsumer;
 
 import app.packed.base.AttributeProvide;
 import app.packed.base.Key;
+import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ComponentLinked;
@@ -121,6 +121,27 @@ public final class ServiceExtension extends Extension {
         node.buildBundle();
     }
 
+    /**
+     * Returns a set of all exported services from this extension. Or null if there are no exports.
+     * 
+     * @return a set of all exported services from this extension. Or null if there are no exports
+     */
+    @AttributeProvide(by = ServiceAttributes.class, name = "exported-services")
+    @Nullable
+    /* package-private */ ServiceSet attributesExports() {
+        return node.newExportedServiceSet();
+    }
+
+    /**
+     * Creates a service contract for this extension.
+     * 
+     * @return a service contract for this extension
+     */
+    @AttributeProvide(by = ServiceAttributes.class, name = "contract")
+    /* package-private */ ServiceContract attributesContract() {
+        return node.newServiceContract();
+    }
+
     <S, U> void breakCycle(Key<S> key1, Key<U> key2, BiConsumer<S, U> consumer) {
         // cycleBreaker
         throw new UnsupportedOperationException();
@@ -133,16 +154,6 @@ public final class ServiceExtension extends Extension {
     @Leaving(state = ExtensionSetup.CHILD_LINKING)
     void childenLinked() {
         node.buildTree();
-    }
-
-    /**
-     * Creates a service contract for this extension.
-     * 
-     * @return a service contract for this extension
-     */
-    @AttributeProvide(declaredBy = ServiceAttributes.class, name = "contract")
-    /* package-private */ ServiceContract contract() {
-        return node.newServiceContract();
     }
 
     // Det er jo i virkeligheden bare en @RunOnInjection klasse
@@ -164,6 +175,8 @@ public final class ServiceExtension extends Extension {
         // Den er meget mere explicit.
         // Den her skal jo pakke initialisering af U ind i en consumer
     }
+
+    // autoExport
 
     <S, U> void cycleBreaker(Class<S> key1, Class<U> key2, BiConsumer<S, U> consumer) {
 
@@ -231,8 +244,6 @@ public final class ServiceExtension extends Extension {
         return export(Key.of(key));
     }
 
-    // autoExport
-
     /**
      * Exposes an internal service outside of this bundle.
      * 
@@ -272,16 +283,6 @@ public final class ServiceExtension extends Extension {
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
         checkConfigurable();
         node.exports().exportAll(captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
-    }
-
-    @AttributeProvide(declaredBy = ServiceAttributes.class, name = "description")
-    public String foo() {
-        return "DU_ER_SET " + Clock.systemDefaultZone().instant();
-    }
-
-    @AttributeProvide(declaredBy = ServiceAttributes.class, name = "other")
-    public String foos() {
-        return "DU_ER_SET " + Clock.systemDefaultZone().instant();
     }
 
     @ComponentLinked(onlyDirectLink = true)

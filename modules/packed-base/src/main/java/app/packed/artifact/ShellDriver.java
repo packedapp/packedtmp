@@ -70,11 +70,11 @@ import packed.internal.util.ThrowableUtil;
 // Which would break encapsulation
 public final class ShellDriver<S> {
 
-    /** The method handle responsible for creating the new shell. */
+    /** The method handle responsible for creating new shell instances. */
     private final MethodHandle instantiatior;
 
-    /** A set of modifiers that the component to which this shell is attached will have as a minimum. */
-    final int modifiers;
+    /** The initial set of modifiers for any system that uses this driver. */
+    private final int modifiers;
 
     /**
      * Creates a new driver.
@@ -129,30 +129,29 @@ public final class ShellDriver<S> {
     }
 
     /**
-     * Creates a new image using the specified bundle and this shell driver.
+     * Creates a new image using the specified bundle and this driver.
      * 
      * @param bundle
-     *            the bundle to use when creating the image
+     *            the bundle to use when assembling the image
      * @param wirelets
      *            optional wirelets
      * @return a new image
      */
     public Image<S> newImage(Bundle<?> bundle, Wirelet... wirelets) {
-        // Taenker vi godt kan lave vores eget image her... Som en privat klasse.. Hvis vi overgaar til use()
         ComponentNodeConfiguration node = PackedAssemblyContext.assemble(PackedComponentModifierSet.I_IMAGE + modifiers, bundle, this, wirelets);
         return new ShellImage(node);
     }
 
     /**
-     * Create a new shell.
+     * Create a new shell using the supplied context.
      * 
-     * @param context
+     * @param pic
      *            the initialization context to wrap
      * @return the new shell
      */
-    S newShell(PackedInitializationContext context) {
+    S newShell(PackedInitializationContext pic) {
         try {
-            return (S) instantiatior.invoke(context);
+            return (S) instantiatior.invoke(pic);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
@@ -176,11 +175,14 @@ public final class ShellDriver<S> {
         return newShell(context);
     }
 
+    public Class<?> type() {
+        return instantiatior.type().returnType();
+    }
+
     public static <A> ShellDriver<A> of(MethodHandles.Lookup caller, Class<A> shellType, Class<? extends A> implementation) {
         boolean isGuest = AutoCloseable.class.isAssignableFrom(implementation);
         Constructor<?> con = implementation.getDeclaredConstructors()[0];
         MethodHandleBuilder builder = MethodHandleBuilder.of(implementation, PackedInitializationContext.class);
-        builder.addKey(PackedInitializationContext.class, 0); // TODO remove...
         builder.addKey(Component.class, PackedInitializationContext.MH_COMPONENT, 0);
         builder.addKey(ServiceRegistry.class, PackedInitializationContext.MH_SERVICES, 0);
         if (isGuest) {
@@ -201,93 +203,45 @@ public final class ShellDriver<S> {
         return new ShellDriver<>(isGuest, mh);
     }
 
-//    public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> shellType, Factory<? extends A> implementation) {
-//        throw new UnsupportedOperationException();
-//    }
+    /** The default implementation of {@link Image}. */
+    private final class ShellImage implements Image<S> {
 
-    static class Option {
+        /** The assembled image node. */
+        private final ComponentNodeConfiguration node;
 
-        // If not autoclosable
-        public Option forceGuest() {
-            throw new UnsupportedOperationException();
+        /**
+         * Creates a new image from the specified configuration and wirelets.
+         * 
+         * @param node
+         *            the artifact driver
+         */
+        private ShellImage(ComponentNodeConfiguration node) {
+            this.node = node;
         }
 
-        public Option forceNonGuest() {
-            throw new UnsupportedOperationException();
+        /** {@inheritDoc} */
+        @Override
+        public Component component() {
+            return node.adaptToComponent();
         }
 
-        // Normally we just check if App.iface extends AutoClosable...
-        // But might want to override this.
-        // forceManaged, forceUnmanaged
-
-        // String Reason??? This extension has been blacklisted
-        @SafeVarargs
-        static Option blacklistExtensions(Class<? extends Extension>... extensions) {
-            throw new UnsupportedOperationException();
+        /** {@inheritDoc} */
+        @Override
+        public S initialize(Wirelet... wirelets) {
+            PackedInitializationContext context = PackedInitializationContext.initialize(node, WireletPack.forImage(node, wirelets));
+            return newShell(context);
         }
 
-        static Option blacklistExtensions(String... extensions) {
-            throw new UnsupportedOperationException();
+        /** {@inheritDoc} */
+        @Override
+        public S start(Wirelet... wirelets) {
+            return initialize(wirelets);
         }
-
-        // Mapning af Execeptions/Errors....
-        //// Saa er det let at rette i f.eks. App
-
-        // Debug Options...
-
-        // whitelistExtension(...)
-        // blacklistExtension
-
-        //// Can only use of them
-        // Altsaa det maa vaere meget taet paa ArchUnit a.la.. Hmmm
-
-        static Option nameProvider() {
-            // prefix???
-            // Ideen er ihvertfald at
-            throw new UnsupportedOperationException();
-        }
-
-        static Option postfixWirelets(Wirelet... wirelets) {
-            throw new UnsupportedOperationException();
-        }
-
-        // Hmmm... Fungere jo ikke rigtigt med image....
-        static Option prefixWirelets(Wirelet... wirelets) {
-            throw new UnsupportedOperationException();
-        }
-
-        // custom ServiceProvider..
-        static Option serviceProvider() {
-            throw new UnsupportedOperationException();
-        }
-
-        // Hmmm... Fungere jo ikke rigtigt med image......
-        @SafeVarargs
-        static Option whitelistExtensions(Class<? extends Extension>... extensions) {
-            throw new UnsupportedOperationException();
-        }
-
-        // non execution -> Create...
-
-        // Ideen var man skulle kunne angive nogle prefix wirelets naar man lavede en shell...
-        // Men det er nu lavet om til options pre and post wirelets
-        // executing -> Create (and initialize), start, startAsync, Execute, executeAsync
-        // StartExecutor ?
-        // final T create(Assembly source, Wirelet... shellWirelets) {
-        //
-//         // Ideen er lidt at Artifact Implementering, kan kalde med dens egen wirelets...
-//         // ala
-//         // Maaske er det en option.. .. ellers andThen... eller have en Wirelet customWirelets(Assemble)..
-        //
-//         // start(Assembly, Wirelet... wirelets) {
-//         // create(Assembly, wirelets, ArtifactWirelets.startSynchronous());
-//         // create(Assembly, wirelets, ArtifactWirelets.startAsynchronous());
-//         // }
-//         // What about execute....
-//         throw new UnsupportedOperationException();
-        // }
     }
 
+//  public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> shellType, Factory<? extends A> implementation) {
+//      throw new UnsupportedOperationException();
+//  }
 //  <E extends A> ArtifactDriver<A> mapTo(Class<E> decoratingType, Function<A, E> decorator) {
 //      // Ideen er egentlig at f.eks. kunne wrappe App, og tilfoeje en metode...
 //      // Men altsaa, maaske er det bare at kalde metoderne direkte i context...
@@ -329,40 +283,87 @@ public final class ShellDriver<S> {
     // Saa vi kan checke ting...
     // Men ikke paavirke hvordan de bliver lavet...
 
-    /** The default implementation of {@link Image}. */
-    final class ShellImage implements Image<S> {
+    static class ZOption {
 
-        /** The assembled image node. */
-        private final ComponentNodeConfiguration node;
-
-        /**
-         * Creates a new image from the specified configuration and wirelets.
-         * 
-         * @param node
-         *            the artifact driver
-         */
-        ShellImage(ComponentNodeConfiguration node) {
-            this.node = node;
+        // If not autoclosable
+        public ZOption forceGuest() {
+            throw new UnsupportedOperationException();
         }
 
-        /** {@inheritDoc} */
-        @Override
-        public Component component() {
-            return node.adaptToComponent();
+        public ZOption forceNonGuest() {
+            throw new UnsupportedOperationException();
         }
 
-        /** {@inheritDoc} */
-        @Override
-        public S initialize(Wirelet... wirelets) {
-            PackedInitializationContext context = PackedInitializationContext.initialize(node, WireletPack.forImage(node, wirelets));
-            return newShell(context);
+        // Normally we just check if App.iface extends AutoClosable...
+        // But might want to override this.
+        // forceManaged, forceUnmanaged
+
+        // String Reason??? This extension has been blacklisted
+        @SafeVarargs
+        static ZOption blacklistExtensions(Class<? extends Extension>... extensions) {
+            throw new UnsupportedOperationException();
         }
 
-        /** {@inheritDoc} */
-        @Override
-        public S start(Wirelet... wirelets) {
-            return initialize(wirelets);
+        static ZOption blacklistExtensions(String... extensions) {
+            throw new UnsupportedOperationException();
         }
+
+        // Mapning af Execeptions/Errors....
+        //// Saa er det let at rette i f.eks. App
+
+        // Debug Options...
+
+        // whitelistExtension(...)
+        // blacklistExtension
+
+        //// Can only use of them
+        // Altsaa det maa vaere meget taet paa ArchUnit a.la.. Hmmm
+
+        static ZOption nameProvider() {
+            // prefix???
+            // Ideen er ihvertfald at
+            throw new UnsupportedOperationException();
+        }
+
+        static ZOption postfixWirelets(Wirelet... wirelets) {
+            throw new UnsupportedOperationException();
+        }
+
+        // Hmmm... Fungere jo ikke rigtigt med image....
+        static ZOption prefixWirelets(Wirelet... wirelets) {
+            throw new UnsupportedOperationException();
+        }
+
+        // custom ServiceProvider..
+        static ZOption serviceProvider() {
+            throw new UnsupportedOperationException();
+        }
+
+        // Hmmm... Fungere jo ikke rigtigt med image......
+        @SafeVarargs
+        static ZOption whitelistExtensions(Class<? extends Extension>... extensions) {
+            throw new UnsupportedOperationException();
+        }
+
+        // non execution -> Create...
+
+        // Ideen var man skulle kunne angive nogle prefix wirelets naar man lavede en shell...
+        // Men det er nu lavet om til options pre and post wirelets
+        // executing -> Create (and initialize), start, startAsync, Execute, executeAsync
+        // StartExecutor ?
+        // final T create(Assembly source, Wirelet... shellWirelets) {
+        //
+//         // Ideen er lidt at Artifact Implementering, kan kalde med dens egen wirelets...
+//         // ala
+//         // Maaske er det en option.. .. ellers andThen... eller have en Wirelet customWirelets(Assemble)..
+        //
+//         // start(Assembly, Wirelet... wirelets) {
+//         // create(Assembly, wirelets, ArtifactWirelets.startSynchronous());
+//         // create(Assembly, wirelets, ArtifactWirelets.startAsynchronous());
+//         // }
+//         // What about execute....
+//         throw new UnsupportedOperationException();
+        // }
     }
 
     // Ideen er lidt at vi har en OptionList som aggregere alle options

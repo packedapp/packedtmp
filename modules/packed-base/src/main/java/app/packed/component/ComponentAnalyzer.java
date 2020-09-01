@@ -16,6 +16,7 @@
 package app.packed.component;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import app.packed.base.Attribute;
 import packed.internal.component.ComponentNodeConfiguration;
@@ -41,6 +42,8 @@ import packed.internal.component.PackedComponentModifierSet;
 // Svaret er det kan give mening naar vi vil analysere...
 // F.eks. AssemblyWirelets... printStuff()
 
+// Det eneste problem er den option...
+// Ellers smider vi den paa ComponentSystem...
 public final class ComponentAnalyzer {
 
     // Maybe on Component???
@@ -52,6 +55,14 @@ public final class ComponentAnalyzer {
         // Should we take options??? Again I don't know if
         // options is more a system transform.
         return analyze(s).stream();
+    }
+
+    public static void print(ComponentSystem s) {
+        ComponentAnalyzer.forEach(s, c -> System.out.println(c.path() + " " + c.modifiers() + " " + c.attributes()));
+    }
+
+    public static void forEach(ComponentSystem s, Consumer<? super Component> action) {
+        analyze(s).stream().forEach(action);
     }
 
     public static Component analyze(ComponentSystem s) {

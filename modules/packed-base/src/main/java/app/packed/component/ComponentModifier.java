@@ -38,6 +38,15 @@ import app.packed.lifecycle.AssemblyContext;
 public enum ComponentModifier {
 
     /**
+     * Every component system has exactly one system component which is always the root of the component tree.
+     * 
+     * @see Component#system()
+     */
+    // Always a guest. Naah, hvad hvis vi har system view...????
+    // Was This component is also always automatically a {@link #GUEST}.
+    SYSTEM,
+
+    /**
      * Indicates that the component and all of its children is in the assembly phase. When such a system is initialized. A
      * new system is created retained the structure of the assembled system but without this modifier.
      * <p>
@@ -63,15 +72,6 @@ public enum ComponentModifier {
      */
     // Hmm, hvad med en exstern database????
     EXTERNAL, // Wirelets, Artifacts are also FOREIGN or EXTERNAL...ENVIRONMENT
-
-    /**
-     * Every component system has exactly one system component which is always the root of the component tree.
-     * 
-     * @see Component#system()
-     */
-    // Always a guest. Naah, hvad hvis vi har system view...????
-    // Was This component is also always automatically a {@link #GUEST}.
-    SYSTEM,
 
     /**
      * Indicates that the component holds an image.

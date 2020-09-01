@@ -48,7 +48,7 @@ public class ClassAttributes {
     }
 
     public static PackedAttribute<?> find(AttributeProvide ap) {
-        return find(ap.declaredBy(), ap.name());
+        return find(ap.by(), ap.name());
     }
 
     public static void register(PackedAttribute<?> pa) {
