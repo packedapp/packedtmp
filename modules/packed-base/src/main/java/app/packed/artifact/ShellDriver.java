@@ -37,6 +37,7 @@ import packed.internal.component.PackedAssemblyContext;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.component.PackedWireableComponentDriver;
+import packed.internal.component.wirelet.WireletPack;
 import packed.internal.invoke.MethodHandleBuilder;
 import packed.internal.invoke.OpenClass;
 import packed.internal.util.ThrowableUtil;
@@ -137,15 +138,16 @@ public final class ShellDriver<S> {
      * @return a new image
      */
     public Image<S> newImage(Bundle<?> bundle, Wirelet... wirelets) {
+        // Taenker vi godt kan lave vores eget image her... Som en privat klasse.. Hvis vi overgaar til use()
         ComponentNodeConfiguration node = PackedAssemblyContext.assemble(PackedComponentModifierSet.I_IMAGE + modifiers, bundle, this, wirelets);
-        return new PackedImage<>(node, this);
+        return new ShellImage(node);
     }
 
     /**
-     * Instantiates a new shell.
+     * Create a new shell.
      * 
      * @param context
-     *            the context to use for instantiating the shell
+     *            the initialization context to wrap
      * @return the new shell
      */
     S newShell(PackedInitializationContext context) {
@@ -189,10 +191,6 @@ public final class ShellDriver<S> {
         return new ShellDriver<>(isGuest, mh2);
     }
 
-//    public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> shellType, Factory<? extends A> implementation) {
-//        throw new UnsupportedOperationException();
-//    }
-
     // A method handle that takes an ArtifactContext and produces something that is compatible with A
     public static <A> ShellDriver<A> of(MethodHandles.Lookup caller, Class<A> shellType, MethodHandle mh) {
         // TODO validate type
@@ -203,46 +201,9 @@ public final class ShellDriver<S> {
         return new ShellDriver<>(isGuest, mh);
     }
 
-//  <E extends A> ArtifactDriver<A> mapTo(Class<E> decoratingType, Function<A, E> decorator) {
-//      // Ideen er egentlig at f.eks. kunne wrappe App, og tilfoeje en metode...
-//      // Men altsaa, maaske er det bare at kalde metoderne direkte i context...
-//      // PackedApp kalder jo bare direkte igennem
-//      throw new UnsupportedOperationException();
-//  }
-
-//
-//    static <A> A start(Class<A> shellType, ArtifactSource source, Wirelet... wirelets) {
-//        // The only thing we save is defining a driver..
-//        // But we need the driver for App#driver... so not much saved
+//    public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> shellType, Factory<? extends A> implementation) {
 //        throw new UnsupportedOperationException();
 //    }
-//  Supplier<A> startingProvider(ArtifactSource a, Wirelet... wirelets) {
-//  // Kunne ogsaa lave den paa image...
-//  // Men altsaa taenker vi godt vil have noget wirelets med...
-//  // <A> Supplier<A> ArtifactImage.supplier(ArtifactDriver<A> driver);
-//  throw new UnsupportedOperationException();
-//}
-//    /** Options that can be specified when creating a new driver or via {@link #withOptions(Option...)}. */
-
-    // Ideen er lidt at vi koerer ArchUnit igennem here....
-    // Altsaa Skal vi have en BaseEnvironment.. hvor vi kan specificere nogle options for alle
-    // F.eks. black liste ting...
-
-    // Invoked by each driver??
-    // List<ArtifactDriver.Option> BaseEnvironment.defaultOptions(Class<?> shellDriver);
-    // BaseEnvironment via service loader. Exactly one... Extensions should never create one.
-    // Users
-    // Men skal man kunne overskriver den forstaaet paa den maade at stramme den...
-    // F.eks. med en order... Alle skal have unik orders (ellers fejl)
-    // D.v.s. CompanyBaseEnvironment(order = 1) , DivisionBaseEnvironment(order = 2)
-    // Ellers ogsaa installere man en masse options... //Allowed algor
-
-    // IDK Den fungere ikke lige skide godt med et image...
-    // Can jo ikke prefix'e med noget som helst hvis foerst imaged er lavet...
-    // Eller f.eks. Whitelist/Blacklist kan vi godt. fordi vi har listen af dem...
-    // naar vi instantiere...
-    // Saa vi kan checke ting...
-    // Men ikke paavirke hvordan de bliver lavet...
 
     static class Option {
 
@@ -325,6 +286,83 @@ public final class ShellDriver<S> {
 //         // What about execute....
 //         throw new UnsupportedOperationException();
         // }
+    }
+
+//  <E extends A> ArtifactDriver<A> mapTo(Class<E> decoratingType, Function<A, E> decorator) {
+//      // Ideen er egentlig at f.eks. kunne wrappe App, og tilfoeje en metode...
+//      // Men altsaa, maaske er det bare at kalde metoderne direkte i context...
+//      // PackedApp kalder jo bare direkte igennem
+//      throw new UnsupportedOperationException();
+//  }
+
+//
+//    static <A> A start(Class<A> shellType, ArtifactSource source, Wirelet... wirelets) {
+//        // The only thing we save is defining a driver..
+//        // But we need the driver for App#driver... so not much saved
+//        throw new UnsupportedOperationException();
+//    }
+//  Supplier<A> startingProvider(ArtifactSource a, Wirelet... wirelets) {
+//  // Kunne ogsaa lave den paa image...
+//  // Men altsaa taenker vi godt vil have noget wirelets med...
+//  // <A> Supplier<A> ArtifactImage.supplier(ArtifactDriver<A> driver);
+//  throw new UnsupportedOperationException();
+//}
+//    /** Options that can be specified when creating a new driver or via {@link #withOptions(Option...)}. */
+
+    // Ideen er lidt at vi koerer ArchUnit igennem here....
+    // Altsaa Skal vi have en BaseEnvironment.. hvor vi kan specificere nogle options for alle
+    // F.eks. black liste ting...
+
+    // Invoked by each driver??
+    // List<ArtifactDriver.Option> BaseEnvironment.defaultOptions(Class<?> shellDriver);
+    // BaseEnvironment via service loader. Exactly one... Extensions should never create one.
+    // Users
+    // Men skal man kunne overskriver den forstaaet paa den maade at stramme den...
+    // F.eks. med en order... Alle skal have unik orders (ellers fejl)
+    // D.v.s. CompanyBaseEnvironment(order = 1) , DivisionBaseEnvironment(order = 2)
+    // Ellers ogsaa installere man en masse options... //Allowed algor
+
+    // IDK Den fungere ikke lige skide godt med et image...
+    // Can jo ikke prefix'e med noget som helst hvis foerst imaged er lavet...
+    // Eller f.eks. Whitelist/Blacklist kan vi godt. fordi vi har listen af dem...
+    // naar vi instantiere...
+    // Saa vi kan checke ting...
+    // Men ikke paavirke hvordan de bliver lavet...
+
+    /** The default implementation of {@link Image}. */
+    final class ShellImage implements Image<S> {
+
+        /** The assembled image node. */
+        private final ComponentNodeConfiguration node;
+
+        /**
+         * Creates a new image from the specified configuration and wirelets.
+         * 
+         * @param node
+         *            the artifact driver
+         */
+        ShellImage(ComponentNodeConfiguration node) {
+            this.node = node;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Component component() {
+            return node.adaptToComponent();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public S initialize(Wirelet... wirelets) {
+            PackedInitializationContext context = PackedInitializationContext.initialize(node, WireletPack.forImage(node, wirelets));
+            return newShell(context);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public S start(Wirelet... wirelets) {
+            return initialize(wirelets);
+        }
     }
 
     // Ideen er lidt at vi har en OptionList som aggregere alle options
