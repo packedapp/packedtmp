@@ -68,6 +68,15 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
     }
 
     /**
+     * Returns whether or not this set contains the {@link ComponentModifier#GUEST} modifier.
+     * 
+     * @return true if this set contains the guest modifier, otherwise false
+     */
+    default boolean isSingleton() {
+        return contains(ComponentModifier.SINGLETON);
+    }
+
+    /**
      * Returns whether or not this set contains the {@link ComponentModifier#IMAGE} modifier.
      * 
      * @return true if this set contains the image modifier, otherwise false

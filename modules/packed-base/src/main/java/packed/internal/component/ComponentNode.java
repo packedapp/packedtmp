@@ -75,20 +75,22 @@ public final class ComponentNode implements Component {
      */
     ComponentNode(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, PackedInitializationContext pic) {
         this.parent = parent;
-        this.storeOffset = configuration.index;
+        this.storeOffset = configuration.storeIndex;
         this.model = RuntimeComponentModel.of(configuration);
-        this.store = requireNonNull(configuration.store.store());
+
+        this.store = parent == null || configuration.modifiers().isGuest() ? configuration.store.newStore() : parent.store;
         if (parent == null) {
             this.name = pic.rootName(configuration);
         } else {
             this.name = requireNonNull(configuration.name);
         }
 
-        // Initialize Container
+        // Initialize if container
         if (modifiers().isContainer()) {
             ServiceRegistry registry = null;
             // I think this injector is only available for the top of an assembly
             PackedContainerAssembly container = configuration.container;
+            //
             if (container.extensions != null) {
                 PackedExtensionConfiguration ee = container.extensions.get(ServiceExtension.class);
                 if (ee != null) {
@@ -100,7 +102,13 @@ public final class ComponentNode implements Component {
                 registry = new PackedInjector(configuration.configSite(), Map.of());
             }
 
-            store.store(this, registry);
+            store.storeServiceRegistry(this, registry);
+        }
+        if (modifiers().isGuest()) {
+            store.storeGuest(this, new PackedGuest(null));
+        }
+        if (modifiers().isSingleton()) {
+
         }
 
         // Last but least, initialize any children the component might have...

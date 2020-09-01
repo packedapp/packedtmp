@@ -20,10 +20,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import app.packed.artifact.App;
-import app.packed.artifact.Image;
 import app.packed.base.Attribute;
 import app.packed.base.AttributeProvide;
-import app.packed.component.ComponentAnalyzer;
 import app.packed.container.BaseBundle;
 
 /**
@@ -37,18 +35,14 @@ public class ZTest extends BaseBundle {
         lookup(MethodHandles.lookup());
         installInstance("asdasd");
         provide(XX.class);
-        provideInstance(123);
-
-        export(Integer.class);
-        link(new MM());
     }
 
     public static void main(String[] args) {
-        ComponentAnalyzer.print(new ZTest());
-
-        Image<App> a = App.newImage(new ZTest());
-        System.out.println();
-        ComponentAnalyzer.print(a); // <--- must have access to all code..:(
+//        ComponentAnalyzer.print(new ZTest());
+//
+//        Image<App> a = App.newImage(new ZTest());
+//        System.out.println();
+//        ComponentAnalyzer.print(a); // <--- must have access to all code..:(
 
         // If we use build-plugin... we can have the experience in a side browser window...
         // Ohh wow, vi kan faktisk se hvad der bliver aendret pga en restart...
@@ -58,7 +52,7 @@ public class ZTest extends BaseBundle {
         // Vi kan have en historik over hvad der er blevet deployet i et cluster....
         // Lokalt paa en maskine... OSV...
 
-        App.initialize(new ZTest());
+        App.start(new ZTest());
     }
 
     static class MM extends BaseBundle {

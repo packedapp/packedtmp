@@ -55,7 +55,6 @@ import packed.internal.base.attribute.DefaultAttributeMap;
 import packed.internal.base.attribute.PackedAttribute;
 import packed.internal.base.attribute.ProvidableAttributeModel;
 import packed.internal.base.attribute.ProvidableAttributeModel.Attt;
-import packed.internal.component.NodeStore.Assembly;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteSupport;
@@ -115,14 +114,14 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     /** The store. */
     final NodeStore.Assembly store;
 
+    final int storeIndex;
+
     /** The realm the component belongs to. */
     private final PackedRealm realm;
 
     /** Any wirelets that was specified by the user when creating this configuration. */
     @Nullable
     public final WireletPack wirelets;
-
-    final int index;
 
     /**************** See how much of this we can get rid of. *****************/
 
@@ -161,7 +160,6 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         this.depth = parent == null ? 0 : parent.depth + 1;
 
         this.driver = requireNonNull(driver);
-        this.store = parent == null || driver.modifiers().isGuest() ? new Assembly(this) : parent.store;
         this.container = driver.modifiers().isContainer() ? new PackedContainerAssembly(this) : parent.container;
 
         this.configSite = requireNonNull(configSite);
@@ -179,7 +177,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         }
         this.modifiers = p;
 
-        this.index = store.reserve(this); // calculate runtime storage
+        this.store = parent == null || driver.modifiers().isGuest() ? new NodeStore.Assembly(this) : parent.store;
+        this.storeIndex = store.reserve(this); // calculate runtime storage
     }
 
     /**

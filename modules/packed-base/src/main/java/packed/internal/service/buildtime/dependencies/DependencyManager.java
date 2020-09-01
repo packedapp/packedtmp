@@ -148,7 +148,7 @@ public final class DependencyManager {
                             }
                             if (Extension.class.isAssignableFrom(rawType)) {
                                 if (entry instanceof ComponentFactoryBuildEntry) {
-                                    Optional<Class<? extends Extension>> op = ((ComponentFactoryBuildEntry) entry).componentConfiguration.extension();
+                                    Optional<Class<? extends Extension>> op = ((ComponentFactoryBuildEntry) entry).component.extension();
                                     if (op.isPresent()) {
                                         Class<? extends Extension> cc = op.get();
                                         if (cc == k.typeLiteral().type()) {

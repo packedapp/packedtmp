@@ -37,6 +37,7 @@ public class PackedGuest implements Guest {
     /** {@inheritDoc} */
     @Override
     public Guest start() {
+        System.out.println("START");
         return null;
     }
 

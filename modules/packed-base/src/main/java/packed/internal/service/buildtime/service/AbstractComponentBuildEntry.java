@@ -33,7 +33,7 @@ import packed.internal.service.buildtime.ServiceExtensionNode;
 public abstract class AbstractComponentBuildEntry<T> extends BuildEntry<T> {
 
     /** The configuration of the component this build entry belongs to */
-    public final ComponentNodeConfiguration componentConfiguration;
+    public final ComponentNodeConfiguration component;
 
     /**
      * @param serviceExtension
@@ -43,6 +43,6 @@ public abstract class AbstractComponentBuildEntry<T> extends BuildEntry<T> {
     public AbstractComponentBuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite, List<ServiceDependency> dependencies,
             AbstractComponentBuildEntry<?> declaringEntry, ComponentNodeConfiguration componentConfiguration) {
         super(serviceExtension, declaringEntry, configSite, dependencies);
-        this.componentConfiguration = requireNonNull(componentConfiguration);
+        this.component = requireNonNull(componentConfiguration);
     }
 }

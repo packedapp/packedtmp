@@ -17,6 +17,7 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import app.packed.service.ServiceRegistry;
@@ -32,35 +33,43 @@ public final class NodeStore {
 
     ConcurrentHashMap<Integer, NodeStore>[] hosts;
 
-    final Object[] instances; // May contain f.eks. CHM.. ?? Maybe hosts are also there...
+    final HashMap<ThingsToStore, Object>[] instances; // May contain f.eks. CHM.. ?? Maybe hosts are also there...
     // If non-root instances[0] always is the parent...
 
+    @SuppressWarnings("unchecked")
     NodeStore(int i) {
-        instances = new Object[i];
-    }
-
-    enum ThingsToStore {
-
-    }
-
-    public Object getSingletonInstance(ComponentNode node) {
-        throw new UnsupportedOperationException();
-    }
-
-    public PackedGuest getGuest(ComponentNode node) {
-        throw new UnsupportedOperationException();
+        instances = new HashMap[i + 1];
+        for (int j = 0; j < instances.length; j++) {
+            instances[j] = new HashMap<>();
+        }
     }
 
     public PackedContainer getContainer(ComponentNode node) {
         throw new UnsupportedOperationException();
     }
 
-    public ServiceRegistry getServiceRegistry(ComponentNode node) {
-        return (ServiceRegistry) instances[node.storeOffset];
+    public PackedGuest getGuest(ComponentNode node) {
+        return (PackedGuest) instances[node.storeOffset].get(ThingsToStore.GUEST);
     }
 
-    public void store(ComponentNode node, ServiceRegistry registry) {
-        instances[node.storeOffset] = registry;
+    public ServiceRegistry getServiceRegistry(ComponentNode node) {
+        return (ServiceRegistry) instances[node.storeOffset].get(ThingsToStore.SERVICEREGISTRY);
+    }
+
+    public Object getSingletonInstance(ComponentNode node) {
+        return instances[node.storeOffset].get(ThingsToStore.SINGLETON_INSTANCE);
+    }
+
+    public void storeServiceRegistry(ComponentNode node, ServiceRegistry registry) {
+        instances[node.storeOffset].put(ThingsToStore.SERVICEREGISTRY, registry);
+    }
+
+    public void storeGuest(ComponentNode node, PackedGuest guest) {
+        instances[node.storeOffset].put(ThingsToStore.GUEST, guest);
+    }
+
+    public void storeSingleton(ComponentNode node, Object instance) {
+        instances[node.storeOffset].put(ThingsToStore.SINGLETON_INSTANCE, instance);
     }
 
     static final class Assembly {
@@ -86,13 +95,13 @@ public final class NodeStore {
             return current;
         }
 
-        NodeStore store() {
-            NodeStore s = store;
-            if (s == null) {
-                s = store = new NodeStore(index);
-            }
-            return s;
+        NodeStore newStore() {
+            return new NodeStore(index);
         }
+    }
+
+    enum ThingsToStore {
+        GUEST, SERVICEREGISTRY, SINGLETON_INSTANCE;
     }
 
 }

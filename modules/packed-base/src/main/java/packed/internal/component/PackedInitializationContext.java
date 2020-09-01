@@ -17,11 +17,9 @@ package packed.internal.component;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.util.concurrent.CompletableFuture;
 
 import app.packed.component.Component;
 import app.packed.guest.Guest;
-import app.packed.lifecycleold.StopOption;
 import app.packed.service.ServiceRegistry;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.util.LookupUtil;
@@ -65,12 +63,7 @@ public final class PackedInitializationContext {
     }
 
     public Guest guest() {
-        return new DummyGuest();
-    }
-
-    public ServiceRegistry services() {
-        // if !container return empty registry...
-        return node.store.getServiceRegistry(node);
+        return node.store.getGuest(node);
     }
 
     // Initialize name, we don't want to override this in Configuration context. We don't want the conf to change if
@@ -88,6 +81,11 @@ public final class PackedInitializationContext {
             }
         }
         return n;
+    }
+
+    public ServiceRegistry services() {
+        // if !container return empty registry...
+        return node.store.getServiceRegistry(node);
     }
 
     /**
@@ -110,32 +108,5 @@ public final class PackedInitializationContext {
         PackedInitializationContext ic = new PackedInitializationContext(wirelets);
         ic.node = new ComponentNode(null, root, ic);
         return ic;
-    }
-
-    static class DummyGuest implements Guest {
-
-        /** {@inheritDoc} */
-        @Override
-        public Guest start() {
-            return this;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public <T> CompletableFuture<T> startAsync(T result) {
-            return null;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Guest stop(StopOption... options) {
-            return this;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public <T> CompletableFuture<T> stopAsync(T result, StopOption... options) {
-            return null;
-        }
     }
 }
