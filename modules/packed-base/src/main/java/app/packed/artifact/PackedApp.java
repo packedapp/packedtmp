@@ -16,7 +16,7 @@ import app.packed.lifecycleold.StopOption;
 import app.packed.service.ServiceRegistry;
 
 /** The default implementation of {@link App}. */
-// Don't know if want a interface.
+// Don't know if want an interface at all.
 final class PackedApp implements App {
 
     /** An driver for creating PackedApp instances. */
