@@ -23,7 +23,6 @@ import java.lang.reflect.Constructor;
 import java.util.function.Function;
 
 import app.packed.container.Extension;
-import app.packed.guest.App;
 import app.packed.guest.Guest;
 import app.packed.service.Injector;
 import app.packed.service.ServiceRegistry;

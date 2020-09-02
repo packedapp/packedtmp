@@ -31,11 +31,11 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
+import app.packed.component.App;
 import app.packed.component.Image;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.container.Packlet;
-import app.packed.guest.App;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;

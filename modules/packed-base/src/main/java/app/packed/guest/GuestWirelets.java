@@ -21,6 +21,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import app.packed.component.App;
 import app.packed.component.Bundle;
 import app.packed.component.Wirelet;
 

@@ -13,19 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.guest;
+package app.packed.component;
 
 import java.util.concurrent.CompletableFuture;
 
 import app.packed.base.Key;
-import app.packed.component.Bundle;
-import app.packed.component.Component;
-import app.packed.component.ComponentDelegate;
-import app.packed.component.ComponentPath;
-import app.packed.component.Image;
-import app.packed.component.ShellDriver;
-import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
+import app.packed.guest.Guest;
+import app.packed.guest.GuestState;
 import app.packed.guest.Guest.GuestStopOption;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceRegistry;
@@ -33,6 +28,7 @@ import app.packed.service.ServiceRegistry;
 /**
  * An App (application) is the main type of shell available in Packed and should cover must usages.
  */
+// nahh tror den kommer i componenter...
 public interface App extends AutoCloseable, ComponentDelegate {
 
     /**

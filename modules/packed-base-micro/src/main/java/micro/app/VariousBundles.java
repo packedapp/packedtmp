@@ -15,9 +15,9 @@
  */
 package micro.app;
 
+import app.packed.component.App;
 import app.packed.component.Image;
 import app.packed.container.BaseBundle;
-import app.packed.guest.App;
 
 /**
  *

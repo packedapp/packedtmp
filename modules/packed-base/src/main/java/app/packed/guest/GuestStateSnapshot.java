@@ -39,9 +39,9 @@ import java.util.Optional;
 public interface GuestStateSnapshot {
 
     /**
-     * Returns the current state of the object.
+     * Returns the current state.
      * 
-     * @return the current state of the object
+     * @return the current state
      */
     GuestState actual(); // actual is maybe better???
 

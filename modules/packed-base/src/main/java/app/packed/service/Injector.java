@@ -18,6 +18,7 @@ package app.packed.service;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
+import app.packed.component.App;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
 import app.packed.component.Image;
@@ -25,7 +26,6 @@ import app.packed.component.ShellDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
-import app.packed.guest.App;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.util.LookupUtil;
 
@@ -103,6 +103,14 @@ import packed.internal.util.LookupUtil;
 
 // Altsaa den hoerer vel ikke til her...
 // Vi kan jo injecte andre ting en services
+
+// Injector taenker jeg er component versionen...
+// ServiceRegistry er service versionen...
+
+// Aahhhh vi mangler nu end 4. version... ind imellem Injector og ServiceRegistry...
+
+// Noget der kan injecte ting... Men ikke har en system component... 
+
 public interface Injector extends ServiceRegistry {
 
     /**

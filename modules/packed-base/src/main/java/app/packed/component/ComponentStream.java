@@ -27,7 +27,6 @@ import java.util.stream.Stream;
 
 import app.packed.base.AttributedElementStream;
 import app.packed.container.Extension;
-import app.packed.guest.App;
 import packed.internal.component.PackedComponentStreamOption;
 
 /**

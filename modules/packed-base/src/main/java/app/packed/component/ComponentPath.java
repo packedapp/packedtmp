@@ -34,6 +34,9 @@ import packed.internal.component.PackedComponentPath;
  */
 // Iteralble Path??? Hmm, er det fulde paths eller del paths??? Den er lidt forvirrende
 // Altsaa taenker den her kan vi inlined...
+
+// Rename to SimplePath???? and move to app.packed.base...
+// BasePath????
 public interface ComponentPath extends Comparable<ComponentPath>, /* , Iterable<ComponentPath>, */ CharSequence {
 
     /** A component path representing the root of a hierarchy. */

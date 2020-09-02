@@ -15,9 +15,9 @@
  */
 package app.packed.cli;
 
+import app.packed.component.App;
 import app.packed.component.Bundle;
 import app.packed.component.Wirelet;
-import app.packed.guest.App;
 import app.packed.guest.GuestState;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedAssemblyContext;

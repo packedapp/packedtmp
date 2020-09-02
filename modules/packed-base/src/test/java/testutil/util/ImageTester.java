@@ -18,10 +18,10 @@ package testutil.util;
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import app.packed.component.App;
 import app.packed.component.Image;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseBundle;
-import app.packed.guest.App;
 
 /**
  *

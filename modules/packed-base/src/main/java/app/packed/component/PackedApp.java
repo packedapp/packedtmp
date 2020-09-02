@@ -1,11 +1,10 @@
-package app.packed.guest;
+package app.packed.component;
 
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.component.Component;
-import app.packed.component.ShellDriver;
+import app.packed.guest.Guest;
 import app.packed.service.ServiceRegistry;
 
 /** The default implementation of {@link App}. */
@@ -23,6 +22,8 @@ final class PackedApp implements App {
 
     // TODO I think we need to create a lazy starting service registry...
     // or at least with findInstance/findProvider
+    // Det skal ihvertfald loeses i registry.. og ikke i selve
+    // shell'en
     /** All services that are available for the user. */
     private final ServiceRegistry services;
 

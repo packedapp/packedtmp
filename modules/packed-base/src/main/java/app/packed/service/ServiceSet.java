@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 import app.packed.base.Key;
 
 /** An immutable set of services. Where each service has an unique {@link Service#key()}. */
+// Its a map????? Nahh, taenkte om man kunne genbruge
 public interface ServiceSet extends Iterable<Service> {
 
     /**
@@ -71,6 +72,7 @@ public interface ServiceSet extends Iterable<Service> {
 
     // Problemet er her navngivning
     // Vi vil gerne have service(descriptor), instance, og provider
+    // So findService, findProvider, find
 
     default Optional<Service> findService(Class<?> key) {
         return findService(Key.of(key));
@@ -96,6 +98,11 @@ public interface ServiceSet extends Iterable<Service> {
      * @return a unordered {@code Stream} of all services contained in this system
      */
     Stream<Service> stream();
+
+//    //IDK
+//    default Map<Key<?>, Service> toServiceMap() {
+//        return stream().collect(Collectors.toMap(e -> e.key(), e -> e));
+//    }
 }
 // contains->containsService??? Syntes jeg ikke. findService er kun fordi vi har find(instance)
 

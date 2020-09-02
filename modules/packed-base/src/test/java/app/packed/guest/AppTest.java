@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.component.App;
 import app.packed.container.BaseBundle;
 import app.packed.container.ContainerConfiguration;
 

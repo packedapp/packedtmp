@@ -20,7 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.guest.App;
+import app.packed.component.App;
 import app.packed.guest.GuestState;
 import app.packed.inject.InjectionContext;
 

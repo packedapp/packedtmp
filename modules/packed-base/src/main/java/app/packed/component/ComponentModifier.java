@@ -19,7 +19,6 @@ import java.lang.reflect.Modifier;
 
 import app.packed.cli.Main;
 import app.packed.container.Extension;
-import app.packed.guest.App;
 import app.packed.inject.Factory;
 import app.packed.lifecycle.AssemblyContext;
 

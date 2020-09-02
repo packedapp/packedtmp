@@ -21,12 +21,21 @@ import java.util.concurrent.TimeUnit;
 import app.packed.component.Wirelet;
 
 /**
- *
+ * 
  */
+
+// Restarting a guest actually means terminated an existing guest. And starting a new one.
+
+// Component, Service = Describes something, Guest also controls something...
+// I would imagine we want something to iterate over all state machines...
+
 // host facing
 // Maybe GuestController.... And guest can be a view/readable thingy
 
 // External facing...
+
+// Taenker ikke en Guest har attributer direkte. Udover componenten..
+// Taenker heller ikke ServiceRegistry
 public interface Guest {
 
     Guest start();
@@ -37,9 +46,29 @@ public interface Guest {
 
     <T> CompletableFuture<T> stopAsync(T result, GuestStopOption... options);
 
+    /**
+     * Returns a snapshot of the guests current state.
+     * 
+     * @return a snapshot of the guests current state
+     */
     default GuestStateSnapshot snapshotState() {
         throw new UnsupportedOperationException();
     }
+
+    // Altsaa vi skal ikke have interface StartOption of @interface WireletOption... Saa maa de hedde noget forskelligt
+
+    // Altsaa skal vi have den her.. eller kan vi komme langt nok med wirelets???
+    // Og stopoptions... Kan vi komme derhen med wirelets??? F.eks. lad os sige vi gerne vil restarte med nogle andre
+    // settings???? StopOption.restart(Wirelet... wirelets)
+    // Jeg vil ikke afvise at vi skal have den... men Wirelets er maaske lidt bedre...
+    public interface GuestStartOption {
+
+        // LifecycleTransition
+        static GuestStartOption reason(String reason) {
+            throw new UnsupportedOperationException();
+        }
+    }
+
     // ContainerStopOption????
     // Eller er det generisk..? Kan den bruges paa en actor??? et Actor Trae...
     // Hehe, hvis actor ogsaa er en artifact... Saa

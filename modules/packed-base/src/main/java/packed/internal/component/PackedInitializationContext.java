@@ -32,6 +32,7 @@ import packed.internal.util.LookupUtil;
  * <p>
  * <strong>Note that this implementation is not synchronized.</strong>
  */
+// Ideen er vi skal bruge den til at registrere fejl...
 public final class PackedInitializationContext {
 
     /** A MethodHandle that can invoke {@link #component()}. */
@@ -52,6 +53,11 @@ public final class PackedInitializationContext {
         this.wirelets = wirelets;
     }
 
+    /**
+     * Returns the top component.
+     * 
+     * @return the top component
+     */
     public Component component() {
         return node;
     }
