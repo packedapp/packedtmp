@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.buildtime;
+package app.packed.guest;
 
-import java.util.IdentityHashMap;
+/**
+ *
+ */
+// Unwraps undeclared throwable exception, by looking at the exceptions the calling
+// method throws
 
-import packed.internal.service.runtime.RuntimeEntry;
-
-/** A special instantiation context that is created */
-public class ServiceExtensionInstantiationContext {
-
-    // Translates from BuildEntry->RuntimeEntry
-    final IdentityHashMap<BuildEntry<?>, RuntimeEntry<?>> transformers = new IdentityHashMap<>();
+// This can be obtained by calling StackWalker to the calling method.
+// And then using reflection to obtain checked throwables. And the sneaky throw
+public class SmartThrow {
 
 }

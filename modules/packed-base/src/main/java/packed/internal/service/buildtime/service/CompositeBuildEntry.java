@@ -9,7 +9,7 @@ import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.ServiceMode;
-import packed.internal.service.runtime.InjectorEntry;
+import packed.internal.service.runtime.RuntimeEntry;
 
 public class CompositeBuildEntry<T> extends BuildEntry<T> {
 
@@ -28,7 +28,7 @@ public class CompositeBuildEntry<T> extends BuildEntry<T> {
     }
 
     @Override
-    protected InjectorEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
+    protected RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
         throw new UnsupportedOperationException();
     }
 

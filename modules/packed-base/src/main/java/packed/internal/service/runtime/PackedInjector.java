@@ -50,13 +50,13 @@ public final class PackedInjector extends AbstractInjector {
     private final ConfigSite configSite;
 
     /** All services that this injector provides. */
-    private final Map<Key<?>, InjectorEntry<?>> entries;
+    private final Map<Key<?>, RuntimeEntry<?>> entries;
 
     /** The parent of this injector, or null if this is a top-level injector. */
     @Nullable
     final AbstractInjector parent;
 
-    public PackedInjector(ConfigSite configSite, Map<Key<?>, InjectorEntry<?>> services) {
+    public PackedInjector(ConfigSite configSite, Map<Key<?>, RuntimeEntry<?>> services) {
         this.parent = null;
         this.configSite = requireNonNull(configSite);
         this.entries = services;
@@ -83,8 +83,8 @@ public final class PackedInjector extends AbstractInjector {
     @SuppressWarnings("unchecked")
     @Override
     @Nullable
-    protected <T> InjectorEntry<T> findNode(Key<T> key) {
-        return (InjectorEntry<T>) entries.get(key);
+    protected <T> RuntimeEntry<T> findNode(Key<T> key) {
+        return (RuntimeEntry<T>) entries.get(key);
     }
 
     /** {@inheritDoc} */
@@ -95,7 +95,7 @@ public final class PackedInjector extends AbstractInjector {
 
     /** {@inheritDoc} */
     @Override
-    public void forEachEntry(Consumer<? super InjectorEntry<?>> action) {
+    public void forEachEntry(Consumer<? super RuntimeEntry<?>> action) {
         entries.values().forEach(action);
     }
 
@@ -124,7 +124,7 @@ public final class PackedInjector extends AbstractInjector {
             Optional<StackFrame> sf = STACK_WALKER.walk(e -> e.filter(f -> f.getDeclaringClass() == PackedInjector.class).findFirst());
             cs = sf.isPresent() ? configSite.thenStackFrame("Injector.Spawn", sf.get()) : ConfigSite.UNKNOWN;
         }
-        LinkedHashMap<Key<?>, InjectorEntry<?>> newServices = new LinkedHashMap<>(entries);
+        LinkedHashMap<Key<?>, RuntimeEntry<?>> newServices = new LinkedHashMap<>(entries);
         WireletList wl = WireletList.ofAll(wirelets);
         ConfigSite ccs = cs;
         wl.forEach(PackedDownstreamInjectionWirelet.class, w -> w.process(ccs, newServices));

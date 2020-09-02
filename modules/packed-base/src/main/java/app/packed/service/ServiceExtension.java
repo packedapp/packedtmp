@@ -34,6 +34,7 @@ import app.packed.inject.Provide;
 import app.packed.statemachine.Leaving;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletList;
+import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.ServiceExtensionNode;
@@ -82,7 +83,7 @@ public final class ServiceExtension extends Extension {
      *            the configuration of the extension
      */
     /* package-private */ ServiceExtension(ExtensionConfiguration configuration) {
-        this.node = new ServiceExtensionNode(configuration);
+        this.node = ((PackedExtensionConfiguration) configuration).container().se = new ServiceExtensionNode(configuration);
     }
 
     // Skal vi ogsaa supportere noget paa tvaers af bundles???

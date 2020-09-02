@@ -43,24 +43,24 @@ import app.packed.container.Extension;
 @State(Scope.Benchmark)
 public class ImageMicro {
 
-    static final Image<App> EMPTY = App.newImage(new BaseBundle() {
+    static final Image<App> EMPTY = App.imageOf(new BaseBundle() {
         @Override
         protected void configure() {}
     });
 
-    static final Image<App> USE_EXTENSION = App.newImage(new BaseBundle() {
+    static final Image<App> USE_EXTENSION = App.imageOf(new BaseBundle() {
         @Override
         public void configure() {
             use(MyExtension.class);
         }
     });
-    static final Image<App> INSTALL = App.newImage(new BaseBundle() {
+    static final Image<App> INSTALL = App.imageOf(new BaseBundle() {
         @Override
         public void configure() {
             installInstance("foo");
         }
     });
-    static final Image<App> INSTALL_AUTO_ACTIVATE = App.newImage(new BaseBundle() {
+    static final Image<App> INSTALL_AUTO_ACTIVATE = App.imageOf(new BaseBundle() {
         @Override
         public void configure() {
             installInstance(new MyStuff());

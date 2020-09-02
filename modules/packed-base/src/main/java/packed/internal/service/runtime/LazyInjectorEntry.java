@@ -30,7 +30,7 @@ import packed.internal.util.ThrowableUtil;
 /** A lazy runtime node if the service was not requested at configuration time. */
 // we don't support lazy services anymore.
 // But we keep this around if we want to support lazy instantiated components at some point
-public final class LazyInjectorEntry<T> extends InjectorEntry<T> implements Provider<T> {
+public final class LazyInjectorEntry<T> extends RuntimeEntry<T> implements Provider<T> {
 
     /** The lazily instantiated instance. */
     private volatile Object instance;

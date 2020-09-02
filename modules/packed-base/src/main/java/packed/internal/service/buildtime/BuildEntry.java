@@ -28,7 +28,7 @@ import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.Service;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.service.AbstractComponentBuildEntry;
-import packed.internal.service.runtime.InjectorEntry;
+import packed.internal.service.runtime.RuntimeEntry;
 import packed.internal.util.KeyBuilder;
 
 /**
@@ -41,9 +41,6 @@ import packed.internal.util.KeyBuilder;
  */
 // BuildEntry does not implements ServiceDescriptor because it is mutable, so we
 public abstract class BuildEntry<T> {
-
-    /** An empty array of entries. */
-    private static final BuildEntry<?>[] EMPTY_ARRAY = new BuildEntry<?>[0];
 
     /** The configuration site of this object. */
     private final ConfigSite configSite;
@@ -85,7 +82,7 @@ public abstract class BuildEntry<T> {
         this.configSite = requireNonNull(configSite);
         this.dependencies = requireNonNull(dependencies);
         int depSize = dependencies.size() + offset;
-        this.resolvedDependencies = depSize == 0 ? EMPTY_ARRAY : new BuildEntry<?>[depSize];
+        this.resolvedDependencies = depSize == 0 ? new BuildEntry<?>[0] : new BuildEntry<?>[depSize];
         boolean hasDependencyOnInjectionSite = false;
         if (declaringEntry != null) {
             resolvedDependencies[0] = declaringEntry;
@@ -161,16 +158,16 @@ public abstract class BuildEntry<T> {
      *
      * @return the new runtime node
      */
-    protected abstract InjectorEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context);
+    protected abstract RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context);
 
     public abstract boolean requiresPrototypeRequest();
 
     public final Service toDescriptor() {
-        return new PackedBuildService(key, configSite);
+        return new PackedService(key, configSite);
     }
 
     @SuppressWarnings("unchecked")
-    public final InjectorEntry<T> toRuntimeEntry(ServiceExtensionInstantiationContext context) {
-        return (InjectorEntry<T>) context.transformers.computeIfAbsent(this, k -> k.newRuntimeNode(context));
+    public final RuntimeEntry<T> toRuntimeEntry(ServiceExtensionInstantiationContext context) {
+        return (RuntimeEntry<T>) context.transformers.computeIfAbsent(this, k -> k.newRuntimeNode(context));
     }
 }

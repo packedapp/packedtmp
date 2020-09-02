@@ -25,7 +25,7 @@ import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.ServiceMode;
 import packed.internal.service.runtime.ConstantInjectorEntry;
-import packed.internal.service.runtime.InjectorEntry;
+import packed.internal.service.runtime.RuntimeEntry;
 
 /**
  *
@@ -64,7 +64,7 @@ public final class ComponentConstantBuildEntry<T> extends AbstractComponentBuild
 
     /** {@inheritDoc} */
     @Override
-    protected InjectorEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
+    protected RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
         return new ConstantInjectorEntry<>(this, instance);
     }
 

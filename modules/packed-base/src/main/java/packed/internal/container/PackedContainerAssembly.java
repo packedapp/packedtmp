@@ -26,6 +26,7 @@ import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.service.buildtime.ServiceExtensionNode;
 
 /** The default container context. */
 public final class PackedContainerAssembly {
@@ -50,6 +51,9 @@ public final class PackedContainerAssembly {
 
     @Nullable
     public final PackedContainerAssembly parent;
+
+    @SuppressWarnings("exports") // some temporary module exports
+    public ServiceExtensionNode se;
 
     public PackedContainerAssembly(ComponentNodeConfiguration component) {
         this.component = requireNonNull(component);

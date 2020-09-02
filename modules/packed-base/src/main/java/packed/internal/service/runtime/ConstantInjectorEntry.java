@@ -26,7 +26,7 @@ import packed.internal.service.buildtime.ServiceMode;
 
 /** An entry holding a constant. */
 // Can't implement both ServiceDescriptor and Provider...
-public final class ConstantInjectorEntry<T> extends InjectorEntry<T> {
+public final class ConstantInjectorEntry<T> extends RuntimeEntry<T> {
 
     /** The singleton instance. */
     @Nullable

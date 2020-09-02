@@ -26,7 +26,6 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.component.WireableComponentDriver;
 import app.packed.inject.Factory;
-import app.packed.service.ServiceExtension;
 import packed.internal.component.PackedWireableComponentDriver;
 
 /**
@@ -50,9 +49,6 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
      * <p>
      * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
-     * <p>
-     * This method uses the {@link ServiceExtension} to instantiate the an instance of the component. (only if there are
-     * dependencies???)
      * 
      * @param <T>
      *            the type of the component
@@ -66,8 +62,6 @@ public interface ContainerConfiguration extends ComponentConfiguration {
 
     /**
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
-     * <p>
-     * This method uses the {@link ServiceExtension} to instantiate an component instance from the factory.
      * 
      * @param <T>
      *            the type of the component
@@ -94,8 +88,6 @@ public interface ContainerConfiguration extends ComponentConfiguration {
 
     /**
      * Installs a stateless component.
-     * <p>
-     * This method uses the {@link ServiceExtension}. Nahh it just uses Dependency injection
      * <p>
      * Extensions might still contain state. So Stateless is better under the assumption that extensions are better tested
      * the user code.

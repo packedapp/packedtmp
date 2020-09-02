@@ -35,10 +35,8 @@ import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
-import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceRegistry;
 import packed.internal.container.PackedContainerAssembly;
-import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.runtime.PackedInjector;
 
@@ -90,18 +88,12 @@ public final class ComponentNode implements Component {
             ServiceRegistry registry = null;
             // I think this injector is only available for the top of an assembly
             PackedContainerAssembly container = configuration.container;
-            //
-            if (container.extensions != null) {
-                PackedExtensionConfiguration ee = container.extensions.get(ServiceExtension.class);
-                if (ee != null) {
-                    ServiceExtensionNode node = ServiceExtensionNode.fromExtension(((ServiceExtension) ee.instance()));
-                    registry = node.onInstantiate(pic.wirelets());
-                }
-            }
-            if (registry == null) {
+            ServiceExtensionNode node = container.se;
+            if (node != null) {
+                registry = node.onInstantiate(pic.wirelets());
+            } else {
                 registry = new PackedInjector(configuration.configSite(), Map.of());
             }
-
             store.storeServiceRegistry(this, registry);
         }
 

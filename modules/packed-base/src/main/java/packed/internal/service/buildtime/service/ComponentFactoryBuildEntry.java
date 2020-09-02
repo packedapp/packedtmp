@@ -28,8 +28,8 @@ import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.ServiceMode;
 import packed.internal.service.runtime.CachingPrototypeInjectorEntry;
-import packed.internal.service.runtime.InjectorEntry;
 import packed.internal.service.runtime.PrototypeInjectorEntry;
+import packed.internal.service.runtime.RuntimeEntry;
 
 /**
  * An entry representing a component node. This node is used for all three binding modes mainly because it makes
@@ -45,6 +45,7 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
     /** Is null for instance components. */
     public final MethodHandle mha;
 
+    // Is created for a @Provide method, uses the parent component
     public ComponentFactoryBuildEntry(ConfigSite configSite, AtProvides atProvides, MethodHandle mh, AbstractComponentBuildEntry<?> parent) {
         super(parent.node, configSite, atProvides.dependencies, atProvides.isStaticMember ? null : parent, parent.component);
         this.instantionMode = atProvides.instantionMode;
@@ -78,7 +79,7 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
 
     /** {@inheritDoc} */
     @Override
-    protected InjectorEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
+    protected RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
         switch (instantionMode) {
         case CONSTANT:
             return new CachingPrototypeInjectorEntry<>(this, context);

@@ -31,7 +31,7 @@ public class ImageTester {
     private final Image<App> image;
 
     public ImageTester(BaseBundle source, Wirelet... wirelets) {
-        this(App.newImage(source, wirelets));
+        this(App.imageOf(source, wirelets));
     }
 
     public AppTester newApp(Wirelet... wirelets) {

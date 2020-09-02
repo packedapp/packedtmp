@@ -30,7 +30,7 @@ import packed.internal.util.ThrowableUtil;
 // No params
 // No InjectionSite parameters
 // InjectionSite parameters
-public class PrototypeInjectorEntry<T> extends InjectorEntry<T> {
+public class PrototypeInjectorEntry<T> extends RuntimeEntry<T> {
 
     /** An empty object array. */
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
@@ -48,7 +48,7 @@ public class PrototypeInjectorEntry<T> extends InjectorEntry<T> {
         int size = node.resolvedDependencies.length;// .dependencies.size();
         providers = new Provider[size];
         for (int i = 0; i < node.resolvedDependencies.length; i++) {
-            InjectorEntry<?> forReal = node.resolvedDependencies[i].toRuntimeEntry(context);
+            RuntimeEntry<?> forReal = node.resolvedDependencies[i].toRuntimeEntry(context);
             ProvideContext is = null;
             if (node.offset >= i) {
                 // System.out.println(node.offset + " " + node.dependencies.size());

@@ -24,10 +24,10 @@ import app.packed.container.BaseBundle;
  */
 public class VariousBundles {
 
-    public static final Image<App> EMPTY_IMAGE = App.newImage(empty());
-    public static final Image<App> ONE_COMPONENT_IMAGE = App.newImage(oneComponent());
-    public static final Image<App> FIVE_CONTAINER_IMAGE = App.newImage(fiveComponents());
-    public static final Image<App> ONE_CONTAINER_IMAGE = App.newImage(oneContainer());
+    public static final Image<App> EMPTY_IMAGE = App.imageOf(empty());
+    public static final Image<App> ONE_COMPONENT_IMAGE = App.imageOf(oneComponent());
+    public static final Image<App> FIVE_CONTAINER_IMAGE = App.imageOf(fiveComponents());
+    public static final Image<App> ONE_CONTAINER_IMAGE = App.imageOf(oneContainer());
 
     public static BaseBundle empty() {
         return new BaseBundle() {

@@ -27,7 +27,6 @@ import app.packed.component.ComponentBundle;
 import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
-import app.packed.service.ServiceExtension;
 
 /**
  * Bundles are the main source of configuration for containers and artifacts. Basically a bundle is just a thin wrapper
@@ -95,9 +94,6 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
      * <p>
      * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
-     * <p>
-     * This method uses the {@link ServiceExtension} to instantiate the an instance of the component. (only if there are
-     * dependencies???)
      * 
      * @param <T>
      *            the type of the component
@@ -115,7 +111,6 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
     /**
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
      * <p>
-     * This method uses the {@link ServiceExtension} to instantiate an component instance from the factory.
      * 
      * @param <T>
      *            the type of the component

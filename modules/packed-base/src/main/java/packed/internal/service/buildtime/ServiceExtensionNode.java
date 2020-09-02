@@ -36,7 +36,7 @@ import packed.internal.service.buildtime.export.ExportManager;
 import packed.internal.service.buildtime.export.ExportedBuildEntry;
 import packed.internal.service.buildtime.service.ComponentFactoryBuildEntry;
 import packed.internal.service.buildtime.service.ServiceProvidingManager;
-import packed.internal.service.runtime.InjectorEntry;
+import packed.internal.service.runtime.RuntimeEntry;
 import packed.internal.service.runtime.PackedInjector;
 import packed.internal.util.LookupUtil;
 
@@ -205,7 +205,7 @@ public final class ServiceExtensionNode {
 //    }
 
     public PackedInjector onInstantiate(WireletPack wc) {
-        LinkedHashMap<Key<?>, InjectorEntry<?>> snm = new LinkedHashMap<>();
+        LinkedHashMap<Key<?>, RuntimeEntry<?>> snm = new LinkedHashMap<>();
         PackedInjector publicInjector = new PackedInjector(context().containerConfigSite(), snm);
 
         ServiceExtensionInstantiationContext con = new ServiceExtensionInstantiationContext();

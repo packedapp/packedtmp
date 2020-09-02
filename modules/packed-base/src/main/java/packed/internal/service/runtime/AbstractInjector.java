@@ -60,14 +60,14 @@ public abstract class AbstractInjector implements Injector {
     }
 
     @Nullable
-    protected <T> InjectorEntry<T> findNode(Class<T> key) {
+    protected <T> RuntimeEntry<T> findNode(Class<T> key) {
         return findNode(Key.of(key));
     }
 
     @Nullable
-    protected abstract <T> InjectorEntry<T> findNode(Key<T> key);
+    protected abstract <T> RuntimeEntry<T> findNode(Key<T> key);
 
-    public abstract void forEachEntry(Consumer<? super InjectorEntry<?>> action);
+    public abstract void forEachEntry(Consumer<? super RuntimeEntry<?>> action);
 
     @Nullable
     private <T> T getInstanceOrNull(Class<T> key) {
@@ -76,7 +76,7 @@ public abstract class AbstractInjector implements Injector {
 
     @Nullable
     private <T> T getInstanceOrNull(Key<T> key) {
-        InjectorEntry<T> n = findNode(key);
+        RuntimeEntry<T> n = findNode(key);
         if (n == null) {
             return null;
         }

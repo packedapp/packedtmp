@@ -28,7 +28,7 @@ import packed.internal.service.buildtime.ServiceMode;
 import packed.internal.util.KeyBuilder;
 
 /** An entry that represents a service at runtime. */
-public abstract class InjectorEntry<T> implements Service {
+public abstract class RuntimeEntry<T> implements Service {
 
     /** The point where this entry was registered. */
     private final ConfigSite configSite;
@@ -42,11 +42,11 @@ public abstract class InjectorEntry<T> implements Service {
      * @param buildEntry
      *            the build node to create the runtime node from
      */
-    InjectorEntry(BuildEntry<T> buildEntry) {
+    RuntimeEntry(BuildEntry<T> buildEntry) {
         this(buildEntry.configSite(), buildEntry.key());
     }
 
-    InjectorEntry(ConfigSite configSite, Key<T> key) {
+    RuntimeEntry(ConfigSite configSite, Key<T> key) {
         this.configSite = requireNonNull(configSite);
         this.key = requireNonNull(key);
     }

@@ -15,20 +15,19 @@
  */
 package app.packed.component;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 
 import app.packed.base.Key;
 import app.packed.config.ConfigSite;
 import app.packed.guest.Guest;
-import app.packed.guest.GuestState;
 import app.packed.guest.Guest.GuestStopOption;
-import app.packed.service.ServiceExtension;
+import app.packed.guest.GuestState;
 import app.packed.service.ServiceRegistry;
 
 /**
  * An App (application) is the main type of shell available in Packed and should cover must usages.
  */
-// nahh tror den kommer i componenter...
 public interface App extends AutoCloseable, ComponentDelegate {
 
     /**
@@ -51,6 +50,8 @@ public interface App extends AutoCloseable, ComponentDelegate {
     default ConfigSite configSite() {
         return component().configSite();
     }
+
+    Guest guest();
 
     /**
      * Returns the name of this application.
@@ -107,11 +108,8 @@ public interface App extends AutoCloseable, ComponentDelegate {
         return guest().stopAsync(this, options);
     }
 
-    Guest guest();
-
     /**
-     * Returns a service with the specified key, if it exists. Otherwise, fails by throwing
-     * {@link UnsupportedOperationException}.
+     * Returns a service with the specified key, if it exists. Otherwise, fails by throwing {@link NoSuchElementException}.
      * <p>
      * If the application is not already running
      * 
@@ -120,16 +118,15 @@ public interface App extends AutoCloseable, ComponentDelegate {
      * @param key
      *            the key of the service to return
      * @return a service of the specified type
-     * @throws UnsupportedOperationException
-     *             if a service with the specified key exist. Or if the application does not use {@link ServiceExtension}.
+     * @throws NoSuchElementException
+     *             if a service with the specified key exist.
      */
     default <T> T use(Class<T> key) {
         return services().use(key);
     }
 
     /**
-     * Returns a service with the specified key, if it exists. Otherwise, fails by throwing
-     * {@link UnsupportedOperationException}.
+     * Returns a service with the specified key, if it exists. Otherwise, fails by throwing {@link NoSuchElementException}.
      * <p>
      * If the application is not already running
      * 
@@ -138,8 +135,8 @@ public interface App extends AutoCloseable, ComponentDelegate {
      * @param key
      *            the key of the service to return
      * @return a service of the specified type
-     * @throws UnsupportedOperationException
-     *             if a service with the specified key exist. Or if the application does not use {@link ServiceExtension}.
+     * @throws NoSuchElementException
+     *             if a service with the specified key exist.
      */
     default <T> T use(Key<T> key) {
         return services().use(key);
@@ -156,25 +153,28 @@ public interface App extends AutoCloseable, ComponentDelegate {
         return PackedApp.DRIVER;
     }
 
+    // Once used the image will return an App in the initialized state.
+    static Image<App> imageOf(Bundle<?> bundle, Wirelet... wirelets) {
+        return driver().newImage(bundle, wirelets);
+    }
+
     /**
-     * Create an application (but does not start it) from the specified source. The state of the returned application is
-     * {@link GuestState#INITIALIZED}. The returned application will lazily start itself when needed. For example, on first
-     * invocation of {@link #use(Class)}.
+     * Create a new application (but does not start it) from the specified bundle. The state of the returned application is
+     * {@link GuestState#INITIALIZED}.
+     * <p>
+     * The returned application will lazily start itself when needed. For example, on first invocation of
+     * {@link #use(Class)}.
      *
      * @param bundle
      *            the source of the application
      * @param wirelets
-     *            any wirelets to use in the construction of the application
+     *            optional wirelets
      * @return the new application
      * @throws RuntimeException
-     *             if the application could not be assembled or initialized
+     *             if the application could not created
      */
-    static App initialize(Bundle<?> bundle, Wirelet... wirelets) {
+    static App of(Bundle<?> bundle, Wirelet... wirelets) {
         return driver().initialize(bundle, wirelets);
-    }
-
-    static Image<App> newImage(Bundle<?> bundle, Wirelet... wirelets) {
-        return driver().newImage(bundle, wirelets);
     }
 
     /**
@@ -189,6 +189,8 @@ public interface App extends AutoCloseable, ComponentDelegate {
      * @throws RuntimeException
      *             if the application failed to initialize or started properly
      */
+    // Eller ogsaa har vi simpelthen en wirelet der hedder do-not-start
+    // ofInitialized()
     static App start(Bundle<?> bundle, Wirelet... wirelets) {
         return driver().start(bundle, wirelets);
     }

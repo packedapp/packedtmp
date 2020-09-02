@@ -23,7 +23,7 @@ import app.packed.config.ConfigSite;
 import app.packed.service.Service;
 
 /** An implementation of {@link Service} because {@link BuildEntry} is not immutable. */
-final class PackedBuildService implements Service {
+final class PackedService implements Service {
 
     /** The configuration site of the service. */
     private final ConfigSite configSite;
@@ -39,7 +39,7 @@ final class PackedBuildService implements Service {
      * @param configSite
      *            the config site of the service
      */
-    PackedBuildService(Key<?> key, ConfigSite configSite) {
+    PackedService(Key<?> key, ConfigSite configSite) {
         this.key = requireNonNull(key);
         this.configSite = requireNonNull(configSite);
     }

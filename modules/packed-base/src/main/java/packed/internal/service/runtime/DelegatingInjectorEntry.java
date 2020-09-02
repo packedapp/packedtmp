@@ -26,10 +26,10 @@ import packed.internal.service.buildtime.ServiceMode;
  * <p>
  * This type is used for exported nodes as well as nodes that are imported from other containers.
  */
-public final class DelegatingInjectorEntry<T> extends InjectorEntry<T> {
+public final class DelegatingInjectorEntry<T> extends RuntimeEntry<T> {
 
     /** The runtime node to delegate to. */
-    private final InjectorEntry<T> delegate;
+    private final RuntimeEntry<T> delegate;
 
     /**
      * Creates a new runtime alias node.
@@ -37,7 +37,7 @@ public final class DelegatingInjectorEntry<T> extends InjectorEntry<T> {
      * @param delegate
      *            the build time alias node to create a runtime node from
      */
-    public DelegatingInjectorEntry(BuildEntry<T> buildNode, InjectorEntry<T> delegate) {
+    public DelegatingInjectorEntry(BuildEntry<T> buildNode, RuntimeEntry<T> delegate) {
         super(buildNode);
         this.delegate = requireNonNull(delegate);
     }

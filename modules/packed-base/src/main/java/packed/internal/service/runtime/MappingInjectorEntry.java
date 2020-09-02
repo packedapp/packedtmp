@@ -24,10 +24,10 @@ import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceMode;
 
 /** A runtime service entry that uses a {@link Function} to map an existing service. */
-public final class MappingInjectorEntry<F, T> extends InjectorEntry<T> {
+public final class MappingInjectorEntry<F, T> extends RuntimeEntry<T> {
 
     /** The runtime entry whose service should mapped. */
-    private final InjectorEntry<F> delegate;
+    private final RuntimeEntry<F> delegate;
 
     /** The function that maps the service. */
     private final Function<? super F, ? extends T> function;
@@ -38,7 +38,7 @@ public final class MappingInjectorEntry<F, T> extends InjectorEntry<T> {
      * @param delegate
      *            the build time alias node to create a runtime node from
      */
-    public MappingInjectorEntry(BuildEntry<T> buildNode, InjectorEntry<F> delegate, Function<? super F, ? extends T> function) {
+    public MappingInjectorEntry(BuildEntry<T> buildNode, RuntimeEntry<F> delegate, Function<? super F, ? extends T> function) {
         super(buildNode);
         this.delegate = requireNonNull(delegate);
         this.function = requireNonNull(function);

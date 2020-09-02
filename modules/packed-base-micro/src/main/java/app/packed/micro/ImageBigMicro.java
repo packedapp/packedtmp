@@ -41,7 +41,7 @@ import app.packed.micro.Letters.NeedsA;
 @State(Scope.Benchmark)
 public class ImageBigMicro {
 
-    static final Image<App> INSTALL31 = App.newImage(new BaseBundle() {
+    static final Image<App> INSTALL31 = App.imageOf(new BaseBundle() {
         @Override
         public void configure() {
             // install(A.class);
@@ -58,7 +58,7 @@ public class ImageBigMicro {
         }
     });
 
-    static final Image<App> INSTALL253 = App.newImage(new BaseBundle() {
+    static final Image<App> INSTALL253 = App.imageOf(new BaseBundle() {
         @Override
         public void configure() {
             for (int i = 0; i < 4; i++) {
@@ -90,7 +90,7 @@ public class ImageBigMicro {
             }
         }
     });
-    static final Image<App> INSTALL253_NOS = App.newImage(new BaseBundle() {
+    static final Image<App> INSTALL253_NOS = App.imageOf(new BaseBundle() {
         @Override
         public void configure() {
             for (int i = 0; i < 4; i++) {
