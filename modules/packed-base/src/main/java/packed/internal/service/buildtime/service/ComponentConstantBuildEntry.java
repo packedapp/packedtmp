@@ -57,6 +57,7 @@ public final class ComponentConstantBuildEntry<T> extends AbstractComponentBuild
     protected RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
         @SuppressWarnings("unchecked")
         T instance = ((SingletonComponentDriver<T>) component.driver()).instance;
+        context.ns.storeSingleton(component, instance);
         return new ConstantInjectorEntry<>(this, instance);
     }
 

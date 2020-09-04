@@ -114,7 +114,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     /** The store. */
     final NodeStore.Assembly store;
 
-    final int storeIndex;
+    final int storeOffset;
 
     /** The realm the component belongs to. */
     private final PackedRealm realm;
@@ -178,7 +178,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         this.modifiers = p;
 
         this.store = parent == null || driver.modifiers().isGuest() ? new NodeStore.Assembly(this) : parent.store;
-        this.storeIndex = store.reserve(this); // calculate runtime storage
+        this.storeOffset = store.reserve(this); // calculate runtime storage
     }
 
     /**

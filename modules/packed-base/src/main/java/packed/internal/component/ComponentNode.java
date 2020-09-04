@@ -73,7 +73,7 @@ public final class ComponentNode implements Component {
      */
     ComponentNode(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, PackedInitializationContext pic) {
         this.parent = parent;
-        this.storeOffset = configuration.storeIndex;
+        this.storeOffset = configuration.storeOffset;
         this.model = RuntimeComponentModel.of(configuration);
         this.store = parent == null || configuration.modifiers().isGuest() ? configuration.store.newStore() : parent.store;
 
@@ -90,7 +90,7 @@ public final class ComponentNode implements Component {
 
             ServiceExtensionNode node = container.se;
             if (node != null) {
-                registry = node.instantiateEverything(pic.wirelets());
+                registry = node.instantiateEverything(store, pic.wirelets());
             } else {
                 registry = new PackedInjector(configuration.configSite(), Map.of());
             }

@@ -30,6 +30,7 @@ import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceRegistry;
 import app.packed.service.ServiceSet;
+import packed.internal.component.NodeStore;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.dependencies.DependencyManager;
@@ -184,11 +185,11 @@ public final class ServiceExtensionNode {
         });
     }
 
-    public ServiceRegistry instantiateEverything(WireletPack wc) {
+    public ServiceRegistry instantiateEverything(NodeStore ns, WireletPack wc) {
         LinkedHashMap<Key<?>, RuntimeEntry<?>> snm = new LinkedHashMap<>();
         PackedInjector publicInjector = new PackedInjector(context().containerConfigSite(), snm);
 
-        ServiceExtensionInstantiationContext con = new ServiceExtensionInstantiationContext();
+        ServiceExtensionInstantiationContext con = new ServiceExtensionInstantiationContext(ns);
 
         for (var e : resolvedEntries.entrySet()) {
             if (e.getKey() != null) { // only services... should be put there
@@ -202,9 +203,6 @@ public final class ServiceExtensionNode {
                 ComponentFactoryBuildEntry<?> s = (ComponentFactoryBuildEntry<?>) node;
                 if (s.instantiationMode() == ServiceMode.CONSTANT) {
                     s.toRuntimeEntry(con).getInstance(null);
-                    if (s.component.modifiers().isSingleton()) {
-                        // TODO add to singleton
-                    }
                 }
             }
         }

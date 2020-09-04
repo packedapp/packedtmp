@@ -60,6 +60,10 @@ public final class NodeStore {
         return instances[node.storeOffset].get(ThingsToStore.SINGLETON_INSTANCE);
     }
 
+    public Object getSingletonInstance(ComponentNodeConfiguration node) {
+        return instances[node.storeOffset].get(ThingsToStore.SINGLETON_INSTANCE);
+    }
+
     public void storeServiceRegistry(ComponentNode node, ServiceRegistry registry) {
         instances[node.storeOffset].put(ThingsToStore.SERVICEREGISTRY, registry);
     }
@@ -68,7 +72,7 @@ public final class NodeStore {
         instances[node.storeOffset].put(ThingsToStore.GUEST, guest);
     }
 
-    public void storeSingleton(ComponentNode node, Object instance) {
+    public void storeSingleton(ComponentNodeConfiguration node, Object instance) {
         instances[node.storeOffset].put(ThingsToStore.SINGLETON_INSTANCE, instance);
     }
 
