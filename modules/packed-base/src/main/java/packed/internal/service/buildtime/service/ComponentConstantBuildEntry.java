@@ -17,7 +17,6 @@ package packed.internal.service.buildtime.service;
 
 import java.util.List;
 
-import app.packed.config.ConfigSite;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedWireableComponentDriver.SingletonComponentDriver;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
@@ -36,11 +35,9 @@ public final class ComponentConstantBuildEntry<T> extends AbstractComponentBuild
      * 
      * @param ib
      *            the injector builder
-     * @param configSite
-     *            the configuration site
      */
-    public ComponentConstantBuildEntry(ServiceExtensionNode ib, ConfigSite configSite, ComponentNodeConfiguration cc) {
-        super(ib, configSite, List.of(), null, cc);
+    public ComponentConstantBuildEntry(ServiceExtensionNode ib, ComponentNodeConfiguration cc) {
+        super(ib, cc.configSite(), List.of(), null, cc);
     }
 
     /** {@inheritDoc} */

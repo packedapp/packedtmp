@@ -92,7 +92,7 @@ public final class ServiceProvidingManager {
         AbstractComponentBuildEntry parentNode;
         SingletonComponentDriver driver = (SingletonComponentDriver) cc.driver();
         if (driver.instance != null) {
-            parentNode = new ComponentConstantBuildEntry<>(node, cc.configSite(), cc);
+            parentNode = new ComponentConstantBuildEntry<>(node, cc);
         } else {
             BaseFactory<?> factory = driver.factory;
             List<ServiceDependency> dependencies = factory.factory.dependencies;
@@ -163,7 +163,7 @@ public final class ServiceProvidingManager {
         BuildEntry<T> c = (BuildEntry<T>) componentConfigurationCache.get(cc);
         if (c == null) {
             // No node found, components has no @Provides method, create a new node
-            c = new ComponentConstantBuildEntry<T>(node, cc.configSite(), cc);
+            c = new ComponentConstantBuildEntry<T>(node, cc);
         }
 
         c.as((Key) Key.of(cc.driver().sourceType()));

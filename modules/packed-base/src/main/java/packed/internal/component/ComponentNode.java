@@ -90,7 +90,7 @@ public final class ComponentNode implements Component {
 
             ServiceExtensionNode node = container.se;
             if (node != null) {
-                registry = node.onInstantiate(pic.wirelets());
+                registry = node.instantiateEverything(pic.wirelets());
             } else {
                 registry = new PackedInjector(configuration.configSite(), Map.of());
             }

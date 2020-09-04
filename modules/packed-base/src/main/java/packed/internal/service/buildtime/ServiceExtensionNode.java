@@ -28,6 +28,7 @@ import app.packed.base.Nullable;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
+import app.packed.service.ServiceRegistry;
 import app.packed.service.ServiceSet;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.inject.ServiceDependency;
@@ -36,8 +37,8 @@ import packed.internal.service.buildtime.export.ExportManager;
 import packed.internal.service.buildtime.export.ExportedBuildEntry;
 import packed.internal.service.buildtime.service.ComponentFactoryBuildEntry;
 import packed.internal.service.buildtime.service.ServiceProvidingManager;
-import packed.internal.service.runtime.RuntimeEntry;
 import packed.internal.service.runtime.PackedInjector;
+import packed.internal.service.runtime.RuntimeEntry;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -183,28 +184,7 @@ public final class ServiceExtensionNode {
         });
     }
 
-//    /**
-//     * Invoked by the runtime when a component has members (fields or methods) that are annotated with {@link Inject}.
-//     * 
-//     * @param cc
-//     *            the configuration of the annotated component
-//     * @param group
-//     *            a inject group object
-//     */
-//    public void onInjectGroup(SingletonConfiguration<?> cc, AtInjectHook group) {
-//        // new Exception().printStackTrace();
-//        // Hvis den er instans, Singlton Factory -> Saa skal det vel med i en liste
-//        // Hvis det er en ManyProvide-> Saa skal vi jo egentlig bare gemme den til den bliver instantieret.
-//        // Det skal ogsaa tilfoejes requires...
-//        // Delt op i 2 dele...
-//        // * Tilfoej det til requirements...
-//        // * Scheduler at groupen skal kaldes senere ved inject...
-//        for (AtInject ai : group.members) {
-//            System.out.println(ai);
-//        }
-//    }
-
-    public PackedInjector onInstantiate(WireletPack wc) {
+    public ServiceRegistry instantiateEverything(WireletPack wc) {
         LinkedHashMap<Key<?>, RuntimeEntry<?>> snm = new LinkedHashMap<>();
         PackedInjector publicInjector = new PackedInjector(context().containerConfigSite(), snm);
 
@@ -232,30 +212,6 @@ public final class ServiceExtensionNode {
         return publicInjector;
     }
 
-//    for (var e : specials.entrySet()) {
-//        System.out.println(e);
-//
-//        // if (e.getKey().key().typeLiteral().rawType() == ExtensionInstantiationContext.class) {
-//        // // DOES not really work c is the instantiation context for the service
-//        // // not nessesarily for the one we should inject....
-//        //
-////        Class<?> pipelineClass = e.getKey().key().typeLiteral().rawType();
-////
-////        if (wc != null) {
-////            instance = wc.getWireletOrPipeline(pipelineClass);
-////            if (instance instanceof WireletPipelineContext) {
-////                instance = ((WireletPipelineContext) instance).instance;
-////            }
-////            requireNonNull(instance);
-////        }
-////        if (instance == null) {
-////            instance = Optional.empty();
-////        } else {
-////            instance = e.getKey().wrapIfOptional(instance);
-////        }
-////        BuildEntry<?> be = e.getValue();
-////        con.transformers.put(be, new ConstantInjectorEntry<Object>(ConfigSite.UNKNOWN, (Key) be.key, instance));
-//    }
     public ServiceProvidingManager provider() {
         ServiceProvidingManager p = provider;
         if (p == null) {
@@ -275,3 +231,49 @@ public final class ServiceExtensionNode {
         return (ServiceExtensionNode) VH_SERVICE_EXTENSION_NODE.get(extension);
     }
 }
+
+///**
+//* Invoked by the runtime when a component has members (fields or methods) that are annotated with {@link Inject}.
+//* 
+//* @param cc
+//*            the configuration of the annotated component
+//* @param group
+//*            a inject group object
+//*/
+//public void onInjectGroup(SingletonConfiguration<?> cc, AtInjectHook group) {
+//  // new Exception().printStackTrace();
+//  // Hvis den er instans, Singlton Factory -> Saa skal det vel med i en liste
+//  // Hvis det er en ManyProvide-> Saa skal vi jo egentlig bare gemme den til den bliver instantieret.
+//  // Det skal ogsaa tilfoejes requires...
+//  // Delt op i 2 dele...
+//  // * Tilfoej det til requirements...
+//  // * Scheduler at groupen skal kaldes senere ved inject...
+//  for (AtInject ai : group.members) {
+//      System.out.println(ai);
+//  }
+//}
+
+//for (var e : specials.entrySet()) {
+//System.out.println(e);
+//
+//// if (e.getKey().key().typeLiteral().rawType() == ExtensionInstantiationContext.class) {
+//// // DOES not really work c is the instantiation context for the service
+//// // not nessesarily for the one we should inject....
+////
+////Class<?> pipelineClass = e.getKey().key().typeLiteral().rawType();
+////
+////if (wc != null) {
+////  instance = wc.getWireletOrPipeline(pipelineClass);
+////  if (instance instanceof WireletPipelineContext) {
+////      instance = ((WireletPipelineContext) instance).instance;
+////  }
+////  requireNonNull(instance);
+////}
+////if (instance == null) {
+////  instance = Optional.empty();
+////} else {
+////  instance = e.getKey().wrapIfOptional(instance);
+////}
+////BuildEntry<?> be = e.getValue();
+////con.transformers.put(be, new ConstantInjectorEntry<Object>(ConfigSite.UNKNOWN, (Key) be.key, instance));
+//}
