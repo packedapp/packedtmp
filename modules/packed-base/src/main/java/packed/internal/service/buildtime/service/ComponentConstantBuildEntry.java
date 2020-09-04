@@ -22,7 +22,7 @@ import packed.internal.component.PackedWireableComponentDriver.SingletonComponen
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.ServiceMode;
-import packed.internal.service.runtime.ConstantInjectorEntry;
+import packed.internal.service.runtime.IndexedInjectorEntry;
 import packed.internal.service.runtime.RuntimeEntry;
 
 /**
@@ -58,7 +58,7 @@ public final class ComponentConstantBuildEntry<T> extends AbstractComponentBuild
         @SuppressWarnings("unchecked")
         T instance = ((SingletonComponentDriver<T>) component.driver()).instance;
         context.ns.storeSingleton(component, instance);
-        return new ConstantInjectorEntry<>(this, instance);
+        return new IndexedInjectorEntry<>(this, context.ns, component.storeOffset);
     }
 
     /** {@inheritDoc} */

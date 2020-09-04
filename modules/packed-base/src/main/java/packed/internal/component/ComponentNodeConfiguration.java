@@ -114,7 +114,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     /** The store. */
     final NodeStore.Assembly store;
 
-    final int storeOffset;
+    public final int storeOffset;
 
     /** The realm the component belongs to. */
     private final PackedRealm realm;

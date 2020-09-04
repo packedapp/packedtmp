@@ -56,6 +56,10 @@ public final class NodeStore {
         return (ServiceRegistry) instances[node.storeOffset].get(ThingsToStore.SERVICEREGISTRY);
     }
 
+    public Object getSingletonInstance(int index) {
+        return instances[index].get(ThingsToStore.SINGLETON_INSTANCE);
+    }
+
     public Object getSingletonInstance(ComponentNode node) {
         return instances[node.storeOffset].get(ThingsToStore.SINGLETON_INSTANCE);
     }
