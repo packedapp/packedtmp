@@ -22,7 +22,6 @@ import java.util.function.Consumer;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.service.Injector;
-import packed.internal.inject.ProvideContextImpl;
 
 /** An abstract implementation of an injector. */
 public abstract class AbstractInjector implements Injector {
@@ -74,14 +73,7 @@ public abstract class AbstractInjector implements Injector {
         return getInstanceOrNull(Key.of(key));
     }
 
-    @Nullable
-    private <T> T getInstanceOrNull(Key<T> key) {
-        RuntimeEntry<T> n = findNode(key);
-        if (n == null) {
-            return null;
-        }
-        return n.getInstance(ProvideContextImpl.of(key));
-    }
+    protected abstract <T> T getInstanceOrNull(Key<T> key);
 
     /** {@inheritDoc} */
     @Override

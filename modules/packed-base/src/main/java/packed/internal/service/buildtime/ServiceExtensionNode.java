@@ -190,7 +190,6 @@ public final class ServiceExtensionNode {
         PackedInjector publicInjector = new PackedInjector(context().containerConfigSite(), snm);
 
         ServiceExtensionInstantiationContext con = new ServiceExtensionInstantiationContext(ns);
-
         for (var e : resolvedEntries.entrySet()) {
             if (e.getKey() != null) { // only services... should be put there
                 snm.put(e.getKey(), e.getValue().toRuntimeEntry(con));

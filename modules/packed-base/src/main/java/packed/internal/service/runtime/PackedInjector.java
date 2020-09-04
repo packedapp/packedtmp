@@ -37,6 +37,7 @@ import app.packed.service.Service;
 import app.packed.service.ServiceProvider;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.config.ConfigSiteSupport;
+import packed.internal.inject.ProvideContextImpl;
 import packed.internal.service.buildtime.wirelets.PackedDownstreamInjectionWirelet;
 import packed.internal.util.KeyBuilder;
 
@@ -77,6 +78,16 @@ public final class PackedInjector extends AbstractInjector {
         // if (n instanceof RuntimeNode<T>)
         // }
         super.failedGet(key);
+    }
+
+    @Override
+    @Nullable
+    protected <T> T getInstanceOrNull(Key<T> key) {
+        RuntimeEntry<T> n = findNode(key);
+        if (n == null) {
+            return null;
+        }
+        return n.getInstance(ProvideContextImpl.of(key));
     }
 
     /** {@inheritDoc} */

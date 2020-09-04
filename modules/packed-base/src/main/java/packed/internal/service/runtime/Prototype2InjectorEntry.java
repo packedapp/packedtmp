@@ -30,7 +30,7 @@ import packed.internal.util.ThrowableUtil;
 // No params
 // No InjectionSite parameters
 // InjectionSite parameters
-public class PrototypeInjectorEntry<T> extends RuntimeEntry<T> {
+public class Prototype2InjectorEntry<T> extends RuntimeEntry<T> {
 
     /** An empty object array. */
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
@@ -39,10 +39,12 @@ public class PrototypeInjectorEntry<T> extends RuntimeEntry<T> {
 
     private final MethodHandle mh;
 
+    private T instance;
+
     /**
      * @param node
      */
-    public PrototypeInjectorEntry(ComponentFactoryBuildEntry<T> node, ServiceExtensionInstantiationContext context) {
+    public Prototype2InjectorEntry(ComponentFactoryBuildEntry<T> node, ServiceExtensionInstantiationContext context) {
         super(node);
         int size = node.resolvedDependencies.length;
         providers = new Provider[size];
@@ -62,7 +64,11 @@ public class PrototypeInjectorEntry<T> extends RuntimeEntry<T> {
     /** {@inheritDoc} */
     @Override
     public T getInstance(ProvideContext site) {
-        return newInstance();
+        T i = instance;
+        if (i == null) {
+            i = instance = newInstance();
+        }
+        return i;
     }
 
     /** {@inheritDoc} */

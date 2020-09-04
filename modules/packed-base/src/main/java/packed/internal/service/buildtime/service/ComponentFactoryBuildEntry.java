@@ -27,7 +27,7 @@ import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.ServiceMode;
-import packed.internal.service.runtime.CachingPrototypeInjectorEntry;
+import packed.internal.service.runtime.Prototype2InjectorEntry;
 import packed.internal.service.runtime.PrototypeInjectorEntry;
 import packed.internal.service.runtime.RuntimeEntry;
 
@@ -84,7 +84,7 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
 //            T instance = ((SingletonComponentDriver<T>) component.driver()).instance;
 //            context.ns.storeSingleton(component, instance);
 //            return new IndexedInjectorEntry<>(this, context.ns, component.storeOffset);
-            return new CachingPrototypeInjectorEntry<>(this, context);
+            return new Prototype2InjectorEntry<>(this, context);
         } else {
             return new PrototypeInjectorEntry<>(this, context);
         }

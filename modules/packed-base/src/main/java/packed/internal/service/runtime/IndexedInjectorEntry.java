@@ -27,6 +27,7 @@ import packed.internal.service.buildtime.ServiceMode;
 public final class IndexedInjectorEntry<T> extends RuntimeEntry<T> {
 
     private final NodeStore ns;
+
     private final int index;
 
     /**
