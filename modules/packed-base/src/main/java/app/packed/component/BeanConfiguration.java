@@ -80,7 +80,7 @@ public class BeanConfiguration<T> extends AbstractComponentConfiguration {
             ServiceExtensionNode sen = ServiceExtensionNode.fromExtension(e);
             SingletonComponentDriver<T> scd = (SingletonComponentDriver<T>) node.driver();
             if (scd.instance != null) {
-                buildEntry = sen.provider().provideInstance(node, scd);
+                buildEntry = sen.provider().provideInstance(node);
             } else {
                 buildEntry = sen.provider().provideFactory(node);
             }

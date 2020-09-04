@@ -92,7 +92,7 @@ public final class ServiceProvidingManager {
         AbstractComponentBuildEntry parentNode;
         SingletonComponentDriver driver = (SingletonComponentDriver) cc.driver();
         if (driver.instance != null) {
-            parentNode = new ComponentConstantBuildEntry<>(node, cc.configSite(), cc, driver);
+            parentNode = new ComponentConstantBuildEntry<>(node, cc.configSite(), cc);
         } else {
             BaseFactory<?> factory = driver.factory;
             List<ServiceDependency> dependencies = factory.factory.dependencies;
@@ -157,16 +157,16 @@ public final class ServiceProvidingManager {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> BuildEntry<T> provideInstance(ComponentNodeConfiguration cc, SingletonComponentDriver<T> driver) {
+    public <T> BuildEntry<T> provideInstance(ComponentNodeConfiguration cc) {
         // First see if we have already installed the node. This happens in #set if the component container any members
         // annotated with @Provides
         BuildEntry<T> c = (BuildEntry<T>) componentConfigurationCache.get(cc);
         if (c == null) {
             // No node found, components has no @Provides method, create a new node
-            c = new ComponentConstantBuildEntry<T>(node, cc.configSite(), cc, driver);
+            c = new ComponentConstantBuildEntry<T>(node, cc.configSite(), cc);
         }
 
-        c.as((Key) Key.of(driver.sourceType()));
+        c.as((Key) Key.of(cc.driver().sourceType()));
         providingEntries.add(c);
         return c;
     }

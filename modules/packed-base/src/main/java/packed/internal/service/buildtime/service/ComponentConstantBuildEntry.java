@@ -31,9 +31,6 @@ import packed.internal.service.runtime.RuntimeEntry;
  */
 public final class ComponentConstantBuildEntry<T> extends AbstractComponentBuildEntry<T> {
 
-    /** The singleton instance. */
-    private final T instance;
-
     /**
      * Creates a new node from an instance.
      * 
@@ -41,13 +38,9 @@ public final class ComponentConstantBuildEntry<T> extends AbstractComponentBuild
      *            the injector builder
      * @param configSite
      *            the configuration site
-     * @param driver
-     *            the instance
      */
-    @SuppressWarnings("unchecked")
-    public ComponentConstantBuildEntry(ServiceExtensionNode ib, ConfigSite configSite, ComponentNodeConfiguration cc, SingletonComponentDriver<T> driver) {
+    public ComponentConstantBuildEntry(ServiceExtensionNode ib, ConfigSite configSite, ComponentNodeConfiguration cc) {
         super(ib, configSite, List.of(), null, cc);
-        this.instance = ((SingletonComponentDriver<T>) cc.driver()).instance;
     }
 
     /** {@inheritDoc} */
@@ -65,7 +58,8 @@ public final class ComponentConstantBuildEntry<T> extends AbstractComponentBuild
     /** {@inheritDoc} */
     @Override
     protected RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
-
+        @SuppressWarnings("unchecked")
+        T instance = ((SingletonComponentDriver<T>) component.driver()).instance;
         return new ConstantInjectorEntry<>(this, instance);
     }
 
