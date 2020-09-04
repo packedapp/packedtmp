@@ -21,7 +21,6 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ProvideContext;
-import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceMode;
 
 /** An entry holding a constant. */
@@ -31,19 +30,6 @@ public final class ConstantInjectorEntry<T> extends RuntimeEntry<T> {
     /** The singleton instance. */
     @Nullable
     private final T constant;
-
-    /**
-     * Creates a new entry.
-     *
-     * @param entry
-     *            the build entry to create this entry from
-     * @param constant
-     *            the singleton instance
-     */
-    public ConstantInjectorEntry(BuildEntry<T> entry, @Nullable T constant) {
-        super(entry);
-        this.constant = requireNonNull(constant);
-    }
 
     /**
      * @param configSite

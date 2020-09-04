@@ -27,7 +27,6 @@ import app.packed.inject.ProvideContext;
 import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.Service;
 import packed.internal.inject.ServiceDependency;
-import packed.internal.service.buildtime.service.AbstractComponentBuildEntry;
 import packed.internal.service.runtime.RuntimeEntry;
 import packed.internal.util.KeyBuilder;
 
@@ -75,7 +74,7 @@ public abstract class BuildEntry<T> {
         this(serviceExtension, null, configSite, dependencies);
     }
 
-    public BuildEntry(@Nullable ServiceExtensionNode serviceExtension, AbstractComponentBuildEntry<?> declaringEntry, ConfigSite configSite,
+    public BuildEntry(@Nullable ServiceExtensionNode serviceExtension, BuildEntry<?> declaringEntry, ConfigSite configSite,
             List<ServiceDependency> dependencies) {
         this.node = serviceExtension;
         this.offset = declaringEntry == null ? 0 : 1;

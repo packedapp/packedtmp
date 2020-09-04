@@ -17,7 +17,6 @@ package packed.internal.service.runtime;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.base.AttributeMap;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
@@ -25,7 +24,6 @@ import app.packed.inject.ProvideContext;
 import app.packed.service.Service;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceMode;
-import packed.internal.util.KeyBuilder;
 
 /** An entry that represents a service at runtime. */
 public abstract class RuntimeEntry<T> implements Service {
@@ -57,11 +55,6 @@ public abstract class RuntimeEntry<T> implements Service {
         return configSite;
     }
 
-    @Override
-    public AttributeMap attributes() {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * Returns an instance.
      * 
@@ -72,10 +65,6 @@ public abstract class RuntimeEntry<T> implements Service {
     public abstract T getInstance(@Nullable ProvideContext request);
 
     public abstract ServiceMode instantiationMode();
-
-    public final boolean isPrivate() {
-        return key().equals(KeyBuilder.INJECTOR_KEY);// || key().equals(KeyBuilder.CONTAINER_KEY);
-    }
 
     /** {@inheritDoc} */
     @Override
@@ -94,9 +83,3 @@ public abstract class RuntimeEntry<T> implements Service {
         return sb.toString();
     }
 }
-//
-//// Ideen er at vi kan komme med forslag til andre noegler end den forespurgte
-//// F.eks. man eftersporger Foo.class, men maaske er der en FooImpl et sted
-// public boolean isAssignableTo(Class<?> type) {
-// throw new UnsupportedOperationException();
-// }

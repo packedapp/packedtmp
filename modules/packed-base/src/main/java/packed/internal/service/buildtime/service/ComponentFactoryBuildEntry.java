@@ -80,10 +80,12 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
     /** {@inheritDoc} */
     @Override
     protected RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
-        switch (instantionMode) {
-        case CONSTANT:
+        if (instantionMode == ServiceMode.CONSTANT) {
+//            T instance = ((SingletonComponentDriver<T>) component.driver()).instance;
+//            context.ns.storeSingleton(component, instance);
+//            return new IndexedInjectorEntry<>(this, context.ns, component.storeOffset);
             return new CachingPrototypeInjectorEntry<>(this, context);
-        default:
+        } else {
             return new PrototypeInjectorEntry<>(this, context);
         }
     }

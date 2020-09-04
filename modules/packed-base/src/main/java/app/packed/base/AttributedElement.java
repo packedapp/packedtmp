@@ -30,5 +30,7 @@ public interface AttributedElement {
         return attributes().get(attribute);
     }
 
-    AttributeMap attributes();
+    default AttributeMap attributes() {
+        throw new UnsupportedOperationException();
+    }
 }
