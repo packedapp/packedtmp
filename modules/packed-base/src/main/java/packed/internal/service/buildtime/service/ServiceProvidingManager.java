@@ -92,7 +92,7 @@ public final class ServiceProvidingManager {
         AbstractComponentBuildEntry parentNode;
         SingletonComponentDriver driver = (SingletonComponentDriver) cc.driver();
         if (driver.instance != null) {
-            parentNode = new ComponentConstantBuildEntry<>(node, cc.configSite(), cc, driver.instance);
+            parentNode = new ComponentConstantBuildEntry<>(node, cc.configSite(), cc, driver);
         } else {
             BaseFactory<?> factory = driver.factory;
             List<ServiceDependency> dependencies = factory.factory.dependencies;
@@ -138,7 +138,7 @@ public final class ServiceProvidingManager {
         if (isPrototype) {
             e.prototype();
         }
-        c.as((Key) scd.factory.key());
+        c.as(scd.factory.key());
         providingEntries.add(c);
         return new PackedPrototypeConfiguration<>(cc, e);
     }
@@ -151,22 +151,22 @@ public final class ServiceProvidingManager {
             List<ServiceDependency> dependencies = scd.factory.factory.dependencies;
             c = new ComponentFactoryBuildEntry<>(node, cc, ServiceMode.CONSTANT, scd.fromFactory(cc), (List) dependencies);
         }
-        c.as((Key) scd.factory.key());
+        c.as(scd.factory.key());
         providingEntries.add(c);
         return (BuildEntry<T>) c;
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> BuildEntry<T> provideInstance(ComponentNodeConfiguration cc, T instance) {
+    public <T> BuildEntry<T> provideInstance(ComponentNodeConfiguration cc, SingletonComponentDriver<T> driver) {
         // First see if we have already installed the node. This happens in #set if the component container any members
         // annotated with @Provides
         BuildEntry<T> c = (BuildEntry<T>) componentConfigurationCache.get(cc);
         if (c == null) {
             // No node found, components has no @Provides method, create a new node
-            c = new ComponentConstantBuildEntry<T>(node, cc.configSite(), cc, instance);
+            c = new ComponentConstantBuildEntry<T>(node, cc.configSite(), cc, driver);
         }
 
-        c.as((Key) Key.of(instance.getClass()));
+        c.as((Key) Key.of(driver.sourceType()));
         providingEntries.add(c);
         return c;
     }

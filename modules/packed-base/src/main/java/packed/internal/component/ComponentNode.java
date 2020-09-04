@@ -57,10 +57,10 @@ public final class ComponentNode implements Component {
     @Nullable
     final ComponentNode parent; // Parent is always stored as the first object in NodeStore...
 
-    /** The index into the pod. */
+    /** The offset into the node-store that this node uses. */
     final int storeOffset;
 
-    /** The pod the component is a part of, components that are strongly connected are all in the same pod. */
+    /** The node store of this node. Where we store, for example, instances. */
     final NodeStore store;
 
     /**
@@ -75,8 +75,8 @@ public final class ComponentNode implements Component {
         this.parent = parent;
         this.storeOffset = configuration.storeIndex;
         this.model = RuntimeComponentModel.of(configuration);
-
         this.store = parent == null || configuration.modifiers().isGuest() ? configuration.store.newStore() : parent.store;
+
         if (parent == null) {
             this.name = pic.rootName(configuration);
         } else {
@@ -86,8 +86,8 @@ public final class ComponentNode implements Component {
         // Initialize if container
         if (modifiers().isContainer()) {
             ServiceRegistry registry = null;
-            // I think this injector is only available for the top of an assembly
             PackedContainerAssembly container = configuration.container;
+
             ServiceExtensionNode node = container.se;
             if (node != null) {
                 registry = node.onInstantiate(pic.wirelets());
@@ -195,8 +195,8 @@ public final class ComponentNode implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public boolean hasModifier(ComponentModifier property) {
-        return PackedComponentModifierSet.isSet(model.properties, property);
+    public boolean hasModifier(ComponentModifier modifier) {
+        return PackedComponentModifierSet.isSet(model.modifiers, modifier);
     }
 
     public boolean isInSameContainer(ComponentNode other) {
@@ -218,7 +218,7 @@ public final class ComponentNode implements Component {
     /** {@inheritDoc} */
     @Override
     public ComponentModifierSet modifiers() {
-        return new PackedComponentModifierSet(model.properties);
+        return new PackedComponentModifierSet(model.modifiers);
     }
 
     /** {@inheritDoc} */

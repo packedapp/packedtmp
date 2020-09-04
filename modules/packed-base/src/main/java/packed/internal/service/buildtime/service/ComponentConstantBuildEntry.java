@@ -15,12 +15,11 @@
  */
 package packed.internal.service.buildtime.service;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.List;
 
 import app.packed.config.ConfigSite;
 import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.PackedWireableComponentDriver.SingletonComponentDriver;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.ServiceMode;
@@ -42,12 +41,13 @@ public final class ComponentConstantBuildEntry<T> extends AbstractComponentBuild
      *            the injector builder
      * @param configSite
      *            the configuration site
-     * @param instance
+     * @param driver
      *            the instance
      */
-    public ComponentConstantBuildEntry(ServiceExtensionNode ib, ConfigSite configSite, ComponentNodeConfiguration cc, T instance) {
+    @SuppressWarnings("unchecked")
+    public ComponentConstantBuildEntry(ServiceExtensionNode ib, ConfigSite configSite, ComponentNodeConfiguration cc, SingletonComponentDriver<T> driver) {
         super(ib, configSite, List.of(), null, cc);
-        this.instance = requireNonNull(instance, "instance is null");
+        this.instance = ((SingletonComponentDriver<T>) cc.driver()).instance;
     }
 
     /** {@inheritDoc} */
@@ -65,6 +65,7 @@ public final class ComponentConstantBuildEntry<T> extends AbstractComponentBuild
     /** {@inheritDoc} */
     @Override
     protected RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
+
         return new ConstantInjectorEntry<>(this, instance);
     }
 

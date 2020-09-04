@@ -51,7 +51,7 @@ public final class RuntimeComponentModel {
 
     final PackedWireableComponentDriver<?> driver; // tmp
 
-    final int properties;
+    final int modifiers;
 
     RuntimeComponentModel(ComponentNodeConfiguration context) {
         this.depth = context.depth;
@@ -60,7 +60,7 @@ public final class RuntimeComponentModel {
         this.driver = context.driver();
         int p = context.modifiers;
         p = PackedComponentModifierSet.removeIf(p, depth == 0, ComponentModifier.IMAGE);
-        this.properties = p;
+        this.modifiers = p;
     }
 
     public boolean isContainer() {

@@ -48,6 +48,8 @@ public enum ServiceMode {
     // * constructing the value will block. Guaranteeing that only a single instance will ever be created.
     // */
     // @Deprecated
+
+    // Uhhh, @Provide... Er den constant??
     // LAZY,
 
     /** A new instance of the service is created every time the service is requested. */

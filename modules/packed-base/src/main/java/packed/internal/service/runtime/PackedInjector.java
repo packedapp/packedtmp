@@ -135,8 +135,6 @@ public final class PackedInjector extends AbstractInjector {
     /** {@inheritDoc} */
     @Override
     public Stream<Service> stream() {
-        return entries.values().stream().filter(e -> !e.key().equals(KeyBuilder.INJECTOR_KEY)).map(e -> {
-            return e;
-        });
+        return entries.values().stream().filter(e -> !e.key().equals(KeyBuilder.INJECTOR_KEY)).map(e -> e);
     }
 }

@@ -50,7 +50,9 @@ public interface Component extends AttributedElement, ComponentSystem {
      */
     int depth();
 
-    boolean hasModifier(ComponentModifier property);
+    default boolean hasModifier(ComponentModifier modifier) {
+        return modifiers().contains(modifier);
+    }
 
     /**
      * Returns an immutable set containing all the modifiers of this component.

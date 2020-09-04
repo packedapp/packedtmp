@@ -29,6 +29,8 @@ import app.packed.component.Wirelet;
 // Component, Service = Describes something, Guest also controls something...
 // I would imagine we want something to iterate over all state machines...
 
+// StateMachine
+
 // host facing
 // Maybe GuestController.... And guest can be a view/readable thingy
 
