@@ -15,6 +15,8 @@
  */
 package packed.internal.service.buildtime.service;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import packed.internal.component.ComponentNodeConfiguration;
@@ -65,5 +67,13 @@ public final class ComponentConstantBuildEntry<T> extends AbstractComponentBuild
     @Override
     public boolean requiresPrototypeRequest() {
         return false;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected MethodHandle newMH(ServiceExtensionInstantiationContext context) {
+        @SuppressWarnings("unchecked")
+        T instance = ((SingletonComponentDriver<T>) component.driver()).instance;
+        return MethodHandles.constant(instance.getClass(), instance);
     }
 }

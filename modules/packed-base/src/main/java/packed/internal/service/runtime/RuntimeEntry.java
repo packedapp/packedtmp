@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
-import app.packed.inject.ProvideContext;
+import app.packed.inject.ProvidePrototypeContext;
 import app.packed.service.Service;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceMode;
@@ -62,7 +62,7 @@ public abstract class RuntimeEntry<T> implements Service {
      *            a request if needed by {@link #requiresPrototypeRequest()}
      * @return the instance
      */
-    public abstract T getInstance(@Nullable ProvideContext request);
+    public abstract T getInstance(@Nullable ProvidePrototypeContext request);
 
     public abstract ServiceMode instantiationMode();
 

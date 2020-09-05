@@ -17,7 +17,7 @@ package packed.internal.service.runtime;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.inject.ProvideContext;
+import app.packed.inject.ProvidePrototypeContext;
 import app.packed.inject.ProvisionException;
 import packed.internal.service.buildtime.Provider;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
@@ -61,7 +61,7 @@ public class PrototypeInjectorEntry<T> extends RuntimeEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ProvideContext site) {
+    public T getInstance(ProvidePrototypeContext site) {
         return newInstance();
     }
 

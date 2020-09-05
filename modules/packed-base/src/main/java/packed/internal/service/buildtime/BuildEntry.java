@@ -17,13 +17,14 @@ package packed.internal.service.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.util.List;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Provide;
-import app.packed.inject.ProvideContext;
+import app.packed.inject.ProvidePrototypeContext;
 import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.Service;
 import packed.internal.inject.ServiceDependency;
@@ -50,7 +51,7 @@ public abstract class BuildEntry<T> {
     /** A flag used to detect cycles in the dependency graph. */
     public boolean detectCycleVisited;
 
-    /** Whether or this node contains a dependency on {@link ProvideContext}. */
+    /** Whether or this node contains a dependency on {@link ProvidePrototypeContext}. */
     protected final boolean hasDependencyOnInjectionSite;
 
     /**
@@ -103,6 +104,7 @@ public abstract class BuildEntry<T> {
         // requireConfigurable();
         // validateKey(key);
         // Det er sgu ikke lige til at validere det med generics signature....
+
         this.key = (Key<T>) key;
     }
 
@@ -144,10 +146,6 @@ public abstract class BuildEntry<T> {
 
     public abstract ServiceMode instantiationMode();
 
-    public boolean isPrivate() {
-        return key().equals(KeyBuilder.INJECTOR_KEY);// || key().equals(KeyBuilder.CONTAINER_KEY);
-    }
-
     public final Key<T> key() {
         return key;
     }
@@ -165,8 +163,16 @@ public abstract class BuildEntry<T> {
         return new PackedService(key, configSite);
     }
 
+    protected abstract MethodHandle newMH(ServiceExtensionInstantiationContext context);
+
+    // cacher runtime noden...
     @SuppressWarnings("unchecked")
     public final RuntimeEntry<T> toRuntimeEntry(ServiceExtensionInstantiationContext context) {
         return (RuntimeEntry<T>) context.transformers.computeIfAbsent(this, k -> k.newRuntimeNode(context));
+    }
+
+    // cacher runtime noden...
+    public final MethodHandle toMH(ServiceExtensionInstantiationContext context) {
+        return context.handlers.computeIfAbsent(this, k -> k.newMH(context));
     }
 }

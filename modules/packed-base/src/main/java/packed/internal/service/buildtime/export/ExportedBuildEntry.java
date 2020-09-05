@@ -17,6 +17,7 @@ package packed.internal.service.buildtime.export;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.util.List;
 
 import app.packed.base.Key;
@@ -108,5 +109,11 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
     @Override
     protected RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
         return new DelegatingInjectorEntry<>(this, exportedEntry.toRuntimeEntry(context));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected MethodHandle newMH(ServiceExtensionInstantiationContext context) {
+        return exportedEntry.toMH(context);
     }
 }

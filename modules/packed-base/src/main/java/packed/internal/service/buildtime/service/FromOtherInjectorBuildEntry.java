@@ -17,6 +17,7 @@ package packed.internal.service.buildtime.service;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.util.List;
 
 import app.packed.base.Nullable;
@@ -74,5 +75,11 @@ final class FromOtherInjectorBuildEntry<T> extends BuildEntry<T> {
     @Override
     public boolean requiresPrototypeRequest() {
         return entry.requiresPrototypeRequest();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected MethodHandle newMH(ServiceExtensionInstantiationContext context) {
+        return null;
     }
 }

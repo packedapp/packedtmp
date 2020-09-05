@@ -162,7 +162,9 @@ import app.packed.service.Injector;
 //ProvisionPrototypeContext
 
 // Uses attributes?????
-public interface ProvideContext {
+
+//@ProvideNonConstantContext
+public interface ProvidePrototypeContext {
 
     // Hvad hvis det ikke er en direkte extension der forsporger???
     // Men f.eks. et eller andet inde i en Bundle som er installeret

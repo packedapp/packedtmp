@@ -198,6 +198,13 @@ public final class ServiceExtensionNode {
 
         // Instantiate all singletons...
         for (BuildEntry<?> node : resolvedEntries.values()) {
+//            MethodHandle mh = node.toMH(con);
+//            try {
+//                System.out.println("Instance " + mh.invoke());
+//            } catch (Throwable e1) {
+//                // TODO Auto-generated catch block
+//                e1.printStackTrace();
+//            }
             if (node instanceof ComponentFactoryBuildEntry) {
                 ComponentFactoryBuildEntry<?> s = (ComponentFactoryBuildEntry<?>) node;
                 if (s.instantiationMode() == ServiceMode.CONSTANT) {

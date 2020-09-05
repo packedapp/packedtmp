@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Function;
 
-import app.packed.inject.ProvideContext;
+import app.packed.inject.ProvidePrototypeContext;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceMode;
 
@@ -46,7 +46,7 @@ public final class MappingInjectorEntry<F, T> extends RuntimeEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ProvideContext site) {
+    public T getInstance(ProvidePrototypeContext site) {
         F f = delegate.getInstance(site);
         T t = function.apply(f);
         // TODO Check Type, and not null

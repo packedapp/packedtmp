@@ -17,7 +17,7 @@ package packed.internal.service.runtime;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.inject.ProvideContext;
+import app.packed.inject.ProvidePrototypeContext;
 import app.packed.inject.ProvisionException;
 import packed.internal.service.buildtime.Provider;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
@@ -39,7 +39,7 @@ public class Prototype2InjectorEntry<T> extends RuntimeEntry<T> {
 
     private final MethodHandle mh;
 
-    private T instance;
+    private final T instance;
 
     /**
      * @param node
@@ -53,22 +53,19 @@ public class Prototype2InjectorEntry<T> extends RuntimeEntry<T> {
             providers[i] = () -> forReal.getInstance(null);
         }
         mh = node.mha;
+        this.instance = newInstance();
     }
 
     /** {@inheritDoc} */
     @Override
     public ServiceMode instantiationMode() {
-        return ServiceMode.PROTOTYPE;
+        return ServiceMode.CONSTANT;
     }
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ProvideContext site) {
-        T i = instance;
-        if (i == null) {
-            i = instance = newInstance();
-        }
-        return i;
+    public T getInstance(ProvidePrototypeContext site) {
+        return instance;
     }
 
     /** {@inheritDoc} */

@@ -17,7 +17,7 @@ package packed.internal.service.runtime;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.inject.ProvideContext;
+import app.packed.inject.ProvidePrototypeContext;
 import packed.internal.component.NodeStore;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceMode;
@@ -45,7 +45,7 @@ public final class IndexedInjectorEntry<T> extends RuntimeEntry<T> {
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public T getInstance(ProvideContext ignore) {
+    public T getInstance(ProvidePrototypeContext ignore) {
         return (T) ns.getSingletonInstance(index);
     }
 

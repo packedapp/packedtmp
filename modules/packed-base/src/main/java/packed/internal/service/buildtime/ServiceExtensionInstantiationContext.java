@@ -17,6 +17,7 @@ package packed.internal.service.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.util.IdentityHashMap;
 
 import packed.internal.component.NodeStore;
@@ -34,4 +35,5 @@ public class ServiceExtensionInstantiationContext {
     // Translates from BuildEntry->RuntimeEntry
     final IdentityHashMap<BuildEntry<?>, RuntimeEntry<?>> transformers = new IdentityHashMap<>();
 
+    final IdentityHashMap<BuildEntry<?>, MethodHandle> handlers = new IdentityHashMap<>();
 }

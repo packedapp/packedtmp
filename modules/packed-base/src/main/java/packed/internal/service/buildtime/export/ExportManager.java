@@ -35,6 +35,7 @@ import packed.internal.service.buildtime.ErrorMessages;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.SimpleServiceSet;
 import packed.internal.service.buildtime.service.PackedPrototypeConfiguration;
+import packed.internal.util.KeyBuilder;
 
 /**
  * This class manages everything to do with exporting of service entries.
@@ -233,7 +234,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
 
         if (exportAll != null) {
             for (BuildEntry<?> e : node.resolvedEntries.values()) {
-                if (!e.isPrivate()) {
+                if (!e.key().equals(KeyBuilder.INJECTOR_KEY)) {
                     if (!resolvedExports.containsKey(e.key())) {
                         resolvedExports.put(e.key(), new ExportedBuildEntry<>(node, e, exportAll));
                     }

@@ -17,6 +17,7 @@ package packed.internal.service.buildtime.wirelets;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.util.List;
 import java.util.function.Function;
 
@@ -26,8 +27,8 @@ import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.ServiceMode;
-import packed.internal.service.runtime.RuntimeEntry;
 import packed.internal.service.runtime.MappingInjectorEntry;
+import packed.internal.service.runtime.RuntimeEntry;
 
 /**
  * A build entry that that takes an existing entry and uses a {@link Function} to map the service provided by the entry.
@@ -69,5 +70,11 @@ final class MappingBuildEntry<F, T> extends BuildEntry<T> {
     @Override
     public boolean requiresPrototypeRequest() {
         return entryToMap.requiresPrototypeRequest();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected MethodHandle newMH(ServiceExtensionInstantiationContext context) {
+        throw new UnsupportedOperationException();
     }
 }

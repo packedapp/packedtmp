@@ -51,6 +51,24 @@ public interface InjectionContext {
      */
     Set<Key<?>> keys();
 
+    default void printDependencyTree() {
+        // Det er jo bare en trae af ServiceDependency
+
+        // InjectableDependency?
+
+        // En for hver parameter...
+//        com.javadeveloperzone:maven-show-dependency-tree:jar:1.0-SNAPSHOT
+//        [INFO] \- org.springframework.boot:spring-boot-devtools:jar:1.5.4.RELEASE:compile
+//        [INFO]    +- org.springframework.boot:spring-boot:jar:1.5.4.RELEASE:compile
+//        [INFO]    |  +- org.springframework:spring-core:jar:4.3.9.RELEASE:compile
+//        [INFO]    |  |  \- commons-logging:commons-logging:jar:1.2:compile
+//        [INFO]    |  \- org.springframework:spring-context:jar:4.3.9.RELEASE:compile
+//        [INFO]    |     +- org.springframework:spring-aop:jar:4.3.9.RELEASE:compile
+//        [INFO]    |     +- org.springframework:spring-beans:jar:4.3.9.RELEASE:compile
+//        [INFO]    |     \- org.springframework:spring-expression:jar:4.3.9.RELEASE:compile
+//        [INFO]    \- org.springframework.boot:spring-boot-autoconfigure:jar:1.5.4.RELEASE:compile
+    }
+
     /**
      * Returns the class that was used to determined which keys are available for injection.
      * 
