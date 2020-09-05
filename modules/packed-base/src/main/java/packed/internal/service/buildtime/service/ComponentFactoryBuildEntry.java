@@ -30,9 +30,11 @@ import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.ServiceMode;
+import packed.internal.service.runtime.IndexedInjectorEntry;
 import packed.internal.service.runtime.Prototype2InjectorEntry;
 import packed.internal.service.runtime.PrototypeInjectorEntry;
 import packed.internal.service.runtime.RuntimeEntry;
+import packed.internal.util.ThrowableUtil;
 
 /**
  * An entry representing a component node. This node is used for all three binding modes mainly because it makes
@@ -80,6 +82,8 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         return instantionMode;
     }
 
+    static boolean Hmm = false;
+
     /** {@inheritDoc} */
     @Override
     protected RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
@@ -87,13 +91,24 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
 //            T instance = ((SingletonComponentDriver<T>) component.driver()).instance;
 //            context.ns.storeSingleton(component, instance);
 //            return new IndexedInjectorEntry<>(this, context.ns, component.storeOffset);
-
-//            Prototype2InjectorEntry<T> e = new Prototype2InjectorEntry<>(this, context);
-//            T instance = e.getInstance(null);
-//            context.ns.storeSingleton(component, instance);
-//            return new IndexedInjectorEntry<>(this, context.ns, component.storeOffset);
-
-            return new Prototype2InjectorEntry(this, context);
+            if (Hmm) {
+                Object instance;
+                try {
+                    MethodHandle mh = toMH(context);
+                    instance = mh.invoke();
+                } catch (Throwable e1) {
+                    throw ThrowableUtil.orUndeclared(e1);
+                }
+                System.out.println(instance.getClass());
+                context.ns.storeSingleton(component, instance);
+                IndexedInjectorEntry<T> ee = new IndexedInjectorEntry<>(this, context.ns, component.storeOffset);
+                if (ee.getInstance(null) != instance) {
+                    throw new IllegalStateException();
+                }
+                return ee;
+            } else {
+                return new Prototype2InjectorEntry<>(this, context);
+            }
             // Okay lortet er resolvet
 
         } else {
@@ -122,7 +137,15 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
     @Override
     protected MethodHandle newMH(ServiceExtensionInstantiationContext context) {
         if (dependencies.isEmpty()) {
-            return mha;
+            MethodHandle mh = mha;
+            if (mh.type().parameterCount() > 0) {
+                MethodHandle mhp = resolvedDependencies[0].toMH(context);
+                System.out.println(mhp);
+                System.out.println(mh);
+                mh = MethodHandles.collectArguments(mh, 0, mhp);
+            }
+            System.out.println(mha);
+            return mh;
         }
         MethodHandle mh = mha;
         for (int i = 0; i < resolvedDependencies.length; i++) {
@@ -136,11 +159,20 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
                 mh = MethodHandles.collectArguments(mh, 0, c.toMH(context));
             }
         }
+        if (mh.type().parameterCount() > 0) {
+            throw new IllegalStateException();
+        }
         // Loeb igennem alle dependencies
         // er det en constant..
         // saa array bind den til argumented
 
         // Er det en prototype saa slaa den op
         return mh;
+    }
+
+    @Override
+    public String toString() {
+
+        return "Factory " + mha.type().parameterList() + " -> " + mha.type().returnType();
     }
 }

@@ -57,10 +57,14 @@ public final class ComponentConstantBuildEntry<T> extends AbstractComponentBuild
     /** {@inheritDoc} */
     @Override
     protected RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
-        @SuppressWarnings("unchecked")
-        T instance = ((SingletonComponentDriver<T>) component.driver()).instance;
+        T instance = instance();
         context.ns.storeSingleton(component, instance);
         return new IndexedInjectorEntry<>(this, context.ns, component.storeOffset);
+    }
+
+    @SuppressWarnings("unchecked")
+    private T instance() {
+        return ((SingletonComponentDriver<T>) component.driver()).instance;
     }
 
     /** {@inheritDoc} */
@@ -72,8 +76,12 @@ public final class ComponentConstantBuildEntry<T> extends AbstractComponentBuild
     /** {@inheritDoc} */
     @Override
     protected MethodHandle newMH(ServiceExtensionInstantiationContext context) {
-        @SuppressWarnings("unchecked")
-        T instance = ((SingletonComponentDriver<T>) component.driver()).instance;
+        T instance = instance();
         return MethodHandles.constant(instance.getClass(), instance);
+    }
+
+    @Override
+    public String toString() {
+        return "Constant " + instance();
     }
 }

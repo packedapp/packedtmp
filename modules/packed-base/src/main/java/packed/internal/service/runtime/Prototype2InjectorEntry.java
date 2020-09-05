@@ -54,6 +54,7 @@ public class Prototype2InjectorEntry<T> extends RuntimeEntry<T> {
         }
         mh = node.mha;
         this.instance = newInstance();
+        System.out.println(instance.getClass());
     }
 
     /** {@inheritDoc} */

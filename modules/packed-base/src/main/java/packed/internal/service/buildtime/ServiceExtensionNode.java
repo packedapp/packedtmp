@@ -108,6 +108,7 @@ public final class ServiceExtensionNode {
     }
 
     public void buildTree() {
+
         if (parent == null) {
 //            TreePrinter.print(this, n -> n.children, "", n -> n.context.containerPath().toString());
         }

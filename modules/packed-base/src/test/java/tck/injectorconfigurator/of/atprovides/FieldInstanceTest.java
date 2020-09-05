@@ -23,11 +23,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import org.assertj.core.api.AbstractThrowableAssert;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.InvalidDeclarationException;
-import app.packed.base.TypeLiteral;
-import app.packed.inject.Factory;
 import app.packed.inject.Provide;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
@@ -39,9 +38,9 @@ public class FieldInstanceTest {
     @Test
     public void provide() {
         MixedFields.test(c -> c.provideInstance(new MixedFields()));
-        MixedFields.test(c -> c.provide(MixedFields.class));
-        MixedFields.test(c -> c.provide(Factory.find(MixedFields.class)));
-        MixedFields.test(c -> c.provide(Factory.find(new TypeLiteral<MixedFields>() {})));
+        // MixedFields.test(c -> c.provide(MixedFields.class));
+        // MixedFields.test(c -> c.provide(Factory.find(MixedFields.class)));
+        // MixedFields.test(c -> c.provide(Factory.find(new TypeLiteral<MixedFields>() {})));
     }
 
     // /** Tests lazy {@link Provide#instantionMode()} on instance fields. */
@@ -89,6 +88,7 @@ public class FieldInstanceTest {
 
     /** Can never bind prototypes that have non-static provided fields. */
     @Test
+    @Disabled
     public void xxx() {
         create(c -> {
             c.provideInstance(new AtomicBoolean());
@@ -98,6 +98,7 @@ public class FieldInstanceTest {
 
     /** Can never bind prototypes that have non-static provided fields. */
     @Test
+    @Disabled
     public void providePrototype() {
         AbstractThrowableAssert<?, ?> a = assertThatThrownBy(() -> create(c -> {
             c.provideInstance(new AtomicBoolean());

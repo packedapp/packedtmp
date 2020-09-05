@@ -172,6 +172,12 @@ public final class ServiceProvidingManager {
     }
 
     public HashMap<Key<?>, BuildEntry<?>> resolve() {
+        System.out.println("---- Resolving ----");
+        for (BuildEntry<?> e : providingEntries) {
+            System.out.println(e);
+        }
+        System.out.println("-------------------");
+
         LinkedHashMap<Key<?>, BuildEntry<?>> resolvedServices = new LinkedHashMap<>();
 
         // First process provided entries, then any entries added via provideAll
