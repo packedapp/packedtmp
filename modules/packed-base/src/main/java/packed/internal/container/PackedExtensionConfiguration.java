@@ -260,7 +260,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
         // This check is done in a class value
         @SuppressWarnings("unchecked")
         Class<? extends Extension> declaringClass = (Class<? extends Extension>) extensionType.getDeclaringClass();
-        System.out.println(declaringClass);
+        // System.out.println(declaringClass);
         // Need to find injection
         throw new UnsupportedOperationException();
     }

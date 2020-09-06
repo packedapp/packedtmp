@@ -17,10 +17,12 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 
 import app.packed.service.ServiceRegistry;
+import packed.internal.util.LookupUtil;
+import packed.internal.util.MethodHandleUtil;
 
 /**
  * All strongly connected components relate to the same pod.
@@ -29,58 +31,48 @@ import app.packed.service.ServiceRegistry;
 // Active System -> 1 NodeStore per guest
 public final class NodeStore {
 
-    RuntimeComponentModel[] descriptors;// packed descriptors...
+    static final MethodHandle MH_GET_SINGLETON_INSTANCE = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "getSingletonInstance", Object.class, int.class);
 
-    ConcurrentHashMap<Integer, NodeStore>[] hosts;
+    final Object[] instances; // May contain f.eks. CHM.. ?? Maybe hosts are also there...
 
-    final HashMap<ThingsToStore, Object>[] instances; // May contain f.eks. CHM.. ?? Maybe hosts are also there...
-    // If non-root instances[0] always is the parent...
-
-    @SuppressWarnings("unchecked")
     NodeStore(int i) {
-        instances = new HashMap[i + 1];
-        for (int j = 0; j < instances.length; j++) {
-            instances[j] = new HashMap<>();
-        }
-    }
-
-    public PackedContainer getContainer(ComponentNode node) {
-        throw new UnsupportedOperationException();
+        instances = new Object[i];
+        // System.out.println("CREATING NEW NODE STORE with room for " + instances.length);
     }
 
     public PackedGuest getGuest(ComponentNode node) {
-        return (PackedGuest) instances[node.storeOffset].get(ThingsToStore.GUEST);
+        return (PackedGuest) instances[0];
     }
 
     public ServiceRegistry getServiceRegistry(ComponentNode node) {
-        return (ServiceRegistry) instances[node.storeOffset].get(ThingsToStore.SERVICEREGISTRY);
+        int off = node.modifiers().isGuest() ? 1 : 0;
+        return (ServiceRegistry) instances[off];
     }
 
     public Object getSingletonInstance(int index) {
-        return instances[index].get(ThingsToStore.SINGLETON_INSTANCE);
-    }
-
-    public Object getSingletonInstance(ComponentNode node) {
-        return instances[node.storeOffset].get(ThingsToStore.SINGLETON_INSTANCE);
-    }
-
-    public Object getSingletonInstance(ComponentNodeConfiguration node) {
-        return instances[node.storeOffset].get(ThingsToStore.SINGLETON_INSTANCE);
-    }
-
-    public void storeServiceRegistry(ComponentNode node, ServiceRegistry registry) {
-        instances[node.storeOffset].put(ThingsToStore.SERVICEREGISTRY, registry);
+        return instances[index];
     }
 
     public void storeGuest(ComponentNode node, PackedGuest guest) {
-        instances[node.storeOffset].put(ThingsToStore.GUEST, guest);
+        instances[0] = guest;
     }
 
-    public void storeSingleton(ComponentNodeConfiguration node, Object instance) {
-        instances[node.storeOffset].put(ThingsToStore.SINGLETON_INSTANCE, instance);
+    public void storeServiceRegistry(ComponentNode node, ServiceRegistry registry) {
+        int off = node.modifiers().isGuest() ? 1 : 0;
+        instances[off] = registry;
     }
 
-    static final class Assembly {
+    public void storeSingleton(int index, Object instance) {
+        instances[index] = instance;
+    }
+
+    public static MethodHandle readSingletonAs(int index, Class<?> type) {
+        MethodHandle mh = MethodHandles.insertArguments(MH_GET_SINGLETON_INSTANCE, 1, index);
+        mh = MethodHandleUtil.castReturnType(mh, type);
+        return mh;
+    }
+
+    public static final class Assembly {
 
         int index;
 
@@ -90,20 +82,15 @@ public final class NodeStore {
             this.root = requireNonNull(node);
         }
 
-        int reserve(ComponentNodeConfiguration c) {
-            int i = 1;
-            int current = index;
-            index += i;
-            return current;
-        }
-
         NodeStore newStore() {
             return new NodeStore(index);
         }
-    }
 
-    enum ThingsToStore {
-        GUEST, SERVICEREGISTRY, SINGLETON_INSTANCE;
+        public int reserve() {
+//      new Exception().printStackTrace();
+            return index++;
+        }
+
     }
 
 }

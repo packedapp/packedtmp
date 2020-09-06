@@ -73,10 +73,6 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     /** The assembly this configuration is a part of. */
     private final PackedAssemblyContext assembly;
 
-    /** Children of this node (lazily initialized). Insertion order maintained by {@link #nextSibling} and friends. */
-    @Nullable
-    Map<String, ComponentNodeConfiguration> children;
-
     /** Any container this component is part of. A container is part of it self */
     @Nullable
     final PackedContainerAssembly container;
@@ -86,6 +82,27 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     /** The driver used to create this component. */
     private final PackedWireableComponentDriver<?> driver;
+
+    final int modifiers;
+
+    /** The name of the component. */
+    public String name;
+
+    /** The store. */
+    public final NodeStore.Assembly store;
+
+    /** The realm the component belongs to. */
+    private final PackedRealm realm;
+
+    /** Any wirelets that was specified by the user when creating this configuration. */
+    @Nullable
+    public final WireletPack wirelets;
+
+    /**************** TREE SUPPORT. *****************/
+
+    /** Children of this node (lazily initialized). Insertion order maintained by {@link #nextSibling} and friends. */
+    @Nullable
+    Map<String, ComponentNodeConfiguration> children;
 
     /** The first child of this component. */
     @Nullable
@@ -98,11 +115,6 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     @Nullable
     private ComponentNodeConfiguration lastChild;
 
-    final int modifiers;
-
-    /** The name of the component. */
-    public String name;
-
     /** The next sibling, in insertion order */
     @Nullable
     public ComponentNodeConfiguration nextSibling;
@@ -110,18 +122,6 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     /** The parent of this component, or null for a root component. */
     @Nullable
     final ComponentNodeConfiguration parent;
-
-    /** The store. */
-    final NodeStore.Assembly store;
-
-    public final int storeOffset;
-
-    /** The realm the component belongs to. */
-    private final PackedRealm realm;
-
-    /** Any wirelets that was specified by the user when creating this configuration. */
-    @Nullable
-    public final WireletPack wirelets;
 
     /**************** See how much of this we can get rid of. *****************/
 
@@ -172,14 +172,26 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             p = p | assembly.modifiers;
             p = PackedComponentModifierSet.addIf(p, parent == null, ComponentModifier.SYSTEM);
 
-            // Is it a guest if we are analyzing??? Well we want the information...
-            p = PackedComponentModifierSet.addIf(p, parent == null, ComponentModifier.GUEST);
+            if (assembly.modifiers().isGuest()) {
+                // Is it a guest if we are analyzing??? Well we want the information...
+                p = PackedComponentModifierSet.addIf(p, parent == null, ComponentModifier.GUEST);
+            }
         }
         this.modifiers = p;
-
+        this.source = driver.sourceType() == null ? null : new SourceAssembly(driver);
+        // We have a NodeStore per guest. As components within the same guest are co-terminus
         this.store = parent == null || driver.modifiers().isGuest() ? new NodeStore.Assembly(this) : parent.store;
-        this.storeOffset = store.reserve(this); // calculate runtime storage
+        if (modifiers().isGuest()) {
+            store.reserve();
+        }
+        if (modifiers().isContainer()) {
+            store.reserve();
+        }
+
+        // this.storeOffset = store.reserve(this); // calculate runtime storage
     }
+
+    public final SourceAssembly source;
 
     /**
      * Returns a {@link Component} adaptor of this node.

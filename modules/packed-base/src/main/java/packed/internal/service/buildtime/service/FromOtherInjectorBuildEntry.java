@@ -18,7 +18,6 @@ package packed.internal.service.buildtime.service;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.util.List;
 
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
@@ -40,7 +39,7 @@ final class FromOtherInjectorBuildEntry<T> extends BuildEntry<T> {
     final ProvideAllFromOtherInjector fromInjector; // not used currently
 
     FromOtherInjectorBuildEntry(ProvideAllFromOtherInjector fromInjector, RuntimeEntry<T> entry) {
-        super(fromInjector.node, fromInjector.configSite.withParent(entry.configSite()), List.of());
+        super(fromInjector.node, fromInjector.configSite.withParent(entry.configSite()));
         this.entry = entry;
         this.fromInjector = fromInjector;
         this.key = requireNonNull(entry.key());
@@ -79,7 +78,7 @@ final class FromOtherInjectorBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected MethodHandle newMH(ServiceExtensionInstantiationContext context) {
-        return null;
+    protected MethodHandle newMH(ServiceProvidingManager spm) {
+        throw new UnsupportedOperationException();
     }
 }

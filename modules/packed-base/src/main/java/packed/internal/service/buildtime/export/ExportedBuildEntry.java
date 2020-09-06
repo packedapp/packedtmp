@@ -18,7 +18,6 @@ package packed.internal.service.buildtime.export;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.util.List;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
@@ -28,6 +27,7 @@ import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.ServiceMode;
+import packed.internal.service.buildtime.service.ServiceProvidingManager;
 import packed.internal.service.runtime.DelegatingInjectorEntry;
 import packed.internal.service.runtime.RuntimeEntry;
 
@@ -56,7 +56,7 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
      * @see ServiceExtension#export(Key)
      */
     ExportedBuildEntry(ServiceExtensionNode builder, Key<T> key, ConfigSite configSite) {
-        super(builder, configSite, List.of());
+        super(builder, configSite);
         this.keyToExport = requireNonNull(key);
         this.key = requireNonNull(key);
     }
@@ -71,7 +71,7 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
      * @see ServiceExtension#exportAll()
      */
     ExportedBuildEntry(ServiceExtensionNode builder, BuildEntry<T> entryToExport, ConfigSite configSite) {
-        super(builder, configSite, List.of());
+        super(builder, configSite);
         this.exportedEntry = entryToExport;
         this.keyToExport = null;
         // Export of export, of export????
@@ -113,7 +113,7 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected MethodHandle newMH(ServiceExtensionInstantiationContext context) {
-        return exportedEntry.toMH(context);
+    protected MethodHandle newMH(ServiceProvidingManager spm) {
+        return exportedEntry.toMH(spm);
     }
 }

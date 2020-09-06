@@ -57,9 +57,6 @@ public final class ComponentNode implements Component {
     @Nullable
     final ComponentNode parent; // Parent is always stored as the first object in NodeStore...
 
-    /** The offset into the node-store that this node uses. */
-    final int storeOffset;
-
     /** The node store of this node. Where we store, for example, instances. */
     final NodeStore store;
 
@@ -73,7 +70,6 @@ public final class ComponentNode implements Component {
      */
     ComponentNode(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, PackedInitializationContext pic) {
         this.parent = parent;
-        this.storeOffset = configuration.storeOffset;
         this.model = RuntimeComponentModel.of(configuration);
         this.store = parent == null || configuration.modifiers().isGuest() ? configuration.store.newStore() : parent.store;
 
@@ -81,6 +77,11 @@ public final class ComponentNode implements Component {
             this.name = pic.rootName(configuration);
         } else {
             this.name = requireNonNull(configuration.name);
+        }
+
+        // Initialize if guest
+        if (modifiers().isGuest()) {
+            store.storeGuest(this, new PackedGuest(null));
         }
 
         // Initialize if container
@@ -95,11 +96,6 @@ public final class ComponentNode implements Component {
                 registry = new PackedInjector(configuration.configSite(), Map.of());
             }
             store.storeServiceRegistry(this, registry);
-        }
-
-        // Initialize if guest
-        if (modifiers().isGuest()) {
-            store.storeGuest(this, new PackedGuest(null));
         }
 
         // Should be set by Dependency Injection logic

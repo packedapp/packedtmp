@@ -52,7 +52,6 @@ public final class PackedContainerAssembly {
     @Nullable
     public final PackedContainerAssembly parent;
 
-    @SuppressWarnings("exports") // some temporary module exports
     public ServiceExtensionNode se;
 
     public PackedContainerAssembly(ComponentNodeConfiguration component) {

@@ -43,15 +43,6 @@ public class FieldStaticTest {
         MixedFieldsInstantiable.test(c -> c.provide(Factory.find(new TypeLiteral<MixedFieldsInstantiable>() {})));
     }
 
-    // /** Tests lazy {@link Provide#instantionMode()} on static fields. */
-    // @Test
-    // public void provideLazy() {
-    // MixedFieldsNoInstantiation.test(c -> c.provide(MixedFieldsNoInstantiation.class).lazy());
-    // MixedFieldsNoInstantiation.test(c -> c.provide(Factory.findInjectable(MixedFieldsNoInstantiation.class)).lazy());
-    // MixedFieldsNoInstantiation.test(c -> c.provide(Factory.findInjectable(new TypeLiteral<MixedFieldsNoInstantiation>()
-    // {})).lazy());
-    // }
-
     /** Tests prototype {@link Provide#constant()} on static fields. */
     @Test
     public void providePrototype() {

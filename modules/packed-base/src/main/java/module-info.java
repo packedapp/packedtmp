@@ -14,23 +14,22 @@ module app.packed.base {
     exports app.packed.statemachine;
 
     // Temporary...
-    exports packed.internal.invoke to app.packed.banana, app.packed.function, app.packed.conta;
-    exports packed.internal.invoke.typevariable to app.packed.banana, app.packed.function;
-    exports packed.internal.util to app.packed.configuration, app.packed.cli, app.packed.conta;
+//    exports packed.internal.invoke to app.packed.banana, app.packed.function, app.packed.conta;
+//    exports packed.internal.invoke.typevariable to app.packed.banana, app.packed.function;
+//    exports packed.internal.util to app.packed.configuration, app.packed.cli, app.packed.conta;
+//
+//    exports packed.internal.component to app.packed.errorhandling;
+//    exports packed.internal.component.wirelet to app.packed.errorhandling;
+//    exports packed.internal.container to app.packed.errorhandling, app.packed.conta;
+//    exports packed.internal.hook to app.packed.errorhandling;
+//    exports packed.internal.lifecycle.old to app.packed.errorhandling;
+//    exports packed.internal.errorhandling to app.packed.errorhandling;
+//    exports packed.internal.base.attribute to app.packed.attribute;
+//    exports packed.internal.sidecar.old to app.packed.conta;
+//    exports packed.internal.hook.applicator to app.packed.errorhandling, app.packed.cli;
 
-    exports packed.internal.component to app.packed.errorhandling;
-    exports packed.internal.component.wirelet to app.packed.errorhandling;
-    exports packed.internal.container to app.packed.errorhandling, app.packed.conta;
-    exports packed.internal.hook to app.packed.errorhandling;
-    exports packed.internal.lifecycle.old to app.packed.errorhandling;
-    exports packed.internal.errorhandling to app.packed.errorhandling;
-    exports packed.internal.base.attribute to app.packed.attribute;
-    exports packed.internal.sidecar.old to app.packed.conta;
-    exports packed.internal.hook.applicator to app.packed.errorhandling, app.packed.cli;
+    // opens app.packed.service to app.packed.service;
 
-    opens app.packed.service to app.packed.service;
-
-    requires java.management;
 }
 
 // requires static org.graalvm.sdk;

@@ -21,6 +21,7 @@ import packed.internal.container.PackedRealm;
 /**
  *
  */
+@SuppressWarnings("exports")
 public interface FactorySourcedDriver<C, I> extends ClassSourcedDriver<C, I> {
 
     @Override

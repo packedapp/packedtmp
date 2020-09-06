@@ -32,7 +32,7 @@ import java.util.Optional;
 public interface WireableComponentDriver<C> extends ComponentDriver<C> {
 
     default Optional<Class<?>> source() {
-        throw new UnsupportedOperationException();
+        return Optional.empty();
     }
 
     static <C> WireableComponentDriver<C> create(MethodHandles.Lookup lookup, Option... options) {

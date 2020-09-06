@@ -23,7 +23,6 @@ import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.ServiceExtension;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedWireableComponentDriver;
-import packed.internal.component.PackedWireableComponentDriver.SingletonComponentDriver;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionNode;
@@ -34,6 +33,7 @@ import packed.internal.service.buildtime.ServiceExtensionNode;
  * <p>
  * It it also possible to install components at runtime via {@link Component}.
  */
+@SuppressWarnings("exports")
 public class BeanConfiguration<T> extends AbstractComponentConfiguration {
 
     public final ComponentNodeConfiguration node;
@@ -78,12 +78,7 @@ public class BeanConfiguration<T> extends AbstractComponentConfiguration {
         if (buildEntry == null) {
             ServiceExtension e = node.container().use(ServiceExtension.class);
             ServiceExtensionNode sen = ServiceExtensionNode.fromExtension(e);
-            SingletonComponentDriver<T> scd = (SingletonComponentDriver<T>) node.driver();
-            if (scd.instance != null) {
-                buildEntry = sen.provider().provideInstance(node);
-            } else {
-                buildEntry = sen.provider().provideFactory(node);
-            }
+            buildEntry = (BuildEntry<T>) sen.provider().provide(node);
         }
         return buildEntry;
     }

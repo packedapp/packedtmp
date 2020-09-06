@@ -37,8 +37,10 @@ import packed.internal.component.wirelet.WireletList;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.ServiceDependency;
+import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.service.AtProvidesHook;
+import packed.internal.service.buildtime.service.PackedPrototypeConfiguration;
 import packed.internal.service.runtime.AbstractInjector;
 
 /**
@@ -354,7 +356,9 @@ public final class ServiceExtension extends Extension {
 
     // Will install a ServiceStatelessConfiguration...
     public <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {
-        return node.provider().provideFactory(install(factory).node, true);
+        @SuppressWarnings("unchecked")
+        BuildEntry<T> b = (BuildEntry<T>) node.provider().providePrototype(install(factory).node);
+        return new PackedPrototypeConfiguration<>(install(factory).node, b);
     }
 
     public void require(Class<?>... keys) {

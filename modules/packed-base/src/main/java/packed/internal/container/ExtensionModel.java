@@ -341,7 +341,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         }
     }
 
-    /** A builder for {@link ExtensionModel}. */
+    /** A builder of {@link ExtensionModel}. */
     static final class Builder extends SidecarModel.Builder {
 
         /** Meta data about the extension sidecar. */

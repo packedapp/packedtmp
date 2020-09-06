@@ -18,7 +18,6 @@ package packed.internal.service.buildtime.wirelets;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.util.List;
 import java.util.function.Function;
 
 import app.packed.base.Key;
@@ -27,6 +26,7 @@ import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.ServiceMode;
+import packed.internal.service.buildtime.service.ServiceProvidingManager;
 import packed.internal.service.runtime.MappingInjectorEntry;
 import packed.internal.service.runtime.RuntimeEntry;
 
@@ -42,7 +42,7 @@ final class MappingBuildEntry<F, T> extends BuildEntry<T> {
     private final Function<? super F, T> function;
 
     MappingBuildEntry(ServiceExtensionNode node, ConfigSite configSite, BuildEntry<F> entryToMap, Key<T> toKey, Function<F, T> function) {
-        super(node, configSite, List.of());
+        super(node, configSite);
         this.entryToMap = entryToMap;
         this.function = requireNonNull(function, "function is null");
         this.key = toKey;
@@ -74,7 +74,7 @@ final class MappingBuildEntry<F, T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected MethodHandle newMH(ServiceExtensionInstantiationContext context) {
+    protected MethodHandle newMH(ServiceProvidingManager context) {
         throw new UnsupportedOperationException();
     }
 }

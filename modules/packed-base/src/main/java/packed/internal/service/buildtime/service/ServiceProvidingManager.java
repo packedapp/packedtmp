@@ -17,13 +17,14 @@ package packed.internal.service.buildtime.service;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
@@ -33,15 +34,11 @@ import app.packed.inject.Provide;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.PackedWireableComponentDriver.SingletonComponentDriver;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.inject.ConfigSiteInjectOperations;
-import packed.internal.inject.ServiceDependency;
-import packed.internal.inject.factory.BaseFactory;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ErrorMessages;
 import packed.internal.service.buildtime.ServiceExtensionNode;
-import packed.internal.service.buildtime.ServiceMode;
 import packed.internal.service.runtime.AbstractInjector;
 
 /**
@@ -53,11 +50,14 @@ import packed.internal.service.runtime.AbstractInjector;
 public final class ServiceProvidingManager {
 
     /** A map used to cache build entries, connect stuff */
-    private final IdentityHashMap<ComponentNodeConfiguration, BuildEntry<?>> componentConfigurationCache = new IdentityHashMap<>();
 
     /** A map of build entries that provide services with the same key. */
     @Nullable
     private LinkedHashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> failingDuplicateProviders;
+
+    public final IdentityHashMap<BuildEntry<?>, MethodHandle> handlers = new IdentityHashMap<>();
+
+    public final ArrayDeque<ComponentFactoryBuildEntry<?>> mustInstantiate = new ArrayDeque<>();
 
     /** The extension node. */
     private final ServiceExtensionNode node;
@@ -88,34 +88,28 @@ public final class ServiceProvidingManager {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void addProvidesHook(AtProvidesHook hook, ComponentNodeConfiguration cc) {
-        // The parent node is not added until #provideFactory or #provideInstance
-        AbstractComponentBuildEntry parentNode;
-        SingletonComponentDriver driver = (SingletonComponentDriver) cc.driver();
-        if (driver.instance != null) {
-            parentNode = new ComponentConstantBuildEntry<>(node, cc);
-        } else {
-            BaseFactory<?> factory = driver.factory;
-            List<ServiceDependency> dependencies = factory.factory.dependencies;
-            parentNode = new ComponentFactoryBuildEntry<>(node, cc, ServiceMode.CONSTANT, driver.fromFactory(cc), dependencies);
-        }
-
-        // If any of the @Provide methods are instance members the parent node needs special treatment.
-        // As it needs to be constructed, before the field or method can provide services.
-        if (parentNode instanceof ComponentFactoryBuildEntry) {
-            ((ComponentFactoryBuildEntry) parentNode).hasInstanceMembers = hook.hasInstanceMembers;
-        }
+        AbstractComponentBuildEntry<?> parent = cc.source.provideForHooks(node, hook, cc);
 
         // Add each @Provide as children of the parent node
         for (AtProvides atProvides : hook.members) {
-            ConfigSite configSite = parentNode.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, atProvides.provides,
+            ConfigSite configSite = parent.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, atProvides.provides,
                     atProvides.member);
-            ComponentFactoryBuildEntry<?> node = new ComponentFactoryBuildEntry<>(configSite, atProvides, atProvides.methodHandle, parentNode);
+            ComponentFactoryBuildEntry<?> node = new ComponentFactoryBuildEntry<>(configSite, atProvides, atProvides.methodHandle, parent);
             node.as((Key) atProvides.key);
             providingEntries.add(node);
         }
+    }
 
-        // Set the parent node, so it can be found from provideFactory or provideInstance
-        componentConfigurationCache.put(cc, parentNode);
+    public BuildEntry<?> provide(ComponentNodeConfiguration cc) {
+        BuildEntry<?> e = cc.source.provide(node, cc);
+        providingEntries.add(e);
+        return e;
+    }
+
+    public BuildEntry<?> providePrototype(ComponentNodeConfiguration cc) {
+        BuildEntry<?> e = cc.source.providePrototype(node, cc);
+        providingEntries.add(e);
+        return e;
     }
 
     public void provideAll(AbstractInjector injector, ConfigSite configSite, WireletList wirelets) {
@@ -124,51 +118,6 @@ public final class ServiceProvidingManager {
             p = provideAll = new ArrayList<>(1);
         }
         p.add(new ProvideAllFromOtherInjector(node, configSite, injector, wirelets));
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> PackedPrototypeConfiguration<T> provideFactory(ComponentNodeConfiguration cc, boolean isPrototype) {
-        SingletonComponentDriver scd = (SingletonComponentDriver) cc.driver();
-        BuildEntry<?> c = componentConfigurationCache.get(cc);// remove??
-        if (c == null) {
-            List<ServiceDependency> dependencies = scd.factory.factory.dependencies;
-            c = new ComponentFactoryBuildEntry<>(node, cc, ServiceMode.CONSTANT, scd.fromFactory(cc), (List) dependencies);
-        }
-        ComponentFactoryBuildEntry e = (ComponentFactoryBuildEntry) c;
-        if (isPrototype) {
-            e.prototype();
-        }
-        c.as(scd.factory.key());
-        providingEntries.add(c);
-        return new PackedPrototypeConfiguration<>(cc, e);
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> BuildEntry<T> provideFactory(ComponentNodeConfiguration cc) {
-        SingletonComponentDriver scd = (SingletonComponentDriver) cc.driver();
-        BuildEntry<?> c = componentConfigurationCache.get(cc);// remove??
-        if (c == null) {
-            List<ServiceDependency> dependencies = scd.factory.factory.dependencies;
-            c = new ComponentFactoryBuildEntry<>(node, cc, ServiceMode.CONSTANT, scd.fromFactory(cc), (List) dependencies);
-        }
-        c.as(scd.factory.key());
-        providingEntries.add(c);
-        return (BuildEntry<T>) c;
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> BuildEntry<T> provideInstance(ComponentNodeConfiguration cc) {
-        // First see if we have already installed the node. This happens in #set if the component container any members
-        // annotated with @Provides
-        BuildEntry<T> c = (BuildEntry<T>) componentConfigurationCache.get(cc);
-        if (c == null) {
-            // No node found, components has no @Provides method, create a new node
-            c = new ComponentConstantBuildEntry<T>(node, cc);
-        }
-
-        c.as((Key) Key.of(cc.driver().sourceType()));
-        providingEntries.add(c);
-        return c;
     }
 
     public HashMap<Key<?>, BuildEntry<?>> resolve() {
@@ -213,6 +162,12 @@ public final class ServiceProvidingManager {
                     hs.add(entry);
                 }
             }
+        }
+    }
+
+    public void resolveMH() {
+        for (BuildEntry<?> e : providingEntries) {
+            e.toMH(this);
         }
     }
 }

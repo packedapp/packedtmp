@@ -15,60 +15,43 @@
  */
 package packed.internal.service.buildtime.service;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import app.packed.component.App;
 import app.packed.container.BaseBundle;
+import app.packed.inject.Provide;
+import app.packed.service.Injector;
+import app.packed.service.ServiceContract;
 
 /**
  *
  */
-public class Zzzz extends BaseBundle {
+public class Z1 extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-        provideInstance("GooBar");
         provideInstance(123);
-        provide(Dooox.class);
-        providePrototype(XX.class);
-        provide(Dooo.class);
+        export(Integer.class);
         provide(Dx.class);
-        export(Dooox.class);
+        exportAll();
     }
 
     public static void main(String[] args) {
-        try (App app = App.of(new Zzzz())) {
-            System.out.println(app.use(Dooox.class));
-        }
+        System.out.println(ServiceContract.of(new Z1()));
+        System.out.println("");
+        Injector inj = Injector.create(new Z1());
+        Object ii = inj.use(Integer.class);
+        System.out.println(ii.getClass() + " " + ii);
+        System.out.println(inj);
         System.out.println("BYE");
     }
 
     public static class XX {
-        public XX() {
-            new Exception().printStackTrace();
-            System.out.println("_______ NEW XX_______");
-        }
+        @Provide(constant = true)
+        long foo = 23;
     }
 
     public static class Dx {
         public Dx(XX x) {
 
-        }
-    }
-
-    public static class Dooox {
-        static final AtomicInteger I = new AtomicInteger();
-        int i = I.getAndIncrement();
-
-        public Dooox(XX ss, XX xx, String s, int s13, int d23, XX xx5, XX xx4, XX xx1) {
-            System.out.println("NEW " + s + " " + " " + s13 + "  " + xx);
-        }
-    }
-
-    public static class Dooo {
-        public Dooo(Dooox fo1, String foo, Dx d) {
-            // System.out.println("Inst " + fo1.i + " " + +fo2.i);
         }
     }
 }

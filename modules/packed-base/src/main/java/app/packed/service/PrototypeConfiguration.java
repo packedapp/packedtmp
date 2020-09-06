@@ -33,6 +33,7 @@ import app.packed.inject.Factory;
  * @see ServiceExtension#providePrototype(Factory)
  */
 //PrototypeServiceConfiguration??
+// Extends Stateless???
 public interface PrototypeConfiguration<T> extends ComponentConfiguration {
 
     /**

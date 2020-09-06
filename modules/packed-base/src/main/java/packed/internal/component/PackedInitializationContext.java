@@ -33,15 +33,17 @@ import packed.internal.util.LookupUtil;
  * <strong>Note that this implementation is not synchronized.</strong>
  */
 // Ideen er vi skal bruge den til at registrere fejl...
+
+// MethodHandle stableAccess(Object[] array) <-- returns 
 public final class PackedInitializationContext {
 
-    /** A MethodHandle that can invoke {@link #component()}. */
+    /** A MethodHandle for invoking {@link #component()}. */
     public static final MethodHandle MH_COMPONENT = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "component", Component.class);
 
-    /** A MethodHandle that can invoke {@link #guest()}. */
+    /** A MethodHandle for invoking {@link #guest()}. */
     public static final MethodHandle MH_GUEST = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "guest", Guest.class);
 
-    /** A MethodHandle that can invoke {@link #services()}. */
+    /** A MethodHandle for invoking {@link #services()}. */
     public static final MethodHandle MH_SERVICES = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "services", ServiceRegistry.class);
 
     /** The component node we are building. */
@@ -101,6 +103,9 @@ public final class PackedInitializationContext {
     public static PackedInitializationContext initialize(ComponentNodeConfiguration root) {
         PackedInitializationContext ic = new PackedInitializationContext(root.wirelets);
         ic.node = new ComponentNode(null, root, ic);
+//        for (int i = 0; i < ic.node.store.instances.length; i++) {
+//            System.out.println(i + " = " + ic.node.store.instances[i]);
+//        }
         return ic;
     }
 

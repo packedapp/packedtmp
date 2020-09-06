@@ -36,7 +36,7 @@ import packed.internal.inject.ServiceDependency;
 public final class AtProvidesHook implements Hook {
 
     /** Whether or not there are any non-static providing fields or methods. */
-    final boolean hasInstanceMembers;
+    public final boolean hasInstanceMembers;
 
     /** An immutable map of all providing members. */
     final List<AtProvides> members;

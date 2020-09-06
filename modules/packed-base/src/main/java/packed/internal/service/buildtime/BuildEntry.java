@@ -24,12 +24,11 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Provide;
-import app.packed.inject.ProvidePrototypeContext;
 import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.Service;
-import packed.internal.inject.ServiceDependency;
+import packed.internal.component.NodeStore;
+import packed.internal.service.buildtime.service.ServiceProvidingManager;
 import packed.internal.service.runtime.RuntimeEntry;
-import packed.internal.util.KeyBuilder;
 
 /**
  * Build service entries ...node is used at configuration time, to make sure that multiple services with the same key
@@ -45,14 +44,8 @@ public abstract class BuildEntry<T> {
     /** The configuration site of this object. */
     private final ConfigSite configSite;
 
-    /** The dependencies of this node. */
-    public final List<ServiceDependency> dependencies;
-
     /** A flag used to detect cycles in the dependency graph. */
     public boolean detectCycleVisited;
-
-    /** Whether or this node contains a dependency on {@link ProvidePrototypeContext}. */
-    protected final boolean hasDependencyOnInjectionSite;
 
     /**
      * The key of the node (optional). Can be null, for example, for a class that is not exposed as a service but has
@@ -62,40 +55,22 @@ public abstract class BuildEntry<T> {
     @Nullable
     protected Key<T> key;
 
-    /** The resolved dependencies of this node. */
-    public final BuildEntry<?>[] resolvedDependencies;
-
     /** The service no this entry belongs to. Or null for wirelets */
     @Nullable // Is nullable for stages for now
     public final ServiceExtensionNode node;
 
-    public final int offset;
+    public final SourceHolder source;
 
-    public BuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite, List<ServiceDependency> dependencies) {
-        this(serviceExtension, null, configSite, dependencies);
+    public BuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite) {
+        this.node = serviceExtension;
+        this.configSite = requireNonNull(configSite);
+        this.source = new SourceHolder(List.of(), null);
     }
 
-    public BuildEntry(@Nullable ServiceExtensionNode serviceExtension, BuildEntry<?> declaringEntry, ConfigSite configSite,
-            List<ServiceDependency> dependencies) {
+    public BuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite, SourceHolder sh) {
         this.node = serviceExtension;
-        this.offset = declaringEntry == null ? 0 : 1;
         this.configSite = requireNonNull(configSite);
-        this.dependencies = requireNonNull(dependencies);
-        int depSize = dependencies.size() + offset;
-        this.resolvedDependencies = depSize == 0 ? new BuildEntry<?>[0] : new BuildEntry<?>[depSize];
-        boolean hasDependencyOnInjectionSite = false;
-        if (declaringEntry != null) {
-            resolvedDependencies[0] = declaringEntry;
-        }
-        if (!dependencies.isEmpty()) {
-            for (ServiceDependency e : dependencies) {
-                if (e.key().equals(KeyBuilder.INJECTION_SITE_KEY)) {
-                    hasDependencyOnInjectionSite = true;
-                    break;
-                }
-            }
-        }
-        this.hasDependencyOnInjectionSite = hasDependencyOnInjectionSite;
+        this.source = sh;
     }
 
     @SuppressWarnings("unchecked")
@@ -106,15 +81,6 @@ public abstract class BuildEntry<T> {
         // Det er sgu ikke lige til at validere det med generics signature....
 
         this.key = (Key<T>) key;
-    }
-
-    public final void checkResolved() {
-        for (int i = offset; i < resolvedDependencies.length; i++) {
-            BuildEntry<?> n = resolvedDependencies[i];
-            if (n == null && !dependencies.get(i).isOptional()) {
-                throw new AssertionError("Dependency " + dependencies.get(i) + " was not resolved");
-            }
-        }
     }
 
     /**
@@ -163,16 +129,25 @@ public abstract class BuildEntry<T> {
         return new PackedService(key, configSite);
     }
 
-    protected abstract MethodHandle newMH(ServiceExtensionInstantiationContext context);
+    protected abstract MethodHandle newMH(ServiceProvidingManager spm);
 
     // cacher runtime noden...
     @SuppressWarnings("unchecked")
     public final RuntimeEntry<T> toRuntimeEntry(ServiceExtensionInstantiationContext context) {
-        return (RuntimeEntry<T>) context.transformers.computeIfAbsent(this, k -> k.newRuntimeNode(context));
+        return (RuntimeEntry<T>) context.transformers.computeIfAbsent(this, k -> {
+            // System.out.println("MSIZE " + context.transformers.size() + " " + k);
+            return k.newRuntimeNode(context);
+        });
     }
 
     // cacher runtime noden...
-    public final MethodHandle toMH(ServiceExtensionInstantiationContext context) {
-        return context.handlers.computeIfAbsent(this, k -> k.newMH(context));
+    public final MethodHandle toMH(ServiceProvidingManager spm) {
+        return spm.handlers.computeIfAbsent(this, k -> {
+            MethodHandle mh = k.newMH(spm);
+            if (!mh.type().parameterList().equals(List.of(NodeStore.class))) {
+                throw new IllegalStateException("Must create node type of " + mh + " for " + getClass());
+            }
+            return mh;
+        });
     }
 }

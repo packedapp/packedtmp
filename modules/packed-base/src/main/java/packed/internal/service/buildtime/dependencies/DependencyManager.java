@@ -131,8 +131,8 @@ public final class DependencyManager {
         for (BuildEntry<?> entry : node.resolvedEntries.values()) {
             if (entry.hasUnresolvedDependencies()) {
                 detectCyclesFor.add(entry);
-                List<ServiceDependency> dependencies = entry.dependencies;
-                for (int i = entry.offset; i < dependencies.size(); i++) {
+                List<ServiceDependency> dependencies = entry.source.dependencies;
+                for (int i = entry.source.offset; i < dependencies.size(); i++) {
                     ServiceDependency dependency = dependencies.get(i);
                     BuildEntry<?> resolveTo = node.resolvedEntries.get(dependency.key());
                     if (resolveTo == null) {
@@ -164,7 +164,7 @@ public final class DependencyManager {
                         }
                     }
                     recordResolvedDependency(entry, dependency, resolveTo, false);
-                    entry.resolvedDependencies[i] = resolveTo;
+                    entry.source.resolvedDependencies[i] = resolveTo;
                 }
             }
         }
@@ -222,7 +222,7 @@ public final class DependencyManager {
                     // Long long error message
                     StringBuilder sb = new StringBuilder();
                     sb.append("Cannot resolve dependency for ");
-                    List<ServiceDependency> dependencies = e.entry.dependencies;
+                    List<ServiceDependency> dependencies = e.entry.source.dependencies;
 
                     if (dependencies.size() == 1) {
                         sb.append("single ");

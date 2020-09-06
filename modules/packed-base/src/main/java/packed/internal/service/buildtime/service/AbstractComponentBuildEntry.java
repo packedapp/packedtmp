@@ -25,6 +25,7 @@ import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionNode;
+import packed.internal.service.buildtime.SourceHolder;
 
 /**
  *
@@ -34,14 +35,21 @@ public abstract class AbstractComponentBuildEntry<T> extends BuildEntry<T> {
     /** The configuration of the component this build entry belongs to */
     public final ComponentNodeConfiguration component;
 
+    public final int index;
+
     /**
      * @param serviceExtension
      * @param configSite
      * @param dependencies
      */
     public AbstractComponentBuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite, List<ServiceDependency> dependencies,
-            AbstractComponentBuildEntry<?> declaringEntry, ComponentNodeConfiguration componentConfiguration) {
-        super(serviceExtension, declaringEntry, configSite, dependencies);
+            AbstractComponentBuildEntry<?> declaringEntry, ComponentNodeConfiguration componentConfiguration, boolean isPrototype) {
+        super(serviceExtension, configSite, new SourceHolder(dependencies, declaringEntry));
         this.component = requireNonNull(componentConfiguration);
+        if (isPrototype) {
+            this.index = -1;
+        } else {
+            this.index = componentConfiguration.store.reserve();
+        }
     }
 }

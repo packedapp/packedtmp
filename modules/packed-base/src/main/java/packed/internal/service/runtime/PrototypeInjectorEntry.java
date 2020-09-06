@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.inject.ProvidePrototypeContext;
 import app.packed.inject.ProvisionException;
-import packed.internal.service.buildtime.Provider;
+import packed.internal.component.NodeStore;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceMode;
 import packed.internal.service.buildtime.service.ComponentFactoryBuildEntry;
@@ -32,25 +32,17 @@ import packed.internal.util.ThrowableUtil;
 // InjectionSite parameters
 public class PrototypeInjectorEntry<T> extends RuntimeEntry<T> {
 
-    /** An empty object array. */
-    private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
-
-    private final Provider<?>[] providers;
-
     private final MethodHandle mh;
+
+    private final NodeStore ns;
 
     /**
      * @param node
      */
     public PrototypeInjectorEntry(ComponentFactoryBuildEntry<T> node, ServiceExtensionInstantiationContext context) {
         super(node);
-        int size = node.resolvedDependencies.length;
-        providers = new Provider[size];
-        for (int i = 0; i < node.resolvedDependencies.length; i++) {
-            RuntimeEntry<?> forReal = node.resolvedDependencies[i].toRuntimeEntry(context);
-            providers[i] = () -> forReal.getInstance(null);
-        }
-        mh = node.mha;
+        this.ns = context.ns;
+        this.mh = node.newInstance;
     }
 
     /** {@inheritDoc} */
@@ -62,34 +54,17 @@ public class PrototypeInjectorEntry<T> extends RuntimeEntry<T> {
     /** {@inheritDoc} */
     @Override
     public T getInstance(ProvidePrototypeContext site) {
-        return newInstance();
+        try {
+            return (T) mh.invoke(ns);
+        } catch (Throwable e) {
+            ThrowableUtil.throwIfUnchecked(e);
+            throw new ProvisionException("Failed to inject ", e);
+        }
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean requiresPrototypeRequest() {
         return false;
-    }
-
-    /**
-     * Creates a new service instance.
-     *
-     * @return the new service instance
-     */
-    @SuppressWarnings("unchecked")
-    final T newInstance() {
-        Object[] params = EMPTY_OBJECT_ARRAY;
-        if (providers.length > 0) {
-            params = new Object[providers.length];
-            for (int i = 0; i < providers.length; i++) {
-                params[i] = providers[i].provide();
-            }
-        }
-        try {
-            return (T) mh.invokeWithArguments(params);
-        } catch (Throwable e) {
-            ThrowableUtil.throwIfUnchecked(e);
-            throw new ProvisionException("Failed to inject ", e);
-        }
     }
 }

@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.PackedWireableComponentDriver.SingletonComponentDriver;
+import packed.internal.component.NodeStore;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.ServiceMode;
@@ -39,7 +39,7 @@ public final class ComponentConstantBuildEntry<T> extends AbstractComponentBuild
      *            the injector builder
      */
     public ComponentConstantBuildEntry(ServiceExtensionNode ib, ComponentNodeConfiguration cc) {
-        super(ib, cc.configSite(), List.of(), null, cc);
+        super(ib, cc.configSite(), List.of(), null, cc, false);
     }
 
     /** {@inheritDoc} */
@@ -58,13 +58,13 @@ public final class ComponentConstantBuildEntry<T> extends AbstractComponentBuild
     @Override
     protected RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
         T instance = instance();
-        context.ns.storeSingleton(component, instance);
-        return new IndexedInjectorEntry<>(this, context.ns, component.storeOffset);
+        context.ns.storeSingleton(index, instance);
+        return new IndexedInjectorEntry<>(this, context.ns, index);
     }
 
     @SuppressWarnings("unchecked")
     private T instance() {
-        return ((SingletonComponentDriver<T>) component.driver()).instance;
+        return (T) component.source.instance();
     }
 
     /** {@inheritDoc} */
@@ -75,9 +75,10 @@ public final class ComponentConstantBuildEntry<T> extends AbstractComponentBuild
 
     /** {@inheritDoc} */
     @Override
-    protected MethodHandle newMH(ServiceExtensionInstantiationContext context) {
+    protected MethodHandle newMH(ServiceProvidingManager spm) {
         T instance = instance();
-        return MethodHandles.constant(instance.getClass(), instance);
+        MethodHandle mh = MethodHandles.constant(instance.getClass(), instance);
+        return MethodHandles.dropArguments(mh, 0, NodeStore.class);
     }
 
     @Override

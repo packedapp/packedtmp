@@ -17,6 +17,7 @@ package packed.internal.service.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ import packed.internal.service.buildtime.service.ServiceProvidingManager;
 import packed.internal.service.runtime.PackedInjector;
 import packed.internal.service.runtime.RuntimeEntry;
 import packed.internal.util.LookupUtil;
+import packed.internal.util.ThrowableUtil;
 
 /**
  * Since the logic for the service extension is quite complex. Especially with cross-container integration. We spread it
@@ -125,6 +127,8 @@ public final class ServiceExtensionNode {
         }
         dependencies().analyze();
 
+        provider().resolveMH();
+
     }
 
     public void checkExportConfigurable() {
@@ -187,25 +191,47 @@ public final class ServiceExtensionNode {
     }
 
     public ServiceRegistry instantiateEverything(NodeStore ns, WireletPack wc) {
-        LinkedHashMap<Key<?>, RuntimeEntry<?>> snm = new LinkedHashMap<>();
-        PackedInjector publicInjector = new PackedInjector(context().containerConfigSite(), snm);
+        LinkedHashMap<Key<?>, RuntimeEntry<?>> runtimeEntries = new LinkedHashMap<>();
+        PackedInjector publicInjector = new PackedInjector(context().containerConfigSite(), runtimeEntries);
 
         ServiceExtensionInstantiationContext con = new ServiceExtensionInstantiationContext(ns);
+        con.spm = provider;
+
+//        System.out.println("--------------- INIT PLAN ----------");
+//        for (ComponentFactoryBuildEntry<?> e : provider.mustInstantiate) {
+//            System.out.println(e.newInstance);
+//        }
+//        System.out.println("-----------------");
+
+        for (ComponentFactoryBuildEntry<?> e : provider.mustInstantiate) {
+            if (e.index > -1) {
+                MethodHandle mh = e.newInstance;
+                // System.out.println("INST " + mh.type().returnType());
+                Object instance;
+                try {
+                    instance = mh.invoke(ns);
+                } catch (Throwable e1) {
+                    throw ThrowableUtil.orUndeclared(e1);
+                }
+                con.ns.storeSingleton(e.index, instance);
+            }
+        }
         for (var e : resolvedEntries.entrySet()) {
             if (e.getKey() != null) { // only services... should be put there
-                snm.put(e.getKey(), e.getValue().toRuntimeEntry(con));
+                // runtimeEntries.put(e.getKey(), e.getValue().toRuntimeEntry(con));
             }
+        }
+        for (var e : exports()) {
+            runtimeEntries.put(e.key, e.toRuntimeEntry(con));
         }
 
         // Instantiate all singletons...
+
+        // Vi bliver noedt til at instantiere dem in-order
+        // Saa vi skal have en orderet liste... af MH(ServiceNode)->Object
         for (BuildEntry<?> node : resolvedEntries.values()) {
-//            MethodHandle mh = node.toMH(con);
-//            try {
-//                System.out.println("Instance " + mh.invoke());
-//            } catch (Throwable e1) {
-//                // TODO Auto-generated catch block
-//                e1.printStackTrace();
-//            }
+            // MethodHandle mh = node.toMH(con);
+            // System.out.println(mh);
             if (node instanceof ComponentFactoryBuildEntry) {
                 ComponentFactoryBuildEntry<?> s = (ComponentFactoryBuildEntry<?>) node;
                 if (s.instantiationMode() == ServiceMode.CONSTANT) {

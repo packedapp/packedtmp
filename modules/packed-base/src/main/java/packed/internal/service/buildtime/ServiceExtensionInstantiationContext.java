@@ -18,15 +18,22 @@ package packed.internal.service.buildtime;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.util.ArrayDeque;
 import java.util.IdentityHashMap;
 
 import packed.internal.component.NodeStore;
+import packed.internal.service.buildtime.service.ComponentFactoryBuildEntry;
+import packed.internal.service.buildtime.service.ServiceProvidingManager;
 import packed.internal.service.runtime.RuntimeEntry;
 
 /** A special instantiation context that is created */
 public class ServiceExtensionInstantiationContext {
 
     public final NodeStore ns;
+
+    public final ArrayDeque<ComponentFactoryBuildEntry<?>> entriesToInstantiate = new ArrayDeque<>();
+
+    public ServiceProvidingManager spm;
 
     ServiceExtensionInstantiationContext(NodeStore ns) {
         this.ns = requireNonNull(ns);

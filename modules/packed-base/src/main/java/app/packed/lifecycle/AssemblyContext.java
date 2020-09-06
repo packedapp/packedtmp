@@ -35,6 +35,7 @@ import packed.internal.errorhandling.ErrorMessage;
 // addSuccessProcess(Runnable r);
 // addFailureProcess(Runnable r);
 // addCompletionProcesser(Consumer<@Nullable Throwable> d);
+@SuppressWarnings("exports")
 
 public interface AssemblyContext {
 

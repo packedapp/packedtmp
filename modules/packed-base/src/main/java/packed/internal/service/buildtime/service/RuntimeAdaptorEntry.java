@@ -18,7 +18,6 @@ package packed.internal.service.buildtime.service;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.util.List;
 
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
@@ -39,7 +38,7 @@ public final class RuntimeAdaptorEntry<T> extends BuildEntry<T> {
     private final RuntimeEntry<T> entry;
 
     public RuntimeAdaptorEntry(ServiceExtensionNode node, RuntimeEntry<T> entry) {
-        super(node, ConfigSite.UNKNOWN, List.of());
+        super(node, ConfigSite.UNKNOWN);
         this.entry = entry;
         this.key = requireNonNull(entry.key());
     }
@@ -77,7 +76,7 @@ public final class RuntimeAdaptorEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected MethodHandle newMH(ServiceExtensionInstantiationContext context) {
+    protected MethodHandle newMH(ServiceProvidingManager spm) {
         throw new UnsupportedOperationException();
     }
 }

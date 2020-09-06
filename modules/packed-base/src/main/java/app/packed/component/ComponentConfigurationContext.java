@@ -149,4 +149,12 @@ public interface ComponentConfigurationContext {
     <C> C wire(WireableComponentDriver<C> driver, Wirelet... wirelets);
 
     <C, I> C wireInstance(InstanceSourcedDriver<C, I> driver, I instance, Wirelet... wirelets);
+
+    // I assume we wan to inject this separately instead maybe????
+    interface Provide<K> {
+
+        void export();
+
+        void setKey(K key);
+    }
 }
