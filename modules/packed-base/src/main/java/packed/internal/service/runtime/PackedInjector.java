@@ -35,6 +35,7 @@ import app.packed.config.ConfigSite;
 import app.packed.service.Injector;
 import app.packed.service.Service;
 import app.packed.service.ServiceProvider;
+import app.packed.service.ServiceRegistry;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.inject.ProvideContextImpl;
@@ -56,6 +57,8 @@ public final class PackedInjector extends AbstractInjector {
     /** The parent of this injector, or null if this is a top-level injector. */
     @Nullable
     final AbstractInjector parent;
+
+    public static final ServiceRegistry EMPTY_SERVICE_REGISTRY = new PackedInjector(ConfigSite.UNKNOWN, Map.of());
 
     public PackedInjector(ConfigSite configSite, Map<Key<?>, RuntimeEntry<?>> services) {
         this.parent = null;

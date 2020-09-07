@@ -37,16 +37,17 @@ public final class Region {
         store = new Object[i];
     }
 
+    public Object getSingletonInstance(int index) {
+        return store[index];
+    }
+
+    // Don't know
     PackedGuest guest() {
         return (PackedGuest) store[0];
     }
 
     ServiceRegistry serviceRegistry(ComponentNode node) {
         return (ServiceRegistry) store[node.modifiers().isGuest() ? 1 : 0];
-    }
-
-    public Object getSingletonInstance(int index) {
-        return store[index];
     }
 
     public void storeSingleton(int index, Object instance) {

@@ -99,6 +99,8 @@ public final class ComponentNode implements Component {
         // Alternativ fejler vi bare naar folk kalder source attributer...
         // Tror bare vi har et check om en source instance er non-null
 
+        // Cannot display the attribute values of /sds/we/ [source = wewe.class] until ccc.class has been instantiated
+
         // Vi create a new region is its the root, or if the component is a guest
         if (parent == null || configuration.modifiers().isGuest()) {
             this.region = configuration.region.newRegion(pic, this);

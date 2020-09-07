@@ -19,6 +19,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import app.packed.base.Key;
+import packed.internal.service.runtime.PackedInjector;
 
 /**
  *
@@ -121,5 +122,9 @@ public interface ServiceRegistry extends ServiceSet {
             throw new NoSuchElementException("A service with the specified key could not be found, key = " + key);
         }
         return t.get();
+    }
+
+    static ServiceRegistry empty() {
+        return PackedInjector.EMPTY_SERVICE_REGISTRY;
     }
 }

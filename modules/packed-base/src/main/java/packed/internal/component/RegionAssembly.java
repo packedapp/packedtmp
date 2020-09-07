@@ -18,12 +18,10 @@ package packed.internal.component;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import app.packed.service.ServiceRegistry;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.service.buildtime.ServiceExtensionNode;
-import packed.internal.service.runtime.PackedInjector;
 
 /**
  *
@@ -32,35 +30,36 @@ public class RegionAssembly {
 
     int index;
 
-    final ComponentNodeConfiguration root; // do we need this??
+    final ComponentNodeConfiguration configuration; // do we need this??
 
     final ArrayList<SourceAssembly> sources = new ArrayList<>();
 
     RegionAssembly(ComponentNodeConfiguration node) {
-        this.root = requireNonNull(node);
+        this.configuration = requireNonNull(node);
     }
 
     Region newRegion(PackedInitializationContext pic, ComponentNode root) {
-        ContainerAssembly container = this.root.container;
+        Region region = new Region(index);
 
-        Region reg = new Region(index);
-        for (SourceAssembly sa : sources) {
-            sa.initSource(reg);
-        }
         if (root.modifiers().isGuest()) {
-            reg.store[0] = new PackedGuest(null);
+            region.store[0] = new PackedGuest(null);
         }
-        ServiceRegistry registry = null;
+
+        for (SourceAssembly sa : sources) {
+            sa.initSource(region);
+        }
+
+        ContainerAssembly container = configuration.container;
+
+        int registryIndex = root.modifiers().isGuest() ? 1 : 0;
         ServiceExtensionNode node = container.se;
         if (node != null) {
-            registry = node.instantiateEverything(reg, pic.wirelets());
+            region.store[registryIndex] = node.instantiateEverything(region, pic.wirelets());
         } else {
-            registry = new PackedInjector(root.configSite(), Map.of());
+            region.store[registryIndex] = ServiceRegistry.empty();
         }
-        int off = root.modifiers().isGuest() ? 1 : 0;
-        reg.store[off] = registry;
 
-        return reg;
+        return region;
     }
 
     public int reserve() {
