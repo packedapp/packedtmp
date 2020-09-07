@@ -31,7 +31,7 @@ public final class Region {
 
     static final MethodHandle MH_GET_SINGLETON_INSTANCE = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "getSingletonInstance", Object.class, int.class);
 
-    final Object[] store; // May contain f.eks. CHM.. ?? Maybe hosts are also there...
+    final Object[] store;
 
     Region(int i) {
         store = new Object[i];

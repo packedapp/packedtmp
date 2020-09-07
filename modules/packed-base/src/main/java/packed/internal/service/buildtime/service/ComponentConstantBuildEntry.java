@@ -24,7 +24,7 @@ import packed.internal.component.Region;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.ServiceMode;
-import packed.internal.service.runtime.IndexedInjectorEntry;
+import packed.internal.service.runtime.IndexedEntry;
 import packed.internal.service.runtime.RuntimeEntry;
 
 /**
@@ -57,14 +57,7 @@ public final class ComponentConstantBuildEntry<T> extends AbstractComponentBuild
     /** {@inheritDoc} */
     @Override
     protected RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
-        T instance = instance();
-        context.ns.storeSingleton(index, instance);
-        return new IndexedInjectorEntry<>(this, context.ns, index);
-    }
-
-    @SuppressWarnings("unchecked")
-    private T instance() {
-        return (T) component.source.instance();
+        return new IndexedEntry<>(this, context.region, component.source.singletonIndex);
     }
 
     /** {@inheritDoc} */
@@ -76,13 +69,13 @@ public final class ComponentConstantBuildEntry<T> extends AbstractComponentBuild
     /** {@inheritDoc} */
     @Override
     protected MethodHandle newMH(ServiceProvidingManager spm) {
-        T instance = instance();
-        MethodHandle mh = MethodHandles.constant(instance.getClass(), instance);
+        Object instance = component.source.instance();
+        MethodHandle mh = MethodHandles.constant(instance.getClass(), component.source.instance());
         return MethodHandles.dropArguments(mh, 0, Region.class);
     }
 
     @Override
     public String toString() {
-        return "Constant " + instance();
+        return "Constant " + component.source.instance().getClass();
     }
 }

@@ -34,7 +34,6 @@ import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ErrorMessages;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.SimpleServiceSet;
-import packed.internal.service.buildtime.service.PackedPrototypeConfiguration;
 import packed.internal.util.KeyBuilder;
 
 /**
@@ -87,24 +86,20 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
      * 
      * @param <T>
      *            the type of service
-     * @param configuration
-     *            the configuration of an existing entry to export
+     * @param entryToExport
+     *            the entry to export
      * @param configSite
      *            the config site of the export
      * @return stuff
      */
-    public <T> ExportedServiceConfiguration<T> export(PackedPrototypeConfiguration<T> configuration, ConfigSite configSite) {
-        BuildEntry<T> entryToExport = configuration.buildEntry;
-        if (entryToExport.node != node) {
-            throw new IllegalArgumentException("The specified configuration was created by another injector extension");
-        }
-        return export0(new ExportedBuildEntry<>(node, entryToExport, configSite));
-    }
+    // I think exporting an entry locks its any providing key it might have...
 
     public <T> ExportedServiceConfiguration<T> export(BuildEntry<T> entryToExport, ConfigSite configSite) {
-        if (entryToExport.node != node) {
-            throw new IllegalArgumentException("The specified configuration was created by another injector extension");
-        }
+        // I'm not sure we need the check after, we have put export() directly on a component configuration..
+        // Perviously you could specify any entry, even something from another bundle.
+        // if (entryToExport.node != node) {
+        // throw new IllegalArgumentException("The specified configuration was created by another injector extension");
+        // }
         return export0(new ExportedBuildEntry<>(node, entryToExport, configSite));
     }
 

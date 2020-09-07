@@ -32,7 +32,9 @@ public class RegionAssembly {
 
     final ComponentNodeConfiguration configuration; // do we need this??
 
-    final ArrayList<SourceAssembly> sources = new ArrayList<>();
+    private final ArrayList<SourceAssembly> instances = new ArrayList<>();
+
+    private final ArrayList<SourceAssembly> sources = new ArrayList<>();
 
     RegionAssembly(ComponentNodeConfiguration node) {
         this.configuration = requireNonNull(node);
@@ -43,6 +45,10 @@ public class RegionAssembly {
 
         if (root.modifiers().isGuest()) {
             region.store[0] = new PackedGuest(null);
+        }
+        // Set all instances first...
+        for (SourceAssembly sa : instances) {
+            region.store[sa.singletonIndex] = sa.instance();
         }
 
         for (SourceAssembly sa : sources) {
@@ -60,6 +66,18 @@ public class RegionAssembly {
         }
 
         return region;
+    }
+
+    void addSourced() {
+
+    }
+
+    public SourceAssembly addSourced(ComponentNodeConfiguration cnc) {
+        SourceAssembly sa = new SourceAssembly(cnc, cnc.driver);
+        if (sa.hasInstance()) {
+            instances.add(sa);
+        }
+        return sa;
     }
 
     public int reserve() {

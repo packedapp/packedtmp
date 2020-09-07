@@ -29,14 +29,14 @@ import packed.internal.service.runtime.RuntimeEntry;
 /** A special instantiation context that is created */
 public class ServiceExtensionInstantiationContext {
 
-    public final Region ns;
+    public final Region region;
 
     public final ArrayDeque<ComponentFactoryBuildEntry<?>> entriesToInstantiate = new ArrayDeque<>();
 
     public ServiceProvidingManager spm;
 
     ServiceExtensionInstantiationContext(Region ns) {
-        this.ns = requireNonNull(ns);
+        this.region = requireNonNull(ns);
     }
 
     // Translates from BuildEntry->RuntimeEntry

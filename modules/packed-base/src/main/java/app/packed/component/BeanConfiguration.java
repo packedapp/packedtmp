@@ -100,6 +100,7 @@ public class BeanConfiguration<T> extends AbstractComponentConfiguration {
         return this;
     }
 
+    // Once a bean has been exported, its key cannot be changed...
     public ExportedServiceConfiguration<T> export() {
         checkConfigurable();
         return buildEntry.node.exports().export(buildEntry, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));

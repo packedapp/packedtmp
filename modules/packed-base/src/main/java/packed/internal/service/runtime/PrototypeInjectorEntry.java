@@ -34,6 +34,8 @@ public class PrototypeInjectorEntry<T> extends RuntimeEntry<T> {
 
     private final MethodHandle mh;
 
+    // Bliver nok noedt til at gemme en component...
+    // Men det kan vi vel bare goere
     private final Region ns;
 
     /**
@@ -41,7 +43,7 @@ public class PrototypeInjectorEntry<T> extends RuntimeEntry<T> {
      */
     public PrototypeInjectorEntry(ComponentFactoryBuildEntry<T> node, ServiceExtensionInstantiationContext context) {
         super(node);
-        this.ns = context.ns;
+        this.ns = context.region;
         this.mh = node.newInstance;
     }
 

@@ -75,6 +75,6 @@ public final class PackedPrototypeConfiguration<T> extends AbstractComponentConf
     @Override
     public ExportedServiceConfiguration<T> export() {
         checkConfigurable();
-        return buildEntry.node.exports().export(this, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
+        return buildEntry.node.exports().export(buildEntry, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 }

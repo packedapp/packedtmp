@@ -74,7 +74,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     private final PackedAssemblyContext assembly;
 
     /** The driver used to create this component. */
-    private final PackedWireableComponentDriver<?> driver;
+    final PackedWireableComponentDriver<?> driver;
 
     /** The name of the component. */
     public String name;
@@ -198,8 +198,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
         // Setup Source
         if (driver.sourceType() != null) {
-            this.source = new SourceAssembly(this, driver);
-            region.sources.add(source);
+            this.source = region.addSourced(this);
         } else {
             this.source = null;
         }

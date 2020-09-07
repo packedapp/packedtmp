@@ -16,9 +16,7 @@
 package packed.internal.service.buildtime.service;
 
 import app.packed.container.BaseBundle;
-import app.packed.inject.Provide;
 import app.packed.service.Injector;
-import app.packed.service.ServiceContract;
 
 /**
  *
@@ -28,15 +26,12 @@ public class Z1 extends BaseBundle {
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-        installInstance(123);
-        // export(Integer.class);
-        // provide(Dx.class);
-        // exportAll();
+        provideInstance(123);
+        install(Dx.class);
+        export(Integer.class);
     }
 
     public static void main(String[] args) {
-        System.out.println(ServiceContract.of(new Z1()));
-        System.out.println("");
         Injector inj = Injector.create(new Z1());
         Object ii = inj.use(Integer.class);
         System.out.println(ii.getClass() + " " + ii);
@@ -44,14 +39,9 @@ public class Z1 extends BaseBundle {
         System.out.println("BYE");
     }
 
-    public static class XX {
-        @Provide(constant = true)
-        long foo = 23;
-    }
-
     public static class Dx {
-        public Dx(XX x) {
-
+        public Dx(Integer x) {
+            System.out.println("Instantiated");
         }
     }
 }

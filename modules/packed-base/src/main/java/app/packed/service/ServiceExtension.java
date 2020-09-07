@@ -232,7 +232,7 @@ public final class ServiceExtension extends Extension {
     }
 
     /**
-     * Exports a service of the specified type.
+     * Exports a service of the specified type. See {@link #export(Key)} for details.
      * 
      * @param <T>
      *            the type of service to export
@@ -242,18 +242,16 @@ public final class ServiceExtension extends Extension {
      * @see #export(Key)
      */
     public <T> ExportedServiceConfiguration<T> export(Class<T> key) {
-        // A service can be exported multiple times...
-        // However export must be called for each export...
         return export(Key.of(key));
     }
 
     /**
-     * Exposes an internal service outside of this bundle.
+     * Exports an internal service outside of this bundle.
      * 
      * <pre>
      *  {@code  
-     * bind(ServiceImpl.class);
-     * expose(ServiceImpl.class);}
+     * install(ServiceImpl.class);
+     * export(ServiceImpl.class);}
      * </pre>
      * 
      * You can also choose to expose a service under a different key then what it is known as internally in the
@@ -264,6 +262,11 @@ public final class ServiceExtension extends Extension {
      * expose(ServiceImpl.class).as(Service.class);}
      * </pre>
      * 
+     * <p>
+     * Packed does not support any other way of exporting a service provided via a field or method annotated with
+     * {@link Provide} except for this method. There are no plan to add an Export annotation that can be used in connection
+     * with {@link Provide}.
+     * 
      * @param <T>
      *            the type of the service to export
      * @param key
@@ -271,6 +274,7 @@ public final class ServiceExtension extends Extension {
      * @return a service configuration for the exposed service
      * @see #export(Key)
      */
+    // Is used to export @Provide method and fields.
     public <T> ExportedServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();

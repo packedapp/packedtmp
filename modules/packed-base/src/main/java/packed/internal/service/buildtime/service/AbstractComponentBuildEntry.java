@@ -35,8 +35,6 @@ public abstract class AbstractComponentBuildEntry<T> extends BuildEntry<T> {
     /** The configuration of the component this build entry belongs to */
     public final ComponentNodeConfiguration component;
 
-    public final int index;
-
     /**
      * @param serviceExtension
      * @param configSite
@@ -46,10 +44,5 @@ public abstract class AbstractComponentBuildEntry<T> extends BuildEntry<T> {
             AbstractComponentBuildEntry<?> declaringEntry, ComponentNodeConfiguration componentConfiguration, boolean isPrototype) {
         super(serviceExtension, configSite, new SourceHolder(dependencies, declaringEntry));
         this.component = requireNonNull(componentConfiguration);
-        if (isPrototype) {
-            this.index = -1;
-        } else {
-            this.index = componentConfiguration.region.reserve();
-        }
     }
 }

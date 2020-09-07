@@ -33,7 +33,6 @@ import app.packed.service.ServiceRegistry;
 import app.packed.service.ServiceSet;
 import packed.internal.component.Region;
 import packed.internal.component.wirelet.WireletPack;
-import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.dependencies.DependencyManager;
 import packed.internal.service.buildtime.export.ExportManager;
 import packed.internal.service.buildtime.export.ExportedBuildEntry;
@@ -81,8 +80,6 @@ public final class ServiceExtensionNode {
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, BuildEntry<?>> resolvedEntries = new LinkedHashMap<>();
 
-    public final LinkedHashMap<ServiceDependency, BuildEntry<?>> specials = new LinkedHashMap<>();
-
     /**
      * Creates a new builder.
      * 
@@ -98,6 +95,7 @@ public final class ServiceExtensionNode {
         hasFailed = true;
     }
 
+    // Ideen var lidt vi kaldte ind her foerend alle boernene er initialized
     public void buildBundle() {
         // We could actually have a desired state = Hosting (No linking just hosting)
         // But I do think it would be correct to say that the desired state is hosting...
@@ -110,11 +108,11 @@ public final class ServiceExtensionNode {
     }
 
     public void buildTree() {
-
+        System.out.println("SGUU");
         if (parent == null) {
 //            TreePrinter.print(this, n -> n.children, "", n -> n.context.containerPath().toString());
         }
-        // System.out.println("Childre " + children);
+
         HashMap<Key<?>, BuildEntry<?>> resolvedServices = provider().resolve();
         resolvedServices.values().forEach(e -> resolvedEntries.put(requireNonNull(e.key()), e));
 
@@ -128,7 +126,6 @@ public final class ServiceExtensionNode {
         dependencies().analyze();
 
         provider().resolveMH();
-
     }
 
     public void checkExportConfigurable() {
@@ -174,6 +171,7 @@ public final class ServiceExtensionNode {
         children.add(child);
     }
 
+    //
     @Nullable
     public ServiceSet newExportedServiceSet() {
         return exports().exports();
@@ -204,7 +202,7 @@ public final class ServiceExtensionNode {
 //        System.out.println("-----------------");
 
         for (ComponentFactoryBuildEntry<?> e : provider.mustInstantiate) {
-            if (e.index > -1) {
+            if (e.component.source.singletonIndex > -1) {
                 MethodHandle mh = e.newInstance;
                 // System.out.println("INST " + mh.type().returnType());
                 Object instance;
@@ -213,7 +211,7 @@ public final class ServiceExtensionNode {
                 } catch (Throwable e1) {
                     throw ThrowableUtil.orUndeclared(e1);
                 }
-                con.ns.storeSingleton(e.index, instance);
+                con.region.storeSingleton(e.component.source.singletonIndex, instance);
             }
         }
         for (var e : resolvedEntries.entrySet()) {

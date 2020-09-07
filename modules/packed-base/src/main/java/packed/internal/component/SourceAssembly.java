@@ -46,7 +46,7 @@ public class SourceAssembly {
 
     // We store the index, but cannot store the instance.. Because
     // The assembly can be used multiple times for initialization.
-    int singletonIndex;
+    public final int singletonIndex;
 
     SourceAssembly(ComponentNodeConfiguration node, PackedWireableComponentDriver<?> driver) {
         this.driver = requireNonNull(driver);

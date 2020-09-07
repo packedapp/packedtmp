@@ -24,10 +24,12 @@ import packed.internal.service.buildtime.ServiceMode;
 
 /** An entry holding a constant. */
 // Can't implement both ServiceDescriptor and Provider...
-public final class IndexedInjectorEntry<T> extends RuntimeEntry<T> {
+public final class IndexedEntry<T> extends RuntimeEntry<T> {
 
-    private final Region ns;
+    /** The region the instance is stored in. */
+    private final Region region;
 
+    /** The index in the regions store. */
     private final int index;
 
     /**
@@ -36,9 +38,9 @@ public final class IndexedInjectorEntry<T> extends RuntimeEntry<T> {
      * @param entry
      *            the build entry to create this entry from
      */
-    public IndexedInjectorEntry(BuildEntry<T> entry, Region ns, int index) {
+    public IndexedEntry(BuildEntry<T> entry, Region ns, int index) {
         super(entry);
-        this.ns = requireNonNull(ns);
+        this.region = requireNonNull(ns);
         this.index = index;
     }
 
@@ -46,7 +48,7 @@ public final class IndexedInjectorEntry<T> extends RuntimeEntry<T> {
     @SuppressWarnings("unchecked")
     @Override
     public T getInstance(ProvidePrototypeContext ignore) {
-        return (T) ns.getSingletonInstance(index);
+        return (T) region.getSingletonInstance(index);
     }
 
     /** {@inheritDoc} */

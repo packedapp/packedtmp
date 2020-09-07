@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringJoiner;
@@ -124,6 +125,8 @@ public final class DependencyManager {
 
     private final IdentityHashMap<Class<? extends Extension>, BuildEntry<? extends Extension>> extensionEntries = new IdentityHashMap<>();
 
+    public final LinkedHashMap<ServiceDependency, BuildEntry<?>> specials = new LinkedHashMap<>();
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private void resolveAllDependencies() {
         detectCyclesFor = new ArrayList<>();
@@ -144,7 +147,7 @@ public final class DependencyManager {
                                 BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
                                         new ConstantInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "Ignore"));
                                 resolveTo = ben;
-                                node.specials.put(dependency, ben);
+                                specials.put(dependency, ben);
                             }
                             if (Extension.class.isAssignableFrom(rawType)) {
                                 if (entry instanceof ComponentFactoryBuildEntry) {

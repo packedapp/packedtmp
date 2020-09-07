@@ -49,8 +49,6 @@ import packed.internal.service.runtime.AbstractInjector;
  */
 public final class ServiceProvidingManager {
 
-    /** A map used to cache build entries, connect stuff */
-
     /** A map of build entries that provide services with the same key. */
     @Nullable
     private LinkedHashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> failingDuplicateProviders;

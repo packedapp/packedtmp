@@ -31,7 +31,7 @@ import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.ServiceMode;
-import packed.internal.service.runtime.IndexedInjectorEntry;
+import packed.internal.service.runtime.IndexedEntry;
 import packed.internal.service.runtime.PrototypeInjectorEntry;
 import packed.internal.service.runtime.RuntimeEntry;
 
@@ -86,8 +86,7 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
     @Override
     protected RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
         if (instantionMode == ServiceMode.CONSTANT) {
-            IndexedInjectorEntry<T> ee = new IndexedInjectorEntry<>(this, context.ns, index);
-            return ee;
+            return new IndexedEntry<>(this, context.region, component.source.singletonIndex);
         } else {
             return new PrototypeInjectorEntry<>(this, context);
         }
@@ -174,7 +173,7 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         // System.out.println("*********************** MUST INSTANTIATE " + component);
         context.mustInstantiate.addLast(this);
         if (instantionMode == ServiceMode.CONSTANT) {
-            return Region.readSingletonAs(index /* component.storeOffset + subIndex */, mh.type().returnType());
+            return Region.readSingletonAs(component.source.singletonIndex, mh.type().returnType());
         } else {
             return mh;
             // return mh;
