@@ -27,8 +27,8 @@ import packed.internal.inject.factory.BaseFactory;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.ServiceMode;
-import packed.internal.service.buildtime.service.ComponentBuildEntry;
 import packed.internal.service.buildtime.service.AtProvidesHook;
+import packed.internal.service.buildtime.service.ComponentBuildEntry;
 import packed.internal.service.buildtime.service.ComponentConstantBuildEntry;
 import packed.internal.service.buildtime.service.ComponentMethodHandleBuildEntry;
 
@@ -102,7 +102,7 @@ public class SourceAssembly {
             BuildEntry<?> c = buildEntry;
             if (c == null) {
                 List<ServiceDependency> dependencies = scd.factory.factory.dependencies;
-                c = new ComponentMethodHandleBuildEntry<>(node, conf, ServiceMode.CONSTANT, scd.fromFactory(conf), (List) dependencies, false);
+                c = new ComponentMethodHandleBuildEntry<>(node, conf, ServiceMode.CONSTANT, scd.fromFactory(conf), (List) dependencies);
             }
             c.as(scd.factory.key());
             return c;
@@ -116,12 +116,15 @@ public class SourceAssembly {
             entry = new ComponentConstantBuildEntry<>(node, conf);
         } else {
             SingletonComponentDriver driver = (SingletonComponentDriver) conf.driver();
+            // ServiceMode.constant needs to reflect the driver type
             BaseFactory<?> factory = driver.factory;
             List<ServiceDependency> dependencies = factory.factory.dependencies;
-            entry = new ComponentMethodHandleBuildEntry<>(node, conf, ServiceMode.CONSTANT, driver.fromFactory(conf), dependencies, false);
+            entry = new ComponentMethodHandleBuildEntry<>(node, conf, ServiceMode.CONSTANT, driver.fromFactory(conf), dependencies);
 
             // If any of the @Provide methods are instance members the parent node needs special treatment.
             // As it needs to be constructed, before the field or method can provide services.
+
+            // HMMM, we need to provide this to constructor I think...
             ((ComponentMethodHandleBuildEntry) entry).hasInstanceMembers = hook.hasInstanceMembers;
         }
         // Set the parent node, so it can be found from provideFactory or provideInstance
@@ -135,11 +138,8 @@ public class SourceAssembly {
         BuildEntry<?> c = buildEntry;
         if (c == null) {
             List<ServiceDependency> dependencies = scd.factory.factory.dependencies;
-            c = new ComponentMethodHandleBuildEntry<>(node, conf, ServiceMode.CONSTANT, scd.fromFactory(conf), (List) dependencies, true);
+            c = new ComponentMethodHandleBuildEntry<>(node, conf, ServiceMode.PROTOTYPE, scd.fromFactory(conf), (List) dependencies);
         }
-        ComponentMethodHandleBuildEntry e = (ComponentMethodHandleBuildEntry) c;
-        // Vi burde kunne styre det
-        e.prototype();
         c.as(scd.factory.key());
         return c;
     }

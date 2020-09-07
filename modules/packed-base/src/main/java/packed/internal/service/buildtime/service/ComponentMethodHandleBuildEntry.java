@@ -18,19 +18,16 @@ package packed.internal.service.buildtime.service;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.util.List;
 
 import app.packed.base.InvalidDeclarationException;
 import app.packed.config.ConfigSite;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.Region;
 import packed.internal.inject.ServiceDependency;
-import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.ServiceMode;
+import packed.internal.service.buildtime.SourceHolder;
 import packed.internal.service.runtime.IndexedEntry;
 import packed.internal.service.runtime.PrototypeInjectorEntry;
 import packed.internal.service.runtime.RuntimeEntry;
@@ -44,36 +41,33 @@ public final class ComponentMethodHandleBuildEntry<T> extends ComponentBuildEntr
     public boolean hasInstanceMembers;
 
     /** The instantiation mode of this node. */
-    private ServiceMode instantionMode;
+    private final ServiceMode instantionMode;
 
-    /** Is null for instance components. */
-    public final MethodHandle mha;
-
-    // Is created for a @Provide method, uses the parent component
+    // @Provide methods
     public ComponentMethodHandleBuildEntry(ConfigSite configSite, AtProvides atProvides, MethodHandle mh, ComponentBuildEntry<?> parent) {
-        super(parent.node, configSite, atProvides.dependencies, atProvides.isStaticMember ? null : parent, parent.component,
-                atProvides.instantionMode == ServiceMode.PROTOTYPE);
+        super(parent.node, configSite, parent.component, new SourceHolder(atProvides.dependencies, atProvides.isStaticMember ? null : parent, mh,
+                atProvides.instantionMode, parent.component.region.reserve()));
         this.instantionMode = atProvides.instantionMode;
-        this.mha = requireNonNull(mh);
     }
 
-    public ComponentMethodHandleBuildEntry(ServiceExtensionNode injectorBuilder, ComponentNodeConfiguration cc, ServiceMode instantionMode, MethodHandle mh,
-            List<ServiceDependency> dependencies, boolean isPrototype) {
-        super(injectorBuilder, cc.configSite(), dependencies, null, cc, isPrototype);
+    public ComponentMethodHandleBuildEntry(ServiceExtensionNode injectorBuilder, ComponentNodeConfiguration component, ServiceMode instantionMode,
+            MethodHandle mh, List<ServiceDependency> dependencies) {
+        super(injectorBuilder, component.configSite(), component, new SourceHolder(dependencies, null, mh, instantionMode, component.source.singletonIndex));
         this.instantionMode = requireNonNull(instantionMode);
-        this.mha = requireNonNull(mh);
+        if (instantionMode == ServiceMode.PROTOTYPE) {
+            if (source.hasDependencyOnProvidePrototypeContext) {
+                throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
+            }
+            if (hasInstanceMembers) {
+                throw new InvalidDeclarationException("Cannot @Provides instance members form on services that are registered as prototypes");
+            }
+        }
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean hasUnresolvedDependencies() {
         return !source.dependencies.isEmpty();
-    }
-
-    public ComponentMethodHandleBuildEntry<T> instantiateAs(ServiceMode mode) {
-        requireNonNull(mode, "mode is null");
-        this.instantionMode = mode;
-        return this;
     }
 
     /** {@inheritDoc} */
@@ -92,101 +86,20 @@ public final class ComponentMethodHandleBuildEntry<T> extends ComponentBuildEntr
         }
     }
 
-    public void prototype() {
-        if (source.hasDependencyOnProvidePrototypeContext) {
-            throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
-        }
-        if (hasInstanceMembers) {
-            throw new InvalidDeclarationException("Cannot @Provides instance members form on services that are registered as prototypes");
-        }
-        instantiateAs(ServiceMode.PROTOTYPE);
-    }
-
     /** {@inheritDoc} */
     @Override
     public boolean requiresPrototypeRequest() {
         return source.hasDependencyOnProvidePrototypeContext;
     }
 
-    public MethodHandle newInstance;
-
     /** {@inheritDoc} */
     @Override
     protected MethodHandle newMH(ServiceProvidingManager context) {
-        MethodHandle mh = mha;
-        // System.out.println("FIXING " + mh + " Dependencies " + source.resolvedDependencies.length);
-
-        if (source.dependencies.isEmpty()) {
-            if (mh.type().parameterCount() > 0) {
-                MethodHandle mhp = source.resolvedDependencies[0].toMH(context);
-//            System.out.println(mhp);
-                // NodeStore.readSingletonAs(index, type)
-                // System.out.println(mhp);
-                // System.out.println(mh);
-                mh = MethodHandles.collectArguments(mh, 0, mhp);
-                // System.out.println("MH " + mh);
-                context.mustInstantiate.addLast(this);
-                newInstance = mh;
-                return mh;
-            }
-        }
-        int adjust = 0;
-        for (int i = 0; i < source.resolvedDependencies.length; i++) {
-            int index = i == 0 ? 0 : i - adjust;
-            BuildEntry<?> e = source.resolvedDependencies[i];
-            requireNonNull(e);
-            if (e instanceof ComponentConstantBuildEntry) {
-                ComponentConstantBuildEntry<?> c = (ComponentConstantBuildEntry<?>) e;
-                Object instance = c.component.source.instance();
-                // System.out.println("INSERTING INTO " + mh);
-                // MethodHandle cons = MethodHandles.constant(instance.getClass(), instance);
-                mh = MethodHandles.insertArguments(mh, index, instance); // 0 is NodeStore
-
-                // mh = MethodHandles.collectArguments(mh, i - adjust, cons);
-                adjust++;
-//                System.out.println("NEW MH " + mh);
-//                System.out.println();
-            } else if (e instanceof ComponentMethodHandleBuildEntry) {
-                ComponentMethodHandleBuildEntry<?> c = (ComponentMethodHandleBuildEntry<?>) e;
-                MethodHandle collect = c.toMH(context);
-//                System.out.println("____INSERTING INTO " + mh + "  -  " + collect);
-
-                mh = MethodHandles.collectArguments(mh, index, collect);
-
-//                System.out.println("____NEW MH " + mh);
-//                System.out.println();
-            } else {
-//                System.out.println("NOOOOO " + e);
-            }
-        }
-        if (mh.type().parameterCount() == 0) {
-            mh = MethodHandles.dropArguments(mh, 0, Region.class);
-        } else if (mh.type().parameterCount() > 1) {
-            MethodType mt = MethodType.methodType(mh.type().returnType(), Region.class);
-            int[] ar = new int[mh.type().parameterCount()];
-            for (int i = 0; i < ar.length; i++) {
-                ar[i] = 0;
-            }
-            mh = MethodHandles.permuteArguments(mh, mt, ar);
-        }
-        newInstance = mh;
-        // System.out.println("*********************** MUST INSTANTIATE " + component);
-        context.mustInstantiate.addLast(this);
-        if (instantionMode == ServiceMode.CONSTANT) {
-            return Region.readSingletonAs(component.source.singletonIndex, mh.type().returnType());
-        } else {
-            return mh;
-            // return mh;
-        }
-        // Loeb igennem alle dependencies
-        // er det en constant..
-        // saa array bind den til argumented
-
-        // Er det en prototype saa slaa den op
+        return source.newMH(context);
     }
 
     @Override
     public String toString() {
-        return "Factory " + mha.type().parameterList() + " -> " + mha.type().returnType();
+        return "Factory ";
     }
 }

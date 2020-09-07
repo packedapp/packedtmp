@@ -44,7 +44,7 @@ public class PrototypeInjectorEntry<T> extends RuntimeEntry<T> {
     public PrototypeInjectorEntry(ComponentMethodHandleBuildEntry<T> node, ServiceExtensionInstantiationContext context) {
         super(node);
         this.ns = context.region;
-        this.mh = node.newInstance;
+        this.mh = node.source.reducedMha;
     }
 
     /** {@inheritDoc} */

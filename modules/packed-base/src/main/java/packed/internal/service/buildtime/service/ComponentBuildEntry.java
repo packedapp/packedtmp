@@ -17,12 +17,9 @@ package packed.internal.service.buildtime.service;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.List;
-
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.SourceHolder;
@@ -38,11 +35,9 @@ public abstract class ComponentBuildEntry<T> extends BuildEntry<T> {
     /**
      * @param serviceExtension
      * @param configSite
-     * @param dependencies
      */
-    public ComponentBuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite, List<ServiceDependency> dependencies,
-            ComponentBuildEntry<?> declaringEntry, ComponentNodeConfiguration componentConfiguration, boolean isPrototype) {
-        super(serviceExtension, configSite, new SourceHolder(dependencies, declaringEntry));
-        this.component = requireNonNull(componentConfiguration);
+    public ComponentBuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite, ComponentNodeConfiguration component, SourceHolder sh) {
+        super(serviceExtension, configSite, sh);
+        this.component = requireNonNull(component);
     }
 }

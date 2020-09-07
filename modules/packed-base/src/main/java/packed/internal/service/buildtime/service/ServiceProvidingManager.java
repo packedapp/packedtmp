@@ -39,6 +39,7 @@ import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ErrorMessages;
 import packed.internal.service.buildtime.ServiceExtensionNode;
+import packed.internal.service.buildtime.SourceHolder;
 import packed.internal.service.runtime.AbstractInjector;
 
 /**
@@ -55,7 +56,7 @@ public final class ServiceProvidingManager {
 
     public final IdentityHashMap<BuildEntry<?>, MethodHandle> handlers = new IdentityHashMap<>();
 
-    public final ArrayDeque<ComponentMethodHandleBuildEntry<?>> mustInstantiate = new ArrayDeque<>();
+    public final ArrayDeque<SourceHolder> mustInstantiate = new ArrayDeque<>();
 
     /** The extension node. */
     private final ServiceExtensionNode node;

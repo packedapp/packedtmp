@@ -201,9 +201,9 @@ public final class ServiceExtensionNode {
 //        }
 //        System.out.println("-----------------");
 
-        for (ComponentMethodHandleBuildEntry<?> e : provider.mustInstantiate) {
-            if (e.component.source.singletonIndex > -1) {
-                MethodHandle mh = e.newInstance;
+        for (SourceHolder e : provider.mustInstantiate) {
+            if (e.index > -1) {
+                MethodHandle mh = e.reducedMha;
                 // System.out.println("INST " + mh.type().returnType());
                 Object instance;
                 try {
@@ -211,7 +211,7 @@ public final class ServiceExtensionNode {
                 } catch (Throwable e1) {
                     throw ThrowableUtil.orUndeclared(e1);
                 }
-                con.region.store(e.component.source.singletonIndex, instance);
+                con.region.store(e.index, instance);
             }
         }
 //        for (var e : resolvedEntries.entrySet()) {

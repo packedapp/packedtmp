@@ -120,6 +120,7 @@ public final class DependencyManager {
                     // Long long error message
                     StringBuilder sb = new StringBuilder();
                     sb.append("Cannot resolve dependency for ");
+                    // Has at least on dependency, so a source is present
                     List<ServiceDependency> dependencies = e.entry.source.dependencies;
 
                     if (dependencies.size() == 1) {
@@ -225,42 +226,45 @@ public final class DependencyManager {
         detectCyclesFor = new ArrayList<>();
 
         for (BuildEntry<?> entry : node.resolvedEntries.values()) {
-            if (entry.hasUnresolvedDependencies()) {
-                detectCyclesFor.add(entry);
-                List<ServiceDependency> dependencies = entry.source.dependencies;
-                for (int i = entry.source.offset; i < dependencies.size(); i++) {
-                    ServiceDependency dependency = dependencies.get(i);
-                    BuildEntry<?> resolveTo = node.resolvedEntries.get(dependency.key());
-                    if (resolveTo == null) {
-                        Key<?> k = dependency.key();
-                        if (!k.hasQualifier()) {
-                            Class<?> rawType = k.typeLiteral().rawType();
-                            if (Wirelet.class.isAssignableFrom(rawType)) {
-                                // Fail if pipelined wirelet...
-                                BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
-                                        new ConstantInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "Ignore"));
-                                resolveTo = ben;
-                                specials.put(dependency, ben);
-                            }
-                            if (Extension.class.isAssignableFrom(rawType)) {
-                                if (entry instanceof ComponentMethodHandleBuildEntry) {
-                                    Optional<Class<? extends Extension>> op = ((ComponentMethodHandleBuildEntry) entry).component.extension();
-                                    if (op.isPresent()) {
-                                        Class<? extends Extension> cc = op.get();
-                                        if (cc == k.typeLiteral().type()) {
-                                            PackedExtensionConfiguration e = ((PackedExtensionConfiguration) node.context()).container().getContext(cc);
-                                            resolveTo = extensionEntries.computeIfAbsent(e.extensionType(), kk -> new RuntimeAdaptorEntry(node,
-                                                    new ConstantInjectorEntry<Extension>(ConfigSite.UNKNOWN, (Key) Key.of(e.extensionType()), e.instance())));
+            if (entry.source != null) {
+                if (entry.hasUnresolvedDependencies()) {
+                    detectCyclesFor.add(entry);
+                    List<ServiceDependency> dependencies = entry.source.dependencies;
+                    for (int i = entry.source.offset; i < dependencies.size(); i++) {
+                        ServiceDependency dependency = dependencies.get(i);
+                        BuildEntry<?> resolveTo = node.resolvedEntries.get(dependency.key());
+                        if (resolveTo == null) {
+                            Key<?> k = dependency.key();
+                            if (!k.hasQualifier()) {
+                                Class<?> rawType = k.typeLiteral().rawType();
+                                if (Wirelet.class.isAssignableFrom(rawType)) {
+                                    // Fail if pipelined wirelet...
+                                    BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
+                                            new ConstantInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "Ignore"));
+                                    resolveTo = ben;
+                                    specials.put(dependency, ben);
+                                }
+                                if (Extension.class.isAssignableFrom(rawType)) {
+                                    if (entry instanceof ComponentMethodHandleBuildEntry) {
+                                        Optional<Class<? extends Extension>> op = ((ComponentMethodHandleBuildEntry) entry).component.extension();
+                                        if (op.isPresent()) {
+                                            Class<? extends Extension> cc = op.get();
+                                            if (cc == k.typeLiteral().type()) {
+                                                PackedExtensionConfiguration e = ((PackedExtensionConfiguration) node.context()).container().getContext(cc);
+                                                resolveTo = extensionEntries.computeIfAbsent(e.extensionType(),
+                                                        kk -> new RuntimeAdaptorEntry(node, new ConstantInjectorEntry<Extension>(ConfigSite.UNKNOWN,
+                                                                (Key) Key.of(e.extensionType()), e.instance())));
 
+                                            }
                                         }
                                     }
                                 }
-                            }
 
+                            }
                         }
+                        recordResolvedDependency(node, entry, dependency, resolveTo, false);
+                        entry.source.resolvedDependencies[i] = resolveTo;
                     }
-                    recordResolvedDependency(node, entry, dependency, resolveTo, false);
-                    entry.source.resolvedDependencies[i] = resolveTo;
                 }
             }
         }

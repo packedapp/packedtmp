@@ -18,12 +18,18 @@ package packed.internal.service.buildtime;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.List;
 
 import app.packed.base.Nullable;
 import app.packed.inject.ProvidePrototypeContext;
+import packed.internal.component.Region;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.service.ComponentBuildEntry;
+import packed.internal.service.buildtime.service.ComponentConstantBuildEntry;
+import packed.internal.service.buildtime.service.ComponentMethodHandleBuildEntry;
+import packed.internal.service.buildtime.service.ServiceProvidingManager;
 import packed.internal.util.KeyBuilder;
 
 /**
@@ -45,10 +51,20 @@ public class SourceHolder {
 
     public final int offset;
 
-    public MethodHandle mh;
+    public final MethodHandle mha;
 
-    public SourceHolder(List<ServiceDependency> dependencies, @Nullable ComponentBuildEntry<?> declaringEntry) {
+    public final int index;
+
+    /** The instantiation mode of this node. */
+    final ServiceMode instantionMode;
+
+    public MethodHandle reducedMha;
+
+    public SourceHolder(List<ServiceDependency> dependencies, @Nullable ComponentBuildEntry<?> declaringEntry, MethodHandle mh, ServiceMode sm, int index) {
         this.dependencies = requireNonNull(dependencies);
+        this.mha = requireNonNull(mh);
+        this.index = index;
+        this.instantionMode = sm;
         int depSize = dependencies.size();
 
         // We include the declaring entry in resolved dependencies because we want to use it when
@@ -74,12 +90,54 @@ public class SourceHolder {
         this.hasDependencyOnProvidePrototypeContext = hasDependencyOnProvidePrototypeContext;
     }
 
-    public final void checkResolved() {
+    public MethodHandle newMH(ServiceProvidingManager context) {
+        MethodHandle mh = mha;
+
+        boolean resolveDeclaringEntry = dependencies.size() != mh.type().parameterCount();
+        if (resolveDeclaringEntry) {
+            MethodHandle mhp = resolvedDependencies[0].toMH(context);
+            mh = MethodHandles.collectArguments(mh, 0, mhp);
+            context.mustInstantiate.addLast(this);
+            reducedMha = mh;
+            return mh;
+        }
+
+        int adjust = 0;
         for (int i = 0; i < resolvedDependencies.length; i++) {
-            BuildEntry<?> n = resolvedDependencies[i];
-            if (n == null && !dependencies.get(i).isOptional()) {
-                throw new AssertionError("Dependency " + dependencies.get(i) + " was not resolved");
+            int index = i == 0 ? 0 : i - adjust;
+            BuildEntry<?> e = resolvedDependencies[i];
+            requireNonNull(e);
+            if (e instanceof ComponentConstantBuildEntry) {
+                ComponentConstantBuildEntry<?> c = (ComponentConstantBuildEntry<?>) e;
+                Object instance = c.component.source.instance();
+                mh = MethodHandles.insertArguments(mh, index, instance); // 0 is NodeStore
+                adjust++;
+            } else if (e instanceof ComponentMethodHandleBuildEntry) {
+                ComponentMethodHandleBuildEntry<?> c = (ComponentMethodHandleBuildEntry<?>) e;
+                MethodHandle collect = c.toMH(context);
+                mh = MethodHandles.collectArguments(mh, index, collect);
+            } else {}
+        }
+        if (mh.type().parameterCount() == 0) {
+            mh = MethodHandles.dropArguments(mh, 0, Region.class);
+        } else if (mh.type().parameterCount() > 1) {
+            MethodType mt = MethodType.methodType(mh.type().returnType(), Region.class);
+            int[] ar = new int[mh.type().parameterCount()];
+            for (int i = 0; i < ar.length; i++) {
+                ar[i] = 0;
             }
+            mh = MethodHandles.permuteArguments(mh, mt, ar);
+        }
+        reducedMha = mh;
+        // System.out.println("*********************** MUST INSTANTIATE " + component);
+        context.mustInstantiate.addLast(this);
+        if (instantionMode == ServiceMode.CONSTANT) {
+
+            // TODO It must be read -> it must be written...
+
+            return Region.readSingletonAs(index, mh.type().returnType());
+        } else {
+            return mh;
         }
     }
 }

@@ -78,41 +78,43 @@ final class DependencyCycleDetector {
      *             if there is a cycle in the graph
      */
     private static DependencyCycle detectCycle(BuildEntry<?> node, ArrayDeque<BuildEntry<?>> stack, ArrayDeque<BuildEntry<?>> dependencies) {
-        stack.push(node);
-        for (int i = 0; i < node.source.resolvedDependencies.length; i++) {
-            BuildEntry<?> dependency = node.source.resolvedDependencies[i];
-            if (dependency == null) {
-                // System.out.println(node.dependencies);
-                // new Exception().printStackTrace();
-            }
-            if (dependency != null) {
-                BuildEntry<?> to = dependency;
-                // If the dependency is a @Provides method, we need to use the declaring node
+        if (node.source != null) {
+            stack.push(node);
+            for (int i = 0; i < node.source.resolvedDependencies.length; i++) {
+                BuildEntry<?> dependency = node.source.resolvedDependencies[i];
+                if (dependency == null) {
+                    // System.out.println(node.dependencies);
+                    // new Exception().printStackTrace();
+                }
+                if (dependency != null) {
+                    BuildEntry<?> to = dependency;
+                    // If the dependency is a @Provides method, we need to use the declaring node
 
-                if (to.hasUnresolvedDependencies() && to instanceof ComponentMethodHandleBuildEntry) {
-                    ComponentMethodHandleBuildEntry<?> ic = (ComponentMethodHandleBuildEntry<?>) to;
-                    if (!ic.detectCycleVisited) {
-                        dependencies.push(to);
-                        // See if the component is already on the stack -> A cycle has been detected
-                        if (stack.contains(to)) {
-                            // clear links not part of the circle, for example, for A->B->C->B we want to remove A
-                            while (stack.peekLast() != to) {
-                                stack.pollLast();
-                                dependencies.pollLast();
+                    if (to.hasUnresolvedDependencies() && to instanceof ComponentMethodHandleBuildEntry) {
+                        ComponentMethodHandleBuildEntry<?> ic = (ComponentMethodHandleBuildEntry<?>) to;
+                        if (!ic.detectCycleVisited) {
+                            dependencies.push(to);
+                            // See if the component is already on the stack -> A cycle has been detected
+                            if (stack.contains(to)) {
+                                // clear links not part of the circle, for example, for A->B->C->B we want to remove A
+                                while (stack.peekLast() != to) {
+                                    stack.pollLast();
+                                    dependencies.pollLast();
+                                }
+                                return new DependencyCycle(dependencies);
                             }
-                            return new DependencyCycle(dependencies);
+                            DependencyCycle cycle = detectCycle(ic, stack, dependencies);
+                            if (cycle != null) {
+                                return cycle;
+                            }
+                            dependencies.pop();
                         }
-                        DependencyCycle cycle = detectCycle(ic, stack, dependencies);
-                        if (cycle != null) {
-                            return cycle;
-                        }
-                        dependencies.pop();
                     }
                 }
             }
+            stack.pop(); // assert stack.pop() == node
+            node.detectCycleVisited = true;
         }
-        stack.pop(); // assert stack.pop() == node
-        node.detectCycleVisited = true;
         return null;
     }
 

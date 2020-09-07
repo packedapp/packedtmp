@@ -59,15 +59,16 @@ public abstract class BuildEntry<T> {
     @Nullable // Is nullable for stages for now
     public final ServiceExtensionNode node;
 
+    @Nullable
     public final SourceHolder source;
 
     public BuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite) {
         this.node = serviceExtension;
         this.configSite = requireNonNull(configSite);
-        this.source = new SourceHolder(List.of(), null);
+        this.source = null;
     }
 
-    public BuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite, SourceHolder sh) {
+    public BuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite, @Nullable SourceHolder sh) {
         this.node = serviceExtension;
         this.configSite = requireNonNull(configSite);
         this.source = sh;
@@ -116,6 +117,8 @@ public abstract class BuildEntry<T> {
         return key;
     }
 
+    protected abstract MethodHandle newMH(ServiceProvidingManager spm);
+
     /**
      * Creates a new runtime node from this node.
      *
@@ -129,17 +132,6 @@ public abstract class BuildEntry<T> {
         return new PackedService(key, configSite);
     }
 
-    protected abstract MethodHandle newMH(ServiceProvidingManager spm);
-
-    // cacher runtime noden...
-    @SuppressWarnings("unchecked")
-    public final RuntimeEntry<T> toRuntimeEntry(ServiceExtensionInstantiationContext context) {
-        return (RuntimeEntry<T>) context.transformers.computeIfAbsent(this, k -> {
-            // System.out.println("MSIZE " + context.transformers.size() + " " + k);
-            return k.newRuntimeNode(context);
-        });
-    }
-
     // cacher runtime noden...
     public final MethodHandle toMH(ServiceProvidingManager spm) {
         return spm.handlers.computeIfAbsent(this, k -> {
@@ -148,6 +140,14 @@ public abstract class BuildEntry<T> {
                 throw new IllegalStateException("Must create node type of " + mh + " for " + getClass());
             }
             return mh;
+        });
+    }
+
+    // cacher runtime noden...
+    @SuppressWarnings("unchecked")
+    public final RuntimeEntry<T> toRuntimeEntry(ServiceExtensionInstantiationContext context) {
+        return (RuntimeEntry<T>) context.transformers.computeIfAbsent(this, k -> {
+            return k.newRuntimeNode(context);
         });
     }
 }

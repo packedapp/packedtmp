@@ -17,7 +17,6 @@ package packed.internal.service.buildtime.service;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.util.List;
 
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.Region;
@@ -35,11 +34,11 @@ public final class ComponentConstantBuildEntry<T> extends ComponentBuildEntry<T>
     /**
      * Creates a new node from an instance.
      * 
-     * @param ib
+     * @param services
      *            the injector builder
      */
-    public ComponentConstantBuildEntry(ServiceExtensionNode ib, ComponentNodeConfiguration cc) {
-        super(ib, cc.configSite(), List.of(), null, cc, false);
+    public ComponentConstantBuildEntry(ServiceExtensionNode services, ComponentNodeConfiguration component) {
+        super(services, component.configSite(), component, null);
     }
 
     /** {@inheritDoc} */
@@ -56,6 +55,16 @@ public final class ComponentConstantBuildEntry<T> extends ComponentBuildEntry<T>
 
     /** {@inheritDoc} */
     @Override
+    protected MethodHandle newMH(ServiceProvidingManager spm) {
+        // Taenker vi hellere vil laese fra arrayet...
+        // Paa lang sigt vil vi gerne cache de method handles vi generere...
+        Object instance = component.source.instance();
+        MethodHandle mh = MethodHandles.constant(instance.getClass(), component.source.instance());
+        return MethodHandles.dropArguments(mh, 0, Region.class);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     protected RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
         return new IndexedEntry<>(this, context.region, component.source.singletonIndex);
     }
@@ -64,14 +73,6 @@ public final class ComponentConstantBuildEntry<T> extends ComponentBuildEntry<T>
     @Override
     public boolean requiresPrototypeRequest() {
         return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected MethodHandle newMH(ServiceProvidingManager spm) {
-        Object instance = component.source.instance();
-        MethodHandle mh = MethodHandles.constant(instance.getClass(), component.source.instance());
-        return MethodHandles.dropArguments(mh, 0, Region.class);
     }
 
     @Override
