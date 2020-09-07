@@ -22,7 +22,7 @@ import app.packed.inject.ProvisionException;
 import packed.internal.component.Region;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceMode;
-import packed.internal.service.buildtime.service.ComponentFactoryBuildEntry;
+import packed.internal.service.buildtime.service.ComponentMethodHandleBuildEntry;
 import packed.internal.util.ThrowableUtil;
 
 /** A runtime service node for prototypes. */
@@ -41,7 +41,7 @@ public class PrototypeInjectorEntry<T> extends RuntimeEntry<T> {
     /**
      * @param node
      */
-    public PrototypeInjectorEntry(ComponentFactoryBuildEntry<T> node, ServiceExtensionInstantiationContext context) {
+    public PrototypeInjectorEntry(ComponentMethodHandleBuildEntry<T> node, ServiceExtensionInstantiationContext context) {
         super(node);
         this.ns = context.region;
         this.mh = node.newInstance;

@@ -22,7 +22,7 @@ import java.util.ArrayList;
 
 import app.packed.service.CyclicDependencyGraphException;
 import packed.internal.service.buildtime.BuildEntry;
-import packed.internal.service.buildtime.service.ComponentFactoryBuildEntry;
+import packed.internal.service.buildtime.service.ComponentMethodHandleBuildEntry;
 
 /** A utility class that can find cycles in a dependency graph. */
 
@@ -89,8 +89,8 @@ final class DependencyCycleDetector {
                 BuildEntry<?> to = dependency;
                 // If the dependency is a @Provides method, we need to use the declaring node
 
-                if (to.hasUnresolvedDependencies() && to instanceof ComponentFactoryBuildEntry) {
-                    ComponentFactoryBuildEntry<?> ic = (ComponentFactoryBuildEntry<?>) to;
+                if (to.hasUnresolvedDependencies() && to instanceof ComponentMethodHandleBuildEntry) {
+                    ComponentMethodHandleBuildEntry<?> ic = (ComponentMethodHandleBuildEntry<?>) to;
                     if (!ic.detectCycleVisited) {
                         dependencies.push(to);
                         // See if the component is already on the stack -> A cycle has been detected

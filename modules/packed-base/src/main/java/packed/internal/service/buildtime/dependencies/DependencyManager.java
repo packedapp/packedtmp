@@ -41,7 +41,7 @@ import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionNode;
-import packed.internal.service.buildtime.service.ComponentFactoryBuildEntry;
+import packed.internal.service.buildtime.service.ComponentMethodHandleBuildEntry;
 import packed.internal.service.buildtime.service.RuntimeAdaptorEntry;
 import packed.internal.service.runtime.ConstantInjectorEntry;
 
@@ -54,14 +54,16 @@ import packed.internal.service.runtime.ConstantInjectorEntry;
  */
 public final class DependencyManager {
 
-    /** The injector builder this manager belongs to. */
-    private final ServiceExtensionNode node;
+    /** A list of nodes to use when detecting dependency cycles. */
+    ArrayList<BuildEntry<?>> detectCyclesFor;
 
     /**
      * Explicit requirements, typically added via {@link ServiceExtension#require(Key...)} or
      * {@link ServiceExtension#requireOptionally(Key...)}.
      */
     final ArrayList<DependencyRequirement> explicitRequirements = new ArrayList<>();
+
+    private final IdentityHashMap<Class<? extends Extension>, BuildEntry<? extends Extension>> extensionEntries = new IdentityHashMap<>();
 
     /**
      * Whether or not the user must explicitly specify all required services. Via {@link ServiceExtension#require(Key...)},
@@ -73,8 +75,8 @@ public final class DependencyManager {
      */
     boolean manualRequirementsManagement;
 
-    /** A list of nodes to use when detecting dependency cycles. */
-    ArrayList<BuildEntry<?>> detectCyclesFor;
+    /** A list of all dependencies that have not been resolved */
+    private ArrayList<DependencyRequirement> missingDependencies;
 
     /** A set of all explicitly registered required service keys. */
     final HashSet<Key<?>> required = new HashSet<>();
@@ -82,96 +84,16 @@ public final class DependencyManager {
     /** A set of all explicitly registered optional service keys. */
     final HashSet<Key<?>> requiredOptionally = new HashSet<>();
 
+    public final LinkedHashMap<ServiceDependency, BuildEntry<?>> specials = new LinkedHashMap<>();
+
     /** A map of all dependencies that could not be resolved */
     IdentityHashMap<BuildEntry<?>, List<ServiceDependency>> unresolvedDependencies;
 
-    /** A list of all dependencies that have not been resolved */
-    private ArrayList<DependencyRequirement> missingDependencies;
-
-    public DependencyManager(ServiceExtensionNode node) {
-        this.node = requireNonNull(node);
-    }
-
-    /**
-     * Enables manual requirements management.
-     * 
-     * @see ServiceExtension#manualRequirementsManagement()
-     */
-    public void manualRequirementsManagement() {
-        manualRequirementsManagement = true;
-    }
-
-    /**
-     * Adds the specified dependency.
-     * 
-     * @param dependency
-     *            the service dependency
-     * @param configSite
-     *            the config site
-     * 
-     * @see ServiceExtension#require(Key...)
-     * @see ServiceExtension#requireOptionally(Key...)
-     */
-    public void require(ServiceDependency dependency, ConfigSite configSite) {
-        explicitRequirements.add(new DependencyRequirement(dependency, configSite));
-    }
-
     /** Also used for descriptors. */
-    public void analyze() {
+    public void analyze(ServiceExtensionNode node) {
         // If we do not export services into a bundle. We should be able to resolver much quicker..
-        resolveAllDependencies();
+        resolveAllDependencies(node);
         DependencyCycleDetector.dependencyCyclesDetect(detectCyclesFor);
-    }
-
-    private final IdentityHashMap<Class<? extends Extension>, BuildEntry<? extends Extension>> extensionEntries = new IdentityHashMap<>();
-
-    public final LinkedHashMap<ServiceDependency, BuildEntry<?>> specials = new LinkedHashMap<>();
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private void resolveAllDependencies() {
-        detectCyclesFor = new ArrayList<>();
-
-        for (BuildEntry<?> entry : node.resolvedEntries.values()) {
-            if (entry.hasUnresolvedDependencies()) {
-                detectCyclesFor.add(entry);
-                List<ServiceDependency> dependencies = entry.source.dependencies;
-                for (int i = entry.source.offset; i < dependencies.size(); i++) {
-                    ServiceDependency dependency = dependencies.get(i);
-                    BuildEntry<?> resolveTo = node.resolvedEntries.get(dependency.key());
-                    if (resolveTo == null) {
-                        Key<?> k = dependency.key();
-                        if (!k.hasQualifier()) {
-                            Class<?> rawType = k.typeLiteral().rawType();
-                            if (Wirelet.class.isAssignableFrom(rawType)) {
-                                // Fail if pipelined wirelet...
-                                BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
-                                        new ConstantInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "Ignore"));
-                                resolveTo = ben;
-                                specials.put(dependency, ben);
-                            }
-                            if (Extension.class.isAssignableFrom(rawType)) {
-                                if (entry instanceof ComponentFactoryBuildEntry) {
-                                    Optional<Class<? extends Extension>> op = ((ComponentFactoryBuildEntry) entry).component.extension();
-                                    if (op.isPresent()) {
-                                        Class<? extends Extension> cc = op.get();
-                                        if (cc == k.typeLiteral().type()) {
-                                            PackedExtensionConfiguration e = ((PackedExtensionConfiguration) node.context()).container().getContext(cc);
-                                            resolveTo = extensionEntries.computeIfAbsent(e.extensionType(), kk -> new RuntimeAdaptorEntry(node,
-                                                    new ConstantInjectorEntry<Extension>(ConfigSite.UNKNOWN, (Key) Key.of(e.extensionType()), e.instance())));
-
-                                        }
-                                    }
-                                }
-                            }
-
-                        }
-                    }
-                    recordResolvedDependency(entry, dependency, resolveTo, false);
-                    entry.source.resolvedDependencies[i] = resolveTo;
-                }
-            }
-        }
-        checkForMissingDependencies();
     }
 
     /**
@@ -189,34 +111,7 @@ public final class DependencyManager {
         }
     }
 
-    /**
-     * Record a dependency that could not be resolved
-     * 
-     * @param entry
-     * @param dependency
-     */
-    public void recordResolvedDependency(BuildEntry<?> entry, ServiceDependency dependency, @Nullable BuildEntry<?> resolvedTo, boolean fromParent) {
-        requireNonNull(entry);
-        requireNonNull(dependency);
-        if (resolvedTo != null) {
-            return;
-        }
-        ArrayList<DependencyRequirement> m = missingDependencies;
-        if (m == null) {
-            m = missingDependencies = new ArrayList<>();
-        }
-        m.add(new DependencyRequirement(dependency, entry));
-
-        if (node.dependencies == null || !node.dependencies.manualRequirementsManagement) {
-            if (dependency.isOptional()) {
-                requiredOptionally.add(dependency.key());
-            } else {
-                required.add(dependency.key());
-            }
-        }
-    }
-
-    public void checkForMissingDependencies() {
+    public void checkForMissingDependencies(ServiceExtensionNode node) {
         boolean manualRequirementsManagement = node.dependencies != null && node.dependencies.manualRequirementsManagement;
         if (missingDependencies != null) {
             // if (!box.source.unresolvedServicesAllowed()) {
@@ -269,8 +164,107 @@ public final class DependencyManager {
         }
     }
 
+    /**
+     * Enables manual requirements management.
+     * 
+     * @see ServiceExtension#manualRequirementsManagement()
+     */
+    public void manualRequirementsManagement() {
+        manualRequirementsManagement = true;
+    }
+
     public void recordMissingDependency(BuildEntry<?> entry, ServiceDependency dependency, boolean fromParent) {
 
+    }
+
+    /**
+     * Record a dependency that could not be resolved
+     * 
+     * @param entry
+     * @param dependency
+     */
+    public void recordResolvedDependency(ServiceExtensionNode node, BuildEntry<?> entry, ServiceDependency dependency, @Nullable BuildEntry<?> resolvedTo,
+            boolean fromParent) {
+        requireNonNull(entry);
+        requireNonNull(dependency);
+        if (resolvedTo != null) {
+            return;
+        }
+        ArrayList<DependencyRequirement> m = missingDependencies;
+        if (m == null) {
+            m = missingDependencies = new ArrayList<>();
+        }
+        m.add(new DependencyRequirement(dependency, entry));
+
+        if (node.dependencies == null || !node.dependencies.manualRequirementsManagement) {
+            if (dependency.isOptional()) {
+                requiredOptionally.add(dependency.key());
+            } else {
+                required.add(dependency.key());
+            }
+        }
+    }
+
+    /**
+     * Adds the specified dependency.
+     * 
+     * @param dependency
+     *            the service dependency
+     * @param configSite
+     *            the config site
+     * 
+     * @see ServiceExtension#require(Key...)
+     * @see ServiceExtension#requireOptionally(Key...)
+     */
+    public void require(ServiceDependency dependency, ConfigSite configSite) {
+        explicitRequirements.add(new DependencyRequirement(dependency, configSite));
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private void resolveAllDependencies(ServiceExtensionNode node) {
+        detectCyclesFor = new ArrayList<>();
+
+        for (BuildEntry<?> entry : node.resolvedEntries.values()) {
+            if (entry.hasUnresolvedDependencies()) {
+                detectCyclesFor.add(entry);
+                List<ServiceDependency> dependencies = entry.source.dependencies;
+                for (int i = entry.source.offset; i < dependencies.size(); i++) {
+                    ServiceDependency dependency = dependencies.get(i);
+                    BuildEntry<?> resolveTo = node.resolvedEntries.get(dependency.key());
+                    if (resolveTo == null) {
+                        Key<?> k = dependency.key();
+                        if (!k.hasQualifier()) {
+                            Class<?> rawType = k.typeLiteral().rawType();
+                            if (Wirelet.class.isAssignableFrom(rawType)) {
+                                // Fail if pipelined wirelet...
+                                BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
+                                        new ConstantInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "Ignore"));
+                                resolveTo = ben;
+                                specials.put(dependency, ben);
+                            }
+                            if (Extension.class.isAssignableFrom(rawType)) {
+                                if (entry instanceof ComponentMethodHandleBuildEntry) {
+                                    Optional<Class<? extends Extension>> op = ((ComponentMethodHandleBuildEntry) entry).component.extension();
+                                    if (op.isPresent()) {
+                                        Class<? extends Extension> cc = op.get();
+                                        if (cc == k.typeLiteral().type()) {
+                                            PackedExtensionConfiguration e = ((PackedExtensionConfiguration) node.context()).container().getContext(cc);
+                                            resolveTo = extensionEntries.computeIfAbsent(e.extensionType(), kk -> new RuntimeAdaptorEntry(node,
+                                                    new ConstantInjectorEntry<Extension>(ConfigSite.UNKNOWN, (Key) Key.of(e.extensionType()), e.instance())));
+
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                    recordResolvedDependency(node, entry, dependency, resolveTo, false);
+                    entry.source.resolvedDependencies[i] = resolveTo;
+                }
+            }
+        }
+        checkForMissingDependencies(node);
     }
 }
 //if (WireletPipeline.class.isAssignableFrom(rawType)) {

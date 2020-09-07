@@ -22,7 +22,7 @@ import java.util.ArrayDeque;
 import java.util.IdentityHashMap;
 
 import packed.internal.component.Region;
-import packed.internal.service.buildtime.service.ComponentFactoryBuildEntry;
+import packed.internal.service.buildtime.service.ComponentMethodHandleBuildEntry;
 import packed.internal.service.buildtime.service.ServiceProvidingManager;
 import packed.internal.service.runtime.RuntimeEntry;
 
@@ -31,7 +31,7 @@ public class ServiceExtensionInstantiationContext {
 
     public final Region region;
 
-    public final ArrayDeque<ComponentFactoryBuildEntry<?>> entriesToInstantiate = new ArrayDeque<>();
+    public final ArrayDeque<ComponentMethodHandleBuildEntry<?>> entriesToInstantiate = new ArrayDeque<>();
 
     public ServiceProvidingManager spm;
 

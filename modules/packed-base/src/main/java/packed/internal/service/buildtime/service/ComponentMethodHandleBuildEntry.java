@@ -39,7 +39,7 @@ import packed.internal.service.runtime.RuntimeEntry;
  * An entry representing a component node. This node is used for all three binding modes mainly because it makes
  * extending it with much easier.
  */
-public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildEntry<T> {
+public final class ComponentMethodHandleBuildEntry<T> extends ComponentBuildEntry<T> {
 
     public boolean hasInstanceMembers;
 
@@ -50,14 +50,14 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
     public final MethodHandle mha;
 
     // Is created for a @Provide method, uses the parent component
-    public ComponentFactoryBuildEntry(ConfigSite configSite, AtProvides atProvides, MethodHandle mh, AbstractComponentBuildEntry<?> parent) {
+    public ComponentMethodHandleBuildEntry(ConfigSite configSite, AtProvides atProvides, MethodHandle mh, ComponentBuildEntry<?> parent) {
         super(parent.node, configSite, atProvides.dependencies, atProvides.isStaticMember ? null : parent, parent.component,
                 atProvides.instantionMode == ServiceMode.PROTOTYPE);
         this.instantionMode = atProvides.instantionMode;
         this.mha = requireNonNull(mh);
     }
 
-    public ComponentFactoryBuildEntry(ServiceExtensionNode injectorBuilder, ComponentNodeConfiguration cc, ServiceMode instantionMode, MethodHandle mh,
+    public ComponentMethodHandleBuildEntry(ServiceExtensionNode injectorBuilder, ComponentNodeConfiguration cc, ServiceMode instantionMode, MethodHandle mh,
             List<ServiceDependency> dependencies, boolean isPrototype) {
         super(injectorBuilder, cc.configSite(), dependencies, null, cc, isPrototype);
         this.instantionMode = requireNonNull(instantionMode);
@@ -70,7 +70,7 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         return !source.dependencies.isEmpty();
     }
 
-    public ComponentFactoryBuildEntry<T> instantiateAs(ServiceMode mode) {
+    public ComponentMethodHandleBuildEntry<T> instantiateAs(ServiceMode mode) {
         requireNonNull(mode, "mode is null");
         this.instantionMode = mode;
         return this;
@@ -146,8 +146,8 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
                 adjust++;
 //                System.out.println("NEW MH " + mh);
 //                System.out.println();
-            } else if (e instanceof ComponentFactoryBuildEntry) {
-                ComponentFactoryBuildEntry<?> c = (ComponentFactoryBuildEntry<?>) e;
+            } else if (e instanceof ComponentMethodHandleBuildEntry) {
+                ComponentMethodHandleBuildEntry<?> c = (ComponentMethodHandleBuildEntry<?>) e;
                 MethodHandle collect = c.toMH(context);
 //                System.out.println("____INSERTING INTO " + mh + "  -  " + collect);
 

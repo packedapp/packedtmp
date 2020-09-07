@@ -55,7 +55,7 @@ public final class ServiceProvidingManager {
 
     public final IdentityHashMap<BuildEntry<?>, MethodHandle> handlers = new IdentityHashMap<>();
 
-    public final ArrayDeque<ComponentFactoryBuildEntry<?>> mustInstantiate = new ArrayDeque<>();
+    public final ArrayDeque<ComponentMethodHandleBuildEntry<?>> mustInstantiate = new ArrayDeque<>();
 
     /** The extension node. */
     private final ServiceExtensionNode node;
@@ -86,13 +86,13 @@ public final class ServiceProvidingManager {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void addProvidesHook(AtProvidesHook hook, ComponentNodeConfiguration cc) {
-        AbstractComponentBuildEntry<?> parent = cc.source.provideForHooks(node, hook);
+        ComponentBuildEntry<?> parent = cc.source.provideForHooks(node, hook);
 
         // Add each @Provide as children of the parent node
         for (AtProvides atProvides : hook.members) {
             ConfigSite configSite = parent.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, atProvides.provides,
                     atProvides.member);
-            ComponentFactoryBuildEntry<?> node = new ComponentFactoryBuildEntry<>(configSite, atProvides, atProvides.methodHandle, parent);
+            ComponentMethodHandleBuildEntry<?> node = new ComponentMethodHandleBuildEntry<>(configSite, atProvides, atProvides.methodHandle, parent);
             node.as((Key) atProvides.key);
             providingEntries.add(node);
         }

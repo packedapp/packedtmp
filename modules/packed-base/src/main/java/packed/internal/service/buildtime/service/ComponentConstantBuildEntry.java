@@ -30,7 +30,7 @@ import packed.internal.service.runtime.RuntimeEntry;
 /**
  *
  */
-public final class ComponentConstantBuildEntry<T> extends AbstractComponentBuildEntry<T> {
+public final class ComponentConstantBuildEntry<T> extends ComponentBuildEntry<T> {
 
     /**
      * Creates a new node from an instance.

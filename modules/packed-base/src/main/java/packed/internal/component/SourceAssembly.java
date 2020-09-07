@@ -27,10 +27,10 @@ import packed.internal.inject.factory.BaseFactory;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.ServiceMode;
-import packed.internal.service.buildtime.service.AbstractComponentBuildEntry;
+import packed.internal.service.buildtime.service.ComponentBuildEntry;
 import packed.internal.service.buildtime.service.AtProvidesHook;
 import packed.internal.service.buildtime.service.ComponentConstantBuildEntry;
-import packed.internal.service.buildtime.service.ComponentFactoryBuildEntry;
+import packed.internal.service.buildtime.service.ComponentMethodHandleBuildEntry;
 
 /**
  * All components that have a {@link ComponentModifier#SOURCED} modifier has an instance of this class.
@@ -102,7 +102,7 @@ public class SourceAssembly {
             BuildEntry<?> c = buildEntry;
             if (c == null) {
                 List<ServiceDependency> dependencies = scd.factory.factory.dependencies;
-                c = new ComponentFactoryBuildEntry<>(node, conf, ServiceMode.CONSTANT, scd.fromFactory(conf), (List) dependencies, false);
+                c = new ComponentMethodHandleBuildEntry<>(node, conf, ServiceMode.CONSTANT, scd.fromFactory(conf), (List) dependencies, false);
             }
             c.as(scd.factory.key());
             return c;
@@ -110,19 +110,19 @@ public class SourceAssembly {
     }
 
     // Always invoked before other provides....
-    public AbstractComponentBuildEntry<?> provideForHooks(ServiceExtensionNode node, AtProvidesHook hook) {
-        AbstractComponentBuildEntry entry;
+    public ComponentBuildEntry<?> provideForHooks(ServiceExtensionNode node, AtProvidesHook hook) {
+        ComponentBuildEntry entry;
         if (hasInstance()) {
             entry = new ComponentConstantBuildEntry<>(node, conf);
         } else {
             SingletonComponentDriver driver = (SingletonComponentDriver) conf.driver();
             BaseFactory<?> factory = driver.factory;
             List<ServiceDependency> dependencies = factory.factory.dependencies;
-            entry = new ComponentFactoryBuildEntry<>(node, conf, ServiceMode.CONSTANT, driver.fromFactory(conf), dependencies, false);
+            entry = new ComponentMethodHandleBuildEntry<>(node, conf, ServiceMode.CONSTANT, driver.fromFactory(conf), dependencies, false);
 
             // If any of the @Provide methods are instance members the parent node needs special treatment.
             // As it needs to be constructed, before the field or method can provide services.
-            ((ComponentFactoryBuildEntry) entry).hasInstanceMembers = hook.hasInstanceMembers;
+            ((ComponentMethodHandleBuildEntry) entry).hasInstanceMembers = hook.hasInstanceMembers;
         }
         // Set the parent node, so it can be found from provideFactory or provideInstance
         buildEntry = entry;
@@ -135,9 +135,9 @@ public class SourceAssembly {
         BuildEntry<?> c = buildEntry;
         if (c == null) {
             List<ServiceDependency> dependencies = scd.factory.factory.dependencies;
-            c = new ComponentFactoryBuildEntry<>(node, conf, ServiceMode.CONSTANT, scd.fromFactory(conf), (List) dependencies, true);
+            c = new ComponentMethodHandleBuildEntry<>(node, conf, ServiceMode.CONSTANT, scd.fromFactory(conf), (List) dependencies, true);
         }
-        ComponentFactoryBuildEntry e = (ComponentFactoryBuildEntry) c;
+        ComponentMethodHandleBuildEntry e = (ComponentMethodHandleBuildEntry) c;
         // Vi burde kunne styre det
         e.prototype();
         c.as(scd.factory.key());

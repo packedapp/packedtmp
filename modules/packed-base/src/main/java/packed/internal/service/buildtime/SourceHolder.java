@@ -17,12 +17,13 @@ package packed.internal.service.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.util.List;
 
 import app.packed.base.Nullable;
 import app.packed.inject.ProvidePrototypeContext;
 import packed.internal.inject.ServiceDependency;
-import packed.internal.service.buildtime.service.AbstractComponentBuildEntry;
+import packed.internal.service.buildtime.service.ComponentBuildEntry;
 import packed.internal.util.KeyBuilder;
 
 /**
@@ -44,7 +45,9 @@ public class SourceHolder {
 
     public final int offset;
 
-    public SourceHolder(List<ServiceDependency> dependencies, @Nullable AbstractComponentBuildEntry<?> declaringEntry) {
+    public MethodHandle mh;
+
+    public SourceHolder(List<ServiceDependency> dependencies, @Nullable ComponentBuildEntry<?> declaringEntry) {
         this.dependencies = requireNonNull(dependencies);
         int depSize = dependencies.size();
 

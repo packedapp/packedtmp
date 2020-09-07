@@ -36,7 +36,7 @@ import packed.internal.component.wirelet.WireletPack;
 import packed.internal.service.buildtime.dependencies.DependencyManager;
 import packed.internal.service.buildtime.export.ExportManager;
 import packed.internal.service.buildtime.export.ExportedBuildEntry;
-import packed.internal.service.buildtime.service.ComponentFactoryBuildEntry;
+import packed.internal.service.buildtime.service.ComponentMethodHandleBuildEntry;
 import packed.internal.service.buildtime.service.ServiceProvidingManager;
 import packed.internal.service.runtime.PackedInjector;
 import packed.internal.service.runtime.RuntimeEntry;
@@ -123,7 +123,7 @@ public final class ServiceExtensionNode {
         if (hasFailed) {
             return;
         }
-        dependencies().analyze();
+        dependencies().analyze(this);
 
         provider().resolveMH();
     }
@@ -145,7 +145,7 @@ public final class ServiceExtensionNode {
     public DependencyManager dependencies() {
         DependencyManager d = dependencies;
         if (d == null) {
-            d = dependencies = new DependencyManager(this);
+            d = dependencies = new DependencyManager();
         }
         return d;
     }
@@ -201,7 +201,7 @@ public final class ServiceExtensionNode {
 //        }
 //        System.out.println("-----------------");
 
-        for (ComponentFactoryBuildEntry<?> e : provider.mustInstantiate) {
+        for (ComponentMethodHandleBuildEntry<?> e : provider.mustInstantiate) {
             if (e.component.source.singletonIndex > -1) {
                 MethodHandle mh = e.newInstance;
                 // System.out.println("INST " + mh.type().returnType());
@@ -230,8 +230,8 @@ public final class ServiceExtensionNode {
         for (BuildEntry<?> node : resolvedEntries.values()) {
             // MethodHandle mh = node.toMH(con);
             // System.out.println(mh);
-            if (node instanceof ComponentFactoryBuildEntry) {
-                ComponentFactoryBuildEntry<?> s = (ComponentFactoryBuildEntry<?>) node;
+            if (node instanceof ComponentMethodHandleBuildEntry) {
+                ComponentMethodHandleBuildEntry<?> s = (ComponentMethodHandleBuildEntry<?>) node;
                 if (s.instantiationMode() == ServiceMode.CONSTANT) {
                     s.toRuntimeEntry(con).getInstance(null);
                 }

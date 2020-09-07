@@ -127,6 +127,8 @@ public final class ServiceWirelets {
     // throw new UnsupportedOperationException();
     // }
 
+    // Hmmm, syntes egentlig ikke man kan bruge den her...
+    // IDK
     public static <T> Wirelet provide(Factory0<T> factory) {
         throw new UnsupportedOperationException();
     }
