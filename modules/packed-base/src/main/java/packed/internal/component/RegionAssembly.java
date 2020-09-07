@@ -32,7 +32,7 @@ public class RegionAssembly {
 
     final ComponentNodeConfiguration configuration; // do we need this??
 
-    private final ArrayList<SourceAssembly> instances = new ArrayList<>();
+    private final ArrayList<SourceAssembly> constantSources = new ArrayList<>();
 
     private final ArrayList<SourceAssembly> sources = new ArrayList<>();
 
@@ -44,14 +44,16 @@ public class RegionAssembly {
         Region region = new Region(index);
 
         if (root.modifiers().isGuest()) {
-            region.store[0] = new PackedGuest(null);
+            region.store(0, new PackedGuest(null));
         }
-        // Set all instances first...
-        for (SourceAssembly sa : instances) {
-            region.store[sa.singletonIndex] = sa.instance();
+
+        // We start by storing all constant sources in the array
+        for (SourceAssembly sa : constantSources) {
+            region.store(sa.singletonIndex, sa.instance());
         }
 
         for (SourceAssembly sa : sources) {
+            System.out.println("SDSDS");
             sa.initSource(region);
         }
 
@@ -60,24 +62,24 @@ public class RegionAssembly {
         int registryIndex = root.modifiers().isGuest() ? 1 : 0;
         ServiceExtensionNode node = container.se;
         if (node != null) {
-            region.store[registryIndex] = node.instantiateEverything(region, pic.wirelets());
+            region.store(registryIndex, node.instantiateEverything(region, pic.wirelets()));
         } else {
-            region.store[registryIndex] = ServiceRegistry.empty();
+            region.store(registryIndex, ServiceRegistry.empty());
         }
 
         return region;
     }
 
-    void addSourced() {
-
-    }
-
     public SourceAssembly addSourced(ComponentNodeConfiguration cnc) {
         SourceAssembly sa = new SourceAssembly(cnc, cnc.driver);
         if (sa.hasInstance()) {
-            instances.add(sa);
+            constantSources.add(sa);
         }
         return sa;
+    }
+
+    public void close() {
+        System.out.println("Closing region");
     }
 
     public int reserve() {

@@ -107,12 +107,7 @@ public final class PackedInitializationContext {
     public static PackedInitializationContext initialize(ComponentNodeConfiguration root) {
         PackedInitializationContext ic = new PackedInitializationContext(root.wirelets);
         ic.node = root.instantiateTree(ic);
-        System.out.println("--");
-        for (int i = 0; i < ic.node.region.store.length; i++) {
-            System.out.println(i + " = " + ic.node.region.store[i]);
-        }
-
-        System.out.println("--");
+        ic.node.region.print();
         return ic;
     }
 

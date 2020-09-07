@@ -31,7 +31,7 @@ public final class Region {
 
     static final MethodHandle MH_GET_SINGLETON_INSTANCE = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "getSingletonInstance", Object.class, int.class);
 
-    final Object[] store;
+    private final Object[] store;
 
     Region(int i) {
         store = new Object[i];
@@ -39,6 +39,15 @@ public final class Region {
 
     public Object getSingletonInstance(int index) {
         return store[index];
+    }
+
+    public void print() {
+        System.out.println("--");
+        for (int i = 0; i < store.length; i++) {
+            System.out.println(i + " = " + store[i]);
+        }
+
+        System.out.println("--");
     }
 
     // Don't know
@@ -50,7 +59,10 @@ public final class Region {
         return (ServiceRegistry) store[node.modifiers().isGuest() ? 1 : 0];
     }
 
-    public void storeSingleton(int index, Object instance) {
+    public void store(int index, Object instance) {
+        if (store[index] != null) {
+            throw new IllegalStateException();
+        }
         store[index] = instance;
     }
 

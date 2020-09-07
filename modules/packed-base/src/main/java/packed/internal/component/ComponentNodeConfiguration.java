@@ -324,6 +324,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         if (container != null) {
             container.advanceTo(ContainerAssembly.LS_3_FINISHED);
         }
+        region.close();
         return this;
     }
 

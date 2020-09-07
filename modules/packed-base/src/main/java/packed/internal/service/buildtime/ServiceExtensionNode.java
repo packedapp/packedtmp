@@ -211,14 +211,14 @@ public final class ServiceExtensionNode {
                 } catch (Throwable e1) {
                     throw ThrowableUtil.orUndeclared(e1);
                 }
-                con.region.storeSingleton(e.component.source.singletonIndex, instance);
+                con.region.store(e.component.source.singletonIndex, instance);
             }
         }
-        for (var e : resolvedEntries.entrySet()) {
-            if (e.getKey() != null) { // only services... should be put there
-                // runtimeEntries.put(e.getKey(), e.getValue().toRuntimeEntry(con));
-            }
-        }
+//        for (var e : resolvedEntries.entrySet()) {
+//            if (e.getKey() != null) { // only services... should be put there
+//                // runtimeEntries.put(e.getKey(), e.getValue().toRuntimeEntry(con));
+//            }
+//        }
         for (var e : exports()) {
             runtimeEntries.put(e.key, e.toRuntimeEntry(con));
         }

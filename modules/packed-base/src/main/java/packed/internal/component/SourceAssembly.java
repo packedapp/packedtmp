@@ -79,7 +79,7 @@ public class SourceAssembly {
     public void initSource(Region ns) {
         if (singletonIndex >= 0) {
             if (hasInstance()) {
-                ns.storeSingleton(singletonIndex, instance());
+                ns.store(singletonIndex, instance());
             }
         }
     }

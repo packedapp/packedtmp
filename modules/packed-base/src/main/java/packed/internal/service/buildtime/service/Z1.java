@@ -27,7 +27,7 @@ public class Z1 extends BaseBundle {
     @Override
     protected void configure() {
         provideInstance(123);
-        install(Dx.class);
+        provide(Dx.class);
         export(Integer.class);
     }
 
@@ -41,6 +41,12 @@ public class Z1 extends BaseBundle {
 
     public static class Dx {
         public Dx(Integer x) {
+            System.out.println("Instantiated");
+        }
+    }
+
+    public static class DxString {
+        public DxString(String x) {
             System.out.println("Instantiated");
         }
     }
