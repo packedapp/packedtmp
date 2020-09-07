@@ -17,13 +17,13 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.util.List;
 
 import app.packed.base.Key;
 import app.packed.component.ComponentModifier;
 import packed.internal.component.PackedWireableComponentDriver.SingletonComponentDriver;
 import packed.internal.inject.ServiceDependency;
-import packed.internal.inject.factory.BaseFactory;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.ServiceMode;
@@ -44,18 +44,29 @@ public class SourceAssembly {
 
     final ComponentNodeConfiguration conf;
 
+    List<ServiceDependency> dependencies;
     // We store the index, but cannot store the instance.. Because
     // The assembly can be used multiple times for initialization.
     public final int singletonIndex;
 
+    MethodHandle mh;
+
     SourceAssembly(ComponentNodeConfiguration node, PackedWireableComponentDriver<?> driver) {
         this.driver = requireNonNull(driver);
         this.conf = requireNonNull(node);
+        List<ServiceDependency> dependencies = null;
         if (driver instanceof SingletonComponentDriver<?>) {
+            SingletonComponentDriver<?> d = (SingletonComponentDriver<?>) driver;
             singletonIndex = node.region.reserve();
+            if (!hasInstance()) {
+                dependencies = d.factory.factory.dependencies;
+                mh = d.fromFactory(node);
+                System.out.println("DEPENDENCIES " + dependencies);
+            }
         } else {
             singletonIndex = -1;
         }
+        this.dependencies = dependencies;
     }
 
     boolean hasInstance() {
@@ -85,28 +96,18 @@ public class SourceAssembly {
     }
 
     public BuildEntry<?> provide(ServiceExtensionNode node) {
-        if (hasInstance()) {
-            // First see if we have already installed the node. This happens in #set if the component container any members
-            // annotated with @Provides
-
-            BuildEntry<?> c = buildEntry;
-            if (c == null) {
-                // No node found, components has no @Provides method, create a new node
-                buildEntry = c = new ComponentConstantBuildEntry<>(node, conf);
+        BuildEntry<?> c = buildEntry;
+        if (c == null) {
+            if (hasInstance()) {
+                c = new ComponentConstantBuildEntry<>(node, conf);
+                c.as((Key) Key.of(conf.driver().sourceType()));
+            } else {
+                SingletonComponentDriver scd = (SingletonComponentDriver) driver;
+                c = new ComponentMethodHandleBuildEntry<>(node, conf, ServiceMode.CONSTANT, mh, dependencies);
+                c.as(scd.factory.key());
             }
-
-            c.as((Key) Key.of(conf.driver().sourceType()));
-            return c;
-        } else {
-            SingletonComponentDriver scd = (SingletonComponentDriver) driver;
-            BuildEntry<?> c = buildEntry;
-            if (c == null) {
-                List<ServiceDependency> dependencies = scd.factory.factory.dependencies;
-                c = new ComponentMethodHandleBuildEntry<>(node, conf, ServiceMode.CONSTANT, scd.fromFactory(conf), (List) dependencies);
-            }
-            c.as(scd.factory.key());
-            return c;
         }
+        return c;
     }
 
     // Always invoked before other provides....
@@ -115,11 +116,8 @@ public class SourceAssembly {
         if (hasInstance()) {
             entry = new ComponentConstantBuildEntry<>(node, conf);
         } else {
-            SingletonComponentDriver driver = (SingletonComponentDriver) conf.driver();
             // ServiceMode.constant needs to reflect the driver type
-            BaseFactory<?> factory = driver.factory;
-            List<ServiceDependency> dependencies = factory.factory.dependencies;
-            entry = new ComponentMethodHandleBuildEntry<>(node, conf, ServiceMode.CONSTANT, driver.fromFactory(conf), dependencies);
+            entry = new ComponentMethodHandleBuildEntry<>(node, conf, ServiceMode.CONSTANT, mh, dependencies);
 
             // If any of the @Provide methods are instance members the parent node needs special treatment.
             // As it needs to be constructed, before the field or method can provide services.
@@ -137,8 +135,7 @@ public class SourceAssembly {
         SingletonComponentDriver scd = (SingletonComponentDriver) driver;
         BuildEntry<?> c = buildEntry;
         if (c == null) {
-            List<ServiceDependency> dependencies = scd.factory.factory.dependencies;
-            c = new ComponentMethodHandleBuildEntry<>(node, conf, ServiceMode.PROTOTYPE, scd.fromFactory(conf), (List) dependencies);
+            c = new ComponentMethodHandleBuildEntry<>(node, conf, ServiceMode.PROTOTYPE, mh, dependencies);
         }
         c.as(scd.factory.key());
         return c;
