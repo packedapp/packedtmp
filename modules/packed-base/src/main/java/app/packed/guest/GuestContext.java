@@ -15,6 +15,7 @@
  */
 package app.packed.guest;
 
+import app.packed.component.Component;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.ComponentPath;
 
@@ -30,6 +31,9 @@ import app.packed.component.ComponentPath;
 // Guest Context er kun noget med start/stop, restart osv at goere...
 
 // Ideen var at man kunne injecte den i componenter...
+
+// Altsaa eneste problem er. Vil vi virkelig gerne have
+// At f.eks. extensions kan stoppe en container de er deployet i???
 public interface GuestContext {
 
     ComponentPath path();
@@ -39,7 +43,14 @@ public interface GuestContext {
      * 
      * @return a set of modifiers
      */
-    ComponentModifierSet modifiers();
+    ComponentModifierSet modifiers(); // Or should we just return the guest???
+
+    /**
+     * Returns the guest component.
+     * 
+     * @return the guest component
+     */
+    Component guest();
 }
 //info
 

@@ -17,7 +17,7 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import packed.internal.container.PackedContainerAssembly;
+import packed.internal.container.ContainerAssembly;
 
 /**
  * An extension that is always available from any container. Even while the Every other extension implicitly has this
@@ -34,7 +34,7 @@ import packed.internal.container.PackedContainerAssembly;
 public final class BaseExtension extends Extension {
 
     /** The container configuration. This extension is the only extension that can use it. */
-    private final PackedContainerAssembly container;
+    private final ContainerAssembly container;
 
     /**
      * Creates a new base extension.
@@ -42,7 +42,7 @@ public final class BaseExtension extends Extension {
      * @param container
      *            the configuration of the container.
      */
-    /* package-private */ BaseExtension(PackedContainerAssembly container) {
+    /* package-private */ BaseExtension(ContainerAssembly container) {
         this.container = requireNonNull(container, "container is null");
     }
 

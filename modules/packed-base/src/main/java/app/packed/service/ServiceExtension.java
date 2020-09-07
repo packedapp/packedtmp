@@ -394,8 +394,6 @@ public final class ServiceExtension extends Extension {
         }
     }
 
-    // Should be Optional<Pipeline>...
-
     public void requireOptionally(Class<?>... keys) {
         throw new UnsupportedOperationException();
     }

@@ -17,50 +17,34 @@ package app.packed.guest;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 import app.packed.component.App;
 import app.packed.component.Bundle;
+import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
+import app.packed.guest.Guest.GuestStopOption;
 
 /**
- * Wirelets that can be used when wiring containers. For example, via {@link App#start(Bundle, Wirelet...)}
+ * Wirelets that can be used when wiring guest. For example, via {@link App#start(Bundle, Wirelet...)}.
+ * <p>
+ * All wirelets on this class requires the {@link ComponentModifier#GUEST} modifier on the component being wired.
  */
-
-// InvalidWireletScopeExtension extends IAE
-// InvalidWireletApplicationException -> Thrown when trying to apply a wirelet in a situation where it cannot be used
-
-// Do we allow them in Image????
-// I don't see why not... So
-//// Taenker ikke det er App. maaske Lifecycle wirelets....
-// Isaer hvis App er en wrapper over en masse ting...
-
-// LifecycleExtension refererer til en container!
 
 //Runables -> InVirtualThread
 
 // Take a ThreadBuilder???
 
-// GuestWirelets?????
+// Methods for adding timestamps/durations on states
+// Det er jo en slags state machine historik...
+// Maaske noget generisks???
+
 public interface GuestWirelets {
 
-    /**
-     * @param state
-     *            the state
-     * @param task
-     *            the task to run
-     * @return the new wirelet
-     */
-    // How are exceptions handled???
-    // I think the container should be shutdown...
-    // Alternative is to print the exception
-
-    // Users should execute
-
-    // Maybe its not a task... More like a callback
-    static Wirelet entering(GuestState state, Runnable task) {
+    // after which the guest will be shutdown normally
+    static Wirelet deadline(Instant deadline, GuestStopOption... options) {
+        // Shuts down container normally
         throw new UnsupportedOperationException();
     }
 
@@ -88,9 +72,24 @@ public interface GuestWirelets {
 //        throw new UnsupportedOperationException();
 //    }
 
-    // after which the guest will be shutdown normally
-    static Wirelet deadline(Instant deadline) {
-        // Shuts down container normally
+    /**
+     * @param state
+     *            the state
+     * @param task
+     *            the task to run
+     * @return the new wirelet
+     */
+    // How are exceptions handled???
+    // I think the container should be shutdown...
+    // Alternative is to print the exception
+
+    // Users should execute
+
+    // Maybe its not a task... More like a callback
+
+    // Runnig on the initializaiob/starting/stopping thread
+
+    static Wirelet on(GuestState state, Runnable task) {
         throw new UnsupportedOperationException();
     }
 
@@ -100,15 +99,29 @@ public interface GuestWirelets {
     // Vi skal lige sikre os at det ikke bliver installeret
     // Foerend vi er fuldt initialiseret. Da vi ikke supportere
     // Fremmede traade der kalder ind paa os naar vi bygger.
-    static Wirelet shutdownHook() {
+
+    // Runtime.addShutdownHook will be invoked immediatly before
+    static Wirelet shutdownHook(Function<Runnable, Thread> threadFactory, Guest.GuestStopOption... options) {
         throw new UnsupportedOperationException();
     }
 
-    static Wirelet shutdownHook(Supplier<? extends Throwable> withException) {
+    /**
+     * Returns a wirelet that will stop a guest
+     * 
+     * @return the new wirelet
+     *
+     * @see Runtime#addShutdownHook(Thread)
+     */
+    static Wirelet shutdownHook(Guest.GuestStopOption... options) {
         throw new UnsupportedOperationException();
     }
 
-    static Wirelet timeToLive(Duration duration) {
+    // excludes start?? IDK
+    static Wirelet timeToRun(Duration duration, Guest.GuestStopOption... options) {
+        throw new UnsupportedOperationException();
+    }
+
+    static Wirelet timeToLive(Duration duration, Guest.GuestStopOption... options) {
         // Duration is from Running transitioning...
         // Shuts down container normally
         throw new UnsupportedOperationException();
@@ -136,13 +149,25 @@ public interface GuestWirelets {
 
     // allowForLink() returns false // check(WireletPosition) <- if (wp == link -> throw new X)
 
-    static Wirelet timeToLive(long timeout, TimeUnit unit) {
-        return timeToLive(Duration.of(timeout, unit.toChronoUnit()));
+    static Wirelet timeToLive(long timeout, TimeUnit unit, Guest.GuestStopOption... options) {
+        return timeToLive(Duration.of(timeout, unit.toChronoUnit()), options);
     }
 
-    static Wirelet timeToLive(long timeout, TimeUnit unit, Supplier<Throwable> supplier) {
-        timeToLive(10, TimeUnit.SECONDS, () -> new CancellationException());
-        // Alternativ, kan man wrappe dem i f.eks. WiringOperation.requireExecutionMode();
-        throw new UnsupportedOperationException();
-    }
+//    private static Wirelet timeToLive(long timeout, TimeUnit unit, Supplier<Throwable> supplier) {
+//        timeToLive(10, TimeUnit.SECONDS, GuestStopOption.erroneous(() -> new CancellationException()));
+//        // Alternativ, kan man wrappe dem i f.eks. WiringOperation.requireExecutionMode();
+//        throw new UnsupportedOperationException();
+//    }
 }
+//Friday, 28 August 2020
+//18:36
+//
+//The default is to only construct the first guest of a system...
+//Same with start. Only the 1st guest...
+//
+//
+//Unless 
+//GuestWirelet.initializeWithParent();
+//GuestWirelet.initializeWithParentAsync();
+//GuestWirelet.startWithParent()
+//GuestWirelet.startWithParentAsync();  <--- Async start these 25 guests...

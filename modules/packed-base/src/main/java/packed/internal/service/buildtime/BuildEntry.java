@@ -26,7 +26,7 @@ import app.packed.config.ConfigSite;
 import app.packed.inject.Provide;
 import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.Service;
-import packed.internal.component.NodeStore;
+import packed.internal.component.Region;
 import packed.internal.service.buildtime.service.ServiceProvidingManager;
 import packed.internal.service.runtime.RuntimeEntry;
 
@@ -144,7 +144,7 @@ public abstract class BuildEntry<T> {
     public final MethodHandle toMH(ServiceProvidingManager spm) {
         return spm.handlers.computeIfAbsent(this, k -> {
             MethodHandle mh = k.newMH(spm);
-            if (!mh.type().parameterList().equals(List.of(NodeStore.class))) {
+            if (!mh.type().parameterList().equals(List.of(Region.class))) {
                 throw new IllegalStateException("Must create node type of " + mh + " for " + getClass());
             }
             return mh;

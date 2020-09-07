@@ -54,7 +54,7 @@ public final class RuntimeComponentModel {
     final int modifiers;
 
     RuntimeComponentModel(ComponentNodeConfiguration context) {
-        this.depth = context.depth;
+        this.depth = context.treeDepth;
         this.configSite = requireNonNull(context.configSite());
         this.extension = context.extension();
         this.driver = context.driver();

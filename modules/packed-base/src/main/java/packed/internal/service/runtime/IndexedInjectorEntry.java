@@ -18,7 +18,7 @@ package packed.internal.service.runtime;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.inject.ProvidePrototypeContext;
-import packed.internal.component.NodeStore;
+import packed.internal.component.Region;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceMode;
 
@@ -26,7 +26,7 @@ import packed.internal.service.buildtime.ServiceMode;
 // Can't implement both ServiceDescriptor and Provider...
 public final class IndexedInjectorEntry<T> extends RuntimeEntry<T> {
 
-    private final NodeStore ns;
+    private final Region ns;
 
     private final int index;
 
@@ -36,7 +36,7 @@ public final class IndexedInjectorEntry<T> extends RuntimeEntry<T> {
      * @param entry
      *            the build entry to create this entry from
      */
-    public IndexedInjectorEntry(BuildEntry<T> entry, NodeStore ns, int index) {
+    public IndexedInjectorEntry(BuildEntry<T> entry, Region ns, int index) {
         super(entry);
         this.ns = requireNonNull(ns);
         this.index = index;

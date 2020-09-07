@@ -16,7 +16,7 @@
 package app.packed.guest;
 
 /**
- * An enum containing all valid run states.
+ * An enum containing all valid states of a {@link Guest}.
  *
  * There are 3 <b>steady</b> states: {@link #INITIALIZED}, {@link #RUNNING} and {@link #TERMINATED}.
  *
@@ -27,6 +27,8 @@ package app.packed.guest;
  * {@link #INITIALIZED} state to {@link #STARTING} state. Intermediate states on the other hand normally transitions
  * "automatically". That is, when all the startup code has been successfully executed. The object will automatically
  * transition to the {@link #RUNNING} state without the user having to do anything.
+ * <p>
+ * This enum does not contain information about whether or not a guest is restarted.
  */
 // Failure on Initializain -> Stopping or Terminated?
 // Stop called on Initialized -> Stopping or Terminated? (should be same as above)
@@ -35,54 +37,58 @@ package app.packed.guest;
 
 // Det betyder maaske ogsaa at restart ikke er en del
 
-// RuntimeState 
+// TODO jeg tror vi meget bedre kan beskrive det her naar vi har fundet ud af det med state machines
+// Fx, hvad vil det sige at stoppe?? Det vil sige at terminere alle state machines der koere ind i den.
+// Managed Resource
 public enum GuestState {
 
     /**
-     * The initial state in the lifecycle of an entity. This state is typically used for reading and validating the
-     * configuration of the entity. Throwing an exception or error if some invariant is broken. If the entity successfully
-     * finishes the initialization phase, it will move to the {@link #INITIALIZED} state. If it fails, it will move to the
-     * {@link #TERMINATED} state.
+     * The initial state of a guest. This state is typically used for reading and validating the configuration of the guest.
+     * Throwing an exception or error if some invariant is broken.
+     * <p>
+     * If the guest is successfully finishes the initialization phase, it will move to the {@link #INITIALIZED} state. If it
+     * fails, it will move to the {@link #TERMINATED} state.
      */
     INITIALIZING,
 
     /**
-     * This state indicating that the entity has been successfully initialized.
+     * This state indicates that the guest has completed the {@link #INITIALIZING} phase successfully.
      * <p>
-     * The entity will remain in this state until it is started by an external action of some kind. For example, if a user
-     * calls some kind of {@code start} function. After which the state of entity transitions to the {@link #STARTING}
-     * state.
+     * The guest will remain in this state until it is started. For example, by the user calling {@link Guest#start()}.
+     * After which the guest will transition to the {@link #STARTING} state.
      */
     INITIALIZED,
 
     /**
-     * The entity has been started by some external action. However, all components have not yet completed startup. When all
-     * components have been properly started the container will transition to the {@link #RUNNING} state. If any component
-     * fails to start up properly. The container will automatically shutdown and move to the {@link #STOPPING} phase.
+     * Indicates that the guest has been started, for example, by the user calling {@link Guest#start()}. However, all
+     * components have not yet completed startup. When all components have been properly started the container will
+     * transition to the {@link #RUNNING} state. If any component fails to start up properly. The container will
+     * automatically shutdown and move to the {@link #STOPPING} phase.
      */
     STARTING,
 
     /**
-     * The entity is running normally. The entity will remain in this state until it is shutdown by some kind of external
-     * action, after which it will transition to the {@link #STOPPING} state.
+     * The guest is running normally. The guest will remain in this state until it is shutdown, for example, by the user
+     * calling {@link Guest#stop(app.packed.guest.Guest.GuestStopOption...)}. After which it will transition to the
+     * {@link #STOPPING} state.
      */
     RUNNING,
 
     /**
-     * The entity is currently in the process of being stopped. When the entity has been completely stopped it will
-     * transition to the {@link #TERMINATED} state.
+     * The guest is currently in the process of being stopped. When the guest has been completely stopped it will transition
+     * to the {@link #TERMINATED} state.
      */
     STOPPING,
 
-    /** The final lifecycle state of an entity. Once it reaches this state it will never transition to any other state. */
+    /** The final lifecycle state of an guest. Once it reaches this state it will never transition to any other state. */
     TERMINATED;
 
     /**
-     * Returns true if the entity is in any of the specified states, otherwise false.
+     * Returns true if the guest is in any of the specified states, otherwise false.
      *
      * @param states
-     *            the states to check
-     * @return true if the entity is in any of the specified states, otherwise false
+     *            the states to test against
+     * @return true if the guest is in any of the specified states, otherwise false
      */
     public boolean isAnyOf(GuestState... states) {
         for (GuestState s : states) {
@@ -94,9 +100,9 @@ public enum GuestState {
     }
 
     /**
-     * Returns true if the entity has been shut down (in the {@link #STOPPING} or {@link #TERMINATED} state).
+     * Returns true if the guest has been shut down (in the {@link #STOPPING} or {@link #TERMINATED} state).
      *
-     * @return true if the entity has been shut down (in the stopping or terminated state).
+     * @return true if the guest has been shut down (in the stopping or terminated state).
      */
     public boolean isShutdown() {
         return this == STOPPING || this == TERMINATED;

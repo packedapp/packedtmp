@@ -58,7 +58,7 @@ import packed.internal.base.attribute.ProvidableAttributeModel.Attt;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.container.PackedContainerAssembly;
+import packed.internal.container.ContainerAssembly;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.container.PackedRealm;
 import packed.internal.inject.ConfigSiteInjectOperations;
@@ -73,23 +73,11 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     /** The assembly this configuration is a part of. */
     private final PackedAssemblyContext assembly;
 
-    /** Any container this component is part of. A container is part of it self */
-    @Nullable
-    final PackedContainerAssembly container;
-
-    /** The depth of the component in the hierarchy (including any parent artifacts). */
-    final int depth;
-
     /** The driver used to create this component. */
     private final PackedWireableComponentDriver<?> driver;
 
-    final int modifiers;
-
     /** The name of the component. */
     public String name;
-
-    /** The store. */
-    public final NodeStore.Assembly store;
 
     /** The realm the component belongs to. */
     private final PackedRealm realm;
@@ -98,30 +86,48 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     @Nullable
     public final WireletPack wirelets;
 
+    /**************** ASSEMBLIES AND MODIFIERS. *****************/
+
+    /** The modifiers for this component. */
+    final int modifiers;
+
+    /** The region this component is a part of. */
+    public final RegionAssembly region;
+
+    /** Any container this component is part of. A container is part of it self */
+    @Nullable
+    final ContainerAssembly container;
+
+    @Nullable
+    public final SourceAssembly source;
+
     /**************** TREE SUPPORT. *****************/
 
-    /** Children of this node (lazily initialized). Insertion order maintained by {@link #nextSibling} and friends. */
+    /** The depth of the component in the hierarchy (including any parent artifacts). */
+    final int treeDepth;
+
+    /** Children of this node (lazily initialized). Insertion order maintained by {@link #treeNextSibling} and friends. */
     @Nullable
-    Map<String, ComponentNodeConfiguration> children;
+    Map<String, ComponentNodeConfiguration> treeChildren;
 
     /** The first child of this component. */
     @Nullable
-    public ComponentNodeConfiguration firstChild;
+    public ComponentNodeConfiguration treeFirstChild;
 
     /**
      * The latest inserted child of this component. Or null if this component has no children. Is exclusively used to help
-     * maintain {@link #nextSibling}.
+     * maintain {@link #treeNextSibling}.
      */
     @Nullable
-    private ComponentNodeConfiguration lastChild;
+    private ComponentNodeConfiguration treeLastChild;
 
     /** The next sibling, in insertion order */
     @Nullable
-    public ComponentNodeConfiguration nextSibling;
+    public ComponentNodeConfiguration treeNextSibling;
 
     /** The parent of this component, or null for a root component. */
     @Nullable
-    final ComponentNodeConfiguration parent;
+    final ComponentNodeConfiguration treeParent;
 
     /**************** See how much of this we can get rid of. *****************/
 
@@ -155,43 +161,51 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             @Nullable ComponentNodeConfiguration parent, @Nullable WireletPack wirelets) {
         this.assembly = requireNonNull(assembly);
         this.realm = requireNonNull(realm);
-
-        this.parent = parent;
-        this.depth = parent == null ? 0 : parent.depth + 1;
-
         this.driver = requireNonNull(driver);
-        this.container = driver.modifiers().isContainer() ? new PackedContainerAssembly(this) : parent.container;
-
         this.configSite = requireNonNull(configSite);
         this.wirelets = wirelets;
 
-        setName0(null); // initialize name
-
-        int p = driver.modifiers;
+        this.treeParent = parent;
+        int mod = driver.modifiers;
         if (parent == null) {
-            p = p | assembly.modifiers;
-            p = PackedComponentModifierSet.addIf(p, parent == null, ComponentModifier.SYSTEM);
+            this.treeDepth = 0;
+            this.region = new RegionAssembly(this); // Root always needs a nodestore
 
+            mod = mod | assembly.modifiers;
+            mod = PackedComponentModifierSet.add(mod, ComponentModifier.SYSTEM);
             if (assembly.modifiers().isGuest()) {
                 // Is it a guest if we are analyzing??? Well we want the information...
-                p = PackedComponentModifierSet.addIf(p, parent == null, ComponentModifier.GUEST);
+                mod = PackedComponentModifierSet.add(mod, ComponentModifier.GUEST);
             }
+        } else {
+            this.treeDepth = parent.treeDepth + 1;
+            this.region = driver.modifiers().isGuest() ? new RegionAssembly(this) : parent.region;
         }
-        this.modifiers = p;
-        this.source = driver.sourceType() == null ? null : new SourceAssembly(driver);
-        // We have a NodeStore per guest. As components within the same guest are co-terminus
-        this.store = parent == null || driver.modifiers().isGuest() ? new NodeStore.Assembly(this) : parent.store;
-        if (modifiers().isGuest()) {
-            store.reserve();
-        }
+        this.modifiers = mod;
+
+        // Setup Container
         if (modifiers().isContainer()) {
-            store.reserve();
+            region.reserve();
+            this.container = new ContainerAssembly(this);
+        } else {
+            this.container = parent == null ? null : parent.container;
         }
 
-        // this.storeOffset = store.reserve(this); // calculate runtime storage
-    }
+        // Setup Guest
+        if (modifiers().isGuest()) {
+            region.reserve();
+        }
 
-    public final SourceAssembly source;
+        // Setup Source
+        if (driver.sourceType() != null) {
+            this.source = new SourceAssembly(this, driver);
+            region.sources.add(source);
+        } else {
+            this.source = null;
+        }
+
+        setName0(null); // initialize name
+    }
 
     /**
      * Returns a {@link Component} adaptor of this node.
@@ -309,7 +323,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     public ComponentNodeConfiguration assembledSuccesfully() {
         finalState = true;
         if (container != null) {
-            container.advanceTo(PackedContainerAssembly.LS_3_FINISHED);
+            container.advanceTo(ContainerAssembly.LS_3_FINISHED);
         }
         return this;
     }
@@ -326,7 +340,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
      * @return the container this component is a part of
      */
     @Nullable
-    public PackedContainerAssembly container() {
+    public ContainerAssembly container() {
         return container;
     }
 
@@ -349,7 +363,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     }
 
     public int depth() {
-        return depth;
+        return treeDepth;
     }
 
     /**
@@ -392,11 +406,11 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
         if (driver.modifiers().isContainer()) {
             // IDK do we want to progress to next stage just in case...
-            if (container.containerState == PackedContainerAssembly.LS_0_MAINL) {
-                container.advanceTo(PackedContainerAssembly.LS_1_LINKING);
-            } else if (container.containerState == PackedContainerAssembly.LS_2_HOSTING) {
+            if (container.containerState == ContainerAssembly.LS_0_MAINL) {
+                container.advanceTo(ContainerAssembly.LS_1_LINKING);
+            } else if (container.containerState == ContainerAssembly.LS_2_HOSTING) {
                 throw new IllegalStateException("Was hosting");
-            } else if (container.containerState == PackedContainerAssembly.LS_3_FINISHED) {
+            } else if (container.containerState == ContainerAssembly.LS_3_FINISHED) {
                 throw new IllegalStateException("Was Assembled");
             }
         }
@@ -404,7 +418,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         // ConfigSite cs = ConfigSiteSupport.captureStackFrame(configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
         WireletPack wp = WireletPack.from(driver, wirelets);
         ConfigSite cs = ConfigSite.UNKNOWN;
-        ComponentNodeConfiguration p = driver().modifiers().isExtension() ? parent : this;
+        ComponentNodeConfiguration p = driver().modifiers().isExtension() ? treeParent : this;
         ComponentNodeConfiguration newNode = p.newChild(driver, cs, PackedRealm.fromBundle(bundle), wp);
 
         // Invoke Bundle::configure
@@ -425,7 +439,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     @Nullable
     public ComponentNodeConfiguration parentOrNull() {
-        return parent;
+        return treeParent;
     }
 
     /** {@inheritDoc} */
@@ -433,7 +447,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     public ComponentPath path() {
         int anyPathMask = NAME_GET_PATH + NAME_CHILD_GOT_PATH;
         if ((nameState & anyPathMask) != 0) {
-            ComponentNodeConfiguration p = parent;
+            ComponentNodeConfiguration p = treeParent;
             while (p != null && ((p.nameState & anyPathMask) == 0)) {
                 p.nameState = (p.nameState & ~NAME_GETSET_MASK) | NAME_GET_PATH;
             }
@@ -512,8 +526,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         }
 
         // maybe just putIfAbsent, under the assumption that we will rarely need to override.
-        if (parent != null) {
-            if (parent.children != null && parent.children.containsKey(n)) {
+        if (treeParent != null) {
+            if (treeParent.treeChildren != null && treeParent.treeChildren.containsKey(n)) {
                 // If name exists. Lets keep a counter (maybe if bigger than 5). For people trying to
                 // insert a given component 1 million times...
                 if (!isFree) {
@@ -523,23 +537,23 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
                 String prefix = n;
                 do {
                     n = prefix + counter++;
-                } while (parent.children.containsKey(n));
+                } while (treeParent.treeChildren.containsKey(n));
             }
 
             if (newName != null) {
                 // TODO check if changed name...
-                parent.children.remove(name);
-                parent.children.put(n, this);
+                treeParent.treeChildren.remove(name);
+                treeParent.treeChildren.put(n, this);
             } else {
                 name = n;
-                if (parent.children == null) {
-                    parent.children = new HashMap<>();
-                    parent.firstChild = parent.lastChild = this;
+                if (treeParent.treeChildren == null) {
+                    treeParent.treeChildren = new HashMap<>();
+                    treeParent.treeFirstChild = treeParent.treeLastChild = this;
                 } else {
-                    parent.lastChild.nextSibling = this;
-                    parent.lastChild = this;
+                    treeParent.treeLastChild.treeNextSibling = this;
+                    treeParent.treeLastChild = this;
                 }
-                parent.children.put(n, this);
+                treeParent.treeChildren.put(n, this);
             }
         }
         name = n;
@@ -568,7 +582,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     @Override
     public <C, I> C wireInstance(InstanceSourcedDriver<C, I> driver, I instance, Wirelet... wirelets) {
-        return wire(driver.bindToInstance(realm, instance), wirelets);
+        WireableComponentDriver<C> wcd = driver.bindToInstance(realm, instance);
+        return wire(wcd, wirelets);
     }
 
     public static ComponentNodeConfiguration newAssembly(PackedAssemblyContext assembly, PackedWireableComponentDriver<?> driver, ConfigSite configSite,
@@ -605,12 +620,12 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         /** {@inheritDoc} */
         @Override
         public Collection<Component> children() {
-            int size = conf.children == null ? 0 : conf.children.size();
+            int size = conf.treeChildren == null ? 0 : conf.treeChildren.size();
             if (size == 0) {
                 return List.of();
             } else {
                 ArrayList<Component> result = new ArrayList<>(size);
-                for (ComponentNodeConfiguration acc = conf.firstChild; acc != null; acc = acc.nextSibling) {
+                for (ComponentNodeConfiguration acc = conf.treeFirstChild; acc != null; acc = acc.treeNextSibling) {
                     result.add(acc.adaptToComponent());
                 }
                 return result;
@@ -626,7 +641,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         /** {@inheritDoc} */
         @Override
         public int depth() {
-            return conf.depth;
+            return conf.treeDepth;
         }
 
         /** {@inheritDoc} */
@@ -651,7 +666,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         /** {@inheritDoc} */
         @Override
         public Optional<Component> parent() {
-            ComponentNodeConfiguration p = conf.parent;
+            ComponentNodeConfiguration p = conf.treeParent;
             return p == null ? Optional.empty() : Optional.of(p.adaptToComponent());
         }
 

@@ -204,7 +204,7 @@ public abstract class BaseBundle extends ContainerBundle {
      * @return a service configuration for the service
      */
     protected final <T> BeanConfiguration<T> provideInstance(T instance) {
-        return installInstance(instance).provide();
+        return configuration().wireInstance(BeanConfiguration.driver(), instance).provide();
     }
 
     protected final void require(Class<?> key) {

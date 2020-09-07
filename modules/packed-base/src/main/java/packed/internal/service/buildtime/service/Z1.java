@@ -28,10 +28,10 @@ public class Z1 extends BaseBundle {
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-        provideInstance(123);
-        export(Integer.class);
-        provide(Dx.class);
-        exportAll();
+        installInstance(123);
+        // export(Integer.class);
+        // provide(Dx.class);
+        // exportAll();
     }
 
     public static void main(String[] args) {

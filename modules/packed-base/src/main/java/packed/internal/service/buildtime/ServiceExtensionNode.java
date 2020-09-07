@@ -31,7 +31,7 @@ import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceRegistry;
 import app.packed.service.ServiceSet;
-import packed.internal.component.NodeStore;
+import packed.internal.component.Region;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.dependencies.DependencyManager;
@@ -190,7 +190,7 @@ public final class ServiceExtensionNode {
         });
     }
 
-    public ServiceRegistry instantiateEverything(NodeStore ns, WireletPack wc) {
+    public ServiceRegistry instantiateEverything(Region ns, WireletPack wc) {
         LinkedHashMap<Key<?>, RuntimeEntry<?>> runtimeEntries = new LinkedHashMap<>();
         PackedInjector publicInjector = new PackedInjector(context().containerConfigSite(), runtimeEntries);
 

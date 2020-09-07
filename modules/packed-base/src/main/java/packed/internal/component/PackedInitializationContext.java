@@ -65,7 +65,7 @@ public final class PackedInitializationContext {
     }
 
     public Guest guest() {
-        return node.store.getGuest(node);
+        return node.region.getGuest(node);
     }
 
     // Initialize name, we don't want to override this in Configuration context. We don't want the conf to change if
@@ -87,7 +87,7 @@ public final class PackedInitializationContext {
 
     public ServiceRegistry services() {
         // if !container return empty registry...
-        return node.store.getServiceRegistry(node);
+        return node.region.getServiceRegistry(node);
     }
 
     /**
@@ -103,9 +103,12 @@ public final class PackedInitializationContext {
     public static PackedInitializationContext initialize(ComponentNodeConfiguration root) {
         PackedInitializationContext ic = new PackedInitializationContext(root.wirelets);
         ic.node = new ComponentNode(null, root, ic);
-//        for (int i = 0; i < ic.node.store.instances.length; i++) {
-//            System.out.println(i + " = " + ic.node.store.instances[i]);
-//        }
+        System.out.println("--");
+        for (int i = 0; i < ic.node.region.store.length; i++) {
+            System.out.println(i + " = " + ic.node.region.store[i]);
+        }
+
+        System.out.println("--");
         return ic;
     }
 

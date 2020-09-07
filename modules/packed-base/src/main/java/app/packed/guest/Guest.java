@@ -17,6 +17,7 @@ package app.packed.guest;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import app.packed.component.Wirelet;
 
@@ -93,12 +94,16 @@ public interface Guest {
             throw new UnsupportedOperationException();
         }
 
+        static GuestStopOption erroneous(Supplier<Throwable> cause) {
+            throw new UnsupportedOperationException();
+        }
+
         static GuestStopOption forced() {
             throw new UnsupportedOperationException();
         }
 
         // Can be used as wirelet as well...
-        static GuestStopOption graceTime(long timeout, TimeUnit unit) {
+        static GuestStopOption forcedGraceTime(long timeout, TimeUnit unit) {
             // before forced???
             throw new UnsupportedOperationException();
         }

@@ -25,7 +25,7 @@ import java.util.List;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.config.ConfigSite;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.NodeStore;
+import packed.internal.component.Region;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
@@ -161,9 +161,9 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
             }
         }
         if (mh.type().parameterCount() == 0) {
-            mh = MethodHandles.dropArguments(mh, 0, NodeStore.class);
+            mh = MethodHandles.dropArguments(mh, 0, Region.class);
         } else if (mh.type().parameterCount() > 1) {
-            MethodType mt = MethodType.methodType(mh.type().returnType(), NodeStore.class);
+            MethodType mt = MethodType.methodType(mh.type().returnType(), Region.class);
             int[] ar = new int[mh.type().parameterCount()];
             for (int i = 0; i < ar.length; i++) {
                 ar[i] = 0;
@@ -174,7 +174,7 @@ public final class ComponentFactoryBuildEntry<T> extends AbstractComponentBuildE
         // System.out.println("*********************** MUST INSTANTIATE " + component);
         context.mustInstantiate.addLast(this);
         if (instantionMode == ServiceMode.CONSTANT) {
-            return NodeStore.readSingletonAs(index /* component.storeOffset + subIndex */, mh.type().returnType());
+            return Region.readSingletonAs(index /* component.storeOffset + subIndex */, mh.type().returnType());
         } else {
             return mh;
             // return mh;

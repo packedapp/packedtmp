@@ -57,7 +57,7 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      * @return the configuration of the component
      */
     default <T> BeanConfiguration<T> install(Class<T> implementation) {
-        return install(Factory.find(implementation));
+        return wire(BeanConfiguration.driver(), Factory.find(implementation));
     }
 
     /**
@@ -146,20 +146,8 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      * 
      * @return the default driver for containers
      */
+    // Men hvad hvis det ogsaa er en gaest...
     static WireableComponentDriver<ContainerConfiguration> driver() {
         return PackedWireableComponentDriver.CONTAINER_DRIVER;
     }
 }
-
-///**
-//* The specified wirelet type must have
-//* 
-//* @param <W>
-//*            the type of wirelet
-//* @param type
-//*            the type of wirelet
-//* @return an optional containing the wirelet if defined otherwise empty.
-//* @throws IllegalArgumentException
-//*             if the specified wirelet type does not have {@link WireletSidecar#failOnImage()} set to true
-//*/
-//<W extends Wirelet> Optional<W> assemblyWirelet(Class<W> type); // Should assembly be the default????

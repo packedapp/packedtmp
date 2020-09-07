@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.inject.ProvidePrototypeContext;
 import app.packed.inject.ProvisionException;
-import packed.internal.component.NodeStore;
+import packed.internal.component.Region;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceMode;
 import packed.internal.service.buildtime.service.ComponentFactoryBuildEntry;
@@ -34,7 +34,7 @@ public class PrototypeInjectorEntry<T> extends RuntimeEntry<T> {
 
     private final MethodHandle mh;
 
-    private final NodeStore ns;
+    private final Region ns;
 
     /**
      * @param node

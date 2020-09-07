@@ -164,7 +164,7 @@ public final class PackedComponentPath implements ComponentPath {
     }
 
     static ComponentPath of(ComponentNodeConfiguration cc) {
-        int depth = cc.depth;
+        int depth = cc.treeDepth;
         switch (depth) {
         case 0:
             return ROOT;
@@ -175,7 +175,7 @@ public final class PackedComponentPath implements ComponentPath {
             ComponentNodeConfiguration acc = cc;
             for (int i = depth - 1; i >= 0; i--) {
                 paths[i] = acc.name;
-                acc = acc.parent;
+                acc = acc.treeParent;
             }
             return new PackedComponentPath(paths);
         }

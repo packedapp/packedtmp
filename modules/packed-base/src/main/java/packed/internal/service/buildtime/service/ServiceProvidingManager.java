@@ -88,7 +88,7 @@ public final class ServiceProvidingManager {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void addProvidesHook(AtProvidesHook hook, ComponentNodeConfiguration cc) {
-        AbstractComponentBuildEntry<?> parent = cc.source.provideForHooks(node, hook, cc);
+        AbstractComponentBuildEntry<?> parent = cc.source.provideForHooks(node, hook);
 
         // Add each @Provide as children of the parent node
         for (AtProvides atProvides : hook.members) {
@@ -101,13 +101,13 @@ public final class ServiceProvidingManager {
     }
 
     public BuildEntry<?> provide(ComponentNodeConfiguration cc) {
-        BuildEntry<?> e = cc.source.provide(node, cc);
+        BuildEntry<?> e = cc.source.provide(node);
         providingEntries.add(e);
         return e;
     }
 
     public BuildEntry<?> providePrototype(ComponentNodeConfiguration cc) {
-        BuildEntry<?> e = cc.source.providePrototype(node, cc);
+        BuildEntry<?> e = cc.source.providePrototype(node);
         providingEntries.add(e);
         return e;
     }

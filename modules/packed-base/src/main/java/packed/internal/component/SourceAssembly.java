@@ -15,6 +15,8 @@
  */
 package packed.internal.component;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.List;
 
 import app.packed.base.Key;
@@ -36,15 +38,27 @@ import packed.internal.service.buildtime.service.ComponentFactoryBuildEntry;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class SourceAssembly {
 
-    final PackedWireableComponentDriver<?> driver;
-
     public BuildEntry<?> buildEntry;
 
-    SourceAssembly(PackedWireableComponentDriver<?> driver) {
-        this.driver = driver;
+    final PackedWireableComponentDriver<?> driver;
+
+    final ComponentNodeConfiguration conf;
+
+    // We store the index, but cannot store the instance.. Because
+    // The assembly can be used multiple times for initialization.
+    int singletonIndex;
+
+    SourceAssembly(ComponentNodeConfiguration node, PackedWireableComponentDriver<?> driver) {
+        this.driver = requireNonNull(driver);
+        this.conf = requireNonNull(node);
+        if (driver instanceof SingletonComponentDriver<?>) {
+            singletonIndex = node.region.reserve();
+        } else {
+            singletonIndex = -1;
+        }
     }
 
-    public boolean hasInstance() {
+    boolean hasInstance() {
         if (driver instanceof SingletonComponentDriver<?>) {
             SingletonComponentDriver<?> d = (SingletonComponentDriver<?>) driver;
             return d.instance != null;
@@ -62,16 +76,49 @@ public class SourceAssembly {
         throw new IllegalStateException();
     }
 
+    public void initSource(Region ns) {
+        if (singletonIndex >= 0) {
+            if (hasInstance()) {
+                ns.store[singletonIndex] = instance();
+            }
+        }
+    }
+
+    public BuildEntry<?> provide(ServiceExtensionNode node) {
+        if (hasInstance()) {
+            // First see if we have already installed the node. This happens in #set if the component container any members
+            // annotated with @Provides
+
+            BuildEntry<?> c = buildEntry;
+            if (c == null) {
+                // No node found, components has no @Provides method, create a new node
+                buildEntry = c = new ComponentConstantBuildEntry<>(node, conf);
+            }
+
+            c.as((Key) Key.of(conf.driver().sourceType()));
+            return c;
+        } else {
+            SingletonComponentDriver scd = (SingletonComponentDriver) driver;
+            BuildEntry<?> c = buildEntry;
+            if (c == null) {
+                List<ServiceDependency> dependencies = scd.factory.factory.dependencies;
+                c = new ComponentFactoryBuildEntry<>(node, conf, ServiceMode.CONSTANT, scd.fromFactory(conf), (List) dependencies, false);
+            }
+            c.as(scd.factory.key());
+            return c;
+        }
+    }
+
     // Always invoked before other provides....
-    public AbstractComponentBuildEntry<?> provideForHooks(ServiceExtensionNode node, AtProvidesHook hook, ComponentNodeConfiguration cc) {
+    public AbstractComponentBuildEntry<?> provideForHooks(ServiceExtensionNode node, AtProvidesHook hook) {
         AbstractComponentBuildEntry entry;
         if (hasInstance()) {
-            entry = new ComponentConstantBuildEntry<>(node, cc);
+            entry = new ComponentConstantBuildEntry<>(node, conf);
         } else {
-            SingletonComponentDriver driver = (SingletonComponentDriver) cc.driver();
+            SingletonComponentDriver driver = (SingletonComponentDriver) conf.driver();
             BaseFactory<?> factory = driver.factory;
             List<ServiceDependency> dependencies = factory.factory.dependencies;
-            entry = new ComponentFactoryBuildEntry<>(node, cc, ServiceMode.CONSTANT, driver.fromFactory(cc), dependencies, false);
+            entry = new ComponentFactoryBuildEntry<>(node, conf, ServiceMode.CONSTANT, driver.fromFactory(conf), dependencies, false);
 
             // If any of the @Provide methods are instance members the parent node needs special treatment.
             // As it needs to be constructed, before the field or method can provide services.
@@ -83,50 +130,17 @@ public class SourceAssembly {
 
     }
 
-    public BuildEntry<?> providePrototype(ServiceExtensionNode node, ComponentNodeConfiguration cc) {
+    public BuildEntry<?> providePrototype(ServiceExtensionNode node) {
         SingletonComponentDriver scd = (SingletonComponentDriver) driver;
         BuildEntry<?> c = buildEntry;
         if (c == null) {
             List<ServiceDependency> dependencies = scd.factory.factory.dependencies;
-            c = new ComponentFactoryBuildEntry<>(node, cc, ServiceMode.CONSTANT, scd.fromFactory(cc), (List) dependencies, true);
+            c = new ComponentFactoryBuildEntry<>(node, conf, ServiceMode.CONSTANT, scd.fromFactory(conf), (List) dependencies, true);
         }
         ComponentFactoryBuildEntry e = (ComponentFactoryBuildEntry) c;
         // Vi burde kunne styre det
         e.prototype();
         c.as(scd.factory.key());
-        return c;
-    }
-
-    public BuildEntry<?> provide(ServiceExtensionNode node, ComponentNodeConfiguration cc) {
-        if (hasInstance()) {
-            return provideInstance(node, cc);
-        } else {
-            return provideFactory(node, cc);
-        }
-    }
-
-    private BuildEntry<?> provideFactory(ServiceExtensionNode node, ComponentNodeConfiguration cc) {
-        SingletonComponentDriver scd = (SingletonComponentDriver) driver;
-        BuildEntry<?> c = buildEntry;
-        if (c == null) {
-            List<ServiceDependency> dependencies = scd.factory.factory.dependencies;
-            c = new ComponentFactoryBuildEntry<>(node, cc, ServiceMode.CONSTANT, scd.fromFactory(cc), (List) dependencies, false);
-        }
-        c.as(scd.factory.key());
-        return c;
-    }
-
-    private BuildEntry<?> provideInstance(ServiceExtensionNode node, ComponentNodeConfiguration cc) {
-        // First see if we have already installed the node. This happens in #set if the component container any members
-        // annotated with @Provides
-
-        BuildEntry<?> c = buildEntry;
-        if (c == null) {
-            // No node found, components has no @Provides method, create a new node
-            buildEntry = c = new ComponentConstantBuildEntry<>(node, cc);
-        }
-
-        c.as((Key) Key.of(cc.driver().sourceType()));
         return c;
     }
 }

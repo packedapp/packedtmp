@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.NodeStore;
+import packed.internal.component.Region;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.ServiceMode;
@@ -78,7 +78,7 @@ public final class ComponentConstantBuildEntry<T> extends AbstractComponentBuild
     protected MethodHandle newMH(ServiceProvidingManager spm) {
         T instance = instance();
         MethodHandle mh = MethodHandles.constant(instance.getClass(), instance);
-        return MethodHandles.dropArguments(mh, 0, NodeStore.class);
+        return MethodHandles.dropArguments(mh, 0, Region.class);
     }
 
     @Override

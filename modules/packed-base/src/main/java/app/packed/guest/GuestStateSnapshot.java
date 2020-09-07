@@ -46,9 +46,9 @@ public interface GuestStateSnapshot {
     GuestState actual(); // actual is maybe better???
 
     /**
-     * Returns the desired state of the object.
+     * Returns the desired state of the guest.
      * 
-     * @return the desired state of the object
+     * @return the desired state of the guest
      */
     GuestState desired();
 

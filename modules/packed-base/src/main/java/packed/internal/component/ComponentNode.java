@@ -35,10 +35,6 @@ import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
-import app.packed.service.ServiceRegistry;
-import packed.internal.container.PackedContainerAssembly;
-import packed.internal.service.buildtime.ServiceExtensionNode;
-import packed.internal.service.runtime.PackedInjector;
 
 /** An runtime representation of a component. */
 public final class ComponentNode implements Component {
@@ -57,8 +53,8 @@ public final class ComponentNode implements Component {
     @Nullable
     final ComponentNode parent; // Parent is always stored as the first object in NodeStore...
 
-    /** The node store of this node. Where we store, for example, instances. */
-    final NodeStore store;
+    /** The region this component is part of. */
+    final Region region;
 
     /**
      * Creates a new component node.
@@ -71,45 +67,21 @@ public final class ComponentNode implements Component {
     ComponentNode(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, PackedInitializationContext pic) {
         this.parent = parent;
         this.model = RuntimeComponentModel.of(configuration);
-        this.store = parent == null || configuration.modifiers().isGuest() ? configuration.store.newStore() : parent.store;
-
         if (parent == null) {
             this.name = pic.rootName(configuration);
         } else {
             this.name = requireNonNull(configuration.name);
         }
 
-        // Initialize if guest
-        if (modifiers().isGuest()) {
-            store.storeGuest(this, new PackedGuest(null));
-        }
-
-        // Initialize if container
-        if (modifiers().isContainer()) {
-            ServiceRegistry registry = null;
-            PackedContainerAssembly container = configuration.container;
-
-            ServiceExtensionNode node = container.se;
-            if (node != null) {
-                registry = node.instantiateEverything(store, pic.wirelets());
-            } else {
-                registry = new PackedInjector(configuration.configSite(), Map.of());
-            }
-            store.storeServiceRegistry(this, registry);
-        }
-
-        // Should be set by Dependency Injection logic
-        if (modifiers().isSingleton()) {
-
-        }
-
-        // Last but least, initialize any children the component might have...
+        // Vi opbygger structuren foerst...
+        // Og saa initialisere vi ting bagefter
+        // Structuren bliver noedt til at vide hvor den skal spoerge efter ting...
         Map<String, ComponentNode> children = null;
-        if (configuration.firstChild != null) {
+        if (configuration.treeFirstChild != null) {
             // Maybe ordered is the default...
-            LinkedHashMap<String, ComponentNode> result = new LinkedHashMap<>(configuration.children.size());
+            LinkedHashMap<String, ComponentNode> result = new LinkedHashMap<>(configuration.treeChildren.size());
 
-            for (ComponentNodeConfiguration cc = configuration.firstChild; cc != null; cc = cc.nextSibling) {
+            for (ComponentNodeConfiguration cc = configuration.treeFirstChild; cc != null; cc = cc.treeNextSibling) {
                 if (!cc.driver().modifiers().isExtension()) {
                     ComponentNode ac = new ComponentNode(this, cc, pic);
                     result.put(ac.name(), ac);
@@ -119,6 +91,19 @@ public final class ComponentNode implements Component {
             children = Map.copyOf(result);
         }
         this.children = children;
+
+        // Maaske er region ikke final...
+        // Problemet er en bruger der injecter Component i constructuren.
+        // Og saa kalder children(). Som jo af gode grunde ikke noedvendig er fuldt
+        // initialiseret f.eks. hvis vi supporter Source attributer...
+        // Alternativ fejler vi bare naar folk kalder source attributer...
+        // Tror bare vi har et check om en source instance er non-null
+        if (parent == null || configuration.modifiers().isGuest()) {
+            this.region = configuration.region.newRegion(pic, configuration.container, this);
+        } else {
+            this.region = parent.region;
+        }
+
     }
 
     /** {@inheritDoc} */

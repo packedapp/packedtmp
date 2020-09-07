@@ -15,8 +15,6 @@
  */
 package packed.internal.component;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
@@ -29,68 +27,46 @@ import packed.internal.util.MethodHandleUtil;
  */
 // Passive System -> 1 NodeStore
 // Active System -> 1 NodeStore per guest
-public final class NodeStore {
+public final class Region {
 
     static final MethodHandle MH_GET_SINGLETON_INSTANCE = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "getSingletonInstance", Object.class, int.class);
 
-    final Object[] instances; // May contain f.eks. CHM.. ?? Maybe hosts are also there...
+    final Object[] store; // May contain f.eks. CHM.. ?? Maybe hosts are also there...
 
-    NodeStore(int i) {
-        instances = new Object[i];
-        // System.out.println("CREATING NEW NODE STORE with room for " + instances.length);
+    Region(int i) {
+        store = new Object[i];
     }
 
     public PackedGuest getGuest(ComponentNode node) {
-        return (PackedGuest) instances[0];
+        return (PackedGuest) store[0];
     }
 
     public ServiceRegistry getServiceRegistry(ComponentNode node) {
         int off = node.modifiers().isGuest() ? 1 : 0;
-        return (ServiceRegistry) instances[off];
+        return (ServiceRegistry) store[off];
     }
 
     public Object getSingletonInstance(int index) {
-        return instances[index];
+        return store[index];
     }
 
     public void storeGuest(ComponentNode node, PackedGuest guest) {
-        instances[0] = guest;
+        store[0] = guest;
     }
 
     public void storeServiceRegistry(ComponentNode node, ServiceRegistry registry) {
         int off = node.modifiers().isGuest() ? 1 : 0;
-        instances[off] = registry;
+        store[off] = registry;
     }
 
     public void storeSingleton(int index, Object instance) {
-        instances[index] = instance;
+        store[index] = instance;
     }
 
     public static MethodHandle readSingletonAs(int index, Class<?> type) {
         MethodHandle mh = MethodHandles.insertArguments(MH_GET_SINGLETON_INSTANCE, 1, index);
         mh = MethodHandleUtil.castReturnType(mh, type);
         return mh;
-    }
-
-    public static final class Assembly {
-
-        int index;
-
-        final ComponentNodeConfiguration root;
-
-        Assembly(ComponentNodeConfiguration node) {
-            this.root = requireNonNull(node);
-        }
-
-        NodeStore newStore() {
-            return new NodeStore(index);
-        }
-
-        public int reserve() {
-//      new Exception().printStackTrace();
-            return index++;
-        }
-
     }
 
 }

@@ -29,7 +29,7 @@ import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 
 /** The default container context. */
-public final class PackedContainerAssembly {
+public final class ContainerAssembly {
 
     public static final int LS_0_MAINL = 0;
 
@@ -50,11 +50,11 @@ public final class PackedContainerAssembly {
     public final ComponentNodeConfiguration component;
 
     @Nullable
-    public final PackedContainerAssembly parent;
+    public final ContainerAssembly parent;
 
     public ServiceExtensionNode se;
 
-    public PackedContainerAssembly(ComponentNodeConfiguration component) {
+    public ContainerAssembly(ComponentNodeConfiguration component) {
         this.component = requireNonNull(component);
         this.parent = component.parentOrNull() == null ? null : component.parentOrNull().container();
     }
@@ -71,7 +71,7 @@ public final class PackedContainerAssembly {
         }
 
         if (containerState == LS_1_LINKING && newState > LS_1_LINKING) {
-            for (ComponentNodeConfiguration cc = component.firstChild; cc != null; cc = cc.nextSibling) {
+            for (ComponentNodeConfiguration cc = component.treeFirstChild; cc != null; cc = cc.treeNextSibling) {
                 if (cc.driver().modifiers().isContainer()) {
                     cc.container().advanceTo(LS_3_FINISHED);
                 }

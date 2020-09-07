@@ -49,7 +49,7 @@ public abstract class AbstractComponentBuildEntry<T> extends BuildEntry<T> {
         if (isPrototype) {
             this.index = -1;
         } else {
-            this.index = componentConfiguration.store.reserve();
+            this.index = componentConfiguration.region.reserve();
         }
     }
 }

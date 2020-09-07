@@ -52,14 +52,14 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     /** A MethodHandle for invoking {@link #lifecycle()} used by {@link ExtensionModel}. */
     static final MethodHandle MH_LIFECYCLE_CONTEXT = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "lifecycle", LifecycleContext.class);
 
-    /** A VarHandle used by {@link #of(PackedContainerAssembly, Class)} to access the field Extension#configuration. */
+    /** A VarHandle used by {@link #of(ContainerAssembly, Class)} to access the field Extension#configuration. */
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
     /** The container this extension belongs to. */
-    private final PackedContainerAssembly container;
+    private final ContainerAssembly container;
 
-    /** The extension instance this configuration wraps, initialized in {@link #of(PackedContainerAssembly, Class)}. */
+    /** The extension instance this configuration wraps, initialized in {@link #of(ContainerAssembly, Class)}. */
     @Nullable
     private Extension instance;
 
@@ -83,7 +83,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
      * @param model
      *            a model of the extension.
      */
-    private PackedExtensionConfiguration(PackedContainerAssembly container, ExtensionModel model) {
+    private PackedExtensionConfiguration(ContainerAssembly container, ExtensionModel model) {
         this.container = requireNonNull(container);
         this.model = requireNonNull(model);
         this.realm = PackedRealm.fromExtension(this);
@@ -127,7 +127,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
      * 
      * @return the configuration of the container the extension is registered in
      */
-    public PackedContainerAssembly container() {
+    public ContainerAssembly container() {
         return container;
     }
 
@@ -258,8 +258,8 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
         requireNonNull(extensionType, "extensionType is null");
 
         // This check is done in a class value
-        @SuppressWarnings("unchecked")
-        Class<? extends Extension> declaringClass = (Class<? extends Extension>) extensionType.getDeclaringClass();
+        // @SuppressWarnings("unchecked")
+        // Class<? extends Extension> declaringClass = (Class<? extends Extension>) extensionType.getDeclaringClass();
         // System.out.println(declaringClass);
         // Need to find injection
         throw new UnsupportedOperationException();
@@ -302,7 +302,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
      *            the type of extension to initialize
      * @return the new extension context
      */
-    static PackedExtensionConfiguration of(PackedContainerAssembly container, Class<? extends Extension> extensionType) {
+    static PackedExtensionConfiguration of(ContainerAssembly container, Class<? extends Extension> extensionType) {
         // I think move to the constructor of this context??? Then extension can be final...
         // Create extension context and instantiate extension
         ExtensionModel model = ExtensionModel.of(extensionType);
@@ -326,7 +326,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
             // Should we also set the active extension in the parent???
             if (model.extensionLinkedToAncestorExtension != null) {
                 PackedExtensionConfiguration parentExtension = null;
-                PackedContainerAssembly parent = container.component.container();
+                ContainerAssembly parent = container.component.container();
                 if (!model.extensionLinkedDirectChildrenOnly) {
                     while (parentExtension == null && parent != null) {
                         parentExtension = parent.getContext(extensionType);
