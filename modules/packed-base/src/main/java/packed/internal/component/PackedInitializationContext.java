@@ -19,6 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.component.Component;
+import app.packed.component.ComponentModifier;
 import app.packed.guest.Guest;
 import app.packed.service.ServiceRegistry;
 import packed.internal.component.wirelet.WireletPack;
@@ -65,7 +66,10 @@ public final class PackedInitializationContext {
     }
 
     public Guest guest() {
-        return node.region.getGuest(node);
+        if (node.hasModifier(ComponentModifier.GUEST)) {
+            return node.region.guest();
+        }
+        throw new UnsupportedOperationException("This component does not have a guest");
     }
 
     // Initialize name, we don't want to override this in Configuration context. We don't want the conf to change if
@@ -87,7 +91,7 @@ public final class PackedInitializationContext {
 
     public ServiceRegistry services() {
         // if !container return empty registry...
-        return node.region.getServiceRegistry(node);
+        return node.region.serviceRegistry(node);
     }
 
     /**

@@ -98,8 +98,10 @@ public final class ComponentNode implements Component {
         // initialiseret f.eks. hvis vi supporter Source attributer...
         // Alternativ fejler vi bare naar folk kalder source attributer...
         // Tror bare vi har et check om en source instance er non-null
+
+        // Vi create a new region is its the root, or if the component is a guest
         if (parent == null || configuration.modifiers().isGuest()) {
-            this.region = configuration.region.newRegion(pic, configuration.container, this);
+            this.region = configuration.region.newRegion(pic, this);
         } else {
             this.region = parent.region;
         }

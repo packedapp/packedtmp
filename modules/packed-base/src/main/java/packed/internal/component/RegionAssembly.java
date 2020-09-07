@@ -29,9 +29,10 @@ import packed.internal.service.runtime.PackedInjector;
  *
  */
 public class RegionAssembly {
+
     int index;
 
-    final ComponentNodeConfiguration root;
+    final ComponentNodeConfiguration root; // do we need this??
 
     final ArrayList<SourceAssembly> sources = new ArrayList<>();
 
@@ -39,13 +40,15 @@ public class RegionAssembly {
         this.root = requireNonNull(node);
     }
 
-    Region newRegion(PackedInitializationContext pic, ContainerAssembly container, ComponentNode root) {
+    Region newRegion(PackedInitializationContext pic, ComponentNode root) {
+        ContainerAssembly container = this.root.container;
+
         Region reg = new Region(index);
         for (SourceAssembly sa : sources) {
             sa.initSource(reg);
         }
         if (root.modifiers().isGuest()) {
-            reg.storeGuest(root, new PackedGuest(null));
+            reg.store[0] = new PackedGuest(null);
         }
         ServiceRegistry registry = null;
         ServiceExtensionNode node = container.se;
@@ -54,7 +57,8 @@ public class RegionAssembly {
         } else {
             registry = new PackedInjector(root.configSite(), Map.of());
         }
-        reg.storeServiceRegistry(root, registry);
+        int off = root.modifiers().isGuest() ? 1 : 0;
+        reg.store[off] = registry;
 
         return reg;
     }
