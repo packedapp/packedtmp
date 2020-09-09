@@ -80,14 +80,17 @@ public class RegionAssembly {
             region.store(index, instance);
         }
 
-        for (Injectable i : resolver.nonServiceNonPrototypeInjectables) {
-            Object instance;
-            try {
-                instance = i.buildMethodHandle().invoke(region);
-            } catch (Throwable e1) {
-                throw ThrowableUtil.orUndeclared(e1);
+        // Last all singletons that have not already been used as services
+        for (SourceAssembly i : resolver.sourceInjectables) {
+            if (i.service == null) {
+                Object instance;
+                try {
+                    instance = i.injectable.buildMethodHandle().invoke(region);
+                } catch (Throwable e1) {
+                    throw ThrowableUtil.orUndeclared(e1);
+                }
+                region.store(i.regionIndex, instance);
             }
-            region.store(i.source().regionIndex, instance);
         }
 
         ContainerAssembly container = configuration.container;

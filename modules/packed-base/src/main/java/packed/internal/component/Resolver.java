@@ -33,15 +33,15 @@ public class Resolver {
 
     public final ArrayList<BuildEntry<?>> constantServices = new ArrayList<>();
 
-    public final ArrayList<Injectable> nonServiceNonPrototypeInjectables = new ArrayList<>();
-
     final RegionAssembly ra;
 
     /** Components that contains constants that should be stored in a region. */
     final ArrayList<SourceAssembly> sourceConstants = new ArrayList<>();
 
     /** Everything that needs to resolved. */
-    public final ArrayList<Injectable> sourceInjectables = new ArrayList<>();
+    public final ArrayList<SourceAssembly> sourceInjectables = new ArrayList<>();
+
+    public final ArrayList<Injectable> allInjectables = new ArrayList<>();
 
     public Resolver(RegionAssembly ra) {
         this.ra = requireNonNull(ra);
@@ -71,14 +71,6 @@ public class Resolver {
 
         // Last we find all source injectables that are registered as services
         // They will be instantiated as the last thing after all services.
-        for (Injectable i : sourceInjectables) {
-            // filter @Provide injectables
-            if (i.source().injectable == i) {
-                if (i.source().service == null) {
-                    nonServiceNonPrototypeInjectables.add(i);
-                }
-            }
-        }
     }
 }
 

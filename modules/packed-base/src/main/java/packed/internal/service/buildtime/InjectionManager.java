@@ -120,7 +120,7 @@ public final class InjectionManager {
             return;
         }
 
-        for (Injectable i : resolver.sourceInjectables) {
+        for (Injectable i : resolver.allInjectables) {
             i.resolve(resolver);
         }
 

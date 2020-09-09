@@ -67,7 +67,8 @@ public class SourceAssembly implements DependencyProvider {
         this.constant = driver.instance;
         if (constant == null) {
             this.injectable = Injectable.ofFactory(this);
-            region.resolver.sourceInjectables.add(injectable);
+            region.resolver.sourceInjectables.add(this);
+            region.resolver.allInjectables.add(injectable);
         } else {
             this.injectable = null;
             region.resolver.sourceConstants.add(this);

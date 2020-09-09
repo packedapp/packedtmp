@@ -89,7 +89,8 @@ public final class ServiceProvidingManager {
         for (AtProvides atProvides : hook.members) {
             ConfigSite configSite = component.source.component.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE,
                     atProvides.provides, atProvides.member);
-            new ProvideBuildEntry(configSite, component, atProvides); // Adds itself to #buildEntries
+            ProvideBuildEntry pbe = new ProvideBuildEntry(configSite, component, atProvides); // Adds itself to #buildEntries
+            component.region.resolver.allInjectables.add(pbe.injectable);
         }
     }
 

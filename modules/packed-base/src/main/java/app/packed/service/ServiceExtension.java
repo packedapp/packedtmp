@@ -324,8 +324,8 @@ public final class ServiceExtension extends Extension {
     public <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {
         BeanConfiguration<T> bc = im.container.component.wire(SingletonComponentDriver.prototype(), factory);
         @SuppressWarnings("unchecked")
-        BuildEntry<T> b = (BuildEntry<T>) im.provider().providePrototype(bc.node);
-        return new PackedPrototypeConfiguration<>(bc.node, b);
+        BuildEntry<T> b = (BuildEntry<T>) im.provider().providePrototype(bc.component);
+        return new PackedPrototypeConfiguration<>(bc.component, b);
     }
 
     public void require(Class<?>... keys) {

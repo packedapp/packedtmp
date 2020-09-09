@@ -34,13 +34,13 @@ import packed.internal.service.buildtime.BuildEntry;
 @SuppressWarnings("exports")
 public class BeanConfiguration<T> extends AbstractComponentConfiguration {
 
-    public final ComponentNodeConfiguration node;
+    public final ComponentNodeConfiguration component;
 
     private BuildEntry<T> buildEntry;
 
-    public BeanConfiguration(ComponentConfigurationContext node) {
-        super(node);
-        this.node = (ComponentNodeConfiguration) node;
+    public BeanConfiguration(ComponentConfigurationContext context) {
+        super(context);
+        this.component = (ComponentNodeConfiguration) context;
     }
 
     /**
@@ -67,38 +67,33 @@ public class BeanConfiguration<T> extends AbstractComponentConfiguration {
      */
     public BeanConfiguration<T> as(Key<? super T> key) {
         checkConfigurable();
-        entry().as(key);
+        provide().as(key);
         return this;
-    }
-
-    @SuppressWarnings("unchecked")
-    BuildEntry<T> entry() {
-        if (buildEntry == null) {
-            buildEntry = (BuildEntry<T>) node.source.provide();
-        }
-        return buildEntry;
     }
 
     public Optional<Key<?>> key() {
         return buildEntry == null ? Optional.empty() : Optional.of(buildEntry.key());
     }
 
+    @SuppressWarnings("unchecked")
     public BeanConfiguration<T> provide() {
-        entry();
-        // TODO should provide as the default key
+        if (buildEntry == null) {
+            buildEntry = (BuildEntry<T>) component.source.provide();
+        }
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
     public BeanConfiguration<T> setName(String name) {
-        node.setName(name);
+        component.setName(name);
         return this;
     }
 
     // Once a bean has been exported, its key cannot be changed...
     public ExportedServiceConfiguration<T> export() {
         checkConfigurable();
+        // buildEntry might not have been set yet...
         return buildEntry.node.exports().export(buildEntry, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 

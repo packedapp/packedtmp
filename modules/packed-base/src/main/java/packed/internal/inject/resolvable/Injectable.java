@@ -99,7 +99,7 @@ public final class Injectable {
 
     public void resolve(Resolver resolver) {
         int startIndex = resolved.length != dependencies.size() ? 1 : 0;
-        for (int i = 0; i < resolved.length; i++) {
+        for (int i = 0; i < dependencies.size(); i++) {
             resolved[i + startIndex] = resolver.resolve(this, dependencies.get(i));
             requireNonNull(resolved[i + startIndex]);
         }
