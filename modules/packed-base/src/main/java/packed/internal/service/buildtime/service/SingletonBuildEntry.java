@@ -17,12 +17,13 @@ package packed.internal.service.buildtime.service;
 
 import java.lang.invoke.MethodHandle;
 
+import app.packed.base.Key;
 import app.packed.base.Nullable;
 import packed.internal.component.SourceAssembly;
 import packed.internal.inject.resolvable.Injectable;
 import packed.internal.service.buildtime.BuildEntry;
-import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.InjectionManager;
+import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.runtime.IndexedEntry;
 import packed.internal.service.runtime.RuntimeEntry;
 
@@ -36,12 +37,15 @@ public final class SingletonBuildEntry<T> extends BuildEntry<T> {
     /**
      * Creates a new node from an instance.
      * 
-     * @param services
+     * @param im
      *            the injector builder
      */
-    public SingletonBuildEntry(InjectionManager services, SourceAssembly sa) {
-        super(services, sa.component.configSite());
+    @SuppressWarnings("unchecked")
+    public SingletonBuildEntry(InjectionManager im, SourceAssembly sa) {
+        super(im, sa.component.configSite());
         this.source = sa;
+        as((Key<T>) sa.defaultKey());
+        im.provider().buildEntries.add(this);
     }
 
     @Override

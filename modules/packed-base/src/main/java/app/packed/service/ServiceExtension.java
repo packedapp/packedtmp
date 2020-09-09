@@ -286,36 +286,6 @@ public final class ServiceExtension extends Extension {
     }
 
     /**
-     * Requires that all requirements are explicitly added via either {@link #requireOptionally(Key...)},
-     * {@link #require(Key...)} or via implementing a contract.
-     */
-    // Kan vi lave denne generisk paa tvaers af extensions...
-    // disableAutomaticRequirements()
-    // Jeg taenker lidt det er enten eller. Vi kan ikke goere det per component.
-    // Problemet er dem der f.eks. har metoder
-    //// Vil det ikke altid bliver efterfuldt af en contract?????
-    // Ser ingen grund til baade at support
-    // ManualRequirements management..
-    // AutoExport with regards to contract???
-
-    // Drop Management?
-    // Skal vi istedet for bare specificere en Contract????
-
-    // exactContract(Contract, forceValidate)
-    // supportContract() <-- can require less dependencies, any optional dependencies, export more dependencies
-
-    @Deprecated
-    // Contract driven og manual requirements management er 2 sider af samme sag
-    // Contract driven er meget staerkere... og vi gider ikke supportere begge ting...
-    void manualRequirementsManagement() {
-        // explicitRequirementsManagement
-        checkConfigurable();
-        im.dependencies().manualRequirementsManagement();
-
-        // useContract vs supportContract
-    }
-
-    /**
      * Invoked by the runtime for each component using {@link Provide}.
      * 
      * @param hook
@@ -435,8 +405,10 @@ public final class ServiceExtension extends Extension {
             this.extensionType = requireNonNull(extensionType, "extensionType is null");
         }
 
-        public void exportd() {
-            export(extensionType);
-        }
+        // I don't think extensions can export...
+        // Except if maybe
+//        public void exportd() {
+//            export(extensionType);
+//        }
     }
 }

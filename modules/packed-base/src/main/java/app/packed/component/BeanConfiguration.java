@@ -20,12 +20,10 @@ import java.util.Optional;
 import app.packed.base.Key;
 import app.packed.container.BaseBundle;
 import app.packed.service.ExportedServiceConfiguration;
-import app.packed.service.ServiceExtension;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedWireableComponentDriver;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.service.buildtime.BuildEntry;
-import packed.internal.service.buildtime.InjectionManager;
 
 /**
  * This class represents the configuration of a component. Actual instances of this interface is usually obtained by
@@ -76,9 +74,7 @@ public class BeanConfiguration<T> extends AbstractComponentConfiguration {
     @SuppressWarnings("unchecked")
     BuildEntry<T> entry() {
         if (buildEntry == null) {
-            ServiceExtension e = node.container().use(ServiceExtension.class);
-            InjectionManager sen = InjectionManager.fromExtension(e);
-            buildEntry = (BuildEntry<T>) sen.provider().provide(node);
+            buildEntry = (BuildEntry<T>) node.source.provide();
         }
         return buildEntry;
     }

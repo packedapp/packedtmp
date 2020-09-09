@@ -26,13 +26,11 @@ import packed.internal.component.PackedWireableComponentDriver.SingletonComponen
 import packed.internal.inject.resolvable.DependencyProvider;
 import packed.internal.inject.resolvable.Injectable;
 import packed.internal.service.buildtime.BuildEntry;
-import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.service.buildtime.service.SingletonBuildEntry;
 
 /**
  * All components that have a {@link ComponentModifier#SOURCED} modifier has an instance of this class.
  */
-@SuppressWarnings({ "rawtypes", "unchecked" })
 
 // Maaske har vi en abstract SourceAssembly.. og Saa SingletonSourceAssembly
 
@@ -80,31 +78,33 @@ public class SourceAssembly implements DependencyProvider {
         return requireNonNull(constant);
     }
 
+    public Key<?> defaultKey() {
+        if (constant != null) {
+            return Key.of(component.driver().sourceType());
+        } else {
+            return driver.factory.key();
+        }
+    }
+
     // Bliver kaldt naar man koere provide();
-    public BuildEntry<?> provide(InjectionManager services) {
+    public BuildEntry<?> provide() {
         // Not sure we should allow for calling provide multiple times...
         BuildEntry<?> c = service;
         if (c == null) {
-            c = new SingletonBuildEntry<>(services, this);
-            if (constant != null) {
-                c.as((Key) Key.of(component.driver().sourceType()));
-            } else {
-                SingletonComponentDriver scd = driver;
-                c.as(scd.factory.key());
-            }
+            c = new SingletonBuildEntry<>(component.container.im, this);
             // service = c;
         }
         return c;
     }
 
-    public BuildEntry<?> providePrototype(InjectionManager services) {
-        SingletonComponentDriver scd = driver;
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public BuildEntry<?> providePrototype() {
         BuildEntry<?> c = service;
         if (c == null) {
             throw new UnsupportedOperationException();
             // c = new ComponentMethodHandleBuildEntry<>(services, component, resolvable, ServiceMode.PROTOTYPE);
         }
-        c.as(scd.factory.key());
+        c.as((Key) defaultKey());
         return c;
     }
 

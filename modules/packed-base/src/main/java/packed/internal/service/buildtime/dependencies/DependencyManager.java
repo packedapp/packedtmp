@@ -42,7 +42,6 @@ import packed.internal.service.buildtime.InjectionManager;
 /**
  * This class manages everything to do with dependencies of components and service for an {@link ServiceExtension}.
  * 
- * @see ServiceExtension#manualRequirementsManagement()
  * @see ServiceExtension#require(Key...)
  * @see ServiceExtension#requireOptionally(Key...)
  */
@@ -158,10 +157,26 @@ public final class DependencyManager {
     }
 
     /**
-     * Enables manual requirements management.
-     * 
-     * @see ServiceExtension#manualRequirementsManagement()
+     * Requires that all requirements are explicitly added via either {@link ServiceExtension#requireOptionally(Key...)},
+     * {@link ServiceExtension#require(Key...)} or via implementing a contract.
      */
+    // Kan vi lave denne generisk paa tvaers af extensions...
+    // disableAutomaticRequirements()
+    // Jeg taenker lidt det er enten eller. Vi kan ikke goere det per component.
+    // Problemet er dem der f.eks. har metoder
+    //// Vil det ikke altid bliver efterfuldt af en contract?????
+    // Ser ingen grund til baade at support
+    // ManualRequirements management..
+    // AutoExport with regards to contract???
+
+    // Drop Management?
+    // Skal vi istedet for bare specificere en Contract????
+
+    // exactContract(Contract, forceValidate)
+    // supportContract() <-- can require less dependencies, any optional dependencies, export more dependencies
+    // Contract driven og manual requirements management er 2 sider af samme sag
+    // Contract driven er meget staerkere... og vi gider ikke supportere begge ting...
+
     public void manualRequirementsManagement() {
         manualRequirementsManagement = true;
     }

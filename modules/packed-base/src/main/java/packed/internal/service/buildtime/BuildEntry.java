@@ -69,7 +69,6 @@ public abstract class BuildEntry<T> implements DependencyProvider {
         // requireConfigurable();
         // validateKey(key);
         // Det er sgu ikke lige til at validere det med generics signature....
-
         this.key = (Key<T>) key;
     }
 

@@ -30,6 +30,7 @@ import java.lang.annotation.Target;
 @Documented
 @Opens(to = { OpenMode.METHOD_INVOKE, OpenMode.FIELD_SET })
 // Giver det mening at kunne injecte attributer??? Not sure
+
 public @interface AttributeProvide {
 
     /** The class that declares the attribute. */
@@ -40,6 +41,14 @@ public @interface AttributeProvide {
      * 
      * @return the name of the attribute that the member provides a value for
      */
+    // Wow hvis vi nu tager metode/field navnet...
+    // Goer at vi ikke kan bruge - og andre limiting ting...
+    // Men maaske er det ok
+
+    // Maaske attributer er camel case?
+    // _ bliver translatet til -
+
+    // Maaske ignorer vi case... //equalsIgnoreCase
     String name();
 }
 

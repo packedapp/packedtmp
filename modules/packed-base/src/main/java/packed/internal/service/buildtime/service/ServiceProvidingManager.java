@@ -54,14 +54,14 @@ public final class ServiceProvidingManager {
 
     public final IdentityHashMap<BuildEntry<?>, MethodHandle> handlers = new IdentityHashMap<>();
 
-    /** The extension node. */
-    private final InjectionManager node;
+    /** The injection manager. */
+    private final InjectionManager im;
 
     /** All injectors added via {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
     private ArrayList<ProvideAllFromOtherInjector> provideAll;
 
     /** All explicit added build entries. */
-    private final ArrayList<BuildEntry<?>> providingEntries = new ArrayList<>();
+    public final ArrayList<BuildEntry<?>> buildEntries = new ArrayList<>();
 
     /**
      * Creates a new manager.
@@ -70,7 +70,7 @@ public final class ServiceProvidingManager {
      *            the extension node
      */
     public ServiceProvidingManager(InjectionManager node) {
-        this.node = requireNonNull(node);
+        this.im = requireNonNull(node);
     }
 
     /**
@@ -78,33 +78,24 @@ public final class ServiceProvidingManager {
      * 
      * @param hook
      *            a provides group object
-     * @param cc
+     * @param component
      *            the configuration of the annotated component
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void addProvidesHook(AtProvidesHook hook, ComponentNodeConfiguration cc) {
-        // ComponentBuildEntry<?> parent = cc.source.provideForHooks(node, hook);
+    @SuppressWarnings("rawtypes")
+    public void addProvidesHook(AtProvidesHook hook, ComponentNodeConfiguration component) {
         // validate new instance member for @Provide
 
         // Add each @Provide as children of the parent node
         for (AtProvides atProvides : hook.members) {
-            ConfigSite configSite = cc.source.component.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, atProvides.provides,
-                    atProvides.member);
-            ProvideBuildEntry<?> node = new ProvideBuildEntry(configSite, this.node, cc.source, atProvides);
-            node.as((Key) atProvides.key);
-            providingEntries.add(node);
+            ConfigSite configSite = component.source.component.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE,
+                    atProvides.provides, atProvides.member);
+            new ProvideBuildEntry(configSite, component, atProvides); // Adds itself to #buildEntries
         }
     }
 
-    public BuildEntry<?> provide(ComponentNodeConfiguration cc) {
-        BuildEntry<?> e = cc.source.provide(node);
-        providingEntries.add(e);
-        return e;
-    }
-
     public BuildEntry<?> providePrototype(ComponentNodeConfiguration cc) {
-        BuildEntry<?> e = cc.source.providePrototype(node);
-        providingEntries.add(e);
+        BuildEntry<?> e = cc.source.providePrototype();
+        buildEntries.add(e);
         return e;
     }
 
@@ -113,20 +104,15 @@ public final class ServiceProvidingManager {
         if (provideAll == null) {
             p = provideAll = new ArrayList<>(1);
         }
-        p.add(new ProvideAllFromOtherInjector(node, configSite, injector, wirelets));
+        p.add(new ProvideAllFromOtherInjector(im, configSite, injector, wirelets));
     }
 
     public HashMap<Key<?>, BuildEntry<?>> resolve() {
-//        System.out.println("---- Resolving ----");
-//        for (BuildEntry<?> e : providingEntries) {
-//            System.out.println(e);
-//        }
-//        System.out.println("-------------------");
 
         LinkedHashMap<Key<?>, BuildEntry<?>> resolvedServices = new LinkedHashMap<>();
 
         // First process provided entries, then any entries added via provideAll
-        resolve0(resolvedServices, providingEntries);
+        resolve0(resolvedServices, buildEntries);
 
         if (provideAll != null) {
             // All injectors have already had wirelets transform and filter

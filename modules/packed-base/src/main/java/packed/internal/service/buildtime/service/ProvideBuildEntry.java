@@ -17,12 +17,13 @@ package packed.internal.service.buildtime.service;
 
 import java.lang.invoke.MethodHandle;
 
+import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
+import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.SourceAssembly;
 import packed.internal.inject.resolvable.Injectable;
 import packed.internal.service.buildtime.BuildEntry;
-import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.runtime.IndexedEntry;
 import packed.internal.service.runtime.RuntimeEntry;
@@ -43,20 +44,21 @@ public class ProvideBuildEntry<T> extends BuildEntry<T> {
     /**
      * Creates a new node from an instance.
      * 
-     * @param services
-     *            the injector builder
      */
-    public ProvideBuildEntry(ConfigSite configSite, InjectionManager services, SourceAssembly sa, AtProvides ap) {
-        super(services, configSite);
-        this.source = sa;
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public ProvideBuildEntry(ConfigSite configSite, ComponentNodeConfiguration component, AtProvides ap) {
+        super(component.container.im, configSite);
+        this.source = component.source;
         this.ap = ap;
         // if singleton reserve... protype no...
-        this.regionIndex = sa.component.region.reserve();
-        this.injectable = Injectable.ofDeclaredMember(sa, ap);
+        this.regionIndex = component.region.reserve();
+        this.injectable = Injectable.ofDeclaredMember(source, ap);
+        as((Key) ap.key);
         if (ap.isConstant) {
             // sa.component.region.resolver.sourceInjectables
             // Constants should be stored
         }
+        component.container.im.provider().buildEntries.add(this);
     }
 
     @Override
