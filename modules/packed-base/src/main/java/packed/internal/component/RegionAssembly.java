@@ -56,7 +56,7 @@ public class RegionAssembly {
 
         // We start by storing all constants in the region array
         for (SourceAssembly sa : resolver.sourceConstants) {
-            region.store(sa.regionIndex, sa.instance());
+            region.store(sa.regionIndex, sa.constant());
         }
 
         for (BuildEntry<?> i : resolver.constantServices) {

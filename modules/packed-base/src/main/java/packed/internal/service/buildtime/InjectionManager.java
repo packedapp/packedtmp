@@ -25,13 +25,11 @@ import java.util.LinkedHashMap;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.container.ExtensionConfiguration;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceRegistry;
 import app.packed.service.ServiceSet;
 import packed.internal.component.Region;
-import packed.internal.component.RegionAssembly;
 import packed.internal.component.Resolver;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.ContainerAssembly;
@@ -58,8 +56,7 @@ public final class InjectionManager {
     @Nullable
     ArrayList<InjectionManager> children;
 
-    /** The configuration of the extension. */
-    private final ExtensionConfiguration configuration;
+    public final ContainerAssembly container;
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
     public DependencyManager dependencies;
@@ -81,22 +78,15 @@ public final class InjectionManager {
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, BuildEntry<?>> resolvedEntries = new LinkedHashMap<>();
 
-    public final ContainerAssembly ca;
-
     /**
-     * Creates a new builder.
+     * Creates a new injection manager.
      * 
-     * @param context
-     *            the context
+     * @param container
+     *            the container this manager belongs to
      */
-    public InjectionManager(ContainerAssembly ca, ExtensionConfiguration context) {
-        this.ca = ca;
-        region = ca.component.region;
-        this.configuration = context;
-
+    public InjectionManager(ContainerAssembly container) {
+        this.container = requireNonNull(container);
     }
-
-    final RegionAssembly region;
 
     public void addErrorMessage() {
         hasFailed = true;
@@ -142,10 +132,6 @@ public final class InjectionManager {
         // We should make sure some stuff is no longer configurable...
     }
 
-    public final ExtensionConfiguration context() {
-        return configuration;
-    }
-
     /**
      * Returns the dependency manager for this builder.
      * 
@@ -172,6 +158,20 @@ public final class InjectionManager {
         return e;
     }
 
+    public ServiceRegistry instantiateEverything(Region region, WireletPack wc) {
+        LinkedHashMap<Key<?>, RuntimeEntry<?>> runtimeEntries = new LinkedHashMap<>();
+        PackedInjector publicInjector = new PackedInjector(container.component.configSite(), runtimeEntries);
+
+        ServiceExtensionInstantiationContext con = new ServiceExtensionInstantiationContext(region);
+
+        exports().forEach(e -> System.out.println("Exporting " + e.key));
+        for (var e : exports()) {
+            runtimeEntries.put(e.key, e.toRuntimeEntry(con));
+        }
+
+        return publicInjector;
+    }
+
     public void link(InjectionManager child) {
         child.parent = this;
         if (children == null) {
@@ -195,20 +195,6 @@ public final class InjectionManager {
             }
             dependencies().buildContract(c);
         });
-    }
-
-    public ServiceRegistry instantiateEverything(Region region, WireletPack wc) {
-        LinkedHashMap<Key<?>, RuntimeEntry<?>> runtimeEntries = new LinkedHashMap<>();
-        PackedInjector publicInjector = new PackedInjector(ca.component.configSite(), runtimeEntries);
-
-        ServiceExtensionInstantiationContext con = new ServiceExtensionInstantiationContext(region);
-
-        exports().forEach(e -> System.out.println("Exporting " + e.key));
-        for (var e : exports()) {
-            runtimeEntries.put(e.key, e.toRuntimeEntry(con));
-        }
-
-        return publicInjector;
     }
 
     public ServiceProvidingManager provider() {

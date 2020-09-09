@@ -38,7 +38,7 @@ public class Resolver {
     final RegionAssembly ra;
 
     /** Components that contains constants that should be stored in a region. */
-    public final ArrayList<SourceAssembly> sourceConstants = new ArrayList<>();
+    final ArrayList<SourceAssembly> sourceConstants = new ArrayList<>();
 
     /** Everything that needs to resolved. */
     public final ArrayList<Injectable> sourceInjectables = new ArrayList<>();

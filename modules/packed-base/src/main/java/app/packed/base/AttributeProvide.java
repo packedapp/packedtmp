@@ -49,6 +49,17 @@ public @interface AttributeProvide {
     // _ bliver translatet til -
 
     // Maaske ignorer vi case... //equalsIgnoreCase
+
+    // Ignore alt paa naer letters
+
+    // Eller maaske proever vi foerst at matche paa type...
+    // Er der flere end et hit skal man specificere et navn...
+
+    // Nahh det er sgu nok fint nok, at skulle specificere et navn...
+
+    // Men maaske hellere field name en attribute name...
+    // maaske begge dele og saa kan man vaelge
+    // Eller leder man efter 1 match...
     String name();
 }
 

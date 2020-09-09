@@ -41,15 +41,16 @@ public final class SingletonBuildEntry<T> extends BuildEntry<T> {
      *            the injector builder
      */
     @SuppressWarnings("unchecked")
-    public SingletonBuildEntry(InjectionManager im, SourceAssembly sa) {
-        super(im, sa.component.configSite());
-        this.source = sa;
-        as((Key<T>) sa.defaultKey());
+    public SingletonBuildEntry(InjectionManager im, SourceAssembly source) {
+        super(im, source.component.configSite());
+        this.source = source;
+        as((Key<T>) source.defaultKey());
         im.provider().buildEntries.add(this);
     }
 
     @Override
-    public @Nullable Injectable injectable() {
+    @Nullable
+    public Injectable injectable() {
         return source.injectable();
     }
 

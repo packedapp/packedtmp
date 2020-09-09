@@ -322,7 +322,7 @@ public final class ServiceExtension extends Extension {
 
     // Will install a ServiceStatelessConfiguration...
     public <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {
-        BeanConfiguration<T> bc = im.context().wire(SingletonComponentDriver.prototype(), factory);
+        BeanConfiguration<T> bc = im.container.component.wire(SingletonComponentDriver.prototype(), factory);
         @SuppressWarnings("unchecked")
         BuildEntry<T> b = (BuildEntry<T>) im.provider().providePrototype(bc.node);
         return new PackedPrototypeConfiguration<>(bc.node, b);

@@ -57,7 +57,7 @@ public final class ContainerAssembly {
     public ContainerAssembly(ComponentNodeConfiguration component) {
         this.component = requireNonNull(component);
         this.parent = component.parentOrNull() == null ? null : component.parentOrNull().container();
-        im = new InjectionManager(this, null);
+        this.im = new InjectionManager(this);
     }
 
     public void advanceTo(int newState) {

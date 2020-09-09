@@ -48,8 +48,6 @@ public class SourceAssembly implements DependencyProvider {
     /** Non-null if the component needs injection (not a constant). */
     final Injectable injectable;
 
-    MethodHandle mh;
-
     /** The index at which to store the source instance, or -1 if it should not be stored. */
     public final int regionIndex;
 
@@ -63,18 +61,20 @@ public class SourceAssembly implements DependencyProvider {
     SourceAssembly(ComponentNodeConfiguration component, SingletonComponentDriver<?> driver) {
         this.component = requireNonNull(component);
         this.driver = requireNonNull(driver);
-        this.regionIndex = component.region.reserve(); // prototype false
+
+        RegionAssembly region = component.region;
+        this.regionIndex = region.reserve(); // prototype false
         this.constant = driver.instance;
         if (constant == null) {
             this.injectable = Injectable.ofFactory(this);
-            component.region.resolver.sourceInjectables.add(injectable);
+            region.resolver.sourceInjectables.add(injectable);
         } else {
             this.injectable = null;
-            component.region.resolver.sourceConstants.add(this);
+            region.resolver.sourceConstants.add(this);
         }
     }
 
-    Object instance() {
+    Object constant() {
         return requireNonNull(constant);
     }
 
@@ -84,6 +84,12 @@ public class SourceAssembly implements DependencyProvider {
         } else {
             return driver.factory.key();
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Injectable injectable() {
+        return injectable;
     }
 
     // Bliver kaldt naar man koere provide();
@@ -106,12 +112,6 @@ public class SourceAssembly implements DependencyProvider {
         }
         c.as((Key) defaultKey());
         return c;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Injectable injectable() {
-        return injectable;
     }
 
     @Override
