@@ -76,15 +76,7 @@ public class SourceAssembly implements DependencyProvider {
         }
     }
 
-    public void close() {
-
-    }
-
-    boolean hasInstance() {
-        return constant != null;
-    }
-
-    public Object instance() {
+    Object instance() {
         return requireNonNull(constant);
     }
 
@@ -94,12 +86,13 @@ public class SourceAssembly implements DependencyProvider {
         BuildEntry<?> c = service;
         if (c == null) {
             c = new SingletonBuildEntry<>(services, this);
-            if (hasInstance()) {
+            if (constant != null) {
                 c.as((Key) Key.of(component.driver().sourceType()));
             } else {
                 SingletonComponentDriver scd = driver;
                 c.as(scd.factory.key());
             }
+            // service = c;
         }
         return c;
     }
@@ -123,15 +116,12 @@ public class SourceAssembly implements DependencyProvider {
 
     @Override
     public MethodHandle toMethodHandle() {
-        if (injectable == null) {
-            Object instance = instance();
-            MethodHandle mh = MethodHandles.constant(instance.getClass(), instance);
-
-            // MethodHandle()T -> MethodHandle(Region)T
-            return MethodHandles.dropArguments(mh, 0, Region.class);
-        } else {
-            return Region.readSingletonAs(regionIndex, component.source.injectable.rawType());
+        if (constant != null) {
+            MethodHandle mh = MethodHandles.constant(constant.getClass(), constant);
+            return MethodHandles.dropArguments(mh, 0, Region.class); // MethodHandle()T -> MethodHandle(Region)T
+        } else { // injectable != null
+            // Taenker vi kun bruger den her... Hvis vi har lyst til genbrug
+            return Region.readSingletonAs(regionIndex, injectable.rawType());
         }
-
     }
 }

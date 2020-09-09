@@ -17,8 +17,6 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.ArrayList;
-
 import app.packed.service.ServiceRegistry;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.resolvable.Injectable;
@@ -33,8 +31,6 @@ import packed.internal.util.ThrowableUtil;
  */
 public class RegionAssembly {
 
-    private final ArrayList<SourceAssembly> allSources = new ArrayList<>();
-
     final ComponentNodeConfiguration configuration; // do we need this??
 
     int nextIndex;
@@ -47,16 +43,6 @@ public class RegionAssembly {
 
     public void assemblyClosed() {
         resolver.resolveAll();
-
-//        for (SourceAssembly sa : allSources) {
-//            if (sa.resolvable != null && sa.service == null) {
-//                ContainerAssembly container = configuration.container;
-//                ServiceExtensionNode node = container.se;
-//                System.out.println("Do we have the service extension= " + (node != null));
-//                sa.resolvable.newMH(this, node.provider());
-//            }
-//        }
-        // Write all non-services singletons...
 
         System.out.println("Closing region");
     }

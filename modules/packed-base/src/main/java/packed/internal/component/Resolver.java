@@ -80,10 +80,6 @@ public class Resolver {
             }
         }
     }
-
-    public void instantiate() {
-
-    }
 }
 
 //if (Extension.class.isAssignableFrom(rawType)) {
