@@ -18,7 +18,6 @@ package packed.internal.service.buildtime.service;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,13 +33,11 @@ import app.packed.inject.Provide;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.RegionAssembly;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.inject.ConfigSiteInjectOperations;
-import packed.internal.inject.resolvable.ResolvableFactory;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ErrorMessages;
-import packed.internal.service.buildtime.ServiceExtensionNode;
+import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.service.runtime.AbstractInjector;
 
 /**
@@ -57,10 +54,8 @@ public final class ServiceProvidingManager {
 
     public final IdentityHashMap<BuildEntry<?>, MethodHandle> handlers = new IdentityHashMap<>();
 
-    public final ArrayDeque<ResolvableFactory> mustInstantiate = new ArrayDeque<>();
-
     /** The extension node. */
-    private final ServiceExtensionNode node;
+    private final InjectionManager node;
 
     /** All injectors added via {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
     private ArrayList<ProvideAllFromOtherInjector> provideAll;
@@ -74,7 +69,7 @@ public final class ServiceProvidingManager {
      * @param node
      *            the extension node
      */
-    public ServiceProvidingManager(ServiceExtensionNode node) {
+    public ServiceProvidingManager(InjectionManager node) {
         this.node = requireNonNull(node);
     }
 
@@ -88,13 +83,14 @@ public final class ServiceProvidingManager {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void addProvidesHook(AtProvidesHook hook, ComponentNodeConfiguration cc) {
-        ComponentBuildEntry<?> parent = cc.source.provideForHooks(node, hook);
+        // ComponentBuildEntry<?> parent = cc.source.provideForHooks(node, hook);
+        // validate new instance member for @Provide
 
         // Add each @Provide as children of the parent node
         for (AtProvides atProvides : hook.members) {
-            ConfigSite configSite = parent.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, atProvides.provides,
+            ConfigSite configSite = cc.source.component.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, atProvides.provides,
                     atProvides.member);
-            ComponentMethodHandleBuildEntry<?> node = new ComponentMethodHandleBuildEntry<>(configSite, atProvides, parent);
+            ProvideBuildEntry<?> node = new ProvideBuildEntry(configSite, this.node, cc.source, atProvides);
             node.as((Key) atProvides.key);
             providingEntries.add(node);
         }
@@ -121,16 +117,17 @@ public final class ServiceProvidingManager {
     }
 
     public HashMap<Key<?>, BuildEntry<?>> resolve() {
-        System.out.println("---- Resolving ----");
-        for (BuildEntry<?> e : providingEntries) {
-            System.out.println(e);
-        }
-        System.out.println("-------------------");
+//        System.out.println("---- Resolving ----");
+//        for (BuildEntry<?> e : providingEntries) {
+//            System.out.println(e);
+//        }
+//        System.out.println("-------------------");
 
         LinkedHashMap<Key<?>, BuildEntry<?>> resolvedServices = new LinkedHashMap<>();
 
         // First process provided entries, then any entries added via provideAll
         resolve0(resolvedServices, providingEntries);
+
         if (provideAll != null) {
             // All injectors have already had wirelets transform and filter
             for (ProvideAllFromOtherInjector fromInjector : provideAll) {
@@ -145,6 +142,7 @@ public final class ServiceProvidingManager {
         if (failingDuplicateProviders != null) {
             ErrorMessages.addDuplicateNodes(failingDuplicateProviders);
         }
+        System.out.println("Found " + resolvedServices);
         return resolvedServices;
     }
 
@@ -162,12 +160,6 @@ public final class ServiceProvidingManager {
                     hs.add(entry);
                 }
             }
-        }
-    }
-
-    public void resolveMH(RegionAssembly ra) {
-        for (BuildEntry<?> e : providingEntries) {
-            e.toMH(ra, this);
         }
     }
 }

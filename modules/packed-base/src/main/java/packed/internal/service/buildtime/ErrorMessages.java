@@ -72,16 +72,20 @@ public final class ErrorMessages {
         throw new IllegalStateException(sb.toString());
     }
 
-    public static void addUnresolvedExports(ServiceExtensionNode node, HashMap<Key<?>, LinkedHashSet<ExportedBuildEntry<?>>> dublicateNodes) {
+    public static void addUnresolvedExports(InjectionManager node, HashMap<Key<?>, LinkedHashSet<ExportedBuildEntry<?>>> dublicateNodes) {
         // ArtifactBuildContext abc = node.context().buildContext();
         // System.out.println(abc);
     }
 
     static String format(BuildEntry<?> e) {
-        if (e.declaringEntry() == null) {
+        // TODO FIX
+        // Need to look in injectable and see if first dependency is SourceAssembly
+        BuildEntry<?> declaringEntry = e;
+
+        if (declaringEntry == null) {
             return e.configSite().toString();
         }
-        StringBuilder sb = new StringBuilder(e.declaringEntry().configSite().toString());
+        StringBuilder sb = new StringBuilder(declaringEntry.configSite().toString());
         e.configSite().visit(new ConfigSiteVisitor() {
 
             /** {@inheritDoc} */

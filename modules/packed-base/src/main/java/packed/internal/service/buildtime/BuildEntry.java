@@ -18,7 +18,6 @@ package packed.internal.service.buildtime;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.util.List;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
@@ -26,10 +25,8 @@ import app.packed.config.ConfigSite;
 import app.packed.inject.Provide;
 import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.Service;
-import packed.internal.component.Region;
-import packed.internal.component.RegionAssembly;
-import packed.internal.inject.resolvable.ResolvableFactory;
-import packed.internal.service.buildtime.service.ServiceProvidingManager;
+import packed.internal.inject.resolvable.DependencyProvider;
+import packed.internal.inject.resolvable.Injectable;
 import packed.internal.service.runtime.RuntimeEntry;
 
 /**
@@ -41,7 +38,7 @@ import packed.internal.service.runtime.RuntimeEntry;
  * BSEs are never exposed to end-users, but instead wrapped in implementations of {@link ExportedServiceConfiguration}.
  */
 // BuildEntry does not implements ServiceDescriptor because it is mutable, so we
-public abstract class BuildEntry<T> {
+public abstract class BuildEntry<T> implements DependencyProvider {
 
     /** The configuration site of this object. */
     private final ConfigSite configSite;
@@ -59,21 +56,11 @@ public abstract class BuildEntry<T> {
 
     /** The service no this entry belongs to. Or null for wirelets */
     @Nullable // Is nullable for stages for now
-    public final ServiceExtensionNode node;
+    public final InjectionManager node;
 
-    @Nullable
-    public final ResolvableFactory source;
-
-    public BuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite) {
+    public BuildEntry(@Nullable InjectionManager serviceExtension, ConfigSite configSite) {
         this.node = serviceExtension;
         this.configSite = requireNonNull(configSite);
-        this.source = null;
-    }
-
-    public BuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite, @Nullable ResolvableFactory sh) {
-        this.node = serviceExtension;
-        this.configSite = requireNonNull(configSite);
-        this.source = sh;
     }
 
     @SuppressWarnings("unchecked")
@@ -95,31 +82,15 @@ public abstract class BuildEntry<T> {
         return configSite;
     }
 
-    /**
-     * If this node is located on another build node return the node, otherwise null. For example a method annotated with
-     * {@link Provide} on a class that is itself registered as a component.
-     * 
-     * @return stuff
-     */
+    @Override
     @Nullable
-    public BuildEntry<?> declaringEntry() {
-        return null;
+    public Injectable injectable() {
+        throw new UnsupportedOperationException();
     }
-
-    /**
-     * Returns whether or not this node has any dependencies that needs to be resolved.
-     *
-     * @return whether or not this node has any dependencies that needs to be resolved
-     */
-    public abstract boolean hasUnresolvedDependencies();
-
-    public abstract ServiceMode instantiationMode();
 
     public final Key<T> key() {
         return key;
     }
-
-    protected abstract MethodHandle newMH(RegionAssembly ra, ServiceProvidingManager spm);
 
     /**
      * Creates a new runtime node from this node.
@@ -132,15 +103,9 @@ public abstract class BuildEntry<T> {
         return new PackedService(key, configSite);
     }
 
-    // cacher runtime noden...
-    public final MethodHandle toMH(RegionAssembly ra, ServiceProvidingManager spm) {
-        return spm.handlers.computeIfAbsent(this, k -> {
-            MethodHandle mh = k.newMH(ra, spm);
-            if (!mh.type().parameterList().equals(List.of(Region.class))) {
-                throw new IllegalStateException("Must create node type of " + mh + " for " + getClass());
-            }
-            return mh;
-        });
+    @Override
+    public MethodHandle toMethodHandle() {
+        throw new UnsupportedOperationException();
     }
 
     // cacher runtime noden...

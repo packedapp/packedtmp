@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.inject.ProvidePrototypeContext;
 import packed.internal.service.buildtime.BuildEntry;
-import packed.internal.service.buildtime.ServiceMode;
 
 /**
  * A delegating runtime service node.
@@ -44,8 +43,8 @@ public final class DelegatingInjectorEntry<T> extends RuntimeEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public ServiceMode instantiationMode() {
-        return delegate.instantiationMode();
+    public boolean isConstant() {
+        return delegate.isConstant();
     }
 
     /** {@inheritDoc} */

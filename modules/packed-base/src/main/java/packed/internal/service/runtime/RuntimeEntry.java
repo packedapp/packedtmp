@@ -23,7 +23,6 @@ import app.packed.config.ConfigSite;
 import app.packed.inject.ProvidePrototypeContext;
 import app.packed.service.Service;
 import packed.internal.service.buildtime.BuildEntry;
-import packed.internal.service.buildtime.ServiceMode;
 
 /** An entry that represents a service at runtime. */
 public abstract class RuntimeEntry<T> implements Service {
@@ -64,7 +63,8 @@ public abstract class RuntimeEntry<T> implements Service {
      */
     public abstract T getInstance(@Nullable ProvidePrototypeContext request);
 
-    public abstract ServiceMode instantiationMode();
+    @Override
+    public abstract boolean isConstant();
 
     /** {@inheritDoc} */
     @Override
@@ -79,7 +79,7 @@ public abstract class RuntimeEntry<T> implements Service {
     public final String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(key());
-        sb.append("[").append(instantiationMode()).append(']');
+        sb.append("[isConstant=").append(isConstant()).append(']');
         return sb.toString();
     }
 }

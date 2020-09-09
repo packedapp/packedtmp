@@ -15,7 +15,10 @@
  */
 package packed.internal.service.buildtime.service;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.container.BaseBundle;
+import app.packed.inject.Provide;
 import app.packed.service.Injector;
 
 /**
@@ -26,27 +29,44 @@ public class Z1 extends BaseBundle {
     /** {@inheritDoc} */
     @Override
     protected void configure() {
+        provide(DxString.class);
+        provide(Dx.class);
         provideInstance(123);
-        // provide(Dx.class);
+        provide(NoDep.class);
         export(Integer.class);
     }
 
     public static void main(String[] args) {
+        long now = System.currentTimeMillis();
         Injector inj = Injector.create(new Z1());
-        Object ii = inj.use(Integer.class);
+        Integer ii = inj.use(Integer.class);
         System.out.println(ii.getClass() + " " + ii);
-        System.out.println(inj);
+        // System.out.println(inj.use(Dx.class).x);
         System.out.println("BYE");
+        System.out.println(System.currentTimeMillis() - now);
+    }
+
+    public static class NoDep {
+        public NoDep() {
+            System.out.println("Instantiated");
+        }
+
+        @Provide(constant = true)
+        public String s() {
+            return "adsasd";
+        }
     }
 
     public static class Dx {
+        final Integer x;
+
         public Dx(Integer x) {
-            System.out.println("Instantiated");
+            this.x = requireNonNull(x);
         }
     }
 
     public static class DxString {
-        public DxString(String x) {
+        public DxString(Dx dx, Integer i) {
             System.out.println("Instantiated");
         }
     }

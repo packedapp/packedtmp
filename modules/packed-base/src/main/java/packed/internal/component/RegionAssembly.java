@@ -17,15 +17,15 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 
 import app.packed.service.ServiceRegistry;
-import packed.internal.component.PackedWireableComponentDriver.SingletonComponentDriver;
 import packed.internal.container.ContainerAssembly;
-import packed.internal.inject.resolvable.ResolvableFactory;
-import packed.internal.service.buildtime.ServiceExtensionNode;
+import packed.internal.inject.resolvable.Injectable;
+import packed.internal.service.buildtime.BuildEntry;
+import packed.internal.service.buildtime.InjectionManager;
+import packed.internal.service.buildtime.service.ProvideBuildEntry;
+import packed.internal.service.buildtime.service.SingletonBuildEntry;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -37,75 +37,77 @@ public class RegionAssembly {
 
     final ComponentNodeConfiguration configuration; // do we need this??
 
-    private final ArrayList<SourceAssembly> constantSources = new ArrayList<>();
-
-    int index;
-
-    public final ArrayDeque<ResolvableFactory> mustInstantiate = new ArrayDeque<>();
+    int nextIndex;
 
     public final Resolver resolver = new Resolver(this);
-
-    public ServiceExtensionNode services;
 
     RegionAssembly(ComponentNodeConfiguration node) {
         this.configuration = requireNonNull(node);
     }
 
-    public SourceAssembly addSourced(ComponentNodeConfiguration cnc) {
-        SourceAssembly sa = new SourceAssembly(cnc, (SingletonComponentDriver<?>) cnc.driver);
-        if (sa.hasInstance()) {
-            constantSources.add(sa);
-        } else {
-            allSources.add(sa);
-        }
-        return sa;
-    }
-
     public void assemblyClosed() {
-        for (SourceAssembly sa : allSources) {
-            if (sa.resolvable != null && sa.service == null) {
-                ContainerAssembly container = configuration.container;
-                ServiceExtensionNode node = container.se;
-                System.out.println("Do we have the service extension= " + (node != null));
-                sa.resolvable.newMH(this, node.provider());
-                mustInstantiate.addLast(sa.resolvable);
-            }
-        }
+        resolver.resolveAll();
+
+//        for (SourceAssembly sa : allSources) {
+//            if (sa.resolvable != null && sa.service == null) {
+//                ContainerAssembly container = configuration.container;
+//                ServiceExtensionNode node = container.se;
+//                System.out.println("Do we have the service extension= " + (node != null));
+//                sa.resolvable.newMH(this, node.provider());
+//            }
+//        }
         // Write all non-services singletons...
 
         System.out.println("Closing region");
     }
 
     Region newRegion(PackedInitializationContext pic, ComponentNode root) {
-        Region region = new Region(index);
+        Region region = new Region(nextIndex);
 
         if (root.modifiers().isGuest()) {
             region.store(0, new PackedGuest(null));
         }
 
-        // We start by storing all constant sources in the array
-        for (SourceAssembly sa : constantSources) {
+        // We start by storing all constants in the region array
+        for (SourceAssembly sa : resolver.sourceConstants) {
             region.store(sa.regionIndex, sa.instance());
         }
 
-        for (ResolvableFactory e : mustInstantiate) {
-            if (e.regionIndex > -1) {
-                MethodHandle mh = e.reducedMha;
-                // System.out.println("INST " + mh.type().returnType());
-                Object instance;
-                try {
-                    instance = mh.invoke(region);
-                } catch (Throwable e1) {
-                    throw ThrowableUtil.orUndeclared(e1);
-                }
-                region.store(e.regionIndex, instance);
+        for (BuildEntry<?> i : resolver.constantServices) {
+            int index;
+            Injectable ii;
+            if (i instanceof ProvideBuildEntry<?>) {
+                ProvideBuildEntry<?> e = (ProvideBuildEntry<?>) i;
+                index = e.regionIndex;
+                ii = e.injectable;
+            } else {
+                SingletonBuildEntry<?> sbe = (SingletonBuildEntry<?>) i;
+                index = sbe.source.regionIndex;
+                ii = sbe.source.injectable;
             }
+            Object instance;
+            try {
+                instance = ii.buildMethodHandle().invoke(region);
+            } catch (Throwable e1) {
+                throw ThrowableUtil.orUndeclared(e1);
+            }
+            region.store(index, instance);
+        }
+
+        for (Injectable i : resolver.nonServiceNonPrototypeInjectables) {
+            Object instance;
+            try {
+                instance = i.buildMethodHandle().invoke(region);
+            } catch (Throwable e1) {
+                throw ThrowableUtil.orUndeclared(e1);
+            }
+            region.store(i.source().regionIndex, instance);
         }
 
         ContainerAssembly container = configuration.container;
 
         int registryIndex = root.modifiers().isGuest() ? 1 : 0;
-        ServiceExtensionNode node = container.se;
+        InjectionManager node = container.im;
         if (node != null) {
             region.store(registryIndex, node.instantiateEverything(region, pic.wirelets()));
         } else {
@@ -116,6 +118,6 @@ public class RegionAssembly {
     }
 
     public int reserve() {
-        return index++;
+        return nextIndex++;
     }
 }

@@ -18,26 +18,25 @@ package packed.internal.component;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Key;
 import app.packed.component.ComponentModifier;
 import packed.internal.component.PackedWireableComponentDriver.SingletonComponentDriver;
 import packed.internal.inject.resolvable.DependencyProvider;
 import packed.internal.inject.resolvable.Injectable;
-import packed.internal.inject.resolvable.ResolvableFactory;
 import packed.internal.service.buildtime.BuildEntry;
-import packed.internal.service.buildtime.ServiceExtensionNode;
-import packed.internal.service.buildtime.ServiceMode;
-import packed.internal.service.buildtime.service.AtProvidesHook;
-import packed.internal.service.buildtime.service.ComponentBuildEntry;
-import packed.internal.service.buildtime.service.ComponentConstantBuildEntry;
-import packed.internal.service.buildtime.service.ComponentMethodHandleBuildEntry;
+import packed.internal.service.buildtime.InjectionManager;
+import packed.internal.service.buildtime.service.SingletonBuildEntry;
 
 /**
  * All components that have a {@link ComponentModifier#SOURCED} modifier has an instance of this class.
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class SourceAssembly {
+
+// Maaske har vi en abstract SourceAssembly.. og Saa SingletonSourceAssembly
+
+public class SourceAssembly implements DependencyProvider {
 
     /** The component the source belongs to. */
     public final ComponentNodeConfiguration component;
@@ -45,20 +44,16 @@ public class SourceAssembly {
     /** If the source represents a constant. */
     private final Object constant;
 
-    private DependencyProvider dependencyProvider;
-
     /** The driver of this source. */
     public final SingletonComponentDriver<?> driver;
 
     /** Non-null if the component needs injection (not a constant). */
-    public final Injectable injectable;
+    final Injectable injectable;
 
     MethodHandle mh;
 
     /** The index at which to store the source instance, or -1 if it should not be stored. */
     public final int regionIndex;
-
-    final ResolvableFactory resolvable;
 
     /** Whether or not the component is provided as a service. */
     public BuildEntry<?> service;
@@ -79,13 +74,10 @@ public class SourceAssembly {
             this.injectable = null;
             component.region.resolver.sourceConstants.add(this);
         }
-        this.resolvable = null;
     }
 
     public void close() {
-        if (resolvable != null && service == null) {
 
-        }
     }
 
     boolean hasInstance() {
@@ -96,58 +88,50 @@ public class SourceAssembly {
         return requireNonNull(constant);
     }
 
-    public DependencyProvider instanceAsDependencyProvider() {
-        DependencyProvider d = dependencyProvider;
-        if (d == null) {
-            d = dependencyProvider = DependencyProvider.provideSingleton(this);
-        }
-        return d;
-    }
-
     // Bliver kaldt naar man koere provide();
-    public BuildEntry<?> provide(ServiceExtensionNode services) {
+    public BuildEntry<?> provide(InjectionManager services) {
+        // Not sure we should allow for calling provide multiple times...
         BuildEntry<?> c = service;
         if (c == null) {
+            c = new SingletonBuildEntry<>(services, this);
             if (hasInstance()) {
-                c = new ComponentConstantBuildEntry<>(services, component);
                 c.as((Key) Key.of(component.driver().sourceType()));
             } else {
                 SingletonComponentDriver scd = driver;
-                c = new ComponentMethodHandleBuildEntry<>(services, component, resolvable, ServiceMode.CONSTANT);
                 c.as(scd.factory.key());
             }
         }
         return c;
     }
 
-    // Always invoked before other provides....
-    public ComponentBuildEntry<?> provideForHooks(ServiceExtensionNode services, AtProvidesHook hook) {
-        ComponentBuildEntry entry;
-        if (hasInstance()) {
-            entry = new ComponentConstantBuildEntry<>(services, component);
-        } else {
-            // ServiceMode.constant needs to reflect the driver type
-            entry = new ComponentMethodHandleBuildEntry<>(services, component, resolvable, ServiceMode.CONSTANT);
-
-            // If any of the @Provide methods are instance members the parent node needs special treatment.
-            // As it needs to be constructed, before the field or method can provide services.
-
-            // HMMM, we need to provide this to constructor I think...
-            ((ComponentMethodHandleBuildEntry) entry).hasInstanceMembers = hook.hasInstanceMembers;
-        }
-        // Set the parent node, so it can be found from provideFactory or provideInstance
-        service = entry;
-        return entry;
-
-    }
-
-    public BuildEntry<?> providePrototype(ServiceExtensionNode services) {
+    public BuildEntry<?> providePrototype(InjectionManager services) {
         SingletonComponentDriver scd = driver;
         BuildEntry<?> c = service;
         if (c == null) {
-            c = new ComponentMethodHandleBuildEntry<>(services, component, resolvable, ServiceMode.PROTOTYPE);
+            throw new UnsupportedOperationException();
+            // c = new ComponentMethodHandleBuildEntry<>(services, component, resolvable, ServiceMode.PROTOTYPE);
         }
         c.as(scd.factory.key());
         return c;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Injectable injectable() {
+        return injectable;
+    }
+
+    @Override
+    public MethodHandle toMethodHandle() {
+        if (injectable == null) {
+            Object instance = instance();
+            MethodHandle mh = MethodHandles.constant(instance.getClass(), instance);
+
+            // MethodHandle()T -> MethodHandle(Region)T
+            return MethodHandles.dropArguments(mh, 0, Region.class);
+        } else {
+            return Region.readSingletonAs(regionIndex, component.source.injectable.rawType());
+        }
+
     }
 }

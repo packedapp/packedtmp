@@ -17,13 +17,9 @@ package packed.internal.service.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-import java.util.ArrayDeque;
 import java.util.IdentityHashMap;
 
 import packed.internal.component.Region;
-import packed.internal.service.buildtime.service.ComponentMethodHandleBuildEntry;
-import packed.internal.service.buildtime.service.ServiceProvidingManager;
 import packed.internal.service.runtime.RuntimeEntry;
 
 /** A special instantiation context that is created */
@@ -31,16 +27,10 @@ public class ServiceExtensionInstantiationContext {
 
     public final Region region;
 
-    public final ArrayDeque<ComponentMethodHandleBuildEntry<?>> entriesToInstantiate = new ArrayDeque<>();
-
-    public ServiceProvidingManager spm;
-
     ServiceExtensionInstantiationContext(Region ns) {
         this.region = requireNonNull(ns);
     }
 
     // Translates from BuildEntry->RuntimeEntry
     final IdentityHashMap<BuildEntry<?>, RuntimeEntry<?>> transformers = new IdentityHashMap<>();
-
-    final IdentityHashMap<BuildEntry<?>, MethodHandle> handlers = new IdentityHashMap<>();
 }

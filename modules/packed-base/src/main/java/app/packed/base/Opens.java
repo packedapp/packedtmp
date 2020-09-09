@@ -59,6 +59,8 @@ import java.lang.annotation.Target;
 
 //AccessibleFor, AccessMode (Hmm not good with VarHandle.AccessMode)
 
+// @OpensForExtension(extension = ServiceExtension.class, mode = OpenMode.FIELD_get);
+
 //AutoOpens
 public @interface Opens {
 

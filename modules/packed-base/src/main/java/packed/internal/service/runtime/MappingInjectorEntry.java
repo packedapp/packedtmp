@@ -21,7 +21,6 @@ import java.util.function.Function;
 
 import app.packed.inject.ProvidePrototypeContext;
 import packed.internal.service.buildtime.BuildEntry;
-import packed.internal.service.buildtime.ServiceMode;
 
 /** A runtime service entry that uses a {@link Function} to map an existing service. */
 public final class MappingInjectorEntry<F, T> extends RuntimeEntry<T> {
@@ -58,8 +57,8 @@ public final class MappingInjectorEntry<F, T> extends RuntimeEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public ServiceMode instantiationMode() {
-        return delegate.instantiationMode();
+    public boolean isConstant() {
+        return delegate.isConstant();
     }
 
     /** {@inheritDoc} */

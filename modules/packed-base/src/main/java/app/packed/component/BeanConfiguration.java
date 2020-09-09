@@ -25,7 +25,7 @@ import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedWireableComponentDriver;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.service.buildtime.BuildEntry;
-import packed.internal.service.buildtime.ServiceExtensionNode;
+import packed.internal.service.buildtime.InjectionManager;
 
 /**
  * This class represents the configuration of a component. Actual instances of this interface is usually obtained by
@@ -77,7 +77,7 @@ public class BeanConfiguration<T> extends AbstractComponentConfiguration {
     BuildEntry<T> entry() {
         if (buildEntry == null) {
             ServiceExtension e = node.container().use(ServiceExtension.class);
-            ServiceExtensionNode sen = ServiceExtensionNode.fromExtension(e);
+            InjectionManager sen = InjectionManager.fromExtension(e);
             buildEntry = (BuildEntry<T>) sen.provider().provide(node);
         }
         return buildEntry;

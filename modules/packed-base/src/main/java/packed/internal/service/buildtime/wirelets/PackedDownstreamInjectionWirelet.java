@@ -27,7 +27,7 @@ import app.packed.container.ExtensionMember;
 import app.packed.service.Service;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceWirelets;
-import packed.internal.service.buildtime.ServiceExtensionNode;
+import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.service.buildtime.export.ExportedBuildEntry;
 import packed.internal.service.runtime.ConstantInjectorEntry;
 import packed.internal.service.runtime.RuntimeEntry;
@@ -77,7 +77,7 @@ public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
         /** {@inheritDoc} */
         @Override
         protected void process(ServiceExtension extension) {
-            for (ExportedBuildEntry<?> e : ServiceExtensionNode.fromExtension(extension).exports()) {
+            for (ExportedBuildEntry<?> e : InjectionManager.fromExtension(extension).exports()) {
                 action.accept(e.toDescriptor());
             }
         }

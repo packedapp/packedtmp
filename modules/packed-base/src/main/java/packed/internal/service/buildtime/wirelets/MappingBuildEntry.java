@@ -17,17 +17,13 @@ package packed.internal.service.buildtime.wirelets;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.config.ConfigSite;
-import packed.internal.component.RegionAssembly;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
-import packed.internal.service.buildtime.ServiceExtensionNode;
-import packed.internal.service.buildtime.ServiceMode;
-import packed.internal.service.buildtime.service.ServiceProvidingManager;
+import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.service.runtime.MappingInjectorEntry;
 import packed.internal.service.runtime.RuntimeEntry;
 
@@ -42,7 +38,7 @@ final class MappingBuildEntry<F, T> extends BuildEntry<T> {
     /** The function to apply on the */
     private final Function<? super F, T> function;
 
-    MappingBuildEntry(ServiceExtensionNode node, ConfigSite configSite, BuildEntry<F> entryToMap, Key<T> toKey, Function<F, T> function) {
+    MappingBuildEntry(InjectionManager node, ConfigSite configSite, BuildEntry<F> entryToMap, Key<T> toKey, Function<F, T> function) {
         super(node, configSite);
         this.entryToMap = entryToMap;
         this.function = requireNonNull(function, "function is null");
@@ -51,25 +47,7 @@ final class MappingBuildEntry<F, T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean hasUnresolvedDependencies() {
-        return entryToMap.hasUnresolvedDependencies();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ServiceMode instantiationMode() {
-        return entryToMap.instantiationMode();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     protected RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
         return new MappingInjectorEntry<>(this, entryToMap.toRuntimeEntry(context), function);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected MethodHandle newMH(RegionAssembly ra, ServiceProvidingManager context) {
-        throw new UnsupportedOperationException();
     }
 }

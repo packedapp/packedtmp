@@ -13,37 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.resolvable;
+package app.packed.base;
 
-import java.lang.invoke.MethodHandle;
-
-import app.packed.base.Nullable;
+import app.packed.container.Extension;
 
 /**
- * Something that
+ *
  */
-// Typer
+public @interface OpensForExtension {
+    Class<? extends Extension> extension();
 
-// En service
-// En Declaring Class
-// Specials.. fx dependency...
-public interface DependencyProvider {
-
-    @Nullable
-    Injectable injectable();
-
-    // Used for cycle tracking
-    MethodHandle toMethodHandle();
+    OpenMode[] mode();
 }
 
-// Requirements
+// @SourceExtension(....)
+// @ExtensionMember -> Extension will be able to use sources
 
-// NodeStore, Components
-
-// Er der forskellige MH TYper??
-// Needs WebRequest
-// Needs Caller
-
-// Resolve -> Finds stuff, makes room in Region
-
-// validate, checks for circles 
+// Kun med OpensForExtension ->

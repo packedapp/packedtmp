@@ -15,33 +15,53 @@
  */
 package packed.internal.service.buildtime.service;
 
-import static java.util.Objects.requireNonNull;
+import java.lang.invoke.MethodHandle;
 
-import app.packed.component.Wirelet;
-import app.packed.config.ConfigSite;
-import app.packed.service.Injector;
-import app.packed.service.ServiceExtension;
+import app.packed.base.Nullable;
+import packed.internal.component.SourceAssembly;
+import packed.internal.inject.resolvable.Injectable;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.InjectionManager;
-import packed.internal.service.runtime.DelegatingInjectorEntry;
+import packed.internal.service.runtime.IndexedEntry;
 import packed.internal.service.runtime.RuntimeEntry;
 
-/** An entry specifically used for {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
-public final class RuntimeAdaptorEntry<T> extends BuildEntry<T> {
+/**
+ *
+ */
+public final class SingletonBuildEntry<T> extends BuildEntry<T> {
 
-    /** The entry from the 'imported' injector. */
-    private final RuntimeEntry<T> entry;
+    public final SourceAssembly source;
 
-    public RuntimeAdaptorEntry(InjectionManager node, RuntimeEntry<T> entry) {
-        super(node, ConfigSite.UNKNOWN);
-        this.entry = entry;
-        this.key = requireNonNull(entry.key());
+    /**
+     * Creates a new node from an instance.
+     * 
+     * @param services
+     *            the injector builder
+     */
+    public SingletonBuildEntry(InjectionManager services, SourceAssembly sa) {
+        super(services, sa.component.configSite());
+        this.source = sa;
+    }
+
+    @Override
+    public @Nullable Injectable injectable() {
+        return source.injectable();
     }
 
     /** {@inheritDoc} */
     @Override
     protected RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
-        return new DelegatingInjectorEntry<T>(this, entry);
+        return new IndexedEntry<>(this, context.region, source.regionIndex);
+    }
+
+    @Override
+    public MethodHandle toMethodHandle() {
+        return source.toMethodHandle();
+    }
+
+    @Override
+    public String toString() {
+        return "Singleton " + source;
     }
 }

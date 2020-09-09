@@ -28,20 +28,17 @@ import app.packed.config.ConfigSite;
 import app.packed.container.ComponentLinked;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
-import app.packed.container.ExtensionSetup;
 import app.packed.hook.OnHook;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
-import app.packed.statemachine.Leaving;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedWireableComponentDriver.SingletonComponentDriver;
 import packed.internal.component.wirelet.WireletList;
-import packed.internal.container.ContainerAssembly;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.resolvable.ServiceDependency;
 import packed.internal.service.buildtime.BuildEntry;
-import packed.internal.service.buildtime.ServiceExtensionNode;
+import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.service.buildtime.service.AtProvidesHook;
 import packed.internal.service.buildtime.service.PackedPrototypeConfiguration;
 import packed.internal.service.runtime.AbstractInjector;
@@ -78,8 +75,8 @@ import packed.internal.service.runtime.AbstractInjector;
 // Ellers selvfoelgelig hvis man bruger provide/@Provides\
 public final class ServiceExtension extends Extension {
 
-    /** The service extension node that does all the hard work. */
-    private final ServiceExtensionNode node;
+    /** The containers injection manager. */
+    private final InjectionManager im;
 
     /**
      * Should never be initialized by users.
@@ -88,8 +85,7 @@ public final class ServiceExtension extends Extension {
      *            the configuration of the extension
      */
     /* package-private */ ServiceExtension(ExtensionConfiguration configuration) {
-        ContainerAssembly ca = ((PackedExtensionConfiguration) configuration).container();
-        this.node = new ServiceExtensionNode(ca, configuration);
+        this.im = ((PackedExtensionConfiguration) configuration).container().im;
     }
 
     // Skal vi ogsaa supportere noget paa tvaers af bundles???
@@ -105,7 +101,7 @@ public final class ServiceExtension extends Extension {
 
     <T> ExportedServiceConfiguration<T> addOptional(Class<T> optional) {
         // @Inject is allowed, but other annotations, types und so weiter is not...
-
+        // Den har ihvertfald slet ikke noget providing...
         throw new UnsupportedOperationException();
     }
 
@@ -123,11 +119,6 @@ public final class ServiceExtension extends Extension {
         throw new UnsupportedOperationException();
     }
 
-    @Leaving(state = ExtensionSetup.NORMAL_USAGE)
-    void assemble() {
-        node.buildBundle();
-    }
-
     /**
      * Returns a set of all exported services from this extension. Or null if there are no exports.
      * 
@@ -136,7 +127,7 @@ public final class ServiceExtension extends Extension {
     @AttributeProvide(by = ServiceAttributes.class, name = "exported-services")
     @Nullable
     /* package-private */ ServiceSet attributesExports() {
-        return node.newExportedServiceSet();
+        return im.newExportedServiceSet();
     }
 
     /**
@@ -146,21 +137,12 @@ public final class ServiceExtension extends Extension {
      */
     @AttributeProvide(by = ServiceAttributes.class, name = "contract")
     /* package-private */ ServiceContract attributesContract() {
-        return node.newServiceContract();
+        return im.newServiceContract();
     }
 
     <S, U> void breakCycle(Key<S> key1, Key<U> key2, BiConsumer<S, U> consumer) {
         // cycleBreaker
         throw new UnsupportedOperationException();
-    }
-
-    /**
-     * This method is invoked by the runtime after all children have been configured. But before any guests might have been
-     * defined.
-     */
-    @Leaving(state = ExtensionSetup.CHILD_LINKING)
-    void childenLinked() {
-        node.buildTree();
     }
 
     // Det er jo i virkeligheden bare en @RunOnInjection klasse
@@ -282,7 +264,7 @@ public final class ServiceExtension extends Extension {
     public <T> ExportedServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        return node.exports().export(key, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
+        return im.exports().export(key, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 
     /**
@@ -293,14 +275,14 @@ public final class ServiceExtension extends Extension {
         // export all _services_.. Also those that are already exported as something else???
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
         checkConfigurable();
-        node.exports().exportAll(captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
+        im.exports().exportAll(captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 
     @ComponentLinked(onlyDirectLink = true)
     private void linkChild(ServiceExtension childExtension /* , @WireletSupply Optional<ServiceWireletPipeline> wirelets */) {
         childExtension.configuration();
         // if(configuration.isStronglyAttachedTo(childExtension.configuation())
-        node.link(childExtension.node);
+        im.link(childExtension.im);
     }
 
     /**
@@ -318,10 +300,17 @@ public final class ServiceExtension extends Extension {
 
     // Drop Management?
     // Skal vi istedet for bare specificere en Contract????
-    public void manualRequirementsManagement() {
+
+    // exactContract(Contract, forceValidate)
+    // supportContract() <-- can require less dependencies, any optional dependencies, export more dependencies
+
+    @Deprecated
+    // Contract driven og manual requirements management er 2 sider af samme sag
+    // Contract driven er meget staerkere... og vi gider ikke supportere begge ting...
+    void manualRequirementsManagement() {
         // explicitRequirementsManagement
         checkConfigurable();
-        node.dependencies().manualRequirementsManagement();
+        im.dependencies().manualRequirementsManagement();
 
         // useContract vs supportContract
     }
@@ -336,7 +325,7 @@ public final class ServiceExtension extends Extension {
      */
     @OnHook
     void onHook(AtProvidesHook hook, ComponentNodeConfiguration cc) {
-        node.provider().addProvidesHook(hook, cc);
+        im.provider().addProvidesHook(hook, cc);
     }
 
     /**
@@ -358,15 +347,14 @@ public final class ServiceExtension extends Extension {
                     "Custom implementations of Injector are currently not supported, injector type = " + injector.getClass().getName());
         }
         checkConfigurable();
-        node.provider().provideAll((AbstractInjector) injector, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL),
-                WireletList.ofAll(wirelets));
+        im.provider().provideAll((AbstractInjector) injector, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL), WireletList.ofAll(wirelets));
     }
 
     // Will install a ServiceStatelessConfiguration...
     public <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {
-        BeanConfiguration<T> bc = node.context().wire(SingletonComponentDriver.prototype(), factory);
+        BeanConfiguration<T> bc = im.context().wire(SingletonComponentDriver.prototype(), factory);
         @SuppressWarnings("unchecked")
-        BuildEntry<T> b = (BuildEntry<T>) node.provider().providePrototype(bc.node);
+        BuildEntry<T> b = (BuildEntry<T>) im.provider().providePrototype(bc.node);
         return new PackedPrototypeConfiguration<>(bc.node, b);
     }
 
@@ -374,7 +362,7 @@ public final class ServiceExtension extends Extension {
         checkConfigurable();
         ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Class<?> key : keys) {
-            node.dependencies().require(ServiceDependency.of(key), cs);
+            im.dependencies().require(ServiceDependency.of(key), cs);
         }
     }
 
@@ -399,7 +387,7 @@ public final class ServiceExtension extends Extension {
         checkConfigurable();
         ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Key<?> key : keys) {
-            node.dependencies().require(ServiceDependency.of(key), cs);
+            im.dependencies().require(ServiceDependency.of(key), cs);
         }
     }
 
@@ -421,7 +409,7 @@ public final class ServiceExtension extends Extension {
         checkConfigurable();
         ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
         for (Key<?> key : keys) {
-            node.dependencies().require(ServiceDependency.ofOptional(key), cs);
+            im.dependencies().require(ServiceDependency.ofOptional(key), cs);
         }
     }
 

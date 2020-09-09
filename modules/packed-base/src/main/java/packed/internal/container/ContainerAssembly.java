@@ -26,7 +26,7 @@ import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.service.buildtime.ServiceExtensionNode;
+import packed.internal.service.buildtime.InjectionManager;
 
 /** The default container context. */
 public final class ContainerAssembly {
@@ -52,11 +52,12 @@ public final class ContainerAssembly {
     @Nullable
     public final ContainerAssembly parent;
 
-    public ServiceExtensionNode se;
+    public final InjectionManager im;
 
     public ContainerAssembly(ComponentNodeConfiguration component) {
         this.component = requireNonNull(component);
         this.parent = component.parentOrNull() == null ? null : component.parentOrNull().container();
+        im = new InjectionManager(this, null);
     }
 
     public void advanceTo(int newState) {

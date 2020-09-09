@@ -108,12 +108,13 @@ public @interface Provide {
     String description() default "";
 
     /**
-     * Whether or not the provided instance is a constant.
+     * Indicates that the provided value is a constant.
+     * <p>
+     * Constant values are always eagerly constructed.
      * 
      * Constants may be cached by the runtime... I think we need to make some strong guarantees.
      * 
      * The provided does not have to be an constant in the way t. But from the perspectiv of the runtime. The instance
-     * 
      * 
      * Constants may be cached
      * 

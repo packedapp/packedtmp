@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import app.packed.inject.ProvidePrototypeContext;
 import packed.internal.component.Region;
 import packed.internal.service.buildtime.BuildEntry;
-import packed.internal.service.buildtime.ServiceMode;
 
 /** An entry holding a constant. */
 // Can't implement both ServiceDescriptor and Provider...
@@ -53,8 +52,8 @@ public final class IndexedEntry<T> extends RuntimeEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public ServiceMode instantiationMode() {
-        return ServiceMode.CONSTANT;
+    public boolean isConstant() {
+        return true;
     }
 
     /** {@inheritDoc} */

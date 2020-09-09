@@ -17,16 +17,11 @@ package packed.internal.service.buildtime.service;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-
-import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
-import packed.internal.component.RegionAssembly;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
-import packed.internal.service.buildtime.ServiceMode;
 import packed.internal.service.runtime.DelegatingInjectorEntry;
 import packed.internal.service.runtime.RuntimeEntry;
 
@@ -48,32 +43,7 @@ final class FromOtherInjectorBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    @Nullable
-    public BuildEntry<?> declaringEntry() {
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean hasUnresolvedDependencies() {
-        return false; // services from an never needs to resolved
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ServiceMode instantiationMode() {
-        return entry.instantiationMode();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     protected RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
         return new DelegatingInjectorEntry<T>(this, entry);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected MethodHandle newMH(RegionAssembly ra, ServiceProvidingManager spm) {
-        throw new UnsupportedOperationException();
     }
 }

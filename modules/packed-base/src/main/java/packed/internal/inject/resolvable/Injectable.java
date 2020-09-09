@@ -40,18 +40,21 @@ import packed.internal.service.buildtime.service.AtProvides;
 
 // Vi skal have noget PackletModel. Tilhoere @Get. De her 3 AOP ting skal vikles rundt om MHs
 
+// Something with dependencis
 public final class Injectable {
+
+    public boolean detectForCycles;
 
     MethodHandle buildMethodHandle;
 
     /** The dependencies that must be resolved. */
-    private final List<ServiceDependency> dependencies;
+    public final List<ServiceDependency> dependencies;
 
     /** A direct method handle. */
-    final MethodHandle directMethodHandle;
+    public final MethodHandle directMethodHandle;
 
     /** Resolved dependencies. */
-    private final DependencyProvider[] resolved;
+    public final DependencyProvider[] resolved;
 
     /** The source (component) this injectable belongs to. */
     private final SourceAssembly source;
@@ -61,6 +64,10 @@ public final class Injectable {
         this.dependencies = source.driver.factory.factory.dependencies;
         this.directMethodHandle = source.driver.fromFactory(source.component);
         this.resolved = new DependencyProvider[dependencies.size()];
+        this.detectForCycles = resolved.length > 0;
+        if (detectForCycles) {
+            source.component.container.im.dependencies().detectCyclesFor.add(this);
+        }
     }
 
     private Injectable(SourceAssembly source, AtProvides ap) {
@@ -69,8 +76,21 @@ public final class Injectable {
         this.directMethodHandle = ap.methodHandle;
         this.resolved = new DependencyProvider[directMethodHandle.type().parameterCount()];
         if (resolved.length != dependencies.size()) {
-            resolved[0] = source.instanceAsDependencyProvider();
+            resolved[0] = source;
         }
+        this.detectForCycles = resolved.length > (resolved.length - dependencies.size());
+        if (detectForCycles) {
+            source.component.container.im.dependencies().detectCyclesFor.add(this);
+        }
+    }
+
+    public boolean hasUnresolved() {
+        for (int i = 0; i < resolved.length; i++) {
+            if (resolved[i] == null) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public Class<?> rawType() {
@@ -81,22 +101,30 @@ public final class Injectable {
         int startIndex = resolved.length != dependencies.size() ? 1 : 0;
         for (int i = 0; i < resolved.length; i++) {
             resolved[i + startIndex] = resolver.resolve(this, dependencies.get(i));
+            requireNonNull(resolved[i + startIndex]);
         }
     }
 
-    public void buildMethodHandle() {
+    public MethodHandle buildMethodHandle() {
         // Does not have have dependencies.
         if (dependencies.size() == 0) {
             buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, Region.class);
         }
+        System.out.println();
+        System.out.println(directMethodHandle);
         MethodHandle mh = directMethodHandle;
         for (int i = 0; i < resolved.length; i++) {
             DependencyProvider dp = resolved[i];
-            MethodHandles.collectArguments(mh, i, dp.toMethodHandle());
+            requireNonNull(dp);
+            MethodHandle dep = dp.toMethodHandle();
+            System.out.println("Dep " + i + " " + dep);
+            mh = MethodHandles.collectArguments(mh, i, dep);
         }
         MethodType mt = MethodType.methodType(mh.type().returnType(), Region.class);
         int[] ar = new int[mh.type().parameterCount()];
         buildMethodHandle = MethodHandles.permuteArguments(mh, mt, ar);
+
+        return buildMethodHandle;
     }
 
     /**
@@ -119,7 +147,7 @@ public final class Injectable {
         return new Injectable(source);
     }
 
-    public static Injectable ofInstanceMember(SourceAssembly source, AtProvides ap) {
+    public static Injectable ofDeclaredMember(SourceAssembly source, AtProvides ap) {
         return new Injectable(source, ap);
     }
 }

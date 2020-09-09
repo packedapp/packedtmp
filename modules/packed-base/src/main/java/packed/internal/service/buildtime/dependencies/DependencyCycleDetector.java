@@ -21,8 +21,8 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 
 import app.packed.service.CyclicDependencyGraphException;
-import packed.internal.service.buildtime.BuildEntry;
-import packed.internal.service.buildtime.service.ComponentMethodHandleBuildEntry;
+import packed.internal.inject.resolvable.DependencyProvider;
+import packed.internal.inject.resolvable.Injectable;
 
 /** A utility class that can find cycles in a dependency graph. */
 
@@ -40,21 +40,24 @@ final class DependencyCycleDetector {
      * @throws CyclicDependencyGraphException
      *             if a dependency cycle was detected
      */
-    static void dependencyCyclesDetect(ArrayList<BuildEntry<?>> detectCyclesFor) {
+    static void dependencyCyclesDetect(ArrayList<Injectable> detectCyclesFor) {
         DependencyCycle c = dependencyCyclesFind(detectCyclesFor);
         if (c != null) {
             throw new CyclicDependencyGraphException("Dependency cycle detected: " + c);
         }
     }
 
-    private static DependencyCycle dependencyCyclesFind(ArrayList<BuildEntry<?>> detectCyclesFor) {
+    private static DependencyCycle dependencyCyclesFind(ArrayList<Injectable> detectCyclesFor) {
         if (detectCyclesFor == null) {
             throw new IllegalStateException("Must resolve nodes before detecting cycles");
         }
-        ArrayDeque<BuildEntry<?>> stack = new ArrayDeque<>();
-        ArrayDeque<BuildEntry<?>> dependencies = new ArrayDeque<>();
-        for (BuildEntry<?> node : detectCyclesFor) {
-            if (!node.detectCycleVisited) { // only process those nodes that have not been visited yet
+        ArrayDeque<Injectable> stack = new ArrayDeque<>();
+        ArrayDeque<Injectable> dependencies = new ArrayDeque<>();
+
+        System.out.println("COOL");
+        for (Injectable node : detectCyclesFor) {
+            System.out.println("Detect for " + node);
+            if (node.detectForCycles) { // only process those nodes that have not been visited yet
                 DependencyCycle dc = DependencyCycleDetector.detectCycle(node, stack, dependencies);
                 if (dc != null) {
                     return dc;
@@ -77,59 +80,56 @@ final class DependencyCycleDetector {
      * @throws CyclicDependencyGraphException
      *             if there is a cycle in the graph
      */
-    private static DependencyCycle detectCycle(BuildEntry<?> node, ArrayDeque<BuildEntry<?>> stack, ArrayDeque<BuildEntry<?>> dependencies) {
-        if (node.source != null) {
-            stack.push(node);
-            for (int i = 0; i < node.source.resolvedDependencies.length; i++) {
-                BuildEntry<?> dependency = node.source.resolvedDependencies[i];
-                if (dependency == null) {
-                    // System.out.println(node.dependencies);
-                    // new Exception().printStackTrace();
-                }
-                if (dependency != null) {
-                    BuildEntry<?> to = dependency;
-                    // If the dependency is a @Provides method, we need to use the declaring node
+    private static DependencyCycle detectCycle(Injectable node, ArrayDeque<Injectable> stack, ArrayDeque<Injectable> dependencies) {
+        stack.push(node);
 
-                    if (to.hasUnresolvedDependencies() && to instanceof ComponentMethodHandleBuildEntry) {
-                        ComponentMethodHandleBuildEntry<?> ic = (ComponentMethodHandleBuildEntry<?>) to;
-                        if (!ic.detectCycleVisited) {
-                            dependencies.push(to);
-                            // See if the component is already on the stack -> A cycle has been detected
-                            if (stack.contains(to)) {
-                                // clear links not part of the circle, for example, for A->B->C->B we want to remove A
-                                while (stack.peekLast() != to) {
-                                    stack.pollLast();
-                                    dependencies.pollLast();
-                                }
-                                return new DependencyCycle(dependencies);
-                            }
-                            DependencyCycle cycle = detectCycle(ic, stack, dependencies);
-                            if (cycle != null) {
-                                return cycle;
-                            }
-                            dependencies.pop();
+        for (int i = 0; i < node.resolved.length; i++) {
+            DependencyProvider dependency = node.resolved[i];
+            if (dependency == null) {
+                System.out.println(node.directMethodHandle + " : " + i);
+                // System.out.println(node.dependencies);
+                throw new IllegalStateException("Could not be resolved");
+            }
+            Injectable injectable = dependency.injectable();
+            if (injectable != null) {
+                if (injectable.detectForCycles) {
+                    dependencies.push(injectable);
+                    // See if the component is already on the stack -> A cycle has been detected
+                    if (stack.contains(injectable)) {
+                        // clear links not part of the circle, for example, for A->B->C->B we want to remove A
+                        while (stack.peekLast() != injectable) {
+                            stack.pollLast();
+                            dependencies.pollLast();
                         }
+                        return new DependencyCycle(dependencies);
                     }
+                    DependencyCycle cycle = detectCycle(injectable, stack, dependencies);
+                    if (cycle != null) {
+                        return cycle;
+                    }
+                    dependencies.pop();
                 }
             }
-            stack.pop(); // assert stack.pop() == node
-            node.detectCycleVisited = true;
         }
+
+        stack.pop(); // assert stack.pop() == node
+        System.out.println("_--------------> " + node.directMethodHandle);
+        node.detectForCycles = false;
         return null;
     }
 
     /** A class indicating a dependency cycle. */
     public static class DependencyCycle {
 
-        final ArrayDeque<BuildEntry<?>> dependencies;
+        final ArrayDeque<Injectable> dependencies;
 
-        DependencyCycle(ArrayDeque<BuildEntry<?>> dependencies) {
+        DependencyCycle(ArrayDeque<Injectable> dependencies) {
             this.dependencies = requireNonNull(dependencies);
         }
 
         @Override
         public String toString() {
-            ArrayList<BuildEntry<?>> list = new ArrayList<>(dependencies);
+            ArrayList<Injectable> list = new ArrayList<>(dependencies);
             // This method does not yet support Provides methods
 
             // Try checking this out and running some examples, it should have better error messages.
@@ -143,7 +143,7 @@ final class DependencyCycleDetector {
 
             // Uncomments the 3
             // sb.append(format(s.factory.mirror.getType()));
-            for (BuildEntry<?> n : list) {
+            for (Injectable n : list) {
                 System.out.println(n);
                 sb.append(" -");
                 // s = (BuildNodeOldFactory<?>) n;

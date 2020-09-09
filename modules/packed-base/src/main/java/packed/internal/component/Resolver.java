@@ -22,12 +22,16 @@ import java.util.ArrayList;
 import packed.internal.inject.resolvable.DependencyProvider;
 import packed.internal.inject.resolvable.Injectable;
 import packed.internal.inject.resolvable.ServiceDependency;
+import packed.internal.service.buildtime.BuildEntry;
+import packed.internal.service.buildtime.InjectionManager;
 
 /**
  *
  */
 // One resolver per region
 public class Resolver {
+
+    public final ArrayList<BuildEntry<?>> constantServices = new ArrayList<>();
 
     public final ArrayList<Injectable> nonServiceNonPrototypeInjectables = new ArrayList<>();
 
@@ -43,14 +47,24 @@ public class Resolver {
         this.ra = requireNonNull(ra);
     }
 
+    // Vi bliver noedt til at kalde ned recursivt saa vi kan finde raekkefolgen af service inst
+
     public DependencyProvider resolve(Injectable injectable, ServiceDependency dependency) {
-        return null;
+        InjectionManager se = ra.configuration.container.im;
+        BuildEntry<?> e = se.resolvedEntries.get(dependency.key());
+        if (e == null) {
+            throw new IllegalStateException("Could not resolve " + dependency.key());
+        } else {
+            // TODO call DependencyManager.recordResolvedDependency
+            return e;
+        }
     }
 
     public void resolveAll() {
-        for (Injectable i : sourceInjectables) {
-            i.resolve(this);
-        }
+        InjectionManager se = ra.configuration.container.im;
+
+        se.buildTree(this);
+
         // check circles
 
         // create mhs
@@ -58,8 +72,11 @@ public class Resolver {
         // Last we find all source injectables that are registered as services
         // They will be instantiated as the last thing after all services.
         for (Injectable i : sourceInjectables) {
-            if (i.source().service == null) {
-                nonServiceNonPrototypeInjectables.add(i);
+            // filter @Provide injectables
+            if (i.source().injectable == i) {
+                if (i.source().service == null) {
+                    nonServiceNonPrototypeInjectables.add(i);
+                }
             }
         }
     }
@@ -68,3 +85,19 @@ public class Resolver {
 
     }
 }
+
+//if (Extension.class.isAssignableFrom(rawType)) {
+//    if (entry instanceof ComponentMethodHandleBuildEntry) {
+//        Optional<Class<? extends Extension>> op = ((ComponentMethodHandleBuildEntry) entry).component.extension();
+//        if (op.isPresent()) {
+//            Class<? extends Extension> cc = op.get();
+//            if (cc == k.typeLiteral().type()) {
+//                PackedExtensionConfiguration e = ((PackedExtensionConfiguration) node.context()).container().getContext(cc);
+//                resolveTo = extensionEntries.computeIfAbsent(e.extensionType(),
+//                        kk -> new RuntimeAdaptorEntry(node, new ConstantInjectorEntry<Extension>(ConfigSite.UNKNOWN,
+//                                (Key) Key.of(e.extensionType()), e.instance())));
+//
+//            }
+//        }
+//    }
+//}

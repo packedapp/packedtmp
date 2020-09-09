@@ -32,8 +32,10 @@ import app.packed.service.ServiceRegistry;
 import app.packed.service.ServiceSet;
 import packed.internal.component.Region;
 import packed.internal.component.RegionAssembly;
+import packed.internal.component.Resolver;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.ContainerAssembly;
+import packed.internal.inject.resolvable.Injectable;
 import packed.internal.service.buildtime.dependencies.DependencyManager;
 import packed.internal.service.buildtime.export.ExportManager;
 import packed.internal.service.buildtime.export.ExportedBuildEntry;
@@ -46,15 +48,15 @@ import packed.internal.util.LookupUtil;
  * Since the logic for the service extension is quite complex. Especially with cross-container integration. We spread it
  * over multiple classes. With this class being the main one.
  */
-public final class ServiceExtensionNode {
+public final class InjectionManager {
 
     /** A VarHandle that can access ServiceExtension#node. */
-    private static final VarHandle VH_SERVICE_EXTENSION_NODE = LookupUtil.vhPrivateOther(MethodHandles.lookup(), ServiceExtension.class, "node",
-            ServiceExtensionNode.class);
+    private static final VarHandle VH_SERVICE_EXTENSION_NODE = LookupUtil.vhPrivateOther(MethodHandles.lookup(), ServiceExtension.class, "im",
+            InjectionManager.class);
 
     /** Any children of the extension. */
     @Nullable
-    ArrayList<ServiceExtensionNode> children;
+    ArrayList<InjectionManager> children;
 
     /** The configuration of the extension. */
     private final ExtensionConfiguration configuration;
@@ -70,7 +72,7 @@ public final class ServiceExtensionNode {
 
     /** Any parent of the node. */
     @Nullable
-    ServiceExtensionNode parent;
+    InjectionManager parent;
 
     /** A service exporter handles everything to do with exports. */
     @Nullable
@@ -79,16 +81,18 @@ public final class ServiceExtensionNode {
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, BuildEntry<?>> resolvedEntries = new LinkedHashMap<>();
 
+    public final ContainerAssembly ca;
+
     /**
      * Creates a new builder.
      * 
      * @param context
      *            the context
      */
-    public ServiceExtensionNode(ContainerAssembly ca, ExtensionConfiguration context) {
+    public InjectionManager(ContainerAssembly ca, ExtensionConfiguration context) {
+        this.ca = ca;
         region = ca.component.region;
-        region.services = this;
-        this.configuration = requireNonNull(context, "context is null");
+        this.configuration = context;
 
     }
 
@@ -110,7 +114,7 @@ public final class ServiceExtensionNode {
         // System.out.println("First " + (parent == null));
     }
 
-    public void buildTree() {
+    public void buildTree(Resolver resolver) {
         if (parent == null) {
 //            TreePrinter.print(this, n -> n.children, "", n -> n.context.containerPath().toString());
         }
@@ -125,9 +129,12 @@ public final class ServiceExtensionNode {
         if (hasFailed) {
             return;
         }
-        dependencies().analyze(this);
 
-        provider().resolveMH(region);
+        for (Injectable i : resolver.sourceInjectables) {
+            i.resolve(resolver);
+        }
+
+        dependencies().analyze(this);
     }
 
     public void checkExportConfigurable() {
@@ -165,7 +172,7 @@ public final class ServiceExtensionNode {
         return e;
     }
 
-    public void link(ServiceExtensionNode child) {
+    public void link(InjectionManager child) {
         child.parent = this;
         if (children == null) {
             children = new ArrayList<>(5);
@@ -192,55 +199,14 @@ public final class ServiceExtensionNode {
 
     public ServiceRegistry instantiateEverything(Region region, WireletPack wc) {
         LinkedHashMap<Key<?>, RuntimeEntry<?>> runtimeEntries = new LinkedHashMap<>();
-        PackedInjector publicInjector = new PackedInjector(context().containerConfigSite(), runtimeEntries);
+        PackedInjector publicInjector = new PackedInjector(ca.component.configSite(), runtimeEntries);
 
         ServiceExtensionInstantiationContext con = new ServiceExtensionInstantiationContext(region);
-        con.spm = provider;
-
-//        System.out.println("--------------- INIT PLAN ----------");
-//        for (ComponentFactoryBuildEntry<?> e : provider.mustInstantiate) {
-//            System.out.println(e.newInstance);
-//        }
-//        System.out.println("-----------------");
-
-//        for (SourceHolder e : provider.mustInstantiate) {
-//            if (e.regionIndex > -1) {
-//                MethodHandle mh = e.reducedMha;
-//                // System.out.println("INST " + mh.type().returnType());
-//                Object instance;
-//                try {
-//                    instance = mh.invoke(ns);
-//                } catch (Throwable e1) {
-//                    throw ThrowableUtil.orUndeclared(e1);
-//                }
-//                con.region.store(e.regionIndex, instance);
-//            }
-//        }
-//        for (var e : resolvedEntries.entrySet()) {
-//            if (e.getKey() != null) { // only services... should be put there
-//                // runtimeEntries.put(e.getKey(), e.getValue().toRuntimeEntry(con));
-//            }
-//        }
 
         exports().forEach(e -> System.out.println("Exporting " + e.key));
         for (var e : exports()) {
             runtimeEntries.put(e.key, e.toRuntimeEntry(con));
         }
-
-        // Instantiate all singletons...
-
-        // Vi bliver noedt til at instantiere dem in-order
-        // Saa vi skal have en orderet liste... af MH(ServiceNode)->Object
-//        for (BuildEntry<?> node : resolvedEntries.values()) {
-//            // MethodHandle mh = node.toMH(con);
-//            // System.out.println(mh);
-//            if (node instanceof ComponentMethodHandleBuildEntry) {
-//                ComponentMethodHandleBuildEntry<?> s = (ComponentMethodHandleBuildEntry<?>) node;
-//                if (s.instantiationMode() == ServiceMode.CONSTANT) {
-//                    s.toRuntimeEntry(con).getInstance(null);
-//                }
-//            }
-//        }
 
         return publicInjector;
     }
@@ -260,11 +226,50 @@ public final class ServiceExtensionNode {
      *            the extension to extract from
      * @return the service node
      */
-    public static ServiceExtensionNode fromExtension(ServiceExtension extension) {
-        return (ServiceExtensionNode) VH_SERVICE_EXTENSION_NODE.get(extension);
+    public static InjectionManager fromExtension(ServiceExtension extension) {
+        return (InjectionManager) VH_SERVICE_EXTENSION_NODE.get(extension);
     }
 }
 
+//System.out.println("--------------- INIT PLAN ----------");
+//for (ComponentFactoryBuildEntry<?> e : provider.mustInstantiate) {
+//  System.out.println(e.newInstance);
+//}
+//System.out.println("-----------------");
+
+//for (SourceHolder e : provider.mustInstantiate) {
+//  if (e.regionIndex > -1) {
+//      MethodHandle mh = e.reducedMha;
+//      // System.out.println("INST " + mh.type().returnType());
+//      Object instance;
+//      try {
+//          instance = mh.invoke(ns);
+//      } catch (Throwable e1) {
+//          throw ThrowableUtil.orUndeclared(e1);
+//      }
+//      con.region.store(e.regionIndex, instance);
+//  }
+//}
+//for (var e : resolvedEntries.entrySet()) {
+//  if (e.getKey() != null) { // only services... should be put there
+//      // runtimeEntries.put(e.getKey(), e.getValue().toRuntimeEntry(con));
+//  }
+//}
+
+// Instantiate all singletons...
+
+// Vi bliver noedt til at instantiere dem in-order
+// Saa vi skal have en orderet liste... af MH(ServiceNode)->Object
+//for (BuildEntry<?> node : resolvedEntries.values()) {
+//    // MethodHandle mh = node.toMH(con);
+//    // System.out.println(mh);
+//    if (node instanceof ComponentMethodHandleBuildEntry) {
+//        ComponentMethodHandleBuildEntry<?> s = (ComponentMethodHandleBuildEntry<?>) node;
+//        if (s.instantiationMode() == ServiceMode.CONSTANT) {
+//            s.toRuntimeEntry(con).getInstance(null);
+//        }
+//    }
+//}
 ///**
 //* Invoked by the runtime when a component has members (fields or methods) that are annotated with {@link Inject}.
 //* 

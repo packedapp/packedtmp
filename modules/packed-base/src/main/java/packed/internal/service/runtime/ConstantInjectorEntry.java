@@ -21,7 +21,6 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ProvidePrototypeContext;
-import packed.internal.service.buildtime.ServiceMode;
 
 /** An entry holding a constant. */
 public final class ConstantInjectorEntry<T> extends RuntimeEntry<T> {
@@ -47,8 +46,8 @@ public final class ConstantInjectorEntry<T> extends RuntimeEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public ServiceMode instantiationMode() {
-        return ServiceMode.CONSTANT;
+    public boolean isConstant() {
+        return true;
     }
 
     /** {@inheritDoc} */

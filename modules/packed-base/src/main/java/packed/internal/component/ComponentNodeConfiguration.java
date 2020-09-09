@@ -96,7 +96,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     /** Any container this component is part of. A container is part of it self */
     @Nullable
-    final ContainerAssembly container;
+    public final ContainerAssembly container;
 
     @Nullable
     public final SourceAssembly source;

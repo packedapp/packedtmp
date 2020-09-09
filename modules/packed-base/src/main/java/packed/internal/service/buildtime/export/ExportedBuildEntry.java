@@ -17,18 +17,13 @@ package packed.internal.service.buildtime.export;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.service.ServiceExtension;
-import packed.internal.component.RegionAssembly;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
-import packed.internal.service.buildtime.ServiceExtensionNode;
-import packed.internal.service.buildtime.ServiceMode;
-import packed.internal.service.buildtime.service.ServiceProvidingManager;
+import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.service.runtime.DelegatingInjectorEntry;
 import packed.internal.service.runtime.RuntimeEntry;
 
@@ -56,7 +51,7 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
      * @see ServiceExtension#export(Class)
      * @see ServiceExtension#export(Key)
      */
-    ExportedBuildEntry(ServiceExtensionNode builder, Key<T> key, ConfigSite configSite) {
+    ExportedBuildEntry(InjectionManager builder, Key<T> key, ConfigSite configSite) {
         super(builder, configSite);
         this.keyToExport = requireNonNull(key);
         this.key = requireNonNull(key);
@@ -71,7 +66,7 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
      *            the config site of the export
      * @see ServiceExtension#exportAll()
      */
-    ExportedBuildEntry(ServiceExtensionNode builder, BuildEntry<T> entryToExport, ConfigSite configSite) {
+    ExportedBuildEntry(InjectionManager builder, BuildEntry<T> entryToExport, ConfigSite configSite) {
         super(builder, configSite);
         this.exportedEntry = entryToExport;
         this.keyToExport = null;
@@ -83,32 +78,7 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    @Nullable
-    public BuildEntry<?> declaringEntry() {
-        return exportedEntry.declaringEntry();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ServiceMode instantiationMode() {
-        return exportedEntry.instantiationMode();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean hasUnresolvedDependencies() {
-        return exportedEntry.hasUnresolvedDependencies();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     protected RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
         return new DelegatingInjectorEntry<>(this, exportedEntry.toRuntimeEntry(context));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected MethodHandle newMH(RegionAssembly ra, ServiceProvidingManager spm) {
-        return exportedEntry.toMH(ra, spm);
     }
 }
