@@ -31,13 +31,16 @@ public final class Region {
 
     static final MethodHandle MH_GET_SINGLETON_INSTANCE = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "getSingletonInstance", Object.class, int.class);
 
-    private final Object[] store;
+    public final Object[] store;
 
-    Region(int i) {
+    public Region(int i) {
         store = new Object[i];
     }
 
     public Object getSingletonInstance(int index) {
+        Object value = store[index];
+        System.out.println("Reading index " + index + " value= " + value);
+        // new Exception().printStackTrace();
         return store[index];
     }
 
@@ -48,6 +51,10 @@ public final class Region {
         }
 
         System.out.println("--");
+    }
+
+    public boolean isSet(int index) {
+        return store[index] != null;
     }
 
     // Don't know
@@ -69,6 +76,7 @@ public final class Region {
     public static MethodHandle readSingletonAs(int index, Class<?> type) {
         MethodHandle mh = MethodHandles.insertArguments(MH_GET_SINGLETON_INSTANCE, 1, index);
         mh = MethodHandleUtil.castReturnType(mh, type);
+
         return mh;
     }
 

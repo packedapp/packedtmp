@@ -15,8 +15,6 @@
  */
 package packed.internal.service.buildtime.service;
 
-import static java.util.Objects.requireNonNull;
-
 import app.packed.container.BaseBundle;
 import app.packed.inject.Provide;
 import app.packed.service.Injector;
@@ -24,24 +22,16 @@ import app.packed.service.Injector;
 /**
  *
  */
-public class Z1 extends BaseBundle {
+public class Z2 extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-        provideInstance(123);
-        provide(NoDep.class);
-        export(Integer.class);
+        install(NoDep.class);
     }
 
     public static void main(String[] args) {
-        long now = System.currentTimeMillis();
-        Injector inj = Injector.create(new Z1());
-        Integer ii = inj.use(Integer.class);
-        System.out.println(ii.getClass() + " " + ii);
-        // System.out.println(inj.use(Dx.class).x);
-        System.out.println("BYE");
-        System.out.println(System.currentTimeMillis() - now);
+        Injector.create(new Z2());
     }
 
     public static class NoDep {
@@ -52,20 +42,6 @@ public class Z1 extends BaseBundle {
         @Provide(constant = true)
         public String s() {
             return "adsasd";
-        }
-    }
-
-    public static class Dx {
-        final Integer x;
-
-        public Dx(Integer x) {
-            this.x = requireNonNull(x);
-        }
-    }
-
-    public static class DxString {
-        public DxString(Dx dx, Integer i) {
-            System.out.println("Instantiated");
         }
     }
 }

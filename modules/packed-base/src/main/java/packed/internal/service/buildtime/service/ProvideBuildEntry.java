@@ -52,7 +52,7 @@ public class ProvideBuildEntry<T> extends BuildEntry<T> {
         this.ap = ap;
         // if singleton reserve... protype no...
         this.regionIndex = component.region.reserve();
-        this.injectable = Injectable.ofDeclaredMember(source, ap);
+        this.injectable = Injectable.ofDeclaredMember(this, source, ap);
         as((Key) ap.key);
         if (ap.isConstant) {
             // sa.component.region.resolver.sourceInjectables

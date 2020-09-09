@@ -31,7 +31,7 @@ import packed.internal.service.buildtime.InjectionManager;
 // One resolver per region
 public class Resolver {
 
-    public final ArrayList<BuildEntry<?>> constantServices = new ArrayList<>();
+    public final ArrayList<Injectable> constantServices = new ArrayList<>();
 
     final RegionAssembly ra;
 

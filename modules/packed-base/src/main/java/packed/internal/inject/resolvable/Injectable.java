@@ -20,12 +20,16 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.util.ArrayList;
 import java.util.List;
 
 import packed.internal.component.Region;
 import packed.internal.component.Resolver;
 import packed.internal.component.SourceAssembly;
+import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.service.AtProvides;
+import packed.internal.service.buildtime.service.Z2;
+import packed.internal.util.ThrowableUtil;
 
 /**
  *
@@ -57,30 +61,51 @@ public final class Injectable {
     public final DependencyProvider[] resolved;
 
     /** The source (component) this injectable belongs to. */
-    private final SourceAssembly source;
+    public final SourceAssembly source;
+
+    private final BuildEntry<?> buildEntry;
+
+    public BuildEntry<?> entry() {
+        if (buildEntry == null) {
+            return source.service;
+        }
+        return buildEntry;
+    }
 
     private Injectable(SourceAssembly source) {
         this.source = requireNonNull(source);
         this.dependencies = source.driver.factory.factory.dependencies;
         this.directMethodHandle = source.driver.fromFactory(source.component);
         this.resolved = new DependencyProvider[dependencies.size()];
-        this.detectForCycles = resolved.length > 0;
+        this.detectForCycles = true;// resolved.length > 0;
         if (detectForCycles) {
             source.component.container.im.dependencies().detectCyclesFor.add(this);
         }
+        buildEntry = null;
     }
 
-    private Injectable(SourceAssembly source, AtProvides ap) {
+    private Injectable(BuildEntry<?> buildEntry, SourceAssembly source, AtProvides ap) {
         this.source = requireNonNull(source);
         this.dependencies = ap.dependencies;
         this.directMethodHandle = ap.methodHandle;
+        this.buildEntry = requireNonNull(buildEntry);
         this.resolved = new DependencyProvider[directMethodHandle.type().parameterCount()];
         if (resolved.length != dependencies.size()) {
             resolved[0] = source;
         }
-        this.detectForCycles = resolved.length > (resolved.length - dependencies.size());
+        // Vi detecter altid circle lige nu. Fordi circle detectionen.
+        // ogsaa gemmer service instantierings raekkefoelgen
+        this.detectForCycles = resolved.length > 0;// dependencies.size() > 0;
         if (detectForCycles) {
             source.component.container.im.dependencies().detectCyclesFor.add(this);
+        }
+        if (!ap.isStaticMember && source.injectable() != null) {
+            ArrayList<Injectable> al = source.component.container.im.dependencies().detectCyclesFor;
+            if (!al.contains(source.injectable())) {
+                System.out.println("________");
+                al.add(source.injectable());
+                source.injectable().detectForCycles = true;
+            }
         }
     }
 
@@ -105,24 +130,53 @@ public final class Injectable {
         }
     }
 
-    public MethodHandle buildMethodHandle() {
-        // Does not have have dependencies.
-        if (dependencies.size() == 0) {
-            buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, Region.class);
-        }
+    public final MethodHandle buildMethodHandle() {
         System.out.println();
-        System.out.println(directMethodHandle);
+        System.out.println("Trying to generate MethodHandle for " + directMethodHandle);
+        // Does not have have dependencies.
+        if (resolved.length == 0) {
+            buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, Region.class);
+            return buildMethodHandle;
+        }
+        System.out.println("----");
         MethodHandle mh = directMethodHandle;
+        System.out.println("Direct " + directMethodHandle);
         for (int i = 0; i < resolved.length; i++) {
             DependencyProvider dp = resolved[i];
             requireNonNull(dp);
             MethodHandle dep = dp.toMethodHandle();
             System.out.println("Dep " + i + " " + dep);
+            try {
+                dep.invoke(new Region(123));
+            } catch (Throwable e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             mh = MethodHandles.collectArguments(mh, i, dep);
+            System.out.println(mh);
+            Region reg = new Region(123);
+            reg.store[1] = new Z2.NoDep();
+            try {
+                mh.invoke(reg);
+            } catch (Throwable e) {
+                throw ThrowableUtil.orUndeclared(e);
+            }
+            // reg.store[1] = null;
+            try {
+                mh.invoke(reg);
+            } catch (Throwable e) {
+                throw ThrowableUtil.orUndeclared(e);
+            }
         }
+        System.out.println("----------");
+
         MethodType mt = MethodType.methodType(mh.type().returnType(), Region.class);
         int[] ar = new int[mh.type().parameterCount()];
         buildMethodHandle = MethodHandles.permuteArguments(mh, mt, ar);
+
+        buildMethodHandle = mh;
+        System.out.println(buildMethodHandle);
+        System.out.println("----------");
 
         return buildMethodHandle;
     }
@@ -147,7 +201,7 @@ public final class Injectable {
         return new Injectable(source);
     }
 
-    public static Injectable ofDeclaredMember(SourceAssembly source, AtProvides ap) {
-        return new Injectable(source, ap);
+    public static Injectable ofDeclaredMember(BuildEntry<?> buildEntry, SourceAssembly source, AtProvides ap) {
+        return new Injectable(buildEntry, source, ap);
     }
 }

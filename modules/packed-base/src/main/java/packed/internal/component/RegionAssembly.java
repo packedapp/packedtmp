@@ -17,13 +17,14 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+
 import app.packed.service.ServiceRegistry;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.resolvable.Injectable;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.service.buildtime.service.ProvideBuildEntry;
-import packed.internal.service.buildtime.service.SingletonBuildEntry;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -59,21 +60,20 @@ public class RegionAssembly {
             region.store(sa.regionIndex, sa.constant());
         }
 
-        for (BuildEntry<?> i : resolver.constantServices) {
+        for (Injectable ii : resolver.constantServices) {
             int index;
-            Injectable ii;
-            if (i instanceof ProvideBuildEntry<?>) {
-                ProvideBuildEntry<?> e = (ProvideBuildEntry<?>) i;
+            BuildEntry<?> entry = ii.entry();
+            if (entry instanceof ProvideBuildEntry<?>) {
+                ProvideBuildEntry<?> e = (ProvideBuildEntry<?>) entry;
                 index = e.regionIndex;
-                ii = e.injectable;
             } else {
-                SingletonBuildEntry<?> sbe = (SingletonBuildEntry<?>) i;
-                index = sbe.source.regionIndex;
-                ii = sbe.source.injectable;
+                index = ii.source.regionIndex;
             }
+            requireNonNull(ii);
             Object instance;
+            MethodHandle mh = ii.buildMethodHandle();
             try {
-                instance = ii.buildMethodHandle().invoke(region);
+                instance = mh.invoke(region);
             } catch (Throwable e1) {
                 throw ThrowableUtil.orUndeclared(e1);
             }
@@ -82,7 +82,7 @@ public class RegionAssembly {
 
         // Last all singletons that have not already been used as services
         for (SourceAssembly i : resolver.sourceInjectables) {
-            if (i.service == null) {
+            if (!region.isSet(i.regionIndex)) {
                 Object instance;
                 try {
                     instance = i.injectable.buildMethodHandle().invoke(region);

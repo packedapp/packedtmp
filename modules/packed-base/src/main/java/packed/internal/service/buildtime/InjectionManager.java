@@ -124,7 +124,7 @@ public final class InjectionManager {
             i.resolve(resolver);
         }
 
-        dependencies().analyze(this);
+        dependencies().analyze(resolver, this);
     }
 
     public void checkExportConfigurable() {

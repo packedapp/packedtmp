@@ -15,6 +15,8 @@
  */
 package packed.internal.service.buildtime.service;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
@@ -43,9 +45,10 @@ public final class SingletonBuildEntry<T> extends BuildEntry<T> {
     @SuppressWarnings("unchecked")
     public SingletonBuildEntry(InjectionManager im, SourceAssembly source) {
         super(im, source.component.configSite());
-        this.source = source;
+        this.source = requireNonNull(source);
         as((Key<T>) source.defaultKey());
         im.provider().buildEntries.add(this);
+        source.service = this;
     }
 
     @Override

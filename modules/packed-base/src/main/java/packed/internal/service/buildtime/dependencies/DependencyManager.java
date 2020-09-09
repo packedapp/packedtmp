@@ -34,6 +34,7 @@ import app.packed.introspection.ParameterDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
+import packed.internal.component.Resolver;
 import packed.internal.inject.resolvable.Injectable;
 import packed.internal.inject.resolvable.ServiceDependency;
 import packed.internal.service.buildtime.BuildEntry;
@@ -81,10 +82,14 @@ public final class DependencyManager {
     IdentityHashMap<BuildEntry<?>, List<ServiceDependency>> unresolvedDependencies;
 
     /** Also used for descriptors. */
-    public void analyze(InjectionManager node) {
+    public void analyze(Resolver resolver, InjectionManager node) {
         // If we do not export services into a bundle. We should be able to resolver much quicker..
         resolveAllDependencies(node);
-        DependencyCycleDetector.dependencyCyclesDetect(detectCyclesFor);
+        System.out.println("________DETECTING CIRCLE_______");
+        for (Injectable i : detectCyclesFor) {
+            System.out.println(i.directMethodHandle);
+        }
+        DependencyCycleDetector.dependencyCyclesDetect(resolver, detectCyclesFor);
     }
 
     /**

@@ -21,6 +21,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 
 import app.packed.service.CyclicDependencyGraphException;
+import packed.internal.component.Resolver;
 import packed.internal.inject.resolvable.DependencyProvider;
 import packed.internal.inject.resolvable.Injectable;
 
@@ -40,25 +41,24 @@ final class DependencyCycleDetector {
      * @throws CyclicDependencyGraphException
      *             if a dependency cycle was detected
      */
-    static void dependencyCyclesDetect(ArrayList<Injectable> detectCyclesFor) {
-        DependencyCycle c = dependencyCyclesFind(detectCyclesFor);
+    static void dependencyCyclesDetect(Resolver resolver, ArrayList<Injectable> detectCyclesFor) {
+        DependencyCycle c = dependencyCyclesFind(resolver, detectCyclesFor);
         if (c != null) {
             throw new CyclicDependencyGraphException("Dependency cycle detected: " + c);
         }
     }
 
-    private static DependencyCycle dependencyCyclesFind(ArrayList<Injectable> detectCyclesFor) {
+    private static DependencyCycle dependencyCyclesFind(Resolver resolver, ArrayList<Injectable> detectCyclesFor) {
         if (detectCyclesFor == null) {
             throw new IllegalStateException("Must resolve nodes before detecting cycles");
         }
         ArrayDeque<Injectable> stack = new ArrayDeque<>();
         ArrayDeque<Injectable> dependencies = new ArrayDeque<>();
 
-        System.out.println("COOL");
         for (Injectable node : detectCyclesFor) {
-            System.out.println("Detect for " + node);
+            System.out.println("Detect for " + node.directMethodHandle + "    " + node.detectForCycles);
             if (node.detectForCycles) { // only process those nodes that have not been visited yet
-                DependencyCycle dc = DependencyCycleDetector.detectCycle(node, stack, dependencies);
+                DependencyCycle dc = DependencyCycleDetector.detectCycle(resolver, node, stack, dependencies);
                 if (dc != null) {
                     return dc;
                 }
@@ -80,7 +80,7 @@ final class DependencyCycleDetector {
      * @throws CyclicDependencyGraphException
      *             if there is a cycle in the graph
      */
-    private static DependencyCycle detectCycle(Injectable node, ArrayDeque<Injectable> stack, ArrayDeque<Injectable> dependencies) {
+    private static DependencyCycle detectCycle(Resolver resolver, Injectable node, ArrayDeque<Injectable> stack, ArrayDeque<Injectable> dependencies) {
         stack.push(node);
 
         for (int i = 0; i < node.resolved.length; i++) {
@@ -103,7 +103,7 @@ final class DependencyCycleDetector {
                         }
                         return new DependencyCycle(dependencies);
                     }
-                    DependencyCycle cycle = detectCycle(injectable, stack, dependencies);
+                    DependencyCycle cycle = detectCycle(resolver, injectable, stack, dependencies);
                     if (cycle != null) {
                         return cycle;
                     }
@@ -113,7 +113,17 @@ final class DependencyCycleDetector {
         }
 
         stack.pop(); // assert stack.pop() == node
-        System.out.println("_--------------> " + node.directMethodHandle);
+        resolver.constantServices.add(node);
+//        BuildEntry<?> entry = node.entry();
+//        System.out.println();
+//        if (entry != null) {
+//            System.out.println("Adding entry " + entry.key());
+//            
+//        } else {
+//            System.out.println("No service for " + node.directMethodHandle);
+//        }
+
+        System.out.println();
         node.detectForCycles = false;
         return null;
     }
