@@ -28,8 +28,6 @@ import packed.internal.component.Resolver;
 import packed.internal.component.SourceAssembly;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.service.AtProvides;
-import packed.internal.service.buildtime.service.Z2;
-import packed.internal.util.ThrowableUtil;
 
 /**
  *
@@ -154,27 +152,17 @@ public final class Injectable {
             }
             mh = MethodHandles.collectArguments(mh, i, dep);
             System.out.println(mh);
-            Region reg = new Region(123);
-            reg.store[1] = new Z2.NoDep();
-            try {
-                mh.invoke(reg);
-            } catch (Throwable e) {
-                throw ThrowableUtil.orUndeclared(e);
-            }
-            // reg.store[1] = null;
-            try {
-                mh.invoke(reg);
-            } catch (Throwable e) {
-                throw ThrowableUtil.orUndeclared(e);
-            }
+
         }
         System.out.println("----------");
 
         MethodType mt = MethodType.methodType(mh.type().returnType(), Region.class);
         int[] ar = new int[mh.type().parameterCount()];
         buildMethodHandle = MethodHandles.permuteArguments(mh, mt, ar);
-
-        buildMethodHandle = mh;
+        if (buildMethodHandle.type().parameterCount() != 1) {
+            System.err.println(buildMethodHandle);
+            throw new IllegalStateException();
+        }
         System.out.println(buildMethodHandle);
         System.out.println("----------");
 

@@ -32,6 +32,8 @@ public class Z1 extends BaseBundle {
         provideInstance(123);
         provide(NoDep.class);
         export(Integer.class);
+        provide(Dx.class);
+        install(DxString.class);
     }
 
     public static void main(String[] args) {
