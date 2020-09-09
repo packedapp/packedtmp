@@ -34,12 +34,13 @@ import app.packed.inject.Provide;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
 import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.RegionAssembly;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.inject.ConfigSiteInjectOperations;
+import packed.internal.inject.resolvable.ResolvableFactory;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ErrorMessages;
 import packed.internal.service.buildtime.ServiceExtensionNode;
-import packed.internal.service.buildtime.SourceHolder;
 import packed.internal.service.runtime.AbstractInjector;
 
 /**
@@ -56,7 +57,7 @@ public final class ServiceProvidingManager {
 
     public final IdentityHashMap<BuildEntry<?>, MethodHandle> handlers = new IdentityHashMap<>();
 
-    public final ArrayDeque<SourceHolder> mustInstantiate = new ArrayDeque<>();
+    public final ArrayDeque<ResolvableFactory> mustInstantiate = new ArrayDeque<>();
 
     /** The extension node. */
     private final ServiceExtensionNode node;
@@ -93,7 +94,7 @@ public final class ServiceProvidingManager {
         for (AtProvides atProvides : hook.members) {
             ConfigSite configSite = parent.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, atProvides.provides,
                     atProvides.member);
-            ComponentMethodHandleBuildEntry<?> node = new ComponentMethodHandleBuildEntry<>(configSite, atProvides, atProvides.methodHandle, parent);
+            ComponentMethodHandleBuildEntry<?> node = new ComponentMethodHandleBuildEntry<>(configSite, atProvides, parent);
             node.as((Key) atProvides.key);
             providingEntries.add(node);
         }
@@ -164,9 +165,9 @@ public final class ServiceProvidingManager {
         }
     }
 
-    public void resolveMH() {
+    public void resolveMH(RegionAssembly ra) {
         for (BuildEntry<?> e : providingEntries) {
-            e.toMH(this);
+            e.toMH(ra, this);
         }
     }
 }

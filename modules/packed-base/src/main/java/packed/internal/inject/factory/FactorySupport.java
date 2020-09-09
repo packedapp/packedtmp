@@ -7,7 +7,7 @@ import java.util.List;
 import app.packed.base.Key;
 import app.packed.inject.Provide;
 import app.packed.statemachine.OnStart;
-import packed.internal.inject.ServiceDependency;
+import packed.internal.inject.resolvable.ServiceDependency;
 
 /** An factory support class. */
 public final class FactorySupport<T> {

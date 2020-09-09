@@ -17,7 +17,6 @@ package packed.internal.service.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
@@ -32,16 +31,16 @@ import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceRegistry;
 import app.packed.service.ServiceSet;
 import packed.internal.component.Region;
+import packed.internal.component.RegionAssembly;
 import packed.internal.component.wirelet.WireletPack;
+import packed.internal.container.ContainerAssembly;
 import packed.internal.service.buildtime.dependencies.DependencyManager;
 import packed.internal.service.buildtime.export.ExportManager;
 import packed.internal.service.buildtime.export.ExportedBuildEntry;
-import packed.internal.service.buildtime.service.ComponentMethodHandleBuildEntry;
 import packed.internal.service.buildtime.service.ServiceProvidingManager;
 import packed.internal.service.runtime.PackedInjector;
 import packed.internal.service.runtime.RuntimeEntry;
 import packed.internal.util.LookupUtil;
-import packed.internal.util.ThrowableUtil;
 
 /**
  * Since the logic for the service extension is quite complex. Especially with cross-container integration. We spread it
@@ -86,10 +85,14 @@ public final class ServiceExtensionNode {
      * @param context
      *            the context
      */
-    public ServiceExtensionNode(ExtensionConfiguration context) {
+    public ServiceExtensionNode(ContainerAssembly ca, ExtensionConfiguration context) {
+        region = ca.component.region;
+        region.services = this;
         this.configuration = requireNonNull(context, "context is null");
 
     }
+
+    final RegionAssembly region;
 
     public void addErrorMessage() {
         hasFailed = true;
@@ -108,7 +111,6 @@ public final class ServiceExtensionNode {
     }
 
     public void buildTree() {
-        System.out.println("SGUU");
         if (parent == null) {
 //            TreePrinter.print(this, n -> n.children, "", n -> n.context.containerPath().toString());
         }
@@ -125,7 +127,7 @@ public final class ServiceExtensionNode {
         }
         dependencies().analyze(this);
 
-        provider().resolveMH();
+        provider().resolveMH(region);
     }
 
     public void checkExportConfigurable() {
@@ -188,11 +190,11 @@ public final class ServiceExtensionNode {
         });
     }
 
-    public ServiceRegistry instantiateEverything(Region ns, WireletPack wc) {
+    public ServiceRegistry instantiateEverything(Region region, WireletPack wc) {
         LinkedHashMap<Key<?>, RuntimeEntry<?>> runtimeEntries = new LinkedHashMap<>();
         PackedInjector publicInjector = new PackedInjector(context().containerConfigSite(), runtimeEntries);
 
-        ServiceExtensionInstantiationContext con = new ServiceExtensionInstantiationContext(ns);
+        ServiceExtensionInstantiationContext con = new ServiceExtensionInstantiationContext(region);
         con.spm = provider;
 
 //        System.out.println("--------------- INIT PLAN ----------");
@@ -201,24 +203,26 @@ public final class ServiceExtensionNode {
 //        }
 //        System.out.println("-----------------");
 
-        for (SourceHolder e : provider.mustInstantiate) {
-            if (e.index > -1) {
-                MethodHandle mh = e.reducedMha;
-                // System.out.println("INST " + mh.type().returnType());
-                Object instance;
-                try {
-                    instance = mh.invoke(ns);
-                } catch (Throwable e1) {
-                    throw ThrowableUtil.orUndeclared(e1);
-                }
-                con.region.store(e.index, instance);
-            }
-        }
+//        for (SourceHolder e : provider.mustInstantiate) {
+//            if (e.regionIndex > -1) {
+//                MethodHandle mh = e.reducedMha;
+//                // System.out.println("INST " + mh.type().returnType());
+//                Object instance;
+//                try {
+//                    instance = mh.invoke(ns);
+//                } catch (Throwable e1) {
+//                    throw ThrowableUtil.orUndeclared(e1);
+//                }
+//                con.region.store(e.regionIndex, instance);
+//            }
+//        }
 //        for (var e : resolvedEntries.entrySet()) {
 //            if (e.getKey() != null) { // only services... should be put there
 //                // runtimeEntries.put(e.getKey(), e.getValue().toRuntimeEntry(con));
 //            }
 //        }
+
+        exports().forEach(e -> System.out.println("Exporting " + e.key));
         for (var e : exports()) {
             runtimeEntries.put(e.key, e.toRuntimeEntry(con));
         }
@@ -227,16 +231,16 @@ public final class ServiceExtensionNode {
 
         // Vi bliver noedt til at instantiere dem in-order
         // Saa vi skal have en orderet liste... af MH(ServiceNode)->Object
-        for (BuildEntry<?> node : resolvedEntries.values()) {
-            // MethodHandle mh = node.toMH(con);
-            // System.out.println(mh);
-            if (node instanceof ComponentMethodHandleBuildEntry) {
-                ComponentMethodHandleBuildEntry<?> s = (ComponentMethodHandleBuildEntry<?>) node;
-                if (s.instantiationMode() == ServiceMode.CONSTANT) {
-                    s.toRuntimeEntry(con).getInstance(null);
-                }
-            }
-        }
+//        for (BuildEntry<?> node : resolvedEntries.values()) {
+//            // MethodHandle mh = node.toMH(con);
+//            // System.out.println(mh);
+//            if (node instanceof ComponentMethodHandleBuildEntry) {
+//                ComponentMethodHandleBuildEntry<?> s = (ComponentMethodHandleBuildEntry<?>) node;
+//                if (s.instantiationMode() == ServiceMode.CONSTANT) {
+//                    s.toRuntimeEntry(con).getInstance(null);
+//                }
+//            }
+//        }
 
         return publicInjector;
     }

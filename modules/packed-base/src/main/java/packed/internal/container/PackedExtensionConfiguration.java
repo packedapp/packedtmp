@@ -25,7 +25,9 @@ import java.util.Optional;
 import app.packed.base.Nullable;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
+import app.packed.component.ClassSourcedDriver;
 import app.packed.component.ComponentPath;
+import app.packed.component.FactorySourcedDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
@@ -165,6 +167,16 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     @Override
     public <T> BeanConfiguration<T> installInstance(T instance) {
         return container.component.wireInstance(BeanConfiguration.driver(), instance);
+    }
+
+    @Override
+    public <C, I> C wire(ClassSourcedDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
+        return container.component.wire(driver, implementation);
+    }
+
+    @Override
+    public <C, I> C wire(FactorySourcedDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
+        return container.component.wire(driver.bindToFactory(realm, implementation), wirelets);
     }
 
     /**

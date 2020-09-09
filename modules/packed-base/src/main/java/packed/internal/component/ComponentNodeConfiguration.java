@@ -198,7 +198,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
         // Setup Source
         if (driver.sourceType() != null) {
-            this.source = region.addSourced(this);
+            this.source = new SourceAssembly(this);
         } else {
             this.source = null;
         }
@@ -324,7 +324,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         if (container != null) {
             container.advanceTo(ContainerAssembly.LS_3_FINISHED);
         }
-        region.close();
+        region.assemblyClosed();
         return this;
     }
 
@@ -476,6 +476,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         int s = nameState;
 
         checkConfigurable();
+
+        // maybe assume s==0
 
         if ((s & NAME_SET) != 0) {
             throw new IllegalStateException("#setName(String) can only be called once");

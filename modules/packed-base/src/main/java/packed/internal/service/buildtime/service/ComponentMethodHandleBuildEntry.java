@@ -23,11 +23,12 @@ import java.util.List;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.config.ConfigSite;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.inject.ServiceDependency;
+import packed.internal.component.RegionAssembly;
+import packed.internal.inject.resolvable.ResolvableFactory;
+import packed.internal.inject.resolvable.ServiceDependency;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.ServiceMode;
-import packed.internal.service.buildtime.SourceHolder;
 import packed.internal.service.runtime.IndexedEntry;
 import packed.internal.service.runtime.PrototypeInjectorEntry;
 import packed.internal.service.runtime.RuntimeEntry;
@@ -44,20 +45,28 @@ public final class ComponentMethodHandleBuildEntry<T> extends ComponentBuildEntr
     private final ServiceMode instantionMode;
 
     // @Provide methods
-    public ComponentMethodHandleBuildEntry(ConfigSite configSite, AtProvides atProvides, MethodHandle mh, ComponentBuildEntry<?> parent) {
-        super(parent.node, configSite, parent.component, new SourceHolder(atProvides.dependencies, atProvides.isStaticMember ? null : parent, mh,
-                atProvides.instantionMode, parent.component.region.reserve()));
+    public ComponentMethodHandleBuildEntry(ConfigSite configSite, AtProvides atProvides, ComponentBuildEntry<?> parent) {
+        super(parent.node, configSite, parent.component, new ResolvableFactory(atProvides.dependencies, atProvides.isStaticMember ? null : parent,
+                atProvides.methodHandle, atProvides.instantionMode, parent.component.region.reserve()));
         this.instantionMode = atProvides.instantionMode;
+    }
+
+    public ComponentMethodHandleBuildEntry(ServiceExtensionNode injectorBuilder, ComponentNodeConfiguration component, ResolvableFactory rf,
+            ServiceMode instantionMode) {
+        super(injectorBuilder, component.configSite(), component, rf);
+        this.instantionMode = requireNonNull(instantionMode);
+        if (instantionMode == ServiceMode.PROTOTYPE) {
+            if (hasInstanceMembers) {
+                throw new InvalidDeclarationException("Cannot @Provides instance members form on services that are registered as prototypes");
+            }
+        }
     }
 
     public ComponentMethodHandleBuildEntry(ServiceExtensionNode injectorBuilder, ComponentNodeConfiguration component, ServiceMode instantionMode,
             MethodHandle mh, List<ServiceDependency> dependencies) {
-        super(injectorBuilder, component.configSite(), component, new SourceHolder(dependencies, null, mh, instantionMode, component.source.singletonIndex));
+        super(injectorBuilder, component.configSite(), component, new ResolvableFactory(dependencies, null, mh, instantionMode, component.source.regionIndex));
         this.instantionMode = requireNonNull(instantionMode);
         if (instantionMode == ServiceMode.PROTOTYPE) {
-            if (source.hasDependencyOnProvidePrototypeContext) {
-                throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
-            }
             if (hasInstanceMembers) {
                 throw new InvalidDeclarationException("Cannot @Provides instance members form on services that are registered as prototypes");
             }
@@ -80,7 +89,7 @@ public final class ComponentMethodHandleBuildEntry<T> extends ComponentBuildEntr
     @Override
     protected RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
         if (instantionMode == ServiceMode.CONSTANT) {
-            return new IndexedEntry<>(this, context.region, component.source.singletonIndex);
+            return new IndexedEntry<>(this, context.region, component.source.regionIndex);
         } else {
             return new PrototypeInjectorEntry<>(this, context);
         }
@@ -88,14 +97,8 @@ public final class ComponentMethodHandleBuildEntry<T> extends ComponentBuildEntr
 
     /** {@inheritDoc} */
     @Override
-    public boolean requiresPrototypeRequest() {
-        return source.hasDependencyOnProvidePrototypeContext;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected MethodHandle newMH(ServiceProvidingManager context) {
-        return source.newMH(context);
+    protected MethodHandle newMH(RegionAssembly ra, ServiceProvidingManager context) {
+        return source.newMH(ra, context);
     }
 
     @Override

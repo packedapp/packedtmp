@@ -24,6 +24,7 @@ import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
+import packed.internal.component.RegionAssembly;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
@@ -70,13 +71,7 @@ public final class RuntimeAdaptorEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean requiresPrototypeRequest() {
-        return entry.requiresPrototypeRequest();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected MethodHandle newMH(ServiceProvidingManager spm) {
+    protected MethodHandle newMH(RegionAssembly ra, ServiceProvidingManager spm) {
         throw new UnsupportedOperationException();
     }
 }

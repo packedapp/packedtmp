@@ -20,9 +20,9 @@ import static java.util.Objects.requireNonNull;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.inject.resolvable.ResolvableFactory;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionNode;
-import packed.internal.service.buildtime.SourceHolder;
 
 /**
  *
@@ -36,7 +36,7 @@ public abstract class ComponentBuildEntry<T> extends BuildEntry<T> {
      * @param serviceExtension
      * @param configSite
      */
-    public ComponentBuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite, ComponentNodeConfiguration component, SourceHolder sh) {
+    public ComponentBuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite, ComponentNodeConfiguration component, ResolvableFactory sh) {
         super(serviceExtension, configSite, sh);
         this.component = requireNonNull(component);
     }

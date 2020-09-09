@@ -26,6 +26,7 @@ import app.packed.component.ClassSourcedDriver;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
+import app.packed.component.FactorySourcedDriver;
 import app.packed.component.InstanceSourcedDriver;
 import app.packed.component.StatelessConfiguration;
 import app.packed.component.WireableComponentDriver;
@@ -109,12 +110,15 @@ public abstract class PackedWireableComponentDriver<C> implements WireableCompon
 
         public final ComponentModel model;
 
-        public SingletonComponentDriver(PackedRealm realm, Factory<?> factory) {
+        public final boolean isPrototype;
+
+        public SingletonComponentDriver(PackedRealm realm, Factory<?> factory, boolean isPrototype) {
             super(ComponentModifier.SINGLETON, ComponentModifier.SOURCED);
             requireNonNull(factory, "factory is null");
             this.model = realm.componentModelOf(factory.rawType());
             this.factory = (@Nullable BaseFactory<?>) factory;
             this.instance = null;
+            this.isPrototype = isPrototype;
         }
 
         public SingletonComponentDriver(PackedRealm realm, T instance) {
@@ -122,6 +126,7 @@ public abstract class PackedWireableComponentDriver<C> implements WireableCompon
             this.instance = requireNonNull(instance, "instance is null");
             this.model = realm.componentModelOf(instance.getClass());
             this.factory = null;
+            this.isPrototype = false;
         }
 
         @Override
@@ -152,13 +157,24 @@ public abstract class PackedWireableComponentDriver<C> implements WireableCompon
 
                 @Override
                 public WireableComponentDriver<BeanConfiguration<T>> bindToFactory(PackedRealm realm, Factory<? extends T> factory) {
-                    return new SingletonComponentDriver<>(realm, factory);
+                    return new SingletonComponentDriver<>(realm, factory, false);
                 }
 
                 @Override
                 public WireableComponentDriver<BeanConfiguration<T>> bindToInstance(PackedRealm realm, T instance) {
                     return new SingletonComponentDriver<>(realm, instance);
                 }
+            };
+        }
+
+        public static <T> FactorySourcedDriver<BeanConfiguration<T>, T> prototype() {
+            return new FactorySourcedDriver<BeanConfiguration<T>, T>() {
+
+                @Override
+                public WireableComponentDriver<BeanConfiguration<T>> bindToFactory(PackedRealm realm, Factory<? extends T> factory) {
+                    return new SingletonComponentDriver<>(realm, factory, true);
+                }
+
             };
         }
     }

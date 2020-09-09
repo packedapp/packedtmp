@@ -17,7 +17,7 @@ package packed.internal.inject.v2;
 
 import java.util.List;
 
-import packed.internal.inject.ServiceDependency;
+import packed.internal.inject.resolvable.ServiceDependency;
 
 /**
  *

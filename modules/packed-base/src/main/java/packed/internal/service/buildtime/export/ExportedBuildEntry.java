@@ -23,6 +23,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.service.ServiceExtension;
+import packed.internal.component.RegionAssembly;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
@@ -95,12 +96,6 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean requiresPrototypeRequest() {
-        return exportedEntry.requiresPrototypeRequest();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public boolean hasUnresolvedDependencies() {
         return exportedEntry.hasUnresolvedDependencies();
     }
@@ -113,7 +108,7 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected MethodHandle newMH(ServiceProvidingManager spm) {
-        return exportedEntry.toMH(spm);
+    protected MethodHandle newMH(RegionAssembly ra, ServiceProvidingManager spm) {
+        return exportedEntry.toMH(ra, spm);
     }
 }

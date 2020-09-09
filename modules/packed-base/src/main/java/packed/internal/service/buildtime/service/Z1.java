@@ -27,7 +27,7 @@ public class Z1 extends BaseBundle {
     @Override
     protected void configure() {
         provideInstance(123);
-        provide(Dx.class);
+        // provide(Dx.class);
         export(Integer.class);
     }
 

@@ -20,6 +20,7 @@ import java.lang.invoke.MethodHandles;
 
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.Region;
+import packed.internal.component.RegionAssembly;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.ServiceMode;
@@ -55,7 +56,7 @@ public final class ComponentConstantBuildEntry<T> extends ComponentBuildEntry<T>
 
     /** {@inheritDoc} */
     @Override
-    protected MethodHandle newMH(ServiceProvidingManager spm) {
+    protected MethodHandle newMH(RegionAssembly ra, ServiceProvidingManager spm) {
         // Taenker vi hellere vil laese fra arrayet...
         // Paa lang sigt vil vi gerne cache de method handles vi generere...
         Object instance = component.source.instance();
@@ -66,13 +67,7 @@ public final class ComponentConstantBuildEntry<T> extends ComponentBuildEntry<T>
     /** {@inheritDoc} */
     @Override
     protected RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
-        return new IndexedEntry<>(this, context.region, component.source.singletonIndex);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean requiresPrototypeRequest() {
-        return false;
+        return new IndexedEntry<>(this, context.region, component.source.regionIndex);
     }
 
     @Override

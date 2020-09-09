@@ -38,7 +38,8 @@ import app.packed.introspection.VariableDescriptor;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import packed.internal.container.PackedExtensionConfiguration;
-import packed.internal.inject.ServiceDependency;
+import packed.internal.inject.resolvable.ResolvableFactory;
+import packed.internal.inject.resolvable.ServiceDependency;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.service.ComponentMethodHandleBuildEntry;
@@ -226,11 +227,13 @@ public final class DependencyManager {
         detectCyclesFor = new ArrayList<>();
 
         for (BuildEntry<?> entry : node.resolvedEntries.values()) {
-            if (entry.source != null) {
+            ResolvableFactory sh = entry.source;
+
+            if (sh != null) {
                 if (entry.hasUnresolvedDependencies()) {
                     detectCyclesFor.add(entry);
-                    List<ServiceDependency> dependencies = entry.source.dependencies;
-                    for (int i = entry.source.offset; i < dependencies.size(); i++) {
+                    List<ServiceDependency> dependencies = sh.dependencies;
+                    for (int i = sh.dependencyOffset; i < dependencies.size(); i++) {
                         ServiceDependency dependency = dependencies.get(i);
                         BuildEntry<?> resolveTo = node.resolvedEntries.get(dependency.key());
                         if (resolveTo == null) {

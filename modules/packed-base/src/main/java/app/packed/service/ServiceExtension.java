@@ -22,6 +22,7 @@ import java.util.function.BiConsumer;
 import app.packed.base.AttributeProvide;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.component.BeanConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ComponentLinked;
@@ -33,10 +34,12 @@ import app.packed.inject.Factory;
 import app.packed.inject.Provide;
 import app.packed.statemachine.Leaving;
 import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.PackedWireableComponentDriver.SingletonComponentDriver;
 import packed.internal.component.wirelet.WireletList;
+import packed.internal.container.ContainerAssembly;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.inject.ConfigSiteInjectOperations;
-import packed.internal.inject.ServiceDependency;
+import packed.internal.inject.resolvable.ServiceDependency;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionNode;
 import packed.internal.service.buildtime.service.AtProvidesHook;
@@ -85,7 +88,8 @@ public final class ServiceExtension extends Extension {
      *            the configuration of the extension
      */
     /* package-private */ ServiceExtension(ExtensionConfiguration configuration) {
-        this.node = ((PackedExtensionConfiguration) configuration).container().se = new ServiceExtensionNode(configuration);
+        ContainerAssembly ca = ((PackedExtensionConfiguration) configuration).container();
+        this.node = new ServiceExtensionNode(ca, configuration);
     }
 
     // Skal vi ogsaa supportere noget paa tvaers af bundles???
@@ -360,9 +364,10 @@ public final class ServiceExtension extends Extension {
 
     // Will install a ServiceStatelessConfiguration...
     public <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {
+        BeanConfiguration<T> bc = node.context().wire(SingletonComponentDriver.prototype(), factory);
         @SuppressWarnings("unchecked")
-        BuildEntry<T> b = (BuildEntry<T>) node.provider().providePrototype(install(factory).node);
-        return new PackedPrototypeConfiguration<>(install(factory).node, b);
+        BuildEntry<T> b = (BuildEntry<T>) node.provider().providePrototype(bc.node);
+        return new PackedPrototypeConfiguration<>(bc.node, b);
     }
 
     public void require(Class<?>... keys) {

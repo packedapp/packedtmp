@@ -22,6 +22,7 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.config.ConfigSite;
+import packed.internal.component.RegionAssembly;
 import packed.internal.service.buildtime.BuildEntry;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.ServiceExtensionNode;
@@ -68,13 +69,7 @@ final class MappingBuildEntry<F, T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean requiresPrototypeRequest() {
-        return entryToMap.requiresPrototypeRequest();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected MethodHandle newMH(ServiceProvidingManager context) {
+    protected MethodHandle newMH(RegionAssembly ra, ServiceProvidingManager context) {
         throw new UnsupportedOperationException();
     }
 }

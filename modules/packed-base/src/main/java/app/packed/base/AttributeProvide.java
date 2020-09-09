@@ -29,6 +29,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Opens(to = { OpenMode.METHOD_INVOKE, OpenMode.FIELD_SET })
+// Giver det mening at kunne injecte attributer??? Not sure
 public @interface AttributeProvide {
 
     /** The class that declares the attribute. */

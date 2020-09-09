@@ -1,0 +1,125 @@
+/*
+ * Copyright (c) 2008 Kasper Nielsen.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package packed.internal.inject.resolvable;
+
+import static java.util.Objects.requireNonNull;
+
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+import java.util.List;
+
+import packed.internal.component.Region;
+import packed.internal.component.Resolver;
+import packed.internal.component.SourceAssembly;
+import packed.internal.service.buildtime.service.AtProvides;
+
+/**
+ *
+ */
+
+// Limitations
+// Everything must have a source
+// Injectable...
+// Har vi en purpose????? Taenker ja
+// Fordi vi skal bruge den til at resolve...
+// Vi har ikke nogen region index, fordi det boerg ligge hos dependencien
+
+// Vi skal have noget PackletModel. Tilhoere @Get. De her 3 AOP ting skal vikles rundt om MHs
+
+public final class Injectable {
+
+    MethodHandle buildMethodHandle;
+
+    /** The dependencies that must be resolved. */
+    private final List<ServiceDependency> dependencies;
+
+    /** A direct method handle. */
+    final MethodHandle directMethodHandle;
+
+    /** Resolved dependencies. */
+    private final DependencyProvider[] resolved;
+
+    /** The source (component) this injectable belongs to. */
+    private final SourceAssembly source;
+
+    private Injectable(SourceAssembly source) {
+        this.source = requireNonNull(source);
+        this.dependencies = source.driver.factory.factory.dependencies;
+        this.directMethodHandle = source.driver.fromFactory(source.component);
+        this.resolved = new DependencyProvider[dependencies.size()];
+    }
+
+    private Injectable(SourceAssembly source, AtProvides ap) {
+        this.source = requireNonNull(source);
+        this.dependencies = ap.dependencies;
+        this.directMethodHandle = ap.methodHandle;
+        this.resolved = new DependencyProvider[directMethodHandle.type().parameterCount()];
+        if (resolved.length != dependencies.size()) {
+            resolved[0] = source.instanceAsDependencyProvider();
+        }
+    }
+
+    public Class<?> rawType() {
+        return directMethodHandle.type().returnType();
+    }
+
+    public void resolve(Resolver resolver) {
+        int startIndex = resolved.length != dependencies.size() ? 1 : 0;
+        for (int i = 0; i < resolved.length; i++) {
+            resolved[i + startIndex] = resolver.resolve(this, dependencies.get(i));
+        }
+    }
+
+    public void buildMethodHandle() {
+        // Does not have have dependencies.
+        if (dependencies.size() == 0) {
+            buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, Region.class);
+        }
+        MethodHandle mh = directMethodHandle;
+        for (int i = 0; i < resolved.length; i++) {
+            DependencyProvider dp = resolved[i];
+            MethodHandles.collectArguments(mh, i, dp.toMethodHandle());
+        }
+        MethodType mt = MethodType.methodType(mh.type().returnType(), Region.class);
+        int[] ar = new int[mh.type().parameterCount()];
+        buildMethodHandle = MethodHandles.permuteArguments(mh, mt, ar);
+    }
+
+    /**
+     * The source this injectable belongs to.
+     * 
+     * @return the source this injectable belongs to.
+     */
+    public SourceAssembly source() {
+        return source;
+    }
+
+    /**
+     * Create a new injectable from the factory of the specified source.
+     * 
+     * @param source
+     *            the source
+     * @return a new injectable
+     */
+    public static Injectable ofFactory(SourceAssembly source) {
+        return new Injectable(source);
+    }
+
+    public static Injectable ofInstanceMember(SourceAssembly source, AtProvides ap) {
+        return new Injectable(source, ap);
+    }
+}

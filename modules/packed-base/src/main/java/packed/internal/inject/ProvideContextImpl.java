@@ -26,6 +26,7 @@ import app.packed.inject.ProvidePrototypeContext;
 import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import app.packed.service.Injector;
+import packed.internal.inject.resolvable.ServiceDependency;
 
 /**
  * An implementation of injection site used, when requesting a service directly through an injector, for example, via

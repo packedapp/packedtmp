@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.buildtime;
+package packed.internal.inject.resolvable;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,82 +23,68 @@ import java.lang.invoke.MethodType;
 import java.util.List;
 
 import app.packed.base.Nullable;
-import app.packed.inject.ProvidePrototypeContext;
 import packed.internal.component.Region;
-import packed.internal.inject.ServiceDependency;
+import packed.internal.component.RegionAssembly;
+import packed.internal.service.buildtime.BuildEntry;
+import packed.internal.service.buildtime.ServiceMode;
 import packed.internal.service.buildtime.service.ComponentBuildEntry;
 import packed.internal.service.buildtime.service.ComponentConstantBuildEntry;
 import packed.internal.service.buildtime.service.ComponentMethodHandleBuildEntry;
 import packed.internal.service.buildtime.service.ServiceProvidingManager;
-import packed.internal.util.KeyBuilder;
 
 /**
  *
  */
-public class SourceHolder {
-
-    /** Just an empty reusable array. */
-    private static final BuildEntry<?>[] NO_DEP = new BuildEntry<?>[0];
+public class ResolvableFactory {
 
     /** The dependencies of this node. */
     public final List<ServiceDependency> dependencies;
 
-    /** Whether or this node contains a dependency on {@link ProvidePrototypeContext}. */
-    public final boolean hasDependencyOnProvidePrototypeContext;
-
     /** The resolved dependencies of this node. */
     public final BuildEntry<?>[] resolvedDependencies;
 
-    public final int offset;
+    public final int dependencyOffset;
 
-    public final MethodHandle mha;
+    private final MethodHandle mha;
 
-    public final int index;
+    public final int regionIndex;
 
     /** The instantiation mode of this node. */
-    final ServiceMode instantionMode;
+    private final ServiceMode instantionMode;
 
     public MethodHandle reducedMha;
 
-    public SourceHolder(List<ServiceDependency> dependencies, @Nullable ComponentBuildEntry<?> declaringEntry, MethodHandle mh, ServiceMode sm, int index) {
+    public BuildEntry<?> buildEntry;
+
+    public ResolvableFactory(List<ServiceDependency> dependencies, @Nullable ComponentBuildEntry<?> declaringEntry, MethodHandle mh, ServiceMode sm,
+            int index) {
         this.dependencies = requireNonNull(dependencies);
         this.mha = requireNonNull(mh);
-        this.index = index;
+        this.regionIndex = index;
         this.instantionMode = sm;
         int depSize = dependencies.size();
 
         // We include the declaring entry in resolved dependencies because we want to use it when
         // checking for dependency circles...
         if (declaringEntry == null) {
-            this.offset = 0;
-            this.resolvedDependencies = depSize == 0 ? NO_DEP : new BuildEntry<?>[depSize];
+            this.dependencyOffset = 0;
+            this.resolvedDependencies = new BuildEntry<?>[depSize];
         } else {
-            this.offset = 1;
+            this.dependencyOffset = 1;
             this.resolvedDependencies = new BuildEntry<?>[depSize + 1];
             this.resolvedDependencies[0] = declaringEntry;
         }
-
-        boolean hasDependencyOnProvidePrototypeContext = false;
-        if (!dependencies.isEmpty()) {
-            for (ServiceDependency e : dependencies) {
-                if (e.key().equals(KeyBuilder.INJECTION_SITE_KEY)) {
-                    hasDependencyOnProvidePrototypeContext = true;
-                    break;
-                }
-            }
-        }
-        this.hasDependencyOnProvidePrototypeContext = hasDependencyOnProvidePrototypeContext;
     }
 
-    public MethodHandle newMH(ServiceProvidingManager context) {
+    public MethodHandle newMH(RegionAssembly ra, ServiceProvidingManager context) {
         MethodHandle mh = mha;
 
         boolean resolveDeclaringEntry = dependencies.size() != mh.type().parameterCount();
         if (resolveDeclaringEntry) {
-            MethodHandle mhp = resolvedDependencies[0].toMH(context);
+            MethodHandle mhp = resolvedDependencies[0].toMH(ra, context);
             mh = MethodHandles.collectArguments(mh, 0, mhp);
-            context.mustInstantiate.addLast(this);
             reducedMha = mh;
+            ra.mustInstantiate.addLast(this);
             return mh;
         }
 
@@ -114,9 +100,9 @@ public class SourceHolder {
                 adjust++;
             } else if (e instanceof ComponentMethodHandleBuildEntry) {
                 ComponentMethodHandleBuildEntry<?> c = (ComponentMethodHandleBuildEntry<?>) e;
-                MethodHandle collect = c.toMH(context);
+                MethodHandle collect = c.toMH(ra, context);
                 mh = MethodHandles.collectArguments(mh, index, collect);
-            } else {}
+            }
         }
         if (mh.type().parameterCount() == 0) {
             mh = MethodHandles.dropArguments(mh, 0, Region.class);
@@ -129,13 +115,9 @@ public class SourceHolder {
             mh = MethodHandles.permuteArguments(mh, mt, ar);
         }
         reducedMha = mh;
-        // System.out.println("*********************** MUST INSTANTIATE " + component);
-        context.mustInstantiate.addLast(this);
         if (instantionMode == ServiceMode.CONSTANT) {
-
-            // TODO It must be read -> it must be written...
-
-            return Region.readSingletonAs(index, mh.type().returnType());
+            ra.mustInstantiate.addLast(this);
+            return Region.readSingletonAs(regionIndex, mh.type().returnType());
         } else {
             return mh;
         }

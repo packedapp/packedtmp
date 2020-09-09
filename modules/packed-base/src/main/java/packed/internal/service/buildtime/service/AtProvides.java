@@ -27,21 +27,21 @@ import app.packed.inject.Provide;
 import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.MethodDescriptor;
-import packed.internal.inject.ServiceDependency;
+import packed.internal.inject.resolvable.ServiceDependency;
 import packed.internal.service.buildtime.ServiceMode;
 
 /** A descriptor for a field or method (member) annotated with {@link Provide}. */
-final class AtProvides {
+public final class AtProvides {
 
     /** An (optional) description from {@link Provide#description()}. */
     @Nullable
     final String description;
 
     /** The instantiation mode from {@link Provide#constant()}. */
-    final ServiceMode instantionMode;
+    public final ServiceMode instantionMode;
 
     /** Whether or not the member on which the annotation is present is a static member. */
-    final boolean isStaticMember;
+    public final boolean isStaticMember;
 
     /** The key under which the provided service will be made available. */
     final Key<?> key;
@@ -53,10 +53,10 @@ final class AtProvides {
     final Provide provides;
 
     /** The dependencies (parameters) of the member. */
-    final List<ServiceDependency> dependencies;
+    public final List<ServiceDependency> dependencies;
 
     /** An unbound method handle to the underlying field or method. */
-    final MethodHandle methodHandle;
+    public final MethodHandle methodHandle;
 
     AtProvides(MethodHandle mh, MemberDescriptor member, Key<?> key, Provide provides, List<ServiceDependency> dependencies) {
         this.methodHandle = requireNonNull(mh);

@@ -27,6 +27,8 @@ import app.packed.inject.Provide;
 import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.Service;
 import packed.internal.component.Region;
+import packed.internal.component.RegionAssembly;
+import packed.internal.inject.resolvable.ResolvableFactory;
 import packed.internal.service.buildtime.service.ServiceProvidingManager;
 import packed.internal.service.runtime.RuntimeEntry;
 
@@ -60,7 +62,7 @@ public abstract class BuildEntry<T> {
     public final ServiceExtensionNode node;
 
     @Nullable
-    public final SourceHolder source;
+    public final ResolvableFactory source;
 
     public BuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite) {
         this.node = serviceExtension;
@@ -68,7 +70,7 @@ public abstract class BuildEntry<T> {
         this.source = null;
     }
 
-    public BuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite, @Nullable SourceHolder sh) {
+    public BuildEntry(@Nullable ServiceExtensionNode serviceExtension, ConfigSite configSite, @Nullable ResolvableFactory sh) {
         this.node = serviceExtension;
         this.configSite = requireNonNull(configSite);
         this.source = sh;
@@ -117,7 +119,7 @@ public abstract class BuildEntry<T> {
         return key;
     }
 
-    protected abstract MethodHandle newMH(ServiceProvidingManager spm);
+    protected abstract MethodHandle newMH(RegionAssembly ra, ServiceProvidingManager spm);
 
     /**
      * Creates a new runtime node from this node.
@@ -126,16 +128,14 @@ public abstract class BuildEntry<T> {
      */
     protected abstract RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context);
 
-    public abstract boolean requiresPrototypeRequest();
-
     public final Service toDescriptor() {
         return new PackedService(key, configSite);
     }
 
     // cacher runtime noden...
-    public final MethodHandle toMH(ServiceProvidingManager spm) {
+    public final MethodHandle toMH(RegionAssembly ra, ServiceProvidingManager spm) {
         return spm.handlers.computeIfAbsent(this, k -> {
-            MethodHandle mh = k.newMH(spm);
+            MethodHandle mh = k.newMH(ra, spm);
             if (!mh.type().parameterList().equals(List.of(Region.class))) {
                 throw new IllegalStateException("Must create node type of " + mh + " for " + getClass());
             }

@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import packed.internal.inject.AtInject;
-import packed.internal.inject.ServiceDependency;
+import packed.internal.inject.resolvable.ServiceDependency;
 import packed.internal.service.buildtime.BuildEntry;
 
 /**
@@ -36,7 +36,6 @@ class DependencyRequirement {
     final BuildEntry<?> entry;
 
     AtInject atInject;
-    // Contract <- If requirement added via a contract
 
     DependencyRequirement(ServiceDependency dependency, ConfigSite configSite) {
         this.dependency = requireNonNull(dependency, "dependency is null");
