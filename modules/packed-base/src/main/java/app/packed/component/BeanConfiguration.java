@@ -90,9 +90,14 @@ public class BeanConfiguration<T> extends AbstractComponentConfiguration {
         return this;
     }
 
+    public ExportedServiceConfiguration<T> exportAs(Class<? super T> key) {
+        return export().as(key);
+    }
+
     // Once a bean has been exported, its key cannot be changed...
     public ExportedServiceConfiguration<T> export() {
         checkConfigurable();
+        provide();
         // buildEntry might not have been set yet...
         return buildEntry.im.exports().export(buildEntry, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }

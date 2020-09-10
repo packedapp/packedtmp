@@ -65,11 +65,11 @@ import packed.internal.util.ThrowableUtil;
 // Which would break encapsulation
 public final class ShellDriver<S> {
 
-    /** The method handle responsible for creating new shell instances. */
-    private final MethodHandle newShell;
-
     /** The initial set of modifiers for any system that uses this driver. */
     private final int modifiers;
+
+    /** The method handle responsible for creating new shell instances. */
+    private final MethodHandle newShell;
 
     /**
      * Creates a new driver.
@@ -91,35 +91,22 @@ public final class ShellDriver<S> {
     public <C, D> S configure(ComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.configure(this, (OldPackedComponentDriver<D>) driver, factory, consumer, wirelets);
         PackedInitializationContext ac = PackedInitializationContext.initialize(node);
-        return newShell(ac);
+        return instantiateShell(ac);
     }
 
     /**
-     * Create a new shell (and its underlying system) using the specified bundle.
+     * Create a new shell using the specified initialization context.
      * 
-     * @param bundle
-     *            the system bundle
-     * @param wirelets
-     *            optional wirelets
+     * @param pic
+     *            the initialization context to wrap
      * @return the new shell
-     * @throws RuntimeException
-     *             if the system could not be properly created
      */
-    // Maaske kan vi laver en function der smider Throwable...
-    public S create(Bundle<?> bundle, Wirelet... wirelets) {
-        // Assemble the system
-        ComponentNodeConfiguration component = PackedAssemblyContext.assemble(modifiers, bundle, this, wirelets);
-
-        // Initialize the system
-        PackedInitializationContext pic = PackedInitializationContext.initialize(component);
-
-        // If the system is a guest, start it (blocking)
-        if (component.modifiers().isGuest()) { // TODO should check guest.delayStart wirelet
-            pic.guest().start();
+    private S instantiateShell(PackedInitializationContext pic) {
+        try {
+            return (S) newShell.invoke(pic);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
         }
-
-        // Return the system in a new shell
-        return newShell(pic);
     }
 
     /**
@@ -151,18 +138,26 @@ public final class ShellDriver<S> {
     }
 
     /**
-     * Create a new shell using the specified initialization context.
+     * Create a new shell (and its underlying system) using the specified bundle.
      * 
-     * @param pic
-     *            the initialization context to wrap
+     * @param bundle
+     *            the system bundle
+     * @param wirelets
+     *            optional wirelets
      * @return the new shell
+     * @throws RuntimeException
+     *             if the system could not be properly created
      */
-    private S newShell(PackedInitializationContext pic) {
-        try {
-            return (S) newShell.invoke(pic);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
+    // Maaske kan vi laver en function der smider Throwable...
+    public S newShell(Bundle<?> bundle, Wirelet... wirelets) {
+        // Assemble the system
+        ComponentNodeConfiguration component = PackedAssemblyContext.assemble(modifiers, bundle, this, wirelets);
+
+        // Initialize the system. Also starts it, if it is a guest
+        PackedInitializationContext pic = PackedInitializationContext.initialize(component);
+
+        // Return the system in a new shell
+        return instantiateShell(pic);
     }
 
     public Class<?> rawType() {
@@ -222,7 +217,7 @@ public final class ShellDriver<S> {
             PackedInitializationContext pic = PackedInitializationContext.initializeImage(component, WireletPack.forImage(component, wirelets));
 
             // Need to start if guest...I think PIC should do it...
-            return newShell(pic);
+            return instantiateShell(pic);
         }
     }
 

@@ -26,7 +26,7 @@ public class USage extends BaseBundle {
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-        provideInstance("HelloWorld").export();
+        installInstance("HelloWorld").export();
     }
 
     public static void main(String[] args) {

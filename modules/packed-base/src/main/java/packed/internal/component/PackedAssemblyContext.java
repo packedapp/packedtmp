@@ -94,10 +94,12 @@ public final class PackedAssemblyContext implements AssemblyContext {
 
     // Modifiers = Modifers for the bundle + modifiers for the shell + modifiers from specific usage...
     public static ComponentNodeConfiguration assemble(int modifiers, Bundle<?> bundle, @Nullable ShellDriver<?> shellDriver, Wirelet... wirelets) {
-        // Get the driver from the bundle
+
+        // First we extract the component driver from the bundle
         OldPackedComponentDriver<?> componentDriver = BundleHelper.getDriver(bundle);
 
-        PackedAssemblyContext assembly = new PackedAssemblyContext(modifiers, shellDriver);
+        // Create a new assembly context that we passe around
+        PackedAssemblyContext assembly = new PackedAssemblyContext(modifiers, shellDriver, wirelets);
 
         WireletPack wp = WireletPack.from(componentDriver, wirelets);
 

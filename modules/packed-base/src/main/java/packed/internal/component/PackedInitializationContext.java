@@ -114,12 +114,22 @@ public final class PackedInitializationContext {
         PackedInitializationContext ic = new PackedInitializationContext(root.wirelets);
         ic.component = root.instantiateTree(ic);
         ic.component.region.print();
+
+        // If the system is a guest, start it (blocking)
+        if (ic.component.modifiers().isGuest()) { // TODO should check guest.delayStart wirelet
+            ic.guest().start();
+        }
         return ic;
     }
 
     public static PackedInitializationContext initializeImage(ComponentNodeConfiguration root, WireletPack wirelets) {
         PackedInitializationContext ic = new PackedInitializationContext(wirelets);
         ic.component = root.instantiateTree(ic);
+
+        // If the system is a guest, start it (blocking)
+        if (ic.component.modifiers().isGuest()) { // TODO should check guest.delayStart wirelet
+            ic.guest().start();
+        }
         return ic;
     }
 }
