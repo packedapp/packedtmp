@@ -45,6 +45,8 @@ import packed.internal.util.KeyBuilder;
 /** The default implementation of {@link Injector}. */
 public final class PackedInjector extends AbstractInjector {
 
+    public static final ServiceRegistry EMPTY_SERVICE_REGISTRY = new PackedInjector(ConfigSite.UNKNOWN, Map.of());
+
     /** A stack walker used from {@link #spawn(Wirelet...)}. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
@@ -52,15 +54,13 @@ public final class PackedInjector extends AbstractInjector {
     private final ConfigSite configSite;
 
     /** All services that this injector provides. */
-    private final Map<Key<?>, RuntimeEntry<?>> entries;
+    private final Map<Key<?>, RuntimeService<?>> entries;
 
     /** The parent of this injector, or null if this is a top-level injector. */
     @Nullable
     final AbstractInjector parent;
 
-    public static final ServiceRegistry EMPTY_SERVICE_REGISTRY = new PackedInjector(ConfigSite.UNKNOWN, Map.of());
-
-    public PackedInjector(ConfigSite configSite, Map<Key<?>, RuntimeEntry<?>> services) {
+    public PackedInjector(ConfigSite configSite, Map<Key<?>, RuntimeService<?>> services) {
         this.parent = null;
         this.configSite = requireNonNull(configSite);
         this.entries = services;
@@ -83,22 +83,12 @@ public final class PackedInjector extends AbstractInjector {
         super.failedGet(key);
     }
 
-    @Override
-    @Nullable
-    protected <T> T getInstanceOrNull(Key<T> key) {
-        RuntimeEntry<T> n = findNode(key);
-        if (n == null) {
-            return null;
-        }
-        return n.getInstance(ProvideContextImpl.of(key));
-    }
-
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     @Nullable
-    protected <T> RuntimeEntry<T> findNode(Key<T> key) {
-        return (RuntimeEntry<T>) entries.get(key);
+    protected <T> RuntimeService<T> findNode(Key<T> key) {
+        return (RuntimeService<T>) entries.get(key);
     }
 
     /** {@inheritDoc} */
@@ -109,8 +99,18 @@ public final class PackedInjector extends AbstractInjector {
 
     /** {@inheritDoc} */
     @Override
-    public void forEachEntry(Consumer<? super RuntimeEntry<?>> action) {
+    public void forEachEntry(Consumer<? super RuntimeService<?>> action) {
         entries.values().forEach(action);
+    }
+
+    @Override
+    @Nullable
+    protected <T> T getInstanceOrNull(Key<T> key) {
+        RuntimeService<T> n = findNode(key);
+        if (n == null) {
+            return null;
+        }
+        return n.getInstance(ProvideContextImpl.of(key));
     }
 
     /** {@inheritDoc} */
@@ -138,7 +138,7 @@ public final class PackedInjector extends AbstractInjector {
             Optional<StackFrame> sf = STACK_WALKER.walk(e -> e.filter(f -> f.getDeclaringClass() == PackedInjector.class).findFirst());
             cs = sf.isPresent() ? configSite.thenStackFrame("Injector.Spawn", sf.get()) : ConfigSite.UNKNOWN;
         }
-        LinkedHashMap<Key<?>, RuntimeEntry<?>> newServices = new LinkedHashMap<>(entries);
+        LinkedHashMap<Key<?>, RuntimeService<?>> newServices = new LinkedHashMap<>(entries);
         WireletList wl = WireletList.ofAll(wirelets);
         ConfigSite ccs = cs;
         wl.forEach(PackedDownstreamInjectionWirelet.class, w -> w.process(ccs, newServices));

@@ -25,7 +25,7 @@ import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.service.runtime.MappingInjectorEntry;
-import packed.internal.service.runtime.RuntimeEntry;
+import packed.internal.service.runtime.RuntimeService;
 
 /**
  * A build entry that that takes an existing entry and uses a {@link Function} to map the service provided by the entry.
@@ -47,7 +47,7 @@ final class MappingBuildEntry<F, T> extends BuildtimeService<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
+    protected RuntimeService<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
         return new MappingInjectorEntry<>(this, entryToMap.toRuntimeEntry(context), function);
     }
 }

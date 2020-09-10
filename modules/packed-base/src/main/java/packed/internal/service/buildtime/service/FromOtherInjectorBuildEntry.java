@@ -23,18 +23,18 @@ import app.packed.service.ServiceExtension;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.runtime.DelegatingInjectorEntry;
-import packed.internal.service.runtime.RuntimeEntry;
+import packed.internal.service.runtime.RuntimeService;
 
 /** An entry specifically used for {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
 final class FromOtherInjectorBuildEntry<T> extends BuildtimeService<T> {
 
     /** The entry from the 'imported' injector. */
-    private final RuntimeEntry<T> entry;
+    private final RuntimeService<T> entry;
 
     /** A wrapper for the 'imported' injector. */
     final ProvideAllFromOtherInjector fromInjector; // not used currently
 
-    FromOtherInjectorBuildEntry(ProvideAllFromOtherInjector fromInjector, RuntimeEntry<T> entry) {
+    FromOtherInjectorBuildEntry(ProvideAllFromOtherInjector fromInjector, RuntimeService<T> entry) {
         super(fromInjector.node, fromInjector.configSite.withParent(entry.configSite()));
         this.entry = entry;
         this.fromInjector = fromInjector;
@@ -43,7 +43,7 @@ final class FromOtherInjectorBuildEntry<T> extends BuildtimeService<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
+    protected RuntimeService<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
         return new DelegatingInjectorEntry<T>(this, entry);
     }
 }

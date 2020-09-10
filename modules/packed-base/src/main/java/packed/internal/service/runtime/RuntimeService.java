@@ -25,7 +25,7 @@ import app.packed.service.Service;
 import packed.internal.service.buildtime.BuildtimeService;
 
 /** An entry that represents a service at runtime. */
-public abstract class RuntimeEntry<T> implements Service {
+public abstract class RuntimeService<T> implements Service {
 
     /** The point where this entry was registered. */
     private final ConfigSite configSite;
@@ -39,11 +39,11 @@ public abstract class RuntimeEntry<T> implements Service {
      * @param buildEntry
      *            the build node to create the runtime node from
      */
-    RuntimeEntry(BuildtimeService<T> buildEntry) {
+    RuntimeService(BuildtimeService<T> buildEntry) {
         this(buildEntry.configSite(), buildEntry.key());
     }
 
-    RuntimeEntry(ConfigSite configSite, Key<T> key) {
+    RuntimeService(ConfigSite configSite, Key<T> key) {
         this.configSite = requireNonNull(configSite);
         this.key = requireNonNull(key);
     }

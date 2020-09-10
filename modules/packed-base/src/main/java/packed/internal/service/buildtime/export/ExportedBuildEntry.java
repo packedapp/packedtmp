@@ -25,7 +25,7 @@ import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.service.runtime.DelegatingInjectorEntry;
-import packed.internal.service.runtime.RuntimeEntry;
+import packed.internal.service.runtime.RuntimeService;
 
 /**
  * A build entry representing an exported service. Entries at runtime has never any reference to how (or if) they where
@@ -78,7 +78,7 @@ public final class ExportedBuildEntry<T> extends BuildtimeService<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
+    protected RuntimeService<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
         return new DelegatingInjectorEntry<>(this, exportedEntry.toRuntimeEntry(context));
     }
 }

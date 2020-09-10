@@ -39,7 +39,7 @@ import packed.internal.service.buildtime.export.ExportManager;
 import packed.internal.service.buildtime.export.ExportedBuildEntry;
 import packed.internal.service.buildtime.service.ServiceProvidingManager;
 import packed.internal.service.runtime.PackedInjector;
-import packed.internal.service.runtime.RuntimeEntry;
+import packed.internal.service.runtime.RuntimeService;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -147,7 +147,7 @@ public final class InjectionManager {
     }
 
     public ServiceRegistry newServiceRegistry(Region region, WireletPack wc) {
-        LinkedHashMap<Key<?>, RuntimeEntry<?>> runtimeEntries = new LinkedHashMap<>();
+        LinkedHashMap<Key<?>, RuntimeService<?>> runtimeEntries = new LinkedHashMap<>();
         ServiceExtensionInstantiationContext con = new ServiceExtensionInstantiationContext(region);
         for (var e : exports()) {
             runtimeEntries.put(e.key, e.toRuntimeEntry(con));

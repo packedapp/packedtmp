@@ -36,6 +36,6 @@ public class InjectorGetServiceTest {
             c.provide(A.class);
         });
 
-        assertThat(i.findService(A.class).get()).isInstanceOf(RuntimeEntry.class);
+        assertThat(i.findService(A.class).get()).isInstanceOf(RuntimeService.class);
     }
 }

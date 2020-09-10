@@ -21,13 +21,26 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ProvidePrototypeContext;
+import packed.internal.component.Region;
+import packed.internal.service.buildtime.BuildtimeService;
 
 /** An entry holding a constant. */
-public final class ConstantInjectorEntry<T> extends RuntimeEntry<T> {
+public final class ConstantInjectorEntry<T> extends RuntimeService<T> {
 
     /** The singleton instance. */
-    @Nullable
     private final T constant;
+
+    /**
+     * Creates a new entry.
+     *
+     * @param service
+     *            the build entry to create this entry from
+     */
+    @SuppressWarnings("unchecked")
+    public ConstantInjectorEntry(BuildtimeService<T> service, Region region, int index) {
+        super(service);
+        this.constant = requireNonNull((T) region.getSingletonInstance(index));
+    }
 
     /**
      * @param configSite

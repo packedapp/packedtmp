@@ -23,11 +23,10 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Provide;
-import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.Service;
 import packed.internal.inject.resolvable.DependencyProvider;
 import packed.internal.inject.resolvable.Injectable;
-import packed.internal.service.runtime.RuntimeEntry;
+import packed.internal.service.runtime.RuntimeService;
 
 /**
  * Build service entries ...node is used at configuration time, to make sure that multiple services with the same key
@@ -35,9 +34,8 @@ import packed.internal.service.runtime.RuntimeEntry;
  * needed at runtime.
  * 
  * <p>
- * BSEs are never exposed to end-users, but instead wrapped in implementations of {@link ExportedServiceConfiguration}.
+ * Instances of this class are never exposed to end users. But instead wrapped.
  */
-// BuildEntry does not implements ServiceDescriptor because it is mutable, so we
 public abstract class BuildtimeService<T> implements DependencyProvider {
 
     /** The configuration site of this object. */
@@ -56,7 +54,7 @@ public abstract class BuildtimeService<T> implements DependencyProvider {
     protected Key<T> key;
 
     public BuildtimeService(@Nullable InjectionManager im, ConfigSite configSite) {
-        this.im = im;
+        this.im = requireNonNull(im);
         this.configSite = requireNonNull(configSite);
     }
 
@@ -93,7 +91,7 @@ public abstract class BuildtimeService<T> implements DependencyProvider {
      *
      * @return the new runtime node
      */
-    protected abstract RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context);
+    protected abstract RuntimeService<T> newRuntimeNode(ServiceExtensionInstantiationContext context);
 
     public final Service toDescriptor() {
         return new PackedService(key, configSite);
@@ -106,8 +104,8 @@ public abstract class BuildtimeService<T> implements DependencyProvider {
 
     // cacher runtime noden...
     @SuppressWarnings("unchecked")
-    public final RuntimeEntry<T> toRuntimeEntry(ServiceExtensionInstantiationContext context) {
-        return (RuntimeEntry<T>) context.transformers.computeIfAbsent(this, k -> {
+    public final RuntimeService<T> toRuntimeEntry(ServiceExtensionInstantiationContext context) {
+        return (RuntimeService<T>) context.transformers.computeIfAbsent(this, k -> {
             return k.newRuntimeNode(context);
         });
     }

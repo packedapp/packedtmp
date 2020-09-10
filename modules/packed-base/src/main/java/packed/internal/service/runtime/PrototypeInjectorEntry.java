@@ -15,52 +15,49 @@
  */
 package packed.internal.service.runtime;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 
 import app.packed.inject.ProvidePrototypeContext;
 import app.packed.inject.ProvisionException;
 import packed.internal.component.Region;
 import packed.internal.service.buildtime.BuildtimeService;
-import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.util.ThrowableUtil;
 
 /** A runtime service node for prototypes. */
-// 3 typer?? Saa kan de foerste to implementere Provider
-// No params
-// No InjectionSite parameters
-// InjectionSite parameters
-public class PrototypeInjectorEntry<T> extends RuntimeEntry<T> {
+public class PrototypeInjectorEntry<T> extends RuntimeService<T> {
 
+    /** The method handle used to create new instances. */
     private final MethodHandle mh;
 
-    // Bliver nok noedt til at gemme en component...
-    // Men det kan vi vel bare goere
-    private final Region ns;
+    /** The region used when creating new instances. */
+    private final Region region;
 
     /**
-     * @param node
+     * @param service
      */
-    public PrototypeInjectorEntry(BuildtimeService<T> node, ServiceExtensionInstantiationContext context) {
-        super(node);
-        this.ns = context.region;
-        this.mh = null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isConstant() {
-        return false;
+    public PrototypeInjectorEntry(BuildtimeService<T> service, Region region, MethodHandle mh) {
+        super(service);
+        this.region = requireNonNull(region);
+        this.mh = requireNonNull(mh);
     }
 
     /** {@inheritDoc} */
     @Override
     public T getInstance(ProvidePrototypeContext site) {
         try {
-            return (T) mh.invoke(ns);
+            return (T) mh.invoke(region);
         } catch (Throwable e) {
             ThrowableUtil.throwIfUnchecked(e);
             throw new ProvisionException("Failed to inject ", e);
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isConstant() {
+        return false;
     }
 
     /** {@inheritDoc} */

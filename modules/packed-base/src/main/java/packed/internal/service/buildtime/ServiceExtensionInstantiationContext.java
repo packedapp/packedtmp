@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.IdentityHashMap;
 
 import packed.internal.component.Region;
-import packed.internal.service.runtime.RuntimeEntry;
+import packed.internal.service.runtime.RuntimeService;
 
 /** A special instantiation context that is created */
 public class ServiceExtensionInstantiationContext {
@@ -28,7 +28,7 @@ public class ServiceExtensionInstantiationContext {
     public final Region region;
 
     // Translates from BuildEntry->RuntimeEntry
-    final IdentityHashMap<BuildtimeService<?>, RuntimeEntry<?>> transformers = new IdentityHashMap<>();
+    final IdentityHashMap<BuildtimeService<?>, RuntimeService<?>> transformers = new IdentityHashMap<>();
 
     ServiceExtensionInstantiationContext(Region ns) {
         this.region = requireNonNull(ns);

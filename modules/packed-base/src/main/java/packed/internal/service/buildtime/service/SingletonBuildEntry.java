@@ -26,15 +26,16 @@ import packed.internal.inject.resolvable.Injectable;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
-import packed.internal.service.runtime.IndexedEntry;
-import packed.internal.service.runtime.RuntimeEntry;
+import packed.internal.service.runtime.ConstantInjectorEntry;
+import packed.internal.service.runtime.RuntimeService;
 
 /**
  *
  */
 public final class SingletonBuildEntry<T> extends BuildtimeService<T> {
 
-    public final SourceAssembly source;
+    /** The singleton source we are wrapping */
+    private final SourceAssembly source;
 
     /**
      * Creates a new node from an instance.
@@ -46,11 +47,12 @@ public final class SingletonBuildEntry<T> extends BuildtimeService<T> {
     public SingletonBuildEntry(InjectionManager im, SourceAssembly source) {
         super(im, source.component.configSite());
         this.source = requireNonNull(source);
-        as((Key<T>) source.defaultKey());
+        this.source.service = this;
+        this.key = (Key<T>) source.defaultKey();
         im.provider().buildEntries.add(this);
-        source.service = this;
     }
 
+    /** {@inheritDoc} */
     @Override
     @Nullable
     public Injectable injectable() {
@@ -59,15 +61,17 @@ public final class SingletonBuildEntry<T> extends BuildtimeService<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
-        return new IndexedEntry<>(this, context.region, source.regionIndex);
+    protected RuntimeService<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
+        return new ConstantInjectorEntry<>(this, context.region, source.regionIndex);
     }
 
+    /** {@inheritDoc} */
     @Override
     public MethodHandle toMethodHandle() {
         return source.toMethodHandle();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return "Singleton " + source;

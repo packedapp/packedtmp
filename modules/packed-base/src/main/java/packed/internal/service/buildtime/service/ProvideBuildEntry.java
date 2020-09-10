@@ -25,8 +25,8 @@ import packed.internal.component.SourceAssembly;
 import packed.internal.inject.resolvable.Injectable;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
-import packed.internal.service.runtime.IndexedEntry;
-import packed.internal.service.runtime.RuntimeEntry;
+import packed.internal.service.runtime.ConstantInjectorEntry;
+import packed.internal.service.runtime.RuntimeService;
 
 /**
  *
@@ -73,9 +73,9 @@ public class ProvideBuildEntry<T> extends BuildtimeService<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeEntry<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
+    protected RuntimeService<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
         if (ap.isConstant) {
-            return new IndexedEntry<>(this, context.region, regionIndex);
+            return new ConstantInjectorEntry<>(this, context.region, regionIndex);
         } else {
             throw new UnsupportedOperationException();
             // return new PrototypeInjectorEntry<>(this, context);
