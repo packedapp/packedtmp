@@ -8,7 +8,7 @@ import app.packed.guest.Guest;
 import app.packed.service.ServiceRegistry;
 
 /** The default implementation of {@link App}. */
-// Don't know if want an interface at all.
+// Er bare en record...Vi kan ignore nulls, da Packed instantiere den
 final class PackedApp implements App {
 
     /** An driver for creating PackedApp instances. */
@@ -20,12 +20,8 @@ final class PackedApp implements App {
     /** The guest that manages the lifecycle. */
     private final Guest guest;
 
-    // TODO I think we need to create a lazy starting service registry...
-    // or at least with findInstance/findProvider
-    // Det skal ihvertfald loeses i registry.. og ikke i selve
-    // shell'en
     /** All services that are available for the user. */
-    private final ServiceRegistry services;
+    private final ServiceRegistry serviceRegistry;
 
     /**
      * Creates a new app.
@@ -40,7 +36,7 @@ final class PackedApp implements App {
     private PackedApp(Component component, ServiceRegistry services, Guest guest) {
         this.component = requireNonNull(component);
         this.guest = requireNonNull(guest);
-        this.services = requireNonNull(services);
+        this.serviceRegistry = requireNonNull(services);
     }
 
     /** {@inheritDoc} */
@@ -58,11 +54,11 @@ final class PackedApp implements App {
     /** {@inheritDoc} */
     @Override
     public ServiceRegistry service() {
-        return services;
+        return serviceRegistry;
     }
 
     @Override
     public String toString() {
-        return "App " + path() + " Running";
+        return "App[" + guest.start() + "] " + path();
     }
 }

@@ -19,6 +19,7 @@ import java.util.concurrent.CompletableFuture;
 
 import app.packed.base.Nullable;
 import app.packed.guest.Guest;
+import app.packed.guest.GuestState;
 
 /**
  *
@@ -44,6 +45,13 @@ public class PackedGuest implements Guest {
     @Override
     public <T> CompletableFuture<T> startAsync(T result) {
         return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public GuestState state() {
+        throw new UnsupportedOperationException();
+
     }
 
     /** {@inheritDoc} */

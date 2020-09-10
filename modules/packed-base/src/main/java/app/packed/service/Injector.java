@@ -193,7 +193,7 @@ public interface Injector extends ServiceRegistry {
      */
     // Of er maaske fin. Saa understreger vi ligesom
     static Injector create(Bundle<?> bundle, Wirelet... wirelets) {
-        return driver().initialize(bundle, wirelets);
+        return driver().create(bundle, wirelets);
     }
 }
 

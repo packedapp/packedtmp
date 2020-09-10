@@ -94,26 +94,29 @@ public final class ShellDriver<S> {
     }
 
     /**
-     * Creates and initializes a new shell (and system) using the specified bundle.
-     * <p>
-     * This method will invoke {@link #newShell(PackedInitializationContext)} to create the actual shell.
+     * Create a new shell (and its underlying system) using the specified bundle.
      * 
      * @param bundle
      *            the system bundle
      * @param wirelets
-     *            any wirelets that should be used when assembling or initializing the system
+     *            optional wirelets
      * @return the new shell
      * @throws RuntimeException
-     *             if the shell could not be created
+     *             if the system could not be properly created
      */
-    public S initialize(Bundle<?> bundle, Wirelet... wirelets) {
+    public S create(Bundle<?> bundle, Wirelet... wirelets) {
         // Assembles the system
-        ComponentNodeConfiguration node = PackedAssemblyContext.assemble(modifiers, bundle, this, wirelets);
+        ComponentNodeConfiguration component = PackedAssemblyContext.assemble(modifiers, bundle, this, wirelets);
 
         // Initializes the system
-        PackedInitializationContext pic = PackedInitializationContext.initialize(node);
+        PackedInitializationContext pic = PackedInitializationContext.initialize(component);
 
-        return newShell(pic); // Returns a shell to the user
+        // If the yb
+        if (modifiers().isGuest()) { // TODO should check guest.delayStart wirelet
+            pic.guest().start();
+        }
+
+        return newShell(pic);
     }
 
     /**
@@ -155,30 +158,6 @@ public final class ShellDriver<S> {
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
-    }
-
-    /**
-     * Create, initialize and start a new shell using the specified source.
-     * 
-     * @param bundle
-     *            the source of the top-level container
-     * @param wirelets
-     *            any wirelets that should be used to create the shell
-     * @return the new shell
-     * @throws UnsupportedOperationException
-     *             if the driver does not produce an shell with an execution phase
-     */
-    public S start(Bundle<?> bundle, Wirelet... wirelets) {
-        // Assembles the system
-        ComponentNodeConfiguration node = PackedAssemblyContext.assemble(modifiers, bundle, this, wirelets);
-
-        // Initializes the system
-        PackedInitializationContext pic = PackedInitializationContext.initialize(node);
-
-        // Starts the system (blocking)
-        pic.guest().start();
-
-        return newShell(pic); // Returns a shell to the user
     }
 
     public Class<?> type() {

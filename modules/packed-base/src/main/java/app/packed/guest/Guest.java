@@ -41,6 +41,8 @@ import app.packed.component.Wirelet;
 // Taenker heller ikke ServiceRegistry
 public interface Guest {
 
+    GuestState state();
+
     /**
      * Returns a snapshot of the guests current state.
      * 

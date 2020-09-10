@@ -159,7 +159,7 @@ public interface App extends AutoCloseable, ComponentDelegate {
      *             if the application could not be created or started
      */
     static App of(Bundle<?> bundle, Wirelet... wirelets) {
-        return driver().start(bundle, wirelets);
+        return driver().create(bundle, wirelets);
     }
 }
 //
