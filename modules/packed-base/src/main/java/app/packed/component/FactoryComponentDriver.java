@@ -15,13 +15,19 @@
  */
 package app.packed.component;
 
+import app.packed.inject.Factory;
 import packed.internal.container.PackedRealm;
 
 /**
  *
  */
 @SuppressWarnings("exports")
-public interface ClassSourcedDriver<C, I> {
+public interface FactoryComponentDriver<C, I> extends ClassComponentDriver<C, I> {
 
-    ComponentDriver<C> bindToClass(PackedRealm realm, Class<? extends I> implementation);
+    @Override
+    default ComponentDriver<C> bindToClass(PackedRealm realm, Class<? extends I> implementation) {
+        return bindToFactory(realm, Factory.find(implementation));
+    }
+
+    ComponentDriver<C> bindToFactory(PackedRealm realm, Factory<? extends I> factory);
 }

@@ -24,10 +24,10 @@ import java.util.Optional;
 import app.packed.base.Nullable;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
-import app.packed.component.ClassSourcedDriver;
+import app.packed.component.ClassComponentDriver;
 import app.packed.component.Component;
 import app.packed.component.ComponentPath;
-import app.packed.component.FactorySourcedDriver;
+import app.packed.component.FactoryComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension.Subtension;
@@ -65,9 +65,9 @@ public interface ExtensionConfiguration {
 
     AssemblyContext assembly();
 
-    <C, I> C wire(ClassSourcedDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets);
+    <C, I> C wire(ClassComponentDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets);
 
-    <C, I> C wire(FactorySourcedDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets);
+    <C, I> C wire(FactoryComponentDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets);
 
     default void checkPreemble() {
         // Ideen er at man kan checke at der ikke er blevet installeret boern...

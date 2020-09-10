@@ -27,7 +27,7 @@ import app.packed.component.Wirelet;
 import app.packed.guest.Guest.GuestStopOption;
 
 /**
- * Wirelets that can be used when wiring guest. For example, via {@link App#start(Bundle, Wirelet...)}.
+ * Wirelets that can be used when wiring guest. For example, via {@link App#of(Bundle, Wirelet...)}.
  * <p>
  * All wirelets on this class requires the {@link ComponentModifier#GUEST} modifier on the component being wired.
  */
@@ -41,6 +41,12 @@ import app.packed.guest.Guest.GuestStopOption;
 // Maaske noget generisks???
 
 public interface GuestWirelets {
+
+    // * The returned application will lazily start itself when needed. For example, on first invocation of
+    // * {@link #use(Class)}.
+    static Wirelet delayStart() {
+        throw new UnsupportedOperationException();
+    }
 
     // after which the guest will be shutdown normally
     static Wirelet deadline(Instant deadline, GuestStopOption... options) {

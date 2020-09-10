@@ -41,14 +41,6 @@ import app.packed.component.Wirelet;
 // Taenker heller ikke ServiceRegistry
 public interface Guest {
 
-    Guest start();
-
-    <T> CompletableFuture<T> startAsync(T result);
-
-    Guest stop(GuestStopOption... options);
-
-    <T> CompletableFuture<T> stopAsync(T result, GuestStopOption... options);
-
     /**
      * Returns a snapshot of the guests current state.
      * 
@@ -57,6 +49,24 @@ public interface Guest {
     default GuestStateSnapshot snapshotState() {
         throw new UnsupportedOperationException();
     }
+
+    // app.guest().start(); I think that is cool, no need to move this method to App for now
+    Guest start();
+
+    <T> CompletableFuture<T> startAsync(T result);
+
+    Guest stop(GuestStopOption... options);
+
+    /**
+     * Initiates an orderly asynchronously shutdown of the application. In which currently running tasks will be executed,
+     * but no new tasks will be started. Invocation has no additional effect if the application has already been shut down.
+     *
+     * @param options
+     *            optional guest stop options
+     * @return a future that can be used to query whether the application has completed shutdown (terminated). Or is still
+     *         in the process of being shut down
+     */
+    <T> CompletableFuture<T> stopAsync(T result, GuestStopOption... options);
 
     // Altsaa vi skal ikke have interface StartOption of @interface WireletOption... Saa maa de hedde noget forskelligt
 
@@ -90,11 +100,11 @@ public interface Guest {
     // Med mindre instanser lige pludselig kan bruge det.
     public interface GuestStopOption {
 
-        static GuestStopOption erroneous(Throwable cause) {
+        static GuestStopOption erroneous(Supplier<Throwable> cause) {
             throw new UnsupportedOperationException();
         }
 
-        static GuestStopOption erroneous(Supplier<Throwable> cause) {
+        static GuestStopOption erroneous(Throwable cause) {
             throw new UnsupportedOperationException();
         }
 
@@ -108,18 +118,18 @@ public interface Guest {
             throw new UnsupportedOperationException();
         }
 
-        static GuestStopOption restart(Wirelet... wirelets) {
-            // restart(Wirelet.rename("Restart at ....");
-            //// Men okay hvad hvis det ikke kan lade sige goere at omnavngive den...
-            throw new UnsupportedOperationException();
-        }
-
         static GuestStopOption now() {
             // Now == shutdownNow();
             throw new UnsupportedOperationException();
         }
 
         static GuestStopOption now(Throwable cause) {
+            throw new UnsupportedOperationException();
+        }
+
+        static GuestStopOption restart(Wirelet... wirelets) {
+            // restart(Wirelet.rename("Restart at ....");
+            //// Men okay hvad hvis det ikke kan lade sige goere at omnavngive den...
             throw new UnsupportedOperationException();
         }
 

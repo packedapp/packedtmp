@@ -37,7 +37,7 @@ public class AppTester {
     }
 
     public AppTester(Bundle<?> source, Wirelet... wirelets) {
-        this(App.start(source, wirelets));
+        this(App.of(source, wirelets));
     }
 
     public AppTester(Image<App> img, Wirelet... wirelets) {
@@ -62,6 +62,6 @@ public class AppTester {
     }
 
     public static AppTester of(Bundle<?> source, Wirelet... wirelets) {
-        return new AppTester(App.start(source, wirelets));
+        return new AppTester(App.of(source, wirelets));
     }
 }

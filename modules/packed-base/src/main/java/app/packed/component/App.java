@@ -16,13 +16,12 @@
 package app.packed.component;
 
 import java.util.NoSuchElementException;
-import java.util.concurrent.CompletableFuture;
 
 import app.packed.base.Key;
 import app.packed.config.ConfigSite;
 import app.packed.guest.Guest;
-import app.packed.guest.Guest.GuestStopOption;
 import app.packed.guest.GuestState;
+import app.packed.guest.GuestWirelets;
 import app.packed.service.ServiceRegistry;
 
 /**
@@ -36,7 +35,7 @@ public interface App extends AutoCloseable, ComponentDelegate {
      **/
     @Override
     default void close() {
-        stop();
+        guest().stop();
     }
 
     /**
@@ -47,10 +46,18 @@ public interface App extends AutoCloseable, ComponentDelegate {
      * 
      * @return the configuration site of this application
      */
+    // Altsaa vil vi have den her????
     default ConfigSite configSite() {
         return component().configSite();
     }
 
+    /**
+     * Returns the guest.
+     * <p>
+     * Calling this method will never effect the state of the app.
+     * 
+     * @return this application's guest.
+     */
     Guest guest();
 
     /**
@@ -83,30 +90,7 @@ public interface App extends AutoCloseable, ComponentDelegate {
      * 
      * @return the service registry for this app
      */
-    ServiceRegistry services();
-
-    /**
-     * @param options
-     *            optional guest stop options
-     * @return this app
-     */
-    default App stop(GuestStopOption... options) {
-        guest().stop(options);
-        return this;
-    }
-
-    /**
-     * Initiates an orderly asynchronously shutdown of the application. In which currently running tasks will be executed,
-     * but no new tasks will be started. Invocation has no additional effect if the application has already been shut down.
-     *
-     * @param options
-     *            optional guest stop options
-     * @return a future that can be used to query whether the application has completed shutdown (terminated). Or is still
-     *         in the process of being shut down
-     */
-    default CompletableFuture<App> stopAsync(GuestStopOption... options) {
-        return guest().stopAsync(this, options);
-    }
+    ServiceRegistry service();
 
     /**
      * Returns a service with the specified key, if it exists. Otherwise, fails by throwing {@link NoSuchElementException}.
@@ -122,7 +106,7 @@ public interface App extends AutoCloseable, ComponentDelegate {
      *             if a service with the specified key exist.
      */
     default <T> T use(Class<T> key) {
-        return services().use(key);
+        return service().use(key);
     }
 
     /**
@@ -139,7 +123,7 @@ public interface App extends AutoCloseable, ComponentDelegate {
      *             if a service with the specified key exist.
      */
     default <T> T use(Key<T> key) {
-        return services().use(key);
+        return service().use(key);
     }
 
     /**
@@ -153,48 +137,55 @@ public interface App extends AutoCloseable, ComponentDelegate {
         return PackedApp.DRIVER;
     }
 
-    // Once used the image will return an App in the initialized state.
+    // Once used the image will return an App in the started state. unless GuestWirelet.delayStart
     static Image<App> imageOf(Bundle<?> bundle, Wirelet... wirelets) {
         return driver().newImage(bundle, wirelets);
     }
 
     /**
-     * Create a new application (but does not start it) from the specified bundle. The state of the returned application is
-     * {@link GuestState#INITIALIZED}.
+     * Create and start a new application using the specified bundle. The state of the returned application is
+     * {@link GuestState#RUNNING}.
      * <p>
-     * The returned application will lazily start itself when needed. For example, on first invocation of
-     * {@link #use(Class)}.
-     *
+     * Should be used with try-with-resources
+     * <p>
+     * If you do not wish to immediately start the application use {@link GuestWirelets#delayStart()}.
+     * 
      * @param bundle
-     *            the source of the application
+     *            the bundle to use for creating the application
      * @param wirelets
      *            optional wirelets
      * @return the new application
      * @throws RuntimeException
-     *             if the application could not created
+     *             if the application could not be created or started
      */
     static App of(Bundle<?> bundle, Wirelet... wirelets) {
-        return driver().initialize(bundle, wirelets);
-    }
-
-    /**
-     * Create and start a new application using the specified bundle. The state of the returned application is
-     * {@link GuestState#RUNNING}.
-     *
-     * @param bundle
-     *            the source of the application
-     * @param wirelets
-     *            optional wirelets
-     * @return the new (running) application
-     * @throws RuntimeException
-     *             if the application failed to initialize or started properly
-     */
-    // Eller ogsaa har vi simpelthen en wirelet der hedder do-not-start
-    // ofInitialized()
-    static App start(Bundle<?> bundle, Wirelet... wirelets) {
         return driver().start(bundle, wirelets);
     }
 }
+//
+///**
+// * @param options
+// *            optional guest stop options
+// * @return this app
+// */
+//default App stop(GuestStopOption... options) {
+//    guest().stop(options);
+//    return this;
+//}
+//
+///**
+// * Initiates an orderly asynchronously shutdown of the application. In which currently running tasks will be executed,
+// * but no new tasks will be started. Invocation has no additional effect if the application has already been shut down.
+// *
+// * @param options
+// *            optional guest stop options
+// * @return a future that can be used to query whether the application has completed shutdown (terminated). Or is still
+// *         in the process of being shut down
+// */
+//default CompletableFuture<App> stopAsync(GuestStopOption... options) {
+//    return guest().stopAsync(this, options);
+//}
+
 // 10 seconds is from start.. Otherwise people must use an exact deadline
 // start(new SomeBundle(), LifecycleWirelets.stopAfter(10, TimeUnit.SECONDS));
 // sart(new SomeBundle(), LifecycleWirelets.stopAfter(10, TimeUnit.SECONDS), ()-> New CancelledException()); (failure)

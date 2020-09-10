@@ -27,10 +27,10 @@ import app.packed.guest.Guest;
 import app.packed.service.Injector;
 import app.packed.service.ServiceRegistry;
 import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.OldPackedComponentDriver;
 import packed.internal.component.PackedAssemblyContext;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.PackedInitializationContext;
-import packed.internal.component.PackedWireableComponentDriver;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.invoke.MethodHandleBuilder;
 import packed.internal.invoke.OpenClass;
@@ -88,7 +88,7 @@ public final class ShellDriver<S> {
     }
 
     public <C, D> S configure(ComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
-        ComponentNodeConfiguration node = PackedAssemblyContext.configure(this, (PackedWireableComponentDriver<D>) driver, factory, consumer, wirelets);
+        ComponentNodeConfiguration node = PackedAssemblyContext.configure(this, (OldPackedComponentDriver<D>) driver, factory, consumer, wirelets);
         PackedInitializationContext ac = PackedInitializationContext.initialize(node);
         return newShell(ac);
     }
@@ -245,50 +245,6 @@ public final class ShellDriver<S> {
         }
     }
 
-//  public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> shellType, Factory<? extends A> implementation) {
-//      throw new UnsupportedOperationException();
-//  }
-//  <E extends A> ArtifactDriver<A> mapTo(Class<E> decoratingType, Function<A, E> decorator) {
-//      // Ideen er egentlig at f.eks. kunne wrappe App, og tilfoeje en metode...
-//      // Men altsaa, maaske er det bare at kalde metoderne direkte i context...
-//      // PackedApp kalder jo bare direkte igennem
-//      throw new UnsupportedOperationException();
-//  }
-
-//
-//    static <A> A start(Class<A> shellType, ArtifactSource source, Wirelet... wirelets) {
-//        // The only thing we save is defining a driver..
-//        // But we need the driver for App#driver... so not much saved
-//        throw new UnsupportedOperationException();
-//    }
-//  Supplier<A> startingProvider(ArtifactSource a, Wirelet... wirelets) {
-//  // Kunne ogsaa lave den paa image...
-//  // Men altsaa taenker vi godt vil have noget wirelets med...
-//  // <A> Supplier<A> ArtifactImage.supplier(ArtifactDriver<A> driver);
-//  throw new UnsupportedOperationException();
-//}
-//    /** Options that can be specified when creating a new driver or via {@link #withOptions(Option...)}. */
-
-    // Ideen er lidt at vi koerer ArchUnit igennem here....
-    // Altsaa Skal vi have en BaseEnvironment.. hvor vi kan specificere nogle options for alle
-    // F.eks. black liste ting...
-
-    // Invoked by each driver??
-    // List<ArtifactDriver.Option> BaseEnvironment.defaultOptions(Class<?> shellDriver);
-    // BaseEnvironment via service loader. Exactly one... Extensions should never create one.
-    // Users
-    // Men skal man kunne overskriver den forstaaet paa den maade at stramme den...
-    // F.eks. med en order... Alle skal have unik orders (ellers fejl)
-    // D.v.s. CompanyBaseEnvironment(order = 1) , DivisionBaseEnvironment(order = 2)
-    // Ellers ogsaa installere man en masse options... //Allowed algor
-
-    // IDK Den fungere ikke lige skide godt med et image...
-    // Can jo ikke prefix'e med noget som helst hvis foerst imaged er lavet...
-    // Eller f.eks. Whitelist/Blacklist kan vi godt. fordi vi har listen af dem...
-    // naar vi instantiere...
-    // Saa vi kan checke ting...
-    // Men ikke paavirke hvordan de bliver lavet...
-
     static class ZOption {
 
         // If not autoclosable
@@ -384,6 +340,51 @@ public final class ShellDriver<S> {
 //        }
 //    }
 }
+
+//public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> shellType, Factory<? extends A> implementation) {
+//  throw new UnsupportedOperationException();
+//}
+//<E extends A> ArtifactDriver<A> mapTo(Class<E> decoratingType, Function<A, E> decorator) {
+//  // Ideen er egentlig at f.eks. kunne wrappe App, og tilfoeje en metode...
+//  // Men altsaa, maaske er det bare at kalde metoderne direkte i context...
+//  // PackedApp kalder jo bare direkte igennem
+//  throw new UnsupportedOperationException();
+//}
+
+//
+//static <A> A start(Class<A> shellType, ArtifactSource source, Wirelet... wirelets) {
+//    // The only thing we save is defining a driver..
+//    // But we need the driver for App#driver... so not much saved
+//    throw new UnsupportedOperationException();
+//}
+//Supplier<A> startingProvider(ArtifactSource a, Wirelet... wirelets) {
+//// Kunne ogsaa lave den paa image...
+//// Men altsaa taenker vi godt vil have noget wirelets med...
+//// <A> Supplier<A> ArtifactImage.supplier(ArtifactDriver<A> driver);
+//throw new UnsupportedOperationException();
+//}
+///** Options that can be specified when creating a new driver or via {@link #withOptions(Option...)}. */
+
+// Ideen er lidt at vi koerer ArchUnit igennem here....
+// Altsaa Skal vi have en BaseEnvironment.. hvor vi kan specificere nogle options for alle
+// F.eks. black liste ting...
+
+// Invoked by each driver??
+// List<ArtifactDriver.Option> BaseEnvironment.defaultOptions(Class<?> shellDriver);
+// BaseEnvironment via service loader. Exactly one... Extensions should never create one.
+// Users
+// Men skal man kunne overskriver den forstaaet paa den maade at stramme den...
+// F.eks. med en order... Alle skal have unik orders (ellers fejl)
+// D.v.s. CompanyBaseEnvironment(order = 1) , DivisionBaseEnvironment(order = 2)
+// Ellers ogsaa installere man en masse options... //Allowed algor
+
+// IDK Den fungere ikke lige skide godt med et image...
+// Can jo ikke prefix'e med noget som helst hvis foerst imaged er lavet...
+// Eller f.eks. Whitelist/Blacklist kan vi godt. fordi vi har listen af dem...
+// naar vi instantiere...
+// Saa vi kan checke ting...
+// Men ikke paavirke hvordan de bliver lavet...
+
 ////// FRA SHELL CONTEXT
 //start() osv smider UnsupportedOperationException hvis LifeycleExtension ikke er installeret???
 //Naeh syntes bare man returnere oejeblikligt

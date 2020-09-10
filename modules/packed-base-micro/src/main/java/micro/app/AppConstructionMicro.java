@@ -42,22 +42,22 @@ public class AppConstructionMicro {
 
     @Benchmark
     public App emptyApp() {
-        return App.start(VariousBundles.empty());
+        return App.of(VariousBundles.empty());
     }
 
     @Benchmark
     public App oneComponent() {
-        return App.start(VariousBundles.oneComponent());
+        return App.of(VariousBundles.oneComponent());
     }
 
     @Benchmark
     public App fiveComponents() {
-        return App.start(VariousBundles.fiveComponents());
+        return App.of(VariousBundles.fiveComponents());
     }
 
     @Benchmark
     public App oneContainer() {
-        return App.start(VariousBundles.oneContainer());
+        return App.of(VariousBundles.oneContainer());
     }
 
     @Benchmark

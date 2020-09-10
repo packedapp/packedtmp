@@ -22,14 +22,14 @@ import java.lang.invoke.MethodHandle;
 import app.packed.base.Nullable;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
-import app.packed.component.ClassSourcedDriver;
+import app.packed.component.ClassComponentDriver;
 import app.packed.component.ComponentConfigurationContext;
+import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
-import app.packed.component.FactorySourcedDriver;
-import app.packed.component.InstanceSourcedDriver;
+import app.packed.component.FactoryComponentDriver;
+import app.packed.component.InstanceComponentDriver;
 import app.packed.component.StatelessConfiguration;
-import app.packed.component.ComponentDriver;
 import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Factory;
 import packed.internal.container.PackedContainerConfiguration;
@@ -40,13 +40,13 @@ import packed.internal.inject.factory.FactoryHandle;
 /**
  *
  */
-public abstract class PackedWireableComponentDriver<C> implements ComponentDriver<C> {
+public abstract class OldPackedComponentDriver<C> implements ComponentDriver<C> {
 
     public static ComponentDriver<ContainerConfiguration> CONTAINER_DRIVER = new ContainerComponentDriver();
 
     final int modifiers;
 
-    protected PackedWireableComponentDriver(ComponentModifier... properties) {
+    protected OldPackedComponentDriver(ComponentModifier... properties) {
         this.modifiers = PackedComponentModifierSet.intOf(properties);
     }
 
@@ -88,7 +88,7 @@ public abstract class PackedWireableComponentDriver<C> implements ComponentDrive
     public abstract C toConfiguration(ComponentConfigurationContext cnc);
 
     /** The default driver for creating new containers. */
-    private static class ContainerComponentDriver extends PackedWireableComponentDriver<ContainerConfiguration> {
+    private static class ContainerComponentDriver extends OldPackedComponentDriver<ContainerConfiguration> {
 
         private ContainerComponentDriver() {
             super(ComponentModifier.CONTAINER);
@@ -100,7 +100,7 @@ public abstract class PackedWireableComponentDriver<C> implements ComponentDrive
         }
     }
 
-    public static class SingletonComponentDriver<T> extends PackedWireableComponentDriver<BeanConfiguration<T>> {
+    public static class SingletonComponentDriver<T> extends OldPackedComponentDriver<BeanConfiguration<T>> {
 
         @Nullable
         public final BaseFactory<?> factory;
@@ -152,8 +152,8 @@ public abstract class PackedWireableComponentDriver<C> implements ComponentDrive
             return new BeanConfiguration<>(cnc);
         }
 
-        public static <T> InstanceSourcedDriver<BeanConfiguration<T>, T> driver() {
-            return new InstanceSourcedDriver<BeanConfiguration<T>, T>() {
+        public static <T> InstanceComponentDriver<BeanConfiguration<T>, T> driver() {
+            return new InstanceComponentDriver<BeanConfiguration<T>, T>() {
 
                 @Override
                 public ComponentDriver<BeanConfiguration<T>> bindToFactory(PackedRealm realm, Factory<? extends T> factory) {
@@ -167,19 +167,18 @@ public abstract class PackedWireableComponentDriver<C> implements ComponentDrive
             };
         }
 
-        public static <T> FactorySourcedDriver<BeanConfiguration<T>, T> prototype() {
-            return new FactorySourcedDriver<BeanConfiguration<T>, T>() {
+        public static <T> FactoryComponentDriver<BeanConfiguration<T>, T> prototype() {
+            return new FactoryComponentDriver<BeanConfiguration<T>, T>() {
 
                 @Override
                 public ComponentDriver<BeanConfiguration<T>> bindToFactory(PackedRealm realm, Factory<? extends T> factory) {
                     return new SingletonComponentDriver<>(realm, factory, true);
                 }
-
             };
         }
     }
 
-    public static class StatelessComponentDriver extends PackedWireableComponentDriver<StatelessConfiguration> {
+    public static class StatelessComponentDriver extends OldPackedComponentDriver<StatelessConfiguration> {
         public final ComponentModel model;
 
         private StatelessComponentDriver(PackedRealm lookup, Class<?> implementation) {
@@ -206,12 +205,12 @@ public abstract class PackedWireableComponentDriver<C> implements ComponentDrive
             return new PackedStatelessComponentConfiguration(cnc);
         }
 
-        public static <T> ClassSourcedDriver<StatelessConfiguration, T> driver() {
-            return new ClassSourcedDriver<StatelessConfiguration, T>() {
+        public static <T> ClassComponentDriver<StatelessConfiguration, T> driver() {
+            return new ClassComponentDriver<StatelessConfiguration, T>() {
 
                 @Override
                 public ComponentDriver<StatelessConfiguration> bindToClass(PackedRealm realm, Class<? extends T> implementation) {
-                    return new PackedWireableComponentDriver.StatelessComponentDriver(realm, implementation);
+                    return new OldPackedComponentDriver.StatelessComponentDriver(realm, implementation);
                 }
             };
         }

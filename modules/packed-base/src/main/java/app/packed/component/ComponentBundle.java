@@ -130,15 +130,15 @@ public abstract class ComponentBundle<T extends ComponentConfiguration> extends 
         return configuration().wire(driver, wirelets);
     }
 
-    protected final <C, I> C wire(ClassSourcedDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
+    protected final <C, I> C wire(ClassComponentDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
         return configuration().wire(driver, implementation, wirelets);
     }
 
-    protected final <C, I> C wire(FactorySourcedDriver<C, I> driver, Factory<I> factory, Wirelet... wirelets) {
+    protected final <C, I> C wire(FactoryComponentDriver<C, I> driver, Factory<I> factory, Wirelet... wirelets) {
         return configuration().wire(driver, factory, wirelets);
     }
 
-    protected final <C, I> C wireInstance(InstanceSourcedDriver<C, I> driver, I instance, Wirelet... wirelets) {
+    protected final <C, I> C wireInstance(InstanceComponentDriver<C, I> driver, I instance, Wirelet... wirelets) {
         return configuration().wireInstance(driver, instance, wirelets);
     }
 }

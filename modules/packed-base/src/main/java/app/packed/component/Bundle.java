@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Nullable;
 import packed.internal.component.BundleHelper;
-import packed.internal.component.PackedWireableComponentDriver;
+import packed.internal.component.OldPackedComponentDriver;
 
 /**
  * A bundle is a thin wrapper that encapsulates a {@link ComponentDriver} and the configuration of a component.
@@ -50,7 +50,7 @@ public abstract class Bundle<C> implements ComponentSystem {
     // Bundle: States-> Ready -> Assembling|Composing -> Consumed|Composed... Ready | Using | Used... Usable | Using | Used
     // Unconfigured/Configuring/Configured (Failed??? well et can't bee Configured if it's failed)
     // [afdf, state = Unusued]consuming|consumed]
-    private final PackedWireableComponentDriver<? extends C> driver; // TODO maybe use for tostring??? Include state
+    private final OldPackedComponentDriver<? extends C> driver; // TODO maybe use for tostring??? Include state
 
     /**
      * Creates a new bundle using the specified driver.
@@ -59,7 +59,7 @@ public abstract class Bundle<C> implements ComponentSystem {
      *            the driver to use for constructing this bundle's configuration object
      */
     protected Bundle(ComponentDriver<? extends C> driver) {
-        this.driver = requireNonNull((PackedWireableComponentDriver<? extends C>) driver, "driver is null");
+        this.driver = requireNonNull((OldPackedComponentDriver<? extends C>) driver, "driver is null");
     }
 
     /**

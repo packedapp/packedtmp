@@ -35,7 +35,7 @@ import java.util.stream.Stream;
 import app.packed.base.AttributeMap;
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
-import app.packed.component.ClassSourcedDriver;
+import app.packed.component.ClassComponentDriver;
 import app.packed.component.Component;
 import app.packed.component.ComponentAttributes;
 import app.packed.component.ComponentConfigurationContext;
@@ -44,8 +44,8 @@ import app.packed.component.ComponentModifierSet;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
-import app.packed.component.FactorySourcedDriver;
-import app.packed.component.InstanceSourcedDriver;
+import app.packed.component.FactoryComponentDriver;
+import app.packed.component.InstanceComponentDriver;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
@@ -75,7 +75,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     private final PackedAssemblyContext assembly;
 
     /** The driver used to create this component. */
-    final PackedWireableComponentDriver<?> driver;
+    final OldPackedComponentDriver<?> driver;
 
     /** The name of the component. */
     String name;
@@ -158,7 +158,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
      * @param parent
      *            the parent of the component
      */
-    private ComponentNodeConfiguration(PackedAssemblyContext assembly, PackedRealm realm, PackedWireableComponentDriver<?> driver, ConfigSite configSite,
+    private ComponentNodeConfiguration(PackedAssemblyContext assembly, PackedRealm realm, OldPackedComponentDriver<?> driver, ConfigSite configSite,
             @Nullable ComponentNodeConfiguration parent, @Nullable WireletPack wirelets) {
         this.assembly = requireNonNull(assembly);
         this.realm = requireNonNull(realm);
@@ -372,7 +372,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
      * 
      * @return the driver of this component
      */
-    public PackedWireableComponentDriver<?> driver() {
+    public OldPackedComponentDriver<?> driver() {
         return driver;
     }
 
@@ -407,7 +407,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     @Override
     public void link(Bundle<?> bundle, Wirelet... wirelets) {
         // Get the driver from the bundle
-        PackedWireableComponentDriver<?> driver = BundleHelper.getDriver(bundle);
+        OldPackedComponentDriver<?> driver = BundleHelper.getDriver(bundle);
 
         if (driver.modifiers().isContainer()) {
             // IDK do we want to progress to next stage just in case...
@@ -438,7 +438,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         return new PackedComponentModifierSet(modifiers);
     }
 
-    public ComponentNodeConfiguration newChild(PackedWireableComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm, @Nullable WireletPack wp) {
+    public ComponentNodeConfiguration newChild(OldPackedComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm, @Nullable WireletPack wp) {
         return new ComponentNodeConfiguration(assembly, realm, driver, configSite, this, wp);
     }
 
@@ -567,12 +567,12 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     }
 
     @Override
-    public <C, I> C wire(ClassSourcedDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
+    public <C, I> C wire(ClassComponentDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
         return wire(driver.bindToClass(realm, implementation), wirelets);
     }
 
     @Override
-    public <C, I> C wire(FactorySourcedDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
+    public <C, I> C wire(FactoryComponentDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
         return wire(driver.bindToFactory(realm, implementation), wirelets);
     }
 
@@ -580,7 +580,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     @Override
     public <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         requireNonNull(driver, "driver is null");
-        PackedWireableComponentDriver<C> d = (PackedWireableComponentDriver<C>) driver;
+        OldPackedComponentDriver<C> d = (OldPackedComponentDriver<C>) driver;
         WireletPack wp = WireletPack.from(d, wirelets);
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         ComponentNodeConfiguration conf = newChild(d, configSite, realm, wp);
@@ -588,12 +588,12 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     }
 
     @Override
-    public <C, I> C wireInstance(InstanceSourcedDriver<C, I> driver, I instance, Wirelet... wirelets) {
+    public <C, I> C wireInstance(InstanceComponentDriver<C, I> driver, I instance, Wirelet... wirelets) {
         ComponentDriver<C> wcd = driver.bindToInstance(realm, instance);
         return wire(wcd, wirelets);
     }
 
-    public static ComponentNodeConfiguration newAssembly(PackedAssemblyContext assembly, PackedWireableComponentDriver<?> driver, ConfigSite configSite,
+    public static ComponentNodeConfiguration newAssembly(PackedAssemblyContext assembly, OldPackedComponentDriver<?> driver, ConfigSite configSite,
             PackedRealm realm, WireletPack wirelets) {
         return new ComponentNodeConfiguration(assembly, realm, driver, configSite, null, wirelets);
     }

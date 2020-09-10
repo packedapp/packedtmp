@@ -21,6 +21,7 @@ import packed.internal.container.PackedRealm;
  *
  */
 @SuppressWarnings("exports")
-public interface InstanceSourcedDriver<C, I> extends FactorySourcedDriver<C, I> {
+public interface InstanceComponentDriver<C, I> extends FactoryComponentDriver<C, I> {
+
     ComponentDriver<C> bindToInstance(PackedRealm realm, I instance);
 }

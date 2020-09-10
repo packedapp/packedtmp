@@ -26,7 +26,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.inject.Factory;
-import packed.internal.component.PackedWireableComponentDriver;
+import packed.internal.component.OldPackedComponentDriver;
 
 /**
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
@@ -148,6 +148,6 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      */
     // Men hvad hvis det ogsaa er en gaest...
     static ComponentDriver<ContainerConfiguration> driver() {
-        return PackedWireableComponentDriver.CONTAINER_DRIVER;
+        return OldPackedComponentDriver.CONTAINER_DRIVER;
     }
 }

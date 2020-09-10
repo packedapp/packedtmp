@@ -33,7 +33,7 @@ public class AppTest {
     @Test
     public void emptyApp() {
         AtomicReference<ContainerConfiguration> ar = new AtomicReference<>();
-        App app = App.start(new BaseBundle() {
+        App app = App.of(new BaseBundle() {
             @Override
             public void configure() {
                 ar.set(configuration());

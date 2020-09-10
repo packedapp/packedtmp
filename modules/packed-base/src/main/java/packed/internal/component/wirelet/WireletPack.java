@@ -24,7 +24,7 @@ import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.PackedWireableComponentDriver;
+import packed.internal.component.OldPackedComponentDriver;
 
 /** A holder of wirelets and wirelet pipelines. */
 public final class WireletPack {
@@ -113,7 +113,7 @@ public final class WireletPack {
     // //Is Initializaing in one -> NotAnImage and Not analyzing...
 
     @Nullable
-    public static WireletPack from(PackedWireableComponentDriver<?> driver, Wirelet... wirelets) {
+    public static WireletPack from(OldPackedComponentDriver<?> driver, Wirelet... wirelets) {
         if (driver.modifiers().isContainer()) {
             return create(wirelets);
         }

@@ -32,7 +32,7 @@ import app.packed.hook.OnHook;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.PackedWireableComponentDriver.SingletonComponentDriver;
+import packed.internal.component.OldPackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.inject.ConfigSiteInjectOperations;

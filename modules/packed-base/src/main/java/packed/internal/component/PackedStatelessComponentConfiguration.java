@@ -17,7 +17,7 @@ package packed.internal.component;
 
 import app.packed.component.AbstractComponentConfiguration;
 import app.packed.component.StatelessConfiguration;
-import packed.internal.component.PackedWireableComponentDriver.StatelessComponentDriver;
+import packed.internal.component.OldPackedComponentDriver.StatelessComponentDriver;
 
 /**
  *

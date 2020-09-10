@@ -57,7 +57,7 @@ final class PackedApp implements App {
 
     /** {@inheritDoc} */
     @Override
-    public ServiceRegistry services() {
+    public ServiceRegistry service() {
         return services;
     }
 

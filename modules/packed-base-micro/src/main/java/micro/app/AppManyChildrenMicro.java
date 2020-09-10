@@ -47,7 +47,7 @@ public class AppManyChildrenMicro {
 
     @Benchmark
     public App manyChildren() {
-        return App.start(new BaseBundle() {
+        return App.of(new BaseBundle() {
             @Override
             protected void configure() {
                 for (int i = 0; i < size; i++) {

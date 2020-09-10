@@ -160,7 +160,7 @@ public abstract class AbstractComponentConfiguration implements ComponentConfigu
     }
 
     @Override
-    public final <C, I> C wire(ClassSourcedDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
+    public final <C, I> C wire(ClassComponentDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
         return context.wire(driver, implementation, wirelets);
     }
 
@@ -170,12 +170,12 @@ public abstract class AbstractComponentConfiguration implements ComponentConfigu
     }
 
     @Override
-    public final <C, I> C wire(FactorySourcedDriver<C, I> driver, Factory<I> implementation, Wirelet... wirelets) {
+    public final <C, I> C wire(FactoryComponentDriver<C, I> driver, Factory<I> implementation, Wirelet... wirelets) {
         return context.wire(driver, implementation, wirelets);
     }
 
     @Override
-    public final <C, I> C wireInstance(InstanceSourcedDriver<C, I> driver, I instance, Wirelet... wirelets) {
+    public final <C, I> C wireInstance(InstanceComponentDriver<C, I> driver, I instance, Wirelet... wirelets) {
         return context.wireInstance(driver, instance, wirelets);
     }
 }

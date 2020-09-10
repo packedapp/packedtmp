@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Key;
 import app.packed.component.ComponentModifier;
-import packed.internal.component.PackedWireableComponentDriver.SingletonComponentDriver;
+import packed.internal.component.OldPackedComponentDriver.SingletonComponentDriver;
 import packed.internal.inject.resolvable.DependencyProvider;
 import packed.internal.inject.resolvable.Injectable;
 import packed.internal.service.buildtime.BuildtimeService;

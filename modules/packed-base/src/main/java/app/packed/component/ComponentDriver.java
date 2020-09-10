@@ -20,32 +20,45 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
+import app.packed.base.TypeLiteral;
+
 /**
  * 
  * @param <C>
  *            the type of configuration the driver expose to users for configuring the underlying component
  * 
- * @apiNote In the future, if the Java language permits, {@link ComponentDriver} may become a {@code sealed}
- *          interface, which would prohibit subclassing except by explicitly permitted types.
+ * @apiNote In the future, if the Java language permits, {@link ComponentDriver} may become a {@code sealed} interface,
+ *          which would prohibit subclassing except by explicitly permitted types.
  */
 // TODO maybe remove all methods... And have attributes???
 // And just retain implementations for internal usage...
 public interface ComponentDriver<C> {
 
+    // boolean isBound() <--- bound to a source
+
     default Optional<Class<?>> source() {
         return Optional.empty();
     }
 
-    static <C> ComponentDriver<C> create(MethodHandles.Lookup lookup, Option... options) {
+    static <C> ComponentDriver<C> of(MethodHandles.Lookup lookup, Class<? extends C> driverType, Option... options) {
         throw new UnsupportedOperationException();
     }
+
+    static <C> ComponentDriver<C> of(MethodHandles.Lookup lookup, TypeLiteral<? extends C> driverType, Option... options) {
+        throw new UnsupportedOperationException();
+    }
+
     // The runtime may add further attributes when applying this driver.
     // For example, the root component of a system always has the SYSTEM property.
     // Irrecspectively of the component driver that was used
-
+    // Hmm ved ikke om vi vil have den..
     ComponentModifierSet modifiers();
 
     public interface Option {
+
+        static Option sourceAssignableTo(Class<?> rawType) {
+            throw new UnsupportedOperationException();
+        }
 
         /**
          * The component the driver will be a container.

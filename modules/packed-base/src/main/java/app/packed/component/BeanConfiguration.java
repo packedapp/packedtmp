@@ -21,7 +21,7 @@ import app.packed.base.Key;
 import app.packed.container.BaseBundle;
 import app.packed.service.ExportedServiceConfiguration;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.PackedWireableComponentDriver;
+import packed.internal.component.OldPackedComponentDriver;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.service.buildtime.BuildtimeService;
 
@@ -97,7 +97,7 @@ public class BeanConfiguration<T> extends AbstractComponentConfiguration {
         return buildEntry.im.exports().export(buildEntry, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 
-    public static <T> InstanceSourcedDriver<BeanConfiguration<T>, T> driver() {
-        return PackedWireableComponentDriver.SingletonComponentDriver.driver();
+    public static <T> InstanceComponentDriver<BeanConfiguration<T>, T> driver() {
+        return OldPackedComponentDriver.SingletonComponentDriver.driver();
     }
 }
