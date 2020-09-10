@@ -16,6 +16,7 @@
 package app.packed.component;
 
 import static java.util.Objects.requireNonNull;
+import static packed.internal.component.PackedComponentModifierSet.I_IMAGE;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -65,7 +66,7 @@ import packed.internal.util.ThrowableUtil;
 public final class ShellDriver<S> {
 
     /** The method handle responsible for creating new shell instances. */
-    private final MethodHandle instantiatior;
+    private final MethodHandle newShell;
 
     /** The initial set of modifiers for any system that uses this driver. */
     private final int modifiers;
@@ -80,7 +81,7 @@ public final class ShellDriver<S> {
      */
     private ShellDriver(boolean isGuest, MethodHandle instantiatior) {
         this.modifiers = PackedComponentModifierSet.I_SHELL + (isGuest ? PackedComponentModifierSet.I_GUEST : 0);
-        this.instantiatior = requireNonNull(instantiatior);
+        this.newShell = requireNonNull(instantiatior);
     }
 
     public <D> S configure(ComponentDriver<D> driver, CustomConfigurator<D> consumer, Wirelet... wirelets) {
@@ -104,24 +105,27 @@ public final class ShellDriver<S> {
      * @throws RuntimeException
      *             if the system could not be properly created
      */
+    // Maaske kan vi laver en function der smider Throwable...
     public S create(Bundle<?> bundle, Wirelet... wirelets) {
-        // Assembles the system
+        // Assemble the system
         ComponentNodeConfiguration component = PackedAssemblyContext.assemble(modifiers, bundle, this, wirelets);
 
-        // Initializes the system
+        // Initialize the system
         PackedInitializationContext pic = PackedInitializationContext.initialize(component);
 
-        // If the yb
-        if (modifiers().isGuest()) { // TODO should check guest.delayStart wirelet
+        // If the system is a guest, start it (blocking)
+        if (component.modifiers().isGuest()) { // TODO should check guest.delayStart wirelet
             pic.guest().start();
         }
 
+        // Return the system in a new shell
         return newShell(pic);
     }
 
     /**
-     * Returns whether or not the type of shell being created by this driver has an execution phase. This is determined by
-     * whether or not the shell implements {@link AutoCloseable}.
+     * Returns a set of the various modifiers that will by set on the underlying component. whether or not the type of shell
+     * being created by this driver has an execution phase. This is determined by whether or not the shell implements
+     * {@link AutoCloseable}.
      * 
      * @return whether or not the shell being produced by this driver has an execution phase
      */
@@ -139,29 +143,30 @@ public final class ShellDriver<S> {
      * @return a new image
      */
     public Image<S> newImage(Bundle<?> bundle, Wirelet... wirelets) {
-        // Assembles a system image
-        ComponentNodeConfiguration node = PackedAssemblyContext.assemble(PackedComponentModifierSet.I_IMAGE + modifiers, bundle, this, wirelets);
+        // Assemble the system
+        ComponentNodeConfiguration component = PackedAssemblyContext.assemble(modifiers | I_IMAGE, bundle, this, wirelets);
 
-        return new ShellImage(node); // Returns a new to the user
+        // Return an image of the assembled system in a new shell
+        return new ShellImage(component);
     }
 
     /**
-     * Create a new shell using the supplied context.
+     * Create a new shell using the specified initialization context.
      * 
      * @param pic
      *            the initialization context to wrap
      * @return the new shell
      */
-    S newShell(PackedInitializationContext pic) {
+    private S newShell(PackedInitializationContext pic) {
         try {
-            return (S) instantiatior.invoke(pic);
+            return (S) newShell.invoke(pic);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
     }
 
-    public Class<?> type() {
-        return instantiatior.type().returnType();
+    public Class<?> rawType() {
+        return newShell.type().returnType();
     }
 
     public static <A> ShellDriver<A> of(MethodHandles.Lookup caller, Class<A> shellType, Class<? extends A> implementation) {
@@ -188,11 +193,11 @@ public final class ShellDriver<S> {
         return new ShellDriver<>(isGuest, mh);
     }
 
-    /** An implementation of {@link Image} uses by {@link ShellDriver#newImage(Bundle, Wirelet...)}. */
+    /** An implementation of {@link Image} used by {@link ShellDriver#newImage(Bundle, Wirelet...)}. */
     private final class ShellImage implements Image<S> {
 
         /** The assembled image node. */
-        private final ComponentNodeConfiguration node;
+        private final ComponentNodeConfiguration component;
 
         /**
          * Creates a new image from the specified configuration and wirelets.
@@ -201,26 +206,23 @@ public final class ShellDriver<S> {
          *            the artifact driver
          */
         private ShellImage(ComponentNodeConfiguration node) {
-            this.node = node;
+            this.component = node;
         }
 
         /** {@inheritDoc} */
         @Override
         public Component component() {
-            return node.adaptToComponent();
+            return component.adaptToComponent();
         }
 
         /** {@inheritDoc} */
         @Override
-        public S initialize(Wirelet... wirelets) {
-            PackedInitializationContext pic = PackedInitializationContext.initializeImage(node, WireletPack.forImage(node, wirelets));
+        public S use(Wirelet... wirelets) {
+            // Initialize the system
+            PackedInitializationContext pic = PackedInitializationContext.initializeImage(component, WireletPack.forImage(component, wirelets));
+
+            // Need to start if guest...I think PIC should do it...
             return newShell(pic);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public S start(Wirelet... wirelets) {
-            return initialize(wirelets);
         }
     }
 

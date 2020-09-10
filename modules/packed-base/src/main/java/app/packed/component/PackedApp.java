@@ -8,7 +8,7 @@ import app.packed.guest.Guest;
 import app.packed.service.ServiceRegistry;
 
 /** The default implementation of {@link App}. */
-// Er bare en record...Vi kan ignore nulls, da Packed instantiere den
+// Er bare en inline record...Vi kan ignore nulls, da Packed instantiere den
 final class PackedApp implements App {
 
     /** An driver for creating PackedApp instances. */

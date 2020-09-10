@@ -38,8 +38,8 @@ public final class Region {
     }
 
     public Object getSingletonInstance(int index) {
-        Object value = store[index];
-        System.out.println("Reading index " + index + " value= " + value);
+//        Object value = store[index];
+        // System.out.println("Reading index " + index + " value= " + value);
         // new Exception().printStackTrace();
         return store[index];
     }

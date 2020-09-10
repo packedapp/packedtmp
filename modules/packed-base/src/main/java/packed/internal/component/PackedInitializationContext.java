@@ -48,7 +48,7 @@ public final class PackedInitializationContext {
     public static final MethodHandle MH_SERVICES = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "services", ServiceRegistry.class);
 
     /** The component node we are building. */
-    private ComponentNode node;
+    private ComponentNode component;
 
     private final WireletPack wirelets;
 
@@ -62,12 +62,12 @@ public final class PackedInitializationContext {
      * @return the top component
      */
     public Component component() {
-        return node;
+        return component;
     }
 
     public Guest guest() {
-        if (node.hasModifier(ComponentModifier.GUEST)) {
-            return node.region.guest();
+        if (component.hasModifier(ComponentModifier.GUEST)) {
+            return component.region.guest();
         }
         throw new UnsupportedOperationException("This component does not have a guest");
     }
@@ -97,7 +97,7 @@ public final class PackedInitializationContext {
         // TODO lav det lazy, hvis det bliver efterspurgt...
         // Ingen grund til det er i en regions node...
         // if !container return empty registry...
-        return node.region.serviceRegistry(node);
+        return component.region.serviceRegistry(component);
     }
 
     /**
@@ -112,14 +112,14 @@ public final class PackedInitializationContext {
 
     public static PackedInitializationContext initialize(ComponentNodeConfiguration root) {
         PackedInitializationContext ic = new PackedInitializationContext(root.wirelets);
-        ic.node = root.instantiateTree(ic);
-        ic.node.region.print();
+        ic.component = root.instantiateTree(ic);
+        ic.component.region.print();
         return ic;
     }
 
     public static PackedInitializationContext initializeImage(ComponentNodeConfiguration root, WireletPack wirelets) {
         PackedInitializationContext ic = new PackedInitializationContext(wirelets);
-        ic.node = root.instantiateTree(ic);
+        ic.component = root.instantiateTree(ic);
         return ic;
     }
 }

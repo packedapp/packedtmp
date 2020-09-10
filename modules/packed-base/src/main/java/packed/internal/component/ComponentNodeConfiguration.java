@@ -39,6 +39,7 @@ import app.packed.component.ClassComponentDriver;
 import app.packed.component.Component;
 import app.packed.component.ComponentAttributes;
 import app.packed.component.ComponentConfigurationContext;
+import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.ComponentPath;
@@ -46,7 +47,6 @@ import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.component.FactoryComponentDriver;
 import app.packed.component.InstanceComponentDriver;
-import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
@@ -274,7 +274,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             dam.addValue(ComponentAttributes.SOURCE_TYPE, driver.sourceType());
         }
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.SHELL)) {
-            dam.addValue(ComponentAttributes.SHELL_TYPE, assembly.shellDriver().type());
+            dam.addValue(ComponentAttributes.SHELL_TYPE, assembly.shellDriver().rawType());
         }
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.EXTENSION)) {
             PackedExtensionConfiguration pec = extension;

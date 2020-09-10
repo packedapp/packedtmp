@@ -82,18 +82,9 @@ public interface Image<A> extends ComponentDelegate {
      *            wirelets used to create the artifact
      * @return the new artifact
      */
-    A initialize(Wirelet... wirelets);
-
-    // Create And start()
-    A start(Wirelet... wirelets);
+    A use(Wirelet... wirelets);
 
     default CompletableFuture<A> startAsync(Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
-    // Uses this image...
-    // appImage.use(DDD.class)
-    default A use(Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 

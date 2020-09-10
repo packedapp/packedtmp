@@ -41,7 +41,7 @@ public interface ComponentDriver<C> {
     }
 
     static <C> ComponentDriver<C> of(MethodHandles.Lookup lookup, Class<? extends C> driverType, Option... options) {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     static <C> ComponentDriver<C> of(MethodHandles.Lookup lookup, TypeLiteral<? extends C> driverType, Option... options) {
@@ -69,7 +69,7 @@ public interface ComponentDriver<C> {
          */
         // Or Maybe
         static Option container() {
-            throw new UnsupportedOperationException();
+            return null;
         }
 
         // The parent + the driver

@@ -69,22 +69,22 @@ public class ImageMicro {
 
     @Benchmark
     public App empty() {
-        return EMPTY.start();
+        return EMPTY.use();
     }
 
     @Benchmark
     public App useExtension() {
-        return USE_EXTENSION.start();
+        return USE_EXTENSION.use();
     }
 
     @Benchmark
     public App install() {
-        return INSTALL.start();
+        return INSTALL.use();
     }
 
     @Benchmark
     public App newExtensionAutoActivate() {
-        return INSTALL_AUTO_ACTIVATE.start();
+        return INSTALL_AUTO_ACTIVATE.use();
     }
 
     static class MyStuff {
