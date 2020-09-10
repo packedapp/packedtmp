@@ -24,7 +24,7 @@ import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.resolvable.Injectable;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.InjectionManager;
-import packed.internal.service.buildtime.service.ProvideBuildEntry;
+import packed.internal.service.buildtime.service.AtProvideBuildEntry;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -57,27 +57,29 @@ public class RegionAssembly {
 
         // We start by storing all constants in the region array
         for (SourceAssembly sa : resolver.sourceConstants) {
-            region.store(sa.regionIndex, sa.constant());
+            region.store(sa.regionIndex, sa.constant);
         }
 
         for (Injectable ii : resolver.constantServices) {
             int index;
             BuildtimeService<?> entry = ii.entry();
-            if (entry instanceof ProvideBuildEntry<?>) {
-                ProvideBuildEntry<?> e = (ProvideBuildEntry<?>) entry;
+            if (entry instanceof AtProvideBuildEntry<?>) {
+                AtProvideBuildEntry<?> e = (AtProvideBuildEntry<?>) entry;
                 index = e.regionIndex;
             } else {
                 index = ii.source.regionIndex;
             }
-            requireNonNull(ii);
-            Object instance;
-            MethodHandle mh = ii.buildMethodHandle();
-            try {
-                instance = mh.invoke(region);
-            } catch (Throwable e1) {
-                throw ThrowableUtil.orUndeclared(e1);
+            if (index > -1) {
+                requireNonNull(ii);
+                Object instance;
+                MethodHandle mh = ii.buildMethodHandle();
+                try {
+                    instance = mh.invoke(region);
+                } catch (Throwable e1) {
+                    throw ThrowableUtil.orUndeclared(e1);
+                }
+                region.store(index, instance);
             }
-            region.store(index, instance);
         }
 
         // Last all singletons that have not already been used as services

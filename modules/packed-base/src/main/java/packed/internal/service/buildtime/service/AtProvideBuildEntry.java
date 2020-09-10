@@ -26,14 +26,13 @@ import packed.internal.inject.resolvable.Injectable;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.runtime.ConstantInjectorEntry;
+import packed.internal.service.runtime.PrototypeInjectorEntry;
 import packed.internal.service.runtime.RuntimeService;
 
 /**
  *
  */
-public class ProvideBuildEntry<T> extends BuildtimeService<T> {
-
-    final SourceAssembly source;
+public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
 
     final AtProvides ap;
 
@@ -41,33 +40,30 @@ public class ProvideBuildEntry<T> extends BuildtimeService<T> {
 
     public final int regionIndex;
 
+    final SourceAssembly source;
+
     /**
      * Creates a new node from an instance.
      * 
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public ProvideBuildEntry(ConfigSite configSite, ComponentNodeConfiguration component, AtProvides ap) {
+    public AtProvideBuildEntry(ConfigSite configSite, ComponentNodeConfiguration component, AtProvides ap) {
         super(component.container.im, configSite);
         this.source = component.source;
         this.ap = ap;
-        // if singleton reserve... protype no...
-        this.regionIndex = component.region.reserve();
         this.injectable = Injectable.ofDeclaredMember(this, source, ap);
-        as((Key) ap.key);
+        this.key = (Key) ap.key;
         if (ap.isConstant) {
-            // sa.component.region.resolver.sourceInjectables
-            // Constants should be stored
+            this.regionIndex = component.region.reserve();
+        } else {
+            this.regionIndex = -1;
         }
-        component.container.im.provider().buildEntries.add(this);
+        component.injectionManager().provider().buildEntries.add(this);
     }
 
     @Override
-    public MethodHandle toMethodHandle() {
-        return injectable.buildMethodHandle();
-    }
-
-    @Override
-    public @Nullable Injectable injectable() {
+    @Nullable
+    public Injectable injectable() {
         return injectable;
     }
 
@@ -77,10 +73,14 @@ public class ProvideBuildEntry<T> extends BuildtimeService<T> {
         if (ap.isConstant) {
             return new ConstantInjectorEntry<>(this, context.region, regionIndex);
         } else {
-            throw new UnsupportedOperationException();
-            // return new PrototypeInjectorEntry<>(this, context);
+            return new PrototypeInjectorEntry<>(this, context.region, toMethodHandle());
         }
 
+    }
+
+    @Override
+    public MethodHandle toMethodHandle() {
+        return injectable.buildMethodHandle();
     }
 
     @Override

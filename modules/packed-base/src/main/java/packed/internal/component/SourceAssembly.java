@@ -40,7 +40,7 @@ public class SourceAssembly implements DependencyProvider {
     public final ComponentNodeConfiguration component;
 
     /** If the source represents a constant. */
-    private final Object constant;
+    final Object constant;
 
     /** The driver of this source. */
     public final SingletonComponentDriver<?> driver;
@@ -75,10 +75,6 @@ public class SourceAssembly implements DependencyProvider {
         }
     }
 
-    Object constant() {
-        return requireNonNull(constant);
-    }
-
     public Key<?> defaultKey() {
         if (constant != null) {
             return Key.of(component.driver().sourceType());
@@ -98,8 +94,7 @@ public class SourceAssembly implements DependencyProvider {
         // Not sure we should allow for calling provide multiple times...
         BuildtimeService<?> c = service;
         if (c == null) {
-            c = new SingletonBuildEntry<>(component.container.im, this);
-            // service = c;
+            c = new SingletonBuildEntry<>(component);
         }
         return c;
     }

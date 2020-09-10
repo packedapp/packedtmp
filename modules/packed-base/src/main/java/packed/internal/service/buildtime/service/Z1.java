@@ -58,7 +58,7 @@ public class Z1 extends BaseBundle {
             return "adsasd";
         }
 
-        @Provide(constant = true)
+        @Provide()
         public Long d2s() {
             return 121231231233L;
         }

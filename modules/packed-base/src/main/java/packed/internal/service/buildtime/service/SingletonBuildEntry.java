@@ -21,10 +21,10 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.SourceAssembly;
 import packed.internal.inject.resolvable.Injectable;
 import packed.internal.service.buildtime.BuildtimeService;
-import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.runtime.ConstantInjectorEntry;
 import packed.internal.service.runtime.RuntimeService;
@@ -40,13 +40,13 @@ public final class SingletonBuildEntry<T> extends BuildtimeService<T> {
     /**
      * Creates a new node from an instance.
      * 
-     * @param im
-     *            the injector builder
+     * @param component
+     *            the component we provide for
      */
     @SuppressWarnings("unchecked")
-    public SingletonBuildEntry(InjectionManager im, SourceAssembly source) {
-        super(im, source.component.configSite());
-        this.source = requireNonNull(source);
+    public SingletonBuildEntry(ComponentNodeConfiguration component) {
+        super(component.injectionManager(), component.configSite());
+        this.source = requireNonNull(component.source);
         this.source.service = this;
         this.key = (Key<T>) source.defaultKey();
         im.provider().buildEntries.add(this);

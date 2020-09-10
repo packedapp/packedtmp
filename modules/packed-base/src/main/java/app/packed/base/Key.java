@@ -130,6 +130,8 @@ public abstract class Key<T> {
     Key(CanonicalizedTypeLiteral<T> typeLiteral, @Nullable Annotation qualifier) {
         this.typeLiteral = typeLiteral;
         this.qualifier = qualifier;
+        // Would be nice to have Key.of(X.class).hashCode() == X.class.hashCode();
+        // Could search for
         this.hash = typeLiteral.hashCode() ^ Objects.hashCode(qualifier);
         assert (!typeLiteral.rawType().isPrimitive());
     }

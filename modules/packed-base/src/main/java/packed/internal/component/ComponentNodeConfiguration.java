@@ -62,6 +62,7 @@ import packed.internal.container.ContainerAssembly;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.container.PackedRealm;
 import packed.internal.inject.ConfigSiteInjectOperations;
+import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.util.ThrowableUtil;
 
 /** The build time representation of a component. */
@@ -386,6 +387,10 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         // Only update with NAME_GET if no prev set/get op
         nameState = (nameState & ~NAME_GETSET_MASK) | NAME_GET;
         return name;
+    }
+
+    public InjectionManager injectionManager() {
+        return container.im;
     }
 
     ComponentNode instantiateTree(PackedInitializationContext ic) {
