@@ -12,7 +12,7 @@ import app.packed.service.ServiceRegistry;
 final class PackedApp implements App {
 
     /** An driver for creating PackedApp instances. */
-    static final ShellDriver<App> DRIVER = ShellDriver.of(MethodHandles.lookup(), App.class, PackedApp.class);
+    static final ShellDriver<App> DRIVER = ShellDriver.of(MethodHandles.lookup(), PackedApp.class);
 
     /** The system component. */
     private final Component component;

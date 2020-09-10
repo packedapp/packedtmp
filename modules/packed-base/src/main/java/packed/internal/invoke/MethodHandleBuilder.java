@@ -42,13 +42,16 @@ public final class MethodHandleBuilder {
 
     final HashMap<Key<?>, Entry> keys = new HashMap<>();
 
+    /** Used for figuring out where the receiver is if instance method. -1 we only static methods. TODO implement */
+    int receiverIndex = 0;
+
     private final MethodType targetType;
 
     private MethodHandleBuilder(MethodType targetType) {
         this.targetType = requireNonNull(targetType);
     }
 
-    private MethodHandleBuilder add(Key<?> key, MethodHandle transformer, int... indexes) {
+    private void add(Key<?> key, MethodHandle transformer, int... indexes) {
         for (int i = 0; i < indexes.length; i++) {
             Objects.checkFromIndexSize(indexes[i], 0, targetType.parameterCount());
         }
@@ -56,34 +59,37 @@ public final class MethodHandleBuilder {
         if (keys.putIfAbsent(key, new Entry(indexes, transformer)) != null) {
             throw new IllegalArgumentException("The specified key " + key + " has already been added");
         }
-        return this;
     }
 
-    public <T> MethodHandleBuilder addAnnoClassMapper(Class<? extends Annotation> annotationType, MethodHandle mh, int index) {
+    public <T> void addAnnoClassMapper(Class<? extends Annotation> annotationType, MethodHandle mh, int index) {
         annoations.put(annotationType, new AnnoClassEntry(annotationType, index, mh));
-        return this;
     }
 
-    public MethodHandleBuilder addKey(Class<?> key, int index) {
-        return addKey(Key.of(key), index);
+    public void addKey(Class<?> key, int index) {
+        addKey(Key.of(key), index);
     }
 
-    public MethodHandleBuilder addKey(Class<?> key, MethodHandle transformer, int... indexes) {
-        return add(Key.of(key), transformer, indexes);
+    public void addKey(Class<?> key, MethodHandle transformer, int... indexes) {
+        add(Key.of(key), transformer, indexes);
     }
 
-    public MethodHandleBuilder addKey(Key<?> key, int index) {
+    public void addKey(Key<?> key, int index) {
         // Check that we can perform upcast?
         // if (targetType.parameterType(index))
-        return add(key, null, index);
+        add(key, null, index);
     }
 
-    public MethodHandleBuilder addKey(Key<?> key, MethodHandle transformer, int... indexes) {
-        return add(key, requireNonNull(transformer, "transformer is null"), indexes);
+    public void addKey(Key<?> key, MethodHandle transformer, int... indexes) {
+        add(key, requireNonNull(transformer, "transformer is null"), indexes);
     }
 
     public MethodHandle build(OpenClass oc, Executable e) {
         return new MethodHandleBuilderHelper(oc, e, this).find();
+    }
+
+    MethodHandleBuilder setStatic() {
+        this.receiverIndex = -1;
+        return this;
     }
 
     /**
@@ -94,14 +100,6 @@ public final class MethodHandleBuilder {
      */
     public MethodType targetType() {
         return targetType;
-    }
-
-    /** Used for figuring out where the receiver is if instance method. -1 we only static methods. TODO implement */
-    int receiverIndex = 0;
-
-    MethodHandleBuilder setStatic() {
-        this.receiverIndex = -1;
-        return this;
     }
 
     public static MethodHandleBuilder of(Class<?> returnType, Class<?>... parameterTypes) {

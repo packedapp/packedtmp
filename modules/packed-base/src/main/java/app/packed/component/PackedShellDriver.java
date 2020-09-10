@@ -20,24 +20,19 @@ import static packed.internal.component.PackedComponentModifierSet.I_IMAGE;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Constructor;
 import java.util.function.Function;
 
 import app.packed.container.Extension;
-import app.packed.guest.Guest;
-import app.packed.service.ServiceRegistry;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.OldPackedComponentDriver;
 import packed.internal.component.PackedAssemblyContext;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.component.wirelet.WireletPack;
-import packed.internal.invoke.MethodHandleBuilder;
-import packed.internal.invoke.OpenClass;
 import packed.internal.util.ThrowableUtil;
 
 /** Implementation of {@link ShellDriver}. */
-class PackedShellDriver<S> implements ShellDriver<S> {
+final class PackedShellDriver<S> implements ShellDriver<S> {
 
     /** The initial set of modifiers for any system that uses this driver. */
     private final int modifiers;
@@ -53,7 +48,7 @@ class PackedShellDriver<S> implements ShellDriver<S> {
      * @param instantiatior
      *            a method handle that create new shell instances
      */
-    private PackedShellDriver(boolean isGuest, MethodHandle instantiatior) {
+    PackedShellDriver(boolean isGuest, MethodHandle instantiatior) {
         this.modifiers = PackedComponentModifierSet.I_SHELL + (isGuest ? PackedComponentModifierSet.I_GUEST : 0);
         this.newShell = requireNonNull(instantiatior);
     }
@@ -96,15 +91,7 @@ class PackedShellDriver<S> implements ShellDriver<S> {
         return new PackedComponentModifierSet(modifiers);
     }
 
-    /**
-     * Creates a new image using the specified bundle and this driver.
-     * 
-     * @param bundle
-     *            the bundle to use when assembling the image
-     * @param wirelets
-     *            optional wirelets
-     * @return a new image
-     */
+    /** {@inheritDoc} */
     @Override
     public Image<S> newImage(Bundle<?> bundle, Wirelet... wirelets) {
         // Assemble the system
@@ -114,18 +101,7 @@ class PackedShellDriver<S> implements ShellDriver<S> {
         return new ShellImage(component);
     }
 
-    /**
-     * Create a new shell (and its underlying system) using the specified bundle.
-     * 
-     * @param bundle
-     *            the system bundle
-     * @param wirelets
-     *            optional wirelets
-     * @return the new shell
-     * @throws RuntimeException
-     *             if the system could not be properly created
-     */
-    // Maaske kan vi laver en function der smider Throwable...
+    /** {@inheritDoc} */
     @Override
     public S newShell(Bundle<?> bundle, Wirelet... wirelets) {
         // Assemble the system
@@ -138,23 +114,10 @@ class PackedShellDriver<S> implements ShellDriver<S> {
         return instantiateShell(pic);
     }
 
+    /** {@inheritDoc} */
     @Override
     public Class<?> rawType() {
         return newShell.type().returnType();
-    }
-
-    static <A> ShellDriver<A> of(MethodHandles.Lookup caller, Class<A> shellType, Class<? extends A> implementation) {
-        boolean isGuest = AutoCloseable.class.isAssignableFrom(implementation);
-        Constructor<?> con = implementation.getDeclaredConstructors()[0];
-        MethodHandleBuilder builder = MethodHandleBuilder.of(implementation, PackedInitializationContext.class);
-        builder.addKey(Component.class, PackedInitializationContext.MH_COMPONENT, 0);
-        builder.addKey(ServiceRegistry.class, PackedInitializationContext.MH_SERVICES, 0);
-        if (isGuest) {
-            builder.addKey(Guest.class, PackedInitializationContext.MH_GUEST, 0);
-        }
-        OpenClass oc = new OpenClass(caller, implementation, true);
-        MethodHandle mh2 = builder.build(oc, con);
-        return new PackedShellDriver<>(isGuest, mh2);
     }
 
     // A method handle that takes an ArtifactContext and produces something that is compatible with A
@@ -174,7 +137,7 @@ class PackedShellDriver<S> implements ShellDriver<S> {
         private final ComponentNodeConfiguration component;
 
         /**
-         * Creates a new image from the specified configuration and wirelets.
+         * Create a new image from the specified component.
          * 
          * @param node
          *            the artifact driver

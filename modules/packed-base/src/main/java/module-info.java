@@ -8,7 +8,6 @@ module app.packed.base {
     exports app.packed.guest;
     exports app.packed.hook;
     exports app.packed.inject;
-    exports app.packed.lifecycle;
     exports app.packed.service;
     exports app.packed.sidecar;
     exports app.packed.statemachine;

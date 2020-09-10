@@ -31,7 +31,8 @@ import packed.internal.component.ComponentNodeConfiguration;
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
 
-    static final ComponentDriver<ContainerConfiguration> DRIVER = ComponentDriver.of(MethodHandles.lookup(), ContainerConfiguration.class, Option.container());
+    static final ComponentDriver<ContainerConfiguration> DRIVER = ComponentDriver.of(MethodHandles.lookup(), PackedContainerConfiguration.class,
+            Option.container());
 
     public PackedContainerConfiguration(ComponentConfigurationContext node) {
         super(node);

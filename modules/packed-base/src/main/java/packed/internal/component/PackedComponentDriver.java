@@ -15,7 +15,10 @@
  */
 package packed.internal.component;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 
 import app.packed.component.ClassComponentDriver;
 import app.packed.component.ComponentConfigurationContext;
@@ -24,6 +27,7 @@ import app.packed.component.ComponentModifierSet;
 import app.packed.component.FactoryComponentDriver;
 import app.packed.inject.Factory;
 import packed.internal.container.PackedRealm;
+import packed.internal.inject.InstantiatorBuilder;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -32,8 +36,16 @@ import packed.internal.util.ThrowableUtil;
 public class PackedComponentDriver<C> implements ComponentDriver<C> {
 
     final Meta meta;
-    final SourceType sourceType;
+
     final Object source;
+
+    final SourceType sourceType;
+
+    PackedComponentDriver(Meta meta) {
+        this.meta = requireNonNull(meta);
+        this.source = null;
+        this.sourceType = null;
+    }
 
     <I> PackedComponentDriver(PackedClassComponentDriver<C, I> driver, Class<? extends I> clazz) {
         this.meta = driver.meta;
@@ -45,6 +57,39 @@ public class PackedComponentDriver<C> implements ComponentDriver<C> {
         this.meta = driver.meta;
         this.sourceType = SourceType.FACTORY;
         this.source = factory;
+    }
+
+    public static <C> PackedComponentDriver<C> of(MethodHandles.Lookup caller, Class<? extends C> driverType, Option... options) {
+        InstantiatorBuilder ib = InstantiatorBuilder.of(caller, driverType, ComponentNodeConfiguration.class);
+        ib.addKey(ComponentConfigurationContext.class, 0);
+        MethodHandle mh = ib.build();
+
+        return new PackedComponentDriver<>(new Meta(mh));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentModifierSet modifiers() {
+        return meta.modifiers;
+    }
+
+    public C newConfiguration(ComponentNodeConfiguration cnc) {
+        try {
+            return (C) meta.mh.invoke(cnc);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+    }
+
+    static class Meta {
+        // all options
+        MethodHandle mh;
+
+        ComponentModifierSet modifiers;
+
+        Meta(MethodHandle mh) {
+            this.mh = requireNonNull(mh);
+        }
     }
 
     static class PackedClassComponentDriver<C, I> implements ClassComponentDriver<C, I> {
@@ -66,28 +111,7 @@ public class PackedComponentDriver<C> implements ComponentDriver<C> {
         }
     }
 
-    static class Meta {
-        // all options
-        MethodHandle mh;
-
-        ComponentModifierSet modifiers;
-    }
-
-    public C toConfiguration(ComponentConfigurationContext cnc) {
-        try {
-            return (C) meta.mh.invoke(cnc);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-    }
-
     static enum SourceType {
-        NONE, CLASS, FACTORY, INSTANCE;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentModifierSet modifiers() {
-        return meta.modifiers;
+        CLASS, FACTORY, INSTANCE, NONE;
     }
 }

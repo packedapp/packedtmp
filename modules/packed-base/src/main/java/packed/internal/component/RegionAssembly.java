@@ -44,8 +44,6 @@ public class RegionAssembly {
 
     public void assemblyClosed() {
         resolver.resolveAll();
-
-        System.out.println("Closing region");
     }
 
     Region newRegion(PackedInitializationContext pic, ComponentNode root) {

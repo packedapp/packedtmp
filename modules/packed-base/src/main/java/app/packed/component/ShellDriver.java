@@ -19,7 +19,11 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Function;
 
+import app.packed.guest.Guest;
 import app.packed.service.Injector;
+import app.packed.service.ServiceRegistry;
+import packed.internal.component.PackedInitializationContext;
+import packed.internal.inject.InstantiatorBuilder;
 
 /**
  * Shell drivers are responsible for creating new shells by instantiating stuff.
@@ -83,10 +87,35 @@ public interface ShellDriver<S> {
     // Maaske kan vi laver en function der smider Throwable...
     S newShell(Bundle<?> bundle, Wirelet... wirelets);
 
+    // The type of shell we produce?? or the implementation?
     Class<?> rawType();
 
-    static <A> ShellDriver<A> of(MethodHandles.Lookup caller, Class<A> shellType, Class<? extends A> implementation) {
-        return PackedShellDriver.of(caller, shellType, implementation);
+    /**
+     * Creates a new shell driver.
+     * 
+     * @param <S>
+     *            the type of shells the driver creates
+     * @param caller
+     *            a lookup object that must have full access to the specified implementation
+     * @param implementation
+     *            the implementation of the shell
+     * @return a new driver
+     */
+    static <S> ShellDriver<S> of(MethodHandles.Lookup caller, Class<? extends S> implementation) {
+        // We automatically assume that if the implementation implements AutoClosable. Then we need a guest.
+        boolean isGuest = AutoCloseable.class.isAssignableFrom(implementation);
+
+        // We currently do not support @Provide ect... Don't know if we ever will
+        // Create a new MethodHandle that can create shell instances.
+        InstantiatorBuilder ib = InstantiatorBuilder.of(caller, implementation, PackedInitializationContext.class);
+        ib.addKey(Component.class, PackedInitializationContext.MH_COMPONENT, 0);
+        ib.addKey(ServiceRegistry.class, PackedInitializationContext.MH_SERVICES, 0);
+        if (isGuest) {
+            ib.addKey(Guest.class, PackedInitializationContext.MH_GUEST, 0);
+        }
+        MethodHandle mh = ib.build();
+
+        return new PackedShellDriver<>(isGuest, mh);
     }
 
     static <A> ShellDriver<A> of(MethodHandles.Lookup caller, Class<A> shellType, MethodHandle mh) {

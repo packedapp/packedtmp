@@ -22,7 +22,7 @@ import app.packed.container.Extension;
 import app.packed.inject.Factory;
 
 /**
- * A component modifier indicates a permanent property of a component.
+ * A component typically has one or modifiers that indicates a permanent property of a component.
  * <p>
  * Modifiers are typically returned in a {@link ComponentModifierSet}.
  * <p>
@@ -147,8 +147,8 @@ public enum ComponentModifier {
     FUNCTION,
 
     /**
-     * Indicates that the user has provided an object instance, a {@link Class} or a {@link Factory} when installing the
-     * component.
+     * Indicates that the user has provided a source (Object instance, a {@link Class} or a {@link Factory}) when installing
+     * the component.
      * 
      * Components with this property:
      * <ul>

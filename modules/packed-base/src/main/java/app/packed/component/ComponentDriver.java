@@ -21,6 +21,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 import app.packed.base.TypeLiteral;
+import packed.internal.component.PackedComponentDriver;
 
 /**
  * 
@@ -41,7 +42,7 @@ public interface ComponentDriver<C> {
     }
 
     static <C> ComponentDriver<C> of(MethodHandles.Lookup lookup, Class<? extends C> driverType, Option... options) {
-        return null;
+        return PackedComponentDriver.of(lookup, driverType, options);
     }
 
     static <C> ComponentDriver<C> of(MethodHandles.Lookup lookup, TypeLiteral<? extends C> driverType, Option... options) {
