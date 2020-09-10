@@ -75,7 +75,6 @@ public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
         } else {
             return new PrototypeInjectorEntry<>(this, context.region, toMethodHandle());
         }
-
     }
 
     @Override

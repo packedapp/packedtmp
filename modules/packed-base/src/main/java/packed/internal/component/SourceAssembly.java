@@ -26,6 +26,7 @@ import packed.internal.component.PackedWireableComponentDriver.SingletonComponen
 import packed.internal.inject.resolvable.DependencyProvider;
 import packed.internal.inject.resolvable.Injectable;
 import packed.internal.service.buildtime.BuildtimeService;
+import packed.internal.service.buildtime.service.PrototypeBuildEntry;
 import packed.internal.service.buildtime.service.SingletonBuildEntry;
 
 /**
@@ -33,20 +34,19 @@ import packed.internal.service.buildtime.service.SingletonBuildEntry;
  */
 
 // Maaske har vi en abstract SourceAssembly.. og Saa SingletonSourceAssembly
-
 public class SourceAssembly implements DependencyProvider {
 
-    /** The component the source belongs to. */
+    /** The component this source is a part of. */
     public final ComponentNodeConfiguration component;
-
-    /** If the source represents a constant. */
-    final Object constant;
 
     /** The driver of this source. */
     public final SingletonComponentDriver<?> driver;
 
     /** Non-null if the component needs injection (not a constant). */
     final Injectable injectable;
+
+    /** If the source represents an instance. */
+    final Object instance;
 
     /** The index at which to store the source instance, or -1 if it should not be stored. */
     public final int regionIndex;
@@ -64,8 +64,8 @@ public class SourceAssembly implements DependencyProvider {
 
         RegionAssembly region = component.region;
         this.regionIndex = region.reserve(); // prototype false
-        this.constant = driver.instance;
-        if (constant == null) {
+        this.instance = driver.instance;
+        if (instance == null) {
             this.injectable = Injectable.ofFactory(this);
             region.resolver.sourceInjectables.add(this);
             region.resolver.allInjectables.add(injectable);
@@ -75,8 +75,8 @@ public class SourceAssembly implements DependencyProvider {
         }
     }
 
-    public Key<?> defaultKey() {
-        if (constant != null) {
+    private Key<?> defaultServiceKey() {
+        if (instance != null) {
             return Key.of(component.driver().sourceType());
         } else {
             return driver.factory.key();
@@ -94,26 +94,23 @@ public class SourceAssembly implements DependencyProvider {
         // Not sure we should allow for calling provide multiple times...
         BuildtimeService<?> c = service;
         if (c == null) {
-            c = new SingletonBuildEntry<>(component);
+            c = new SingletonBuildEntry<>(component, defaultServiceKey());
         }
         return c;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public BuildtimeService<?> providePrototype() {
         BuildtimeService<?> c = service;
         if (c == null) {
-            throw new UnsupportedOperationException();
-            // c = new ComponentMethodHandleBuildEntry<>(services, component, resolvable, ServiceMode.PROTOTYPE);
+            c = new PrototypeBuildEntry<>(component, defaultServiceKey());
         }
-        c.as((Key) defaultKey());
         return c;
     }
 
     @Override
     public MethodHandle toMethodHandle() {
-        if (constant != null) {
-            MethodHandle mh = MethodHandles.constant(constant.getClass(), constant);
+        if (instance != null) {
+            MethodHandle mh = MethodHandles.constant(instance.getClass(), instance);
             return MethodHandles.dropArguments(mh, 0, Region.class); // MethodHandle()T -> MethodHandle(Region)T
         } else { // injectable != null
             // Taenker vi kun bruger den her... Hvis vi har lyst til genbrug
