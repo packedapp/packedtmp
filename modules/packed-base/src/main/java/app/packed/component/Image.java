@@ -42,19 +42,15 @@ import app.packed.cli.MainArgs;
  *          would prohibit subclassing except by explicitly permitted types.
  * 
  */
-// isRoot??
-// Path -> / or /.dd.img
-
 // Hvis Guest == Closeable
 // Saa er et image noget andet...
-
 // AttributeHodelder, modifiers...
 
 // ImageAttribute -> What happens on use()
 public interface Image<A> extends ComponentDelegate {
 
     default A use(String[] args, Wirelet... wirelets) {
-        return use(Wirelet.combine(MainArgs.wirelet(args), wirelets));
+        return use(Wirelet.combine(MainArgs.wireletOf(args), wirelets));
     }
 
     /**
@@ -66,105 +62,3 @@ public interface Image<A> extends ComponentDelegate {
      */
     A use(Wirelet... wirelets);
 }
-
-///**
-// * Returns the component representation of this image.
-// * <p>
-// * The returned component always has the {@link ComponentModifier#IMAGE} modifier set.
-// * 
-// * @return the component representation of this image
-// */
-//@Override
-//Component component();
-///**
-// * Returns the raw type of what the image creates
-// * 
-// * @return the raw type
-// */
-//// And what are we going to use this for???
-//Class<?> rawShellType();
-// Altsaa hvis den er null.. Giver det vel kun mening at man
-// bruger et image til at execute???
-// Root = Shell now, its not a component
-//default Optional<Component> artifact() {
-//    throw new UnsupportedOperationException();
-//}
-
-///**
-// * Returns a bundle descriptor for this image.
-// * 
-// * @return the bundle descriptor
-// * 
-// * @see ContainerDescriptor#of(ContainerBundle)
-// */
-//// ImageDescriptor with all wirelets????? Eller bare med i BundleDescriptor???
-//// Vi har jo feks anderledes contract... Og kan vi se alt???
-//// AssemblyDescriptor?
-//
-//// Altsaa helt sikker med contracts saa skal det jo vaere whatever der er appliet...
-///// Saa det gaelder jo saadan set ogsaa med #name()
-//ContainerDescriptor descriptor();
-
-//
-///**
-// * Returns the path of the image.
-// * 
-// * @return the path of the image
-// */
-//ComponentPath path();
-/**
- * Returns the name of this artifact.
- * <p>
- * The returned name is always identical to the name of the artifact's root container.
- * <p>
- * If no name is explicitly set when creating the artifact, the runtime will generate a name that guaranteed to be
- * unique among any of the artifact'ssiblings.**@return the name of this artifact
- * <p>
- * The name can be overridden by using {@link Wirelet#named(String)} when instantiating the image.
- * 
- * @return the name
- */
-
-/**
- * Returns the type of bundle that was used to create this image.
- * <p>
- * An image created from another image, will retain the source type of the source image.
- * 
- * @return the type of bundle that was used to create this image
- */
-// Taenker vi dropper den her, og smider som en attribute???
-// Hvem ved maaske er det andet end bundles der kan bruges en dag..
-//Class<? extends Bundle<?>> sourceType();
-
-//Contains
-
-//Ways to initialize, start, stop, execute, ect...
-//Ways to query the image... in the same way as a Bundle...
-////Tror dog det betyder vi skal have noget a.la. 
-//ArtifactImage -> SystemDescribable, saa metoder, f.eks.,
-//ServiceContract.from(Image|new XBundle()); -> 
-////SystemInspector.find(iOrB, ServiceContract.class); <-- SC exposed as a contract
-
-//Image<App> app = App.newImage(new MyApp());
-//Image app = Image.of(new MyApp());
-
-// App.driver().image(Bundle b);
-
-//Man kan ikke lave et Image via Image...
-//Fordi det maaske ikke kun er Artifact drivers der kan lave images...
-//Kunne sagtens forstille mig en dag
-// Nej... syntes ikke alle skal kunne noedvendig bruge den driver...
-// Maaske har vi en hemlig driver...
-// ArtifactDriver<A> driver();
-///**
-//* Returns a new artifact image by applying the specified wirelets.
-//* 
-//* @param wirelets
-//*            the wirelets to apply
-//* @return the new image
-//*/
-//// f.eks. applyPartialConfiguration(SomeConf)... Vi aendrer schemaet..
-//// withFixedConf(app.threads = 123)... withDefaultConf(app.threads = 123)
-//// Vi fejler hvis det ikke kan bruges??? Pure static solution...
-//// rename to prefixWith() <--- no validation...
-//ArtifactImage with(Wirelet... wirelets);

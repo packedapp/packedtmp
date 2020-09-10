@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle;
-
-import app.packed.component.Wirelet;
+package app.packed.component;
 
 /**
  * These wirelets can only be used in the assembly phase of a component system.

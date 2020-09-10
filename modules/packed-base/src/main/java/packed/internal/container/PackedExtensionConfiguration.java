@@ -23,6 +23,7 @@ import java.lang.invoke.VarHandle;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
+import app.packed.component.AssemblyContext;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
 import app.packed.component.ClassComponentDriver;
@@ -35,7 +36,6 @@ import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionSetup;
 import app.packed.inject.Factory;
-import app.packed.lifecycle.AssemblyContext;
 import app.packed.statemachine.LifecycleContext;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.lifecycle.old.LifecycleContextHelper;

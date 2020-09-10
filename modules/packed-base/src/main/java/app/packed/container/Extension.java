@@ -22,11 +22,11 @@ import java.lang.reflect.Modifier;
 import java.util.Optional;
 
 import app.packed.base.TypeLiteral;
+import app.packed.component.AssemblyContext;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
-import app.packed.lifecycle.AssemblyContext;
 import packed.internal.config.ConfigSiteSupport;
 
 /**

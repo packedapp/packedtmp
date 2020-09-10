@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle;
+package app.packed.component;
 
 /**
  * An exception thrown by the runtime when a pod cannot be assembled properly. This exception normally indicates a

@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
+import app.packed.component.AssemblyContext;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
 import app.packed.component.ClassComponentDriver;
@@ -32,7 +33,6 @@ import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension.Subtension;
 import app.packed.inject.Factory;
-import app.packed.lifecycle.AssemblyContext;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.container.PackedExtensionConfiguration;

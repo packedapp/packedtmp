@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle;
+package app.packed.component;
 
-import app.packed.component.ComponentModifier;
-import app.packed.component.ComponentModifierSet;
 import packed.internal.errorhandling.ErrorMessage;
 
 /**
@@ -36,7 +34,6 @@ import packed.internal.errorhandling.ErrorMessage;
 // addFailureProcess(Runnable r);
 // addCompletionProcesser(Consumer<@Nullable Throwable> d);
 @SuppressWarnings("exports")
-
 public interface AssemblyContext {
 
     // Maaske vi hellere vil tilfoeje det lokalt???
@@ -66,9 +63,9 @@ public interface AssemblyContext {
     // isSuccess
 
     // It can be on error path...
-    enum State {
-        IN_PROCESS, FAILED, SUCCES;
-    }
+//    enum State {
+//        IN_PROCESS, FAILED, SUCCES;
+//    }
 }
 // Tror denne skaber mere forvirring end hjaelper
 ///**

@@ -21,7 +21,6 @@ import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundle;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
-import app.packed.lifecycle.AssemblyContext;
 
 /**
  * Component configuration context objects used by {@link AbstractComponentConfiguration}.

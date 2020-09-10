@@ -20,9 +20,14 @@ import app.packed.component.Wirelet;
 /**
  *
  */
-public class MainArgs {
+// extends Iterable<String>
+public final class MainArgs {
 
-    public static Wirelet wirelet(String... args) {
+    public static MainArgs of(String... args) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static Wirelet wireletOf(String... args) {
         throw new UnsupportedOperationException();
     }
 }
