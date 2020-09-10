@@ -22,5 +22,5 @@ import packed.internal.container.PackedRealm;
  */
 @SuppressWarnings("exports")
 public interface InstanceSourcedDriver<C, I> extends FactorySourcedDriver<C, I> {
-    WireableComponentDriver<C> bindToInstance(PackedRealm realm, I instance);
+    ComponentDriver<C> bindToInstance(PackedRealm realm, I instance);
 }

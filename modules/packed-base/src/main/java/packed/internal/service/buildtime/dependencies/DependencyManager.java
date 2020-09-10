@@ -84,11 +84,11 @@ public final class DependencyManager {
     /** Also used for descriptors. */
     public void analyze(Resolver resolver, InjectionManager node) {
         // If we do not export services into a bundle. We should be able to resolver much quicker..
-        resolveAllDependencies(node);
-        System.out.println("________DETECTING CIRCLE_______");
-        for (Injectable i : detectCyclesFor) {
-            System.out.println(i.directMethodHandle);
-        }
+        // resolveAllDependencies(node);
+//        System.out.println("________DETECTING CIRCLE_______");
+//        for (Injectable i : detectCyclesFor) {
+//            System.out.println(i.directMethodHandle);
+//        }
         DependencyCycleDetector.dependencyCyclesDetect(resolver, detectCyclesFor);
     }
 
@@ -196,8 +196,8 @@ public final class DependencyManager {
      * @param entry
      * @param dependency
      */
-    public void recordResolvedDependency(InjectionManager node, BuildtimeService<?> entry, ServiceDependency dependency, @Nullable BuildtimeService<?> resolvedTo,
-            boolean fromParent) {
+    public void recordResolvedDependency(InjectionManager node, BuildtimeService<?> entry, ServiceDependency dependency,
+            @Nullable BuildtimeService<?> resolvedTo, boolean fromParent) {
         requireNonNull(entry);
         requireNonNull(dependency);
         if (resolvedTo != null) {
@@ -233,7 +233,7 @@ public final class DependencyManager {
         explicitRequirements.add(new DependencyRequirement(dependency, configSite));
     }
 
-    private void resolveAllDependencies(InjectionManager node) {
+    void resolveAllDependencies(InjectionManager node) {
         for (BuildtimeService<?> entry : node.resolvedEntries.values()) {
             Injectable in = entry.injectable();
             if (in != null && in.hasUnresolved()) {

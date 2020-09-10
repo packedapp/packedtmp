@@ -24,7 +24,7 @@ import app.packed.base.Nullable;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.StatelessConfiguration;
-import app.packed.component.WireableComponentDriver;
+import app.packed.component.ComponentDriver;
 import app.packed.inject.Factory;
 import packed.internal.component.PackedWireableComponentDriver;
 
@@ -147,7 +147,7 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      * @return the default driver for containers
      */
     // Men hvad hvis det ogsaa er en gaest...
-    static WireableComponentDriver<ContainerConfiguration> driver() {
+    static ComponentDriver<ContainerConfiguration> driver() {
         return PackedWireableComponentDriver.CONTAINER_DRIVER;
     }
 }

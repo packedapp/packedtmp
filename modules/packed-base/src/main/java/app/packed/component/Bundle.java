@@ -22,7 +22,7 @@ import packed.internal.component.BundleHelper;
 import packed.internal.component.PackedWireableComponentDriver;
 
 /**
- * A bundle is a thin wrapper that encapsulates a {@link WireableComponentDriver} and the configuration of a component.
+ * A bundle is a thin wrapper that encapsulates a {@link ComponentDriver} and the configuration of a component.
  * This class is primary used through one of its subclasses such as .
  * <p>
  * This class is not meant to be extended by ordinary users. But provides means for power users to extend the basic
@@ -58,7 +58,7 @@ public abstract class Bundle<C> implements ComponentSystem {
      * @param driver
      *            the driver to use for constructing this bundle's configuration object
      */
-    protected Bundle(WireableComponentDriver<? extends C> driver) {
+    protected Bundle(ComponentDriver<? extends C> driver) {
         this.driver = requireNonNull((PackedWireableComponentDriver<? extends C>) driver, "driver is null");
     }
 

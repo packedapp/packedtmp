@@ -28,7 +28,7 @@ public abstract class ComponentBundle<T extends ComponentConfiguration> extends 
      * @param driver
      *            the driver to use for constructing the bundles configuration object
      */
-    protected ComponentBundle(WireableComponentDriver<? extends T> driver) {
+    protected ComponentBundle(ComponentDriver<? extends T> driver) {
         super(driver);
     }
 
@@ -126,7 +126,7 @@ public abstract class ComponentBundle<T extends ComponentConfiguration> extends 
         configuration().setName(name);
     }
 
-    protected final <C> C wire(WireableComponentDriver<C> driver, Wirelet... wirelets) {
+    protected final <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         return configuration().wire(driver, wirelets);
     }
 

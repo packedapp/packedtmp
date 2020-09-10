@@ -46,7 +46,7 @@ import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.component.FactorySourcedDriver;
 import app.packed.component.InstanceSourcedDriver;
-import app.packed.component.WireableComponentDriver;
+import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
@@ -578,7 +578,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     /** {@inheritDoc} */
     @Override
-    public <C> C wire(WireableComponentDriver<C> driver, Wirelet... wirelets) {
+    public <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         requireNonNull(driver, "driver is null");
         PackedWireableComponentDriver<C> d = (PackedWireableComponentDriver<C>) driver;
         WireletPack wp = WireletPack.from(d, wirelets);
@@ -589,7 +589,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     @Override
     public <C, I> C wireInstance(InstanceSourcedDriver<C, I> driver, I instance, Wirelet... wirelets) {
-        WireableComponentDriver<C> wcd = driver.bindToInstance(realm, instance);
+        ComponentDriver<C> wcd = driver.bindToInstance(realm, instance);
         return wire(wcd, wirelets);
     }
 

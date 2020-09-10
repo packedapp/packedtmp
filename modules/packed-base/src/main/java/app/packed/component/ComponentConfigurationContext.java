@@ -146,7 +146,7 @@ public interface ComponentConfigurationContext {
      *            any wirelets that should be used when creating the component
      * @return a configuration for the component
      */
-    <C> C wire(WireableComponentDriver<C> driver, Wirelet... wirelets);
+    <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
 
     <C, I> C wireInstance(InstanceSourcedDriver<C, I> driver, I instance, Wirelet... wirelets);
 

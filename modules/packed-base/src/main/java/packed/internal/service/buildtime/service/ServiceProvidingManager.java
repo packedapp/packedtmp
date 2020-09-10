@@ -129,7 +129,6 @@ public final class ServiceProvidingManager {
         if (failingDuplicateProviders != null) {
             ErrorMessages.addDuplicateNodes(failingDuplicateProviders);
         }
-        System.out.println("Found " + resolvedServices);
         return resolvedServices;
     }
 
