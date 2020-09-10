@@ -15,10 +15,7 @@
  */
 package app.packed.component;
 
-import java.util.concurrent.CompletableFuture;
-
 import app.packed.cli.MainArgs;
-import app.packed.config.ConfigSite;
 
 /**
  * Artifact images are immutable ahead-of-time configured artifacts. By configuring an artifact ahead of time, the
@@ -56,23 +53,8 @@ import app.packed.config.ConfigSite;
 // ImageAttribute -> What happens on use()
 public interface Image<A> extends ComponentDelegate {
 
-    /**
-     * Returns the component representation of this image.
-     * <p>
-     * The returned component always has the {@link ComponentModifier#IMAGE} modifier set.
-     * 
-     * @return the component representation of this image
-     */
-    @Override
-    Component component();
-
-    /**
-     * Returns the configuration site of this image.
-     * 
-     * @return the configuration site of this image
-     */
-    default ConfigSite configSite() {
-        return component().configSite();
+    default A use(String[] args, Wirelet... wirelets) {
+        return use(Wirelet.combine(MainArgs.wirelet(args), wirelets));
     }
 
     /**
@@ -83,16 +65,17 @@ public interface Image<A> extends ComponentDelegate {
      * @return the new artifact
      */
     A use(Wirelet... wirelets);
-
-    default CompletableFuture<A> startAsync(Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
-    default A use(String[] args, Wirelet... wirelets) {
-        return use(Wirelet.combine(MainArgs.wirelet(args), wirelets));
-    }
 }
 
+///**
+// * Returns the component representation of this image.
+// * <p>
+// * The returned component always has the {@link ComponentModifier#IMAGE} modifier set.
+// * 
+// * @return the component representation of this image
+// */
+//@Override
+//Component component();
 ///**
 // * Returns the raw type of what the image creates
 // * 

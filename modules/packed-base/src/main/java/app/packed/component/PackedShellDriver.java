@@ -53,7 +53,7 @@ class PackedShellDriver<S> implements ShellDriver<S> {
      * @param instantiatior
      *            a method handle that create new shell instances
      */
-    public PackedShellDriver(boolean isGuest, MethodHandle instantiatior) {
+    private PackedShellDriver(boolean isGuest, MethodHandle instantiatior) {
         this.modifiers = PackedComponentModifierSet.I_SHELL + (isGuest ? PackedComponentModifierSet.I_GUEST : 0);
         this.newShell = requireNonNull(instantiatior);
     }
