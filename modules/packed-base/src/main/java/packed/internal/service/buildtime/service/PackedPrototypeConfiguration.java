@@ -24,7 +24,7 @@ import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.PrototypeConfiguration;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.inject.ConfigSiteInjectOperations;
-import packed.internal.service.buildtime.BuildEntry;
+import packed.internal.service.buildtime.BuildtimeService;
 
 /**
  *
@@ -32,7 +32,7 @@ import packed.internal.service.buildtime.BuildEntry;
 public final class PackedPrototypeConfiguration<T> extends AbstractComponentConfiguration implements PrototypeConfiguration<T> {
 
     /** The service we are exposing. */
-    public final BuildEntry<T> buildEntry;
+    public final BuildtimeService<T> buildEntry;
 
     /** The component we are exposing. */
     private final ComponentNodeConfiguration component;
@@ -43,7 +43,7 @@ public final class PackedPrototypeConfiguration<T> extends AbstractComponentConf
      * @param buildEntry
      *            the build entry to wrap
      */
-    public PackedPrototypeConfiguration(ComponentNodeConfiguration component, BuildEntry<T> buildEntry) {
+    public PackedPrototypeConfiguration(ComponentNodeConfiguration component, BuildtimeService<T> buildEntry) {
         super(component);
         this.buildEntry = requireNonNull(buildEntry);
         this.component = component;
@@ -75,6 +75,6 @@ public final class PackedPrototypeConfiguration<T> extends AbstractComponentConf
     @Override
     public ExportedServiceConfiguration<T> export() {
         checkConfigurable();
-        return buildEntry.node.exports().export(buildEntry, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
+        return buildEntry.im.exports().export(buildEntry, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 }

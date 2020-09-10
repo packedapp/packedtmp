@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import packed.internal.inject.resolvable.DependencyProvider;
 import packed.internal.inject.resolvable.Injectable;
 import packed.internal.inject.resolvable.ServiceDependency;
-import packed.internal.service.buildtime.BuildEntry;
+import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.InjectionManager;
 
 /**
@@ -51,7 +51,7 @@ public class Resolver {
 
     public DependencyProvider resolve(Injectable injectable, ServiceDependency dependency) {
         InjectionManager se = ra.configuration.container.im;
-        BuildEntry<?> e = se.resolvedEntries.get(dependency.key());
+        BuildtimeService<?> e = se.resolvedEntries.get(dependency.key());
         if (e == null) {
             throw new IllegalStateException("Could not resolve " + dependency.key());
         } else {

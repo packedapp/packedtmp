@@ -23,7 +23,7 @@ import app.packed.service.ExportedServiceConfiguration;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedWireableComponentDriver;
 import packed.internal.inject.ConfigSiteInjectOperations;
-import packed.internal.service.buildtime.BuildEntry;
+import packed.internal.service.buildtime.BuildtimeService;
 
 /**
  * This class represents the configuration of a component. Actual instances of this interface is usually obtained by
@@ -36,7 +36,7 @@ public class BeanConfiguration<T> extends AbstractComponentConfiguration {
 
     public final ComponentNodeConfiguration component;
 
-    private BuildEntry<T> buildEntry;
+    private BuildtimeService<T> buildEntry;
 
     public BeanConfiguration(ComponentConfigurationContext context) {
         super(context);
@@ -78,7 +78,7 @@ public class BeanConfiguration<T> extends AbstractComponentConfiguration {
     @SuppressWarnings("unchecked")
     public BeanConfiguration<T> provide() {
         if (buildEntry == null) {
-            buildEntry = (BuildEntry<T>) component.source.provide();
+            buildEntry = (BuildtimeService<T>) component.source.provide();
         }
         return this;
     }
@@ -94,7 +94,7 @@ public class BeanConfiguration<T> extends AbstractComponentConfiguration {
     public ExportedServiceConfiguration<T> export() {
         checkConfigurable();
         // buildEntry might not have been set yet...
-        return buildEntry.node.exports().export(buildEntry, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
+        return buildEntry.im.exports().export(buildEntry, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 
     public static <T> InstanceSourcedDriver<BeanConfiguration<T>, T> driver() {

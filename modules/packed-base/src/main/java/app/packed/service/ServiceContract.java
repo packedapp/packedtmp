@@ -266,7 +266,7 @@ public final class ServiceContract {
      *            the injector to return a contract for
      * @return the service contract for an injector
      */
-    public static ServiceContract of(ServiceSet serviceSet) {
+    public static ServiceContract of(ServiceMap serviceSet) {
         return newContract(c -> serviceSet.keys().forEach(s -> c.provides(s)));
     }
 

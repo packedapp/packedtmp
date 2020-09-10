@@ -27,8 +27,7 @@ import java.util.stream.Stream;
 import app.packed.base.Key;
 
 /** An immutable set of services. Where each service has an unique {@link Service#key()}. */
-// Its a map????? Nahh, taenkte om man kunne genbruge
-public interface ServiceSet extends Iterable<Service> {
+public interface ServiceMap extends Iterable<Service> {
 
     /**
      * Returns true if the system contains a service with the specified key.
@@ -40,12 +39,6 @@ public interface ServiceSet extends Iterable<Service> {
      */
     default boolean contains(Class<?> key) {
         return contains(Key.of(key));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    default Iterator<Service> iterator() {
-        return stream().iterator();
     }
 
     /**
@@ -70,17 +63,23 @@ public interface ServiceSet extends Iterable<Service> {
         return ServiceContract.newContract(c -> stream().forEach(s -> c.provides(s.key())));
     }
 
-    // Problemet er her navngivning
-    // Vi vil gerne have service(descriptor), instance, og provider
-    // So findService, findProvider, find
-
     default Optional<Service> findService(Class<?> key) {
         return findService(Key.of(key));
     }
 
+    // Problemet er her navngivning
+    // Vi vil gerne have service(descriptor), instance, og provider
+    // So findService, findProvider, find
+
     default Optional<Service> findService(Key<?> key) {
         requireNonNull(key, "key is null");
         return stream().filter(d -> d.key().equals(key)).findFirst();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    default Iterator<Service> iterator() {
+        return stream().iterator();
     }
 
     /**
@@ -98,12 +97,15 @@ public interface ServiceSet extends Iterable<Service> {
      * @return a unordered {@code Stream} of all services contained in this system
      */
     Stream<Service> stream();
-
-//    //IDK
-//    default Map<Key<?>, Service> toServiceMap() {
-//        return stream().collect(Collectors.toMap(e -> e.key(), e -> e));
-//    }
 }
+
+// Map<Key<?>, Service> services()
+
+////IDK
+//default Map<Key<?>, Service> toServiceMap() {
+//  return stream().collect(Collectors.toMap(e -> e.key(), e -> e));
+//}
+
 // contains->containsService??? Syntes jeg ikke. findService er kun fordi vi har find(instance)
 
 //An important questions are keys unique????

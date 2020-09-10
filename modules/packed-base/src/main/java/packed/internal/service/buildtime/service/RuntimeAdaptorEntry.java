@@ -21,14 +21,14 @@ import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
-import packed.internal.service.buildtime.BuildEntry;
+import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.service.runtime.DelegatingInjectorEntry;
 import packed.internal.service.runtime.RuntimeEntry;
 
 /** An entry specifically used for {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
-public final class RuntimeAdaptorEntry<T> extends BuildEntry<T> {
+public final class RuntimeAdaptorEntry<T> extends BuildtimeService<T> {
 
     /** The entry from the 'imported' injector. */
     private final RuntimeEntry<T> entry;

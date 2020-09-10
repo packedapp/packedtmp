@@ -29,8 +29,8 @@ import app.packed.config.ConfigSite;
 import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.Service;
 import app.packed.service.ServiceExtension;
-import app.packed.service.ServiceSet;
-import packed.internal.service.buildtime.BuildEntry;
+import app.packed.service.ServiceMap;
+import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ErrorMessages;
 import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.service.buildtime.SimpleServiceSet;
@@ -94,7 +94,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
      */
     // I think exporting an entry locks its any providing key it might have...
 
-    public <T> ExportedServiceConfiguration<T> export(BuildEntry<T> entryToExport, ConfigSite configSite) {
+    public <T> ExportedServiceConfiguration<T> export(BuildtimeService<T> entryToExport, ConfigSite configSite) {
         // I'm not sure we need the check after, we have put export() directly on a component configuration..
         // Perviously you could specify any entry, even something from another bundle.
         // if (entryToExport.node != node) {
@@ -154,7 +154,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
     }
 
     @Nullable
-    public ServiceSet exports() {
+    public ServiceMap exports() {
         if (resolvedExports == null) {
             return null;
         }
@@ -191,7 +191,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
             for (ExportedBuildEntry<?> entry : exportedEntries) {
                 // try and find a matching service entry for key'ed exports via
                 // exportedEntry != null for entries added via InjectionExtension#export(ProvidedComponentConfiguration)
-                BuildEntry<?> entryToExport = entry.exportedEntry;
+                BuildtimeService<?> entryToExport = entry.exportedEntry;
                 boolean export = true;
                 if (entryToExport == null) {
                     entryToExport = node.resolvedEntries.get(entry.keyToExport);
@@ -202,7 +202,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
                         failingUnresolvedKeyedExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>()).add(entry);
                         export = false;
                     } else {
-                        entry.exportedEntry = (BuildEntry) entryToExport;
+                        entry.exportedEntry = (BuildtimeService) entryToExport;
                     }
                 }
 
@@ -228,7 +228,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
         }
 
         if (exportAll != null) {
-            for (BuildEntry<?> e : node.resolvedEntries.values()) {
+            for (BuildtimeService<?> e : node.resolvedEntries.values()) {
                 if (!e.key().equals(KeyBuilder.INJECTOR_KEY)) {
                     if (!resolvedExports.containsKey(e.key())) {
                         resolvedExports.put(e.key(), new ExportedBuildEntry<>(node, e, exportAll));

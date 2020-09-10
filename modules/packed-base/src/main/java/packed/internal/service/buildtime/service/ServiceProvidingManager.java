@@ -35,7 +35,7 @@ import app.packed.service.ServiceExtension;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.inject.ConfigSiteInjectOperations;
-import packed.internal.service.buildtime.BuildEntry;
+import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ErrorMessages;
 import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.service.runtime.AbstractInjector;
@@ -50,9 +50,9 @@ public final class ServiceProvidingManager {
 
     /** A map of build entries that provide services with the same key. */
     @Nullable
-    private LinkedHashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> failingDuplicateProviders;
+    private LinkedHashMap<Key<?>, LinkedHashSet<BuildtimeService<?>>> failingDuplicateProviders;
 
-    public final IdentityHashMap<BuildEntry<?>, MethodHandle> handlers = new IdentityHashMap<>();
+    public final IdentityHashMap<BuildtimeService<?>, MethodHandle> handlers = new IdentityHashMap<>();
 
     /** The injection manager. */
     private final InjectionManager im;
@@ -61,7 +61,7 @@ public final class ServiceProvidingManager {
     private ArrayList<ProvideAllFromOtherInjector> provideAll;
 
     /** All explicit added build entries. */
-    public final ArrayList<BuildEntry<?>> buildEntries = new ArrayList<>();
+    public final ArrayList<BuildtimeService<?>> buildEntries = new ArrayList<>();
 
     /**
      * Creates a new manager.
@@ -94,8 +94,8 @@ public final class ServiceProvidingManager {
         }
     }
 
-    public BuildEntry<?> providePrototype(ComponentNodeConfiguration cc) {
-        BuildEntry<?> e = cc.source.providePrototype();
+    public BuildtimeService<?> providePrototype(ComponentNodeConfiguration cc) {
+        BuildtimeService<?> e = cc.source.providePrototype();
         buildEntries.add(e);
         return e;
     }
@@ -108,9 +108,9 @@ public final class ServiceProvidingManager {
         p.add(new ProvideAllFromOtherInjector(im, configSite, injector, wirelets));
     }
 
-    public HashMap<Key<?>, BuildEntry<?>> resolve() {
+    public HashMap<Key<?>, BuildtimeService<?>> resolve() {
 
-        LinkedHashMap<Key<?>, BuildEntry<?>> resolvedServices = new LinkedHashMap<>();
+        LinkedHashMap<Key<?>, BuildtimeService<?>> resolvedServices = new LinkedHashMap<>();
 
         // First process provided entries, then any entries added via provideAll
         resolve0(resolvedServices, buildEntries);
@@ -133,16 +133,16 @@ public final class ServiceProvidingManager {
         return resolvedServices;
     }
 
-    private void resolve0(LinkedHashMap<Key<?>, BuildEntry<?>> resolvedServices, Collection<? extends BuildEntry<?>> entries) {
-        for (BuildEntry<?> entry : entries) {
+    private void resolve0(LinkedHashMap<Key<?>, BuildtimeService<?>> resolvedServices, Collection<? extends BuildtimeService<?>> entries) {
+        for (BuildtimeService<?> entry : entries) {
             Key<?> key = entry.key(); // whats the deal with null keys
             if (key != null) {
-                BuildEntry<?> existing = resolvedServices.putIfAbsent(key, entry);
+                BuildtimeService<?> existing = resolvedServices.putIfAbsent(key, entry);
                 if (existing != null) {
                     if (failingDuplicateProviders == null) {
                         failingDuplicateProviders = new LinkedHashMap<>();
                     }
-                    LinkedHashSet<BuildEntry<?>> hs = failingDuplicateProviders.computeIfAbsent(key, m -> new LinkedHashSet<>());
+                    LinkedHashSet<BuildtimeService<?>> hs = failingDuplicateProviders.computeIfAbsent(key, m -> new LinkedHashSet<>());
                     hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
                     hs.add(entry);
                 }

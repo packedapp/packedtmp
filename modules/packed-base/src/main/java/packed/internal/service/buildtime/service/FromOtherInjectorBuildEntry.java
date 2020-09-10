@@ -20,13 +20,13 @@ import static java.util.Objects.requireNonNull;
 import app.packed.component.Wirelet;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
-import packed.internal.service.buildtime.BuildEntry;
+import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.runtime.DelegatingInjectorEntry;
 import packed.internal.service.runtime.RuntimeEntry;
 
 /** An entry specifically used for {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
-final class FromOtherInjectorBuildEntry<T> extends BuildEntry<T> {
+final class FromOtherInjectorBuildEntry<T> extends BuildtimeService<T> {
 
     /** The entry from the 'imported' injector. */
     private final RuntimeEntry<T> entry;

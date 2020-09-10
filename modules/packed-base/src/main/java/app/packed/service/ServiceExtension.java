@@ -37,7 +37,7 @@ import packed.internal.component.wirelet.WireletList;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.resolvable.ServiceDependency;
-import packed.internal.service.buildtime.BuildEntry;
+import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.service.buildtime.service.AtProvidesHook;
 import packed.internal.service.buildtime.service.PackedPrototypeConfiguration;
@@ -75,7 +75,7 @@ import packed.internal.service.runtime.AbstractInjector;
 // Ellers selvfoelgelig hvis man bruger provide/@Provides\
 public final class ServiceExtension extends Extension {
 
-    /** The containers injection manager. */
+    /** The containers injection manager which controls all service functionality. */
     private final InjectionManager im;
 
     /**
@@ -126,7 +126,7 @@ public final class ServiceExtension extends Extension {
      */
     @AttributeProvide(by = ServiceAttributes.class, name = "exported-services")
     @Nullable
-    /* package-private */ ServiceSet attributesExports() {
+    /* package-private */ ServiceMap attributesExports() {
         return im.newExportedServiceSet();
     }
 
@@ -321,10 +321,12 @@ public final class ServiceExtension extends Extension {
     }
 
     // Will install a ServiceStatelessConfiguration...
+    // Spoergmaalet er om vi ikke bare skal have en driver...
+    // og en metode paa BaseBundle...
     public <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {
         BeanConfiguration<T> bc = im.container.component.wire(SingletonComponentDriver.prototype(), factory);
         @SuppressWarnings("unchecked")
-        BuildEntry<T> b = (BuildEntry<T>) im.provider().providePrototype(bc.component);
+        BuildtimeService<T> b = (BuildtimeService<T>) im.provider().providePrototype(bc.component);
         return new PackedPrototypeConfiguration<>(bc.component, b);
     }
 

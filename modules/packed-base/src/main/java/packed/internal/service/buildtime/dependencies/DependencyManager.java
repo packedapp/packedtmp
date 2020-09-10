@@ -37,7 +37,7 @@ import app.packed.service.ServiceExtension;
 import packed.internal.component.Resolver;
 import packed.internal.inject.resolvable.Injectable;
 import packed.internal.inject.resolvable.ServiceDependency;
-import packed.internal.service.buildtime.BuildEntry;
+import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.InjectionManager;
 
 /**
@@ -76,10 +76,10 @@ public final class DependencyManager {
     /** A set of all explicitly registered optional service keys. */
     final HashSet<Key<?>> requiredOptionally = new HashSet<>();
 
-    public final LinkedHashMap<ServiceDependency, BuildEntry<?>> specials = new LinkedHashMap<>();
+    public final LinkedHashMap<ServiceDependency, BuildtimeService<?>> specials = new LinkedHashMap<>();
 
     /** A map of all dependencies that could not be resolved */
-    IdentityHashMap<BuildEntry<?>, List<ServiceDependency>> unresolvedDependencies;
+    IdentityHashMap<BuildtimeService<?>, List<ServiceDependency>> unresolvedDependencies;
 
     /** Also used for descriptors. */
     public void analyze(Resolver resolver, InjectionManager node) {
@@ -186,7 +186,7 @@ public final class DependencyManager {
         manualRequirementsManagement = true;
     }
 
-    public void recordMissingDependency(BuildEntry<?> entry, ServiceDependency dependency, boolean fromParent) {
+    public void recordMissingDependency(BuildtimeService<?> entry, ServiceDependency dependency, boolean fromParent) {
 
     }
 
@@ -196,7 +196,7 @@ public final class DependencyManager {
      * @param entry
      * @param dependency
      */
-    public void recordResolvedDependency(InjectionManager node, BuildEntry<?> entry, ServiceDependency dependency, @Nullable BuildEntry<?> resolvedTo,
+    public void recordResolvedDependency(InjectionManager node, BuildtimeService<?> entry, ServiceDependency dependency, @Nullable BuildtimeService<?> resolvedTo,
             boolean fromParent) {
         requireNonNull(entry);
         requireNonNull(dependency);
@@ -234,7 +234,7 @@ public final class DependencyManager {
     }
 
     private void resolveAllDependencies(InjectionManager node) {
-        for (BuildEntry<?> entry : node.resolvedEntries.values()) {
+        for (BuildtimeService<?> entry : node.resolvedEntries.values()) {
             Injectable in = entry.injectable();
             if (in != null && in.hasUnresolved()) {
                 System.out.println("ADDDDDDD " + entry.key());

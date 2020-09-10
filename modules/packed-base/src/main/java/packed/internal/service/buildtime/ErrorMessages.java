@@ -38,14 +38,14 @@ import packed.internal.util.StringFormatter;
 
 public final class ErrorMessages {
 
-    public static void addDuplicateNodes(HashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> dublicateNodes) {
+    public static void addDuplicateNodes(HashMap<Key<?>, LinkedHashSet<BuildtimeService<?>>> dublicateNodes) {
         ConfigSiteJoiner csj = new ConfigSiteJoiner();
 
         csj.prefix("    ", "  & ", "  & ");
         for (var e : dublicateNodes.entrySet()) {
             // e.getValue().stream().map(BSE::configSite).collect(csj.collector();
 
-            csj.addAll(e.getValue().stream().map(BuildEntry::configSite).collect(Collectors.toList()));
+            csj.addAll(e.getValue().stream().map(BuildtimeService::configSite).collect(Collectors.toList()));
             System.out.println(csj.toString());
         }
         System.out.println("------");
@@ -54,7 +54,7 @@ public final class ErrorMessages {
         // create an instance sounds like something that should not be used in the build phase...
         sb.append("ServiceExtension failed");
         int nn = 1;
-        for (Map.Entry<Key<?>, LinkedHashSet<BuildEntry<?>>> e : dublicateNodes.entrySet()) {
+        for (Map.Entry<Key<?>, LinkedHashSet<BuildtimeService<?>>> e : dublicateNodes.entrySet()) {
             sb.append("\n\n");
             Key<?> key = e.getKey();
             String n = key.qualifier().map(ee -> "@" + ee.annotationType().getSimpleName() + " ").orElse("") + key.typeLiteral().toStringSimple();
@@ -77,10 +77,10 @@ public final class ErrorMessages {
         // System.out.println(abc);
     }
 
-    static String format(BuildEntry<?> e) {
+    static String format(BuildtimeService<?> e) {
         // TODO FIX
         // Need to look in injectable and see if first dependency is SourceAssembly
-        BuildEntry<?> declaringEntry = e;
+        BuildtimeService<?> declaringEntry = e;
 
         if (declaringEntry == null) {
             return e.configSite().toString();

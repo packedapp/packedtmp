@@ -22,7 +22,7 @@ import app.packed.base.Key;
 import app.packed.config.ConfigSite;
 import app.packed.service.Service;
 
-/** An implementation of {@link Service} because {@link BuildEntry} is not immutable. */
+/** An implementation of {@link Service} because {@link BuildtimeService} is not immutable. */
 final class PackedService implements Service {
 
     /** The configuration site of the service. */

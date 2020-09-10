@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandle;
 import app.packed.service.ServiceRegistry;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.resolvable.Injectable;
-import packed.internal.service.buildtime.BuildEntry;
+import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.service.buildtime.service.ProvideBuildEntry;
 import packed.internal.util.ThrowableUtil;
@@ -62,7 +62,7 @@ public class RegionAssembly {
 
         for (Injectable ii : resolver.constantServices) {
             int index;
-            BuildEntry<?> entry = ii.entry();
+            BuildtimeService<?> entry = ii.entry();
             if (entry instanceof ProvideBuildEntry<?>) {
                 ProvideBuildEntry<?> e = (ProvideBuildEntry<?>) entry;
                 index = e.regionIndex;
@@ -97,8 +97,10 @@ public class RegionAssembly {
 
         int registryIndex = root.modifiers().isGuest() ? 1 : 0;
         InjectionManager node = container.im;
+        // Move this to lazy create via PIC
+        // And no need to store this is the region
         if (node != null) {
-            region.store(registryIndex, node.instantiateEverything(region, pic.wirelets()));
+            region.store(registryIndex, node.newServiceRegistry(region, pic.wirelets()));
         } else {
             region.store(registryIndex, ServiceRegistry.empty());
         }

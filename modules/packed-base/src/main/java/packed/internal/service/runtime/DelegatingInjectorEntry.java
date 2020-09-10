@@ -18,7 +18,7 @@ package packed.internal.service.runtime;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.inject.ProvidePrototypeContext;
-import packed.internal.service.buildtime.BuildEntry;
+import packed.internal.service.buildtime.BuildtimeService;
 
 /**
  * A delegating runtime service node.
@@ -36,7 +36,7 @@ public final class DelegatingInjectorEntry<T> extends RuntimeEntry<T> {
      * @param delegate
      *            the build time alias node to create a runtime node from
      */
-    public DelegatingInjectorEntry(BuildEntry<T> buildNode, RuntimeEntry<T> delegate) {
+    public DelegatingInjectorEntry(BuildtimeService<T> buildNode, RuntimeEntry<T> delegate) {
         super(buildNode);
         this.delegate = requireNonNull(delegate);
     }

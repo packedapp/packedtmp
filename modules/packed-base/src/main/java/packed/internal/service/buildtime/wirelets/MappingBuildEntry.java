@@ -21,7 +21,7 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.config.ConfigSite;
-import packed.internal.service.buildtime.BuildEntry;
+import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.service.runtime.MappingInjectorEntry;
@@ -30,15 +30,15 @@ import packed.internal.service.runtime.RuntimeEntry;
 /**
  * A build entry that that takes an existing entry and uses a {@link Function} to map the service provided by the entry.
  */
-final class MappingBuildEntry<F, T> extends BuildEntry<T> {
+final class MappingBuildEntry<F, T> extends BuildtimeService<T> {
 
     /** The entry that should be mapped. */
-    final BuildEntry<F> entryToMap;
+    final BuildtimeService<F> entryToMap;
 
     /** The function to apply on the */
     private final Function<? super F, T> function;
 
-    MappingBuildEntry(InjectionManager node, ConfigSite configSite, BuildEntry<F> entryToMap, Key<T> toKey, Function<F, T> function) {
+    MappingBuildEntry(InjectionManager node, ConfigSite configSite, BuildtimeService<F> entryToMap, Key<T> toKey, Function<F, T> function) {
         super(node, configSite);
         this.entryToMap = entryToMap;
         this.function = requireNonNull(function, "function is null");

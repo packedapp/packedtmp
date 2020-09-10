@@ -23,7 +23,7 @@ import app.packed.config.ConfigSite;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.SourceAssembly;
 import packed.internal.inject.resolvable.Injectable;
-import packed.internal.service.buildtime.BuildEntry;
+import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.runtime.IndexedEntry;
 import packed.internal.service.runtime.RuntimeEntry;
@@ -31,7 +31,7 @@ import packed.internal.service.runtime.RuntimeEntry;
 /**
  *
  */
-public class ProvideBuildEntry<T> extends BuildEntry<T> {
+public class ProvideBuildEntry<T> extends BuildtimeService<T> {
 
     final SourceAssembly source;
 

@@ -28,7 +28,7 @@ import app.packed.base.Nullable;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceRegistry;
-import app.packed.service.ServiceSet;
+import app.packed.service.ServiceMap;
 import packed.internal.component.Region;
 import packed.internal.component.Resolver;
 import packed.internal.component.wirelet.WireletPack;
@@ -76,7 +76,7 @@ public final class InjectionManager {
     ServiceProvidingManager provider;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
-    public final LinkedHashMap<Key<?>, BuildEntry<?>> resolvedEntries = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, BuildtimeService<?>> resolvedEntries = new LinkedHashMap<>();
 
     /**
      * Creates a new injection manager.
@@ -92,24 +92,12 @@ public final class InjectionManager {
         hasFailed = true;
     }
 
-    // Ideen var lidt vi kaldte ind her foerend alle boernene er initialized
-    public void buildBundle() {
-        // We could actually have a desired state = Hosting (No linking just hosting)
-        // But I do think it would be correct to say that the desired state is hosting...
-        // Don't know if it would help anything...
-
-        // No more services or components registered in this extension instance.
-        // Let's run some quick tests before we start with linking..
-        // We might even
-        // System.out.println("First " + (parent == null));
-    }
-
     public void buildTree(Resolver resolver) {
         if (parent == null) {
 //            TreePrinter.print(this, n -> n.children, "", n -> n.context.containerPath().toString());
         }
 
-        HashMap<Key<?>, BuildEntry<?>> resolvedServices = provider().resolve();
+        HashMap<Key<?>, BuildtimeService<?>> resolvedServices = provider().resolve();
         resolvedServices.values().forEach(e -> resolvedEntries.put(requireNonNull(e.key()), e));
 
         if (exporter != null) {
@@ -158,18 +146,13 @@ public final class InjectionManager {
         return e;
     }
 
-    public ServiceRegistry instantiateEverything(Region region, WireletPack wc) {
+    public ServiceRegistry newServiceRegistry(Region region, WireletPack wc) {
         LinkedHashMap<Key<?>, RuntimeEntry<?>> runtimeEntries = new LinkedHashMap<>();
-        PackedInjector publicInjector = new PackedInjector(container.component.configSite(), runtimeEntries);
-
         ServiceExtensionInstantiationContext con = new ServiceExtensionInstantiationContext(region);
-
-        exports().forEach(e -> System.out.println("Exporting " + e.key));
         for (var e : exports()) {
             runtimeEntries.put(e.key, e.toRuntimeEntry(con));
         }
-
-        return publicInjector;
+        return new PackedInjector(container.component.configSite(), runtimeEntries);
     }
 
     public void link(InjectionManager child) {
@@ -180,13 +163,14 @@ public final class InjectionManager {
         children.add(child);
     }
 
-    //
     @Nullable
-    public ServiceSet newExportedServiceSet() {
+    public ServiceMap newExportedServiceSet() {
         return exports().exports();
     }
 
     public ServiceContract newServiceContract() {
+        // Er ikke sikker paa alt er med her...
+        // Vi kalder vist ikke ordenligt ind paa DependencyManager.register...
         return ServiceContract.newContract(c -> {
             if (exporter != null) {
                 for (ExportedBuildEntry<?> n : exporter) {
@@ -216,88 +200,3 @@ public final class InjectionManager {
         return (InjectionManager) VH_SERVICE_EXTENSION_NODE.get(extension);
     }
 }
-
-//System.out.println("--------------- INIT PLAN ----------");
-//for (ComponentFactoryBuildEntry<?> e : provider.mustInstantiate) {
-//  System.out.println(e.newInstance);
-//}
-//System.out.println("-----------------");
-
-//for (SourceHolder e : provider.mustInstantiate) {
-//  if (e.regionIndex > -1) {
-//      MethodHandle mh = e.reducedMha;
-//      // System.out.println("INST " + mh.type().returnType());
-//      Object instance;
-//      try {
-//          instance = mh.invoke(ns);
-//      } catch (Throwable e1) {
-//          throw ThrowableUtil.orUndeclared(e1);
-//      }
-//      con.region.store(e.regionIndex, instance);
-//  }
-//}
-//for (var e : resolvedEntries.entrySet()) {
-//  if (e.getKey() != null) { // only services... should be put there
-//      // runtimeEntries.put(e.getKey(), e.getValue().toRuntimeEntry(con));
-//  }
-//}
-
-// Instantiate all singletons...
-
-// Vi bliver noedt til at instantiere dem in-order
-// Saa vi skal have en orderet liste... af MH(ServiceNode)->Object
-//for (BuildEntry<?> node : resolvedEntries.values()) {
-//    // MethodHandle mh = node.toMH(con);
-//    // System.out.println(mh);
-//    if (node instanceof ComponentMethodHandleBuildEntry) {
-//        ComponentMethodHandleBuildEntry<?> s = (ComponentMethodHandleBuildEntry<?>) node;
-//        if (s.instantiationMode() == ServiceMode.CONSTANT) {
-//            s.toRuntimeEntry(con).getInstance(null);
-//        }
-//    }
-//}
-///**
-//* Invoked by the runtime when a component has members (fields or methods) that are annotated with {@link Inject}.
-//* 
-//* @param cc
-//*            the configuration of the annotated component
-//* @param group
-//*            a inject group object
-//*/
-//public void onInjectGroup(SingletonConfiguration<?> cc, AtInjectHook group) {
-//  // new Exception().printStackTrace();
-//  // Hvis den er instans, Singlton Factory -> Saa skal det vel med i en liste
-//  // Hvis det er en ManyProvide-> Saa skal vi jo egentlig bare gemme den til den bliver instantieret.
-//  // Det skal ogsaa tilfoejes requires...
-//  // Delt op i 2 dele...
-//  // * Tilfoej det til requirements...
-//  // * Scheduler at groupen skal kaldes senere ved inject...
-//  for (AtInject ai : group.members) {
-//      System.out.println(ai);
-//  }
-//}
-
-//for (var e : specials.entrySet()) {
-//System.out.println(e);
-//
-//// if (e.getKey().key().typeLiteral().rawType() == ExtensionInstantiationContext.class) {
-//// // DOES not really work c is the instantiation context for the service
-//// // not nessesarily for the one we should inject....
-////
-////Class<?> pipelineClass = e.getKey().key().typeLiteral().rawType();
-////
-////if (wc != null) {
-////  instance = wc.getWireletOrPipeline(pipelineClass);
-////  if (instance instanceof WireletPipelineContext) {
-////      instance = ((WireletPipelineContext) instance).instance;
-////  }
-////  requireNonNull(instance);
-////}
-////if (instance == null) {
-////  instance = Optional.empty();
-////} else {
-////  instance = e.getKey().wrapIfOptional(instance);
-////}
-////BuildEntry<?> be = e.getValue();
-////con.transformers.put(be, new ConstantInjectorEntry<Object>(ConfigSite.UNKNOWN, (Key) be.key, instance));
-//}

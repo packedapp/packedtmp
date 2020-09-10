@@ -25,7 +25,7 @@ import app.packed.config.ConfigSite;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
 import packed.internal.component.wirelet.WireletList;
-import packed.internal.service.buildtime.BuildEntry;
+import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.service.buildtime.wirelets.PackedUpstreamInjectionWirelet;
 import packed.internal.service.runtime.AbstractInjector;
@@ -43,7 +43,7 @@ public final class ProvideAllFromOtherInjector {
 
     /** All entries that was imported, any wirelets that was specified when importing the injector may modify this map. */
     // Is not ProvideABE because we might transform some of the entries...
-    public final LinkedHashMap<Key<?>, BuildEntry<?>> entries = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, BuildtimeService<?>> entries = new LinkedHashMap<>();
 
     /** The injector that provides the services. */
     final AbstractInjector injector;

@@ -21,7 +21,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.service.ServiceExtension;
-import packed.internal.service.buildtime.BuildEntry;
+import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.service.runtime.DelegatingInjectorEntry;
@@ -31,11 +31,11 @@ import packed.internal.service.runtime.RuntimeEntry;
  * A build entry representing an exported service. Entries at runtime has never any reference to how (or if) they where
  * exported.
  */
-public final class ExportedBuildEntry<T> extends BuildEntry<T> {
+public final class ExportedBuildEntry<T> extends BuildtimeService<T> {
 
     /** The actual entry that is exported. Is initially null for keyed exports, until it is resolved. */
     @Nullable
-    BuildEntry<T> exportedEntry;
+    BuildtimeService<T> exportedEntry;
 
     /** The key under which to export the entry, is null for entry exports. */
     @Nullable
@@ -66,7 +66,7 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
      *            the config site of the export
      * @see ServiceExtension#exportAll()
      */
-    ExportedBuildEntry(InjectionManager builder, BuildEntry<T> entryToExport, ConfigSite configSite) {
+    ExportedBuildEntry(InjectionManager builder, BuildtimeService<T> entryToExport, ConfigSite configSite) {
         super(builder, configSite);
         this.exportedEntry = entryToExport;
         this.keyToExport = null;

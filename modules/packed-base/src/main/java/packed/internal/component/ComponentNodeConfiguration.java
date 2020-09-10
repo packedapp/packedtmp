@@ -77,7 +77,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     final PackedWireableComponentDriver<?> driver;
 
     /** The name of the component. */
-    public String name;
+    String name;
 
     /** The realm the component belongs to. */
     private final PackedRealm realm;
@@ -193,7 +193,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
         // Setup Guest
         if (modifiers().isGuest()) {
-            region.reserve();
+            region.reserve(); // reserve a slot to an instance of PackedGuest
         }
 
         // Setup Source

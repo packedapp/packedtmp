@@ -25,7 +25,7 @@ import app.packed.component.ComponentModifier;
 import packed.internal.component.PackedWireableComponentDriver.SingletonComponentDriver;
 import packed.internal.inject.resolvable.DependencyProvider;
 import packed.internal.inject.resolvable.Injectable;
-import packed.internal.service.buildtime.BuildEntry;
+import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.service.SingletonBuildEntry;
 
 /**
@@ -52,7 +52,7 @@ public class SourceAssembly implements DependencyProvider {
     public final int regionIndex;
 
     /** Whether or not the component is provided as a service. */
-    public BuildEntry<?> service;
+    public BuildtimeService<?> service;
 
     SourceAssembly(ComponentNodeConfiguration component) {
         this(component, (SingletonComponentDriver<?>) component.driver);
@@ -94,9 +94,9 @@ public class SourceAssembly implements DependencyProvider {
     }
 
     // Bliver kaldt naar man koere provide();
-    public BuildEntry<?> provide() {
+    public BuildtimeService<?> provide() {
         // Not sure we should allow for calling provide multiple times...
-        BuildEntry<?> c = service;
+        BuildtimeService<?> c = service;
         if (c == null) {
             c = new SingletonBuildEntry<>(component.container.im, this);
             // service = c;
@@ -105,8 +105,8 @@ public class SourceAssembly implements DependencyProvider {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public BuildEntry<?> providePrototype() {
-        BuildEntry<?> c = service;
+    public BuildtimeService<?> providePrototype() {
+        BuildtimeService<?> c = service;
         if (c == null) {
             throw new UnsupportedOperationException();
             // c = new ComponentMethodHandleBuildEntry<>(services, component, resolvable, ServiceMode.PROTOTYPE);

@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.inject.ProvidePrototypeContext;
 import packed.internal.component.Region;
-import packed.internal.service.buildtime.BuildEntry;
+import packed.internal.service.buildtime.BuildtimeService;
 
 /** An entry holding a constant. */
 // Can't implement both ServiceDescriptor and Provider...
@@ -37,7 +37,7 @@ public final class IndexedEntry<T> extends RuntimeEntry<T> {
      * @param entry
      *            the build entry to create this entry from
      */
-    public IndexedEntry(BuildEntry<T> entry, Region ns, int index) {
+    public IndexedEntry(BuildtimeService<T> entry, Region ns, int index) {
         super(entry);
         this.region = requireNonNull(ns);
         this.index = index;

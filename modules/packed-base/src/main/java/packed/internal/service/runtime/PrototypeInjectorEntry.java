@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandle;
 import app.packed.inject.ProvidePrototypeContext;
 import app.packed.inject.ProvisionException;
 import packed.internal.component.Region;
-import packed.internal.service.buildtime.BuildEntry;
+import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.util.ThrowableUtil;
 
@@ -40,7 +40,7 @@ public class PrototypeInjectorEntry<T> extends RuntimeEntry<T> {
     /**
      * @param node
      */
-    public PrototypeInjectorEntry(BuildEntry<T> node, ServiceExtensionInstantiationContext context) {
+    public PrototypeInjectorEntry(BuildtimeService<T> node, ServiceExtensionInstantiationContext context) {
         super(node);
         this.ns = context.region;
         this.mh = null;

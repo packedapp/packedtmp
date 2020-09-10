@@ -23,7 +23,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import packed.internal.component.SourceAssembly;
 import packed.internal.inject.resolvable.Injectable;
-import packed.internal.service.buildtime.BuildEntry;
+import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.runtime.IndexedEntry;
@@ -32,7 +32,7 @@ import packed.internal.service.runtime.RuntimeEntry;
 /**
  *
  */
-public final class SingletonBuildEntry<T> extends BuildEntry<T> {
+public final class SingletonBuildEntry<T> extends BuildtimeService<T> {
 
     public final SourceAssembly source;
 

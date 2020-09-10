@@ -25,7 +25,7 @@ import packed.internal.service.runtime.PackedInjector;
  *
  */
 // Maybe also have ifPresent
-public interface ServiceRegistry extends ServiceSet {
+public interface ServiceRegistry extends ServiceMap {
 
     /**
      * Returns a service instance for the given key if available, otherwise an empty optional. As an alternative, if you

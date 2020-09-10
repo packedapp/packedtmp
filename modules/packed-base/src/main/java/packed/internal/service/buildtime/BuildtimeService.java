@@ -38,13 +38,14 @@ import packed.internal.service.runtime.RuntimeEntry;
  * BSEs are never exposed to end-users, but instead wrapped in implementations of {@link ExportedServiceConfiguration}.
  */
 // BuildEntry does not implements ServiceDescriptor because it is mutable, so we
-public abstract class BuildEntry<T> implements DependencyProvider {
+public abstract class BuildtimeService<T> implements DependencyProvider {
 
     /** The configuration site of this object. */
     private final ConfigSite configSite;
 
-    /** A flag used to detect cycles in the dependency graph. */
-    public boolean detectCycleVisited;
+    /** The service no this entry belongs to. Or null for wirelets */
+    @Nullable // Is nullable for stages for now
+    public final InjectionManager im;
 
     /**
      * The key of the node (optional). Can be null, for example, for a class that is not exposed as a service but has
@@ -54,12 +55,8 @@ public abstract class BuildEntry<T> implements DependencyProvider {
     @Nullable
     protected Key<T> key;
 
-    /** The service no this entry belongs to. Or null for wirelets */
-    @Nullable // Is nullable for stages for now
-    public final InjectionManager node;
-
-    public BuildEntry(@Nullable InjectionManager serviceExtension, ConfigSite configSite) {
-        this.node = serviceExtension;
+    public BuildtimeService(@Nullable InjectionManager im, ConfigSite configSite) {
+        this.im = im;
         this.configSite = requireNonNull(configSite);
     }
 

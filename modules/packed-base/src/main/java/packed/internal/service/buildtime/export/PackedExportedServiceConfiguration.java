@@ -50,7 +50,7 @@ final class PackedExportedServiceConfiguration<T> implements ExportedServiceConf
     public ExportedServiceConfiguration<T> as(@Nullable Key<? super T> key) {
         // TODO, maybe it gets disabled the minute we start analyzing exports???
         // Nah, lige saa snart, vi begynder
-        entry.node.checkExportConfigurable();
+        entry.im.checkExportConfigurable();
         entry.as(key);
         return this;
     }

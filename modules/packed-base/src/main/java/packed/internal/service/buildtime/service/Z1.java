@@ -31,15 +31,17 @@ public class Z1 extends BaseBundle {
     protected void configure() {
         provideInstance(123);
         provide(NoDep.class);
-        export(Integer.class);
         provide(Dx.class);
         install(DxString.class);
+
+        export(Integer.class);
     }
 
     public static void main(String[] args) {
         long now = System.currentTimeMillis();
         Injector inj = Injector.create(new Z1());
         Integer ii = inj.use(Integer.class);
+
         System.out.println(ii.getClass() + " " + ii);
         // System.out.println(inj.use(Dx.class).x);
         System.out.println("BYE");
@@ -55,6 +57,11 @@ public class Z1 extends BaseBundle {
         public String s() {
             return "adsasd";
         }
+
+        @Provide(constant = true)
+        public Long d2s() {
+            return 121231231233L;
+        }
     }
 
     public static class Dx {
@@ -67,7 +74,7 @@ public class Z1 extends BaseBundle {
 
     public static class DxString {
         public DxString(Dx dx, Integer i) {
-            System.out.println("Instantiated");
+            System.out.println("Instantiated " + i);
         }
     }
 }
