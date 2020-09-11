@@ -230,10 +230,28 @@ public enum ComponentModifier {
 
     // A single java based instance that is strongly bound to lifecycle of the component.
     // Cannot be replaced. As such this instance is co-terminus with the guest
-    SINGLETON,
+    // If an instance is specified it is used, otherwise a new instance will created
+    // from the class of factory.
 
-    // Stateless, but we inject new stuff...
-    UNSCOPED;
+    // install(Ffff.class); <-----
+    // install(Ffff.class); <-----
+    // Creates two singletons of the same type
+
+    // https://www.powerthesaurus.org/permanent/synonyms
+    // Constant???
+    // Instant
+    CONSTANT, // passer ogsaa bedre med provide
+
+    /**
+     * Something that needs to be managed by the runtime after it has been initialized.
+     * <p>
+     * Since Java is GC'ed we do not have to worry about ordinary objects...
+     */
+    STATEFUL, // Something that has to be managed by the runtime after it has been initialized.
+
+    STATELESS, // passer ogsaa bedre med provide
+
+    UNSCOPED; // Det er her hvor den kan vaere managed eller unmanaged..
 
     public ComponentModifierSet toSet() {
         return ComponentModifierSet.of(this);
@@ -247,6 +265,9 @@ public enum ComponentModifier {
 //Components.isPartOfImage() <--- look recursively in parents and see if any has the Image 
 
 enum Sandbox {
+
+    INJECTABLE, // Syntes denne er daarlig fordi det er foerst noget vi ved efter
+    // sourcen er bundet. provide(Class) -> INJECTABLE, provide(instance) -> NOT_INJECTABLE
 
     RESTARTABLE,
 

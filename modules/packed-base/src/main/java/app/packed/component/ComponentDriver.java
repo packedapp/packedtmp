@@ -72,6 +72,7 @@ public interface ComponentDriver<C> {
          * A container that is a component cannot be sourced??? Yes It can... It can be the actor system
          * 
          * @return stuff
+         * @see ComponentModifier#CONTAINER
          */
         static Option container() {
             return PackedComponentDriver.OptionImpl.CONTAINER;
@@ -83,9 +84,10 @@ public interface ComponentDriver<C> {
          * A container that is a component cannot be sourced??? Yes It can... It can be the actor system
          * 
          * @return stuff
+         * @see ComponentModifier#CONSTANT
          */
-        static Option singletonSource() {
-            return PackedComponentDriver.OptionImpl.CONTAINER;
+        static Option constantSource() {
+            return PackedComponentDriver.OptionImpl.CONSTANT;
         }
 
         // The parent + the driver

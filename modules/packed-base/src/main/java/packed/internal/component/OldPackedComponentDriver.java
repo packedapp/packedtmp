@@ -17,8 +17,6 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-
 import app.packed.base.Nullable;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
@@ -33,7 +31,6 @@ import app.packed.component.StatelessConfiguration;
 import app.packed.inject.Factory;
 import packed.internal.container.PackedRealm;
 import packed.internal.inject.factory.BaseFactory;
-import packed.internal.inject.factory.FactoryHandle;
 
 /**
  *
@@ -96,7 +93,7 @@ public abstract class OldPackedComponentDriver<C> implements ComponentDriver<C> 
         public final boolean isPrototype;
 
         public SingletonComponentDriver(PackedRealm realm, Factory<?> factory, boolean isPrototype) {
-            super(ComponentModifier.SINGLETON, ComponentModifier.SOURCED);
+            super(ComponentModifier.CONSTANT, ComponentModifier.SOURCED);
             requireNonNull(factory, "factory is null");
             this.model = realm.componentModelOf(factory.rawType());
             this.factory = (@Nullable BaseFactory<?>) factory;
@@ -105,7 +102,7 @@ public abstract class OldPackedComponentDriver<C> implements ComponentDriver<C> 
         }
 
         public SingletonComponentDriver(PackedRealm realm, T instance) {
-            super(ComponentModifier.SINGLETON, ComponentModifier.SOURCED);
+            super(ComponentModifier.CONSTANT, ComponentModifier.SOURCED);
             this.instance = requireNonNull(instance, "instance is null");
             this.model = realm.componentModelOf(instance.getClass());
             this.factory = null;
@@ -117,11 +114,6 @@ public abstract class OldPackedComponentDriver<C> implements ComponentDriver<C> 
             return model.defaultPrefix();
         }
 
-        public MethodHandle fromFactory(ComponentNodeConfiguration context) {
-            FactoryHandle<?> handle = factory.factory.handle;
-            return context.realm().fromFactoryHandle(handle);
-        }
-
         @Override
         @Nullable
         public Class<?> sourceType() {
@@ -130,9 +122,7 @@ public abstract class OldPackedComponentDriver<C> implements ComponentDriver<C> 
 
         @Override
         public BeanConfiguration<T> toConfiguration(ComponentConfigurationContext context) {
-            ComponentNodeConfiguration cnc = (ComponentNodeConfiguration) context;
-            model.invokeOnHookOnInstall(cnc);
-            return new BeanConfiguration<>(cnc);
+            return new BeanConfiguration<>(context);
         }
 
         public static <T> InstanceComponentDriver<BeanConfiguration<T>, T> driver() {

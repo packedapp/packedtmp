@@ -73,7 +73,7 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
      * @return true if this set contains the guest modifier, otherwise false
      */
     default boolean isSingleton() {
-        return contains(ComponentModifier.SINGLETON);
+        return contains(ComponentModifier.CONSTANT);
     }
 
     /**

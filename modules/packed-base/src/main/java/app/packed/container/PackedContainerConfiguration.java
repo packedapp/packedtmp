@@ -26,11 +26,11 @@ import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentDriver.Option;
 import packed.internal.component.ComponentNodeConfiguration;
 
-/** The default implementation of {@link ContainerConfiguration}. */
-public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
+/** Implementation of {@link ContainerConfiguration}. */
+final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
 
     /** A component driver that create instances of this configuration class. */
-    public static final ComponentDriver<ContainerConfiguration> DRIVER = ComponentDriver.of(MethodHandles.lookup(), PackedContainerConfiguration.class,
+    static final ComponentDriver<ContainerConfiguration> DRIVER = ComponentDriver.of(MethodHandles.lookup(), PackedContainerConfiguration.class,
             Option.container());
 
     /**

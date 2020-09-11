@@ -87,8 +87,8 @@ public final class ServiceProvidingManager {
 
         // Add each @Provide as children of the parent node
         for (AtProvides atProvides : hook.members) {
-            ConfigSite configSite = component.source.component.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE,
-                    atProvides.provides, atProvides.member);
+            ConfigSite configSite = component.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, atProvides.provides,
+                    atProvides.member);
             AtProvideBuildEntry pbe = new AtProvideBuildEntry(configSite, component, atProvides); // Adds itself to #buildEntries
             component.region.resolver.allInjectables.add(pbe.injectable);
         }

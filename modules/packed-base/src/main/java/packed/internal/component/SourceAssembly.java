@@ -23,6 +23,7 @@ import java.lang.invoke.MethodHandles;
 import app.packed.base.Key;
 import app.packed.component.ComponentModifier;
 import packed.internal.component.OldPackedComponentDriver.SingletonComponentDriver;
+import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.inject.resolvable.DependencyProvider;
 import packed.internal.inject.resolvable.Injectable;
 import packed.internal.service.buildtime.BuildtimeService;
@@ -97,6 +98,11 @@ public class SourceAssembly implements DependencyProvider {
             c = new SingletonBuildEntry<>(component, defaultServiceKey());
         }
         return c;
+    }
+
+    public MethodHandle fromFactory() {
+        FactoryHandle<?> handle = driver.factory.factory.handle;
+        return component.realm().fromFactoryHandle(handle);
     }
 
     public BuildtimeService<?> providePrototype() {

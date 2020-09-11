@@ -55,6 +55,7 @@ import packed.internal.base.attribute.DefaultAttributeMap;
 import packed.internal.base.attribute.PackedAttribute;
 import packed.internal.base.attribute.ProvidableAttributeModel;
 import packed.internal.base.attribute.ProvidableAttributeModel.Attt;
+import packed.internal.component.OldPackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteSupport;
@@ -199,14 +200,18 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             region.reserve(); // reserve a slot to an instance of PackedGuest
         }
 
+        setName0(null); // initialize name
+
         // Setup Source
         if (driver.sourceType() != null) {
             this.source = new SourceAssembly(this);
+            ComponentModel cm = ((SingletonComponentDriver<?>) driver).model;
+            cm.invokeOnHookOnInstall(this);
+
         } else {
             this.source = null;
         }
 
-        setName0(null); // initialize name
     }
 
     /**
@@ -586,7 +591,9 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         WireletPack wp = WireletPack.from(d, wirelets);
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         ComponentNodeConfiguration conf = newChild(d, configSite, realm, wp);
-        return d.toConfiguration(conf);
+        C c = d.toConfiguration(conf);
+
+        return c;
     }
 
     @Override

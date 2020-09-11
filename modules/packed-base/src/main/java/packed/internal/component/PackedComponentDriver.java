@@ -72,6 +72,9 @@ public class PackedComponentDriver<C> extends OldPackedComponentDriver<C> implem
             case OptionImpl.OPT_CONTAINER:
                 modifiers |= PackedComponentModifierSet.I_CONTAINER;
                 break;
+            case OptionImpl.OPT_CONSTANT:
+                modifiers |= PackedComponentModifierSet.I_SINGLETON;
+                break;
             default:
                 throw new IllegalStateException(o + " is not a valid option");
             }
@@ -142,10 +145,10 @@ public class PackedComponentDriver<C> extends OldPackedComponentDriver<C> implem
     // Nahhh
     public static class OptionImpl implements ComponentDriver.Option {
         static final int OPT_CONTAINER = 1;
-        static final int OPT_SINGLETON = 2;
+        static final int OPT_CONSTANT = 2;
 
         public static final OptionImpl CONTAINER = new OptionImpl(OPT_CONTAINER, null);
-        public static final OptionImpl SINGLETON = new OptionImpl(OPT_SINGLETON, null);
+        public static final OptionImpl CONSTANT = new OptionImpl(OPT_CONSTANT, null);
 
         final int id;
         @Nullable

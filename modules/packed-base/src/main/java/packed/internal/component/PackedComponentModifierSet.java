@@ -36,7 +36,7 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
     public static final int I_IMAGE = intOf(ComponentModifier.IMAGE);
 
     public static final int I_SHELL = intOf(ComponentModifier.SHELL);
-    public static final int I_SINGLETON = intOf(ComponentModifier.SINGLETON);
+    public static final int I_SINGLETON = intOf(ComponentModifier.CONSTANT);
     public static final int I_UNSCOPED = intOf(ComponentModifier.UNSCOPED);
 
     /** An array containing all modifiers. */
