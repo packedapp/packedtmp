@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package app.packed.container;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
@@ -24,18 +24,23 @@ import app.packed.component.AbstractComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentDriver.Option;
-import app.packed.container.ContainerConfiguration;
-import app.packed.container.Extension;
 import packed.internal.component.ComponentNodeConfiguration;
 
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
 
-    static final ComponentDriver<ContainerConfiguration> DRIVER = ComponentDriver.of(MethodHandles.lookup(), PackedContainerConfiguration.class,
+    /** A component driver that create instances of this configuration class. */
+    public static final ComponentDriver<ContainerConfiguration> DRIVER = ComponentDriver.of(MethodHandles.lookup(), PackedContainerConfiguration.class,
             Option.container());
 
-    public PackedContainerConfiguration(ComponentConfigurationContext node) {
-        super(node);
+    /**
+     * Creates a new PackedContainerConfiguration, only used by {@link #DRIVER}.
+     *
+     * @param context
+     *            the component configuration context
+     */
+    private PackedContainerConfiguration(ComponentConfigurationContext context) {
+        super(context);
     }
 
     /** {@inheritDoc} */
@@ -47,11 +52,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** {@inheritDoc} */
     @Override
     public void lookup(@Nullable Lookup lookup) {
-        node().realm().lookup(lookup);
-    }
-
-    private ComponentNodeConfiguration node() {
-        return (ComponentNodeConfiguration) super.context;
+        ((ComponentNodeConfiguration) super.context).realm().lookup(lookup);
     }
 
     /** {@inheritDoc} */

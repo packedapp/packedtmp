@@ -184,6 +184,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         }
         this.modifiers = mod;
 
+        // System.out.println("MODS " + modifiers);
+
         // Setup Container
         if (modifiers().isContainer()) {
             region.reserve();

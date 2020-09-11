@@ -13,27 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.cli;
-
-import app.packed.component.Wirelet;
+package app.packed.service;
 
 /**
  *
  */
+// Specielt lavet til at lave injectors.
+abstract class InjectorBundle {
 
-// Kunne vaere fedt hvis man kunne gemme den...
-// Maaske har vi en CLI extension der kan gemme den...
-
-// Saa MainArgs er en Packlet??? IDK
-
-// extends Iterable<String>
-public final class MainArgs {
-
-    public static MainArgs of(String... args) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static Wirelet wireletOf(String... args) {
-        throw new UnsupportedOperationException();
-    }
 }

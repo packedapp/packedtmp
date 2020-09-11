@@ -37,10 +37,8 @@ import app.packed.cli.MainArgs;
  * An image can be used to create new instances of {@link app.packed.component.App} or other artifact images. Artifact
  * images can not be used as a part of other containers, for example, via
  * 
- * 
  * @apiNote In the future, if the Java language permits, {@link Image} may become a {@code sealed} interface, which
  *          would prohibit subclassing except by explicitly permitted types.
- * 
  */
 // Hvis Guest == Closeable
 // Saa er et image noget andet...

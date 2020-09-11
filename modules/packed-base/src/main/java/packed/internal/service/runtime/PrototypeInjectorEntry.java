@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.inject.ProvidePrototypeContext;
+import app.packed.inject.PrototypeProvideContext;
 import app.packed.inject.ProvisionException;
 import packed.internal.component.Region;
 import packed.internal.service.buildtime.BuildtimeService;
@@ -45,7 +45,7 @@ public class PrototypeInjectorEntry<T> extends RuntimeService<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ProvidePrototypeContext site) {
+    public T getInstance(PrototypeProvideContext site) {
         try {
             return (T) mh.invoke(region);
         } catch (Throwable e) {

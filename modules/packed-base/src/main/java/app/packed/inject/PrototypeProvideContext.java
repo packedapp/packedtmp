@@ -161,10 +161,26 @@ import app.packed.service.Injector;
 //ProvisionContext (If we have InjectionContext)
 //ProvisionPrototypeContext
 
-// Uses attributes?????
+// Uses attributes????? I Think it may better support it...
 
 //@ProvideNonConstantContext
-public interface ProvidePrototypeContext {
+// PrototypeProvideContext
+
+// Eller ogsaa kan den bruges altid og saa
+// er det bare BaseExtension der staar som requestor...
+
+// Altsaa en slags hvorfor bliver jeg instantieret....
+
+// Og kan vi ikke bare smide den paa InjectionContext????
+// Ville nu vaere fedt at adskille taenker jeg.
+// Den ene er debugging og den her kan vaere useful 
+// paa runtime
+
+// Det er ogsaa bare alle informationer vi bliver noedt til at at gemme i InjectionContext....
+
+// ProvideContext(), ProvideServiceContext
+
+public interface PrototypeProvideContext {
 
     // Hvad hvis det ikke er en direkte extension der forsporger???
     // Men f.eks. et eller andet inde i en Bundle som er installeret

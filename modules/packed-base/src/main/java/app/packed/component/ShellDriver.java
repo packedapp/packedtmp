@@ -39,8 +39,10 @@ import packed.internal.inject.InstantiatorBuilder;
  * @param <S>
  *            The type of shell this driver creates.
  * @see App#driver()
+ * 
+ * @apiNote In the future, if the Java language permits, {@link ShellDriver} may become a {@code sealed} interface,
+ *          which would prohibit subclassing except by explicitly permitted types.
  */
-
 // Tror ikke shells kan bruge annoteringer??? Altsaa maaske paa surragates???
 // Ville maaske vaere fedt nok bare at kunne sige
 // @OnShutdown()
@@ -106,6 +108,7 @@ public interface ShellDriver<S> {
         boolean isGuest = AutoCloseable.class.isAssignableFrom(implementation);
 
         // We currently do not support @Provide ect... Don't know if we ever will
+
         // Create a new MethodHandle that can create shell instances.
         InstantiatorBuilder ib = InstantiatorBuilder.of(caller, implementation, PackedInitializationContext.class);
         ib.addKey(Component.class, PackedInitializationContext.MH_COMPONENT, 0);

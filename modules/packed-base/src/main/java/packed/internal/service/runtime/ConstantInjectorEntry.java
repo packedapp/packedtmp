@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
-import app.packed.inject.ProvidePrototypeContext;
+import app.packed.inject.PrototypeProvideContext;
 import packed.internal.component.Region;
 import packed.internal.service.buildtime.BuildtimeService;
 
@@ -53,7 +53,7 @@ public final class ConstantInjectorEntry<T> extends RuntimeService<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ProvidePrototypeContext ignore) {
+    public T getInstance(PrototypeProvideContext ignore) {
         return constant;
     }
 

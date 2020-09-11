@@ -55,6 +55,11 @@ public interface ComponentDriver<C> {
     // Hmm ved ikke om vi vil have den..
     ComponentModifierSet modifiers();
 
+    /**
+     *
+     * @apiNote In the future, if the Java language permits, {@link ShellDriver} may become a {@code sealed} interface,
+     *          which would prohibit subclassing except by explicitly permitted types.
+     */
     public interface Option {
 
         static Option sourceAssignableTo(Class<?> rawType) {
@@ -68,9 +73,19 @@ public interface ComponentDriver<C> {
          * 
          * @return stuff
          */
-        // Or Maybe
         static Option container() {
-            return null;
+            return PackedComponentDriver.OptionImpl.CONTAINER;
+        }
+
+        /**
+         * The component the driver will be a container.
+         * <p>
+         * A container that is a component cannot be sourced??? Yes It can... It can be the actor system
+         * 
+         * @return stuff
+         */
+        static Option singletonSource() {
+            return PackedComponentDriver.OptionImpl.CONTAINER;
         }
 
         // The parent + the driver

@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
+import app.packed.base.Nullable;
 import app.packed.component.ClassComponentDriver;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
@@ -33,7 +34,7 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
-public class PackedComponentDriver<C> implements ComponentDriver<C> {
+public class PackedComponentDriver<C> extends OldPackedComponentDriver<C> implements ComponentDriver<C> {
 
     final Meta meta;
 
@@ -42,6 +43,7 @@ public class PackedComponentDriver<C> implements ComponentDriver<C> {
     final SourceType sourceType;
 
     PackedComponentDriver(Meta meta) {
+        super(meta.modifiers.toArray());
         this.meta = requireNonNull(meta);
         this.source = null;
         this.sourceType = null;
@@ -60,11 +62,27 @@ public class PackedComponentDriver<C> implements ComponentDriver<C> {
     }
 
     public static <C> PackedComponentDriver<C> of(MethodHandles.Lookup caller, Class<? extends C> driverType, Option... options) {
+        requireNonNull(options, "options is null");
+
+        // Parse all options
+        int modifiers = 0;
+        for (int i = 0; i < options.length; i++) {
+            OptionImpl o = (OptionImpl) options[i];
+            switch (o.id) {
+            case OptionImpl.OPT_CONTAINER:
+                modifiers |= PackedComponentModifierSet.I_CONTAINER;
+                break;
+            default:
+                throw new IllegalStateException(o + " is not a valid option");
+            }
+        }
+
+        // Find constructor
         InstantiatorBuilder ib = InstantiatorBuilder.of(caller, driverType, ComponentNodeConfiguration.class);
         ib.addKey(ComponentConfigurationContext.class, 0);
         MethodHandle mh = ib.build();
 
-        return new PackedComponentDriver<>(new Meta(mh));
+        return new PackedComponentDriver<>(new Meta(mh, modifiers));
     }
 
     /** {@inheritDoc} */
@@ -73,7 +91,9 @@ public class PackedComponentDriver<C> implements ComponentDriver<C> {
         return meta.modifiers;
     }
 
-    public C newConfiguration(ComponentNodeConfiguration cnc) {
+    @Override
+    public C toConfiguration(ComponentConfigurationContext cnc) {
+        // Vil godt lave den om til CNC
         try {
             return (C) meta.mh.invoke(cnc);
         } catch (Throwable e) {
@@ -87,8 +107,9 @@ public class PackedComponentDriver<C> implements ComponentDriver<C> {
 
         ComponentModifierSet modifiers;
 
-        Meta(MethodHandle mh) {
+        Meta(MethodHandle mh, int modifiers) {
             this.mh = requireNonNull(mh);
+            this.modifiers = new PackedComponentModifierSet(modifiers);
         }
     }
 
@@ -113,5 +134,26 @@ public class PackedComponentDriver<C> implements ComponentDriver<C> {
 
     static enum SourceType {
         CLASS, FACTORY, INSTANCE, NONE;
+    }
+
+    // And the use one big switch
+    // Kunne ogsaa encode det i ComponentDriver.option..
+    // Og saa bruge MethodHandles til at extract id, data?
+    // Nahhh
+    public static class OptionImpl implements ComponentDriver.Option {
+        static final int OPT_CONTAINER = 1;
+        static final int OPT_SINGLETON = 2;
+
+        public static final OptionImpl CONTAINER = new OptionImpl(OPT_CONTAINER, null);
+        public static final OptionImpl SINGLETON = new OptionImpl(OPT_SINGLETON, null);
+
+        final int id;
+        @Nullable
+        final Object data;
+
+        OptionImpl(int id, @Nullable Object data) {
+            this.id = id;
+            this.data = data;
+        }
     }
 }

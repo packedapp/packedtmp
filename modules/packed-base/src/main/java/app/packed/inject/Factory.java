@@ -129,6 +129,7 @@ public interface Factory<T> {
      * @return the key under which this factory will be registered unless
      * @see #withKey(Key)
      */
+    // defaultKey() ??????
     Key<T> key();
 
     /**
@@ -211,6 +212,8 @@ public interface Factory<T> {
     // Lookup object paa et factory. Kan bruges til alle metoder....Ikke kun dem med inject
     // Giver ikke mening andet...
     Factory<T> withLookup(MethodHandles.Lookup lookup);
+
+    // bindRaw(Class<?> dd, ...);
 
     /**
      * Binds the specified argument to a variable with the specified index as returned by {@link #variables()}. This method

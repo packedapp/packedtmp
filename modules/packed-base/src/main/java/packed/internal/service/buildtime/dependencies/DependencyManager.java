@@ -196,7 +196,7 @@ public final class DependencyManager {
      * @param entry
      * @param dependency
      */
-    public void recordResolvedDependency(InjectionManager node, BuildtimeService<?> entry, ServiceDependency dependency,
+    public void recordResolvedDependency(InjectionManager im, BuildtimeService<?> entry, ServiceDependency dependency,
             @Nullable BuildtimeService<?> resolvedTo, boolean fromParent) {
         requireNonNull(entry);
         requireNonNull(dependency);
@@ -209,7 +209,7 @@ public final class DependencyManager {
         }
         m.add(new DependencyRequirement(dependency, entry));
 
-        if (node.dependencies == null || !node.dependencies.manualRequirementsManagement) {
+        if (im.dependencies == null || !im.dependencies.manualRequirementsManagement) {
             if (dependency.isOptional()) {
                 requiredOptionally.add(dependency.key());
             } else {

@@ -17,14 +17,14 @@ package packed.internal.util;
 
 import app.packed.base.Key;
 import app.packed.inject.Inject;
-import app.packed.inject.ProvidePrototypeContext;
+import app.packed.inject.PrototypeProvideContext;
 import app.packed.service.Injector;
 
 /** A builder of keys, mainly useful for creating proper error messages. */
 public final class KeyBuilder {
 
-    /** The {@link ProvidePrototypeContext} class as a key. */
-    public static final Key<?> INJECTION_SITE_KEY = Key.of(ProvidePrototypeContext.class);
+    /** The {@link PrototypeProvideContext} class as a key. */
+    public static final Key<?> INJECTION_SITE_KEY = Key.of(PrototypeProvideContext.class);
 
     /** The {@link Injector} class as a key. */
     public static final Key<?> INJECTOR_KEY = Key.of(Injector.class);

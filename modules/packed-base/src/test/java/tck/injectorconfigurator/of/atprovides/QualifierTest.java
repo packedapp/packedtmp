@@ -59,7 +59,10 @@ public class QualifierTest {
         Stub.B = 1L;
         Stub.C = 1L;
         Stub.L = 1L;
-        Injector i = create(c -> c.provide(Stub.class));
+        Injector i = create(c -> {
+            c.provide(Stub.class);
+
+        });
         // Stub.A = 2L;
         Stub.B = 2L;
         Stub.C = 2L;

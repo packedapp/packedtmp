@@ -20,6 +20,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.time.LocalDateTime;
 
 import app.packed.base.OpenMode;
 import app.packed.base.Opens;
@@ -28,7 +29,7 @@ import app.packed.container.Packlet;
 import app.packed.service.ServiceExtension;
 
 /**
- * An annotation indicating that an annotated type, method or field provides a service of some kind. A field
+ * An annotation indicating that an annotated type, method or field provides a object of some kind. A field
  * 
  * Or a final field.
  * 
@@ -39,11 +40,11 @@ import app.packed.service.ServiceExtension;
  * Both fields and methods can make used of qualifiers to specify the exact key they are made available under. For
  * example, given to two qualifier annotations: {@code @Left} and {@code @Right}<pre>
  *  &#64;Left
- *  &#64;Provides
+ *  &#64;Provide
  *  String name = "left";
  *   
  *  &#64;Right
- *  &#64;Provides
+ *  &#64;Provide
  *  String provide() {
  *      return "right";
  *  }
@@ -73,7 +74,8 @@ import app.packed.service.ServiceExtension;
  * dependency is optional.
  */
 // @Provides(description = "Current time) final Provider<LocalDate> p = ....
-// @Provides final Factory<Long> p = ....
+
+// @Provides final Factory<Long> p = .... <-------------- COOL, havde helt glemt...
 
 // @Component(name, description, children, ....)
 // Taenker @Provides @Install(asChild=true)
@@ -108,7 +110,7 @@ public @interface Provide {
     String description() default "";
 
     /**
-     * Indicates that the provided value is a constant.
+     * Indicates whether or not the provided value is a constant.
      * <p>
      * Constant values are always eagerly constructed.
      * 
@@ -124,4 +126,12 @@ public @interface Provide {
      * @return whether or not the provided value is a constant
      */
     boolean constant() default false;
+}
+
+class Us {
+
+    // It is a bit of a wart with FactoryX. But very managable. We don't expect to many of them
+    // Its an extract X<> + {}
+    @Provide
+    static final Factory<LocalDateTime> now = new Factory0<>(LocalDateTime::now) {};
 }

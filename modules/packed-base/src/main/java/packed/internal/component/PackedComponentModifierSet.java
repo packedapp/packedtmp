@@ -31,6 +31,7 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
 
     public static final int I_ANALYSIS = intOf(ComponentModifier.ANALYSIS);
     public static final int I_ASSEMBLY = intOf(ComponentModifier.ASSEMBLY);
+    public static final int I_CONTAINER = intOf(ComponentModifier.CONTAINER);
     public static final int I_GUEST = intOf(ComponentModifier.GUEST);
     public static final int I_IMAGE = intOf(ComponentModifier.IMAGE);
 

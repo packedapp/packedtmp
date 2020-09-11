@@ -72,4 +72,18 @@ public final class InstantiatorBuilder {
         Constructor<?> constructor = implementation.getDeclaredConstructors()[0];
         return new InstantiatorBuilder(oc, mhb, constructor);
     }
+
+    // Kunne sagtens se vi kunne publishe modellen paa et tidspunkt..
+    // Men saa igen den er jo taet tilknyttet til Extension mekanisme...
+
+    // ShellDriver <--- kan den provide attributer??? Why not...
+    // ComponentDriver <--- Why not attributer.. (hmm vi vil ikke gemme component configuration...)
+
+    enum ZZZModel {
+        INJECT_ONLY, // <-- only @Inject annotations can be used
+
+        // Extensions...
+
+        COMPONENT; // full monthy
+    }
 }

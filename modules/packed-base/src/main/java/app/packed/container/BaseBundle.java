@@ -64,6 +64,13 @@ import app.packed.statemachine.OnStart;
 // Og saa sige at folk skal laere derfra
 public abstract class BaseBundle extends ContainerBundle {
 
+    protected void requireGuest() {
+        // requirePassive <--- maaske er den her i virkeligheden meget mere interessant...
+
+        // Vi skal have en eller anden maade at kunne specificere det her
+
+    }
+
     /**
      * Returns a {@link BaseExtension}.
      * 

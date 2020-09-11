@@ -30,9 +30,7 @@ import app.packed.component.ComponentModifierSet;
 import app.packed.component.FactoryComponentDriver;
 import app.packed.component.InstanceComponentDriver;
 import app.packed.component.StatelessConfiguration;
-import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Factory;
-import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.PackedRealm;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
@@ -41,8 +39,6 @@ import packed.internal.inject.factory.FactoryHandle;
  *
  */
 public abstract class OldPackedComponentDriver<C> implements ComponentDriver<C> {
-
-    public static ComponentDriver<ContainerConfiguration> CONTAINER_DRIVER = new ContainerComponentDriver();
 
     final int modifiers;
 
@@ -86,19 +82,6 @@ public abstract class OldPackedComponentDriver<C> implements ComponentDriver<C> 
     }
 
     public abstract C toConfiguration(ComponentConfigurationContext cnc);
-
-    /** The default driver for creating new containers. */
-    private static class ContainerComponentDriver extends OldPackedComponentDriver<ContainerConfiguration> {
-
-        private ContainerComponentDriver() {
-            super(ComponentModifier.CONTAINER);
-        }
-
-        @Override
-        public ContainerConfiguration toConfiguration(ComponentConfigurationContext cnc) {
-            return new PackedContainerConfiguration(cnc);
-        }
-    }
 
     public static class SingletonComponentDriver<T> extends OldPackedComponentDriver<BeanConfiguration<T>> {
 
