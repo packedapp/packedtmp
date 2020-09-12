@@ -69,9 +69,13 @@ public class BeanConfiguration<T> extends AbstractComponentConfiguration {
      * @return this configuration
      * @see #as(Class)
      */
+    @SuppressWarnings("unchecked")
     public BeanConfiguration<T> as(Key<? super T> key) {
         checkConfigurable();
-        provide().as(key);
+        if (buildEntry == null) {
+            buildEntry = (BuildtimeService<T>) component.source.provide();
+        }
+        buildEntry.as(key);
         return this;
     }
 

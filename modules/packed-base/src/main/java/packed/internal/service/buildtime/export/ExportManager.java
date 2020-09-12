@@ -65,7 +65,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
     private LinkedHashMap<Key<?>, LinkedHashSet<ExportedBuildEntry<?>>> failingUnresolvedKeyedExports;
 
     /** The extension node this exporter is a part of. */
-    private final InjectionManager node;
+    private final InjectionManager im;
 
     /** All resolved exports. Is null until {@link #resolve()} has finished (successfully or just finished?). */
     @Nullable
@@ -74,11 +74,11 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
     /**
      * Creates a new export manager.
      * 
-     * @param node
+     * @param im
      *            the extension node this export manager belongs to
      */
-    public ExportManager(InjectionManager node) {
-        this.node = requireNonNull(node);
+    public ExportManager(InjectionManager im) {
+        this.im = requireNonNull(im);
     }
 
     /**
@@ -100,7 +100,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
         // if (entryToExport.node != node) {
         // throw new IllegalArgumentException("The specified configuration was created by another injector extension");
         // }
-        return export0(new ExportedBuildEntry<>(node, entryToExport, configSite));
+        return export0(new ExportedBuildEntry<>(im, entryToExport, configSite));
     }
 
     /**
@@ -117,7 +117,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
      * @see ServiceExtension#export(Key)
      */
     public <T> ExportedServiceConfiguration<T> export(Key<T> key, ConfigSite configSite) {
-        return export0(new ExportedBuildEntry<>(node, key, configSite));
+        return export0(new ExportedBuildEntry<>(im, key, configSite));
     }
 
     /**
@@ -194,7 +194,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
                 BuildtimeService<?> entryToExport = entry.exportedEntry;
                 boolean export = true;
                 if (entryToExport == null) {
-                    entryToExport = node.resolvedEntries.get(entry.keyToExport);
+                    entryToExport = im.resolvedEntries.get(entry.keyToExport);
                     if (entryToExport == null) {
                         if (failingUnresolvedKeyedExports == null) {
                             failingUnresolvedKeyedExports = new LinkedHashMap<>();
@@ -221,17 +221,17 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
         }
 
         if (failingUnresolvedKeyedExports != null) {
-            ErrorMessages.addUnresolvedExports(node, failingUnresolvedKeyedExports);
+            ErrorMessages.addUnresolvedExports(im, failingUnresolvedKeyedExports);
         }
         if (failingDuplicateExports != null) {
             // TODO add error messages
         }
 
         if (exportAll != null) {
-            for (BuildtimeService<?> e : node.resolvedEntries.values()) {
+            for (BuildtimeService<?> e : im.resolvedEntries.values()) {
                 if (!e.key().equals(KeyBuilder.INJECTOR_KEY)) {
                     if (!resolvedExports.containsKey(e.key())) {
-                        resolvedExports.put(e.key(), new ExportedBuildEntry<>(node, e, exportAll));
+                        resolvedExports.put(e.key(), new ExportedBuildEntry<>(im, e, exportAll));
                     }
                 }
             }

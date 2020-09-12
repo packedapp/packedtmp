@@ -338,8 +338,10 @@ public final class ServiceExtension extends Extension {
         return im.container.component.wire(prototype(), factory);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    // javac wants the cast
     public static <T> FactoryComponentDriver<PrototypeConfiguration<T>, T> prototype() {
-        return InstanceComponentDriver.of(MethodHandles.lookup(), PackedPrototypeConfiguration.class);
+        return (FactoryComponentDriver) InstanceComponentDriver.of(MethodHandles.lookup(), PackedPrototypeConfiguration.class);
     }
 
     public void require(Class<?>... keys) {
