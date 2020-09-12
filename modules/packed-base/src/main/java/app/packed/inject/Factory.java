@@ -16,6 +16,7 @@
 package app.packed.inject;
 
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -164,6 +165,8 @@ public interface Factory<T> {
      */
     // input, output...
     List<VariableDescriptor> variables();
+
+    MethodType methodType();
 
     /**
      * Returns a new factory retaining all of the existing properties of this factory. Except that the key returned by

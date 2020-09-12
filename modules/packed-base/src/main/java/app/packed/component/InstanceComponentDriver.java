@@ -24,6 +24,10 @@ import packed.internal.container.PackedRealm;
 /**
  *
  */
+
+// Maybe you make a 
+// ComponentDriverDriver???
+
 @SuppressWarnings("exports")
 public interface InstanceComponentDriver<C, I> extends FactoryComponentDriver<C, I> {
 
@@ -31,5 +35,13 @@ public interface InstanceComponentDriver<C, I> extends FactoryComponentDriver<C,
 
     static <C, I> InstanceComponentDriver<C, I> of(MethodHandles.Lookup lookup, Class<? extends C> driverType, Option... options) {
         return PackedComponentDriver.ofInstance(lookup, driverType, options);
+    }
+
+    // <C,I> cast();
+
+    // Altsaa vi vil have folk til at kalde den her
+
+    static <C, I> InstanceComponentDriver<C, I> of(Object stuff) {
+        throw new UnsupportedOperationException();
     }
 }

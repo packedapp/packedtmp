@@ -202,9 +202,6 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
 
     static class PackedFactoryComponentDriver<C, I> extends PackedClassComponentDriver<C, I> implements FactoryComponentDriver<C, I> {
 
-        /**
-         * @param meta
-         */
         public PackedFactoryComponentDriver(Meta meta) {
             super(meta);
         }
@@ -217,12 +214,9 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
         }
     }
 
-    static class PackedInstanceComponentDriver<C, I> extends PackedFactoryComponentDriver<C, I> implements InstanceComponentDriver<C, I> {
+    private static class PackedInstanceComponentDriver<C, I> extends PackedFactoryComponentDriver<C, I> implements InstanceComponentDriver<C, I> {
 
-        /**
-         * @param meta
-         */
-        public PackedInstanceComponentDriver(Meta meta) {
+        private PackedInstanceComponentDriver(Meta meta) {
             super(meta);
         }
 
@@ -237,9 +231,5 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
             }
             return new PackedComponentDriver<>(meta, instance);
         }
-    }
-
-    static enum SourceType {
-        CLASS, FACTORY, INSTANCE, NONE;
     }
 }

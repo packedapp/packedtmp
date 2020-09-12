@@ -266,6 +266,8 @@ public enum ComponentModifier {
 
 enum Sandbox {
 
+    FOREIGN, // A non-JVM language...
+
     INJECTABLE, // Syntes denne er daarlig fordi det er foerst noget vi ved efter
     // sourcen er bundet. provide(Class) -> INJECTABLE, provide(instance) -> NOT_INJECTABLE
 
@@ -296,6 +298,8 @@ enum Sandbox {
 
     // IDK if we will ever use it... But just a reminder.
     EPHEMERAL, // https://kubernetes.io/docs/concepts/workloads/pods/ephemeral-containers/
+
+    UNSAFE, // Components that use Unsafe is marked paa en frivillig basis...
 
     WIRELET, // Wirelet as in t I think instead it is a forerign component
 

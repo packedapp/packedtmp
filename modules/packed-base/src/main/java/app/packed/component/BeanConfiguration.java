@@ -35,6 +35,7 @@ import packed.internal.service.buildtime.BuildtimeService;
 @SuppressWarnings("exports")
 public class BeanConfiguration<T> extends AbstractComponentConfiguration {
 
+    @SuppressWarnings("rawtypes")
     private static final InstanceComponentDriver ICD = InstanceComponentDriver.of(MethodHandles.lookup(), BeanConfiguration.class, Option.constantSource());
 
     public final ComponentNodeConfiguration component;

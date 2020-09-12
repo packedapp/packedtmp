@@ -15,11 +15,10 @@
  */
 package packed.internal.service.buildtime.service;
 
-import static java.util.Objects.requireNonNull;
-
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.AbstractComponentConfiguration;
+import app.packed.component.ComponentConfigurationContext;
 import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.PrototypeConfiguration;
 import packed.internal.component.ComponentNodeConfiguration;
@@ -40,13 +39,14 @@ public final class PackedPrototypeConfiguration<T> extends AbstractComponentConf
     /**
      * Creates a new configuration object
      * 
-     * @param buildEntry
-     *            the build entry to wrap
      */
-    public PackedPrototypeConfiguration(ComponentNodeConfiguration component, BuildtimeService<T> buildEntry) {
+    @SuppressWarnings("unchecked")
+    public PackedPrototypeConfiguration(ComponentConfigurationContext component) {
         super(component);
-        this.buildEntry = requireNonNull(buildEntry);
-        this.component = component;
+        this.component = (ComponentNodeConfiguration) component;
+        this.buildEntry = (BuildtimeService<T>) this.component.source.provide();
+        System.out.println("Provided as " + buildEntry);
+
     }
 
     /** {@inheritDoc} */

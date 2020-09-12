@@ -20,6 +20,7 @@ import static packed.internal.util.StringFormatter.format;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodType;
 
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
@@ -110,6 +111,8 @@ public abstract class FactoryHandle<T> extends Object {
     public FactoryHandle<T> withLookup(Lookup lookup) {
         throw new UnsupportedOperationException("This method is only supported by factories that were created from a field, constructor or method");
     }
+
+    public abstract MethodType methodType();
 }
 // public abstract class PFunction<T> {
 //

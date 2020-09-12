@@ -141,6 +141,7 @@ public final class InjectorAssembler extends Assembler {
      * @return a service configuration for the service
      */
     public <T> BeanConfiguration<T> provide(Class<T> implementation) {
+        extension(); // call exportAll
         return configuration.install(implementation).provide();
     }
 
@@ -157,10 +158,12 @@ public final class InjectorAssembler extends Assembler {
      * @return a service configuration for the service
      */
     public <T> BeanConfiguration<T> provide(Factory<T> factory) {
+        extension(); // call exportAll
         return configuration.install(factory).provide();
     }
 
     public <T> PrototypeConfiguration<T> providePrototype(Class<T> implementation) {
+        extension(); // call exportAll
         return providePrototype(Factory.find(implementation));
     }
 
@@ -232,6 +235,7 @@ public final class InjectorAssembler extends Assembler {
     // Ohh we need to analyze them differently, because we should ignore all constructors.
     // Should not fail if we fx have two public constructors of equal lenght
     public <T> BeanConfiguration<T> provideInstance(T instance) {
+        extension(); // call exportAll
         return configuration.installInstance(instance).provide();
     }
 }

@@ -67,4 +67,10 @@ public final class MappingFactoryHandle<T, R> extends FactoryHandle<R> {
         mf = mf.asType(mf.type().changeReturnType(Object.class));
         return MethodHandles.foldArguments(APPLY.bindTo(mapper), mf);
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodType methodType() {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -82,14 +82,16 @@ public class RegionAssembly {
 
         // Last all singletons that have not already been used as services
         for (SourceAssembly i : resolver.sourceInjectables) {
-            if (!region.isSet(i.regionIndex)) {
-                Object instance;
-                try {
-                    instance = i.injectable.buildMethodHandle().invoke(region);
-                } catch (Throwable e1) {
-                    throw ThrowableUtil.orUndeclared(e1);
+            if (i.regionIndex > -1) {
+                if (!region.isSet(i.regionIndex)) {
+                    Object instance;
+                    try {
+                        instance = i.injectable.buildMethodHandle().invoke(region);
+                    } catch (Throwable e1) {
+                        throw ThrowableUtil.orUndeclared(e1);
+                    }
+                    region.store(i.regionIndex, instance);
                 }
-                region.store(i.regionIndex, instance);
             }
         }
 

@@ -18,6 +18,8 @@ package packed.internal.inject.factory;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -66,7 +68,9 @@ public final class Factory0FactoryHandle<T> extends FactoryHandle<T> {
     /** {@inheritDoc} */
     @Override
     public MethodHandle toMethodHandle() {
-        return GET.bindTo(supplier);
+        MethodHandle mh = GET.bindTo(supplier);
+        mh = MethodHandles.explicitCastArguments(mh, methodType());
+        return mh;
     }
 
     /**
@@ -82,6 +86,12 @@ public final class Factory0FactoryHandle<T> extends FactoryHandle<T> {
     public static <T> FactorySupport<T> create(Class<?> implementation, Supplier<? extends T> supplier) {
         TypeLiteral<T> tt = (TypeLiteral<T>) CACHE.get(implementation);
         return new FactorySupport<>(new Factory0FactoryHandle<>(tt, supplier), List.of());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodType methodType() {
+        return MethodType.methodType(returnTypeRaw());
     }
 }
 

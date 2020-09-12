@@ -58,7 +58,8 @@ public final class PackedRealm {
     }
 
     public MethodHandle fromFactoryHandle(FactoryHandle<?> handle) {
-        return lookup.readable(handle).toMethodHandle();
+        MethodHandle mh = lookup.readable(handle).toMethodHandle();
+        return mh;
     }
 
     public ComponentModel componentModelOf(Class<?> componentType) {

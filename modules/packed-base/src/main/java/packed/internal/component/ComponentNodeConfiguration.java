@@ -200,22 +200,20 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             region.reserve(); // reserve a slot to an instance of PackedGuest
         }
         if (modifiers().isSource()) {
-            PackedComponentDriver<?> pcd = driver;
-            Object source = pcd.data;
-            requireNonNull(source);
+            Object source = driver.data;
             if (source instanceof Class) {
                 Class<?> c = (Class<?>) source;
                 Factory<?> factory = Factory.find(c);
                 ComponentModel cm = realm.componentModelOf(factory.rawType());
                 this.source = new SourceAssembly(this, cm, (BaseFactory<?>) factory);
             } else if (source instanceof Factory) {
-                throw new UnsupportedOperationException();
+                BaseFactory<?> factory = (BaseFactory<?>) source;
+                ComponentModel cm = realm.componentModelOf(factory.rawType());
+                this.source = new SourceAssembly(this, cm, factory);
             } else {
-                Object instance = pcd.data;
-                ComponentModel cm = realm.componentModelOf(instance.getClass());
-                this.source = new SourceAssembly(this, cm, instance);
+                ComponentModel cm = realm.componentModelOf(source.getClass());
+                this.source = new SourceAssembly(this, cm, source);
             }
-
             this.source.cm.invokeOnHookOnInstall(this);
         } else {
             this.source = null;

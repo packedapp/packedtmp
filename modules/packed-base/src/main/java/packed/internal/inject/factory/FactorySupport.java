@@ -2,6 +2,7 @@ package packed.internal.inject.factory;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodType;
 import java.util.List;
 
 import app.packed.base.Key;
@@ -25,6 +26,11 @@ public final class FactorySupport<T> {
         this.dependencies = requireNonNull(dependencies, "dependencies is null");
         this.handle = requireNonNull(function);
         this.key = Key.fromTypeLiteral(function.typeLiteral);
+    }
+
+    public MethodType methodType() {
+        return handle.methodType();
+
     }
 
     /**

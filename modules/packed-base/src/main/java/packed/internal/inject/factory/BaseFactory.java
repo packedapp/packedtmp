@@ -18,6 +18,7 @@ package packed.internal.inject.factory;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -461,5 +462,11 @@ public class BaseFactory<T> implements Factory<T> {
      */
     public static <T> Factory<T> fromInstance(T instance) {
         return new BaseFactory<>(new FactorySupport<>(InstanceFactoryHandle.of(instance), List.of()));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodType methodType() {
+        return factory.methodType();
     }
 }

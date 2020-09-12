@@ -18,6 +18,7 @@ package packed.internal.inject.factory;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodType;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.List;
 import java.util.Map.Entry;
@@ -34,20 +35,6 @@ public class Factory2FactoryHandle<T, U, R> extends FactoryHandle<R> {
     /** A method handle for {@link BiFunction#apply(Object, Object)}. */
     private static final MethodHandle APPLY = LookupUtil.mhVirtualPublic(BiFunction.class, "apply", Object.class, Object.class, Object.class);
 
-    /** The function responsible for creating the actual objects. */
-    private final BiFunction<? super T, ? super U, ? extends R> function;
-
-    private Factory2FactoryHandle(TypeLiteral<R> typeLiteral, BiFunction<? super T, ? super U, ? extends R> function) {
-        super(typeLiteral);
-        this.function = requireNonNull(function);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle toMethodHandle() {
-        return APPLY.bindTo(function);
-    }
-
     /** A cache of extracted type variables and dependencies from subclasses of this class. */
     private static final ClassValue<Entry<TypeLiteral<?>, List<ServiceDependency>>> CACHE = new ClassValue<>() {
 
@@ -59,6 +46,26 @@ public class Factory2FactoryHandle<T, U, R> extends FactoryHandle<R> {
                     ServiceDependency.fromTypeVariables((Class) type, Factory2.class, 0, 1));
         }
     };
+
+    /** The function responsible for creating the actual objects. */
+    private final BiFunction<? super T, ? super U, ? extends R> function;
+
+    private Factory2FactoryHandle(TypeLiteral<R> typeLiteral, BiFunction<? super T, ? super U, ? extends R> function) {
+        super(typeLiteral);
+        this.function = requireNonNull(function);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodType methodType() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle toMethodHandle() {
+        return APPLY.bindTo(function);
+    }
 
     /**
      * Creates a new factory support instance from an implementation of this class and a (bi) function.

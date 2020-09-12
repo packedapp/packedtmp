@@ -151,7 +151,9 @@ public class FieldInstanceTest {
         Short s = 1;
 
         static void test(Consumer<? super InjectorAssembler> configurator) {
-            Injector i = create(c -> configurator.accept(c));
+            Injector i = create(c -> {
+                configurator.accept(c);
+            });
             MixedFields f = i.use(MixedFields.class);
             // f.l = 2L;
             f.s = 2;

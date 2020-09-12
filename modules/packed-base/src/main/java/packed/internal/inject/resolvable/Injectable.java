@@ -129,6 +129,9 @@ public final class Injectable {
     }
 
     public final MethodHandle buildMethodHandle() {
+        if (buildMethodHandle != null) {
+            return buildMethodHandle;
+        }
         // Does not have have dependencies.
         if (resolved.length == 0) {
             buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, Region.class);
@@ -139,6 +142,9 @@ public final class Injectable {
             DependencyProvider dp = resolved[i];
             requireNonNull(dp);
             MethodHandle dep = dp.toMethodHandle();
+            System.out.println();
+            System.out.println("Old " + mh + " i= " + i + "  new TYPE " + dep.type());
+
             mh = MethodHandles.collectArguments(mh, i, dep);
         }
 

@@ -17,6 +17,7 @@ package packed.internal.inject.factory;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Modifier;
 
 import app.packed.base.InaccessibleMemberException;
@@ -123,5 +124,11 @@ public final class ExecutableFactoryHandle<T> extends FactoryHandle<T> {
             mh = mh.asFixedArity();
         }
         return mh;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodType methodType() {
+        return methodHandle.type();
     }
 }

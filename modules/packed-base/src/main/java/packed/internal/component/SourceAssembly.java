@@ -53,14 +53,15 @@ public class SourceAssembly implements DependencyProvider {
     /** Whether or not the component is provided as a service. */
     public BuildtimeService<?> service;
 
-    public final BaseFactory<?> factory;
+    private final BaseFactory<?> factory;
 
-    public final ComponentModel cm;
+    final ComponentModel cm;
 
     SourceAssembly(ComponentNodeConfiguration component, ComponentModel cm, Object instance) {
-        this.instance = requireNonNull(instance);
-        this.cm = requireNonNull(cm);
         this.component = requireNonNull(component);
+        this.cm = requireNonNull(cm);
+
+        this.instance = requireNonNull(instance);
         RegionAssembly region = component.region;
         this.regionIndex = region.reserve(); // prototype false
         this.injectable = null;
@@ -72,12 +73,22 @@ public class SourceAssembly implements DependencyProvider {
         this.component = requireNonNull(component);
         this.cm = requireNonNull(cm);
         RegionAssembly region = component.region;
-        this.regionIndex = region.reserve(); // prototype false
+
+        if (isPrototype()) {
+            this.regionIndex = -1;
+        } else {
+            this.regionIndex = region.reserve(); // prototype false
+        }
+
         this.instance = null;
         this.factory = factory;
         this.injectable = Injectable.ofFactory(this);
         region.resolver.sourceInjectables.add(this);
         region.resolver.allInjectables.add(injectable);
+    }
+
+    public boolean isPrototype() {
+        return !component.modifiers().isSingleton();
     }
 
     private Key<?> defaultServiceKey() {
@@ -99,7 +110,11 @@ public class SourceAssembly implements DependencyProvider {
         // Not sure we should allow for calling provide multiple times...
         BuildtimeService<?> c = service;
         if (c == null) {
-            c = new SingletonBuildEntry<>(component, defaultServiceKey());
+            if (component.modifiers().isSingleton()) {
+                c = new SingletonBuildEntry<>(component, defaultServiceKey());
+            } else {
+                c = new PrototypeBuildEntry<>(component, defaultServiceKey());
+            }
         }
         return c;
     }
@@ -107,14 +122,6 @@ public class SourceAssembly implements DependencyProvider {
     public MethodHandle fromFactory() {
         FactoryHandle<?> handle = factory.factory.handle;
         return component.realm().fromFactoryHandle(handle);
-    }
-
-    public BuildtimeService<?> providePrototype() {
-        BuildtimeService<?> c = service;
-        if (c == null) {
-            c = new PrototypeBuildEntry<>(component, defaultServiceKey());
-        }
-        return c;
     }
 
     public List<ServiceDependency> dependencies() {
@@ -126,8 +133,12 @@ public class SourceAssembly implements DependencyProvider {
         if (instance != null) {
             MethodHandle mh = MethodHandles.constant(instance.getClass(), instance);
             return MethodHandles.dropArguments(mh, 0, Region.class); // MethodHandle()T -> MethodHandle(Region)T
-        } else { // injectable != null
+        } else if (isPrototype()) { // injectable != null
+            MethodHandle mh = injectable.buildMethodHandle();
+            System.out.println(mh);
+            return mh;
             // Taenker vi kun bruger den her... Hvis vi har lyst til genbrug
+        } else {
             return Region.readSingletonAs(regionIndex, injectable.rawType());
         }
     }

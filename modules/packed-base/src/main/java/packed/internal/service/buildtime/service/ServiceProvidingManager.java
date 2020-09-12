@@ -25,6 +25,7 @@ import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
+import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
@@ -84,7 +85,9 @@ public final class ServiceProvidingManager {
     @SuppressWarnings("rawtypes")
     public void addProvidesHook(AtProvidesHook hook, ComponentNodeConfiguration component) {
         // validate new instance member for @Provide
-
+        if (hook.hasInstanceMembers && component.source.isPrototype()) {
+            throw new InvalidDeclarationException("Not okay)");
+        }
         // Add each @Provide as children of the parent node
         for (AtProvides atProvides : hook.members) {
             ConfigSite configSite = component.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, atProvides.provides,
@@ -92,10 +95,11 @@ public final class ServiceProvidingManager {
             AtProvideBuildEntry pbe = new AtProvideBuildEntry(configSite, component, atProvides); // Adds itself to #buildEntries
             component.region.resolver.allInjectables.add(pbe.injectable);
         }
+
     }
 
     public BuildtimeService<?> providePrototype(ComponentNodeConfiguration cc) {
-        BuildtimeService<?> e = cc.source.providePrototype();
+        BuildtimeService<?> e = cc.source.provide();
         buildEntries.add(e);
         return e;
     }

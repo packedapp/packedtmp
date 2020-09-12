@@ -17,12 +17,14 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandles;
 import java.util.function.BiConsumer;
 
 import app.packed.base.AttributeProvide;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.component.BeanConfiguration;
+import app.packed.component.FactoryComponentDriver;
+import app.packed.component.InstanceComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ComponentLinked;
@@ -36,7 +38,6 @@ import packed.internal.component.wirelet.WireletList;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.resolvable.ServiceDependency;
-import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.service.buildtime.service.AtProvidesHook;
 import packed.internal.service.buildtime.service.PackedPrototypeConfiguration;
@@ -271,6 +272,7 @@ public final class ServiceExtension extends Extension {
      */
     // Will never export services that are requirements...
     public void exportAll() {
+        System.out.println("EXPORT ALL");
         // export all _services_.. Also those that are already exported as something else???
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
         checkConfigurable();
@@ -333,10 +335,11 @@ public final class ServiceExtension extends Extension {
 //          }
 //      };
 //  }
-        BeanConfiguration<T> bc = im.container.component.wire(null, factory);
-        @SuppressWarnings("unchecked")
-        BuildtimeService<T> b = (BuildtimeService<T>) im.provider().providePrototype(bc.component);
-        return new PackedPrototypeConfiguration<>(bc.component, b);
+        return im.container.component.wire(prototype(), factory);
+    }
+
+    public static <T> FactoryComponentDriver<PrototypeConfiguration<T>, T> prototype() {
+        return InstanceComponentDriver.of(MethodHandles.lookup(), PackedPrototypeConfiguration.class);
     }
 
     public void require(Class<?>... keys) {

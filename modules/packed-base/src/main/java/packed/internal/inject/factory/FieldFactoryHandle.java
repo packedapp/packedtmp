@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
 import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Modifier;
@@ -116,6 +117,12 @@ public final class FieldFactoryHandle<T> extends FactoryHandle<T> {
             throw new InaccessibleMemberException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
         }
         return new FieldFactoryHandle<>(returnType(), field, handle);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodType methodType() {
+        return MethodType.methodType(varHandle.varType());
     }
 }
 

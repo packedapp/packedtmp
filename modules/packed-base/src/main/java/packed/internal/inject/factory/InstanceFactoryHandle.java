@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
@@ -55,5 +56,11 @@ public final class InstanceFactoryHandle<T> extends FactoryHandle<T> {
         requireNonNull(instance, "instance is null");
         Class<?> type = instance.getClass();
         return new InstanceFactoryHandle<T>((TypeLiteral<T>) TypeLiteral.of(type), instance, type);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodType methodType() {
+        return MethodType.methodType(instance.getClass());
     }
 }

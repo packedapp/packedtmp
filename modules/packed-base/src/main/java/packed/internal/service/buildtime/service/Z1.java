@@ -18,6 +18,7 @@ package packed.internal.service.buildtime.service;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.container.BaseBundle;
+import app.packed.inject.Factory0;
 import app.packed.inject.Provide;
 import app.packed.service.Injector;
 
@@ -30,22 +31,44 @@ public class Z1 extends BaseBundle {
     @Override
     protected void configure() {
         provideInstance(123);
-        provide(NoDep.class);
-        provide(Dx.class);
+        // provide(NoDep.class);
+        // provide(Dx.class);
+//        provide(new Factory0<>(() -> {
+//            System.out.println("New");
+//            return 123123L;
+//        }) {});
+
+        // New Foo()
+        // Old MethodHandle(Foo)DxString new TYPE (Region)Object
+
+        // provide(Foo.class);
+        provide(new Factory0<>(() -> new Foo()) {});
+
+        // providePrototype(new Factory0() {});
+
         install(DxString.class);
 
         export(Integer.class);
+        export(Foo.class);
     }
 
     public static void main(String[] args) {
         long now = System.currentTimeMillis();
         Injector inj = Injector.create(new Z1());
         Integer ii = inj.use(Integer.class);
-
+        System.out.println(inj.use(Foo.class));
+        System.out.println(inj.use(Foo.class));
         System.out.println(ii.getClass() + " " + ii);
         // System.out.println(inj.use(Dx.class).x);
         System.out.println("BYE");
         System.out.println(System.currentTimeMillis() - now);
+    }
+
+    public static class Foo {
+        public Foo() {
+            new Exception().printStackTrace();
+            System.out.println("New Foo()");
+        }
     }
 
     public static class NoDep {
@@ -58,7 +81,7 @@ public class Z1 extends BaseBundle {
             return "adsasd";
         }
 
-        @Provide()
+//        @Provide
         public Long d2s() {
             return 121231231233L;
         }
@@ -73,7 +96,7 @@ public class Z1 extends BaseBundle {
     }
 
     public static class DxString {
-        public DxString(Dx dx, Integer i) {
+        public DxString(/* Dx dx, */ Foo i) {
             System.out.println("Instantiated " + i);
         }
     }
