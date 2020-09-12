@@ -63,7 +63,7 @@ public class SourceAssembly implements DependencyProvider {
         Object source = component.driver.data;
         RegionAssembly region = component.region;
 
-        this.regionIndex = isPrototype() ? -1 : region.reserve(); // prototype false
+        this.regionIndex = component.modifiers().isSingleton() ? region.reserve() : -1;
         if (source instanceof Class) {
             Class<?> c = (Class<?>) source;
             this.factory = (BaseFactory<?>) Factory.find(c);
