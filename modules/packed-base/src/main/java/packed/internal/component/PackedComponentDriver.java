@@ -46,25 +46,16 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
     // Holds ExtensionModel for extensions, source for sourced components
     final Object data;
 
-    final SourceType sourceType;
-
-    PackedComponentDriver(Meta meta, Object data, SourceType sourceType) {
+    PackedComponentDriver(Meta meta, Object data) {
         this.meta = requireNonNull(meta);
         this.data = data;
-        this.sourceType = sourceType;
         this.modifiers = PackedComponentModifierSet.intOf(meta.modifiers.toArray());
         if (modifiers == 0) {
             throw new IllegalStateException();
         }
     }
 
-    public String defaultName(PackedRealm realm) {
-        if (this instanceof PackedComponentDriver) {
-            PackedComponentDriver<?> pcd = this;
-            if (pcd.data instanceof ExtensionModel) {
-                return ((ExtensionModel) pcd.data).defaultComponentName;
-            }
-        }
+    String defaultName(PackedRealm realm) {
         if (modifiers().isContainer()) {
             // I think try and move some of this to ComponentNameWirelet
             @Nullable
@@ -84,6 +75,8 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
                 }
             }
             // TODO think it should be named Artifact type, for example, app, injector, ...
+        } else if (modifiers().isExtension()) {
+            return ((ExtensionModel) data).defaultComponentName;
         }
         return "Unknown";
     }
@@ -107,7 +100,7 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
         // AN EXTENSION DOES NOT HAVE A SOURCE. Sources are to be analyzed
         // And is available at runtime
         Meta meta = new Meta(null, PackedComponentModifierSet.I_EXTENSION);
-        return new PackedComponentDriver<>(meta, em, SourceType.NONE);
+        return new PackedComponentDriver<>(meta, em);
     }
 
     public static Meta newMeta(MethodHandles.Lookup caller, boolean isSource, Class<?> driverType, Option... options) {
@@ -146,7 +139,7 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
         requireNonNull(options, "options is null");
 
         Meta meta = newMeta(caller, false, driverType, options);
-        return new PackedComponentDriver<>(meta, null, SourceType.NONE);
+        return new PackedComponentDriver<>(meta, null);
     }
 
     public static <C, I> PackedInstanceComponentDriver<C, I> ofInstance(MethodHandles.Lookup caller, Class<? extends C> driverType, Option... options) {
@@ -203,7 +196,7 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
         @Override
         public ComponentDriver<C> bindToClass(PackedRealm realm, Class<? extends I> implementation) {
             requireNonNull(implementation, "implementation is null");
-            return new PackedComponentDriver<>(meta, implementation, SourceType.CLASS);
+            return new PackedComponentDriver<>(meta, implementation);
         }
     }
 
@@ -220,7 +213,7 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
         @Override
         public ComponentDriver<C> bindToFactory(PackedRealm realm, Factory<? extends I> factory) {
             requireNonNull(factory, "factory is null");
-            return new PackedComponentDriver<>(meta, factory, SourceType.FACTORY);
+            return new PackedComponentDriver<>(meta, factory);
         }
     }
 
@@ -242,7 +235,7 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
             } else if (instance instanceof Factory) {
                 throw new IllegalStateException("Cannot specify a Factory instance, was " + instance);
             }
-            return new PackedComponentDriver<>(meta, instance, SourceType.INSTANCE);
+            return new PackedComponentDriver<>(meta, instance);
         }
     }
 

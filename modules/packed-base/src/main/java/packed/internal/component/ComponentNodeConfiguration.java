@@ -542,11 +542,6 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         boolean isFree = false;
 
         if (n == null) {
-//            if (driver instanceof ExtensionComponentDriver) {
-//                n = ((ExtensionComponentDriver) driver).model.defaultComponentName;
-//            } else {
-//               
-//            }
             if (source != null) {
                 n = source.cm.defaultPrefix();
             } else {
