@@ -26,6 +26,8 @@ import java.util.List;
 import packed.internal.component.Region;
 import packed.internal.component.Resolver;
 import packed.internal.component.SourceAssembly;
+import packed.internal.inject.factory.BaseFactory;
+import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.service.AtProvides;
 
@@ -45,12 +47,14 @@ import packed.internal.service.buildtime.service.AtProvides;
 // Something with dependencis
 public final class Injectable {
 
-    public boolean detectForCycles;
+    private final BuildtimeService<?> buildEntry;
 
     MethodHandle buildMethodHandle;
 
     /** The dependencies that must be resolved. */
     public final List<ServiceDependency> dependencies;
+
+    public boolean detectForCycles;
 
     /** A direct method handle. */
     public final MethodHandle directMethodHandle;
@@ -60,27 +64,6 @@ public final class Injectable {
 
     /** The source (component) this injectable belongs to. */
     public final SourceAssembly source;
-
-    private final BuildtimeService<?> buildEntry;
-
-    public BuildtimeService<?> entry() {
-        if (buildEntry == null) {
-            return source.service;
-        }
-        return buildEntry;
-    }
-
-    private Injectable(SourceAssembly source) {
-        this.source = requireNonNull(source);
-        this.dependencies = source.dependencies();
-        this.directMethodHandle = source.fromFactory();
-        this.resolved = new DependencyProvider[dependencies.size()];
-        this.detectForCycles = true;// resolved.length > 0;
-        if (detectForCycles) {
-            source.component.container.im.dependencies().detectCyclesFor.add(this);
-        }
-        buildEntry = null;
-    }
 
     private Injectable(BuildtimeService<?> buildEntry, SourceAssembly source, AtProvides ap) {
         this.source = requireNonNull(source);
@@ -110,24 +93,20 @@ public final class Injectable {
         }
     }
 
-    public boolean hasUnresolved() {
-        for (int i = 0; i < resolved.length; i++) {
-            if (resolved[i] == null) {
-                return true;
-            }
-        }
-        return false;
-    }
+    public Injectable(SourceAssembly source, BaseFactory<?> factory) {
+        this.source = requireNonNull(source);
 
-    public Class<?> rawType() {
-        return directMethodHandle.type().returnType();
-    }
+        FactoryHandle<?> handle = factory.factory.handle;
+        MethodHandle mh = source.component.realm().fromFactoryHandle(handle);
 
-    public void resolve(Resolver resolver) {
-        int startIndex = resolved.length != dependencies.size() ? 1 : 0;
-        for (int i = 0; i < dependencies.size(); i++) {
-            resolved[i + startIndex] = resolver.resolve(this, dependencies.get(i));
+        this.dependencies = factory.factory.dependencies;
+        this.directMethodHandle = requireNonNull(mh);
+        this.resolved = new DependencyProvider[dependencies.size()];
+        this.detectForCycles = true;// resolved.length > 0;
+        if (detectForCycles) {
+            source.component.container.im.dependencies().detectCyclesFor.add(this);
         }
+        buildEntry = null;
     }
 
     public final MethodHandle buildMethodHandle() {
@@ -157,6 +136,33 @@ public final class Injectable {
         return buildMethodHandle;
     }
 
+    public BuildtimeService<?> entry() {
+        if (buildEntry == null) {
+            return source.service;
+        }
+        return buildEntry;
+    }
+
+    public boolean hasUnresolved() {
+        for (int i = 0; i < resolved.length; i++) {
+            if (resolved[i] == null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Class<?> rawType() {
+        return directMethodHandle.type().returnType();
+    }
+
+    public void resolve(Resolver resolver) {
+        int startIndex = resolved.length != dependencies.size() ? 1 : 0;
+        for (int i = 0; i < dependencies.size(); i++) {
+            resolved[i + startIndex] = resolver.resolve(this, dependencies.get(i));
+        }
+    }
+
     /**
      * The source this injectable belongs to.
      * 
@@ -166,18 +172,8 @@ public final class Injectable {
         return source;
     }
 
-    /**
-     * Create a new injectable from the factory of the specified source.
-     * 
-     * @param source
-     *            the source
-     * @return a new injectable
-     */
-    public static Injectable ofFactory(SourceAssembly source) {
-        return new Injectable(source);
-    }
-
     public static Injectable ofDeclaredMember(BuildtimeService<?> buildEntry, SourceAssembly source, AtProvides ap) {
         return new Injectable(buildEntry, source, ap);
     }
+
 }
