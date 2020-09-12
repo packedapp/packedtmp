@@ -26,7 +26,9 @@ import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.FactoryComponentDriver;
+import app.packed.component.InstanceComponentDriver;
 import app.packed.inject.Factory;
+import packed.internal.container.ExtensionModel;
 import packed.internal.container.PackedRealm;
 import packed.internal.inject.InstantiatorBuilder;
 import packed.internal.util.ThrowableUtil;
@@ -49,10 +51,22 @@ public class PackedComponentDriver<C> extends OldPackedComponentDriver<C> implem
         this.sourceType = null;
     }
 
+    <I> PackedComponentDriver(PackedClassComponentDriver<C, I> driver, Object instance) {
+        this.meta = driver.meta;
+        this.sourceType = SourceType.INSTANCE;
+        this.source = instance;
+    }
+
     <I> PackedComponentDriver(PackedClassComponentDriver<C, I> driver, Class<? extends I> clazz) {
         this.meta = driver.meta;
         this.sourceType = SourceType.CLASS;
         this.source = clazz;
+    }
+
+    private PackedComponentDriver(Meta meta, ExtensionModel em) {
+        this.meta = meta;
+        this.source = em;
+        this.sourceType = SourceType.NONE;
     }
 
     <I> PackedComponentDriver(PackedFactoryComponentDriver<C, I> driver, Factory<? extends I> factory) {
@@ -61,7 +75,21 @@ public class PackedComponentDriver<C> extends OldPackedComponentDriver<C> implem
         this.source = factory;
     }
 
+    public static PackedComponentDriver<Void> extensionDriver(ExtensionModel em) {
+        // AN EXTENSION DOES NOT HAVE A SOURCE. Sources are to be analyzed
+        // And is available at runtime
+        Meta meta = new Meta(null, PackedComponentModifierSet.I_EXTENSION);
+        return new PackedComponentDriver<>(meta, em);
+    }
+
     public static <C> PackedComponentDriver<C> of(MethodHandles.Lookup caller, Class<? extends C> driverType, Option... options) {
+        requireNonNull(options, "options is null");
+
+        Meta meta = newMeta(caller, driverType, options);
+        return new PackedComponentDriver<>(meta);
+    }
+
+    public static Meta newMeta(MethodHandles.Lookup caller, Class<?> driverType, Option... options) {
         requireNonNull(options, "options is null");
 
         // Parse all options
@@ -85,7 +113,7 @@ public class PackedComponentDriver<C> extends OldPackedComponentDriver<C> implem
         ib.addKey(ComponentConfigurationContext.class, 0);
         MethodHandle mh = ib.build();
 
-        return new PackedComponentDriver<>(new Meta(mh, modifiers));
+        return new Meta(mh, modifiers);
     }
 
     /** {@inheritDoc} */
@@ -111,7 +139,7 @@ public class PackedComponentDriver<C> extends OldPackedComponentDriver<C> implem
         ComponentModifierSet modifiers;
 
         Meta(MethodHandle mh, int modifiers) {
-            this.mh = requireNonNull(mh);
+            this.mh = mh;
             this.modifiers = new PackedComponentModifierSet(modifiers);
         }
     }
@@ -132,6 +160,15 @@ public class PackedComponentDriver<C> extends OldPackedComponentDriver<C> implem
         @Override
         public ComponentDriver<C> bindToFactory(PackedRealm realm, Factory<? extends I> factory) {
             return new PackedComponentDriver<>(this, factory);
+        }
+    }
+
+    static class PackedInstanceComponentDriver<C, I> extends PackedFactoryComponentDriver<C, I> implements InstanceComponentDriver<C, I> {
+
+        /** {@inheritDoc} */
+        @Override
+        public ComponentDriver<C> bindToInstance(PackedRealm realm, I instance) {
+            return new PackedComponentDriver<>(this, instance);
         }
     }
 

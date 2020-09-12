@@ -72,7 +72,7 @@ public final class Injectable {
 
     private Injectable(SourceAssembly source) {
         this.source = requireNonNull(source);
-        this.dependencies = source.driver.factory.factory.dependencies;
+        this.dependencies = source.dependencies();
         this.directMethodHandle = source.fromFactory();
         this.resolved = new DependencyProvider[dependencies.size()];
         this.detectForCycles = true;// resolved.length > 0;

@@ -202,14 +202,24 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
         setName0(null); // initialize name
 
-        // Setup Source
-        if (driver.sourceType() != null) {
-            this.source = new SourceAssembly(this);
-            ComponentModel cm = ((SingletonComponentDriver<?>) driver).model;
-            cm.invokeOnHookOnInstall(this);
+        if (driver instanceof PackedComponentDriver) {
+            PackedComponentDriver<?> pcd = (PackedComponentDriver<?>) driver;
+            Object source = pcd.source;
+            if (source instanceof Class) {
 
-        } else {
+            }
             this.source = null;
+            // ...
+        } else {
+            // Setup Source
+            if (driver.sourceType() != null) {
+                this.source = new SourceAssembly(this);
+                ComponentModel cm = ((SingletonComponentDriver<?>) driver).model;
+                cm.invokeOnHookOnInstall(this);
+
+            } else {
+                this.source = null;
+            }
         }
 
     }
@@ -532,6 +542,11 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         boolean isFree = false;
 
         if (n == null) {
+//            if (driver instanceof ExtensionComponentDriver) {
+//                n = ((ExtensionComponentDriver) driver).model.defaultComponentName;
+//            } else {
+//               
+//            }
             n = driver.defaultName(realm);
             isFree = true;
         } else if (n.endsWith("?")) {

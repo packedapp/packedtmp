@@ -19,13 +19,16 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 
 import app.packed.base.Key;
 import app.packed.component.ComponentModifier;
 import packed.internal.component.OldPackedComponentDriver.SingletonComponentDriver;
+import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.inject.resolvable.DependencyProvider;
 import packed.internal.inject.resolvable.Injectable;
+import packed.internal.inject.resolvable.ServiceDependency;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.service.PrototypeBuildEntry;
 import packed.internal.service.buildtime.service.SingletonBuildEntry;
@@ -40,9 +43,6 @@ public class SourceAssembly implements DependencyProvider {
     /** The component this source is a part of. */
     public final ComponentNodeConfiguration component;
 
-    /** The driver of this source. */
-    public final SingletonComponentDriver<?> driver;
-
     /** Non-null if the component needs injection (not a constant). */
     final Injectable injectable;
 
@@ -55,24 +55,27 @@ public class SourceAssembly implements DependencyProvider {
     /** Whether or not the component is provided as a service. */
     public BuildtimeService<?> service;
 
+    public final BaseFactory<?> factory;
+
     SourceAssembly(ComponentNodeConfiguration component) {
         this(component, (SingletonComponentDriver<?>) component.driver);
     }
 
     SourceAssembly(ComponentNodeConfiguration component, SingletonComponentDriver<?> driver) {
         this.component = requireNonNull(component);
-        this.driver = requireNonNull(driver);
 
         RegionAssembly region = component.region;
         this.regionIndex = region.reserve(); // prototype false
         this.instance = driver.instance;
         if (instance == null) {
+            factory = driver.factory;
             this.injectable = Injectable.ofFactory(this);
             region.resolver.sourceInjectables.add(this);
             region.resolver.allInjectables.add(injectable);
         } else {
             this.injectable = null;
             region.resolver.sourceConstants.add(this);
+            factory = null;
         }
     }
 
@@ -80,7 +83,7 @@ public class SourceAssembly implements DependencyProvider {
         if (instance != null) {
             return Key.of(component.driver().sourceType());
         } else {
-            return driver.factory.key();
+            return factory.key();
         }
     }
 
@@ -101,7 +104,7 @@ public class SourceAssembly implements DependencyProvider {
     }
 
     public MethodHandle fromFactory() {
-        FactoryHandle<?> handle = driver.factory.factory.handle;
+        FactoryHandle<?> handle = factory.factory.handle;
         return component.realm().fromFactoryHandle(handle);
     }
 
@@ -111,6 +114,10 @@ public class SourceAssembly implements DependencyProvider {
             c = new PrototypeBuildEntry<>(component, defaultServiceKey());
         }
         return c;
+    }
+
+    public List<ServiceDependency> dependencies() {
+        return factory.factory.dependencies;
     }
 
     @Override

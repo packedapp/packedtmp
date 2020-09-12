@@ -30,8 +30,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import app.packed.base.Nullable;
-import app.packed.component.ComponentConfigurationContext;
-import app.packed.component.ComponentModifier;
 import app.packed.component.WireletHandler;
 import app.packed.container.ComponentLinked;
 import app.packed.container.Extension;
@@ -44,6 +42,7 @@ import app.packed.hook.OnHook;
 import app.packed.statemachine.LifecycleContext;
 import packed.internal.base.attribute.ProvidableAttributeModel;
 import packed.internal.component.OldPackedComponentDriver;
+import packed.internal.component.PackedComponentDriver;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
@@ -183,7 +182,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         this.directDependencies = ExtensionSet.of(builder.dependenciesDirect);// Set.copyOf(builder.dependenciesDirect);
         this.optional = Optional.of(extensionType()); // No need to create an optional every time we need this
         this.nameUsedForSorting = requireNonNull(extensionType().getCanonicalName());
-        this.driver = new ExtensionComponentDriver(this);
+        this.driver = PackedComponentDriver.extensionDriver(this);
         this.defaultComponentName = "." + extensionType().getSimpleName();
         this.extensionLinkedToAncestorExtension = builder.li;
         this.extensionLinkedDirectChildrenOnly = builder.callbackOnlyDirectChildren;
@@ -316,29 +315,6 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
             return (List<Class<? extends Extension>>) result;
         }
         return ThrowableUtil.throwReturn((Throwable) result);
-    }
-
-    public static class ExtensionComponentDriver extends OldPackedComponentDriver<ExtensionConfiguration> {
-
-        private final ExtensionModel model;
-
-        public ExtensionComponentDriver(ExtensionModel ed) {
-            // AN EXTENSION DOES NOT HAVE A SOURCE. Sources are to be analyzed
-            // And is available at runtime
-            super(ComponentModifier.EXTENSION);
-            this.model = requireNonNull(ed);
-        }
-
-        @Override
-        public String defaultName(PackedRealm realm) {
-            return model.defaultComponentName;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ExtensionConfiguration toConfiguration(ComponentConfigurationContext cnc) {
-            throw new UnsupportedOperationException();
-        }
     }
 
     /** A builder of {@link ExtensionModel}. */

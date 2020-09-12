@@ -29,6 +29,7 @@ import app.packed.component.FactoryComponentDriver;
 import app.packed.component.InstanceComponentDriver;
 import app.packed.component.StatelessConfiguration;
 import app.packed.inject.Factory;
+import packed.internal.container.ExtensionModel;
 import packed.internal.container.PackedRealm;
 import packed.internal.inject.factory.BaseFactory;
 
@@ -49,6 +50,12 @@ public abstract class OldPackedComponentDriver<C> implements ComponentDriver<C> 
     }
 
     public String defaultName(PackedRealm realm) {
+        if (this instanceof PackedComponentDriver) {
+            PackedComponentDriver<?> pcd = (PackedComponentDriver<?>) this;
+            if (pcd.source instanceof ExtensionModel) {
+                return ((ExtensionModel) pcd.source).defaultComponentName;
+            }
+        }
         if (modifiers().isContainer()) {
             // I think try and move some of this to ComponentNameWirelet
             @Nullable
@@ -83,22 +90,19 @@ public abstract class OldPackedComponentDriver<C> implements ComponentDriver<C> 
     public static class SingletonComponentDriver<T> extends OldPackedComponentDriver<BeanConfiguration<T>> {
 
         @Nullable
-        public final BaseFactory<?> factory;
+        final BaseFactory<?> factory;
 
         @Nullable
-        public final T instance;
+        final T instance;
 
-        public final ComponentModel model;
+        final ComponentModel model;
 
-        public final boolean isPrototype;
-
-        public SingletonComponentDriver(PackedRealm realm, Factory<?> factory, boolean isPrototype) {
+        public SingletonComponentDriver(PackedRealm realm, Factory<?> factory) {
             super(ComponentModifier.CONSTANT, ComponentModifier.SOURCED);
             requireNonNull(factory, "factory is null");
             this.model = realm.componentModelOf(factory.rawType());
-            this.factory = (@Nullable BaseFactory<?>) factory;
+            this.factory = (BaseFactory<?>) factory;
             this.instance = null;
-            this.isPrototype = isPrototype;
         }
 
         public SingletonComponentDriver(PackedRealm realm, T instance) {
@@ -106,7 +110,6 @@ public abstract class OldPackedComponentDriver<C> implements ComponentDriver<C> 
             this.instance = requireNonNull(instance, "instance is null");
             this.model = realm.componentModelOf(instance.getClass());
             this.factory = null;
-            this.isPrototype = false;
         }
 
         @Override
@@ -130,7 +133,7 @@ public abstract class OldPackedComponentDriver<C> implements ComponentDriver<C> 
 
                 @Override
                 public ComponentDriver<BeanConfiguration<T>> bindToFactory(PackedRealm realm, Factory<? extends T> factory) {
-                    return new SingletonComponentDriver<>(realm, factory, false);
+                    return new SingletonComponentDriver<>(realm, factory);
                 }
 
                 @Override
@@ -145,7 +148,7 @@ public abstract class OldPackedComponentDriver<C> implements ComponentDriver<C> 
 
                 @Override
                 public ComponentDriver<BeanConfiguration<T>> bindToFactory(PackedRealm realm, Factory<? extends T> factory) {
-                    return new SingletonComponentDriver<>(realm, factory, true);
+                    return new SingletonComponentDriver<>(realm, factory);
                 }
             };
         }
