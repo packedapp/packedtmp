@@ -23,6 +23,8 @@ import packed.internal.component.Region;
 import packed.internal.service.runtime.RuntimeService;
 
 /** A special instantiation context that is created */
+// Vi beholder den lidt endnu, det saa traels hver gang vi
+// laver aendringer, hvis vi bare sender Region+IHM rundt
 public class ServiceExtensionInstantiationContext {
 
     public final Region region;

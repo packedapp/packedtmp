@@ -69,7 +69,7 @@ public enum GuestState {
 
     /**
      * The guest is running normally. The guest will remain in this state until it is shutdown, for example, by the user
-     * calling {@link Guest#stop(app.packed.guest.Guest.GuestStopOption...)}. After which it will transition to the
+     * calling {@link Guest#stop(app.packed.guest.Guest.StopOption...)}. After which it will transition to the
      * {@link #STOPPING} state.
      */
     RUNNING,

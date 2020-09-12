@@ -24,17 +24,14 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentModifier;
 import app.packed.inject.Factory;
+import packed.internal.inject.DependencyProvider;
+import packed.internal.inject.Injectable;
 import packed.internal.inject.factory.BaseFactory;
-import packed.internal.inject.resolvable.DependencyProvider;
-import packed.internal.inject.resolvable.Injectable;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.service.ComponentBuildEntry;
 
-/**
- * All components that have a {@link ComponentModifier#SOURCED} modifier has an instance of this class.
- */
-// Maaske har vi en abstract SourceAssembly.. og Saa SingletonSourceAssembly
-public class SourceAssembly implements DependencyProvider {
+/** All components with a {@link ComponentModifier#SOURCED} modifier has an instance of this class. */
+public final class SourceAssembly implements DependencyProvider {
 
     /** The component this source is a part of. */
     public final ComponentNodeConfiguration component;
@@ -55,7 +52,7 @@ public class SourceAssembly implements DependencyProvider {
     /** The index at which to store the runtime instance, or -1 if it should not be stored. */
     public final int regionIndex;
 
-    /** Whether or not the component is provided as a service. */
+    /** Whether or not this source is provided as a service. */
     @Nullable
     public BuildtimeService<?> service;
 
@@ -107,17 +104,17 @@ public class SourceAssembly implements DependencyProvider {
     // Bliver kaldt naar man koere provide();
     public BuildtimeService<?> provide() {
         // Not sure we should allow for calling provide multiple times...
-        BuildtimeService<?> c = service;
-        if (c == null) {
+        BuildtimeService<?> s = service;
+        if (s == null) {
             Key<?> key;
             if (instance != null) {
                 key = Key.of(model.type());
             } else {
                 key = factory.key();
             }
-            c = service = new ComponentBuildEntry<>(component, key);
+            s = service = new ComponentBuildEntry<>(component, key);
         }
-        return c;
+        return s;
     }
 
     @Override

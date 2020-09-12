@@ -24,7 +24,7 @@ import app.packed.component.App;
 import app.packed.component.Bundle;
 import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
-import app.packed.guest.Guest.GuestStopOption;
+import app.packed.guest.Guest.StopOption;
 
 /**
  * Wirelets that can be used when wiring guest. For example, via {@link App#of(Bundle, Wirelet...)}.
@@ -49,7 +49,7 @@ public interface GuestWirelets {
     }
 
     // after which the guest will be shutdown normally
-    static Wirelet deadline(Instant deadline, GuestStopOption... options) {
+    static Wirelet deadline(Instant deadline, StopOption... options) {
         // Shuts down container normally
         throw new UnsupportedOperationException();
     }
@@ -107,7 +107,7 @@ public interface GuestWirelets {
     // Fremmede traade der kalder ind paa os naar vi bygger.
 
     // Runtime.addShutdownHook will be invoked immediatly before
-    static Wirelet shutdownHook(Function<Runnable, Thread> threadFactory, Guest.GuestStopOption... options) {
+    static Wirelet shutdownHook(Function<Runnable, Thread> threadFactory, Guest.StopOption... options) {
         throw new UnsupportedOperationException();
     }
 
@@ -118,16 +118,16 @@ public interface GuestWirelets {
      *
      * @see Runtime#addShutdownHook(Thread)
      */
-    static Wirelet shutdownHook(Guest.GuestStopOption... options) {
+    static Wirelet shutdownHook(Guest.StopOption... options) {
         throw new UnsupportedOperationException();
     }
 
     // excludes start?? IDK
-    static Wirelet timeToRun(Duration duration, Guest.GuestStopOption... options) {
+    static Wirelet timeToRun(Duration duration, Guest.StopOption... options) {
         throw new UnsupportedOperationException();
     }
 
-    static Wirelet timeToLive(Duration duration, Guest.GuestStopOption... options) {
+    static Wirelet timeToLive(Duration duration, Guest.StopOption... options) {
         // Duration is from Running transitioning...
         // Shuts down container normally
         throw new UnsupportedOperationException();
@@ -155,7 +155,7 @@ public interface GuestWirelets {
 
     // allowForLink() returns false // check(WireletPosition) <- if (wp == link -> throw new X)
 
-    static Wirelet timeToLive(long timeout, TimeUnit unit, Guest.GuestStopOption... options) {
+    static Wirelet timeToLive(long timeout, TimeUnit unit, Guest.StopOption... options) {
         return timeToLive(Duration.of(timeout, unit.toChronoUnit()), options);
     }
 

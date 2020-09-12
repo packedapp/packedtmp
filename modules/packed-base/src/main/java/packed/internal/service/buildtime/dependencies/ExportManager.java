@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.buildtime.export;
+package packed.internal.service.buildtime.dependencies;
 
 import static java.util.Objects.requireNonNull;
 

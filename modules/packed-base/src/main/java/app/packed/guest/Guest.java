@@ -39,8 +39,14 @@ import app.packed.component.Wirelet;
 
 // Taenker ikke en Guest har attributer direkte. Udover componenten..
 // Taenker heller ikke ServiceRegistry
+
 public interface Guest {
 
+    /**
+     * Returns the current state of the guest.
+     * 
+     * @return the current state of the guest
+     */
     GuestState state();
 
     /**
@@ -48,7 +54,7 @@ public interface Guest {
      * 
      * @return a snapshot of the guests current state
      */
-    default GuestStateSnapshot snapshotState() {
+    default GuestExtendedState snapshotState() {
         throw new UnsupportedOperationException();
     }
 
@@ -57,7 +63,7 @@ public interface Guest {
 
     <T> CompletableFuture<T> startAsync(T result);
 
-    Guest stop(GuestStopOption... options);
+    Guest stop(StopOption... options);
 
     /**
      * Initiates an orderly asynchronously shutdown of the application. In which currently running tasks will be executed,
@@ -68,7 +74,7 @@ public interface Guest {
      * @return a future that can be used to query whether the application has completed shutdown (terminated). Or is still
      *         in the process of being shut down
      */
-    <T> CompletableFuture<T> stopAsync(T result, GuestStopOption... options);
+    <T> CompletableFuture<T> stopAsync(T result, StopOption... options);
 
     // Altsaa vi skal ikke have interface StartOption of @interface WireletOption... Saa maa de hedde noget forskelligt
 
@@ -76,13 +82,13 @@ public interface Guest {
     // Og stopoptions... Kan vi komme derhen med wirelets??? F.eks. lad os sige vi gerne vil restarte med nogle andre
     // settings???? StopOption.restart(Wirelet... wirelets)
     // Jeg vil ikke afvise at vi skal have den... men Wirelets er maaske lidt bedre...
-    public interface GuestStartOption {
-
-        // LifecycleTransition
-        static GuestStartOption reason(String reason) {
-            throw new UnsupportedOperationException();
-        }
-    }
+//    public interface GuestStartOption {
+//
+//        // LifecycleTransition
+//        static GuestStartOption reason(String reason) {
+//            throw new UnsupportedOperationException();
+//        }
+//    }
 
     // ContainerStopOption????
     // Eller er det generisk..? Kan den bruges paa en actor??? et Actor Trae...
@@ -100,36 +106,36 @@ public interface Guest {
     // ER HELT SIKKER IKKE EN DEL AF LIFECYCLE VIL JEG MENE
     // Som udgangspunkt er det noget med Guest og goere..
     // Med mindre instanser lige pludselig kan bruge det.
-    public interface GuestStopOption {
+    public interface StopOption {
 
-        static GuestStopOption erroneous(Supplier<Throwable> cause) {
+        static StopOption erroneous(Supplier<Throwable> cause) {
             throw new UnsupportedOperationException();
         }
 
-        static GuestStopOption erroneous(Throwable cause) {
+        static StopOption erroneous(Throwable cause) {
             throw new UnsupportedOperationException();
         }
 
-        static GuestStopOption forced() {
+        static StopOption forced() {
             throw new UnsupportedOperationException();
         }
 
         // Can be used as wirelet as well...
-        static GuestStopOption forcedGraceTime(long timeout, TimeUnit unit) {
+        static StopOption forcedGraceTime(long timeout, TimeUnit unit) {
             // before forced???
             throw new UnsupportedOperationException();
         }
 
-        static GuestStopOption now() {
+        static StopOption now() {
             // Now == shutdownNow();
             throw new UnsupportedOperationException();
         }
 
-        static GuestStopOption now(Throwable cause) {
+        static StopOption now(Throwable cause) {
             throw new UnsupportedOperationException();
         }
 
-        static GuestStopOption restart(Wirelet... wirelets) {
+        static StopOption restart(Wirelet... wirelets) {
             // restart(Wirelet.rename("Restart at ....");
             //// Men okay hvad hvis det ikke kan lade sige goere at omnavngive den...
             throw new UnsupportedOperationException();
@@ -139,7 +145,7 @@ public interface Guest {
         // linger would be nice
         // Or maybe somewhere to replace the guest with a tombstone of some kind.
         // Summarizing everything in the guest...
-        static GuestStopOption undeploy() {
+        static StopOption undeploy() {
             throw new UnsupportedOperationException();
         }
         // restart.. (Artifact must have been started with RestartWirelets.restartable();

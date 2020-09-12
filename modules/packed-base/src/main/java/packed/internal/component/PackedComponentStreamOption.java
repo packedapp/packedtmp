@@ -44,7 +44,7 @@ public final class PackedComponentStreamOption implements ComponentStream.Option
 
     public static final PackedComponentStreamOption INCLUDE_EXTENSION_OPTION = new PackedComponentStreamOption(INCLUDE_EXTENSIONS, null);
 
-    public static final PackedComponentStreamOption IN_SAME_CONTAINER_OPTION = new PackedComponentStreamOption(IN_SAME_CONTAINER, null);
+    public static final PackedComponentStreamOption IN_ORIGIN_CONTAINER_OPTION = new PackedComponentStreamOption(IN_SAME_CONTAINER, null);
 
     private final int s;
 

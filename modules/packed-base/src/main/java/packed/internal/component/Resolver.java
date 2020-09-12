@@ -19,9 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 
-import packed.internal.inject.resolvable.DependencyProvider;
-import packed.internal.inject.resolvable.Injectable;
-import packed.internal.inject.resolvable.ServiceDependency;
+import packed.internal.inject.DependencyProvider;
+import packed.internal.inject.Injectable;
+import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.InjectionManager;
 

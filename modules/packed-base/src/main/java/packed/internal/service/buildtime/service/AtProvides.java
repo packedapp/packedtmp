@@ -27,7 +27,7 @@ import app.packed.inject.Provide;
 import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.MethodDescriptor;
-import packed.internal.inject.resolvable.ServiceDependency;
+import packed.internal.inject.ServiceDependency;
 
 /** A descriptor for a field or method (member) annotated with {@link Provide}. */
 public final class AtProvides {

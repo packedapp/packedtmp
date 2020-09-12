@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.service.ServiceRegistry;
 import packed.internal.container.ContainerAssembly;
-import packed.internal.inject.resolvable.Injectable;
+import packed.internal.inject.Injectable;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.service.buildtime.service.AtProvideBuildEntry;

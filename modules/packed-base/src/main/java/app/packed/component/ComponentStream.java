@@ -251,17 +251,6 @@ public interface ComponentStream extends AttributedElementStream<Component> {
 
         // Vil vel ogsaa gerne bruge den paa component.traversel
 
-//        default ComponentStream.Option andInSameArtifact() {
-//            throw new UnsupportedOperationException();
-//        }
-
-        default ComponentStream.Option andInSameContainer() {
-            return PackedComponentStreamOption.IN_SAME_CONTAINER_OPTION;
-        }
-
-        default ComponentStream.Option andSkipOrigin() {
-            return PackedComponentStreamOption.IN_SAME_CONTAINER_OPTION;
-        }
         // FollowUnitialized guests...
 
         /**
@@ -273,6 +262,14 @@ public interface ComponentStream extends AttributedElementStream<Component> {
             return PackedComponentStreamOption.INCLUDE_EXTENSION_OPTION;
         }
 
+        /**
+         * @param depth
+         *            the maximum depth of any component relative to the origin's depth
+         * @return an option
+         * @throws IllegalArgumentException
+         *             if the specified depth is negative
+         */
+        // maxRelativeDepth?
         public static ComponentStream.Option maxDepth(int depth) {
             return PackedComponentStreamOption.INCLUDE_EXTENSION_OPTION;
         }
@@ -290,19 +287,15 @@ public interface ComponentStream extends AttributedElementStream<Component> {
             throw new UnsupportedOperationException();
         }
 
-//        //
-//        public static ComponentStream.Option inSameArtifact() {
-//            throw new UnsupportedOperationException();
-//        }
-
         /**
-         * Only process components that are in the same container as the stream origin. If the origin is not in a container?
-         * Fail???
+         * Only process components that are in the same container as the stream origin.
+         * <p>
+         * If the origin is not in a container? Fail??? Empty Stream, Only Origin
          * 
-         * @return the option
+         * @return an option that selects only the components that are in the same container as the stream origin.
          */
-        public static ComponentStream.Option inSameContainer() {
-            return PackedComponentStreamOption.IN_SAME_CONTAINER_OPTION;
+        public static ComponentStream.Option inOriginContainer() {
+            return PackedComponentStreamOption.IN_ORIGIN_CONTAINER_OPTION;
         }
 
         /**
@@ -315,6 +308,7 @@ public interface ComponentStream extends AttributedElementStream<Component> {
             return PackedComponentStreamOption.EXCLUDE_ORIGIN_OPTION;
         }
 
+        // Not sure we are ready for this...
         static ComponentStream.Option parallel() {
             throw new UnsupportedOperationException();
         }

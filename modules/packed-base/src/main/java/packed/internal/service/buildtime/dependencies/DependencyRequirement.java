@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import packed.internal.inject.AtInject;
-import packed.internal.inject.resolvable.Injectable;
-import packed.internal.inject.resolvable.ServiceDependency;
+import packed.internal.inject.Injectable;
+import packed.internal.inject.ServiceDependency;
 
 /**
  *

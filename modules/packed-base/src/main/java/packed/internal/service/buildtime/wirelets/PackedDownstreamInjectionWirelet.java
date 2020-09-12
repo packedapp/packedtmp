@@ -28,7 +28,7 @@ import app.packed.service.Service;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceWirelets;
 import packed.internal.service.buildtime.InjectionManager;
-import packed.internal.service.buildtime.export.ExportedBuildEntry;
+import packed.internal.service.buildtime.dependencies.ExportedBuildEntry;
 import packed.internal.service.runtime.ConstantInjectorEntry;
 import packed.internal.service.runtime.RuntimeService;
 

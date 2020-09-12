@@ -56,13 +56,13 @@ public class PackedGuest implements Guest {
 
     /** {@inheritDoc} */
     @Override
-    public Guest stop(GuestStopOption... options) {
+    public Guest stop(StopOption... options) {
         return null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public <T> CompletableFuture<T> stopAsync(T result, GuestStopOption... options) {
+    public <T> CompletableFuture<T> stopAsync(T result, StopOption... options) {
         return null;
     }
 }

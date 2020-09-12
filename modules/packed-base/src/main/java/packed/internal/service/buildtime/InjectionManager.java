@@ -27,16 +27,16 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
-import app.packed.service.ServiceRegistry;
 import app.packed.service.ServiceMap;
+import app.packed.service.ServiceRegistry;
 import packed.internal.component.Region;
 import packed.internal.component.Resolver;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.ContainerAssembly;
-import packed.internal.inject.resolvable.Injectable;
+import packed.internal.inject.Injectable;
 import packed.internal.service.buildtime.dependencies.DependencyManager;
-import packed.internal.service.buildtime.export.ExportManager;
-import packed.internal.service.buildtime.export.ExportedBuildEntry;
+import packed.internal.service.buildtime.dependencies.ExportManager;
+import packed.internal.service.buildtime.dependencies.ExportedBuildEntry;
 import packed.internal.service.buildtime.service.ServiceProvidingManager;
 import packed.internal.service.runtime.PackedInjector;
 import packed.internal.service.runtime.RuntimeService;
@@ -169,8 +169,6 @@ public final class InjectionManager {
     }
 
     public ServiceContract newServiceContract() {
-        // Er ikke sikker paa alt er med her...
-        // Vi kalder vist ikke ordenligt ind paa DependencyManager.register...
         return ServiceContract.newContract(c -> {
             if (exporter != null) {
                 for (ExportedBuildEntry<?> n : exporter) {

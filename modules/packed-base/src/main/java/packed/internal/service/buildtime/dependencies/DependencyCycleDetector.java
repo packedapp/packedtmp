@@ -22,8 +22,8 @@ import java.util.ArrayList;
 
 import app.packed.service.CyclicDependencyGraphException;
 import packed.internal.component.Resolver;
-import packed.internal.inject.resolvable.DependencyProvider;
-import packed.internal.inject.resolvable.Injectable;
+import packed.internal.inject.DependencyProvider;
+import packed.internal.inject.Injectable;
 
 /** A utility class that can find cycles in a dependency graph. */
 

@@ -25,7 +25,6 @@ import app.packed.hook.OnHook;
 import app.packed.inject.Inject;
 import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.MethodDescriptor;
-import packed.internal.inject.resolvable.ServiceDependency;
 
 /**
  *

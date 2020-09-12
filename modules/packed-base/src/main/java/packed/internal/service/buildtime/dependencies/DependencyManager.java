@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -35,8 +34,8 @@ import app.packed.introspection.VariableDescriptor;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import packed.internal.component.Resolver;
-import packed.internal.inject.resolvable.Injectable;
-import packed.internal.inject.resolvable.ServiceDependency;
+import packed.internal.inject.Injectable;
+import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.InjectionManager;
 
@@ -65,6 +64,7 @@ public final class DependencyManager {
      * hook methods that make use of injection. Because they may not be processed until the bitter end, so it was only
      * really services registered via the provide methods that could make use of them.
      */
+    // Skal jo erstattet af noget Contract...
     boolean manualRequirementsManagement;
 
     /** A list of all dependencies that have not been resolved */
@@ -75,8 +75,6 @@ public final class DependencyManager {
 
     /** A set of all explicitly registered optional service keys. */
     final HashSet<Key<?>> requiredOptionally = new HashSet<>();
-
-    public final LinkedHashMap<ServiceDependency, BuildtimeService<?>> specials = new LinkedHashMap<>();
 
     /** A map of all dependencies that could not be resolved */
     IdentityHashMap<BuildtimeService<?>, List<ServiceDependency>> unresolvedDependencies;

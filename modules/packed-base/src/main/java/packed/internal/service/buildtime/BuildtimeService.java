@@ -24,8 +24,8 @@ import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Provide;
 import app.packed.service.Service;
-import packed.internal.inject.resolvable.DependencyProvider;
-import packed.internal.inject.resolvable.Injectable;
+import packed.internal.inject.DependencyProvider;
+import packed.internal.inject.Injectable;
 import packed.internal.service.runtime.RuntimeService;
 
 /**
