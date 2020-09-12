@@ -272,7 +272,6 @@ public final class ServiceExtension extends Extension {
      */
     // Will never export services that are requirements...
     public void exportAll() {
-        System.out.println("EXPORT ALL");
         // export all _services_.. Also those that are already exported as something else???
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
         checkConfigurable();

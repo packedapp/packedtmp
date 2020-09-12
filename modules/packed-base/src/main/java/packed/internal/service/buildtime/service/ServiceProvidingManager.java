@@ -95,7 +95,6 @@ public final class ServiceProvidingManager {
             AtProvideBuildEntry pbe = new AtProvideBuildEntry(configSite, component, atProvides); // Adds itself to #buildEntries
             component.region.resolver.allInjectables.add(pbe.injectable);
         }
-
     }
 
     public BuildtimeService<?> providePrototype(ComponentNodeConfiguration cc) {

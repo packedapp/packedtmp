@@ -39,6 +39,7 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
     public static final int I_EXTENSION = intOf(ComponentModifier.EXTENSION);
     public static final int I_SHELL = intOf(ComponentModifier.SHELL);
     public static final int I_SINGLETON = intOf(ComponentModifier.CONSTANT);
+    public static final int I_STATELESS = intOf(ComponentModifier.STATELESS);
     public static final int I_UNSCOPED = intOf(ComponentModifier.UNSCOPED);
 
     /** An array containing all modifiers. */

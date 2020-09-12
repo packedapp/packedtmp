@@ -238,6 +238,5 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
         }
         // Finally, make the resolved exports visible.
         this.resolvedExports = resolvedExports;
-        System.out.println("EXPORTED " + resolvedExports);
     }
 }

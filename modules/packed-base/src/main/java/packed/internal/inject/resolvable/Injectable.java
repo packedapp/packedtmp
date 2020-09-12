@@ -94,13 +94,16 @@ public final class Injectable {
         // Vi detecter altid circle lige nu. Fordi circle detectionen.
         // ogsaa gemmer service instantierings raekkefoelgen
         this.detectForCycles = resolved.length > 0;// dependencies.size() > 0;
+
+        // We have moved all the logic for adding some to various list.
+        // Down into the dependency cycle check.
+        detectForCycles = true;
         if (detectForCycles) {
             source.component.container.im.dependencies().detectCyclesFor.add(this);
         }
         if (!ap.isStaticMember && source.injectable() != null) {
             ArrayList<Injectable> al = source.component.container.im.dependencies().detectCyclesFor;
             if (!al.contains(source.injectable())) {
-                System.out.println("________");
                 al.add(source.injectable());
                 source.injectable().detectForCycles = true;
             }
@@ -124,7 +127,6 @@ public final class Injectable {
         int startIndex = resolved.length != dependencies.size() ? 1 : 0;
         for (int i = 0; i < dependencies.size(); i++) {
             resolved[i + startIndex] = resolver.resolve(this, dependencies.get(i));
-            requireNonNull(resolved[i + startIndex]);
         }
     }
 
@@ -142,8 +144,6 @@ public final class Injectable {
             DependencyProvider dp = resolved[i];
             requireNonNull(dp);
             MethodHandle dep = dp.toMethodHandle();
-            System.out.println();
-            System.out.println("Old " + mh + " i= " + i + "  new TYPE " + dep.type());
 
             mh = MethodHandles.collectArguments(mh, i, dep);
         }

@@ -56,9 +56,11 @@ public class RegionAssembly {
         // We start by storing all constants in the region array
         for (SourceAssembly sa : resolver.sourceConstants) {
             region.store(sa.regionIndex, sa.instance);
+            requireNonNull(sa.instance);
         }
 
         for (Injectable ii : resolver.constantServices) {
+            // System.out.println(ii.directMethodHandle);
             int index;
             BuildtimeService<?> entry = ii.entry();
             if (entry instanceof AtProvideBuildEntry<?>) {
@@ -76,6 +78,7 @@ public class RegionAssembly {
                 } catch (Throwable e1) {
                     throw ThrowableUtil.orUndeclared(e1);
                 }
+                requireNonNull(instance);
                 region.store(index, instance);
             }
         }
@@ -90,6 +93,7 @@ public class RegionAssembly {
                     } catch (Throwable e1) {
                         throw ThrowableUtil.orUndeclared(e1);
                     }
+                    requireNonNull(instance);
                     region.store(i.regionIndex, instance);
                 }
             }

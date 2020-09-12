@@ -85,6 +85,7 @@ public final class DependencyManager {
     public void analyze(Resolver resolver, InjectionManager node) {
         // If we do not export services into a bundle. We should be able to resolver much quicker..
         // resolveAllDependencies(node);
+        checkForMissingDependencies(node);
 //        System.out.println("________DETECTING CIRCLE_______");
 //        for (Injectable i : detectCyclesFor) {
 //            System.out.println(i.directMethodHandle);
@@ -117,7 +118,7 @@ public final class DependencyManager {
                     StringBuilder sb = new StringBuilder();
                     sb.append("Cannot resolve dependency for ");
                     // Has at least on dependency, so a source is present
-                    List<ServiceDependency> dependencies = e.entry.injectable().dependencies;
+                    List<ServiceDependency> dependencies = e.entry.dependencies;
 
                     if (dependencies.size() == 1) {
                         sb.append("single ");
@@ -196,13 +197,14 @@ public final class DependencyManager {
      * @param entry
      * @param dependency
      */
-    public void recordResolvedDependency(InjectionManager im, BuildtimeService<?> entry, ServiceDependency dependency,
-            @Nullable BuildtimeService<?> resolvedTo, boolean fromParent) {
+    public void recordResolvedDependency(InjectionManager im, Injectable entry, ServiceDependency dependency, @Nullable BuildtimeService<?> resolvedTo,
+            boolean fromParent) {
         requireNonNull(entry);
         requireNonNull(dependency);
         if (resolvedTo != null) {
             return;
         }
+        im.container.hackServiceExtension();
         ArrayList<DependencyRequirement> m = missingDependencies;
         if (m == null) {
             m = missingDependencies = new ArrayList<>();

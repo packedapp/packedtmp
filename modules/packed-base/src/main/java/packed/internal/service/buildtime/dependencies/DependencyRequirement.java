@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import packed.internal.inject.AtInject;
+import packed.internal.inject.resolvable.Injectable;
 import packed.internal.inject.resolvable.ServiceDependency;
-import packed.internal.service.buildtime.BuildtimeService;
 
 /**
  *
@@ -33,7 +33,7 @@ class DependencyRequirement {
     final ServiceDependency dependency;
 
     @Nullable
-    final BuildtimeService<?> entry;
+    final Injectable entry;
 
     AtInject atInject;
 
@@ -43,16 +43,9 @@ class DependencyRequirement {
         this.entry = null;
     }
 
-    DependencyRequirement(ServiceDependency dependency, BuildtimeService<?> entry) {
+    DependencyRequirement(ServiceDependency dependency, Injectable entry) {
         this.dependency = requireNonNull(dependency, "dependency is null");
-        this.configSite = entry.configSite();
+        this.configSite = null;
         this.entry = entry;
-    }
-
-    DependencyRequirement(ServiceDependency dependency, BuildtimeService<?> entry, AtInject atInject) {
-        this.dependency = requireNonNull(dependency, "dependency is null");
-        this.configSite = entry.configSite();
-        this.entry = entry;
-        this.atInject = requireNonNull(atInject);
     }
 }

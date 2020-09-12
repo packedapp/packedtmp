@@ -45,7 +45,6 @@ public final class PackedPrototypeConfiguration<T> extends AbstractComponentConf
         super(component);
         this.component = (ComponentNodeConfiguration) component;
         this.buildEntry = (BuildtimeService<T>) this.component.source.provide();
-        System.out.println("Provided as " + buildEntry);
 
     }
 

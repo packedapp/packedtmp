@@ -15,6 +15,11 @@
  */
 package app.packed.component;
 
+import java.lang.invoke.MethodHandles;
+
+import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.PackedStatelessComponentConfiguration;
+
 /**
  *
  */
@@ -40,7 +45,6 @@ public interface StatelessConfiguration extends ComponentConfiguration {
      * @return a driver
      */
     static <T> ClassComponentDriver<StatelessConfiguration, T> driver() {
-        throw new UnsupportedOperationException();
-        // return OldPackedComponentDriver.StatelessComponentDriver.driver();
+        return PackedComponentDriver.ofClass(MethodHandles.lookup(), PackedStatelessComponentConfiguration.class, ComponentDriver.Option.statelessSource());
     }
 }

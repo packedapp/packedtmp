@@ -25,6 +25,7 @@ import java.util.TreeSet;
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
+import app.packed.service.ServiceExtension;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.service.buildtime.InjectionManager;
 
@@ -110,6 +111,15 @@ public final class ContainerAssembly {
     public PackedExtensionConfiguration getContext(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         return extensions.get(extensionType);
+    }
+
+    public void hackServiceExtension() {
+        // A hack to allow ServiceContract to ServiceExtension
+        // As it is not installed just for missing requiremeents
+        // see ServiceContractTCKTest
+        if (!extensions.containsKey(ServiceExtension.class)) {
+            extensions.put(ServiceExtension.class, PackedExtensionConfiguration.of(this, ServiceExtension.class));
+        }
     }
 
     @SuppressWarnings("unchecked")

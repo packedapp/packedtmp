@@ -42,6 +42,15 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
     }
 
     /**
+     * Returns whether or not this set contains the {@link ComponentModifier#CONTAINER} modifier.
+     * 
+     * @return true if this set contains the container modifier, otherwise false
+     */
+    default boolean isStateless() {
+        return contains(ComponentModifier.STATELESS);
+    }
+
+    /**
      * Returns whether or not this set contains any modifiers.
      * 
      * @return true if this set contains any modifiers, otherwise false

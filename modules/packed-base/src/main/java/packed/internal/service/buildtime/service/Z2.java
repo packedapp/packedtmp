@@ -40,8 +40,7 @@ public class Z2 extends BaseBundle {
         }
 
         @Provide(constant = true)
-        public String s() {
-            return "adsasd";
-        }
+        public static String s = "adsasd";
+
     }
 }

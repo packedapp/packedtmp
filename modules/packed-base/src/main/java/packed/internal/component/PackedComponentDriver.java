@@ -117,6 +117,9 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
             case OptionImpl.OPT_CONSTANT:
                 modifiers |= PackedComponentModifierSet.I_SINGLETON;
                 break;
+            case OptionImpl.OPT_STATELESS:
+                modifiers |= PackedComponentModifierSet.I_STATELESS;
+                break;
             default:
                 throw new IllegalStateException(o + " is not a valid option");
             }
@@ -140,6 +143,13 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
 
         Meta meta = newMeta(caller, false, driverType, options);
         return new PackedComponentDriver<>(meta, null);
+    }
+
+    public static <C, I> PackedClassComponentDriver<C, I> ofClass(MethodHandles.Lookup caller, Class<? extends C> driverType, Option... options) {
+        requireNonNull(options, "options is null");
+
+        Meta meta = newMeta(caller, true, driverType, options);
+        return new PackedClassComponentDriver<>(meta);
     }
 
     public static <C, I> PackedInstanceComponentDriver<C, I> ofInstance(MethodHandles.Lookup caller, Class<? extends C> driverType, Option... options) {
@@ -170,8 +180,10 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
     // Nahhh
     public static class OptionImpl implements ComponentDriver.Option {
 
+        static final int OPT_STATELESS = 3;
         static final int OPT_CONSTANT = 2;
         static final int OPT_CONTAINER = 1;
+        public static final OptionImpl STATELESS = new OptionImpl(OPT_STATELESS, null);
         public static final OptionImpl CONSTANT = new OptionImpl(OPT_CONSTANT, null);
         public static final OptionImpl CONTAINER = new OptionImpl(OPT_CONTAINER, null);
 

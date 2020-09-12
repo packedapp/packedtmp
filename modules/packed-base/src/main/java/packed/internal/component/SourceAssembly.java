@@ -82,9 +82,13 @@ public class SourceAssembly implements DependencyProvider {
 
         this.instance = null;
         this.factory = factory;
-        this.injectable = Injectable.ofFactory(this);
-        region.resolver.sourceInjectables.add(this);
-        region.resolver.allInjectables.add(injectable);
+        if (!component.modifiers().isStateless()) {
+            this.injectable = Injectable.ofFactory(this);
+            region.resolver.sourceInjectables.add(this);
+            region.resolver.allInjectables.add(injectable);
+        } else {
+            this.injectable = null;
+        }
     }
 
     public boolean isPrototype() {
@@ -135,7 +139,6 @@ public class SourceAssembly implements DependencyProvider {
             return MethodHandles.dropArguments(mh, 0, Region.class); // MethodHandle()T -> MethodHandle(Region)T
         } else if (isPrototype()) { // injectable != null
             MethodHandle mh = injectable.buildMethodHandle();
-            System.out.println(mh);
             return mh;
             // Taenker vi kun bruger den her... Hvis vi har lyst til genbrug
         } else {

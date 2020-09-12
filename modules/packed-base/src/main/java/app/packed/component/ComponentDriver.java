@@ -91,6 +91,10 @@ public interface ComponentDriver<C> {
             return PackedComponentDriver.OptionImpl.CONSTANT;
         }
 
+        static Option statelessSource() {
+            return PackedComponentDriver.OptionImpl.STATELESS;
+        }
+
         // The parent + the driver
         //
         static Option validateWiring(BiConsumer<Component, ComponentDriver<?>> validator) {

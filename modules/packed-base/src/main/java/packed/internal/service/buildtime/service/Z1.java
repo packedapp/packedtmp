@@ -31,7 +31,7 @@ public class Z1 extends BaseBundle {
     @Override
     protected void configure() {
         provideInstance(123);
-        // provide(NoDep.class);
+        provide(NoDep.class);
         // provide(Dx.class);
 //        provide(new Factory0<>(() -> {
 //            System.out.println("New");
@@ -50,6 +50,7 @@ public class Z1 extends BaseBundle {
 
         export(Integer.class);
         export(Foo.class);
+        export(Double.class);
     }
 
     public static void main(String[] args) {
@@ -58,6 +59,7 @@ public class Z1 extends BaseBundle {
         Integer ii = inj.use(Integer.class);
         System.out.println(inj.use(Foo.class));
         System.out.println(inj.use(Foo.class));
+        System.out.println(inj.use(Double.class));
         System.out.println(ii.getClass() + " " + ii);
         // System.out.println(inj.use(Dx.class).x);
         System.out.println("BYE");
@@ -66,18 +68,21 @@ public class Z1 extends BaseBundle {
 
     public static class Foo {
         public Foo() {
-            new Exception().printStackTrace();
             System.out.println("New Foo()");
         }
     }
 
     public static class NoDep {
+
+        @Provide(constant = true)
+        public static Double d = 444D;
+
         public NoDep() {
             System.out.println("Instantiated");
         }
 
         @Provide(constant = true)
-        public String s() {
+        public static String s() {
             return "adsasd";
         }
 

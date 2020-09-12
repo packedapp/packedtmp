@@ -52,8 +52,10 @@ public class Resolver {
     public DependencyProvider resolve(Injectable injectable, ServiceDependency dependency) {
         InjectionManager se = ra.configuration.container.im;
         BuildtimeService<?> e = se.resolvedEntries.get(dependency.key());
+
+        se.dependencies().recordResolvedDependency(se, injectable, dependency, e, false);
         if (e == null) {
-            throw new IllegalStateException("Could not resolve " + dependency.key());
+            return e;
         } else {
             // TODO call DependencyManager.recordResolvedDependency
             return e;

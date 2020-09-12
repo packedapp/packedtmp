@@ -113,7 +113,7 @@ public final class PackedInitializationContext {
     public static PackedInitializationContext initialize(ComponentNodeConfiguration root) {
         PackedInitializationContext ic = new PackedInitializationContext(root.wirelets);
         ic.component = root.instantiateTree(ic);
-        ic.component.region.print();
+        // ic.component.region.print();
 
         // If the system is a guest, start it (blocking)
         if (ic.component.modifiers().isGuest()) { // TODO should check guest.delayStart wirelet

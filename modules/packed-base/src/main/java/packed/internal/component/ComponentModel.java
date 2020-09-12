@@ -101,7 +101,6 @@ public final class ComponentModel extends Model {
     }
 
     public <T> ComponentNodeConfiguration invokeOnHookOnInstall(ComponentNodeConfiguration acc) {
-        // System.out.println(sourceHook + " - " + cs);
         try {
             // First invoke any OnHook methods on the container source (bundle)
             if (sourceHook != null) {

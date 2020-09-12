@@ -85,29 +85,26 @@ final class DependencyCycleDetector {
 
         for (int i = 0; i < node.resolved.length; i++) {
             DependencyProvider dependency = node.resolved[i];
-            if (dependency == null) {
-                System.out.println(node.directMethodHandle + " : " + i);
-                // System.out.println(node.dependencies);
-                throw new IllegalStateException("Could not be resolved");
-            }
-            Injectable injectable = dependency.injectable();
-            if (injectable != null) {
-                if (injectable.detectForCycles) {
-                    dependencies.push(injectable);
-                    // See if the component is already on the stack -> A cycle has been detected
-                    if (stack.contains(injectable)) {
-                        // clear links not part of the circle, for example, for A->B->C->B we want to remove A
-                        while (stack.peekLast() != injectable) {
-                            stack.pollLast();
-                            dependencies.pollLast();
+            if (dependency != null) {
+                Injectable injectable = dependency.injectable();
+                if (injectable != null) {
+                    if (injectable.detectForCycles) {
+                        dependencies.push(injectable);
+                        // See if the component is already on the stack -> A cycle has been detected
+                        if (stack.contains(injectable)) {
+                            // clear links not part of the circle, for example, for A->B->C->B we want to remove A
+                            while (stack.peekLast() != injectable) {
+                                stack.pollLast();
+                                dependencies.pollLast();
+                            }
+                            return new DependencyCycle(dependencies);
                         }
-                        return new DependencyCycle(dependencies);
+                        DependencyCycle cycle = detectCycle(resolver, injectable, stack, dependencies);
+                        if (cycle != null) {
+                            return cycle;
+                        }
+                        dependencies.pop();
                     }
-                    DependencyCycle cycle = detectCycle(resolver, injectable, stack, dependencies);
-                    if (cycle != null) {
-                        return cycle;
-                    }
-                    dependencies.pop();
                 }
             }
         }
@@ -138,7 +135,7 @@ final class DependencyCycleDetector {
 
         @Override
         public String toString() {
-            ArrayList<Injectable> list = new ArrayList<>(dependencies);
+            // ArrayList<Injectable> list = new ArrayList<>(dependencies);
             // This method does not yet support Provides methods
 
             // Try checking this out and running some examples, it should have better error messages.
@@ -152,12 +149,11 @@ final class DependencyCycleDetector {
 
             // Uncomments the 3
             // sb.append(format(s.factory.mirror.getType()));
-            for (Injectable n : list) {
-                System.out.println(n);
-                sb.append(" -");
-                // s = (BuildNodeOldFactory<?>) n;
-                // sb.append("> ").append(format(s.factory.mirror.getType()));
-            }
+//            for (Injectable n : list) {
+//                sb.append(" -");
+//                // s = (BuildNodeOldFactory<?>) n;
+//                // sb.append("> ").append(format(s.factory.mirror.getType()));
+//            }
 
             return sb.toString();
         }

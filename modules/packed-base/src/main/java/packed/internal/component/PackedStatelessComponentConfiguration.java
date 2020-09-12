@@ -16,6 +16,7 @@
 package packed.internal.component;
 
 import app.packed.component.AbstractComponentConfiguration;
+import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.StatelessConfiguration;
 
 /**
@@ -25,9 +26,9 @@ public class PackedStatelessComponentConfiguration extends AbstractComponentConf
 
     private final ComponentNodeConfiguration context;
 
-    public PackedStatelessComponentConfiguration(ComponentNodeConfiguration context) {
+    public PackedStatelessComponentConfiguration(ComponentConfigurationContext context) {
         super(context);
-        this.context = context;
+        this.context = (ComponentNodeConfiguration) context;
     }
 
     /** {@inheritDoc} */
