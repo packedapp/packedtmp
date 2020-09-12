@@ -24,8 +24,8 @@ import java.util.function.Function;
 
 import app.packed.container.Extension;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.OldPackedComponentDriver;
 import packed.internal.component.PackedAssemblyContext;
+import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.component.wirelet.WireletPack;
@@ -59,7 +59,7 @@ final class PackedShellDriver<S> implements ShellDriver<S> {
 
     @Override
     public <C, D> S configure(ComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
-        ComponentNodeConfiguration node = PackedAssemblyContext.configure(this, (OldPackedComponentDriver<D>) driver, factory, consumer, wirelets);
+        ComponentNodeConfiguration node = PackedAssemblyContext.configure(this, (PackedComponentDriver<D>) driver, factory, consumer, wirelets);
         PackedInitializationContext ac = PackedInitializationContext.initialize(node);
         return instantiateShell(ac);
     }

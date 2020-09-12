@@ -34,8 +34,7 @@ public final class BundleHelper {
     private static final VarHandle VH_BUNDLE_CONFIGURATION = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Bundle.class, "configuration", Object.class);
 
     /** A VarHandle used from {@link #getDriver(Bundle)} to access the driver field from a {@link Bundle}. */
-    private static final VarHandle VH_BUNDLE_DRIVER = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Bundle.class, "driver",
-            OldPackedComponentDriver.class);
+    private static final VarHandle VH_BUNDLE_DRIVER = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Bundle.class, "driver", PackedComponentDriver.class);
 
     /** A MethodHandle that can invoke Bundle#configure. */
     private static final MethodHandle MH_BUNDLE_CONFIGURE = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), Bundle.class, "configure", void.class);
@@ -83,8 +82,8 @@ public final class BundleHelper {
      * @return the specified bundle's component driver
      * @see #VH_BUNDLE_DRIVER
      */
-    public static <C> OldPackedComponentDriver<? extends C> getDriver(Bundle<C> bundle) {
+    public static <C> PackedComponentDriver<? extends C> getDriver(Bundle<C> bundle) {
         requireNonNull(bundle, "bundle is null");
-        return (OldPackedComponentDriver<? extends C>) VH_BUNDLE_DRIVER.get(bundle);
+        return (PackedComponentDriver<? extends C>) VH_BUNDLE_DRIVER.get(bundle);
     }
 }

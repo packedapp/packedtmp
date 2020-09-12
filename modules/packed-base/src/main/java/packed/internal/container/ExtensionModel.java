@@ -41,7 +41,6 @@ import app.packed.container.InternalExtensionException;
 import app.packed.hook.OnHook;
 import app.packed.statemachine.LifecycleContext;
 import packed.internal.base.attribute.ProvidableAttributeModel;
-import packed.internal.component.OldPackedComponentDriver;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.BaseHookQualifierList;
@@ -164,7 +163,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
     /** The default component name of the extension. */
     public final String defaultComponentName;
 
-    private final OldPackedComponentDriver<?> driver;
+    private final PackedComponentDriver<?> driver;
 
     private final ProvidableAttributeModel pam;
 
@@ -196,7 +195,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         return pam;
     }
 
-    public OldPackedComponentDriver<?> driver() {
+    public PackedComponentDriver<?> driver() {
         return driver;
     }
 

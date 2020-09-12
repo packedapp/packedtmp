@@ -96,7 +96,7 @@ public final class PackedAssemblyContext implements AssemblyContext {
     public static ComponentNodeConfiguration assemble(int modifiers, Bundle<?> bundle, @Nullable ShellDriver<?> shellDriver, Wirelet... wirelets) {
 
         // First we extract the component driver from the bundle
-        OldPackedComponentDriver<?> componentDriver = BundleHelper.getDriver(bundle);
+        PackedComponentDriver<?> componentDriver = BundleHelper.getDriver(bundle);
 
         // Create a new assembly context that we passe around
         PackedAssemblyContext assembly = new PackedAssemblyContext(modifiers, shellDriver, wirelets);
@@ -112,7 +112,7 @@ public final class PackedAssemblyContext implements AssemblyContext {
         return node.assembledSuccesfully();
     }
 
-    public static <C, D> ComponentNodeConfiguration configure(ShellDriver<?> ad, OldPackedComponentDriver<D> driver, Function<D, C> factory,
+    public static <C, D> ComponentNodeConfiguration configure(ShellDriver<?> ad, PackedComponentDriver<D> driver, Function<D, C> factory,
             CustomConfigurator<C> consumer, Wirelet... wirelets) {
         WireletPack wp = WireletPack.from(driver, wirelets);
         // Vil gerne parse nogle wirelets some det allerfoerste

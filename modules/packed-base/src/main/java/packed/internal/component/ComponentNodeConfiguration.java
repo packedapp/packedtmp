@@ -76,7 +76,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     private final PackedAssemblyContext assembly;
 
     /** The driver used to create this component. */
-    final OldPackedComponentDriver<?> driver;
+    final PackedComponentDriver<?> driver;
 
     /** The name of the component. */
     String name;
@@ -159,7 +159,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
      * @param parent
      *            the parent of the component
      */
-    private ComponentNodeConfiguration(PackedAssemblyContext assembly, PackedRealm realm, OldPackedComponentDriver<?> driver, ConfigSite configSite,
+    private ComponentNodeConfiguration(PackedAssemblyContext assembly, PackedRealm realm, PackedComponentDriver<?> driver, ConfigSite configSite,
             @Nullable ComponentNodeConfiguration parent, @Nullable WireletPack wirelets) {
         this.assembly = requireNonNull(assembly);
         this.realm = requireNonNull(realm);
@@ -200,7 +200,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             region.reserve(); // reserve a slot to an instance of PackedGuest
         }
         if (modifiers().isSource()) {
-            PackedComponentDriver<?> pcd = (PackedComponentDriver<?>) driver;
+            PackedComponentDriver<?> pcd = driver;
             Object source = pcd.source;
             requireNonNull(source);
             if (source instanceof Class) {
@@ -389,7 +389,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
      * 
      * @return the driver of this component
      */
-    public OldPackedComponentDriver<?> driver() {
+    public PackedComponentDriver<?> driver() {
         return driver;
     }
 
@@ -424,7 +424,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     @Override
     public void link(Bundle<?> bundle, Wirelet... wirelets) {
         // Get the driver from the bundle
-        OldPackedComponentDriver<?> driver = BundleHelper.getDriver(bundle);
+        PackedComponentDriver<?> driver = BundleHelper.getDriver(bundle);
 
         if (driver.modifiers().isContainer()) {
             // IDK do we want to progress to next stage just in case...
@@ -455,7 +455,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         return new PackedComponentModifierSet(modifiers);
     }
 
-    public ComponentNodeConfiguration newChild(OldPackedComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm, @Nullable WireletPack wp) {
+    public ComponentNodeConfiguration newChild(PackedComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm, @Nullable WireletPack wp) {
         return new ComponentNodeConfiguration(assembly, realm, driver, configSite, this, wp);
     }
 
@@ -606,7 +606,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     @Override
     public <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         requireNonNull(driver, "driver is null");
-        OldPackedComponentDriver<C> d = (OldPackedComponentDriver<C>) driver;
+        PackedComponentDriver<C> d = (PackedComponentDriver<C>) driver;
         WireletPack wp = WireletPack.from(d, wirelets);
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         ComponentNodeConfiguration conf = newChild(d, configSite, realm, wp);
@@ -621,7 +621,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         return wire(wcd, wirelets);
     }
 
-    public static ComponentNodeConfiguration newAssembly(PackedAssemblyContext assembly, OldPackedComponentDriver<?> driver, ConfigSite configSite,
+    public static ComponentNodeConfiguration newAssembly(PackedAssemblyContext assembly, PackedComponentDriver<?> driver, ConfigSite configSite,
             PackedRealm realm, WireletPack wirelets) {
         return new ComponentNodeConfiguration(assembly, realm, driver, configSite, null, wirelets);
     }
