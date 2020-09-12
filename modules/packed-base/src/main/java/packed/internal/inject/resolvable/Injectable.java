@@ -23,6 +23,7 @@ import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.packed.base.Nullable;
 import packed.internal.component.Region;
 import packed.internal.component.Resolver;
 import packed.internal.component.SourceAssembly;
@@ -65,7 +66,7 @@ public final class Injectable {
     /** The source (component) this injectable belongs to. */
     public final SourceAssembly source;
 
-    private Injectable(BuildtimeService<?> buildEntry, SourceAssembly source, AtProvides ap) {
+    public Injectable(BuildtimeService<?> buildEntry, SourceAssembly source, AtProvides ap) {
         this.source = requireNonNull(source);
         this.dependencies = ap.dependencies;
         this.directMethodHandle = ap.methodHandle;
@@ -136,10 +137,14 @@ public final class Injectable {
         return buildMethodHandle;
     }
 
+    @Nullable
     public BuildtimeService<?> entry() {
+        // buildEntry is null if it this Injectable is created from a source and not @AtProvides
+        // In which case we store the build entry (if available) in the source instead
         if (buildEntry == null) {
             return source.service;
         }
+        // created from @Provide
         return buildEntry;
     }
 
@@ -161,19 +166,6 @@ public final class Injectable {
         for (int i = 0; i < dependencies.size(); i++) {
             resolved[i + startIndex] = resolver.resolve(this, dependencies.get(i));
         }
-    }
-
-    /**
-     * The source this injectable belongs to.
-     * 
-     * @return the source this injectable belongs to.
-     */
-    public SourceAssembly source() {
-        return source;
-    }
-
-    public static Injectable ofDeclaredMember(BuildtimeService<?> buildEntry, SourceAssembly source, AtProvides ap) {
-        return new Injectable(buildEntry, source, ap);
     }
 
 }

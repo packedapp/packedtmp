@@ -48,7 +48,7 @@ public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
     public AtProvideBuildEntry(ConfigSite configSite, ComponentNodeConfiguration component, AtProvides ap) {
         super(component.container.im, configSite);
         this.source = component.source;
-        this.injectable = Injectable.ofDeclaredMember(this, source, ap);
+        this.injectable = new Injectable(this, source, ap);
         this.key = (Key) ap.key;
         if (ap.isConstant) {
             this.regionIndex = component.region.reserve();
@@ -81,6 +81,6 @@ public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
 
     @Override
     public String toString() {
-        return "Singleton " + source;
+        return "@Provide " + injectable.directMethodHandle;
     }
 }

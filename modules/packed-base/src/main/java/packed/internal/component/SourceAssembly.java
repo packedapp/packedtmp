@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Key;
+import app.packed.base.Nullable;
 import app.packed.component.ComponentModifier;
 import app.packed.inject.Factory;
 import packed.internal.inject.factory.BaseFactory;
@@ -41,9 +42,11 @@ public class SourceAssembly implements DependencyProvider {
     private final BaseFactory<?> factory;
 
     /** An injectable, if this source needs to be created at runtime (not a constant). */
+    @Nullable
     final Injectable injectable;
 
     /** If the source represents an instance. */
+    @Nullable
     final Object instance;
 
     /** The source model. */
@@ -53,6 +56,7 @@ public class SourceAssembly implements DependencyProvider {
     public final int regionIndex;
 
     /** Whether or not the component is provided as a service. */
+    @Nullable
     public BuildtimeService<?> service;
 
     SourceAssembly(ComponentNodeConfiguration component) {
