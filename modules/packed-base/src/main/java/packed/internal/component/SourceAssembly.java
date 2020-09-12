@@ -29,8 +29,7 @@ import packed.internal.inject.resolvable.DependencyProvider;
 import packed.internal.inject.resolvable.Injectable;
 import packed.internal.inject.resolvable.ServiceDependency;
 import packed.internal.service.buildtime.BuildtimeService;
-import packed.internal.service.buildtime.service.PrototypeBuildEntry;
-import packed.internal.service.buildtime.service.SingletonBuildEntry;
+import packed.internal.service.buildtime.service.SourceBuildEntry;
 
 /**
  * All components that have a {@link ComponentModifier#SOURCED} modifier has an instance of this class.
@@ -114,11 +113,7 @@ public class SourceAssembly implements DependencyProvider {
         // Not sure we should allow for calling provide multiple times...
         BuildtimeService<?> c = service;
         if (c == null) {
-            if (component.modifiers().isSingleton()) {
-                c = new SingletonBuildEntry<>(component, defaultServiceKey());
-            } else {
-                c = new PrototypeBuildEntry<>(component, defaultServiceKey());
-            }
+            c = new SourceBuildEntry<>(component, defaultServiceKey());
         }
         return c;
     }

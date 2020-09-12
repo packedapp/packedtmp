@@ -27,12 +27,13 @@ import packed.internal.inject.resolvable.Injectable;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.runtime.ConstantInjectorEntry;
+import packed.internal.service.runtime.PrototypeInjectorEntry;
 import packed.internal.service.runtime.RuntimeService;
 
 /**
  *
  */
-public final class SingletonBuildEntry<T> extends BuildtimeService<T> {
+public final class SourceBuildEntry<T> extends BuildtimeService<T> {
 
     /** The singleton source we are wrapping */
     private final SourceAssembly source;
@@ -43,7 +44,7 @@ public final class SingletonBuildEntry<T> extends BuildtimeService<T> {
      * @param component
      *            the component we provide for
      */
-    public SingletonBuildEntry(ComponentNodeConfiguration component, Key<T> key) {
+    public SourceBuildEntry(ComponentNodeConfiguration component, Key<T> key) {
         super(component.injectionManager(), component.configSite());
         this.source = requireNonNull(component.source);
         this.source.service = this;
@@ -61,7 +62,11 @@ public final class SingletonBuildEntry<T> extends BuildtimeService<T> {
     /** {@inheritDoc} */
     @Override
     protected RuntimeService<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
-        return new ConstantInjectorEntry<>(this, context.region, source.regionIndex);
+        if (source.isPrototype()) {
+            return new PrototypeInjectorEntry<>(this, context.region, toMethodHandle());
+        } else {
+            return new ConstantInjectorEntry<>(this, context.region, source.regionIndex);
+        }
     }
 
     /** {@inheritDoc} */
