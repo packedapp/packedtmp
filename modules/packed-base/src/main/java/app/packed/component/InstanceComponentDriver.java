@@ -15,6 +15,10 @@
  */
 package app.packed.component;
 
+import java.lang.invoke.MethodHandles;
+
+import app.packed.component.ComponentDriver.Option;
+import packed.internal.component.PackedComponentDriver;
 import packed.internal.container.PackedRealm;
 
 /**
@@ -24,4 +28,8 @@ import packed.internal.container.PackedRealm;
 public interface InstanceComponentDriver<C, I> extends FactoryComponentDriver<C, I> {
 
     ComponentDriver<C> bindToInstance(PackedRealm realm, I instance);
+
+    static <C, I> InstanceComponentDriver<C, I> of(MethodHandles.Lookup lookup, Class<? extends C> driverType, Option... options) {
+        return PackedComponentDriver.ofInstance(lookup, driverType, options);
+    }
 }

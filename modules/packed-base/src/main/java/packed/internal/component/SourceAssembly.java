@@ -23,7 +23,6 @@ import java.util.List;
 
 import app.packed.base.Key;
 import app.packed.component.ComponentModifier;
-import packed.internal.component.OldPackedComponentDriver.SingletonComponentDriver;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.inject.resolvable.DependencyProvider;
@@ -36,7 +35,6 @@ import packed.internal.service.buildtime.service.SingletonBuildEntry;
 /**
  * All components that have a {@link ComponentModifier#SOURCED} modifier has an instance of this class.
  */
-
 // Maaske har vi en abstract SourceAssembly.. og Saa SingletonSourceAssembly
 public class SourceAssembly implements DependencyProvider {
 
@@ -57,31 +55,34 @@ public class SourceAssembly implements DependencyProvider {
 
     public final BaseFactory<?> factory;
 
-    SourceAssembly(ComponentNodeConfiguration component) {
-        this(component, (SingletonComponentDriver<?>) component.driver);
-    }
+    public final ComponentModel cm;
 
-    SourceAssembly(ComponentNodeConfiguration component, SingletonComponentDriver<?> driver) {
+    SourceAssembly(ComponentNodeConfiguration component, ComponentModel cm, Object instance) {
+        this.cm = requireNonNull(cm);
         this.component = requireNonNull(component);
-
         RegionAssembly region = component.region;
         this.regionIndex = region.reserve(); // prototype false
-        this.instance = driver.instance;
-        if (instance == null) {
-            factory = driver.factory;
-            this.injectable = Injectable.ofFactory(this);
-            region.resolver.sourceInjectables.add(this);
-            region.resolver.allInjectables.add(injectable);
-        } else {
-            this.injectable = null;
-            region.resolver.sourceConstants.add(this);
-            factory = null;
-        }
+        this.instance = instance;
+        this.injectable = null;
+        region.resolver.sourceConstants.add(this);
+        this.factory = null;
+    }
+
+    SourceAssembly(ComponentNodeConfiguration component, ComponentModel cm, BaseFactory<?> factory) {
+        this.component = requireNonNull(component);
+        this.cm = requireNonNull(cm);
+        RegionAssembly region = component.region;
+        this.regionIndex = region.reserve(); // prototype false
+        this.instance = null;
+        this.factory = factory;
+        this.injectable = Injectable.ofFactory(this);
+        region.resolver.sourceInjectables.add(this);
+        region.resolver.allInjectables.add(injectable);
     }
 
     private Key<?> defaultServiceKey() {
         if (instance != null) {
-            return Key.of(component.driver().sourceType());
+            return Key.of(cm.type());
         } else {
             return factory.key();
         }

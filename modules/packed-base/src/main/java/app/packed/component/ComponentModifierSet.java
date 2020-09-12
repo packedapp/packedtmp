@@ -57,6 +57,15 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
         return contains(ComponentModifier.EXTENSION);
     }
 
+    /**
+     * Returns whether or not this set contains the {@link ComponentModifier#SOURCED} modifier.
+     * 
+     * @return true if this set contains the source modifier, otherwise false
+     */
+    default boolean isSource() {
+        return contains(ComponentModifier.SOURCED);
+    }
+
     // boolean containsAll(Collection<ComponentModifier> c);
     /**
      * Returns whether or not this set contains the {@link ComponentModifier#GUEST} modifier.

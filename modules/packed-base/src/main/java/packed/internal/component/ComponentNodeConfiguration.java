@@ -60,6 +60,7 @@ import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ContainerAssembly;
+import packed.internal.container.ExtensionModel;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.container.PackedRealm;
 import packed.internal.inject.ConfigSiteInjectOperations;
@@ -200,28 +201,45 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             region.reserve(); // reserve a slot to an instance of PackedGuest
         }
 
-        setName0(null); // initialize name
-
         if (driver instanceof PackedComponentDriver) {
             PackedComponentDriver<?> pcd = (PackedComponentDriver<?>) driver;
-            Object source = pcd.source;
-            if (source instanceof Class) {
-
+            if (pcd.source != null && !modifiers().isExtension() && !(pcd.source instanceof ExtensionModel)) {
+                Object source = pcd.source;
+                System.out.println(source);
+                if (source instanceof Class) {
+                    Class<?> c = (Class<?>) source;
+                    Factory<?> factory = Factory.find(c);
+                    ComponentModel cm = realm.componentModelOf(factory.rawType());
+                    this.source = new SourceAssembly(this, cm, factory);
+                } else if (source instanceof Factory) {
+                    throw new UnsupportedOperationException();
+                } else {
+                    Object instance = pcd.source;
+                    ComponentModel cm = realm.componentModelOf(instance.getClass());
+                    this.source = new SourceAssembly(this, cm, instance);
+                }
+                this.source.cm.invokeOnHookOnInstall(this);
+            } else {
+                this.source = null;
             }
-            this.source = null;
             // ...
         } else {
             // Setup Source
-            if (driver.sourceType() != null) {
-                this.source = new SourceAssembly(this);
-                ComponentModel cm = ((SingletonComponentDriver<?>) driver).model;
-                cm.invokeOnHookOnInstall(this);
-
+            if (modifiers().isSource()) {
+                SingletonComponentDriver<?> d = (SingletonComponentDriver<?>) driver;
+                if (d.instance != null) {
+                    ComponentModel cm = realm.componentModelOf(d.instance.getClass());
+                    this.source = new SourceAssembly(this, cm, d.instance);
+                } else {
+                    ComponentModel cm = realm.componentModelOf(d.factory.rawType());
+                    this.source = new SourceAssembly(this, cm, d.factory);
+                }
+                this.source.cm.invokeOnHookOnInstall(this);
             } else {
                 this.source = null;
             }
         }
-
+        setName0(null); // initialize name
     }
 
     /**
@@ -288,7 +306,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             }
         }
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.SOURCED)) {
-            dam.addValue(ComponentAttributes.SOURCE_TYPE, driver.sourceType());
+            dam.addValue(ComponentAttributes.SOURCE_TYPE, source.cm.type());
         }
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.SHELL)) {
             dam.addValue(ComponentAttributes.SHELL_TYPE, assembly.shellDriver().rawType());
@@ -547,7 +565,11 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 //            } else {
 //               
 //            }
-            n = driver.defaultName(realm);
+            if (source != null) {
+                n = source.cm.defaultPrefix();
+            } else {
+                n = driver.defaultName(realm);
+            }
             isFree = true;
         } else if (n.endsWith("?")) {
             n = n.substring(0, n.length() - 1);

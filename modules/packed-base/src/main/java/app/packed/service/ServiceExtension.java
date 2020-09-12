@@ -32,7 +32,6 @@ import app.packed.hook.OnHook;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.OldPackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.inject.ConfigSiteInjectOperations;
@@ -324,7 +323,17 @@ public final class ServiceExtension extends Extension {
     // Spoergmaalet er om vi ikke bare skal have en driver...
     // og en metode paa BaseBundle...
     public <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {
-        BeanConfiguration<T> bc = im.container.component.wire(SingletonComponentDriver.prototype(), factory);
+        // null was SingletonComponentDriver.prototype()
+//      public static <T> FactoryComponentDriver<BeanConfiguration<T>, T> prototype() {
+//      return new FactoryComponentDriver<BeanConfiguration<T>, T>() {
+//
+//          @Override
+//          public ComponentDriver<BeanConfiguration<T>> bindToFactory(PackedRealm realm, Factory<? extends T> factory) {
+//              return new SingletonComponentDriver<>(realm, factory);
+//          }
+//      };
+//  }
+        BeanConfiguration<T> bc = im.container.component.wire(null, factory);
         @SuppressWarnings("unchecked")
         BuildtimeService<T> b = (BuildtimeService<T>) im.provider().providePrototype(bc.component);
         return new PackedPrototypeConfiguration<>(bc.component, b);

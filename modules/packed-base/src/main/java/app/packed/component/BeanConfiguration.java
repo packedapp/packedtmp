@@ -15,9 +15,11 @@
  */
 package app.packed.component;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 
 import app.packed.base.Key;
+import app.packed.component.ComponentDriver.Option;
 import app.packed.container.BaseBundle;
 import app.packed.service.ExportedServiceConfiguration;
 import packed.internal.component.ComponentNodeConfiguration;
@@ -33,6 +35,8 @@ import packed.internal.service.buildtime.BuildtimeService;
  */
 @SuppressWarnings("exports")
 public class BeanConfiguration<T> extends AbstractComponentConfiguration {
+
+    private static final InstanceComponentDriver ICD = InstanceComponentDriver.of(MethodHandles.lookup(), BeanConfiguration.class, Option.constantSource());
 
     public final ComponentNodeConfiguration component;
 
@@ -102,7 +106,9 @@ public class BeanConfiguration<T> extends AbstractComponentConfiguration {
         return buildEntry.im.exports().export(buildEntry, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> InstanceComponentDriver<BeanConfiguration<T>, T> driver() {
+        // return ICD;
         return OldPackedComponentDriver.SingletonComponentDriver.driver();
     }
 }

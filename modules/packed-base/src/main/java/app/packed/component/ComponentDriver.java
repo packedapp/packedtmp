@@ -86,6 +86,7 @@ public interface ComponentDriver<C> {
          * @return stuff
          * @see ComponentModifier#CONSTANT
          */
+        // InstanceComponentDriver automatically sets the source...
         static Option constantSource() {
             return PackedComponentDriver.OptionImpl.CONSTANT;
         }

@@ -31,8 +31,23 @@ import app.packed.inject.Factory;
  *          {@code sealed} interface, which would prohibit subclassing except by explicitly permitted types.
  */
 
+// ComponentComposer
+
 //Component component(); seeThrough???
 //If we have that we can also navigate?? I guess thats okay
+
+// Has a lot of options..
+// prefixed with container() <--- throws UOE if no Container tag
+// prefixed with source() <--- throws UOE if no source tag
+// prefixed with guest() <--- throws UOE if no guest tag
+
+// componentName();
+// componentPath();
+
+// sourceExport();
+// sourceExportAs();
+// sourceProvide();
+// sourceProvideAs();
 public interface ComponentConfigurationContext {
 
     AssemblyContext assembly();

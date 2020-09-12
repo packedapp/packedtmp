@@ -25,7 +25,6 @@ import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
-import app.packed.component.FactoryComponentDriver;
 import app.packed.component.InstanceComponentDriver;
 import app.packed.component.StatelessConfiguration;
 import app.packed.inject.Factory;
@@ -42,11 +41,6 @@ public abstract class OldPackedComponentDriver<C> implements ComponentDriver<C> 
 
     protected OldPackedComponentDriver(ComponentModifier... properties) {
         this.modifiers = PackedComponentModifierSet.intOf(properties);
-    }
-
-    @Nullable
-    public Class<?> sourceType() {
-        return null;
     }
 
     public String defaultName(PackedRealm realm) {
@@ -95,12 +89,9 @@ public abstract class OldPackedComponentDriver<C> implements ComponentDriver<C> 
         @Nullable
         final T instance;
 
-        final ComponentModel model;
-
         public SingletonComponentDriver(PackedRealm realm, Factory<?> factory) {
             super(ComponentModifier.CONSTANT, ComponentModifier.SOURCED);
             requireNonNull(factory, "factory is null");
-            this.model = realm.componentModelOf(factory.rawType());
             this.factory = (BaseFactory<?>) factory;
             this.instance = null;
         }
@@ -108,19 +99,7 @@ public abstract class OldPackedComponentDriver<C> implements ComponentDriver<C> 
         public SingletonComponentDriver(PackedRealm realm, T instance) {
             super(ComponentModifier.CONSTANT, ComponentModifier.SOURCED);
             this.instance = requireNonNull(instance, "instance is null");
-            this.model = realm.componentModelOf(instance.getClass());
             this.factory = null;
-        }
-
-        @Override
-        public String defaultName(PackedRealm realm) {
-            return model.defaultPrefix();
-        }
-
-        @Override
-        @Nullable
-        public Class<?> sourceType() {
-            return model.type();
         }
 
         @Override
@@ -142,16 +121,6 @@ public abstract class OldPackedComponentDriver<C> implements ComponentDriver<C> 
                 }
             };
         }
-
-        public static <T> FactoryComponentDriver<BeanConfiguration<T>, T> prototype() {
-            return new FactoryComponentDriver<BeanConfiguration<T>, T>() {
-
-                @Override
-                public ComponentDriver<BeanConfiguration<T>> bindToFactory(PackedRealm realm, Factory<? extends T> factory) {
-                    return new SingletonComponentDriver<>(realm, factory);
-                }
-            };
-        }
     }
 
     public static class StatelessComponentDriver extends OldPackedComponentDriver<StatelessConfiguration> {
@@ -166,12 +135,6 @@ public abstract class OldPackedComponentDriver<C> implements ComponentDriver<C> 
         @Override
         public String defaultName(PackedRealm realm) {
             return model.defaultPrefix();
-        }
-
-        @Override
-        @Nullable
-        public Class<?> sourceType() {
-            return model.type();
         }
 
         @Override

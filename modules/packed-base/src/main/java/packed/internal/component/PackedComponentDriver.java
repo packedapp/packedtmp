@@ -51,10 +51,10 @@ public class PackedComponentDriver<C> extends OldPackedComponentDriver<C> implem
         this.sourceType = null;
     }
 
-    <I> PackedComponentDriver(PackedClassComponentDriver<C, I> driver, Object instance) {
-        this.meta = driver.meta;
-        this.sourceType = SourceType.INSTANCE;
-        this.source = instance;
+    private PackedComponentDriver(Meta meta, ExtensionModel em) {
+        this.meta = meta;
+        this.source = em;
+        this.sourceType = SourceType.NONE;
     }
 
     <I> PackedComponentDriver(PackedClassComponentDriver<C, I> driver, Class<? extends I> clazz) {
@@ -63,57 +63,16 @@ public class PackedComponentDriver<C> extends OldPackedComponentDriver<C> implem
         this.source = clazz;
     }
 
-    private PackedComponentDriver(Meta meta, ExtensionModel em) {
-        this.meta = meta;
-        this.source = em;
-        this.sourceType = SourceType.NONE;
+    <I> PackedComponentDriver(PackedClassComponentDriver<C, I> driver, Object instance) {
+        this.meta = driver.meta;
+        this.sourceType = SourceType.INSTANCE;
+        this.source = instance;
     }
 
     <I> PackedComponentDriver(PackedFactoryComponentDriver<C, I> driver, Factory<? extends I> factory) {
         this.meta = driver.meta;
         this.sourceType = SourceType.FACTORY;
         this.source = factory;
-    }
-
-    public static PackedComponentDriver<Void> extensionDriver(ExtensionModel em) {
-        // AN EXTENSION DOES NOT HAVE A SOURCE. Sources are to be analyzed
-        // And is available at runtime
-        Meta meta = new Meta(null, PackedComponentModifierSet.I_EXTENSION);
-        return new PackedComponentDriver<>(meta, em);
-    }
-
-    public static <C> PackedComponentDriver<C> of(MethodHandles.Lookup caller, Class<? extends C> driverType, Option... options) {
-        requireNonNull(options, "options is null");
-
-        Meta meta = newMeta(caller, driverType, options);
-        return new PackedComponentDriver<>(meta);
-    }
-
-    public static Meta newMeta(MethodHandles.Lookup caller, Class<?> driverType, Option... options) {
-        requireNonNull(options, "options is null");
-
-        // Parse all options
-        int modifiers = 0;
-        for (int i = 0; i < options.length; i++) {
-            OptionImpl o = (OptionImpl) options[i];
-            switch (o.id) {
-            case OptionImpl.OPT_CONTAINER:
-                modifiers |= PackedComponentModifierSet.I_CONTAINER;
-                break;
-            case OptionImpl.OPT_CONSTANT:
-                modifiers |= PackedComponentModifierSet.I_SINGLETON;
-                break;
-            default:
-                throw new IllegalStateException(o + " is not a valid option");
-            }
-        }
-
-        // Find constructor
-        InstantiatorBuilder ib = InstantiatorBuilder.of(caller, driverType, ComponentNodeConfiguration.class);
-        ib.addKey(ComponentConfigurationContext.class, 0);
-        MethodHandle mh = ib.build();
-
-        return new Meta(mh, modifiers);
     }
 
     /** {@inheritDoc} */
@@ -132,6 +91,59 @@ public class PackedComponentDriver<C> extends OldPackedComponentDriver<C> implem
         }
     }
 
+    public static PackedComponentDriver<Void> extensionDriver(ExtensionModel em) {
+        // AN EXTENSION DOES NOT HAVE A SOURCE. Sources are to be analyzed
+        // And is available at runtime
+        Meta meta = new Meta(null, PackedComponentModifierSet.I_EXTENSION);
+        return new PackedComponentDriver<>(meta, em);
+    }
+
+    public static Meta newMeta(MethodHandles.Lookup caller, boolean isSource, Class<?> driverType, Option... options) {
+        requireNonNull(options, "options is null");
+
+        // Parse all options
+        int modifiers = 0;
+        for (int i = 0; i < options.length; i++) {
+            OptionImpl o = (OptionImpl) options[i];
+            switch (o.id) {
+            case OptionImpl.OPT_CONTAINER:
+                modifiers |= PackedComponentModifierSet.I_CONTAINER;
+                break;
+            case OptionImpl.OPT_CONSTANT:
+                modifiers |= PackedComponentModifierSet.I_SINGLETON;
+                break;
+            default:
+                throw new IllegalStateException(o + " is not a valid option");
+            }
+        }
+        if (isSource) {
+            modifiers |= PackedComponentModifierSet.I_SOURCE;
+        }
+        // IDK should we just have a Function<ComponentComposer, T>???
+        // Unless we have multiple composer/context objects (which it looks like we wont have)
+        // Or we fx support @AttributeProvide... This makes no sense..
+        // AttributeProvide could make sense... And then some way to say retain this info at runtime...
+        // But maybe this is sidecars instead???
+        InstantiatorBuilder ib = InstantiatorBuilder.of(caller, driverType, ComponentNodeConfiguration.class);
+        ib.addKey(ComponentConfigurationContext.class, 0);
+        MethodHandle mh = ib.build();
+        return new Meta(mh, modifiers);
+    }
+
+    public static <C> ComponentDriver<C> of(MethodHandles.Lookup caller, Class<? extends C> driverType, Option... options) {
+        requireNonNull(options, "options is null");
+
+        Meta meta = newMeta(caller, false, driverType, options);
+        return new PackedComponentDriver<>(meta);
+    }
+
+    public static <C, I> PackedInstanceComponentDriver<C, I> ofInstance(MethodHandles.Lookup caller, Class<? extends C> driverType, Option... options) {
+        requireNonNull(options, "options is null");
+
+        Meta meta = newMeta(caller, true, driverType, options);
+        return new PackedInstanceComponentDriver<>(meta);
+    }
+
     static class Meta {
         // all options
         MethodHandle mh;
@@ -144,8 +156,33 @@ public class PackedComponentDriver<C> extends OldPackedComponentDriver<C> implem
         }
     }
 
+    // And the use one big switch
+    // Kunne ogsaa encode det i ComponentDriver.option..
+    // Og saa bruge MethodHandles til at extract id, data?
+    // Nahhh
+    public static class OptionImpl implements ComponentDriver.Option {
+        static final int OPT_CONSTANT = 2;
+        static final int OPT_CONTAINER = 1;
+
+        public static final OptionImpl CONSTANT = new OptionImpl(OPT_CONSTANT, null);
+        public static final OptionImpl CONTAINER = new OptionImpl(OPT_CONTAINER, null);
+
+        @Nullable
+        final Object data;
+        final int id;
+
+        OptionImpl(int id, @Nullable Object data) {
+            this.id = id;
+            this.data = data;
+        }
+    }
+
     static class PackedClassComponentDriver<C, I> implements ClassComponentDriver<C, I> {
-        Meta meta;
+        final Meta meta;
+
+        public PackedClassComponentDriver(Meta meta) {
+            this.meta = meta;
+        }
 
         /** {@inheritDoc} */
         @Override
@@ -156,6 +193,13 @@ public class PackedComponentDriver<C> extends OldPackedComponentDriver<C> implem
 
     static class PackedFactoryComponentDriver<C, I> extends PackedClassComponentDriver<C, I> implements FactoryComponentDriver<C, I> {
 
+        /**
+         * @param meta
+         */
+        public PackedFactoryComponentDriver(Meta meta) {
+            super(meta);
+        }
+
         /** {@inheritDoc} */
         @Override
         public ComponentDriver<C> bindToFactory(PackedRealm realm, Factory<? extends I> factory) {
@@ -164,6 +208,13 @@ public class PackedComponentDriver<C> extends OldPackedComponentDriver<C> implem
     }
 
     static class PackedInstanceComponentDriver<C, I> extends PackedFactoryComponentDriver<C, I> implements InstanceComponentDriver<C, I> {
+
+        /**
+         * @param meta
+         */
+        public PackedInstanceComponentDriver(Meta meta) {
+            super(meta);
+        }
 
         /** {@inheritDoc} */
         @Override
@@ -174,26 +225,5 @@ public class PackedComponentDriver<C> extends OldPackedComponentDriver<C> implem
 
     static enum SourceType {
         CLASS, FACTORY, INSTANCE, NONE;
-    }
-
-    // And the use one big switch
-    // Kunne ogsaa encode det i ComponentDriver.option..
-    // Og saa bruge MethodHandles til at extract id, data?
-    // Nahhh
-    public static class OptionImpl implements ComponentDriver.Option {
-        static final int OPT_CONTAINER = 1;
-        static final int OPT_CONSTANT = 2;
-
-        public static final OptionImpl CONTAINER = new OptionImpl(OPT_CONTAINER, null);
-        public static final OptionImpl CONSTANT = new OptionImpl(OPT_CONSTANT, null);
-
-        final int id;
-        @Nullable
-        final Object data;
-
-        OptionImpl(int id, @Nullable Object data) {
-            this.id = id;
-            this.data = data;
-        }
     }
 }
