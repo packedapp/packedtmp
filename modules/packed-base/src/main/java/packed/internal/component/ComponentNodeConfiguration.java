@@ -201,31 +201,31 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             region.reserve(); // reserve a slot to an instance of PackedGuest
         }
 
-        if (driver instanceof PackedComponentDriver) {
-            PackedComponentDriver<?> pcd = (PackedComponentDriver<?>) driver;
-            if (pcd.source != null && !modifiers().isExtension() && !(pcd.source instanceof ExtensionModel)) {
-                Object source = pcd.source;
-                System.out.println(source);
-                if (source instanceof Class) {
-                    Class<?> c = (Class<?>) source;
-                    Factory<?> factory = Factory.find(c);
-                    ComponentModel cm = realm.componentModelOf(factory.rawType());
-                    this.source = new SourceAssembly(this, cm, factory);
-                } else if (source instanceof Factory) {
-                    throw new UnsupportedOperationException();
+        if (modifiers().isSource()) {
+            if (driver instanceof PackedComponentDriver) {
+                PackedComponentDriver<?> pcd = (PackedComponentDriver<?>) driver;
+                if (pcd.source != null && !modifiers().isExtension() && !(pcd.source instanceof ExtensionModel)) {
+                    Object source = pcd.source;
+                    System.out.println(source);
+                    if (source instanceof Class) {
+                        Class<?> c = (Class<?>) source;
+                        Factory<?> factory = Factory.find(c);
+                        ComponentModel cm = realm.componentModelOf(factory.rawType());
+                        this.source = new SourceAssembly(this, cm, factory);
+                    } else if (source instanceof Factory) {
+                        throw new UnsupportedOperationException();
+                    } else {
+                        Object instance = pcd.source;
+                        ComponentModel cm = realm.componentModelOf(instance.getClass());
+                        this.source = new SourceAssembly(this, cm, instance);
+                    }
+                    this.source.cm.invokeOnHookOnInstall(this);
                 } else {
-                    Object instance = pcd.source;
-                    ComponentModel cm = realm.componentModelOf(instance.getClass());
-                    this.source = new SourceAssembly(this, cm, instance);
+                    this.source = null;
                 }
-                this.source.cm.invokeOnHookOnInstall(this);
+                // ...
             } else {
-                this.source = null;
-            }
-            // ...
-        } else {
-            // Setup Source
-            if (modifiers().isSource()) {
+                // Setup Source
                 SingletonComponentDriver<?> d = (SingletonComponentDriver<?>) driver;
                 if (d.instance != null) {
                     ComponentModel cm = realm.componentModelOf(d.instance.getClass());
@@ -235,10 +235,11 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
                     this.source = new SourceAssembly(this, cm, d.factory);
                 }
                 this.source.cm.invokeOnHookOnInstall(this);
-            } else {
-                this.source = null;
             }
+        } else {
+            this.source = null;
         }
+
         setName0(null); // initialize name
     }
 
