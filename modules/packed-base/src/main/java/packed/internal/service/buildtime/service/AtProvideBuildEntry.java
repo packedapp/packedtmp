@@ -34,8 +34,6 @@ import packed.internal.service.runtime.RuntimeService;
  */
 public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
 
-    final AtProvides ap;
-
     public final Injectable injectable;
 
     public final int regionIndex;
@@ -50,7 +48,6 @@ public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
     public AtProvideBuildEntry(ConfigSite configSite, ComponentNodeConfiguration component, AtProvides ap) {
         super(component.container.im, configSite);
         this.source = component.source;
-        this.ap = ap;
         this.injectable = Injectable.ofDeclaredMember(this, source, ap);
         this.key = (Key) ap.key;
         if (ap.isConstant) {
@@ -70,7 +67,7 @@ public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
     /** {@inheritDoc} */
     @Override
     protected RuntimeService<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
-        if (ap.isConstant) {
+        if (regionIndex > -1) {
             return new ConstantInjectorEntry<>(this, context.region, regionIndex);
         } else {
             return new PrototypeInjectorEntry<>(this, context.region, toMethodHandle());

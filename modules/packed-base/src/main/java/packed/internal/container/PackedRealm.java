@@ -23,7 +23,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
-import packed.internal.component.ComponentModel;
+import packed.internal.component.SourceModel;
 import packed.internal.inject.factory.FactoryHandle;
 
 /**
@@ -62,7 +62,7 @@ public final class PackedRealm {
         return mh;
     }
 
-    public ComponentModel componentModelOf(Class<?> componentType) {
+    public SourceModel componentModelOf(Class<?> componentType) {
         return lookup.componentModelOf(componentType);
     }
 

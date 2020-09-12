@@ -33,7 +33,7 @@ import packed.internal.service.runtime.RuntimeService;
 /**
  *
  */
-public final class SourceBuildEntry<T> extends BuildtimeService<T> {
+public final class ComponentBuildEntry<T> extends BuildtimeService<T> {
 
     /** The singleton source we are wrapping */
     private final SourceAssembly source;
@@ -44,10 +44,9 @@ public final class SourceBuildEntry<T> extends BuildtimeService<T> {
      * @param component
      *            the component we provide for
      */
-    public SourceBuildEntry(ComponentNodeConfiguration component, Key<T> key) {
+    public ComponentBuildEntry(ComponentNodeConfiguration component, Key<T> key) {
         super(component.injectionManager(), component.configSite());
         this.source = requireNonNull(component.source);
-        this.source.service = this;
         this.key = requireNonNull(key);
         im.provider().buildEntries.add(this);
     }

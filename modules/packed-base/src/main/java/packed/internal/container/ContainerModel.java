@@ -25,7 +25,7 @@ import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
-import packed.internal.component.ComponentModel;
+import packed.internal.component.SourceModel;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.OnHookModel;
 import packed.internal.inject.factory.ExecutableFactoryHandle;
@@ -56,11 +56,11 @@ public final class ContainerModel extends Model implements ComponentLookup {
 
     /** A cache of component models that have been accessed without a lookup object. */
     // most likely they will have the same class loader as the container source
-    private final ClassValue<ComponentModel> componentsNoLookup = new ClassValue<>() {
+    private final ClassValue<SourceModel> componentsNoLookup = new ClassValue<>() {
 
         @Override
-        protected ComponentModel computeValue(Class<?> type) {
-            return ComponentModel.newInstance(ContainerModel.this, ContainerModel.this.newClassProcessor(type, true));
+        protected SourceModel computeValue(Class<?> type) {
+            return SourceModel.newInstance(ContainerModel.this, ContainerModel.this.newClassProcessor(type, true));
         }
     };
 
@@ -103,7 +103,7 @@ public final class ContainerModel extends Model implements ComponentLookup {
 
     /** {@inheritDoc} */
     @Override
-    public ComponentModel componentModelOf(Class<?> componentType) {
+    public SourceModel componentModelOf(Class<?> componentType) {
         return componentsNoLookup.get(componentType);
     }
 
@@ -171,11 +171,11 @@ public final class ContainerModel extends Model implements ComponentLookup {
     private static final class PerLookup implements ComponentLookup {
 
         /** A cache of component class descriptors. */
-        private final ClassValue<ComponentModel> components = new ClassValue<>() {
+        private final ClassValue<SourceModel> components = new ClassValue<>() {
 
             @Override
-            protected ComponentModel computeValue(Class<?> type) {
-                return ComponentModel.newInstance(parent, PerLookup.this.newClassProcessor(type, true));
+            protected SourceModel computeValue(Class<?> type) {
+                return SourceModel.newInstance(parent, PerLookup.this.newClassProcessor(type, true));
             }
         };
 
@@ -191,7 +191,7 @@ public final class ContainerModel extends Model implements ComponentLookup {
 
         /** {@inheritDoc} */
         @Override
-        public ComponentModel componentModelOf(Class<?> componentType) {
+        public SourceModel componentModelOf(Class<?> componentType) {
             return components.get(componentType);
         }
 

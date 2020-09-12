@@ -17,7 +17,7 @@ package packed.internal.container;
 
 import java.lang.invoke.MethodHandles.Lookup;
 
-import packed.internal.component.ComponentModel;
+import packed.internal.component.SourceModel;
 import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.invoke.OpenClass;
 
@@ -27,7 +27,7 @@ import packed.internal.invoke.OpenClass;
  */
 interface ComponentLookup {
 
-    ComponentModel componentModelOf(Class<?> componentType);
+    SourceModel componentModelOf(Class<?> componentType);
 
     OpenClass newClassProcessor(Class<?> clazz, boolean registerNatives);
 

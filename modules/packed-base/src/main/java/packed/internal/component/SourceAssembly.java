@@ -23,13 +23,14 @@ import java.util.List;
 
 import app.packed.base.Key;
 import app.packed.component.ComponentModifier;
+import app.packed.inject.Factory;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.inject.resolvable.DependencyProvider;
 import packed.internal.inject.resolvable.Injectable;
 import packed.internal.inject.resolvable.ServiceDependency;
 import packed.internal.service.buildtime.BuildtimeService;
-import packed.internal.service.buildtime.service.SourceBuildEntry;
+import packed.internal.service.buildtime.service.ComponentBuildEntry;
 
 /**
  * All components that have a {@link ComponentModifier#SOURCED} modifier has an instance of this class.
@@ -40,13 +41,13 @@ public class SourceAssembly implements DependencyProvider {
     /** The component this source is a part of. */
     public final ComponentNodeConfiguration component;
 
-    /** Non-null if the component needs injection (not a constant). */
+    /** An injectable, if this source needs to be created at runtime (not a constant). */
     final Injectable injectable;
 
     /** If the source represents an instance. */
     final Object instance;
 
-    /** The index at which to store the source instance, or -1 if it should not be stored. */
+    /** The index at which to store the runtime instance, or -1 if it should not be stored. */
     public final int regionIndex;
 
     /** Whether or not the component is provided as a service. */
@@ -54,39 +55,40 @@ public class SourceAssembly implements DependencyProvider {
 
     private final BaseFactory<?> factory;
 
-    final ComponentModel cm;
+    /** The source model. */
+    final SourceModel model;
 
-    SourceAssembly(ComponentNodeConfiguration component, ComponentModel cm, Object instance) {
+    SourceAssembly(ComponentNodeConfiguration component) {
         this.component = requireNonNull(component);
-        this.cm = requireNonNull(cm);
-
-        this.instance = requireNonNull(instance);
-        RegionAssembly region = component.region;
-        this.regionIndex = region.reserve(); // prototype false
-        this.injectable = null;
-        region.resolver.sourceConstants.add(this);
-        this.factory = null;
-    }
-
-    SourceAssembly(ComponentNodeConfiguration component, ComponentModel cm, BaseFactory<?> factory) {
-        this.component = requireNonNull(component);
-        this.cm = requireNonNull(cm);
+        Object source = component.driver.data;
         RegionAssembly region = component.region;
 
-        if (isPrototype()) {
-            this.regionIndex = -1;
-        } else {
-            this.regionIndex = region.reserve(); // prototype false
-        }
-
-        this.instance = null;
-        this.factory = factory;
-        if (!component.modifiers().isStateless()) {
+        this.regionIndex = isPrototype() ? -1 : region.reserve(); // prototype false
+        if (source instanceof Class) {
+            Class<?> c = (Class<?>) source;
+            this.factory = (BaseFactory<?>) Factory.find(c);
+            this.instance = null;
+            this.model = component.realm.componentModelOf(factory.rawType());
+            if (component.modifiers().isStateless()) {
+                this.injectable = null;
+            } else {
+                this.injectable = Injectable.ofFactory(this);
+                region.resolver.sourceInjectables.add(this);
+                region.resolver.allInjectables.add(injectable);
+            }
+        } else if (source instanceof Factory) {
+            this.factory = (BaseFactory<?>) source;
+            this.model = component.realm.componentModelOf(factory.rawType());
+            this.instance = null;
             this.injectable = Injectable.ofFactory(this);
             region.resolver.sourceInjectables.add(this);
             region.resolver.allInjectables.add(injectable);
         } else {
+            this.model = component.realm.componentModelOf(source.getClass());
+            this.instance = source;
             this.injectable = null;
+            region.resolver.sourceConstants.add(this);
+            this.factory = null;
         }
     }
 
@@ -96,7 +98,7 @@ public class SourceAssembly implements DependencyProvider {
 
     private Key<?> defaultServiceKey() {
         if (instance != null) {
-            return Key.of(cm.type());
+            return Key.of(model.type());
         } else {
             return factory.key();
         }
@@ -113,7 +115,7 @@ public class SourceAssembly implements DependencyProvider {
         // Not sure we should allow for calling provide multiple times...
         BuildtimeService<?> c = service;
         if (c == null) {
-            c = new SourceBuildEntry<>(component, defaultServiceKey());
+            c = service = new ComponentBuildEntry<>(component, defaultServiceKey());
         }
         return c;
     }

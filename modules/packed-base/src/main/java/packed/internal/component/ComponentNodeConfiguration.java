@@ -62,7 +62,6 @@ import packed.internal.container.ContainerAssembly;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.container.PackedRealm;
 import packed.internal.inject.ConfigSiteInjectOperations;
-import packed.internal.inject.factory.BaseFactory;
 import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.util.ThrowableUtil;
 
@@ -82,7 +81,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     String name;
 
     /** The realm the component belongs to. */
-    private final PackedRealm realm;
+    final PackedRealm realm;
 
     /** Any wirelets that was specified by the user when creating this configuration. */
     @Nullable
@@ -198,21 +197,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             region.reserve(); // reserve a slot to an instance of PackedGuest
         }
         if (modifiers().isSource()) {
-            Object source = driver.data;
-            if (source instanceof Class) {
-                Class<?> c = (Class<?>) source;
-                Factory<?> factory = Factory.find(c);
-                ComponentModel cm = realm.componentModelOf(factory.rawType());
-                this.source = new SourceAssembly(this, cm, (BaseFactory<?>) factory);
-            } else if (source instanceof Factory) {
-                BaseFactory<?> factory = (BaseFactory<?>) source;
-                ComponentModel cm = realm.componentModelOf(factory.rawType());
-                this.source = new SourceAssembly(this, cm, factory);
-            } else {
-                ComponentModel cm = realm.componentModelOf(source.getClass());
-                this.source = new SourceAssembly(this, cm, source);
-            }
-            this.source.cm.invokeOnHookOnInstall(this);
+            this.source = new SourceAssembly(this);
+            this.source.model.invokeOnHookOnInstall(this);
         } else {
             this.source = null;
         }
@@ -284,7 +270,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             }
         }
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.SOURCED)) {
-            dam.addValue(ComponentAttributes.SOURCE_TYPE, source.cm.type());
+            dam.addValue(ComponentAttributes.SOURCE_TYPE, source.model.type());
         }
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.SHELL)) {
             dam.addValue(ComponentAttributes.SHELL_TYPE, assembly.shellDriver().rawType());
@@ -539,7 +525,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
         if (n == null) {
             if (source != null) {
-                n = source.cm.defaultPrefix();
+                n = source.model.defaultPrefix();
             } else {
                 n = driver.defaultName(realm);
             }

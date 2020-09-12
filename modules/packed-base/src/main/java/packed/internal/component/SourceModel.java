@@ -42,7 +42,7 @@ import packed.internal.util.ThrowableUtil;
  * A model of a container, a cached instance of this class is acquired via
  * {@link ContainerModel#componentModelOf(Class)}.
  */
-public final class ComponentModel extends Model {
+public final class SourceModel extends Model {
 
     /** An array of any extensions with relevant {@link OnHook} methods. */
     private final ExtensionRequestPair[] extensionHooks;
@@ -61,7 +61,7 @@ public final class ComponentModel extends Model {
      * @param builder
      *            a builder for this descriptor
      */
-    private ComponentModel(ComponentModel.Builder builder) {
+    private SourceModel(SourceModel.Builder builder) {
         super(builder.cp.type());
 
         try {
@@ -131,7 +131,7 @@ public final class ComponentModel extends Model {
      *            a class processor usable by hooks
      * @return a model of the component
      */
-    public static ComponentModel newInstance(ContainerModel csm, OpenClass cp) {
+    public static SourceModel newInstance(ContainerModel csm, OpenClass cp) {
         return new Builder(csm, cp).build();
     }
 
@@ -164,7 +164,7 @@ public final class ComponentModel extends Model {
          * 
          * @return a new model
          */
-        private ComponentModel build() {
+        private SourceModel build() {
             final LazyExtensionActivationMap activatorMap = csm.activatorMap;
             Class<?> componentType = cp.type();
 
@@ -178,7 +178,7 @@ public final class ComponentModel extends Model {
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             }
-            return new ComponentModel(this);
+            return new SourceModel(this);
         }
 
         private void findAssinableTo(MemberUnreflector htp, LazyExtensionActivationMap activatorMap, Class<?> componentType) throws Throwable {
