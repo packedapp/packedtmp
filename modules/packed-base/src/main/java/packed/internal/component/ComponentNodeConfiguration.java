@@ -55,15 +55,14 @@ import packed.internal.base.attribute.DefaultAttributeMap;
 import packed.internal.base.attribute.PackedAttribute;
 import packed.internal.base.attribute.ProvidableAttributeModel;
 import packed.internal.base.attribute.ProvidableAttributeModel.Attt;
-import packed.internal.component.OldPackedComponentDriver.SingletonComponentDriver;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ContainerAssembly;
-import packed.internal.container.ExtensionModel;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.container.PackedRealm;
 import packed.internal.inject.ConfigSiteInjectOperations;
+import packed.internal.inject.factory.BaseFactory;
 import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.util.ThrowableUtil;
 
@@ -200,42 +199,24 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         if (modifiers().isGuest()) {
             region.reserve(); // reserve a slot to an instance of PackedGuest
         }
-
         if (modifiers().isSource()) {
-            if (driver instanceof PackedComponentDriver) {
-                PackedComponentDriver<?> pcd = (PackedComponentDriver<?>) driver;
-                if (pcd.source != null && !modifiers().isExtension() && !(pcd.source instanceof ExtensionModel)) {
-                    Object source = pcd.source;
-                    System.out.println(source);
-                    if (source instanceof Class) {
-                        Class<?> c = (Class<?>) source;
-                        Factory<?> factory = Factory.find(c);
-                        ComponentModel cm = realm.componentModelOf(factory.rawType());
-                        this.source = new SourceAssembly(this, cm, factory);
-                    } else if (source instanceof Factory) {
-                        throw new UnsupportedOperationException();
-                    } else {
-                        Object instance = pcd.source;
-                        ComponentModel cm = realm.componentModelOf(instance.getClass());
-                        this.source = new SourceAssembly(this, cm, instance);
-                    }
-                    this.source.cm.invokeOnHookOnInstall(this);
-                } else {
-                    this.source = null;
-                }
-                // ...
+            PackedComponentDriver<?> pcd = (PackedComponentDriver<?>) driver;
+            Object source = pcd.source;
+            requireNonNull(source);
+            if (source instanceof Class) {
+                Class<?> c = (Class<?>) source;
+                Factory<?> factory = Factory.find(c);
+                ComponentModel cm = realm.componentModelOf(factory.rawType());
+                this.source = new SourceAssembly(this, cm, (BaseFactory<?>) factory);
+            } else if (source instanceof Factory) {
+                throw new UnsupportedOperationException();
             } else {
-                // Setup Source
-                SingletonComponentDriver<?> d = (SingletonComponentDriver<?>) driver;
-                if (d.instance != null) {
-                    ComponentModel cm = realm.componentModelOf(d.instance.getClass());
-                    this.source = new SourceAssembly(this, cm, d.instance);
-                } else {
-                    ComponentModel cm = realm.componentModelOf(d.factory.rawType());
-                    this.source = new SourceAssembly(this, cm, d.factory);
-                }
-                this.source.cm.invokeOnHookOnInstall(this);
+                Object instance = pcd.source;
+                ComponentModel cm = realm.componentModelOf(instance.getClass());
+                this.source = new SourceAssembly(this, cm, instance);
             }
+
+            this.source.cm.invokeOnHookOnInstall(this);
         } else {
             this.source = null;
         }

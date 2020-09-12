@@ -52,24 +52,28 @@ public class PackedComponentDriver<C> extends OldPackedComponentDriver<C> implem
     }
 
     private PackedComponentDriver(Meta meta, ExtensionModel em) {
+        super(meta.modifiers.toArray());
         this.meta = meta;
         this.source = em;
         this.sourceType = SourceType.NONE;
     }
 
     <I> PackedComponentDriver(PackedClassComponentDriver<C, I> driver, Class<? extends I> clazz) {
+        super(driver.meta.modifiers.toArray());
         this.meta = driver.meta;
         this.sourceType = SourceType.CLASS;
         this.source = clazz;
     }
 
     <I> PackedComponentDriver(PackedClassComponentDriver<C, I> driver, Object instance) {
+        super(driver.meta.modifiers.toArray());
         this.meta = driver.meta;
         this.sourceType = SourceType.INSTANCE;
         this.source = instance;
     }
 
     <I> PackedComponentDriver(PackedFactoryComponentDriver<C, I> driver, Factory<? extends I> factory) {
+        super(driver.meta.modifiers.toArray());
         this.meta = driver.meta;
         this.sourceType = SourceType.FACTORY;
         this.source = factory;
@@ -153,6 +157,9 @@ public class PackedComponentDriver<C> extends OldPackedComponentDriver<C> implem
         Meta(MethodHandle mh, int modifiers) {
             this.mh = mh;
             this.modifiers = new PackedComponentModifierSet(modifiers);
+            if (this.modifiers.isEmpty()) {
+                throw new IllegalStateException();
+            }
         }
     }
 

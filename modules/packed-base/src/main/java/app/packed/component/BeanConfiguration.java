@@ -23,7 +23,6 @@ import app.packed.component.ComponentDriver.Option;
 import app.packed.container.BaseBundle;
 import app.packed.service.ExportedServiceConfiguration;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.OldPackedComponentDriver;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.service.buildtime.BuildtimeService;
 
@@ -108,7 +107,6 @@ public class BeanConfiguration<T> extends AbstractComponentConfiguration {
 
     @SuppressWarnings("unchecked")
     public static <T> InstanceComponentDriver<BeanConfiguration<T>, T> driver() {
-        // return ICD;
-        return OldPackedComponentDriver.SingletonComponentDriver.driver();
+        return ICD;
     }
 }

@@ -15,20 +15,18 @@
  */
 package app.packed.component;
 
-import packed.internal.component.OldPackedComponentDriver;
-
 /**
  *
  */
 // I don't like the name...
 public interface StatelessConfiguration extends ComponentConfiguration {
 
-    /**
-     * Yup
-     * 
-     * @return yup
-     */
-    Class<?> definition();
+//    /**
+//     * Yup
+//     * 
+//     * @return yup
+//     */
+//    Class<?> definition();
 
     /** {@inheritDoc} */
     @Override
@@ -42,6 +40,7 @@ public interface StatelessConfiguration extends ComponentConfiguration {
      * @return a driver
      */
     static <T> ClassComponentDriver<StatelessConfiguration, T> driver() {
-        return OldPackedComponentDriver.StatelessComponentDriver.driver();
+        throw new UnsupportedOperationException();
+        // return OldPackedComponentDriver.StatelessComponentDriver.driver();
     }
 }

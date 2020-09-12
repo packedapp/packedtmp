@@ -58,11 +58,11 @@ public class SourceAssembly implements DependencyProvider {
     public final ComponentModel cm;
 
     SourceAssembly(ComponentNodeConfiguration component, ComponentModel cm, Object instance) {
+        this.instance = requireNonNull(instance);
         this.cm = requireNonNull(cm);
         this.component = requireNonNull(component);
         RegionAssembly region = component.region;
         this.regionIndex = region.reserve(); // prototype false
-        this.instance = instance;
         this.injectable = null;
         region.resolver.sourceConstants.add(this);
         this.factory = null;

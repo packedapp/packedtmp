@@ -15,22 +15,14 @@
  */
 package packed.internal.component;
 
-import static java.util.Objects.requireNonNull;
-
 import app.packed.base.Nullable;
-import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
-import app.packed.component.ClassComponentDriver;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
-import app.packed.component.InstanceComponentDriver;
-import app.packed.component.StatelessConfiguration;
-import app.packed.inject.Factory;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.PackedRealm;
-import packed.internal.inject.factory.BaseFactory;
 
 /**
  *
@@ -41,6 +33,9 @@ public abstract class OldPackedComponentDriver<C> implements ComponentDriver<C> 
 
     protected OldPackedComponentDriver(ComponentModifier... properties) {
         this.modifiers = PackedComponentModifierSet.intOf(properties);
+        if (modifiers == 0) {
+            throw new IllegalStateException();
+        }
     }
 
     public String defaultName(PackedRealm realm) {
@@ -80,78 +75,4 @@ public abstract class OldPackedComponentDriver<C> implements ComponentDriver<C> 
     }
 
     public abstract C toConfiguration(ComponentConfigurationContext cnc);
-
-    public static class SingletonComponentDriver<T> extends OldPackedComponentDriver<BeanConfiguration<T>> {
-
-        @Nullable
-        final BaseFactory<?> factory;
-
-        @Nullable
-        final T instance;
-
-        public SingletonComponentDriver(PackedRealm realm, Factory<?> factory) {
-            super(ComponentModifier.CONSTANT, ComponentModifier.SOURCED);
-            requireNonNull(factory, "factory is null");
-            this.factory = (BaseFactory<?>) factory;
-            this.instance = null;
-        }
-
-        public SingletonComponentDriver(PackedRealm realm, T instance) {
-            super(ComponentModifier.CONSTANT, ComponentModifier.SOURCED);
-            this.instance = requireNonNull(instance, "instance is null");
-            this.factory = null;
-        }
-
-        @Override
-        public BeanConfiguration<T> toConfiguration(ComponentConfigurationContext context) {
-            return new BeanConfiguration<>(context);
-        }
-
-        public static <T> InstanceComponentDriver<BeanConfiguration<T>, T> driver() {
-            return new InstanceComponentDriver<BeanConfiguration<T>, T>() {
-
-                @Override
-                public ComponentDriver<BeanConfiguration<T>> bindToFactory(PackedRealm realm, Factory<? extends T> factory) {
-                    return new SingletonComponentDriver<>(realm, factory);
-                }
-
-                @Override
-                public ComponentDriver<BeanConfiguration<T>> bindToInstance(PackedRealm realm, T instance) {
-                    return new SingletonComponentDriver<>(realm, instance);
-                }
-            };
-        }
-    }
-
-    public static class StatelessComponentDriver extends OldPackedComponentDriver<StatelessConfiguration> {
-        public final ComponentModel model;
-
-        private StatelessComponentDriver(PackedRealm lookup, Class<?> implementation) {
-            super(ComponentModifier.UNSCOPED, ComponentModifier.SOURCED);
-            this.model = lookup.componentModelOf(requireNonNull(implementation, "implementation is null"));
-            requireNonNull(implementation, "implementation is null");
-        }
-
-        @Override
-        public String defaultName(PackedRealm realm) {
-            return model.defaultPrefix();
-        }
-
-        @Override
-        public StatelessConfiguration toConfiguration(ComponentConfigurationContext context) {
-            ComponentNodeConfiguration cnc = (ComponentNodeConfiguration) context;
-            model.invokeOnHookOnInstall(cnc);
-            return new PackedStatelessComponentConfiguration(cnc);
-        }
-
-        public static <T> ClassComponentDriver<StatelessConfiguration, T> driver() {
-            return new ClassComponentDriver<StatelessConfiguration, T>() {
-
-                @Override
-                public ComponentDriver<StatelessConfiguration> bindToClass(PackedRealm realm, Class<? extends T> implementation) {
-                    return new OldPackedComponentDriver.StatelessComponentDriver(realm, implementation);
-                }
-            };
-        }
-    }
 }
