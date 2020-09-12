@@ -23,6 +23,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundle;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
+import app.packed.service.ExportedServiceConfiguration;
 
 /**
  * Component configuration context objects used by {@link AbstractComponentConfiguration}.
@@ -89,6 +90,8 @@ public interface ComponentConfigurationContext {
     void sourceProvide();
 
     void sourceProvideAs(Key<?> key);
+
+    <T> ExportedServiceConfiguration<T> sourceExport();
 
     /**
      * Returns the name of the component. If no name has previously been set via {@link #setName(String)} a name is

@@ -52,6 +52,7 @@ import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
+import app.packed.service.ExportedServiceConfiguration;
 import packed.internal.base.attribute.DefaultAttributeMap;
 import packed.internal.base.attribute.PackedAttribute;
 import packed.internal.base.attribute.ProvidableAttributeModel;
@@ -632,6 +633,15 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         return source.service == null ? Optional.empty() : Optional.of(source.service.key());
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> ExportedServiceConfiguration<T> sourceExport() {
+        sourceProvide();
+        return (ExportedServiceConfiguration<T>) source.service.im.exports().export(source.service,
+                captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public void sourceProvideAs(Key<?> key) {
         requireNonNull(key, "key is null");
@@ -639,6 +649,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         if (source == null) {
             throw new UnsupportedOperationException();
         }
+        source.provide().as((Key) key);
     }
 
     /** An adaptor of the {@link Component} interface from a {@link ComponentNodeConfiguration}. */

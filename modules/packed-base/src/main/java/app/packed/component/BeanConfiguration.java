@@ -23,7 +23,6 @@ import app.packed.component.ComponentDriver.Option;
 import app.packed.container.BaseBundle;
 import app.packed.service.ExportedServiceConfiguration;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.service.buildtime.BuildtimeService;
 
 /**
@@ -105,10 +104,7 @@ public class BeanConfiguration<T> extends AbstractComponentConfiguration {
 
     // Once a bean has been exported, its key cannot be changed...
     public ExportedServiceConfiguration<T> export() {
-        checkConfigurable();
-        provide();
-        // buildEntry might not have been set yet...
-        return buildEntry.im.exports().export(buildEntry, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
+        return component.sourceExport();
     }
 
     @SuppressWarnings("unchecked")
