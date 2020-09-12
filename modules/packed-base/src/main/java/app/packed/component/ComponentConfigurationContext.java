@@ -15,6 +15,7 @@
  */
 package app.packed.component;
 
+import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Key;
@@ -82,6 +83,8 @@ public interface ComponentConfigurationContext {
 
     // IDK hvorfor har en driver adgang til alm extensions????
     <T extends Extension> T containerUse(Class<T> extensionType);
+
+    Optional<Key<?>> sourceProvideAsKey();
 
     void sourceProvide();
 

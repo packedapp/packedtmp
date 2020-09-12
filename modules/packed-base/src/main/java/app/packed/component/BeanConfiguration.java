@@ -80,11 +80,12 @@ public class BeanConfiguration<T> extends AbstractComponentConfiguration {
     }
 
     public Optional<Key<?>> key() {
-        return buildEntry == null ? Optional.empty() : Optional.of(buildEntry.key());
+        return component.sourceProvideAsKey();
     }
 
     @SuppressWarnings("unchecked")
     public BeanConfiguration<T> provide() {
+
         if (buildEntry == null) {
             buildEntry = (BuildtimeService<T>) component.source.provide();
         }

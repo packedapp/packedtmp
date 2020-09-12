@@ -625,6 +625,14 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     }
 
     @Override
+    public Optional<Key<?>> sourceProvideAsKey() {
+        if (source == null) {
+            throw new UnsupportedOperationException();
+        }
+        return source.service == null ? Optional.empty() : Optional.of(source.service.key());
+    }
+
+    @Override
     public void sourceProvideAs(Key<?> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
