@@ -19,6 +19,6 @@ package packed.internal.container;
  *
  */
 // IDeen er at man kan specificere den til OpenClass...
-public enum SourceModel {
+public enum SourceModelX {
     INJECT_ONLY, FULL;
 }

@@ -17,6 +17,7 @@ package app.packed.component;
 
 import java.util.Set;
 
+import app.packed.base.Key;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundle;
 import app.packed.container.Extension;
@@ -79,7 +80,12 @@ public interface ComponentConfigurationContext {
     // Maybe an attribute.. component.with(Extension.USED_EXTENSIONS)
     Set<Class<? extends Extension>> containerExtensions();
 
+    // IDK hvorfor har en driver adgang til alm extensions????
     <T extends Extension> T containerUse(Class<T> extensionType);
+
+    void sourceProvide();
+
+    void sourceProvideAs(Key<?> key);
 
     /**
      * Returns the name of the component. If no name has previously been set via {@link #setName(String)} a name is
@@ -91,6 +97,7 @@ public interface ComponentConfigurationContext {
      * @return the name of the component
      * @see #setName(String)
      */
+    // Ditch this one?? Maybe have it via asComponent();
     String getName();
 
     /**
@@ -164,11 +171,4 @@ public interface ComponentConfigurationContext {
 
     <C, I> C wireInstance(InstanceComponentDriver<C, I> driver, I instance, Wirelet... wirelets);
 
-    // I assume we wan to inject this separately instead maybe????
-    interface Provide<K> {
-
-        void export();
-
-        void setKey(K key);
-    }
 }

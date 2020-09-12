@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.base.AttributeMap;
+import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.ClassComponentDriver;
@@ -168,6 +169,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
         this.treeParent = parent;
         int mod = driver.modifiers;
+
         if (parent == null) {
             this.treeDepth = 0;
             this.region = new RegionAssembly(this); // Root always needs a nodestore
@@ -196,6 +198,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         if (modifiers().isGuest()) {
             region.reserve(); // reserve a slot to an instance of PackedGuest
         }
+
+        // Setup source
         if (modifiers().isSource()) {
             this.source = new SourceAssembly(this);
             this.source.model.invokeOnHookOnInstall(this);
@@ -203,7 +207,8 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             this.source = null;
         }
 
-        setName0(null); // initialize name
+        // Setup default name
+        setName0(null);
     }
 
     /**
@@ -360,10 +365,6 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             throw new UnsupportedOperationException("This method can only be used by a component has ComponentDriver.Option.container() enabled");
         }
         return container.use(extensionType);
-    }
-
-    public int depth() {
-        return treeDepth;
     }
 
     /**
@@ -611,6 +612,25 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         }
         ComponentAdaptor cc = (ComponentAdaptor) component;
         return cc.conf;
+    }
+
+    @Override
+    public void sourceProvide() {
+        // TODO check not stateless
+        checkConfigurable();
+        if (source == null) {
+            throw new UnsupportedOperationException();
+        }
+        source.provide();
+    }
+
+    @Override
+    public void sourceProvideAs(Key<?> key) {
+        requireNonNull(key, "key is null");
+        checkConfigurable();
+        if (source == null) {
+            throw new UnsupportedOperationException();
+        }
     }
 
     /** An adaptor of the {@link Component} interface from a {@link ComponentNodeConfiguration}. */

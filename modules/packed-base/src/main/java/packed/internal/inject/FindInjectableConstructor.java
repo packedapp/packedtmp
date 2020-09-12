@@ -108,7 +108,7 @@ public final class FindInjectableConstructor {
         throw new IllegalArgumentException(
                 "No constructor annotated with @" + Inject.class.getSimpleName() + ". And multiple private constructors on class " + format(type));
     }
-
+}
 //  // Try to find a single static method annotated with @Inject
 //  Method method = null;
 //  for (Method m : type.getDeclaredMethods()) {
@@ -134,4 +134,3 @@ public final class FindInjectableConstructor {
 //      // Og saa brugere skal bruge Factory.findStaticInject(Class, Type); <----
 //      return method;
 //  }
-}

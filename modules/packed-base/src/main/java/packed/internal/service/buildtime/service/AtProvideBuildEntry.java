@@ -34,7 +34,7 @@ import packed.internal.service.runtime.RuntimeService;
  */
 public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
 
-    public final Injectable injectable;
+    final Injectable injectable;
 
     public final int regionIndex;
 
