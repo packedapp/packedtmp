@@ -58,40 +58,6 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
         }
     }
 
-    private PackedComponentDriver(Meta meta, ExtensionModel em) {
-        this(meta, em, SourceType.NONE);
-    }
-
-    <I> PackedComponentDriver(PackedClassComponentDriver<C, I> driver, Class<? extends I> clazz) {
-        this.meta = driver.meta;
-        this.sourceType = SourceType.CLASS;
-        this.data = clazz;
-        this.modifiers = PackedComponentModifierSet.intOf(meta.modifiers.toArray());
-        if (modifiers == 0) {
-            throw new IllegalStateException();
-        }
-    }
-
-    <I> PackedComponentDriver(PackedClassComponentDriver<C, I> driver, Object instance) {
-        this.meta = driver.meta;
-        this.sourceType = SourceType.INSTANCE;
-        this.data = instance;
-        this.modifiers = PackedComponentModifierSet.intOf(meta.modifiers.toArray());
-        if (modifiers == 0) {
-            throw new IllegalStateException();
-        }
-    }
-
-    <I> PackedComponentDriver(PackedFactoryComponentDriver<C, I> driver, Factory<? extends I> factory) {
-        this.meta = driver.meta;
-        this.sourceType = SourceType.FACTORY;
-        this.data = factory;
-        this.modifiers = PackedComponentModifierSet.intOf(meta.modifiers.toArray());
-        if (modifiers == 0) {
-            throw new IllegalStateException();
-        }
-    }
-
     public String defaultName(PackedRealm realm) {
         if (this instanceof PackedComponentDriver) {
             PackedComponentDriver<?> pcd = this;
@@ -141,7 +107,7 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
         // AN EXTENSION DOES NOT HAVE A SOURCE. Sources are to be analyzed
         // And is available at runtime
         Meta meta = new Meta(null, PackedComponentModifierSet.I_EXTENSION);
-        return new PackedComponentDriver<>(meta, em);
+        return new PackedComponentDriver<>(meta, em, SourceType.NONE);
     }
 
     public static Meta newMeta(MethodHandles.Lookup caller, boolean isSource, Class<?> driverType, Option... options) {
@@ -236,7 +202,8 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
         /** {@inheritDoc} */
         @Override
         public ComponentDriver<C> bindToClass(PackedRealm realm, Class<? extends I> implementation) {
-            return new PackedComponentDriver<>(this, implementation);
+            requireNonNull(implementation, "implementation is null");
+            return new PackedComponentDriver<>(meta, implementation, SourceType.CLASS);
         }
     }
 
@@ -252,7 +219,8 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
         /** {@inheritDoc} */
         @Override
         public ComponentDriver<C> bindToFactory(PackedRealm realm, Factory<? extends I> factory) {
-            return new PackedComponentDriver<>(this, factory);
+            requireNonNull(factory, "factory is null");
+            return new PackedComponentDriver<>(meta, factory, SourceType.FACTORY);
         }
     }
 
@@ -268,7 +236,13 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
         /** {@inheritDoc} */
         @Override
         public ComponentDriver<C> bindToInstance(PackedRealm realm, I instance) {
-            return new PackedComponentDriver<>(this, instance);
+            requireNonNull(instance, "instance is null");
+            if (instance instanceof Class) {
+                throw new IllegalStateException("Cannot specify a Class instance, was " + instance);
+            } else if (instance instanceof Factory) {
+                throw new IllegalStateException("Cannot specify a Factory instance, was " + instance);
+            }
+            return new PackedComponentDriver<>(meta, instance, SourceType.INSTANCE);
         }
     }
 
