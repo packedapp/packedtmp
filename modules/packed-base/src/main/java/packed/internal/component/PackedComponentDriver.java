@@ -37,31 +37,66 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
-public final class PackedComponentDriver<C> extends OldPackedComponentDriver<C> implements ComponentDriver<C> {
+public final class PackedComponentDriver<C> implements ComponentDriver<C> {
 
     final Meta meta;
 
-    final Object source;
+    final int modifiers;
+
+    // Holds ExtensionModel for extensions, source for sourced components
+    final Object data;
 
     final SourceType sourceType;
 
-    PackedComponentDriver(Meta meta) {
+    PackedComponentDriver(Meta meta, Object data, SourceType sourceType) {
         this.meta = requireNonNull(meta);
-        this.source = null;
-        this.sourceType = null;
+        this.data = data;
+        this.sourceType = sourceType;
         this.modifiers = PackedComponentModifierSet.intOf(meta.modifiers.toArray());
         if (modifiers == 0) {
             throw new IllegalStateException();
         }
     }
 
-    final int modifiers;
+    private PackedComponentDriver(Meta meta, ExtensionModel em) {
+        this(meta, em, SourceType.NONE);
+    }
+
+    <I> PackedComponentDriver(PackedClassComponentDriver<C, I> driver, Class<? extends I> clazz) {
+        this.meta = driver.meta;
+        this.sourceType = SourceType.CLASS;
+        this.data = clazz;
+        this.modifiers = PackedComponentModifierSet.intOf(meta.modifiers.toArray());
+        if (modifiers == 0) {
+            throw new IllegalStateException();
+        }
+    }
+
+    <I> PackedComponentDriver(PackedClassComponentDriver<C, I> driver, Object instance) {
+        this.meta = driver.meta;
+        this.sourceType = SourceType.INSTANCE;
+        this.data = instance;
+        this.modifiers = PackedComponentModifierSet.intOf(meta.modifiers.toArray());
+        if (modifiers == 0) {
+            throw new IllegalStateException();
+        }
+    }
+
+    <I> PackedComponentDriver(PackedFactoryComponentDriver<C, I> driver, Factory<? extends I> factory) {
+        this.meta = driver.meta;
+        this.sourceType = SourceType.FACTORY;
+        this.data = factory;
+        this.modifiers = PackedComponentModifierSet.intOf(meta.modifiers.toArray());
+        if (modifiers == 0) {
+            throw new IllegalStateException();
+        }
+    }
 
     public String defaultName(PackedRealm realm) {
         if (this instanceof PackedComponentDriver) {
             PackedComponentDriver<?> pcd = this;
-            if (pcd.source instanceof ExtensionModel) {
-                return ((ExtensionModel) pcd.source).defaultComponentName;
+            if (pcd.data instanceof ExtensionModel) {
+                return ((ExtensionModel) pcd.data).defaultComponentName;
             }
         }
         if (modifiers().isContainer()) {
@@ -85,46 +120,6 @@ public final class PackedComponentDriver<C> extends OldPackedComponentDriver<C> 
             // TODO think it should be named Artifact type, for example, app, injector, ...
         }
         return "Unknown";
-    }
-
-    private PackedComponentDriver(Meta meta, ExtensionModel em) {
-        this.meta = meta;
-        this.source = em;
-        this.sourceType = SourceType.NONE;
-        this.modifiers = PackedComponentModifierSet.intOf(meta.modifiers.toArray());
-        if (modifiers == 0) {
-            throw new IllegalStateException();
-        }
-    }
-
-    <I> PackedComponentDriver(PackedClassComponentDriver<C, I> driver, Class<? extends I> clazz) {
-        this.meta = driver.meta;
-        this.sourceType = SourceType.CLASS;
-        this.source = clazz;
-        this.modifiers = PackedComponentModifierSet.intOf(meta.modifiers.toArray());
-        if (modifiers == 0) {
-            throw new IllegalStateException();
-        }
-    }
-
-    <I> PackedComponentDriver(PackedClassComponentDriver<C, I> driver, Object instance) {
-        this.meta = driver.meta;
-        this.sourceType = SourceType.INSTANCE;
-        this.source = instance;
-        this.modifiers = PackedComponentModifierSet.intOf(meta.modifiers.toArray());
-        if (modifiers == 0) {
-            throw new IllegalStateException();
-        }
-    }
-
-    <I> PackedComponentDriver(PackedFactoryComponentDriver<C, I> driver, Factory<? extends I> factory) {
-        this.meta = driver.meta;
-        this.sourceType = SourceType.FACTORY;
-        this.source = factory;
-        this.modifiers = PackedComponentModifierSet.intOf(meta.modifiers.toArray());
-        if (modifiers == 0) {
-            throw new IllegalStateException();
-        }
     }
 
     /** {@inheritDoc} */
@@ -185,7 +180,7 @@ public final class PackedComponentDriver<C> extends OldPackedComponentDriver<C> 
         requireNonNull(options, "options is null");
 
         Meta meta = newMeta(caller, false, driverType, options);
-        return new PackedComponentDriver<>(meta);
+        return new PackedComponentDriver<>(meta, null, SourceType.NONE);
     }
 
     public static <C, I> PackedInstanceComponentDriver<C, I> ofInstance(MethodHandles.Lookup caller, Class<? extends C> driverType, Option... options) {
@@ -215,9 +210,9 @@ public final class PackedComponentDriver<C> extends OldPackedComponentDriver<C> 
     // Og saa bruge MethodHandles til at extract id, data?
     // Nahhh
     public static class OptionImpl implements ComponentDriver.Option {
+
         static final int OPT_CONSTANT = 2;
         static final int OPT_CONTAINER = 1;
-
         public static final OptionImpl CONSTANT = new OptionImpl(OPT_CONSTANT, null);
         public static final OptionImpl CONTAINER = new OptionImpl(OPT_CONTAINER, null);
 

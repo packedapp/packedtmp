@@ -201,7 +201,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         }
         if (modifiers().isSource()) {
             PackedComponentDriver<?> pcd = driver;
-            Object source = pcd.source;
+            Object source = pcd.data;
             requireNonNull(source);
             if (source instanceof Class) {
                 Class<?> c = (Class<?>) source;
@@ -211,7 +211,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             } else if (source instanceof Factory) {
                 throw new UnsupportedOperationException();
             } else {
-                Object instance = pcd.source;
+                Object instance = pcd.data;
                 ComponentModel cm = realm.componentModelOf(instance.getClass());
                 this.source = new SourceAssembly(this, cm, instance);
             }
