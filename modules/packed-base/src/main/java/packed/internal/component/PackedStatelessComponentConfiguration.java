@@ -24,11 +24,8 @@ import app.packed.component.StatelessConfiguration;
  */
 public class PackedStatelessComponentConfiguration extends AbstractComponentConfiguration implements StatelessConfiguration {
 
-    private final ComponentNodeConfiguration context;
-
     public PackedStatelessComponentConfiguration(ComponentConfigurationContext context) {
         super(context);
-        this.context = (ComponentNodeConfiguration) context;
     }
 
     /** {@inheritDoc} */

@@ -22,8 +22,6 @@ import app.packed.base.Key;
 import app.packed.component.ComponentDriver.Option;
 import app.packed.container.BaseBundle;
 import app.packed.service.ExportedServiceConfiguration;
-import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.service.buildtime.BuildtimeService;
 
 /**
  * This class represents the configuration of a component. Actual instances of this interface is usually obtained by
@@ -31,19 +29,13 @@ import packed.internal.service.buildtime.BuildtimeService;
  * <p>
  * It it also possible to install components at runtime via {@link Component}.
  */
-@SuppressWarnings("exports")
 public class BeanConfiguration<T> extends AbstractComponentConfiguration {
 
     @SuppressWarnings("rawtypes")
     private static final InstanceComponentDriver ICD = InstanceComponentDriver.of(MethodHandles.lookup(), BeanConfiguration.class, Option.constantSource());
 
-    public final ComponentNodeConfiguration component;
-
-    private BuildtimeService<T> buildEntry;
-
-    public BeanConfiguration(ComponentConfigurationContext context) {
+    private BeanConfiguration(ComponentConfigurationContext context) {
         super(context);
-        this.component = (ComponentNodeConfiguration) context;
     }
 
     /**
@@ -68,33 +60,24 @@ public class BeanConfiguration<T> extends AbstractComponentConfiguration {
      * @return this configuration
      * @see #as(Class)
      */
-    @SuppressWarnings("unchecked")
     public BeanConfiguration<T> as(Key<? super T> key) {
-        checkConfigurable();
-        if (buildEntry == null) {
-            buildEntry = (BuildtimeService<T>) component.source.provide();
-        }
-        buildEntry.as(key);
+        context.sourceProvideAs(key);
         return this;
     }
 
     public Optional<Key<?>> key() {
-        return component.sourceProvideAsKey();
+        return context.sourceProvideAsKey();
     }
 
-    @SuppressWarnings("unchecked")
     public BeanConfiguration<T> provide() {
-
-        if (buildEntry == null) {
-            buildEntry = (BuildtimeService<T>) component.source.provide();
-        }
+        context.sourceProvide();
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
     public BeanConfiguration<T> setName(String name) {
-        component.setName(name);
+        context.setName(name);
         return this;
     }
 
@@ -104,7 +87,7 @@ public class BeanConfiguration<T> extends AbstractComponentConfiguration {
 
     // Once a bean has been exported, its key cannot be changed...
     public ExportedServiceConfiguration<T> export() {
-        return component.sourceExport();
+        return context.sourceExport();
     }
 
     @SuppressWarnings("unchecked")

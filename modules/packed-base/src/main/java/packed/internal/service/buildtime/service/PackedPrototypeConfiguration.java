@@ -21,38 +21,24 @@ import app.packed.component.AbstractComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.PrototypeConfiguration;
-import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.inject.ConfigSiteInjectOperations;
-import packed.internal.service.buildtime.BuildtimeService;
 
 /**
  *
  */
 public final class PackedPrototypeConfiguration<T> extends AbstractComponentConfiguration implements PrototypeConfiguration<T> {
 
-    /** The service we are exposing. */
-    public final BuildtimeService<T> buildEntry;
-
-    /** The component we are exposing. */
-    private final ComponentNodeConfiguration component;
-
     /**
      * Creates a new configuration object
-     * 
      */
-    @SuppressWarnings("unchecked")
     public PackedPrototypeConfiguration(ComponentConfigurationContext component) {
         super(component);
-        this.component = (ComponentNodeConfiguration) component;
-        this.buildEntry = (BuildtimeService<T>) this.component.source.provide();
-
+        context.sourceProvide();
     }
 
     /** {@inheritDoc} */
     @Override
     public PackedPrototypeConfiguration<T> as(Key<? super T> key) {
-        checkConfigurable();
-        buildEntry.as(key);
+        context.sourceProvideAs(key);
         return this;
     }
 
@@ -60,20 +46,19 @@ public final class PackedPrototypeConfiguration<T> extends AbstractComponentConf
     @Override
     @Nullable
     public Key<?> getKey() {
-        return buildEntry.key();
+        return context.sourceProvideAsKey().get();
     }
 
     /** {@inheritDoc} */
     @Override
     public PackedPrototypeConfiguration<T> setName(String name) {
-        component.setName(name);
+        context.setName(name);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
     public ExportedServiceConfiguration<T> export() {
-        checkConfigurable();
-        return buildEntry.im.exports().export(buildEntry, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
+        return context.sourceExport();
     }
 }
