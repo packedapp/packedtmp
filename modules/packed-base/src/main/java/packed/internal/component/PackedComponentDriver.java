@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Nullable;
+import app.packed.component.Bundle;
 import app.packed.component.ClassComponentDriver;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
@@ -36,7 +37,7 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
-public class PackedComponentDriver<C> extends OldPackedComponentDriver<C> implements ComponentDriver<C> {
+public final class PackedComponentDriver<C> extends OldPackedComponentDriver<C> implements ComponentDriver<C> {
 
     final Meta meta;
 
@@ -45,38 +46,85 @@ public class PackedComponentDriver<C> extends OldPackedComponentDriver<C> implem
     final SourceType sourceType;
 
     PackedComponentDriver(Meta meta) {
-        super(meta.modifiers.toArray());
         this.meta = requireNonNull(meta);
         this.source = null;
         this.sourceType = null;
+        this.modifiers = PackedComponentModifierSet.intOf(meta.modifiers.toArray());
+        if (modifiers == 0) {
+            throw new IllegalStateException();
+        }
+    }
+
+    final int modifiers;
+
+    public String defaultName(PackedRealm realm) {
+        if (this instanceof PackedComponentDriver) {
+            PackedComponentDriver<?> pcd = this;
+            if (pcd.source instanceof ExtensionModel) {
+                return ((ExtensionModel) pcd.source).defaultComponentName;
+            }
+        }
+        if (modifiers().isContainer()) {
+            // I think try and move some of this to ComponentNameWirelet
+            @Nullable
+            Class<?> source = realm.type();
+            if (Bundle.class.isAssignableFrom(source)) {
+                String nnn = source.getSimpleName();
+                if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
+                    nnn = nnn.substring(0, nnn.length() - 6);
+                }
+                if (nnn.length() > 0) {
+                    // checkName, if not just App
+                    // TODO need prefix
+                    return nnn;
+                }
+                if (nnn.length() == 0) {
+                    return "Container";
+                }
+            }
+            // TODO think it should be named Artifact type, for example, app, injector, ...
+        }
+        return "Unknown";
     }
 
     private PackedComponentDriver(Meta meta, ExtensionModel em) {
-        super(meta.modifiers.toArray());
         this.meta = meta;
         this.source = em;
         this.sourceType = SourceType.NONE;
+        this.modifiers = PackedComponentModifierSet.intOf(meta.modifiers.toArray());
+        if (modifiers == 0) {
+            throw new IllegalStateException();
+        }
     }
 
     <I> PackedComponentDriver(PackedClassComponentDriver<C, I> driver, Class<? extends I> clazz) {
-        super(driver.meta.modifiers.toArray());
         this.meta = driver.meta;
         this.sourceType = SourceType.CLASS;
         this.source = clazz;
+        this.modifiers = PackedComponentModifierSet.intOf(meta.modifiers.toArray());
+        if (modifiers == 0) {
+            throw new IllegalStateException();
+        }
     }
 
     <I> PackedComponentDriver(PackedClassComponentDriver<C, I> driver, Object instance) {
-        super(driver.meta.modifiers.toArray());
         this.meta = driver.meta;
         this.sourceType = SourceType.INSTANCE;
         this.source = instance;
+        this.modifiers = PackedComponentModifierSet.intOf(meta.modifiers.toArray());
+        if (modifiers == 0) {
+            throw new IllegalStateException();
+        }
     }
 
     <I> PackedComponentDriver(PackedFactoryComponentDriver<C, I> driver, Factory<? extends I> factory) {
-        super(driver.meta.modifiers.toArray());
         this.meta = driver.meta;
         this.sourceType = SourceType.FACTORY;
         this.source = factory;
+        this.modifiers = PackedComponentModifierSet.intOf(meta.modifiers.toArray());
+        if (modifiers == 0) {
+            throw new IllegalStateException();
+        }
     }
 
     /** {@inheritDoc} */
@@ -85,7 +133,6 @@ public class PackedComponentDriver<C> extends OldPackedComponentDriver<C> implem
         return meta.modifiers;
     }
 
-    @Override
     public C toConfiguration(ComponentConfigurationContext cnc) {
         // Vil godt lave den om til CNC
         try {
