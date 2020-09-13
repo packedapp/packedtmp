@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import app.packed.base.Key;
@@ -100,12 +99,11 @@ public final class InjectionManager {
     }
 
     public void buildTree(RegionAssembly resolver) {
+        provider().resolve(this, resolvedEntries);
 
-        HashMap<Key<?>, BuildtimeService<?>> resolvedServices = provider().resolve(this);
         if (em != null) {
             ErrorMessages.addDuplicateNodes(em.failingDuplicateProviders);
         }
-        resolvedServices.values().forEach(e -> resolvedEntries.put(requireNonNull(e.key()), e));
 
         if (exporter != null) {
             exporter.resolve();

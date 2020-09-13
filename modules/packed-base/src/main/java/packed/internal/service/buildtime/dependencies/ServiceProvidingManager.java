@@ -17,7 +17,6 @@ package packed.internal.service.buildtime.dependencies;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
@@ -54,8 +53,7 @@ public final class ServiceProvidingManager {
         p.add(new ProvideAllFromOtherInjector(im, configSite, injector, wirelets));
     }
 
-    public HashMap<Key<?>, BuildtimeService<?>> resolve(InjectionManager im) {
-        LinkedHashMap<Key<?>, BuildtimeService<?>> resolvedServices = new LinkedHashMap<>();
+    public LinkedHashMap<Key<?>, BuildtimeService<?>> resolve(InjectionManager im, LinkedHashMap<Key<?>, BuildtimeService<?>> resolvedServices) {
 
         // First process provided entries, then any entries added via provideAll
         resolve0(im, resolvedServices, buildEntries);
