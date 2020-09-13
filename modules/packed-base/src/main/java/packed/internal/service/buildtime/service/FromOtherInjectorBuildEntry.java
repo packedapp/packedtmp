@@ -15,8 +15,6 @@
  */
 package packed.internal.service.buildtime.service;
 
-import static java.util.Objects.requireNonNull;
-
 import app.packed.component.Wirelet;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
@@ -38,7 +36,7 @@ final class FromOtherInjectorBuildEntry<T> extends BuildtimeService<T> {
         super(fromInjector.node, fromInjector.configSite.withParent(entry.configSite()));
         this.entry = entry;
         this.fromInjector = fromInjector;
-        this.key = requireNonNull(entry.key());
+        setKey(entry.key());
     }
 
     /** {@inheritDoc} */

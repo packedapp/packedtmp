@@ -80,7 +80,6 @@ public final class ServiceProvidingManager {
     }
 
     public HashMap<Key<?>, BuildtimeService<?>> resolve() {
-
         LinkedHashMap<Key<?>, BuildtimeService<?>> resolvedServices = new LinkedHashMap<>();
 
         // First process provided entries, then any entries added via provideAll
@@ -103,8 +102,8 @@ public final class ServiceProvidingManager {
         return resolvedServices;
     }
 
-    private void resolve0(LinkedHashMap<Key<?>, BuildtimeService<?>> resolvedServices, Collection<? extends BuildtimeService<?>> entries) {
-        for (BuildtimeService<?> entry : entries) {
+    private void resolve0(LinkedHashMap<Key<?>, BuildtimeService<?>> resolvedServices, Collection<? extends BuildtimeService<?>> buildEntries) {
+        for (BuildtimeService<?> entry : buildEntries) {
             Key<?> key = entry.key(); // whats the deal with null keys
             if (key != null) {
                 BuildtimeService<?> existing = resolvedServices.putIfAbsent(key, entry);

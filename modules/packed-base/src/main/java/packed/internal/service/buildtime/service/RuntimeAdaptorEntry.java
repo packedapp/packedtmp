@@ -15,8 +15,6 @@
  */
 package packed.internal.service.buildtime.service;
 
-import static java.util.Objects.requireNonNull;
-
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.service.Injector;
@@ -36,7 +34,7 @@ public final class RuntimeAdaptorEntry<T> extends BuildtimeService<T> {
     public RuntimeAdaptorEntry(InjectionManager node, RuntimeService<T> entry) {
         super(node, ConfigSite.UNKNOWN);
         this.entry = entry;
-        this.key = requireNonNull(entry.key());
+        setKey(entry.key());
     }
 
     /** {@inheritDoc} */

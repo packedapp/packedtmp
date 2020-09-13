@@ -51,8 +51,7 @@ public abstract class BuildtimeService<T> implements DependencyProvider {
      * instance methods annotated with {@link Provide}. In which the case the declaring class needs to be constructor
      * injected before the providing method can be invoked.
      */
-    @Nullable
-    protected Key<T> key;
+    private Key<T> key;
 
     public BuildtimeService(@Nullable InjectionManager im, ConfigSite configSite) {
         this.im = requireNonNull(im);
@@ -65,6 +64,12 @@ public abstract class BuildtimeService<T> implements DependencyProvider {
         // requireConfigurable();
         // validateKey(key);
         // Det er sgu ikke lige til at validere det med generics signature....
+        this.key = (Key<T>) key;
+    }
+
+    @SuppressWarnings("unchecked")
+    public void setKey(Key<? super T> key) {
+        requireNonNull(key);
         this.key = (Key<T>) key;
     }
 

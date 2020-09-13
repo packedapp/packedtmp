@@ -45,7 +45,7 @@ public final class ComponentSourceBuildEntry<T> extends BuildtimeService<T> {
     public ComponentSourceBuildEntry(ComponentNodeConfiguration component, Key<T> key) {
         super(component.injectionManager(), component.configSite());
         this.source = requireNonNull(component.source);
-        this.key = requireNonNull(key);
+        setKey(requireNonNull(key));
         im.provider().buildEntries.add(this);
     }
 

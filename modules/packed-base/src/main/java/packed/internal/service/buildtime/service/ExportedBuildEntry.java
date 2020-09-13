@@ -54,7 +54,7 @@ public final class ExportedBuildEntry<T> extends BuildtimeService<T> {
     public ExportedBuildEntry(InjectionManager builder, Key<T> key, ConfigSite configSite) {
         super(builder, configSite);
         this.keyToExport = requireNonNull(key);
-        this.key = requireNonNull(key);
+        setKey(key);
     }
 
     /**
@@ -73,7 +73,7 @@ public final class ExportedBuildEntry<T> extends BuildtimeService<T> {
         // Export of export, of export????
         // Hvad hvis en eller anden aendrer en key midt i chainen.
         // Slaar det igennem i hele vejen ned.
-        this.key = entryToExport.key();
+        setKey(entryToExport.key());
     }
 
     /** {@inheritDoc} */

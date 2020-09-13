@@ -49,7 +49,7 @@ public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
         super(component.container.im, component.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, ap.provides, ap.member));
         this.source = component.source;
         this.injectable = new Injectable(this, source, ap);
-        this.key = (Key) ap.key;
+        setKey((Key) ap.key);
         if (ap.isConstant) {
             this.regionIndex = component.region.reserve();
         } else {

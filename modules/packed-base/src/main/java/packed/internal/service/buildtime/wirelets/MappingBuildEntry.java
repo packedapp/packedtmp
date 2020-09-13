@@ -42,7 +42,7 @@ final class MappingBuildEntry<F, T> extends BuildtimeService<T> {
         super(node, configSite);
         this.entryToMap = entryToMap;
         this.function = requireNonNull(function, "function is null");
-        this.key = toKey;
+        setKey(toKey);
     }
 
     /** {@inheritDoc} */
