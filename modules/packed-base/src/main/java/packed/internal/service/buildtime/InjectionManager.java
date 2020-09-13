@@ -30,7 +30,7 @@ import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceMap;
 import app.packed.service.ServiceRegistry;
 import packed.internal.component.Region;
-import packed.internal.component.Resolver;
+import packed.internal.component.RegionAssembly;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.Injectable;
@@ -92,7 +92,7 @@ public final class InjectionManager {
         hasFailed = true;
     }
 
-    public void buildTree(Resolver resolver) {
+    public void buildTree(RegionAssembly resolver) {
         if (parent == null) {
 //            TreePrinter.print(this, n -> n.children, "", n -> n.context.containerPath().toString());
         }

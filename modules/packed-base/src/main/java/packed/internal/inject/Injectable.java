@@ -25,7 +25,7 @@ import java.util.List;
 
 import app.packed.base.Nullable;
 import packed.internal.component.Region;
-import packed.internal.component.Resolver;
+import packed.internal.component.RegionAssembly;
 import packed.internal.component.SourceAssembly;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
@@ -161,7 +161,7 @@ public final class Injectable {
         return directMethodHandle.type().returnType();
     }
 
-    public void resolve(Resolver resolver) {
+    public void resolve(RegionAssembly resolver) {
         int startIndex = resolved.length != dependencies.size() ? 1 : 0;
         for (int i = 0; i < dependencies.size(); i++) {
             resolved[i + startIndex] = resolver.resolve(this, dependencies.get(i));

@@ -93,7 +93,7 @@ public final class ServiceProvidingManager {
             ConfigSite configSite = component.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, atProvides.provides,
                     atProvides.member);
             AtProvideBuildEntry pbe = new AtProvideBuildEntry(configSite, component, atProvides); // Adds itself to #buildEntries
-            component.region.resolver.allInjectables.add(pbe.injectable);
+            component.region.allInjectables.add(pbe.injectable);
         }
     }
 

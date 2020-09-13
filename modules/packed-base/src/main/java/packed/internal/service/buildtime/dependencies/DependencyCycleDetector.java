@@ -21,7 +21,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 
 import app.packed.service.CyclicDependencyGraphException;
-import packed.internal.component.Resolver;
+import packed.internal.component.RegionAssembly;
 import packed.internal.inject.DependencyProvider;
 import packed.internal.inject.Injectable;
 
@@ -41,14 +41,14 @@ final class DependencyCycleDetector {
      * @throws CyclicDependencyGraphException
      *             if a dependency cycle was detected
      */
-    static void dependencyCyclesDetect(Resolver resolver, ArrayList<Injectable> detectCyclesFor) {
+    static void dependencyCyclesDetect(RegionAssembly resolver, ArrayList<Injectable> detectCyclesFor) {
         DependencyCycle c = dependencyCyclesFind(resolver, detectCyclesFor);
         if (c != null) {
             throw new CyclicDependencyGraphException("Dependency cycle detected: " + c);
         }
     }
 
-    private static DependencyCycle dependencyCyclesFind(Resolver resolver, ArrayList<Injectable> detectCyclesFor) {
+    private static DependencyCycle dependencyCyclesFind(RegionAssembly resolver, ArrayList<Injectable> detectCyclesFor) {
         if (detectCyclesFor == null) {
             throw new IllegalStateException("Must resolve nodes before detecting cycles");
         }
@@ -80,7 +80,7 @@ final class DependencyCycleDetector {
      * @throws CyclicDependencyGraphException
      *             if there is a cycle in the graph
      */
-    private static DependencyCycle detectCycle(Resolver resolver, Injectable node, ArrayDeque<Injectable> stack, ArrayDeque<Injectable> dependencies) {
+    private static DependencyCycle detectCycle(RegionAssembly resolver, Injectable node, ArrayDeque<Injectable> stack, ArrayDeque<Injectable> dependencies) {
         stack.push(node);
 
         for (int i = 0; i < node.resolved.length; i++) {

@@ -33,7 +33,7 @@ import app.packed.introspection.ParameterDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
-import packed.internal.component.Resolver;
+import packed.internal.component.RegionAssembly;
 import packed.internal.inject.Injectable;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.BuildtimeService;
@@ -80,7 +80,7 @@ public final class DependencyManager {
     IdentityHashMap<BuildtimeService<?>, List<ServiceDependency>> unresolvedDependencies;
 
     /** Also used for descriptors. */
-    public void analyze(Resolver resolver, InjectionManager node) {
+    public void analyze(RegionAssembly resolver, InjectionManager node) {
         // If we do not export services into a bundle. We should be able to resolver much quicker..
         // resolveAllDependencies(node);
         checkForMissingDependencies(node);
