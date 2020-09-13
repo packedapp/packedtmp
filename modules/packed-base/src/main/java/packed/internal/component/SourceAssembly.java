@@ -27,7 +27,7 @@ import packed.internal.inject.DependencyProvider;
 import packed.internal.inject.Injectable;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.service.buildtime.BuildtimeService;
-import packed.internal.service.buildtime.service.ComponentBuildEntry;
+import packed.internal.service.buildtime.service.ComponentSourceBuildEntry;
 
 /** All components with a {@link ComponentModifier#SOURCED} modifier has an instance of this class. */
 public final class SourceAssembly implements DependencyProvider {
@@ -111,7 +111,7 @@ public final class SourceAssembly implements DependencyProvider {
             } else {
                 key = factory.key();
             }
-            s = service = new ComponentBuildEntry<>(compConf, key);
+            s = service = new ComponentSourceBuildEntry<>(compConf, key);
         }
         return s;
     }

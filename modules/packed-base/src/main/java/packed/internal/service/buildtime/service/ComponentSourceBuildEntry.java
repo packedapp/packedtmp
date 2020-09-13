@@ -30,10 +30,8 @@ import packed.internal.service.runtime.ConstantInjectorEntry;
 import packed.internal.service.runtime.PrototypeInjectorEntry;
 import packed.internal.service.runtime.RuntimeService;
 
-/**
- *
- */
-public final class ComponentBuildEntry<T> extends BuildtimeService<T> {
+/** A build entry wrapping a component source. */
+public final class ComponentSourceBuildEntry<T> extends BuildtimeService<T> {
 
     /** The singleton source we are wrapping */
     private final SourceAssembly source;
@@ -44,7 +42,7 @@ public final class ComponentBuildEntry<T> extends BuildtimeService<T> {
      * @param component
      *            the component we provide for
      */
-    public ComponentBuildEntry(ComponentNodeConfiguration component, Key<T> key) {
+    public ComponentSourceBuildEntry(ComponentNodeConfiguration component, Key<T> key) {
         super(component.injectionManager(), component.configSite());
         this.source = requireNonNull(component.source);
         this.key = requireNonNull(key);
