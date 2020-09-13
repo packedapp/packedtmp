@@ -208,12 +208,13 @@ public final class InjectionManager {
     /** All explicit added build entries. */
     public final ArrayList<BuildtimeService<?>> buildEntries = new ArrayList<>();
 
-    public void provideFromInjector(InjectionManager im, AbstractInjector injector, ConfigSite configSite, WireletList wirelets) {
+    public void provideFromInjector(AbstractInjector injector, ConfigSite configSite, WireletList wirelets) {
+        ProvideAllFromOtherInjector pi = new ProvideAllFromOtherInjector(this, configSite, injector, wirelets);
         ArrayList<ProvideAllFromOtherInjector> p = provideAll;
         if (provideAll == null) {
             p = provideAll = new ArrayList<>(1);
         }
-        p.add(new ProvideAllFromOtherInjector(im, configSite, injector, wirelets));
+        p.add(pi);
     }
 
     public LinkedHashMap<Key<?>, BuildtimeService<?>> resolve(InjectionManager im, LinkedHashMap<Key<?>, BuildtimeService<?>> resolvedServices) {
