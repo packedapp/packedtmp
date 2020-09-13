@@ -130,7 +130,10 @@ public final class ServiceExtension extends Extension {
     @AttributeProvide(by = ServiceAttributes.class, name = "exported-services")
     @Nullable
     /* package-private */ ServiceMap attributesExports() {
-        return im.newExportedServiceSet();
+        if (im.hasExports()) {
+            return im.exports().exports();
+        }
+        return null;
     }
 
     /**
@@ -326,8 +329,7 @@ public final class ServiceExtension extends Extension {
                     "Custom implementations of Injector are currently not supported, injector type = " + injector.getClass().getName());
         }
         checkConfigurable();
-        im.provider().provideAll(im, (AbstractInjector) injector, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL),
-                WireletList.ofAll(wirelets));
+        im.provideAll(im, (AbstractInjector) injector, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL), WireletList.ofAll(wirelets));
     }
 
     // Will install a ServiceStatelessConfiguration...

@@ -55,7 +55,7 @@ public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
         } else {
             this.regionIndex = -1;
         }
-        component.injectionManager().provider().buildEntries.add(this);
+        component.injectionManager().buildEntries.add(this);
         component.region.allInjectables.add(injectable);
     }
 

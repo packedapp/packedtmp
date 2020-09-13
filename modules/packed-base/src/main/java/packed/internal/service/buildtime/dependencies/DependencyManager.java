@@ -80,13 +80,7 @@ public final class DependencyManager {
 
     /** Also used for descriptors. */
     public void analyze(RegionAssembly resolver, InjectionManager node) {
-        // If we do not export services into a bundle. We should be able to resolver much quicker..
-        // resolveAllDependencies(node);
         checkForMissingDependencies(node);
-//        System.out.println("________DETECTING CIRCLE_______");
-//        for (Injectable i : detectCyclesFor) {
-//            System.out.println(i.directMethodHandle);
-//        }
         DependencyCycleDetector.dependencyCyclesDetect(resolver, detectCyclesFor);
     }
 
@@ -232,55 +226,3 @@ public final class DependencyManager {
         explicitRequirements.add(new DependencyRequirement(dependency, configSite));
     }
 }
-
-//void resolveAllDependencies(InjectionManager node) {
-//    for (BuildtimeService<?> entry : node.resolvedEntries.values()) {
-//        Injectable in = entry.injectable();
-//        if (in != null && in.hasUnresolved()) {
-//            System.out.println("ADDDDDDD " + entry.key());
-//            // recordResolvedDependency(node, entry, dependency, resolveTo, false);
-////            
-//////            List<ServiceDependency> dependencies = sh.dependencies;
-//////            for (int i = sh.dependencyOffset; i < dependencies.size(); i++) {
-//////                ServiceDependency dependency = dependencies.get(i);
-//////                BuildEntry<?> resolveTo = node.resolvedEntries.get(dependency.key());
-//////                if (resolveTo == null) {
-//////                    Key<?> k = dependency.key();
-//////                    if (!k.hasQualifier()) {
-//////                        Class<?> rawType = k.typeLiteral().rawType();
-//////                        if (Wirelet.class.isAssignableFrom(rawType)) {
-//////                            // Fail if pipelined wirelet...
-//////                            BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
-//////                                    new ConstantInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "Ignore"));
-//////                            resolveTo = ben;
-//////                            specials.put(dependency, ben);
-//////                        }
-//////                    }
-//////                }
-//////               
-//////                entry.source.resolvedDependencies[i] = resolveTo;
-//////            }
-//        }
-//    }
-//    checkForMissingDependencies(node);
-//}
-//if (WireletPipeline.class.isAssignableFrom(rawType)) {
-//WireletPipelineModel wpc = WireletPipelineModel.of((Class<? extends WireletPipeline<?, ?>>) rawType);
-//if (wpc.extension() == null) {
-//  // Fail if pipelined wirelet...
-//  BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
-//          new ConstantInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "Ignore"));
-//  resolveTo = ben;
-//  node.specials.put(dependency, ben);
-//} else {
-//  if (entry instanceof ComponentFactoryBuildEntry) {
-//      Optional<Class<? extends Extension>> op = ((ComponentFactoryBuildEntry) entry).componentConfiguration.extension();
-//      if (op.isPresent()) {
-//          BuildEntry<String> ben = new RuntimeAdaptorEntry<String>(node,
-//                  new ConstantInjectorEntry<String>(ConfigSite.UNKNOWN, (Key) k, "Ignore"));
-//          resolveTo = ben;
-//          node.specials.put(dependency, ben);
-//      }
-//  }
-//}
-//}
