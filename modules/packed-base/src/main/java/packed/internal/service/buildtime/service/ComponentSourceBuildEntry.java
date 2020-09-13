@@ -26,6 +26,7 @@ import packed.internal.component.SourceAssembly;
 import packed.internal.inject.Injectable;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
+import packed.internal.service.buildtime.dependencies.InjectionManager;
 import packed.internal.service.runtime.ConstantInjectorEntry;
 import packed.internal.service.runtime.PrototypeInjectorEntry;
 import packed.internal.service.runtime.RuntimeService;
@@ -42,8 +43,8 @@ public final class ComponentSourceBuildEntry<T> extends BuildtimeService<T> {
      * @param compConf
      *            the component we provide for
      */
-    public ComponentSourceBuildEntry(ComponentNodeConfiguration compConf, Key<T> key) {
-        super(compConf.injectionManager(), compConf.configSite(), key);
+    public ComponentSourceBuildEntry(InjectionManager im, ComponentNodeConfiguration compConf, Key<T> key) {
+        super(im, compConf.configSite(), key);
         this.source = requireNonNull(compConf.source);
     }
 

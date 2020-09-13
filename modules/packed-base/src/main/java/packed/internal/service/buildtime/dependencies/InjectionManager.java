@@ -100,13 +100,13 @@ public final class InjectionManager {
     }
 
     public <T> BuildtimeService<T> provideFromSource(ComponentNodeConfiguration compConf, Key<T> key) {
-        BuildtimeService<T> e = new ComponentSourceBuildEntry<>(compConf, key);
+        BuildtimeService<T> e = new ComponentSourceBuildEntry<>(this, compConf, key);
         buildEntries.add(e);
         return e;
     }
 
     public void provideFromAtProvides(ComponentNodeConfiguration compConf, AtProvides atProvides) {
-        BuildtimeService<?> e = new AtProvideBuildEntry<>(compConf, atProvides);
+        BuildtimeService<?> e = new AtProvideBuildEntry<>(this, compConf, atProvides);
         buildEntries.add(e);
         compConf.region.allInjectables.add(e.injectable());
     }

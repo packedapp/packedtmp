@@ -24,6 +24,7 @@ import packed.internal.inject.sidecar.AtProvides;
 import packed.internal.inject.various.ConfigSiteInjectOperations;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
+import packed.internal.service.buildtime.dependencies.InjectionManager;
 import packed.internal.service.runtime.ConstantInjectorEntry;
 import packed.internal.service.runtime.PrototypeInjectorEntry;
 import packed.internal.service.runtime.RuntimeService;
@@ -42,9 +43,8 @@ public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
      * 
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public AtProvideBuildEntry(ComponentNodeConfiguration compConf, AtProvides ap) {
-        super(compConf.container.im, compConf.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, ap.provides, ap.member),
-                (Key) ap.key);
+    public AtProvideBuildEntry(InjectionManager im, ComponentNodeConfiguration compConf, AtProvides ap) {
+        super(im, compConf.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, ap.provides, ap.member), (Key) ap.key);
         this.injectable = new Injectable(this, compConf.source, ap);
         this.regionIndex = ap.isConstant ? compConf.region.reserve() : -1;
     }
