@@ -27,7 +27,7 @@ import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import app.packed.service.ServiceExtension;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.service.buildtime.InjectionManager;
+import packed.internal.service.buildtime.dependencies.InjectionManager;
 
 /** The default container context. */
 public final class ContainerAssembly {

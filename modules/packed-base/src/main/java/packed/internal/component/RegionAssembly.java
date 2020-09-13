@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import app.packed.service.ServiceRegistry;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.Injectable;
-import packed.internal.service.buildtime.InjectionManager;
+import packed.internal.service.buildtime.dependencies.InjectionManager;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -46,12 +46,13 @@ public final class RegionAssembly {
     // For now written by DependencyCycleDetector via BFS
     public final ArrayList<Injectable> constantServices = new ArrayList<>();
 
+    /** Everything that needs to be injected and store, but which is not a service. */
+    final ArrayList<SourceAssembly> sourceInjectables = new ArrayList<>();
+
     /*---***************************/
 
+    // Taenker den her er paa injection manager
     public final ArrayList<Injectable> allInjectables = new ArrayList<>();
-
-    /** Everything that needs to resolved. */
-    public final ArrayList<SourceAssembly> sourceInjectables = new ArrayList<>();
 
     RegionAssembly(ComponentNodeConfiguration compConf) {
         this.compConf = requireNonNull(compConf);
@@ -59,7 +60,6 @@ public final class RegionAssembly {
 
     public void assemblyClosed() {
         InjectionManager se = compConf.container.im;
-
         se.buildTree(this);
     }
 
@@ -119,7 +119,7 @@ public final class RegionAssembly {
         // Move this to lazy create via PIC
         // And no need to store this is the region
         if (node != null) {
-            region.store(registryIndex, node.newServiceRegistry(region, pic.wirelets()));
+            region.store(registryIndex, node.newServiceRegistry(root, region, pic.wirelets()));
         } else {
             region.store(registryIndex, ServiceRegistry.empty());
         }

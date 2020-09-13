@@ -32,7 +32,7 @@ public class ServiceExtensionInstantiationContext {
     // Translates from BuildEntry->RuntimeEntry
     final IdentityHashMap<BuildtimeService<?>, RuntimeService<?>> transformers = new IdentityHashMap<>();
 
-    ServiceExtensionInstantiationContext(Region ns) {
+    public ServiceExtensionInstantiationContext(Region ns) {
         this.region = requireNonNull(ns);
     }
 }

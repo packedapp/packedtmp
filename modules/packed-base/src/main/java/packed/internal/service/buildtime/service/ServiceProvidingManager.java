@@ -38,7 +38,7 @@ import packed.internal.component.wirelet.WireletList;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ErrorMessages;
-import packed.internal.service.buildtime.InjectionManager;
+import packed.internal.service.buildtime.dependencies.InjectionManager;
 import packed.internal.service.runtime.AbstractInjector;
 
 /**

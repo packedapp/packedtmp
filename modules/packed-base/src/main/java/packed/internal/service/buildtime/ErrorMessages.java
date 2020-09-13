@@ -27,6 +27,7 @@ import app.packed.config.ConfigSiteVisitor;
 import app.packed.introspection.MethodDescriptor;
 import packed.internal.config.ConfigSiteJoiner;
 import packed.internal.service.buildtime.dependencies.ExportedBuildEntry;
+import packed.internal.service.buildtime.dependencies.InjectionManager;
 import packed.internal.util.StringFormatter;
 
 /**

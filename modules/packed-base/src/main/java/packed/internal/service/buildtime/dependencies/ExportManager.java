@@ -32,7 +32,6 @@ import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceMap;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ErrorMessages;
-import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.service.buildtime.SimpleServiceSet;
 import packed.internal.util.KeyBuilder;
 

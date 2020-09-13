@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.buildtime;
+package packed.internal.service.buildtime.dependencies;
 
 import static java.util.Objects.requireNonNull;
 
@@ -29,14 +29,14 @@ import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceMap;
 import app.packed.service.ServiceRegistry;
+import packed.internal.component.ComponentNode;
 import packed.internal.component.Region;
 import packed.internal.component.RegionAssembly;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.Injectable;
-import packed.internal.service.buildtime.dependencies.DependencyManager;
-import packed.internal.service.buildtime.dependencies.ExportManager;
-import packed.internal.service.buildtime.dependencies.ExportedBuildEntry;
+import packed.internal.service.buildtime.BuildtimeService;
+import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.service.ServiceProvidingManager;
 import packed.internal.service.runtime.PackedInjector;
 import packed.internal.service.runtime.RuntimeService;
@@ -67,10 +67,6 @@ public final class InjectionManager {
 
     private boolean hasFailed;
 
-    /** Any parent of the node. */
-    @Nullable
-    InjectionManager parent;
-
     /** A service exporter handles everything to do with exports. */
     @Nullable
     ServiceProvidingManager provider;
@@ -93,9 +89,6 @@ public final class InjectionManager {
     }
 
     public void buildTree(RegionAssembly resolver) {
-        if (parent == null) {
-//            TreePrinter.print(this, n -> n.children, "", n -> n.context.containerPath().toString());
-        }
 
         HashMap<Key<?>, BuildtimeService<?>> resolvedServices = provider().resolve();
         resolvedServices.values().forEach(e -> resolvedEntries.put(requireNonNull(e.key()), e));
@@ -146,17 +139,16 @@ public final class InjectionManager {
         return e;
     }
 
-    public ServiceRegistry newServiceRegistry(Region region, WireletPack wc) {
+    public ServiceRegistry newServiceRegistry(ComponentNode comp, Region region, WireletPack wc) {
         LinkedHashMap<Key<?>, RuntimeService<?>> runtimeEntries = new LinkedHashMap<>();
         ServiceExtensionInstantiationContext con = new ServiceExtensionInstantiationContext(region);
         for (var e : exports()) {
-            runtimeEntries.put(e.key, e.toRuntimeEntry(con));
+            runtimeEntries.put(e.key(), e.toRuntimeEntry(con));
         }
-        return new PackedInjector(container.component.configSite(), runtimeEntries);
+        return new PackedInjector(comp.configSite(), runtimeEntries);
     }
 
     public void link(InjectionManager child) {
-        child.parent = this;
         if (children == null) {
             children = new ArrayList<>(5);
         }
