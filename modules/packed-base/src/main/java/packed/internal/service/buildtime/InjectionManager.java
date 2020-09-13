@@ -109,7 +109,7 @@ public final class InjectionManager {
         }
 
         for (Injectable i : resolver.allInjectables) {
-            i.resolve(resolver);
+            i.resolve();
         }
 
         dependencies().analyze(resolver, this);

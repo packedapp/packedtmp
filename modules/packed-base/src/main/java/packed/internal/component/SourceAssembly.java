@@ -86,8 +86,8 @@ public final class SourceAssembly implements DependencyProvider {
             this.model = component.realm.componentModelOf(source.getClass());
             this.instance = source;
             this.injectable = null;
-            region.sourceConstants.add(this);
             this.factory = null;
+            region.runtimeInstances.add(this);
         }
     }
 

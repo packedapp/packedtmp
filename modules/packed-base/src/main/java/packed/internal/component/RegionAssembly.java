@@ -22,9 +22,7 @@ import java.util.ArrayList;
 
 import app.packed.service.ServiceRegistry;
 import packed.internal.container.ContainerAssembly;
-import packed.internal.inject.DependencyProvider;
 import packed.internal.inject.Injectable;
-import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.InjectionManager;
 import packed.internal.service.buildtime.service.AtProvideBuildEntry;
@@ -33,46 +31,33 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
-public class RegionAssembly {
+public final class RegionAssembly {
 
-    final ComponentNodeConfiguration configuration; // do we need this??
+    public final ArrayList<Injectable> allInjectables = new ArrayList<>();
 
-    int nextIndex;
-
-    RegionAssembly(ComponentNodeConfiguration node) {
-        this.configuration = requireNonNull(node);
-    }
-
-    public void assemblyClosed() {
-        InjectionManager se = configuration.container.im;
-
-        se.buildTree(this);
-    }
+    final ComponentNodeConfiguration compConf; // do we need this??
 
     public final ArrayList<Injectable> constantServices = new ArrayList<>();
 
+    int nextIndex;
+
     /** Components that contains constants that should be stored in a region. */
-    final ArrayList<SourceAssembly> sourceConstants = new ArrayList<>();
+    final ArrayList<SourceAssembly> runtimeInstances = new ArrayList<>();
 
     /** Everything that needs to resolved. */
     public final ArrayList<SourceAssembly> sourceInjectables = new ArrayList<>();
 
-    public final ArrayList<Injectable> allInjectables = new ArrayList<>();
+    RegionAssembly(ComponentNodeConfiguration compConf) {
+        this.compConf = requireNonNull(compConf);
+    }
+
+    public void assemblyClosed() {
+        InjectionManager se = compConf.container.im;
+
+        se.buildTree(this);
+    }
 
     // Vi bliver noedt til at kalde ned recursivt saa vi kan finde raekkefolgen af service inst
-
-    public DependencyProvider resolve(Injectable injectable, ServiceDependency dependency) {
-        InjectionManager se = configuration.container.im;
-        BuildtimeService<?> e = se.resolvedEntries.get(dependency.key());
-
-        se.dependencies().recordResolvedDependency(se, injectable, dependency, e, false);
-        if (e == null) {
-            return e;
-        } else {
-            // TODO call DependencyManager.recordResolvedDependency
-            return e;
-        }
-    }
 
     Region newRegion(PackedInitializationContext pic, ComponentNode root) {
         Region region = new Region(nextIndex);
@@ -82,9 +67,8 @@ public class RegionAssembly {
         }
 
         // We start by storing all constants in the region array
-        for (SourceAssembly sa : sourceConstants) {
+        for (SourceAssembly sa : runtimeInstances) {
             region.store(sa.regionIndex, sa.instance);
-            requireNonNull(sa.instance);
         }
 
         for (Injectable ii : constantServices) {
@@ -127,7 +111,7 @@ public class RegionAssembly {
             }
         }
 
-        ContainerAssembly container = configuration.container;
+        ContainerAssembly container = compConf.container;
 
         int registryIndex = root.modifiers().isGuest() ? 1 : 0;
         InjectionManager node = container.im;
