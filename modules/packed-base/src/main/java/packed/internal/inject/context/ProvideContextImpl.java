@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject;
+package packed.internal.inject.context;
 
 import static java.util.Objects.requireNonNull;
 
@@ -26,6 +26,7 @@ import app.packed.inject.PrototypeProvideContext;
 import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import app.packed.service.Injector;
+import packed.internal.inject.ServiceDependency;
 
 /**
  * An implementation of injection site used, when requesting a service directly through an injector, for example, via

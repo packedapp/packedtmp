@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.base.TypeLiteral;
 import app.packed.introspection.ExecutableDescriptor;
 import packed.internal.inject.ServiceDependency;
-import packed.internal.inject.util.FindInjectableConstructor;
+import packed.internal.inject.various.FindInjectableConstructor;
 
 /** This class is responsible for finding an injectable executable. */
 

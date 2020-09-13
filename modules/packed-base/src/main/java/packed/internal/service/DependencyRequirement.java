@@ -35,7 +35,7 @@ class DependencyRequirement {
     @Nullable
     final Injectable entry;
 
-    AtInject atInject;
+    AtInject atInject;// ???
 
     DependencyRequirement(ServiceDependency dependency, ConfigSite configSite) {
         this.dependency = requireNonNull(dependency, "dependency is null");

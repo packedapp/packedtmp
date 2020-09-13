@@ -29,7 +29,7 @@ import java.lang.reflect.Modifier;
 
 import app.packed.base.InaccessibleMemberException;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.inject.util.FindInjectableConstructor;
+import packed.internal.inject.various.FindInjectableConstructor;
 import packed.internal.util.NativeImage;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableConsumer;

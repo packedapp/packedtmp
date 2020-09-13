@@ -34,8 +34,8 @@ import app.packed.inject.InjectionContext;
 import app.packed.inject.UnsatisfiableDependencyException;
 import app.packed.introspection.ParameterDescriptor;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.inject.PackedInjectionContext;
 import packed.internal.inject.ServiceDependency;
+import packed.internal.inject.context.PackedInjectionContext;
 import packed.internal.invoke.MethodHandleBuilder.Entry;
 import packed.internal.util.MethodHandleUtil;
 

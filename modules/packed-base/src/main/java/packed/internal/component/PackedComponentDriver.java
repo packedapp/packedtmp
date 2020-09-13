@@ -31,7 +31,7 @@ import app.packed.component.InstanceComponentDriver;
 import app.packed.inject.Factory;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.PackedRealm;
-import packed.internal.inject.util.InstantiatorBuilder;
+import packed.internal.inject.various.InstantiatorBuilder;
 import packed.internal.util.ThrowableUtil;
 
 /**

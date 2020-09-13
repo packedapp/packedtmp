@@ -38,7 +38,7 @@ import app.packed.service.ServiceProvider;
 import app.packed.service.ServiceRegistry;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.inject.ProvideContextImpl;
+import packed.internal.inject.context.ProvideContextImpl;
 import packed.internal.service.wirelets.PackedDownstreamInjectionWirelet;
 import packed.internal.util.KeyBuilder;
 
