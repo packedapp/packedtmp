@@ -33,10 +33,9 @@ final class FromOtherInjectorBuildEntry<T> extends BuildtimeService<T> {
     final ProvideAllFromOtherInjector fromInjector; // not used currently
 
     FromOtherInjectorBuildEntry(ProvideAllFromOtherInjector fromInjector, RuntimeService<T> entry) {
-        super(fromInjector.node, fromInjector.configSite.withParent(entry.configSite()));
+        super(fromInjector.node, fromInjector.configSite.withParent(entry.configSite()), entry.key());
         this.entry = entry;
         this.fromInjector = fromInjector;
-        setKey(entry.key());
     }
 
     /** {@inheritDoc} */

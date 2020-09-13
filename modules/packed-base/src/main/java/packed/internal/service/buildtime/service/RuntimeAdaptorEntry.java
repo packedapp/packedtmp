@@ -32,9 +32,8 @@ public final class RuntimeAdaptorEntry<T> extends BuildtimeService<T> {
     private final RuntimeService<T> entry;
 
     public RuntimeAdaptorEntry(InjectionManager node, RuntimeService<T> entry) {
-        super(node, ConfigSite.UNKNOWN);
+        super(node, ConfigSite.UNKNOWN, entry.key());
         this.entry = entry;
-        setKey(entry.key());
     }
 
     /** {@inheritDoc} */

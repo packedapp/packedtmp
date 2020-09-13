@@ -53,9 +53,10 @@ public abstract class BuildtimeService<T> implements DependencyProvider {
      */
     private Key<T> key;
 
-    public BuildtimeService(@Nullable InjectionManager im, ConfigSite configSite) {
+    public BuildtimeService(@Nullable InjectionManager im, ConfigSite configSite, Key<T> key) {
         this.im = requireNonNull(im);
         this.configSite = requireNonNull(configSite);
+        this.key = requireNonNull(key);
     }
 
     @SuppressWarnings("unchecked")
@@ -64,12 +65,6 @@ public abstract class BuildtimeService<T> implements DependencyProvider {
         // requireConfigurable();
         // validateKey(key);
         // Det er sgu ikke lige til at validere det med generics signature....
-        this.key = (Key<T>) key;
-    }
-
-    @SuppressWarnings("unchecked")
-    public void setKey(Key<? super T> key) {
-        requireNonNull(key);
         this.key = (Key<T>) key;
     }
 

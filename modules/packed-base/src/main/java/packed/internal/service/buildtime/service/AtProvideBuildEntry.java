@@ -46,10 +46,10 @@ public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public AtProvideBuildEntry(ComponentNodeConfiguration component, AtProvides ap) {
-        super(component.container.im, component.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, ap.provides, ap.member));
+        super(component.container.im, component.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, ap.provides, ap.member),
+                (Key) ap.key);
         this.source = component.source;
         this.injectable = new Injectable(this, source, ap);
-        setKey((Key) ap.key);
         if (ap.isConstant) {
             this.regionIndex = component.region.reserve();
         } else {

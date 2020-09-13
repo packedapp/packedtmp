@@ -39,10 +39,9 @@ final class MappingBuildEntry<F, T> extends BuildtimeService<T> {
     private final Function<? super F, T> function;
 
     MappingBuildEntry(InjectionManager node, ConfigSite configSite, BuildtimeService<F> entryToMap, Key<T> toKey, Function<F, T> function) {
-        super(node, configSite);
+        super(node, configSite, toKey);
         this.entryToMap = entryToMap;
         this.function = requireNonNull(function, "function is null");
-        setKey(toKey);
     }
 
     /** {@inheritDoc} */
