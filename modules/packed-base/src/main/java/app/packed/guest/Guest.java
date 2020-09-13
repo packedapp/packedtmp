@@ -43,7 +43,49 @@ import app.packed.component.Wirelet;
 public interface Guest {
 
     /**
+     * Blocks until the object has reached the requested state, or the current thread is interrupted, whichever happens
+     * first.
+     * <p>
+     * If the object has already reached or passed the specified state this method returns immediately. For example, if
+     * attempting to wait on the {@link GuestState#RUNNING} state and the object has already been stopped. This method will
+     * return immediately with true.
+     *
+     * @param state
+     *            the state to wait on
+     * @throws InterruptedException
+     *             if interrupted while waiting
+     * @see #await(GuestState, long, TimeUnit)
+     * @see #state()
+     */
+    void await(GuestState state) throws InterruptedException;
+
+    /**
+     * Blocks until the object has reached the requested state, or the timeout occurs, or the current thread is interrupted,
+     * whichever happens first.
+     * <p>
+     * If the object has already reached or passed the specified state this method returns immediately. For example, if
+     * attempting to wait on the {@link GuestState#RUNNING} state and the object has already been stopped. This method will
+     * return immediately with true.
+     *
+     * @param state
+     *            the state to wait on
+     * @param timeout
+     *            the maximum time to wait
+     * @param unit
+     *            the time unit of the timeout argument
+     * @return true if this object is in (or has already passed) the specified state and false if the timeout elapsed before
+     *         reaching the state
+     * @throws InterruptedException
+     *             if interrupted while waiting
+     * @see #await(GuestState)
+     * @see #state()
+     */
+    boolean await(GuestState state, long timeout, TimeUnit unit) throws InterruptedException;
+
+    /**
      * Returns the current state of the guest.
+     * <p>
+     * Calling this method will never block the current thread.
      * 
      * @return the current state of the guest
      */
@@ -61,6 +103,10 @@ public interface Guest {
     // app.guest().start(); I think that is cool, no need to move this method to App for now
     Guest start();
 
+    // startInterruptable
+
+    // Altsaa vi kan godt lave en version med Guest..
+    // Men hvad skal man bruge gaest til??? awaitX
     <T> CompletableFuture<T> startAsync(T result);
 
     Guest stop(StopOption... options);

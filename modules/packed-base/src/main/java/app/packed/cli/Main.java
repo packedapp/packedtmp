@@ -44,7 +44,7 @@ public class Main {
      * <p>
      * Entry point or run to termination
      * 
-     * @param source
+     * @param bundle
      *            the source of the application
      * @param wirelets
      *            wirelets
@@ -54,20 +54,15 @@ public class Main {
     // add exitOnEnter() <--- so useful for tests
     // exitable daemon...
     // https://github.com/patriknw/akka-typed-blog/blob/master/src/main/java/blog/typed/javadsl/ImmutableRoundRobinApp.java3
-    public static void execute(Bundle<?> source, Wirelet... wirelets) {
-        execute0(source, wirelets);
+    public static void execute(Bundle<?> bundle, Wirelet... wirelets) {
+        ComponentNodeConfiguration node = PackedAssemblyContext.assemble(0, bundle, null, wirelets);
+        PackedInitializationContext.initialize(node);
     }
 
     // sync deamon???????
     // App.main(new Goo(), args);
     public static void main(Bundle<?> bundle, String[] args, Wirelet... wirelets) {
-        execute0(bundle, wirelets);
-    }
-
-    // Maybe more a.la. Main.execute()
-    public static void execute0(Bundle<?> bundle, Wirelet... wirelets) {
-        ComponentNodeConfiguration node = PackedAssemblyContext.assemble(0, bundle, null, wirelets);
-        PackedInitializationContext context = PackedInitializationContext.initialize(node);
-        context.guest().start();
+        ComponentNodeConfiguration node = PackedAssemblyContext.assemble(0, bundle, null, Wirelet.combine(MainArgs.wireletOf(args), wirelets));
+        PackedInitializationContext.initialize(node);
     }
 }

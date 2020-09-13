@@ -68,6 +68,7 @@ public final class ComponentNode implements Component {
         this.parent = parent;
         this.model = RuntimeComponentModel.of(configuration);
         if (parent == null) {
+            pic.component = this;
             this.name = pic.rootName(configuration);
         } else {
             this.name = requireNonNull(configuration.name);
@@ -107,7 +108,6 @@ public final class ComponentNode implements Component {
         } else {
             this.region = parent.region;
         }
-
     }
 
     /** {@inheritDoc} */

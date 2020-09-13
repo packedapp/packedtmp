@@ -48,7 +48,7 @@ public final class PackedInitializationContext {
     public static final MethodHandle MH_SERVICES = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "services", ServiceRegistry.class);
 
     /** The component node we are building. */
-    private ComponentNode component;
+    ComponentNode component;
 
     private final WireletPack wirelets;
 
@@ -111,25 +111,24 @@ public final class PackedInitializationContext {
     }
 
     public static PackedInitializationContext initialize(ComponentNodeConfiguration root) {
-        PackedInitializationContext ic = new PackedInitializationContext(root.wirelets);
-        ic.component = root.instantiateTree(ic);
-        // ic.component.region.print();
-
-        // If the system is a guest, start it (blocking)
-        if (ic.component.modifiers().isGuest()) { // TODO should check guest.delayStart wirelet
-            ic.guest().start();
+        PackedInitializationContext pic = new PackedInitializationContext(root.wirelets);
+        // Hmmm Packed Guest bliver jo lavet der...
+        // Maaske laver vi en PackedGuest og smider i PIC. som man saa kan steale...
+        if (root.modifiers().isGuest()) {
+            PackedGuest.initializeAndStart(root, pic);
+        } else {
+            new ComponentNode(null, root, pic);
         }
-        return ic;
+        return pic;
     }
 
     public static PackedInitializationContext initializeImage(ComponentNodeConfiguration root, WireletPack wirelets) {
-        PackedInitializationContext ic = new PackedInitializationContext(wirelets);
-        ic.component = root.instantiateTree(ic);
-
-        // If the system is a guest, start it (blocking)
-        if (ic.component.modifiers().isGuest()) { // TODO should check guest.delayStart wirelet
-            ic.guest().start();
+        PackedInitializationContext pic = new PackedInitializationContext(wirelets);
+        if (root.modifiers().isGuest()) {
+            PackedGuest.initializeAndStart(root, pic);
+        } else {
+            new ComponentNode(null, root, pic);
         }
-        return ic;
+        return pic;
     }
 }

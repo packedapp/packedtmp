@@ -394,10 +394,6 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         return container.im;
     }
 
-    ComponentNode instantiateTree(PackedInitializationContext ic) {
-        return new ComponentNode(null, this, ic);
-    }
-
     // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
     // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return
     // type. Maybe in the future LinkedBundle<- (LinkableContainerSource)

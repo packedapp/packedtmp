@@ -15,31 +15,27 @@
  */
 package packed.internal.component;
 
-import app.packed.component.App;
-import app.packed.component.ComponentAnalyzer;
+import app.packed.cli.Main;
 import app.packed.container.BaseBundle;
-import app.packed.container.Extension;
 
 /**
  *
  */
-public class Zzz extends BaseBundle {
+public class Z4 extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-        service();
-        use(MyEx.class);
+        install(Doo.class);
     }
 
     public static void main(String[] args) {
-        App.of(new Z4());
-        ComponentAnalyzer.stream(new Zzz()).forEach(c -> {
-            System.out.println(c.path() + "  " + c.modifiers() + "  " + c.attributes());
-        });
+        Main.execute(new Z4());
     }
 
-    static class MyEx extends Extension {
-
+    public static class Doo {
+        public Doo() {
+            new Exception().printStackTrace();
+        }
     }
 }
