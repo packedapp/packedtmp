@@ -77,7 +77,7 @@ public final class InjectionManager {
     private ExportManager exporter;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
-    public final LinkedHashMap<Key<?>, BuildtimeService<?>> resolvedEntries = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, BuildtimeService<?>> resolvedServices = new LinkedHashMap<>();
 
     InjectionErrorManager em;
 
@@ -110,7 +110,7 @@ public final class InjectionManager {
     }
 
     public void buildTree(RegionAssembly resolver) {
-        resolve(this, resolvedEntries);
+        resolve(this, resolvedServices);
 
         if (em != null) {
             ErrorMessages.addDuplicateNodes(em.failingDuplicateProviders);

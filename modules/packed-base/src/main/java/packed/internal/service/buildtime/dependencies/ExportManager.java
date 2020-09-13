@@ -187,7 +187,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
                 BuildtimeService<?> entryToExport = entry.exportedEntry;
                 boolean export = true;
                 if (entryToExport == null) {
-                    entryToExport = im.resolvedEntries.get(entry.keyToExport);
+                    entryToExport = im.resolvedServices.get(entry.keyToExport);
                     if (entryToExport == null) {
                         im.errorManager().failingUnresolvedKeyedExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>()).add(entry);
                         export = false;
@@ -216,7 +216,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
         }
 
         if (exportAll != null) {
-            for (BuildtimeService<?> e : im.resolvedEntries.values()) {
+            for (BuildtimeService<?> e : im.resolvedServices.values()) {
                 if (!e.key().equals(KeyBuilder.INJECTOR_KEY)) {
                     if (!resolvedExports.containsKey(e.key())) {
                         resolvedExports.put(e.key(), new ExportedBuildEntry<>(im, e, exportAll));

@@ -166,7 +166,7 @@ public final class Injectable {
         int startIndex = resolved.length != dependencies.size() ? 1 : 0;
         for (int i = 0; i < dependencies.size(); i++) {
             ServiceDependency sd = dependencies.get(i);
-            BuildtimeService<?> e = se.resolvedEntries.get(sd.key());
+            BuildtimeService<?> e = se.resolvedServices.get(sd.key());
             se.dependencies().recordResolvedDependency(se, this, sd, e, false);
             resolved[i + startIndex] = e;
         }

@@ -18,9 +18,7 @@ package packed.internal.service.buildtime.service;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
-import app.packed.base.Nullable;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.SourceAssembly;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.Injectable;
 import packed.internal.service.buildtime.BuildtimeService;
@@ -38,8 +36,6 @@ public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
 
     public final int regionIndex;
 
-    final SourceAssembly source;
-
     /**
      * Creates a new node from an instance.
      * 
@@ -48,8 +44,7 @@ public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
     public AtProvideBuildEntry(ComponentNodeConfiguration compConf, AtProvides ap) {
         super(compConf.container.im, compConf.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, ap.provides, ap.member),
                 (Key) ap.key);
-        this.source = compConf.source;
-        this.injectable = new Injectable(this, source, ap);
+        this.injectable = new Injectable(this, compConf.source, ap);
         if (ap.isConstant) {
             this.regionIndex = compConf.region.reserve();
         } else {
@@ -60,14 +55,8 @@ public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
     }
 
     @Override
-    @Nullable
     public Injectable injectable() {
         return injectable;
-    }
-
-    @Override
-    public int regionIndex() {
-        return regionIndex;
     }
 
     /** {@inheritDoc} */
@@ -78,6 +67,11 @@ public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
         } else {
             return new ConstantInjectorEntry<>(this, context.region, regionIndex);
         }
+    }
+
+    @Override
+    public int regionIndex() {
+        return regionIndex;
     }
 
     @Override
