@@ -25,7 +25,6 @@ import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
-import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
@@ -33,14 +32,9 @@ import app.packed.config.ConfigSite;
 import app.packed.inject.Provide;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
-import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletList;
-import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ErrorMessages;
-import packed.internal.service.buildtime.service.AtProvideBuildEntry;
-import packed.internal.service.buildtime.service.AtProvides;
-import packed.internal.service.buildtime.service.AtProvidesHook;
 import packed.internal.service.buildtime.service.ProvideAllFromOtherInjector;
 import packed.internal.service.runtime.AbstractInjector;
 
@@ -75,35 +69,6 @@ public final class ServiceProvidingManager {
      */
     public ServiceProvidingManager(InjectionManager im) {
         this.im = requireNonNull(im);
-    }
-
-    /**
-     * Invoked by the runtime when a component has members (fields or methods) that are annotated with {@link Provide}.
-     * 
-     * @param hook
-     *            a provides group object
-     * @param component
-     *            the configuration of the annotated component
-     */
-    @SuppressWarnings("rawtypes")
-    public void addProvidesHook(AtProvidesHook hook, ComponentNodeConfiguration component) {
-        // validate new instance member for @Provide
-        if (hook.hasInstanceMembers && component.source.isPrototype()) {
-            throw new InvalidDeclarationException("Not okay)");
-        }
-        // Add each @Provide as children of the parent node
-        for (AtProvides atProvides : hook.members) {
-            ConfigSite configSite = component.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, atProvides.provides,
-                    atProvides.member);
-            AtProvideBuildEntry pbe = new AtProvideBuildEntry(configSite, component, atProvides); // Adds itself to #buildEntries
-            component.region.allInjectables.add(pbe.injectable);
-        }
-    }
-
-    public BuildtimeService<?> providePrototype(ComponentNodeConfiguration cc) {
-        BuildtimeService<?> e = cc.source.provide();
-        buildEntries.add(e);
-        return e;
     }
 
     public void provideAll(AbstractInjector injector, ConfigSite configSite, WireletList wirelets) {

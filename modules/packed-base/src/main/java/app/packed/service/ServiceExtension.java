@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.function.BiConsumer;
 
 import app.packed.base.AttributeProvide;
+import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.FactoryComponentDriver;
@@ -39,6 +40,8 @@ import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.dependencies.InjectionManager;
+import packed.internal.service.buildtime.service.AtProvideBuildEntry;
+import packed.internal.service.buildtime.service.AtProvides;
 import packed.internal.service.buildtime.service.AtProvidesHook;
 import packed.internal.service.buildtime.service.PackedPrototypeConfiguration;
 import packed.internal.service.runtime.AbstractInjector;
@@ -290,12 +293,18 @@ public final class ServiceExtension extends Extension {
      * 
      * @param hook
      *            the cached hook
-     * @param cc
+     * @param compConf
      *            the configuration of the component that uses the annotation
      */
     @OnHook
-    void onHook(AtProvidesHook hook, ComponentNodeConfiguration cc) {
-        im.provider().addProvidesHook(hook, cc);
+    void onHook(AtProvidesHook hook, ComponentNodeConfiguration compConf) {
+        if (hook.hasInstanceMembers && compConf.source.isPrototype()) {
+            throw new InvalidDeclarationException("Not okay)");
+        }
+        // Add each @Provide as children of the parent node
+        for (AtProvides atProvides : hook.members) {
+            new AtProvideBuildEntry<>(compConf, atProvides); // Adds itself to #buildEntries
+        }
     }
 
     /**

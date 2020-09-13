@@ -19,9 +19,9 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.config.ConfigSite;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.SourceAssembly;
+import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.Injectable;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
@@ -45,8 +45,8 @@ public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
      * 
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public AtProvideBuildEntry(ConfigSite configSite, ComponentNodeConfiguration component, AtProvides ap) {
-        super(component.container.im, configSite);
+    public AtProvideBuildEntry(ComponentNodeConfiguration component, AtProvides ap) {
+        super(component.container.im, component.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, ap.provides, ap.member));
         this.source = component.source;
         this.injectable = new Injectable(this, source, ap);
         this.key = (Key) ap.key;
@@ -56,6 +56,7 @@ public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
             this.regionIndex = -1;
         }
         component.injectionManager().provider().buildEntries.add(this);
+        component.region.allInjectables.add(injectable);
     }
 
     @Override
