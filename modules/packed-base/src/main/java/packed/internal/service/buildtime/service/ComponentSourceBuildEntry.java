@@ -39,13 +39,12 @@ public final class ComponentSourceBuildEntry<T> extends BuildtimeService<T> {
     /**
      * Creates a new node from an instance.
      * 
-     * @param component
+     * @param compConf
      *            the component we provide for
      */
-    public ComponentSourceBuildEntry(ComponentNodeConfiguration component, Key<T> key) {
-        super(component.injectionManager(), component.configSite(), key);
-        this.source = requireNonNull(component.source);
-        im.buildEntries.add(this);
+    public ComponentSourceBuildEntry(ComponentNodeConfiguration compConf, Key<T> key) {
+        super(compConf.injectionManager(), compConf.configSite(), key);
+        this.source = requireNonNull(compConf.source);
     }
 
     @Override

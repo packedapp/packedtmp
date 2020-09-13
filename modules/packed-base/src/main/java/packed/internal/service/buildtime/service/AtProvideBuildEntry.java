@@ -45,18 +45,18 @@ public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
      * 
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public AtProvideBuildEntry(ComponentNodeConfiguration component, AtProvides ap) {
-        super(component.container.im, component.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, ap.provides, ap.member),
+    public AtProvideBuildEntry(ComponentNodeConfiguration compConf, AtProvides ap) {
+        super(compConf.container.im, compConf.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, ap.provides, ap.member),
                 (Key) ap.key);
-        this.source = component.source;
+        this.source = compConf.source;
         this.injectable = new Injectable(this, source, ap);
         if (ap.isConstant) {
-            this.regionIndex = component.region.reserve();
+            this.regionIndex = compConf.region.reserve();
         } else {
             this.regionIndex = -1;
         }
-        component.injectionManager().buildEntries.add(this);
-        component.region.allInjectables.add(injectable);
+        compConf.injectionManager().buildEntries.add(this);
+        compConf.region.allInjectables.add(injectable);
     }
 
     @Override
@@ -73,10 +73,10 @@ public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
     /** {@inheritDoc} */
     @Override
     protected RuntimeService<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
-        if (regionIndex > -1) {
-            return new ConstantInjectorEntry<>(this, context.region, regionIndex);
-        } else {
+        if (regionIndex == -1) {
             return new PrototypeInjectorEntry<>(this, context.region, toMethodHandle());
+        } else {
+            return new ConstantInjectorEntry<>(this, context.region, regionIndex);
         }
     }
 

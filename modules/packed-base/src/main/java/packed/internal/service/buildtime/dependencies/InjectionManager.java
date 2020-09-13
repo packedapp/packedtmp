@@ -33,6 +33,7 @@ import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceRegistry;
 import packed.internal.component.ComponentNode;
+import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.Region;
 import packed.internal.component.RegionAssembly;
 import packed.internal.component.wirelet.WireletList;
@@ -42,6 +43,9 @@ import packed.internal.inject.Injectable;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ErrorMessages;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
+import packed.internal.service.buildtime.service.AtProvideBuildEntry;
+import packed.internal.service.buildtime.service.AtProvides;
+import packed.internal.service.buildtime.service.ComponentSourceBuildEntry;
 import packed.internal.service.buildtime.service.ExportedBuildEntry;
 import packed.internal.service.buildtime.service.ProvideAllFromOtherInjector;
 import packed.internal.service.runtime.AbstractInjector;
@@ -95,6 +99,16 @@ public final class InjectionManager {
             e = em = new InjectionErrorManager();
         }
         return e;
+    }
+
+    public <T> BuildtimeService<T> addFromSource(ComponentNodeConfiguration compConf, Key<T> key) {
+        BuildtimeService<T> e = new ComponentSourceBuildEntry<>(compConf, key);
+        buildEntries.add(e);
+        return e;
+    }
+
+    public void addFromAtProvides(ComponentNodeConfiguration compConf, AtProvides atProvides) {
+        new AtProvideBuildEntry<>(compConf, atProvides); // Adds itself to #buildEntries
     }
 
     public void buildTree(RegionAssembly resolver) {

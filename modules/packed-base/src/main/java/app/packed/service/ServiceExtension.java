@@ -40,7 +40,6 @@ import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.service.buildtime.dependencies.InjectionManager;
-import packed.internal.service.buildtime.service.AtProvideBuildEntry;
 import packed.internal.service.buildtime.service.AtProvides;
 import packed.internal.service.buildtime.service.AtProvidesHook;
 import packed.internal.service.buildtime.service.PackedPrototypeConfiguration;
@@ -306,7 +305,7 @@ public final class ServiceExtension extends Extension {
         }
         // Add each @Provide as children of the parent node
         for (AtProvides atProvides : hook.members) {
-            new AtProvideBuildEntry<>(compConf, atProvides); // Adds itself to #buildEntries
+            im.addFromAtProvides(compConf, atProvides);
         }
     }
 
@@ -324,7 +323,8 @@ public final class ServiceExtension extends Extension {
      *             if specifying wirelets that are not defined via {@link ServiceWirelets}
      */
     public void provideAll(Injector injector, Wirelet... wirelets) {
-        if (!(requireNonNull(injector, "injector is null") instanceof AbstractInjector)) {
+        requireNonNull(injector, "injector is null");
+        if (!(injector instanceof AbstractInjector)) {
             throw new IllegalArgumentException(
                     "Custom implementations of Injector are currently not supported, injector type = " + injector.getClass().getName());
         }
@@ -336,16 +336,6 @@ public final class ServiceExtension extends Extension {
     // Spoergmaalet er om vi ikke bare skal have en driver...
     // og en metode paa BaseBundle...
     public <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {
-        // null was SingletonComponentDriver.prototype()
-//      public static <T> FactoryComponentDriver<BeanConfiguration<T>, T> prototype() {
-//      return new FactoryComponentDriver<BeanConfiguration<T>, T>() {
-//
-//          @Override
-//          public ComponentDriver<BeanConfiguration<T>> bindToFactory(PackedRealm realm, Factory<? extends T> factory) {
-//              return new SingletonComponentDriver<>(realm, factory);
-//          }
-//      };
-//  }
         return im.container.component.wire(prototype(), factory);
     }
 

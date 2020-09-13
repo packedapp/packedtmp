@@ -107,11 +107,11 @@ public final class SourceAssembly implements DependencyProvider {
         if (s == null) {
             Key<?> key;
             if (instance != null) {
-                key = Key.of(model.type());
+                key = Key.of(model.type()); // Move to model?? What if instance has Qualifier???
             } else {
                 key = factory.key();
             }
-            s = service = new ComponentSourceBuildEntry<>(compConf, key);
+            s = service = compConf.injectionManager().addFromSource(compConf, key);
         }
         return s;
     }
