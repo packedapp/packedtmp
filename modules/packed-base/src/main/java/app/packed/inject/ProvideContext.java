@@ -180,7 +180,9 @@ import app.packed.service.Injector;
 
 // ProvideContext(), ProvideServiceContext
 
-public interface PrototypeProvideContext {
+// Altsaa taenker vi ogsaa kan bruge den til constanter...
+// Saa er der bare tom for alt..
+public interface ProvideContext {
 
     // Hvad hvis det ikke er en direkte extension der forsporger???
     // Men f.eks. et eller andet inde i en Bundle som er installeret

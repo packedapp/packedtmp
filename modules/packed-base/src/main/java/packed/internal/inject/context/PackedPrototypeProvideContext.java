@@ -22,7 +22,7 @@ import java.util.Optional;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.Component;
-import app.packed.inject.PrototypeProvideContext;
+import app.packed.inject.ProvideContext;
 import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import app.packed.service.Injector;
@@ -32,7 +32,7 @@ import packed.internal.inject.ServiceDependency;
  * An implementation of injection site used, when requesting a service directly through an injector, for example, via
  * {@link Injector#use(Class)}.
  */
-public final class ProvideContextImpl implements PrototypeProvideContext {
+public final class PackedPrototypeProvideContext implements ProvideContext {
 
     /** An optional component, in case the request is via a component's private injector. */
     @Nullable
@@ -41,7 +41,7 @@ public final class ProvideContextImpl implements PrototypeProvideContext {
     /** The key of the service that was requested */
     private final ServiceDependency dependency;
 
-    public ProvideContextImpl(ServiceDependency dependency, @Nullable Component component) {
+    public PackedPrototypeProvideContext(ServiceDependency dependency, @Nullable Component component) {
         this.dependency = requireNonNull(dependency, "dependency is null");
         this.component = component;
     }
@@ -74,12 +74,12 @@ public final class ProvideContextImpl implements PrototypeProvideContext {
         return dependency.isOptional();
     }
 
-    static PrototypeProvideContext of(ServiceDependency dependency) {
-        return new ProvideContextImpl(dependency, null);
+    static ProvideContext of(ServiceDependency dependency) {
+        return new PackedPrototypeProvideContext(dependency, null);
     }
 
-    static PrototypeProvideContext of(ServiceDependency dependency, Component componenent) {
-        return new ProvideContextImpl(dependency, requireNonNull(componenent, "component is null"));
+    static ProvideContext of(ServiceDependency dependency, Component componenent) {
+        return new PackedPrototypeProvideContext(dependency, requireNonNull(componenent, "component is null"));
     }
 
     /**
@@ -91,8 +91,8 @@ public final class ProvideContextImpl implements PrototypeProvideContext {
      *            the for which injection is requested
      * @return an injection site for the specified injector and key.
      */
-    public static PrototypeProvideContext of(Key<?> key) {
-        return new ProvideContextImpl(ServiceDependency.of(key), null);
+    public static ProvideContext of(Key<?> key) {
+        return new PackedPrototypeProvideContext(ServiceDependency.of(key), null);
     }
 
     /**
@@ -104,8 +104,8 @@ public final class ProvideContextImpl implements PrototypeProvideContext {
      *            the component to which the injector belongs
      * @return an injection site for the specified injector and key and component.
      */
-    static PrototypeProvideContext of(Key<?> key, Component component) {
-        return new ProvideContextImpl(ServiceDependency.of(key), requireNonNull(component, "component is null"));
+    static ProvideContext of(Key<?> key, Component component) {
+        return new PackedPrototypeProvideContext(ServiceDependency.of(key), requireNonNull(component, "component is null"));
     }
 }
 // static {AopReady r = AOPSupport.compile(FooClass.class)}, at runtime r.newInstance(r))// Arghh grimt

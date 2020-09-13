@@ -38,7 +38,7 @@ import app.packed.service.ServiceProvider;
 import app.packed.service.ServiceRegistry;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.inject.context.ProvideContextImpl;
+import packed.internal.inject.context.PackedPrototypeProvideContext;
 import packed.internal.service.wirelets.PackedDownstreamInjectionWirelet;
 import packed.internal.util.KeyBuilder;
 
@@ -110,7 +110,7 @@ public final class PackedInjector extends AbstractInjector {
         if (n == null) {
             return null;
         }
-        return n.getInstance(ProvideContextImpl.of(key));
+        return n.getInstance(PackedPrototypeProvideContext.of(key));
     }
 
     /** {@inheritDoc} */
