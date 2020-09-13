@@ -76,8 +76,6 @@ public final class InjectionManager {
     @Nullable
     private ExportManager exporter;
 
-    private boolean hasFailed;
-
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, BuildtimeService<?>> resolvedEntries = new LinkedHashMap<>();
 
@@ -101,13 +99,13 @@ public final class InjectionManager {
         return e;
     }
 
-    public <T> BuildtimeService<T> addFromSource(ComponentNodeConfiguration compConf, Key<T> key) {
+    public <T> BuildtimeService<T> provideFromSource(ComponentNodeConfiguration compConf, Key<T> key) {
         BuildtimeService<T> e = new ComponentSourceBuildEntry<>(compConf, key);
         buildEntries.add(e);
         return e;
     }
 
-    public void addFromAtProvides(ComponentNodeConfiguration compConf, AtProvides atProvides) {
+    public void provideFromAtProvides(ComponentNodeConfiguration compConf, AtProvides atProvides) {
         new AtProvideBuildEntry<>(compConf, atProvides); // Adds itself to #buildEntries
     }
 
@@ -120,10 +118,6 @@ public final class InjectionManager {
 
         if (exporter != null) {
             exporter.resolve();
-        }
-
-        if (hasFailed) {
-            return;
         }
 
         for (Injectable i : resolver.allInjectables) {
@@ -212,7 +206,7 @@ public final class InjectionManager {
     /** All explicit added build entries. */
     public final ArrayList<BuildtimeService<?>> buildEntries = new ArrayList<>();
 
-    public void provideAll(InjectionManager im, AbstractInjector injector, ConfigSite configSite, WireletList wirelets) {
+    public void provideFromInjector(InjectionManager im, AbstractInjector injector, ConfigSite configSite, WireletList wirelets) {
         ArrayList<ProvideAllFromOtherInjector> p = provideAll;
         if (provideAll == null) {
             p = provideAll = new ArrayList<>(1);

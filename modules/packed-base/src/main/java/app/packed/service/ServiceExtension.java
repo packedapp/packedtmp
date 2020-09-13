@@ -305,7 +305,7 @@ public final class ServiceExtension extends Extension {
         }
         // Add each @Provide as children of the parent node
         for (AtProvides atProvides : hook.members) {
-            im.addFromAtProvides(compConf, atProvides);
+            im.provideFromAtProvides(compConf, atProvides);
         }
     }
 
@@ -329,7 +329,7 @@ public final class ServiceExtension extends Extension {
                     "Custom implementations of Injector are currently not supported, injector type = " + injector.getClass().getName());
         }
         checkConfigurable();
-        im.provideAll(im, (AbstractInjector) injector, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL), WireletList.ofAll(wirelets));
+        im.provideFromInjector(im, (AbstractInjector) injector, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL), WireletList.ofAll(wirelets));
     }
 
     // Will install a ServiceStatelessConfiguration...

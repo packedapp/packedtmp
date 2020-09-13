@@ -27,7 +27,6 @@ import packed.internal.inject.DependencyProvider;
 import packed.internal.inject.Injectable;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.service.buildtime.BuildtimeService;
-import packed.internal.service.buildtime.service.ComponentSourceBuildEntry;
 
 /** All components with a {@link ComponentModifier#SOURCED} modifier has an instance of this class. */
 public final class SourceAssembly implements DependencyProvider {
@@ -100,8 +99,7 @@ public final class SourceAssembly implements DependencyProvider {
         return !compConf.modifiers().isSingleton();
     }
 
-    // Bliver kaldt naar man koere provide();
-    public BuildtimeService<?> provide() {
+    BuildtimeService<?> provide() {
         // Not sure we should allow for calling provide multiple times...
         BuildtimeService<?> s = service;
         if (s == null) {
@@ -111,7 +109,7 @@ public final class SourceAssembly implements DependencyProvider {
             } else {
                 key = factory.key();
             }
-            s = service = compConf.injectionManager().addFromSource(compConf, key);
+            s = service = compConf.injectionManager().provideFromSource(compConf, key);
         }
         return s;
     }

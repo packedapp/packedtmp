@@ -633,7 +633,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     @Override
     public <T> ExportedServiceConfiguration<T> sourceExport() {
         sourceProvide();
-        return (ExportedServiceConfiguration<T>) source.service.im.exports().export(source.service,
+        return (ExportedServiceConfiguration<T>) injectionManager().exports().export(source.service,
                 captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 
