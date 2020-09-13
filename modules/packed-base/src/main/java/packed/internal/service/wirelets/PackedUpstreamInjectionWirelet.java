@@ -27,7 +27,7 @@ import app.packed.service.Service;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceWirelets;
 import packed.internal.service.buildtime.BuildtimeService;
-import packed.internal.service.buildtime.service.ProvideAllFromOtherInjector;
+import packed.internal.service.buildtime.ProvideAllFromOtherInjector;
 
 /** The common superclass for upstream service wirelets. */
 public abstract class PackedUpstreamInjectionWirelet extends ServiceWirelet {

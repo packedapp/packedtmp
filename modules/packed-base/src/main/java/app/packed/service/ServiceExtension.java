@@ -41,8 +41,8 @@ import packed.internal.inject.ServiceDependency;
 import packed.internal.inject.sidecar.AtProvides;
 import packed.internal.inject.sidecar.AtProvidesHook;
 import packed.internal.inject.various.ConfigSiteInjectOperations;
+import packed.internal.service.buildtime.PackedPrototypeConfiguration;
 import packed.internal.service.buildtime.dependencies.InjectionManager;
-import packed.internal.service.buildtime.service.PackedPrototypeConfiguration;
 import packed.internal.service.runtime.AbstractInjector;
 
 /**

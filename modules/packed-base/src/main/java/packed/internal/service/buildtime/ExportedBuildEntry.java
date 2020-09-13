@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.buildtime.service;
+package packed.internal.service.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,7 +21,6 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.service.ServiceExtension;
-import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.dependencies.InjectionManager;
 import packed.internal.service.runtime.DelegatingInjectorEntry;
 import packed.internal.service.runtime.RuntimeService;

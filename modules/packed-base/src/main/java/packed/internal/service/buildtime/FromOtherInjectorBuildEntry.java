@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.buildtime.service;
+package packed.internal.service.buildtime;
 
 import app.packed.component.Wirelet;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
-import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.runtime.DelegatingInjectorEntry;
 import packed.internal.service.runtime.RuntimeService;
 import packed.internal.service.runtime.ServiceInstantiationContext;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.buildtime;
+package packed.internal.service.runtime;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,9 +21,10 @@ import app.packed.base.AttributeMap;
 import app.packed.base.Key;
 import app.packed.config.ConfigSite;
 import app.packed.service.Service;
+import packed.internal.service.buildtime.BuildtimeService;
 
 /** An implementation of {@link Service} because {@link BuildtimeService} is not immutable. */
-final class PackedService implements Service {
+public final class PackedService implements Service {
 
     /** The configuration site of the service. */
     private final ConfigSite configSite;
@@ -39,7 +40,7 @@ final class PackedService implements Service {
      * @param configSite
      *            the config site of the service
      */
-    PackedService(Key<?> key, ConfigSite configSite) {
+    public PackedService(Key<?> key, ConfigSite configSite) {
         this.key = requireNonNull(key);
         this.configSite = requireNonNull(configSite);
     }

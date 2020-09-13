@@ -20,7 +20,7 @@ import java.util.LinkedHashSet;
 
 import app.packed.base.Key;
 import packed.internal.service.buildtime.BuildtimeService;
-import packed.internal.service.buildtime.service.ExportedBuildEntry;
+import packed.internal.service.buildtime.ExportedBuildEntry;
 
 /**
  * An error manager is lazily created when an the configuration of an injection manager fails

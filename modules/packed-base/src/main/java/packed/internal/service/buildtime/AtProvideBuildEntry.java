@@ -13,72 +13,68 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.buildtime.service;
-
-import static java.util.Objects.requireNonNull;
+package packed.internal.service.buildtime;
 
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
-import app.packed.base.Nullable;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.SourceAssembly;
 import packed.internal.inject.Injectable;
-import packed.internal.service.buildtime.BuildtimeService;
+import packed.internal.inject.sidecar.AtProvides;
+import packed.internal.inject.various.ConfigSiteInjectOperations;
 import packed.internal.service.buildtime.dependencies.InjectionManager;
 import packed.internal.service.runtime.ConstantInjectorEntry;
 import packed.internal.service.runtime.PrototypeInjectorEntry;
 import packed.internal.service.runtime.RuntimeService;
 import packed.internal.service.runtime.ServiceInstantiationContext;
 
-/** A build entry wrapping a component source. */
-public final class ComponentSourceBuildEntry<T> extends BuildtimeService<T> {
+/**
+ *
+ */
+public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
 
-    /** The singleton source we are wrapping */
-    private final SourceAssembly source;
+    private final Injectable injectable;
+
+    private final int regionIndex;
 
     /**
      * Creates a new node from an instance.
      * 
-     * @param compConf
-     *            the component we provide for
      */
-    public ComponentSourceBuildEntry(InjectionManager im, ComponentNodeConfiguration compConf, Key<T> key) {
-        super(im, compConf.configSite(), key);
-        this.source = requireNonNull(compConf.source);
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public AtProvideBuildEntry(InjectionManager im, ComponentNodeConfiguration compConf, AtProvides ap) {
+        super(im, compConf.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, ap.provides, ap.member), (Key) ap.key);
+        this.injectable = new Injectable(this, compConf.source, ap);
+        this.regionIndex = ap.isConstant ? compConf.region.reserve() : -1;
     }
 
     @Override
-    public int regionIndex() {
-        return source.regionIndex;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    @Nullable
     public Injectable injectable() {
-        return source.injectable();
+        return injectable;
     }
 
     /** {@inheritDoc} */
     @Override
     protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
-        if (source.isPrototype()) {
+        if (regionIndex == -1) {
             return new PrototypeInjectorEntry<>(this, context.region, toMethodHandle());
         } else {
-            return new ConstantInjectorEntry<>(this, context.region, source.regionIndex);
+            return new ConstantInjectorEntry<>(this, context.region, regionIndex);
         }
     }
 
-    /** {@inheritDoc} */
     @Override
-    public MethodHandle toMethodHandle() {
-        return source.toMethodHandle();
+    public int regionIndex() {
+        return regionIndex;
     }
 
-    /** {@inheritDoc} */
+    @Override
+    public MethodHandle toMethodHandle() {
+        return injectable.buildMethodHandle();
+    }
+
     @Override
     public String toString() {
-        return "Singleton " + source;
+        return "@Provide " + injectable.directMethodHandle;
     }
 }

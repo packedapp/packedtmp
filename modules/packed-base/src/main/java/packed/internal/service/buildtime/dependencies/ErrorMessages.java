@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.buildtime;
+package packed.internal.service.buildtime.dependencies;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
@@ -26,8 +26,8 @@ import app.packed.config.ConfigSite;
 import app.packed.config.ConfigSiteVisitor;
 import app.packed.introspection.MethodDescriptor;
 import packed.internal.config.ConfigSiteJoiner;
-import packed.internal.service.buildtime.dependencies.InjectionManager;
-import packed.internal.service.buildtime.service.ExportedBuildEntry;
+import packed.internal.service.buildtime.BuildtimeService;
+import packed.internal.service.buildtime.ExportedBuildEntry;
 import packed.internal.util.StringFormatter;
 
 /**

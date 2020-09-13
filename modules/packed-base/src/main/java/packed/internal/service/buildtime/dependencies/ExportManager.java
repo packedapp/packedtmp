@@ -31,10 +31,9 @@ import app.packed.service.Service;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceMap;
 import packed.internal.service.buildtime.BuildtimeService;
-import packed.internal.service.buildtime.ErrorMessages;
-import packed.internal.service.buildtime.SimpleServiceSet;
-import packed.internal.service.buildtime.service.ExportedBuildEntry;
-import packed.internal.service.buildtime.service.PackedExportedServiceConfiguration;
+import packed.internal.service.buildtime.ExportedBuildEntry;
+import packed.internal.service.buildtime.PackedExportedServiceConfiguration;
+import packed.internal.service.runtime.SimpleServiceSet;
 import packed.internal.util.KeyBuilder;
 
 /**
