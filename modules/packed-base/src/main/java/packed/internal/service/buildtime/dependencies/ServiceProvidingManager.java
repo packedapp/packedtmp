@@ -70,11 +70,11 @@ public final class ServiceProvidingManager {
     /**
      * Creates a new manager.
      * 
-     * @param node
+     * @param im
      *            the extension node
      */
-    public ServiceProvidingManager(InjectionManager node) {
-        this.im = requireNonNull(node);
+    public ServiceProvidingManager(InjectionManager im) {
+        this.im = requireNonNull(im);
     }
 
     /**

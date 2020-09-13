@@ -57,14 +57,6 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
     @Nullable
     private ArrayList<ExportedBuildEntry<?>> exportedEntries;
 
-    /** A map of multiple exports of the same key. */
-    @Nullable
-    private LinkedHashMap<Key<?>, LinkedHashSet<ExportedBuildEntry<?>>> failingDuplicateExports;
-
-    /** A map of all keyed exports where an entry matching the key could not be found. */
-    @Nullable
-    private LinkedHashMap<Key<?>, LinkedHashSet<ExportedBuildEntry<?>>> failingUnresolvedKeyedExports;
-
     /** The extension node this exporter is a part of. */
     private final InjectionManager im;
 
@@ -197,10 +189,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
                 if (entryToExport == null) {
                     entryToExport = im.resolvedEntries.get(entry.keyToExport);
                     if (entryToExport == null) {
-                        if (failingUnresolvedKeyedExports == null) {
-                            failingUnresolvedKeyedExports = new LinkedHashMap<>();
-                        }
-                        failingUnresolvedKeyedExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>()).add(entry);
+                        im.errorManager().failingUnresolvedKeyedExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>()).add(entry);
                         export = false;
                     } else {
                         entry.exportedEntry = (BuildtimeService) entryToExport;
@@ -210,10 +199,8 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
                 if (export) {
                     ExportedBuildEntry<?> existing = resolvedExports.putIfAbsent(entry.key(), entry);
                     if (existing != null) {
-                        if (failingDuplicateExports == null) {
-                            failingDuplicateExports = new LinkedHashMap<>();
-                        }
-                        LinkedHashSet<ExportedBuildEntry<?>> hs = failingDuplicateExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
+                        LinkedHashSet<ExportedBuildEntry<?>> hs = im.errorManager().failingDuplicateExports.computeIfAbsent(entry.key(),
+                                m -> new LinkedHashSet<>());
                         hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
                         hs.add(entry);
                     }
@@ -221,10 +208,10 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
             }
         }
 
-        if (failingUnresolvedKeyedExports != null) {
-            ErrorMessages.addUnresolvedExports(im, failingUnresolvedKeyedExports);
+        if (im.errorManager().failingUnresolvedKeyedExports != null) {
+            ErrorMessages.addUnresolvedExports(im, im.errorManager().failingUnresolvedKeyedExports);
         }
-        if (failingDuplicateExports != null) {
+        if (im.errorManager().failingDuplicateExports != null) {
             // TODO add error messages
         }
 

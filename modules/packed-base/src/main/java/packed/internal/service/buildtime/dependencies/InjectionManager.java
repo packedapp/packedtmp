@@ -74,6 +74,8 @@ public final class InjectionManager {
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, BuildtimeService<?>> resolvedEntries = new LinkedHashMap<>();
 
+    InjectionErrorManager em;
+
     /**
      * Creates a new injection manager.
      * 
@@ -82,6 +84,14 @@ public final class InjectionManager {
      */
     public InjectionManager(ContainerAssembly container) {
         this.container = requireNonNull(container);
+    }
+
+    InjectionErrorManager errorManager() {
+        InjectionErrorManager e = em;
+        if (e == null) {
+            e = em = new InjectionErrorManager();
+        }
+        return e;
     }
 
     public void addErrorMessage() {
