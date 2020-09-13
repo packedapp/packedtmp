@@ -36,6 +36,7 @@ import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.Injectable;
 import packed.internal.service.buildtime.BuildtimeService;
+import packed.internal.service.buildtime.ErrorMessages;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.service.ExportedBuildEntry;
 import packed.internal.service.runtime.PackedInjector;
@@ -100,7 +101,10 @@ public final class InjectionManager {
 
     public void buildTree(RegionAssembly resolver) {
 
-        HashMap<Key<?>, BuildtimeService<?>> resolvedServices = provider().resolve();
+        HashMap<Key<?>, BuildtimeService<?>> resolvedServices = provider().resolve(this);
+        if (em != null) {
+            ErrorMessages.addDuplicateNodes(em.failingDuplicateProviders);
+        }
         resolvedServices.values().forEach(e -> resolvedEntries.put(requireNonNull(e.key()), e));
 
         if (exporter != null) {
@@ -184,7 +188,7 @@ public final class InjectionManager {
     public ServiceProvidingManager provider() {
         ServiceProvidingManager p = provider;
         if (p == null) {
-            p = provider = new ServiceProvidingManager(this);
+            p = provider = new ServiceProvidingManager();
         }
         return p;
     }
