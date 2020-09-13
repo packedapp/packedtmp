@@ -83,10 +83,10 @@ public final class Injectable {
         // Down into the dependency cycle check.
         detectForCycles = true;
         if (detectForCycles) {
-            source.component.container.im.dependencies().detectCyclesFor.add(this);
+            source.compConf.container.im.dependencies().detectCyclesFor.add(this);
         }
         if (!ap.isStaticMember && source.injectable() != null) {
-            ArrayList<Injectable> al = source.component.container.im.dependencies().detectCyclesFor;
+            ArrayList<Injectable> al = source.compConf.container.im.dependencies().detectCyclesFor;
             if (!al.contains(source.injectable())) {
                 al.add(source.injectable());
                 source.injectable().detectForCycles = true;
@@ -98,14 +98,14 @@ public final class Injectable {
         this.source = requireNonNull(source);
 
         FactoryHandle<?> handle = factory.factory.handle;
-        MethodHandle mh = source.component.realm().fromFactoryHandle(handle);
+        MethodHandle mh = source.compConf.realm().fromFactoryHandle(handle);
 
         this.dependencies = factory.factory.dependencies;
         this.directMethodHandle = requireNonNull(mh);
         this.resolved = new DependencyProvider[dependencies.size()];
         this.detectForCycles = true;// resolved.length > 0;
         if (detectForCycles) {
-            source.component.container.im.dependencies().detectCyclesFor.add(this);
+            source.compConf.container.im.dependencies().detectCyclesFor.add(this);
         }
         buildEntry = null;
     }
@@ -162,7 +162,7 @@ public final class Injectable {
     }
 
     public void resolve() {
-        InjectionManager se = source.component.container.im;
+        InjectionManager se = source.compConf.container.im;
         int startIndex = resolved.length != dependencies.size() ? 1 : 0;
         for (int i = 0; i < dependencies.size(); i++) {
             ServiceDependency sd = dependencies.get(i);

@@ -15,8 +15,6 @@
  */
 package packed.internal.component;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
@@ -24,6 +22,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentModifier;
 import app.packed.inject.Factory;
+import packed.internal.container.PackedRealm;
 import packed.internal.inject.DependencyProvider;
 import packed.internal.inject.Injectable;
 import packed.internal.inject.factory.BaseFactory;
@@ -34,7 +33,7 @@ import packed.internal.service.buildtime.service.ComponentBuildEntry;
 public final class SourceAssembly implements DependencyProvider {
 
     /** The component this source is a part of. */
-    public final ComponentNodeConfiguration component;
+    public final ComponentNodeConfiguration compConf;
 
     private final BaseFactory<?> factory;
 
@@ -56,19 +55,17 @@ public final class SourceAssembly implements DependencyProvider {
     @Nullable
     public BuildtimeService<?> service;
 
-    SourceAssembly(ComponentNodeConfiguration component) {
-        this.component = requireNonNull(component);
+    SourceAssembly(ComponentNodeConfiguration compConf, RegionAssembly region, PackedRealm realm, Object source) {
+        this.compConf = compConf;
+        this.regionIndex = compConf.modifiers().isSingleton() ? region.reserve() : -1;
 
-        RegionAssembly region = component.region;
-        this.regionIndex = component.modifiers().isSingleton() ? region.reserve() : -1;
-
-        Object source = component.driver.data;
+        // The specified source is either a Class, a Factory, or an instance
         if (source instanceof Class) {
             Class<?> c = (Class<?>) source;
             this.factory = (BaseFactory<?>) Factory.find(c);
             this.instance = null;
-            this.model = component.realm.componentModelOf(factory.rawType());
-            if (component.modifiers().isStateless()) {
+            this.model = realm.componentModelOf(factory.rawType());
+            if (compConf.modifiers().isStateless()) {
                 this.injectable = null;
             } else {
                 this.injectable = new Injectable(this, factory);
@@ -77,16 +74,17 @@ public final class SourceAssembly implements DependencyProvider {
             }
         } else if (source instanceof Factory) {
             this.factory = (BaseFactory<?>) source;
-            this.model = component.realm.componentModelOf(factory.rawType());
             this.instance = null;
+            this.model = realm.componentModelOf(factory.rawType());
             this.injectable = new Injectable(this, factory);
             region.sourceInjectables.add(this);
             region.allInjectables.add(injectable);
         } else {
-            this.model = component.realm.componentModelOf(source.getClass());
+            this.model = realm.componentModelOf(source.getClass());
             this.instance = source;
             this.injectable = null;
             this.factory = null;
+            // All instances are stored in its region at runtime.
             region.runtimeInstances.add(this);
         }
     }
@@ -98,7 +96,7 @@ public final class SourceAssembly implements DependencyProvider {
     }
 
     public boolean isPrototype() {
-        return !component.modifiers().isSingleton();
+        return !compConf.modifiers().isSingleton();
     }
 
     // Bliver kaldt naar man koere provide();
@@ -112,7 +110,7 @@ public final class SourceAssembly implements DependencyProvider {
             } else {
                 key = factory.key();
             }
-            s = service = new ComponentBuildEntry<>(component, key);
+            s = service = new ComponentBuildEntry<>(compConf, key);
         }
         return s;
     }

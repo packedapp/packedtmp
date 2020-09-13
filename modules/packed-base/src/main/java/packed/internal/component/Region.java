@@ -27,8 +27,11 @@ import packed.internal.util.MethodHandleUtil;
  */
 // Passive System -> 1 NodeStore
 // Active System -> 1 NodeStore per guest
+
+// Long term, this might just be an Object[] array. But for now its a class, in case we need stuff that isn't stored in the array. 
 public final class Region {
 
+    /** A method handle for calling {@link #getSingletonInstance(int)} at runtime. */
     static final MethodHandle MH_GET_SINGLETON_INSTANCE = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "getSingletonInstance", Object.class, int.class);
 
     public final Object[] store;
@@ -76,14 +79,6 @@ public final class Region {
     public static MethodHandle readSingletonAs(int index, Class<?> type) {
         MethodHandle mh = MethodHandles.insertArguments(MH_GET_SINGLETON_INSTANCE, 1, index);
         mh = MethodHandleUtil.castReturnType(mh, type);
-
         return mh;
     }
-
 }
-//Taenker den er inline
-//Skal jo godt nok vaere lille for Actors...
-
-/// GUESTS (
-
-// En guest kunne mere eller mindre vaere 10 objects

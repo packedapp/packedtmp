@@ -202,7 +202,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
         // Setup source
         if (modifiers().isSource()) {
-            this.source = new SourceAssembly(this);
+            this.source = new SourceAssembly(this, region, realm, driver.data);
             this.source.model.invokeOnHookOnInstall(this);
         } else {
             this.source = null;
