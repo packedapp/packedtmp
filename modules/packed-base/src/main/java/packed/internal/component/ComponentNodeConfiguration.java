@@ -63,7 +63,7 @@ import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.container.PackedRealm;
-import packed.internal.inject.ConfigSiteInjectOperations;
+import packed.internal.inject.various.ConfigSiteInjectOperations;
 import packed.internal.service.buildtime.dependencies.InjectionManager;
 import packed.internal.util.ThrowableUtil;
 

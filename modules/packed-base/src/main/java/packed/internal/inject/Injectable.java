@@ -28,9 +28,9 @@ import packed.internal.component.Region;
 import packed.internal.component.SourceAssembly;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
+import packed.internal.inject.sidecar.AtProvides;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.dependencies.InjectionManager;
-import packed.internal.service.buildtime.service.AtProvides;
 
 /**
  *

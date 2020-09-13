@@ -31,7 +31,7 @@ import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.PackedRealm;
 import packed.internal.errorhandling.ErrorMessage;
-import packed.internal.inject.ConfigSiteInjectOperations;
+import packed.internal.inject.various.ConfigSiteInjectOperations;
 
 /** The default implementation of {@link AssemblyContext} */
 public final class PackedAssemblyContext implements AssemblyContext {

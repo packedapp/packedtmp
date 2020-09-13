@@ -19,8 +19,9 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.inject.Injectable;
+import packed.internal.inject.sidecar.AtProvides;
+import packed.internal.inject.various.ConfigSiteInjectOperations;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.runtime.ConstantInjectorEntry;
@@ -32,9 +33,9 @@ import packed.internal.service.runtime.RuntimeService;
  */
 public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
 
-    public final Injectable injectable;
+    private final Injectable injectable;
 
-    public final int regionIndex;
+    private final int regionIndex;
 
     /**
      * Creates a new node from an instance.
@@ -45,13 +46,7 @@ public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
         super(compConf.container.im, compConf.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, ap.provides, ap.member),
                 (Key) ap.key);
         this.injectable = new Injectable(this, compConf.source, ap);
-        if (ap.isConstant) {
-            this.regionIndex = compConf.region.reserve();
-        } else {
-            this.regionIndex = -1;
-        }
-        compConf.injectionManager().buildEntries.add(this);
-        compConf.region.allInjectables.add(injectable);
+        this.regionIndex = ap.isConstant ? compConf.region.reserve() : -1;
     }
 
     @Override

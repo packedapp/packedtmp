@@ -23,7 +23,7 @@ import app.packed.guest.Guest;
 import app.packed.service.Injector;
 import app.packed.service.ServiceRegistry;
 import packed.internal.component.PackedInitializationContext;
-import packed.internal.inject.InstantiatorBuilder;
+import packed.internal.inject.util.InstantiatorBuilder;
 
 /**
  * Shell drivers are responsible for creating new shells by instantiating stuff.

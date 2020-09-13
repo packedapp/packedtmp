@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject;
+package packed.internal.inject.sidecar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +25,7 @@ import app.packed.hook.OnHook;
 import app.packed.inject.Inject;
 import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.MethodDescriptor;
+import packed.internal.inject.ServiceDependency;
 
 /**
  *

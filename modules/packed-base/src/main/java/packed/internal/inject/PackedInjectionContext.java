@@ -24,7 +24,9 @@ import app.packed.inject.InjectionContext;
 
 /** The default implementation of {@link InjectionContext}. */
 public class PackedInjectionContext implements InjectionContext {
+
     private final Class<?> target;
+
     private final Set<Key<?>> keys;
 
     public PackedInjectionContext(Class<?> target, Set<Key<?>> keys) {

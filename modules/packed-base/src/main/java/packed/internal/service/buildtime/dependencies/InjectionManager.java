@@ -40,11 +40,11 @@ import packed.internal.component.wirelet.WireletList;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.Injectable;
+import packed.internal.inject.sidecar.AtProvides;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ErrorMessages;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.service.AtProvideBuildEntry;
-import packed.internal.service.buildtime.service.AtProvides;
 import packed.internal.service.buildtime.service.ComponentSourceBuildEntry;
 import packed.internal.service.buildtime.service.ExportedBuildEntry;
 import packed.internal.service.buildtime.service.ProvideAllFromOtherInjector;
@@ -106,7 +106,9 @@ public final class InjectionManager {
     }
 
     public void provideFromAtProvides(ComponentNodeConfiguration compConf, AtProvides atProvides) {
-        new AtProvideBuildEntry<>(compConf, atProvides); // Adds itself to #buildEntries
+        BuildtimeService<?> e = new AtProvideBuildEntry<>(compConf, atProvides);
+        buildEntries.add(e);
+        compConf.region.allInjectables.add(e.injectable());
     }
 
     public void buildTree(RegionAssembly resolver) {

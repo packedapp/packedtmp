@@ -1,4 +1,4 @@
-package packed.internal.inject.v2;
+package packed.internal.inject.composite;
 
 import packed.internal.sidecar.old.Model;
 
