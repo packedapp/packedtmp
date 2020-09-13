@@ -38,19 +38,19 @@ final class PackedShellDriver<S> implements ShellDriver<S> {
     private final int modifiers;
 
     /** The method handle responsible for creating new shell instances. */
-    private final MethodHandle newShell;
+    private final MethodHandle newShellMH;
 
     /**
      * Creates a new driver.
      * 
      * @param isGuest
      *            the type of shell that is created
-     * @param instantiatior
-     *            a method handle that create new shell instances
+     * @param newShellMH
+     *            a method handle that can create new shell instances
      */
-    PackedShellDriver(boolean isGuest, MethodHandle instantiatior) {
+    PackedShellDriver(boolean isGuest, MethodHandle newShellMH) {
         this.modifiers = PackedComponentModifierSet.I_SHELL + (isGuest ? PackedComponentModifierSet.I_GUEST : 0);
-        this.newShell = requireNonNull(instantiatior);
+        this.newShellMH = requireNonNull(newShellMH);
     }
 
     public <D> S configure(ComponentDriver<D> driver, CustomConfigurator<D> consumer, Wirelet... wirelets) {
@@ -73,7 +73,7 @@ final class PackedShellDriver<S> implements ShellDriver<S> {
      */
     private S instantiateShell(PackedInitializationContext pic) {
         try {
-            return (S) newShell.invoke(pic);
+            return (S) newShellMH.invoke(pic);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
@@ -94,10 +94,10 @@ final class PackedShellDriver<S> implements ShellDriver<S> {
     /** {@inheritDoc} */
     @Override
     public Image<S> newImage(Bundle<?> bundle, Wirelet... wirelets) {
-        // Assemble the system
-        ComponentNodeConfiguration component = PackedAssemblyContext.assemble(modifiers | I_IMAGE, bundle, this, wirelets);
+        // Assemble the system with the ComponentModifier.IMAGE modifier added
+        ComponentNodeConfiguration component = PackedAssemblyContext.assemble(bundle, modifiers | I_IMAGE, this, wirelets);
 
-        // Return an image of the assembled system in a new shell
+        // Return a new image that be people can use (Image::use)
         return new ShellImage(component);
     }
 
@@ -105,9 +105,9 @@ final class PackedShellDriver<S> implements ShellDriver<S> {
     @Override
     public S newShell(Bundle<?> bundle, Wirelet... wirelets) {
         // Assemble the system
-        ComponentNodeConfiguration component = PackedAssemblyContext.assemble(modifiers, bundle, this, wirelets);
+        ComponentNodeConfiguration component = PackedAssemblyContext.assemble(bundle, modifiers, this, wirelets);
 
-        // Initialize the system. Also starts it, if it is a guest
+        // Initialize the system. And start it if necessary (if it is a guest)
         PackedInitializationContext pic = PackedInitializationContext.initialize(component);
 
         // Return the system in a new shell
@@ -117,7 +117,7 @@ final class PackedShellDriver<S> implements ShellDriver<S> {
     /** {@inheritDoc} */
     @Override
     public Class<?> rawType() {
-        return newShell.type().returnType();
+        return newShellMH.type().returnType();
     }
 
     // A method handle that takes an ArtifactContext and produces something that is compatible with A
@@ -155,10 +155,10 @@ final class PackedShellDriver<S> implements ShellDriver<S> {
         /** {@inheritDoc} */
         @Override
         public S use(Wirelet... wirelets) {
-            // Initialize the system
+            // Initialize a new system using the previously assembled node
             PackedInitializationContext pic = PackedInitializationContext.initializeImage(component, WireletPack.forImage(component, wirelets));
 
-            // Need to start if guest...I think PIC should do it...
+            // Returns the system wrapped in a shell
             return instantiateShell(pic);
         }
     }

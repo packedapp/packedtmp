@@ -55,14 +55,14 @@ public class Main {
     // exitable daemon...
     // https://github.com/patriknw/akka-typed-blog/blob/master/src/main/java/blog/typed/javadsl/ImmutableRoundRobinApp.java3
     public static void execute(Bundle<?> bundle, Wirelet... wirelets) {
-        ComponentNodeConfiguration node = PackedAssemblyContext.assemble(0, bundle, null, wirelets);
+        ComponentNodeConfiguration node = PackedAssemblyContext.assemble(bundle, 0, null, wirelets);
         PackedInitializationContext.initialize(node);
     }
 
     // sync deamon???????
     // App.main(new Goo(), args);
     public static void main(Bundle<?> bundle, String[] args, Wirelet... wirelets) {
-        ComponentNodeConfiguration node = PackedAssemblyContext.assemble(0, bundle, null, Wirelet.combine(MainArgs.wireletOf(args), wirelets));
+        ComponentNodeConfiguration node = PackedAssemblyContext.assemble(bundle, 0, null, Wirelet.combine(MainArgs.wireletOf(args), wirelets));
         PackedInitializationContext.initialize(node);
     }
 }

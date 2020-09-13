@@ -51,33 +51,20 @@ public final class ComponentAnalyzer {
     // If the specified system is a bundle. The bundle will be consumed
     // And ComponentModifier.Analysis will be set
 
-    public static ComponentStream stream(ComponentSystem s) {
-        // Should we take options??? Again I don't know if
-        // options is more a system transform.
-        return analyze(s).stream();
-    }
-
-    public static void print(ComponentSystem s) {
-        ComponentAnalyzer.forEach(s, c -> System.out.println(c.path() + " " + c.modifiers() + " " + c.attributes()));
-    }
-
-    public static void forEach(ComponentSystem s, Consumer<? super Component> action) {
-        analyze(s).stream().forEach(action);
-    }
-
     public static Component analyze(ComponentSystem s) {
         if (s instanceof Component) {
             return (Component) s;
         } else if (s instanceof ComponentDelegate) {
             return ((ComponentDelegate) s).component();
         } else {
-            ComponentNodeConfiguration node = PackedAssemblyContext.assemble(PackedComponentModifierSet.I_ANALYSIS, (Bundle<?>) s, null);
-            return node.adaptToComponent();
-        }
-    }
+            Bundle<?> bundle = (Bundle<?>) s;
 
-    public static Optional<Component> findExtension(ComponentSystem s, Attribute<?> attribute) {
-        return stream(s).filter(c -> c.attributes().isPresent(attribute)).findAny();
+            // Assembles the system with the ComponentModifier.ANALYSIS modifier set
+            ComponentNodeConfiguration component = PackedAssemblyContext.assemble(bundle, PackedComponentModifierSet.I_ANALYSIS, null);
+
+            // Returns a ComponentConfiguration -> Component adaptor
+            return component.adaptToComponent();
+        }
     }
 
     /**
@@ -91,6 +78,24 @@ public final class ComponentAnalyzer {
         throw new UnsupportedOperationException();
     }
 
+    public static Optional<Component> findExtension(ComponentSystem s, Attribute<?> attribute) {
+        return stream(s).filter(c -> c.attributes().isPresent(attribute)).findAny();
+    }
+
+    public static void forEach(ComponentSystem s, Consumer<? super Component> action) {
+        analyze(s).stream().forEach(action);
+    }
+
+    public static void print(ComponentSystem s) {
+        ComponentAnalyzer.forEach(s, c -> System.out.println(c.path() + " " + c.modifiers() + " " + c.attributes()));
+    }
+
+    public static ComponentStream stream(ComponentSystem s) {
+        // Should we take options??? Again I don't know if
+        // options is more a system transform.
+        return analyze(s).stream();
+    }
+
     static void validate(ComponentSystem s, Object ruleset) {
 
     }
@@ -99,11 +104,12 @@ public final class ComponentAnalyzer {
     // require assembly time (maybe as options...)
     // I don't know if we want an option
     interface Option {
-        static Option requireAssembly() {
+        // Omvendt kan det jo vaere en steam option
+        static Option includeEnvironment(ComponentModifier modifier) {
             throw new UnsupportedOperationException();
         }
 
-        static Option requireRuntime() {
+        static Option requireAssembly() {
             throw new UnsupportedOperationException();
         }
 
@@ -118,8 +124,7 @@ public final class ComponentAnalyzer {
         // Det er primaert taenkt at vi f.eks. gerne transformere et stort system
         // til en enkelt container. Hvor alle referencer er EXTERNAL/ENVIRONMENT
 
-        // Omvendt kan det jo vaere en steam option
-        static Option includeEnvironment(ComponentModifier modifier) {
+        static Option requireRuntime() {
             throw new UnsupportedOperationException();
         }
     }

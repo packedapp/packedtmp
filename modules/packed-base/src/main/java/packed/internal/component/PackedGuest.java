@@ -37,7 +37,8 @@ import app.packed.guest.GuestState;
 // Extra data... Startup/Initialization exception
 
 public class PackedGuest implements Guest {
-    private final Sync sync = new Sync();
+
+    final Sync sync = new Sync();
 
     static final int I_INITIALIZING = GuestState.INITIALIZING.ordinal();
     static final int I_INITIALIZED = GuestState.INITIALIZED.ordinal();
