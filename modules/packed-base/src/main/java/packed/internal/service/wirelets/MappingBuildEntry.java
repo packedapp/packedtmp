@@ -21,8 +21,8 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.config.ConfigSite;
+import packed.internal.service.InjectionManager;
 import packed.internal.service.buildtime.BuildtimeService;
-import packed.internal.service.buildtime.dependencies.InjectionManager;
 import packed.internal.service.runtime.MappingInjectorEntry;
 import packed.internal.service.runtime.RuntimeService;
 import packed.internal.service.runtime.ServiceInstantiationContext;

@@ -24,7 +24,7 @@ import app.packed.base.Nullable;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.SourceAssembly;
 import packed.internal.inject.Injectable;
-import packed.internal.service.buildtime.dependencies.InjectionManager;
+import packed.internal.service.InjectionManager;
 import packed.internal.service.runtime.ConstantInjectorEntry;
 import packed.internal.service.runtime.PrototypeInjectorEntry;
 import packed.internal.service.runtime.RuntimeService;

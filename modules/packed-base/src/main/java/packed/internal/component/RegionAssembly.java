@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import app.packed.service.ServiceRegistry;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.Injectable;
-import packed.internal.service.buildtime.dependencies.InjectionManager;
+import packed.internal.service.InjectionManager;
 import packed.internal.util.ThrowableUtil;
 
 /**

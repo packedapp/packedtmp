@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.buildtime.dependencies;
+package packed.internal.service;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
