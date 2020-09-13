@@ -39,7 +39,7 @@ public final class AtProvidesHook implements Hook {
     public final boolean hasInstanceMembers;
 
     /** An immutable map of all providing members. */
-    final List<AtProvides> members;
+    public final List<AtProvides> members;
 
     /**
      * Creates a new group.

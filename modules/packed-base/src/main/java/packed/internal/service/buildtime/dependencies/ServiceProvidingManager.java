@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.buildtime.service;
+package packed.internal.service.buildtime.dependencies;
 
 import static java.util.Objects.requireNonNull;
 
@@ -38,7 +38,10 @@ import packed.internal.component.wirelet.WireletList;
 import packed.internal.inject.ConfigSiteInjectOperations;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ErrorMessages;
-import packed.internal.service.buildtime.dependencies.InjectionManager;
+import packed.internal.service.buildtime.service.AtProvideBuildEntry;
+import packed.internal.service.buildtime.service.AtProvides;
+import packed.internal.service.buildtime.service.AtProvidesHook;
+import packed.internal.service.buildtime.service.ProvideAllFromOtherInjector;
 import packed.internal.service.runtime.AbstractInjector;
 
 /**

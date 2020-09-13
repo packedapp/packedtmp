@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.buildtime.dependencies;
+package packed.internal.service.buildtime.service;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,6 +23,7 @@ import app.packed.config.ConfigSite;
 import app.packed.service.ServiceExtension;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
+import packed.internal.service.buildtime.dependencies.InjectionManager;
 import packed.internal.service.runtime.DelegatingInjectorEntry;
 import packed.internal.service.runtime.RuntimeService;
 
@@ -34,11 +35,11 @@ public final class ExportedBuildEntry<T> extends BuildtimeService<T> {
 
     /** The actual entry that is exported. Is initially null for keyed exports, until it is resolved. */
     @Nullable
-    BuildtimeService<T> exportedEntry;
+    public BuildtimeService<T> exportedEntry;
 
     /** The key under which to export the entry, is null for entry exports. */
     @Nullable
-    final Key<?> keyToExport;
+    public final Key<?> keyToExport;
 
     /**
      * Exports an entry via its key.
@@ -50,7 +51,7 @@ public final class ExportedBuildEntry<T> extends BuildtimeService<T> {
      * @see ServiceExtension#export(Class)
      * @see ServiceExtension#export(Key)
      */
-    ExportedBuildEntry(InjectionManager builder, Key<T> key, ConfigSite configSite) {
+    public ExportedBuildEntry(InjectionManager builder, Key<T> key, ConfigSite configSite) {
         super(builder, configSite);
         this.keyToExport = requireNonNull(key);
         this.key = requireNonNull(key);
@@ -65,7 +66,7 @@ public final class ExportedBuildEntry<T> extends BuildtimeService<T> {
      *            the config site of the export
      * @see ServiceExtension#exportAll()
      */
-    ExportedBuildEntry(InjectionManager builder, BuildtimeService<T> entryToExport, ConfigSite configSite) {
+    public ExportedBuildEntry(InjectionManager builder, BuildtimeService<T> entryToExport, ConfigSite configSite) {
         super(builder, configSite);
         this.exportedEntry = entryToExport;
         this.keyToExport = null;

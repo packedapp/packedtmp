@@ -34,7 +34,7 @@ public final class AtProvides {
 
     /** An (optional) description from {@link Provide#description()}. */
     @Nullable
-    final String description;
+    public final String description;
 
     /** The instantiation mode from {@link Provide#constant()}. */
     public final boolean isConstant;
@@ -43,13 +43,13 @@ public final class AtProvides {
     public final boolean isStaticMember;
 
     /** The key under which the provided service will be made available. */
-    final Key<?> key;
+    public final Key<?> key;
 
     /** The annotated member, either an {@link FieldDescriptor} or an {@link MethodDescriptor}. */
-    final MemberDescriptor member;
+    public final MemberDescriptor member;
 
     /** The annotated value, is used for creating config sites. */
-    final Provide provides;
+    public final Provide provides;
 
     /** The dependencies (parameters) of the member. */
     public final List<ServiceDependency> dependencies;

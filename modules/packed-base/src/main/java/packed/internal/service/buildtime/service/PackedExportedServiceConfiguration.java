@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.buildtime.dependencies;
+package packed.internal.service.buildtime.service;
 
 import static java.util.Objects.requireNonNull;
 
@@ -30,7 +30,7 @@ import app.packed.service.ServiceExtension;
  * @see ServiceExtension#export(Key)
  */
 // Move to ExportManager when we key + check configurable has been finalized
-final class PackedExportedServiceConfiguration<T> implements ExportedServiceConfiguration<T> {
+public final class PackedExportedServiceConfiguration<T> implements ExportedServiceConfiguration<T> {
 
     /** The entry that is exported. */
     private final ExportedBuildEntry<T> entry;
@@ -41,7 +41,7 @@ final class PackedExportedServiceConfiguration<T> implements ExportedServiceConf
      * @param entry
      *            the entry to export
      */
-    PackedExportedServiceConfiguration(ExportedBuildEntry<T> entry) {
+    public PackedExportedServiceConfiguration(ExportedBuildEntry<T> entry) {
         this.entry = requireNonNull(entry);
     }
 

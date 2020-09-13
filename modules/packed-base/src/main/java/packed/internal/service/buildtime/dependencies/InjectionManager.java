@@ -37,7 +37,7 @@ import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.Injectable;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
-import packed.internal.service.buildtime.service.ServiceProvidingManager;
+import packed.internal.service.buildtime.service.ExportedBuildEntry;
 import packed.internal.service.runtime.PackedInjector;
 import packed.internal.service.runtime.RuntimeService;
 import packed.internal.util.LookupUtil;

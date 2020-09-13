@@ -33,6 +33,8 @@ import app.packed.service.ServiceMap;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ErrorMessages;
 import packed.internal.service.buildtime.SimpleServiceSet;
+import packed.internal.service.buildtime.service.ExportedBuildEntry;
+import packed.internal.service.buildtime.service.PackedExportedServiceConfiguration;
 import packed.internal.util.KeyBuilder;
 
 /**
