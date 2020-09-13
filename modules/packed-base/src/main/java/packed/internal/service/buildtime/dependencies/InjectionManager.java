@@ -43,7 +43,6 @@ import packed.internal.inject.Injectable;
 import packed.internal.inject.sidecar.AtProvides;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.ErrorMessages;
-import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.service.AtProvideBuildEntry;
 import packed.internal.service.buildtime.service.ComponentSourceBuildEntry;
 import packed.internal.service.buildtime.service.ExportedBuildEntry;
@@ -51,6 +50,7 @@ import packed.internal.service.buildtime.service.ProvideAllFromOtherInjector;
 import packed.internal.service.runtime.AbstractInjector;
 import packed.internal.service.runtime.PackedInjector;
 import packed.internal.service.runtime.RuntimeService;
+import packed.internal.service.runtime.ServiceInstantiationContext;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -166,7 +166,7 @@ public final class InjectionManager {
 
     public ServiceRegistry newServiceRegistry(ComponentNode comp, Region region, WireletPack wc) {
         LinkedHashMap<Key<?>, RuntimeService<?>> runtimeEntries = new LinkedHashMap<>();
-        ServiceExtensionInstantiationContext con = new ServiceExtensionInstantiationContext(region);
+        ServiceInstantiationContext con = new ServiceInstantiationContext(region);
         for (var e : exports()) {
             runtimeEntries.put(e.key(), e.toRuntimeEntry(con));
         }

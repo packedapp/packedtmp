@@ -13,26 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.buildtime;
+package packed.internal.service.runtime;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.IdentityHashMap;
 
 import packed.internal.component.Region;
-import packed.internal.service.runtime.RuntimeService;
+import packed.internal.service.buildtime.BuildtimeService;
 
 /** A special instantiation context that is created */
 // Vi beholder den lidt endnu, det saa traels hver gang vi
 // laver aendringer, hvis vi bare sender Region+IHM rundt
-public class ServiceExtensionInstantiationContext {
+public class ServiceInstantiationContext {
 
     public final Region region;
 
     // Translates from BuildEntry->RuntimeEntry
-    final IdentityHashMap<BuildtimeService<?>, RuntimeService<?>> transformers = new IdentityHashMap<>();
+    public final IdentityHashMap<BuildtimeService<?>, RuntimeService<?>> transformers = new IdentityHashMap<>();
 
-    public ServiceExtensionInstantiationContext(Region ns) {
+    public ServiceInstantiationContext(Region ns) {
         this.region = requireNonNull(ns);
     }
 }

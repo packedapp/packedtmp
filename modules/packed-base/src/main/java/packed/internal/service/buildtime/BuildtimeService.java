@@ -28,6 +28,7 @@ import packed.internal.inject.DependencyProvider;
 import packed.internal.inject.Injectable;
 import packed.internal.service.buildtime.dependencies.InjectionManager;
 import packed.internal.service.runtime.RuntimeService;
+import packed.internal.service.runtime.ServiceInstantiationContext;
 
 /**
  * Build service entries ...node is used at configuration time, to make sure that multiple services with the same key
@@ -96,7 +97,7 @@ public abstract class BuildtimeService<T> implements DependencyProvider {
      *
      * @return the new runtime node
      */
-    protected abstract RuntimeService<T> newRuntimeNode(ServiceExtensionInstantiationContext context);
+    protected abstract RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context);
 
     public final Service toDescriptor() {
         return new PackedService(key, configSite);
@@ -109,7 +110,7 @@ public abstract class BuildtimeService<T> implements DependencyProvider {
 
     // cacher runtime noden...
     @SuppressWarnings("unchecked")
-    public final RuntimeService<T> toRuntimeEntry(ServiceExtensionInstantiationContext context) {
+    public final RuntimeService<T> toRuntimeEntry(ServiceInstantiationContext context) {
         return (RuntimeService<T>) context.transformers.computeIfAbsent(this, k -> {
             return k.newRuntimeNode(context);
         });

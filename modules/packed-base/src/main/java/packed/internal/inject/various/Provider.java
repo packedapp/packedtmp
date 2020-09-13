@@ -13,9 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.buildtime;
+package packed.internal.inject.various;
 
 import static java.util.Objects.requireNonNull;
+
+import java.lang.invoke.MethodHandle;
+
+import packed.internal.util.ThrowableUtil;
 
 /**
  * A provider of object instances.
@@ -35,6 +39,25 @@ public interface Provider<T> {
 
     static <T> Provider<T> of(T t) {
         return new ConstantProvider<>(t);
+    }
+}
+
+class InvokeExactProvider<T> implements Provider<T> {
+
+    private final MethodHandle mh;
+
+    InvokeExactProvider(MethodHandle mh) {
+        this.mh = requireNonNull(mh);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public T provide() {
+        try {
+            return (T) mh.invokeExact();
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
     }
 }
 

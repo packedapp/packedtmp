@@ -19,9 +19,9 @@ import app.packed.component.Wirelet;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
 import packed.internal.service.buildtime.BuildtimeService;
-import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.runtime.DelegatingInjectorEntry;
 import packed.internal.service.runtime.RuntimeService;
+import packed.internal.service.runtime.ServiceInstantiationContext;
 
 /** An entry specifically used for {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
 final class FromOtherInjectorBuildEntry<T> extends BuildtimeService<T> {
@@ -40,7 +40,7 @@ final class FromOtherInjectorBuildEntry<T> extends BuildtimeService<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeService<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
+    protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
         return new DelegatingInjectorEntry<T>(this, entry);
     }
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.buildtime.wirelets;
+package packed.internal.service.wirelets;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,10 +22,10 @@ import java.util.function.Function;
 import app.packed.base.Key;
 import app.packed.config.ConfigSite;
 import packed.internal.service.buildtime.BuildtimeService;
-import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.dependencies.InjectionManager;
 import packed.internal.service.runtime.MappingInjectorEntry;
 import packed.internal.service.runtime.RuntimeService;
+import packed.internal.service.runtime.ServiceInstantiationContext;
 
 /**
  * A build entry that that takes an existing entry and uses a {@link Function} to map the service provided by the entry.
@@ -46,7 +46,7 @@ final class MappingBuildEntry<F, T> extends BuildtimeService<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeService<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
+    protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
         return new MappingInjectorEntry<>(this, entryToMap.toRuntimeEntry(context), function);
     }
 }

@@ -27,9 +27,9 @@ import app.packed.service.ServiceExtension;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.dependencies.InjectionManager;
-import packed.internal.service.buildtime.wirelets.PackedUpstreamInjectionWirelet;
 import packed.internal.service.runtime.AbstractInjector;
 import packed.internal.service.runtime.RuntimeService;
+import packed.internal.service.wirelets.PackedUpstreamInjectionWirelet;
 import packed.internal.util.KeyBuilder;
 
 /** Represents an injector that used via {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */

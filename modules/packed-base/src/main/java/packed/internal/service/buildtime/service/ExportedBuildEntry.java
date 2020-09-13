@@ -22,10 +22,10 @@ import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.service.ServiceExtension;
 import packed.internal.service.buildtime.BuildtimeService;
-import packed.internal.service.buildtime.ServiceExtensionInstantiationContext;
 import packed.internal.service.buildtime.dependencies.InjectionManager;
 import packed.internal.service.runtime.DelegatingInjectorEntry;
 import packed.internal.service.runtime.RuntimeService;
+import packed.internal.service.runtime.ServiceInstantiationContext;
 
 /**
  * A build entry representing an exported service. Entries at runtime has never any reference to how (or if) they where
@@ -76,7 +76,7 @@ public final class ExportedBuildEntry<T> extends BuildtimeService<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeService<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {
+    protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
         return new DelegatingInjectorEntry<>(this, exportedEntry.toRuntimeEntry(context));
     }
 }
