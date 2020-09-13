@@ -43,10 +43,6 @@ public class Resolver {
 
     public final ArrayList<Injectable> allInjectables = new ArrayList<>();
 
-    public Resolver(RegionAssembly ra) {
-        this.ra = requireNonNull(ra);
-    }
-
     // Vi bliver noedt til at kalde ned recursivt saa vi kan finde raekkefolgen af service inst
 
     public DependencyProvider resolve(Injectable injectable, ServiceDependency dependency) {
@@ -62,18 +58,10 @@ public class Resolver {
         }
     }
 
-    public void resolveAll() {
-        InjectionManager se = ra.configuration.container.im;
-
-        se.buildTree(this);
-
-        // check circles
-
-        // create mhs
-
-        // Last we find all source injectables that are registered as services
-        // They will be instantiated as the last thing after all services.
+    public Resolver(RegionAssembly ra) {
+        this.ra = requireNonNull(ra);
     }
+
 }
 
 //if (Extension.class.isAssignableFrom(rawType)) {

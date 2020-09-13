@@ -43,7 +43,9 @@ public class RegionAssembly {
     }
 
     public void assemblyClosed() {
-        resolver.resolveAll();
+        InjectionManager se = configuration.container.im;
+
+        se.buildTree(resolver);
     }
 
     Region newRegion(PackedInitializationContext pic, ComponentNode root) {

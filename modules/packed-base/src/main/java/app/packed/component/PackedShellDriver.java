@@ -61,7 +61,7 @@ final class PackedShellDriver<S> implements ShellDriver<S> {
     public <C, D> S configure(ComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.configure(this, (PackedComponentDriver<D>) driver, factory, consumer, wirelets);
         PackedInitializationContext ac = PackedInitializationContext.initialize(node);
-        return instantiateShell(ac);
+        return newShell(ac);
     }
 
     /**
@@ -71,7 +71,7 @@ final class PackedShellDriver<S> implements ShellDriver<S> {
      *            the initialization context to wrap
      * @return the new shell
      */
-    private S instantiateShell(PackedInitializationContext pic) {
+    private S newShell(PackedInitializationContext pic) {
         try {
             return (S) newShellMH.invoke(pic);
         } catch (Throwable e) {
@@ -111,7 +111,7 @@ final class PackedShellDriver<S> implements ShellDriver<S> {
         PackedInitializationContext pic = PackedInitializationContext.initialize(component);
 
         // Return the system in a new shell
-        return instantiateShell(pic);
+        return newShell(pic);
     }
 
     /** {@inheritDoc} */
@@ -130,47 +130,14 @@ final class PackedShellDriver<S> implements ShellDriver<S> {
         return new PackedShellDriver<>(isGuest, mh);
     }
 
-    /** An implementation of {@link Image} used by {@link ShellDriver#newImage(Bundle, Wirelet...)}. */
-    private final class ShellImage implements Image<S> {
-
-        /** The assembled image node. */
-        private final ComponentNodeConfiguration component;
-
-        /**
-         * Create a new image from the specified component.
-         * 
-         * @param node
-         *            the artifact driver
-         */
-        private ShellImage(ComponentNodeConfiguration node) {
-            this.component = node;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Component component() {
-            return component.adaptToComponent();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public S use(Wirelet... wirelets) {
-            // Initialize a new system using the previously assembled node
-            PackedInitializationContext pic = PackedInitializationContext.initializeImage(component, WireletPack.forImage(component, wirelets));
-
-            // Returns the system wrapped in a shell
-            return instantiateShell(pic);
-        }
-    }
-
-    static class ZOption {
+    interface Option {
 
         // If not autoclosable
-        public ZOption forceGuest() {
+        static Option forceGuest() {
             throw new UnsupportedOperationException();
         }
 
-        public ZOption forceNonGuest() {
+        static Option forceNonGuest() {
             throw new UnsupportedOperationException();
         }
 
@@ -180,11 +147,11 @@ final class PackedShellDriver<S> implements ShellDriver<S> {
 
         // String Reason??? This extension has been blacklisted
         @SafeVarargs
-        static ZOption blacklistExtensions(Class<? extends Extension>... extensions) {
+        static Option blacklistExtensions(Class<? extends Extension>... extensions) {
             throw new UnsupportedOperationException();
         }
 
-        static ZOption blacklistExtensions(String... extensions) {
+        static Option blacklistExtensions(String... extensions) {
             throw new UnsupportedOperationException();
         }
 
@@ -199,29 +166,29 @@ final class PackedShellDriver<S> implements ShellDriver<S> {
         //// Can only use of them
         // Altsaa det maa vaere meget taet paa ArchUnit a.la.. Hmmm
 
-        static ZOption nameProvider() {
+        static Option nameProvider() {
             // prefix???
             // Ideen er ihvertfald at
             throw new UnsupportedOperationException();
         }
 
-        static ZOption postfixWirelets(Wirelet... wirelets) {
+        static Option postfixWirelets(Wirelet... wirelets) {
             throw new UnsupportedOperationException();
         }
 
         // Hmmm... Fungere jo ikke rigtigt med image....
-        static ZOption prefixWirelets(Wirelet... wirelets) {
+        static Option prefixWirelets(Wirelet... wirelets) {
             throw new UnsupportedOperationException();
         }
 
         // custom ServiceProvider..
-        static ZOption serviceProvider() {
+        static Option serviceProvider() {
             throw new UnsupportedOperationException();
         }
 
         // Hmmm... Fungere jo ikke rigtigt med image......
         @SafeVarargs
-        static ZOption whitelistExtensions(Class<? extends Extension>... extensions) {
+        static Option whitelistExtensions(Class<? extends Extension>... extensions) {
             throw new UnsupportedOperationException();
         }
 
@@ -244,6 +211,39 @@ final class PackedShellDriver<S> implements ShellDriver<S> {
 //         // What about execute....
 //         throw new UnsupportedOperationException();
         // }
+    }
+
+    /** An implementation of {@link Image} used by {@link ShellDriver#newImage(Bundle, Wirelet...)}. */
+    private final class ShellImage implements Image<S> {
+
+        /** The assembled image node. */
+        private final ComponentNodeConfiguration compConf;
+
+        /**
+         * Create a new image from the specified component.
+         * 
+         * @param compConf
+         *            the assembled component
+         */
+        private ShellImage(ComponentNodeConfiguration compConf) {
+            this.compConf = compConf;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Component component() {
+            return compConf.adaptToComponent();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public S use(Wirelet... wirelets) {
+            // Initialize a new system using the previously assembled node
+            PackedInitializationContext pic = PackedInitializationContext.initializeFromImage(compConf, WireletPack.forImage(compConf, wirelets));
+
+            // Returns the system wrapped in a shell
+            return newShell(pic);
+        }
     }
 
     // Ideen er lidt at vi har en OptionList som aggregere alle options

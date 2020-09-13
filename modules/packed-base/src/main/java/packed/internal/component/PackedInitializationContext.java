@@ -122,7 +122,7 @@ public final class PackedInitializationContext {
         return pic;
     }
 
-    public static PackedInitializationContext initializeImage(ComponentNodeConfiguration root, WireletPack wirelets) {
+    public static PackedInitializationContext initializeFromImage(ComponentNodeConfiguration root, WireletPack wirelets) {
         PackedInitializationContext pic = new PackedInitializationContext(wirelets);
         if (root.modifiers().isGuest()) {
             PackedGuest.initializeAndStart(root, pic);
