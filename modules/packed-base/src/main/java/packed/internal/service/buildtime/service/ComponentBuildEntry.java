@@ -51,6 +51,11 @@ public final class ComponentBuildEntry<T> extends BuildtimeService<T> {
         im.provider().buildEntries.add(this);
     }
 
+    @Override
+    public int regionIndex() {
+        return source.regionIndex;
+    }
+
     /** {@inheritDoc} */
     @Override
     @Nullable

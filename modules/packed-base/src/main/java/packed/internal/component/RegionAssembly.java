@@ -23,26 +23,32 @@ import java.util.ArrayList;
 import app.packed.service.ServiceRegistry;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.Injectable;
-import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.service.buildtime.InjectionManager;
-import packed.internal.service.buildtime.service.AtProvideBuildEntry;
 import packed.internal.util.ThrowableUtil;
 
 /**
  *
  */
+// Vi gemmer alt det her i en region...
+// Fordi raekkefoelgen af initialisering gaar paa tvaers af containere
+// Idet de kan dependende paa hinanden
 public final class RegionAssembly {
-
-    public final ArrayList<Injectable> allInjectables = new ArrayList<>();
-
-    final ComponentNodeConfiguration compConf; // do we need this??
-
-    public final ArrayList<Injectable> constantServices = new ArrayList<>();
-
-    int nextIndex;
 
     /** Components that contains constants that should be stored in a region. */
     final ArrayList<SourceAssembly> runtimeInstances = new ArrayList<>();
+
+    final ComponentNodeConfiguration compConf; // do we need this??
+
+    int nextIndex;
+
+    // List of services that must be instantiated and stored in the region
+    // They are ordered in the order they should be initialized
+    // For now written by DependencyCycleDetector via BFS
+    public final ArrayList<Injectable> constantServices = new ArrayList<>();
+
+    /*---***************************/
+
+    public final ArrayList<Injectable> allInjectables = new ArrayList<>();
 
     /** Everything that needs to resolved. */
     public final ArrayList<SourceAssembly> sourceInjectables = new ArrayList<>();
@@ -62,6 +68,7 @@ public final class RegionAssembly {
     Region newRegion(PackedInitializationContext pic, ComponentNode root) {
         Region region = new Region(nextIndex);
 
+        // I don't now if we create the guest here??? We do for now though
         if (root.modifiers().isGuest()) {
             region.store(0, new PackedGuest(null));
         }
@@ -71,16 +78,11 @@ public final class RegionAssembly {
             region.store(sa.regionIndex, sa.instance);
         }
 
+        // All services that must be instantiated and stored
         for (Injectable ii : constantServices) {
-            // System.out.println(ii.directMethodHandle);
-            int index;
-            BuildtimeService<?> entry = ii.entry();
-            if (entry instanceof AtProvideBuildEntry<?>) {
-                AtProvideBuildEntry<?> e = (AtProvideBuildEntry<?>) entry;
-                index = e.regionIndex;
-            } else {
-                index = ii.source.regionIndex;
-            }
+            int index = ii.entry().regionIndex();
+
+            // Should never have been added if index==-1
             if (index > -1) {
                 requireNonNull(ii);
                 Object instance;
@@ -97,17 +99,16 @@ public final class RegionAssembly {
 
         // Last all singletons that have not already been used as services
         for (SourceAssembly i : sourceInjectables) {
-            if (i.regionIndex > -1) {
-                if (!region.isSet(i.regionIndex)) {
-                    Object instance;
-                    try {
-                        instance = i.injectable.buildMethodHandle().invoke(region);
-                    } catch (Throwable e1) {
-                        throw ThrowableUtil.orUndeclared(e1);
-                    }
-                    requireNonNull(instance);
-                    region.store(i.regionIndex, instance);
+            if (i.regionIndex > -1 && !region.isSet(i.regionIndex)) {
+                Object instance;
+                MethodHandle mh = i.injectable.buildMethodHandle();
+                try {
+                    instance = mh.invoke(region);
+                } catch (Throwable e1) {
+                    throw ThrowableUtil.orUndeclared(e1);
                 }
+                requireNonNull(instance);
+                region.store(i.regionIndex, instance);
             }
         }
 

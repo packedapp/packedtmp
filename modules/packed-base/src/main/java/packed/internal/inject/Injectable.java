@@ -107,7 +107,7 @@ public final class Injectable {
         if (detectForCycles) {
             source.compConf.container.im.dependencies().detectCyclesFor.add(this);
         }
-        buildEntry = null;
+        buildEntry = null; // Any build entry is stored in SourceAssembly#service
     }
 
     public final MethodHandle buildMethodHandle() {

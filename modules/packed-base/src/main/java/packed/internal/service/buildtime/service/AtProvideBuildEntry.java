@@ -64,6 +64,11 @@ public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
         return injectable;
     }
 
+    @Override
+    public int regionIndex() {
+        return regionIndex;
+    }
+
     /** {@inheritDoc} */
     @Override
     protected RuntimeService<T> newRuntimeNode(ServiceExtensionInstantiationContext context) {

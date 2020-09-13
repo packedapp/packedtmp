@@ -82,6 +82,10 @@ public abstract class BuildtimeService<T> implements DependencyProvider {
         throw new UnsupportedOperationException();
     }
 
+    public int regionIndex() {
+        throw new UnsupportedOperationException();
+    }
+
     public final Key<T> key() {
         return key;
     }

@@ -35,6 +35,7 @@ public final class SourceAssembly implements DependencyProvider {
     /** The component this source is a part of. */
     public final ComponentNodeConfiguration compConf;
 
+    @Nullable
     private final BaseFactory<?> factory;
 
     /** An injectable, if this source needs to be created at runtime (not a constant). */
