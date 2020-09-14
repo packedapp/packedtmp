@@ -58,6 +58,7 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
+    /** The container this extension is a part of */
     private final ContainerAssembly container;
 
     /** The extension instance this assembly wraps, instantiated in {@link #of(ContainerAssembly, Class)}. */
@@ -67,7 +68,7 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
     /** Whether or not the extension has been configured. */
     private boolean isConfigured;
 
-    /** The sidecar model of the extension. */
+    /** A model of the extension. */
     private final ExtensionModel model;
 
     /** The component node of the extension. */
