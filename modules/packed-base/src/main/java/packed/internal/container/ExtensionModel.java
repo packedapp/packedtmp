@@ -186,7 +186,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         this.depth = builder.depth;
         this.bundleBuilderMethod = builder.builderMethod;
         this.dependencies = ExtensionSet.of(builder.dependenciesDirect);// Set.copyOf(builder.dependenciesDirect);
-        this.optional = Optional.of(extensionType()); // No need to create an optional every time we need this
+        this.optional = Optional.of(type()); // No need to create an optional every time we need this
 
         this.driver = PackedComponentDriver.extensionDriver(this);
 
@@ -243,7 +243,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
      * @return the extension type of this model
      */
     @SuppressWarnings("unchecked")
-    Class<? extends Extension> extensionType() {
+    Class<? extends Extension> type() {
         return (Class<? extends Extension>) type;
     }
 

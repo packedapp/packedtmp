@@ -138,7 +138,7 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
     /** {@inheritDoc} */
     @Override
     public Class<? extends Extension> extensionType() {
-        return model.extensionType();
+        return model.type();
     }
 
     /**
@@ -284,7 +284,7 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
                 return (T) instance;
             }
 
-            throw new UnsupportedOperationException("The specified extension type is not among " + model.extensionType().getSimpleName()
+            throw new UnsupportedOperationException("The specified extension type is not among " + model.type().getSimpleName()
                     + " dependencies, extensionType = " + extensionType + ", valid dependencies = " + model.dependencies());
         }
         return (T) container.useExtension(extensionType, this).instance;
@@ -302,7 +302,7 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
     static ExtensionAssembly of(ContainerAssembly container, Class<? extends Extension> extensionType) {
         // Create extension context and instantiate extension
         ExtensionModel model = ExtensionModel.of(extensionType);
-        PackedRealm realm = PackedRealm.fromExtension(model.extensionType());
+        PackedRealm realm = PackedRealm.fromExtension(model.type());
         ComponentNodeConfiguration compConf = container.compConf.newChild(model.driver, container.compConf.configSite(), realm, null);
 
         ExtensionAssembly ea = compConf.extension;
