@@ -96,9 +96,11 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     @Nullable
     public final ContainerAssembly container;
 
+    /** Any extension that is attached to this component. */
     @Nullable
     public ExtensionAssembly extension;
 
+    /** Any source that is attached to this component. */
     @Nullable
     public final SourceAssembly source;
 

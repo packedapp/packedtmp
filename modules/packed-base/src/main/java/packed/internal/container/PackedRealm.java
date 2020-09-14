@@ -23,6 +23,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
+import app.packed.container.Extension;
 import packed.internal.component.SourceModel;
 import packed.internal.inject.factory.FactoryHandle;
 
@@ -69,12 +70,12 @@ public final class PackedRealm {
     /**
      * Creates a new realm for an extension.
      * 
-     * @param pec
+     * @param extensionType
      *            the extension
      * @return a new realm
      */
-    public static PackedRealm fromExtension(ExtensionAssembly pec) {
-        return new PackedRealm(pec.extensionType());
+    public static PackedRealm fromExtension(Class<? extends Extension> extensionType) {
+        return new PackedRealm(extensionType);
     }
 
     public static PackedRealm fromBundle(Bundle<?> bundle) {

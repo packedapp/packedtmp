@@ -87,12 +87,11 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
      * @param model
      *            a model of the extension.
      */
-    private ExtensionAssembly(ContainerAssembly container, ExtensionModel model) {
+    private ExtensionAssembly(ComponentNodeConfiguration compConf, PackedRealm realm, ContainerAssembly container, ExtensionModel model) {
         this.container = requireNonNull(container);
         this.model = requireNonNull(model);
-        this.realm = PackedRealm.fromExtension(this);
-        this.compConf = container.compConf.newChild(model.driver(), container.compConf.configSite(), realm, null);
-        this.compConf.extension = this;
+        this.realm = requireNonNull(realm);
+        this.compConf = requireNonNull(compConf);
     }
 
     /** {@inheritDoc} */
@@ -319,7 +318,14 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
         // I think move to the constructor of this context??? Then extension can be final...
         // Create extension context and instantiate extension
         ExtensionModel model = ExtensionModel.of(extensionType);
-        ExtensionAssembly pec = new ExtensionAssembly(container, model);
+
+        PackedRealm realm = PackedRealm.fromExtension(model.extensionType());
+        ComponentNodeConfiguration compConf = container.compConf.newChild(model.driver(), container.compConf.configSite(), realm, null);
+
+        ExtensionAssembly pec = new ExtensionAssembly(compConf, realm, container, model);
+
+        compConf.extension = pec;
+
         pec.checkState(ExtensionSetup.INSTANTIATING);
         Extension e = pec.instance = model.newInstance(pec); // Creates a new XXExtension instance
         pec.checkState(ExtensionSetup.NORMAL_USAGE);
