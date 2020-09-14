@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 
-import app.packed.base.TypeLiteral;
 import app.packed.component.AssemblyContext;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
@@ -74,8 +73,6 @@ public abstract class Extension {
 
     /** A stack walker used by {@link #captureStackFrame(String)}. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
-
-    static final TypeLiteral<Class<? extends Extension>> TL = new TypeLiteral<Class<? extends Extension>>() {};
 
     /** The configuration of this extension. Should never be read directly, but accessed via {@link #configuration()}. */
     // I think we should have a value representing configured. In this way people can store the extension

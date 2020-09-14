@@ -21,6 +21,7 @@ import java.util.Optional;
 import app.packed.base.Key;
 import app.packed.component.ComponentDriver.Option;
 import app.packed.container.BaseBundle;
+import app.packed.inject.Factory;
 import app.packed.service.ExportedServiceConfiguration;
 
 /**
@@ -97,5 +98,13 @@ public class BeanConfiguration<T> extends AbstractComponentConfiguration {
 
     public static <T> ComponentDriver<BeanConfiguration<T>> driver(Class<T> implementation) {
         return BeanConfiguration.<T>driver().bindToClass(implementation);
+    }
+
+    public static <T> ComponentDriver<BeanConfiguration<T>> driver(Factory<T> factory) {
+        return BeanConfiguration.<T>driver().bindToFactory(factory);
+    }
+
+    public static <T> ComponentDriver<BeanConfiguration<T>> driverInstance(T instance) {
+        return BeanConfiguration.<T>driver().bindToInstance(instance);
     }
 }

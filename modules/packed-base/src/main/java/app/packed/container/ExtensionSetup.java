@@ -30,19 +30,14 @@ import app.packed.statemachine.Leaving;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 //app.packed.state.... Also ExtensionSidecar.STATE2_MAIN, ExtensionSidecar.STATE3_LINKING, ExtensionSidecar.STATE4_HOSTING
-
 // dependencies = Class<? extends SubExtension>...
 // implementation default Extension.class <-- must be fillout if extension is interface (extends Extension)...
-
 // Skal vi dele dem op i mandatory og optional og optionalNamed
 // Er mest taenkt for descriptors. F.eks. kan man se om en given extension er optional
-
 // TODO we need a new name now that sidecars are no longer annotations
 // Alternativ Settings
 // ExtensionDependencies er vi vel tilbage i....
-
 // transitive... Altsaa kan vi forstille os at extensions of extension skal bruge dem...
-
 // Was ExtensionSettings
 public @interface ExtensionSetup {
 
@@ -95,15 +90,4 @@ public @interface ExtensionSetup {
      * @return extensions that the extension may use if they are present on the classpath or modulepath
      */
     String[] optionalDependencies() default {};
-
 }
-//
-///**
-//* Returns any runtime sidecar representations.
-//* 
-//* @return any runtime sidecar representations
-//*/
-//// wtf is this
-//// Ahh, det maa vaere en ide om at vi skal definere runtime componenterne foer vi bruger dem...
-//// Vi dropper det...
-//Class<?>[] runtime() default {};

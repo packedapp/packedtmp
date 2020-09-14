@@ -53,6 +53,8 @@ public interface ExtensionConfiguration {
 
     // ComponentAttributes
 
+    AssemblyContext assembly();
+
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
@@ -62,12 +64,6 @@ public interface ExtensionConfiguration {
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
     void checkConfigurable();
-
-    AssemblyContext assembly();
-
-    <C, I> C wire(ClassComponentDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets);
-
-    <C, I> C wire(FactoryComponentDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets);
 
     default void checkPreemble() {
         // Ideen er at man kan checke at der ikke er blevet installeret boern...
@@ -82,14 +78,6 @@ public interface ExtensionConfiguration {
      */
     // Returns the config site of extension which is always identical to its container's config site
     ConfigSite containerConfigSite(); // parent.configSite
-
-    /**
-     * Returns the component path of the extension. The path of the extension's container, can be obtained by calling
-     * <code>path.parent().get()</code>.
-     * 
-     * @return the component path of the extension
-     */
-    TreePath path();
 
     /**
      * Returns the type of extension this context wraps.
@@ -122,6 +110,16 @@ public interface ExtensionConfiguration {
     void link(Bundle<?> bundle, Wirelet... wirelets);
 
     /**
+     * Returns the component path of the extension. The path of the extension's container, can be obtained by calling
+     * <code>path.parent().get()</code>.
+     * 
+     * @return the component path of the extension
+     */
+    TreePath path();
+
+    <E extends Subtension> E use(Class<E> extensionType);
+
+    /**
      * Returns an extension of the specified type. The specified type must be among the extension's dependencies as
      * specified via.... Otherwise an {@link InternalExtensionException} is thrown.
      * <p>
@@ -144,7 +142,32 @@ public interface ExtensionConfiguration {
      */
     <E extends Extension> E useOld(Class<E> extensionType);
 
-    <E extends Subtension> E use(Class<E> extensionType);
+    <C, I> C wire(ClassComponentDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets);
+
+    <C, I> C wire(FactoryComponentDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets);
+
+    @Nullable
+    private static ExtensionAssembly pa(MethodHandles.Lookup lookup, Component component) {
+        requireNonNull(lookup, "component is null");
+
+        // lookup.lookupClass() must point to the extension that should be extracted
+        if (lookup.lookupClass() == Extension.class || !Extension.class.isAssignableFrom(lookup.lookupClass())) {
+            throw new IllegalArgumentException("The lookupClass() of the specified lookup object must be a proper subclass of "
+                    + Extension.class.getCanonicalName() + ", was " + lookup.lookupClass());
+        }
+
+        @SuppressWarnings("unchecked")
+        Class<? extends Extension> extensionType = (Class<? extends Extension>) lookup.lookupClass();
+        // Must have full access to the extension class
+        if (!lookup.hasPrivateAccess()) {
+            throw new IllegalArgumentException("The specified lookup object must have full access to " + extensionType
+                    + ", try creating a new lookup object using MethodHandle.privateLookupIn(lookup, " + extensionType.getSimpleName() + ".class)");
+        }
+
+        ComponentNodeConfiguration node = ComponentNodeConfiguration.unadapt(lookup, component);
+        ContainerAssembly container = node.container();
+        return container == null ? null : container.getExtensionContext(extensionType);
+    }
 
     /**
      * Typically used, for example, for testing.
@@ -193,28 +216,5 @@ public interface ExtensionConfiguration {
         @Nullable
         ExtensionAssembly pec = pa(lookup, component);
         return pec == null ? Optional.empty() : Optional.of((T) pec.instance());
-    }
-
-    @Nullable
-    private static ExtensionAssembly pa(MethodHandles.Lookup lookup, Component component) {
-        requireNonNull(lookup, "component is null");
-
-        // lookup.lookupClass() must point to the extension that should be extracted
-        if (lookup.lookupClass() == Extension.class || !Extension.class.isAssignableFrom(lookup.lookupClass())) {
-            throw new IllegalArgumentException("The lookupClass() of the specified lookup object must be a proper subclass of "
-                    + Extension.class.getCanonicalName() + ", was " + lookup.lookupClass());
-        }
-
-        @SuppressWarnings("unchecked")
-        Class<? extends Extension> extensionType = (Class<? extends Extension>) lookup.lookupClass();
-        // Must have full access to the extension class
-        if (!lookup.hasPrivateAccess()) {
-            throw new IllegalArgumentException("The specified lookup object must have full access to " + extensionType
-                    + ", try creating a new lookup object using MethodHandle.privateLookupIn(lookup, " + extensionType.getSimpleName() + ".class)");
-        }
-
-        ComponentNodeConfiguration node = ComponentNodeConfiguration.unadapt(lookup, component);
-        ContainerAssembly container = node.container();
-        return container == null ? null : container.getExtensionContext(extensionType);
     }
 }

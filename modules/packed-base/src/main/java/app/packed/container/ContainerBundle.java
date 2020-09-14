@@ -117,7 +117,7 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
      * @see BaseBundle#install(Factory)
      */
     protected final <T> BeanConfiguration<T> install(Factory<T> factory) {
-        return wire(BeanConfiguration.driver(), factory);
+        return configuration().wire(BeanConfiguration.driver(factory));
     }
 
     /**
@@ -135,7 +135,7 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
      * @return this configuration
      */
     protected final <T> BeanConfiguration<T> installInstance(T instance) {
-        return wireInstance(BeanConfiguration.driver(), instance);
+        return configuration().wire(BeanConfiguration.driverInstance(instance));
     }
 
     protected final StatelessConfiguration installHelper(Class<?> implementation) {
@@ -172,10 +172,10 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
     protected final <T extends Extension> T use(Class<T> extensionType) {
         return configuration().use(extensionType);
     }
-
-//    // Must be a assembly type wirelet
-//    // useWirelet()
-//    protected final <W extends Wirelet> Optional<W> wirelet(Class<W> type) {
-//        return configuration().assemblyWirelet(type);
-//    }
 }
+
+//// Must be a assembly type wirelet
+//// useWirelet()
+//protected final <W extends Wirelet> Optional<W> wirelet(Class<W> type) {
+//  return configuration().assemblyWirelet(type);
+//}

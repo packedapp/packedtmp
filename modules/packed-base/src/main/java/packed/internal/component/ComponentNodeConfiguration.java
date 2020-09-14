@@ -528,11 +528,18 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     /** {@inheritDoc} */
     @Override
     public <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        requireNonNull(driver, "driver is null");
-        PackedComponentDriver<C> d = (PackedComponentDriver<C>) driver;
+        PackedComponentDriver<C> d = (PackedComponentDriver<C>) requireNonNull(driver, "driver is null");
         WireletPack wp = WireletPack.from(d, wirelets);
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
-        ComponentNodeConfiguration conf = newChild(d, configSite, realm, wp);
+
+        ComponentNodeConfiguration conf;
+        if (extension == null) {
+            conf = newChild(d, configSite, realm, wp);
+        } else {
+            // When an extension adds new components they are added to the container (the extension's parent)
+            // Instead of the extension, because the extension itself is removed at runtime.
+            conf = treeParent.newChild(d, configSite, /* The extension's realm */ realm, wp);
+        }
         return d.toConfiguration(conf);
     }
 
