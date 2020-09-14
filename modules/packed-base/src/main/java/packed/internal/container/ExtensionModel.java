@@ -166,6 +166,8 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
     /** The canonical name of the extension. Used when needing to deterministically sort extensions. */
     private final String nameForSorting;
 
+    final String nameSimple;
+
     /** An optional containing the extension type. To avoid excessive creation of them at runtime. */
     public final Optional<Class<? extends Extension>> optional; // can go away with Valhalla
 
@@ -186,7 +188,8 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         this.optional = Optional.of(extensionType()); // No need to create an optional every time we need this
         this.nameForSorting = requireNonNull(extensionType().getCanonicalName());
         this.driver = PackedComponentDriver.extensionDriver(this);
-        this.nameForComponent = "." + extensionType().getSimpleName();
+        this.nameSimple = extensionType().getSimpleName();
+        this.nameForComponent = "." + nameSimple;
         this.extensionLinkedToAncestorExtension = builder.li;
         this.extensionLinkedDirectChildrenOnly = builder.callbackOnlyDirectChildren;
         this.pam = builder.pam;

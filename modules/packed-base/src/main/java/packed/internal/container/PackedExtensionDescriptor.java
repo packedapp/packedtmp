@@ -62,7 +62,7 @@ public final class PackedExtensionDescriptor implements ExtensionDescriptor {
     /** {@inheritDoc} */
     @Override
     public String name() {
-        return type().getSimpleName();
+        return model.nameSimple;
     }
 
     /** {@inheritDoc} */
@@ -92,6 +92,7 @@ public final class PackedExtensionDescriptor implements ExtensionDescriptor {
     /** {@inheritDoc} */
     @Override
     public String fullName() {
+        // Er det ikke extensionSortByName here???
         return type().getCanonicalName();
     }
 }

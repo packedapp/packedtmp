@@ -83,6 +83,7 @@ public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
      * @return the full name of the extension
      * @see Class#getCanonicalName()
      */
+    // Skal vi have noget med at det er det vi sortere efter
     String fullName();
 
     /**
