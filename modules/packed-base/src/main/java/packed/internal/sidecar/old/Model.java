@@ -20,7 +20,11 @@ import static java.util.Objects.requireNonNull;
 /**
  * An abstract class for the various models we have in Packed. A model is typically build upon a class provided by the
  * user. Where we need to analyze constructors/methods/fields.
+ * 
+ * @apiNote This class is actually pretty useless. It is just nice to be able to find all of the models we have. By
+ *          finding all classes that extends from this class.
  */
+
 public abstract class Model {
 
     /** The type this is a model for. */
