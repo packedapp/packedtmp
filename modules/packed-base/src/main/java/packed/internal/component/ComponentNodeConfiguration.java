@@ -227,9 +227,14 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     @SuppressWarnings({ "unchecked", "rawtypes" })
     AttributeMap attributes() {
         // Det er ikke super vigtigt at den her er hurtig paa configurations tidspunktet...
-
         DefaultAttributeMap dam = new DefaultAttributeMap();
-        if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.EXTENSION)) {
+
+        if (source != null) {
+            dam.addValue(ComponentAttributes.SOURCE_TYPE, source.model.modelType());
+        }
+
+        if (extension != null) {
+            dam.addValue(ComponentAttributes.EXTENSION_MEMBER, extension.extensionType());
             ProvidableAttributeModel pam = extension.model().pam();
             if (pam != null) {
                 for (Entry<PackedAttribute<?>, Attt> e : pam.attributeTypes.entrySet()) {
@@ -251,12 +256,6 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
                     }
                 }
             }
-        }
-        if (source != null) {
-            dam.addValue(ComponentAttributes.SOURCE_TYPE, source.model.modelType());
-        }
-        if (extension != null) {
-            dam.addValue(ComponentAttributes.EXTENSION_MEMBER, extension.extensionType());
         }
 
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.SHELL)) {
