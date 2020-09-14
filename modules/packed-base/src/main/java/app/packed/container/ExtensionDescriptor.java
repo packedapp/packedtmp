@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.container.Extension.Subtension;
+import packed.internal.container.PackedExtensionDescriptor;
 
 /**
  * An extension descriptor.

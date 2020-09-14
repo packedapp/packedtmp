@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.base.AttributedElement;
+import app.packed.base.TreePath;
 import app.packed.component.ComponentStream.Option;
 import app.packed.config.ConfigSite;
 
@@ -83,7 +84,7 @@ public interface Component extends AttributedElement, ComponentSystem {
      *
      * @return the path of this component
      */
-    ComponentPath path();
+    TreePath path();
 
     /**
      * Computes the relation from this component to the specified component.

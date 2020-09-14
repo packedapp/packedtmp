@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.Set;
 
+import app.packed.container.Extension;
+import app.packed.container.ExtensionDescriptor;
+import app.packed.container.ExtensionSet;
 import app.packed.introspection.ExecutableDescriptor;
-import packed.internal.container.ExtensionModel;
 
 /**
  * The default implementation of {@link ExecutableDescriptor}.
@@ -29,7 +31,7 @@ import packed.internal.container.ExtensionModel;
  *           expose the context which implements {@link Comparable}... So should probably fix that as well.
  **/
 // Well just added Comparator to ED... Maybe we can just use ExtensionModel directly now (see implNote)
-final class PackedExtensionDescriptor implements ExtensionDescriptor {
+public final class PackedExtensionDescriptor implements ExtensionDescriptor {
 
     /** The extension model we wrap. */
     private final ExtensionModel model;
@@ -76,7 +78,7 @@ final class PackedExtensionDescriptor implements ExtensionDescriptor {
      *            the extension type to return a descriptor for
      * @return a descriptor for the specified extension type
      */
-    static ExtensionDescriptor of(Class<? extends Extension> extensionType) {
+    public static ExtensionDescriptor of(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         return new PackedExtensionDescriptor(ExtensionModel.of(extensionType));
     }

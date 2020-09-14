@@ -15,6 +15,7 @@
  */
 package app.packed.component;
 
+import app.packed.base.TreePath;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Factory;
@@ -99,7 +100,7 @@ public abstract class ComponentBundle<T extends ComponentConfiguration> extends 
      * @return the full path of the container that this bundle creates
      * @see ContainerConfiguration#path()
      */
-    protected final ComponentPath path() {
+    protected final TreePath path() {
         return configuration().path();
     }
 

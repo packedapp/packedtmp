@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 import app.packed.base.AttributeMap;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.base.TreePath;
 import app.packed.component.Bundle;
 import app.packed.component.ClassComponentDriver;
 import app.packed.component.Component;
@@ -41,7 +42,6 @@ import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
-import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.component.FactoryComponentDriver;
@@ -405,7 +405,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
 
     /** {@inheritDoc} */
     @Override
-    public ComponentPath path() {
+    public TreePath path() {
         int anyPathMask = NAME_GET_PATH + NAME_CHILD_GOT_PATH;
         if ((nameState & anyPathMask) != 0) {
             ComponentNodeConfiguration p = treeParent;
@@ -414,7 +414,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
             }
         }
         nameState = (nameState & ~NAME_GETSET_MASK) | NAME_GET_PATH;
-        return PackedComponentPath.of(this); // show we weak intern them????
+        return PackedTreePath.of(this); // show we weak intern them????
     }
 
     public PackedRealm realm() {
@@ -695,7 +695,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
 
         /** {@inheritDoc} */
         @Override
-        public ComponentPath path() {
+        public TreePath path() {
             return compConf.path();
         }
 

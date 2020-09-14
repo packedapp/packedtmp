@@ -22,6 +22,7 @@ import java.lang.StackWalker.StackFrame;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 
+import app.packed.base.TreePath;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
@@ -142,7 +143,7 @@ public abstract class AbstractComponentConfiguration implements ComponentConfigu
 
     /** {@inheritDoc} */
     @Override
-    public final ComponentPath path() {
+    public final TreePath path() {
         return context.path();
     }
 

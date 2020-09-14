@@ -15,9 +15,9 @@
  */
 package app.packed.guest;
 
+import app.packed.base.TreePath;
 import app.packed.component.Component;
 import app.packed.component.ComponentModifierSet;
-import app.packed.component.ComponentPath;
 
 /**
  * Available to all components within a guest.
@@ -36,7 +36,7 @@ import app.packed.component.ComponentPath;
 // At f.eks. extensions kan stoppe en container de er deployet i???
 public interface GuestContext {
 
-    ComponentPath path();
+    TreePath path();
 
     /**
      * Returns the set of

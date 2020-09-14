@@ -18,6 +18,7 @@ package app.packed.component;
 import java.util.NoSuchElementException;
 
 import app.packed.base.Key;
+import app.packed.base.TreePath;
 import app.packed.config.ConfigSite;
 import app.packed.guest.Guest;
 import app.packed.guest.GuestState;
@@ -81,7 +82,7 @@ public interface App extends AutoCloseable, ComponentDelegate {
      * @return the path of this application
      * @see Component#path()
      */
-    default ComponentPath path() {
+    default TreePath path() {
         return component().path();
     }
 

@@ -28,10 +28,10 @@ import java.util.stream.Stream;
 
 import app.packed.base.AttributeMap;
 import app.packed.base.Nullable;
+import app.packed.base.TreePath;
 import app.packed.component.Component;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
-import app.packed.component.ComponentPath;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
@@ -220,8 +220,8 @@ public final class ComponentNode implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public ComponentPath path() {
-        return PackedComponentPath.of(this);
+    public TreePath path() {
+        return PackedTreePath.of(this);
     }
 
     /** {@inheritDoc} */

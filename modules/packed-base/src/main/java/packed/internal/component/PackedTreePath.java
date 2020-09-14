@@ -22,13 +22,13 @@ import java.util.StringJoiner;
 import java.util.stream.Stream;
 
 import app.packed.base.Nullable;
-import app.packed.component.ComponentPath;
+import app.packed.base.TreePath;
 
-/** The default implementation of {@link ComponentPath}. */
-public final class PackedComponentPath implements ComponentPath {
+/** The default implementation of {@link TreePath}. */
+public final class PackedTreePath implements TreePath {
     /** A component path representing the root of a hierarchy. */
     //
-    public static final ComponentPath ROOT = new PackedComponentPath();
+    public static final TreePath ROOT = new PackedTreePath();
 
     private final String[] elements;
 
@@ -38,7 +38,7 @@ public final class PackedComponentPath implements ComponentPath {
     /** String representation, created lazily */
     private volatile String string;
 
-    PackedComponentPath(String... elements) {
+    PackedTreePath(String... elements) {
         this.elements = requireNonNull(elements);
     }
 
@@ -50,7 +50,7 @@ public final class PackedComponentPath implements ComponentPath {
 
     /** {@inheritDoc} */
     @Override
-    public int compareTo(ComponentPath o) {
+    public int compareTo(TreePath o) {
         return toString().compareTo(o.toString());
     }
 
@@ -63,8 +63,8 @@ public final class PackedComponentPath implements ComponentPath {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof PackedComponentPath) {
-            PackedComponentPath pcp = (PackedComponentPath) obj;
+        if (obj instanceof PackedTreePath) {
+            PackedTreePath pcp = (PackedTreePath) obj;
             if (pcp.elements.length != elements.length) {
                 return false;
             }
@@ -74,8 +74,8 @@ public final class PackedComponentPath implements ComponentPath {
                 }
             }
             return true;
-        } else if (obj instanceof ComponentPath) {
-            ComponentPath pcp = (ComponentPath) obj;
+        } else if (obj instanceof TreePath) {
+            TreePath pcp = (TreePath) obj;
             if (pcp.depth() != elements.length) {
                 return false;
             }
@@ -116,11 +116,11 @@ public final class PackedComponentPath implements ComponentPath {
 
     /** {@inheritDoc} */
     @Override
-    public @Nullable ComponentPath parent() {
+    public @Nullable TreePath parent() {
         if (isRoot()) {
             return null;
         }
-        return new PackedComponentPath(Arrays.copyOf(elements, elements.length - 1));
+        return new PackedTreePath(Arrays.copyOf(elements, elements.length - 1));
     }
 
     /** {@inheritDoc} */
@@ -145,13 +145,13 @@ public final class PackedComponentPath implements ComponentPath {
 
     }
 
-    static ComponentPath of(ComponentNode component) {
+    static TreePath of(ComponentNode component) {
         int depth = component.depth();
         switch (depth) {
         case 0:
             return ROOT;
         case 1:
-            return new PackedComponentPath(component.name());
+            return new PackedTreePath(component.name());
         default:
             String[] paths = new String[depth];
             ComponentNode acc = component;
@@ -159,33 +159,33 @@ public final class PackedComponentPath implements ComponentPath {
                 paths[i] = acc.name();
                 acc = acc.parent;
             }
-            return new PackedComponentPath(paths);
+            return new PackedTreePath(paths);
         }
     }
 
-    static ComponentPath of(ComponentNodeConfiguration cc) {
+    static TreePath of(OpenTreeNode<?> cc) {
         int depth = cc.treeDepth;
         switch (depth) {
         case 0:
             return ROOT;
         case 1:
-            return new PackedComponentPath(cc.name);
+            return new PackedTreePath(cc.name);
         default:
             String[] paths = new String[depth];
-            ComponentNodeConfiguration acc = cc;
+            OpenTreeNode<?> acc = cc;
             for (int i = depth - 1; i >= 0; i--) {
                 paths[i] = acc.name;
                 acc = acc.treeParent;
             }
-            return new PackedComponentPath(paths);
+            return new PackedTreePath(paths);
         }
     }
 
     /** {@inheritDoc} */
     @Override
-    public ComponentPath add(ComponentPath other) {
-        PackedComponentPath pcp = (PackedComponentPath) other;
-        return new PackedComponentPath(Stream.concat(Arrays.stream(elements), Arrays.stream(pcp.elements)).toArray(String[]::new));
+    public TreePath add(TreePath other) {
+        PackedTreePath pcp = (PackedTreePath) other;
+        return new PackedTreePath(Stream.concat(Arrays.stream(elements), Arrays.stream(pcp.elements)).toArray(String[]::new));
     }
 }
 /// ** {@inheritDoc} */

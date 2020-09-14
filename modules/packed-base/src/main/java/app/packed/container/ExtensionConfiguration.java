@@ -22,12 +22,12 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
+import app.packed.base.TreePath;
 import app.packed.component.AssemblyContext;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
 import app.packed.component.ClassComponentDriver;
 import app.packed.component.Component;
-import app.packed.component.ComponentPath;
 import app.packed.component.FactoryComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
@@ -89,7 +89,7 @@ public interface ExtensionConfiguration {
      * 
      * @return the component path of the extension
      */
-    ComponentPath path();
+    TreePath path();
 
     /**
      * Returns the type of extension this context wraps.

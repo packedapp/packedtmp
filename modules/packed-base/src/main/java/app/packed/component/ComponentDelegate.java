@@ -15,6 +15,7 @@
  */
 package app.packed.component;
 
+import app.packed.base.TreePath;
 import app.packed.component.ComponentStream.Option;
 
 /**
@@ -45,7 +46,7 @@ public interface ComponentDelegate extends ComponentSystem {
     /**
      * <p>
      * This method takes a {@link CharSequence} as parameter, so it is easy to passe either a {@link String} or a
-     * {@link ComponentPath}.
+     * {@link TreePath}.
      * 
      * @param path
      *            the path of the component to return

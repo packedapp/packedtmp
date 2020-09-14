@@ -23,11 +23,11 @@ import java.lang.invoke.VarHandle;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
+import app.packed.base.TreePath;
 import app.packed.component.AssemblyContext;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
 import app.packed.component.ClassComponentDriver;
-import app.packed.component.ComponentPath;
 import app.packed.component.FactoryComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
@@ -97,6 +97,7 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
     /** {@inheritDoc} */
     @Override
     public void checkConfigurable() {
+        // TODO, jeg syntes det skal vaere component vi henviser til...
         if (container.containerState != 0) {
             throw new IllegalStateException("This extension (" + instance().getClass().getSimpleName() + ") is no longer configurable");
         }
@@ -245,7 +246,7 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
 
     /** {@inheritDoc} */
     @Override
-    public ComponentPath path() {
+    public TreePath path() {
         return compConf.path();
     }
 
@@ -311,7 +312,7 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
         // Create extension context and instantiate extension
         ExtensionModel model = ExtensionModel.of(extensionType);
         PackedRealm realm = PackedRealm.fromExtension(model.extensionType());
-        ComponentNodeConfiguration compConf = container.compConf.newChild(model.driver(), container.compConf.configSite(), realm, null);
+        ComponentNodeConfiguration compConf = container.compConf.newChild(model.driver, container.compConf.configSite(), realm, null);
 
         ExtensionAssembly ea = compConf.extension;
         ea.checkState(ExtensionSetup.INSTANTIATING);

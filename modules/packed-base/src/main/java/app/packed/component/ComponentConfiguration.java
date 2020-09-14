@@ -15,6 +15,7 @@
  */
 package app.packed.component;
 
+import app.packed.base.TreePath;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 
@@ -65,7 +66,7 @@ public interface ComponentConfiguration {
      * 
      * @return the path of this configuration.
      */
-    ComponentPath path();
+    TreePath path();
 
     /**
      * Sets the {@link Component#name() name} of the component. The name must consists only of alphanumeric characters and

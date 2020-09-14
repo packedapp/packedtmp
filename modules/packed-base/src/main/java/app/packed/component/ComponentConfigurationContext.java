@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Key;
+import app.packed.base.TreePath;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundle;
 import app.packed.container.Extension;
@@ -139,7 +140,7 @@ public interface ComponentConfigurationContext {
      * 
      * @return the path of this configuration.
      */
-    ComponentPath path();
+    TreePath path();
 
     /**
      * Sets the {@link Component#name() name} of the component. The name must consists only of alphanumeric characters and

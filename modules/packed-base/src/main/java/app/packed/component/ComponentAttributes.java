@@ -18,6 +18,7 @@ package app.packed.component;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Attribute;
+import app.packed.base.TreePath;
 import app.packed.base.TypeLiteral;
 import app.packed.container.Extension;
 
@@ -64,5 +65,5 @@ public class ComponentAttributes {
     // What Aboun generation?? MAYBE an IMAGE_GENERATION as well?? Or maybe Image names are never reused???
     // A root image will have "/" or /.system.image if restartable...
     // Maybe on GuestImage instead???
-    public static final Attribute<ComponentPath> IMAGE_PATH = Attribute.of(MethodHandles.lookup(), "image-path", ComponentPath.class);
+    public static final Attribute<TreePath> IMAGE_PATH = Attribute.of(MethodHandles.lookup(), "image-path", TreePath.class);
 }

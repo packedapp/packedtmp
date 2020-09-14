@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.component.ComponentPath;
+import app.packed.base.TreePath;
 
 /**
  *
@@ -31,12 +31,12 @@ public class PackedComponentPathTest {
 
     @Test
     public void root() {
-        checkPath(PackedComponentPath.ROOT, "/");
-        checkPath(new PackedComponentPath("Foo"), "/Foo");
-        checkPath(new PackedComponentPath("Foo", "Boo"), "/Foo/Boo");
+        checkPath(PackedTreePath.ROOT, "/");
+        checkPath(new PackedTreePath("Foo"), "/Foo");
+        checkPath(new PackedTreePath("Foo", "Boo"), "/Foo/Boo");
     }
 
-    private static void checkPath(ComponentPath p, String expected) {
+    private static void checkPath(TreePath p, String expected) {
 
         ///////// Object
         // hashCode

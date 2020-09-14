@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.base;
 
 import java.nio.file.Path;
 
-import app.packed.base.Nullable;
-import packed.internal.component.PackedComponentPath;
+import packed.internal.component.PackedTreePath;
 
 /**
  * A component path points to a single component in a hierarchy of components (component system) expressed as a string
@@ -37,12 +36,13 @@ import packed.internal.component.PackedComponentPath;
 
 // Rename to SimplePath???? and move to app.packed.base...
 // BasePath????
-public interface ComponentPath extends Comparable<ComponentPath>, /* , Iterable<ComponentPath>, */ CharSequence {
+// TreePath....
+public interface TreePath extends Comparable<TreePath>, /* , Iterable<ComponentPath>, */ CharSequence {
 
     /** A component path representing the root of a hierarchy. */
-    static final ComponentPath ROOT = PackedComponentPath.ROOT;
+    static final TreePath ROOT = PackedTreePath.ROOT;
 
-    ComponentPath add(ComponentPath other);
+    TreePath add(TreePath other);
 
     /**
      * Returns the number of elements in this path.
@@ -64,7 +64,7 @@ public interface ComponentPath extends Comparable<ComponentPath>, /* , Iterable<
      * @return a path representing the path's parent
      */
     @Nullable
-    ComponentPath parent();// Should probably be optional??? Or for performance reasons nullable... hmm
+    TreePath parent();// Should probably be optional??? Or for performance reasons nullable... hmm
 
     /**
      * Returns the string representation of this component path.
@@ -88,7 +88,7 @@ public interface ComponentPath extends Comparable<ComponentPath>, /* , Iterable<
      * @throws IllegalArgumentException
      *             if the specified path string cannot be converted to a {@code ComponentPath}
      */
-    public static ComponentPath of(String first, String... more) {
+    public static TreePath of(String first, String... more) {
         throw new UnsupportedOperationException();
     }
 

@@ -53,7 +53,7 @@ import packed.internal.sidecar.old.SidecarTypeMeta;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 
-/** A model of an Extension (sidecar). */
+/** A model of an Extension. */
 public final class ExtensionModel extends SidecarModel implements Comparable<ExtensionModel> {
 
     /** A cache of extension models. */
@@ -163,7 +163,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
     /** The default component name of the extension. */
     public final String defaultComponentName;
 
-    private final PackedComponentDriver<?> driver;
+    final PackedComponentDriver<?> driver;
 
     private final ProvidableAttributeModel pam;
 
@@ -193,10 +193,6 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
 
     public ProvidableAttributeModel pam() {
         return pam;
-    }
-
-    public PackedComponentDriver<?> driver() {
-        return driver;
     }
 
     /** {@inheritDoc} */

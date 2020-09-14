@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.base.Attribute;
 import app.packed.base.AttributeProvide;
 import app.packed.base.Contract;
+import packed.internal.container.PackedExtensionDescriptor;
 
 /** Tests {@link PackedExtensionDescriptor}. */
 public class ExtensionDescriptorTest {
