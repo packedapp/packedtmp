@@ -331,12 +331,6 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         return driver;
     }
 
-    @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Extension>> extension() {
-        System.out.println("J<<<<");
-        return Extension.class.isAssignableFrom(realm.type()) ? Optional.empty() : Optional.of((Class<? extends Extension>) realm.type());
-    }
-
     /** {@inheritDoc} */
     @Override
     public String getName() {

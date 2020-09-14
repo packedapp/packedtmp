@@ -17,11 +17,8 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Optional;
-
 import app.packed.component.ComponentModifier;
 import app.packed.config.ConfigSite;
-import app.packed.container.Extension;
 
 /**
  * The different types of components that are supported in Packed.
@@ -47,7 +44,7 @@ public final class RuntimeComponentModel {
     final int depth;
 
     /** Any extension the component belongs to. */ // Generic Extension Table?
-    final Optional<Class<? extends Extension>> extension;
+    // final Optional<Class<? extends Extension>> extension;
 
     final PackedComponentDriver<?> driver; // tmp
 
@@ -56,7 +53,7 @@ public final class RuntimeComponentModel {
     RuntimeComponentModel(ComponentNodeConfiguration context) {
         this.depth = context.treeDepth;
         this.configSite = requireNonNull(context.configSite());
-        this.extension = context.extension();
+        // this.extension = context.extension();
         this.driver = context.driver();
         int p = context.modifiers;
         p = PackedComponentModifierSet.removeIf(p, depth == 0, ComponentModifier.IMAGE);
@@ -67,9 +64,9 @@ public final class RuntimeComponentModel {
         return driver.modifiers().isContainer();
     }
 
-    public Optional<Class<? extends Extension>> extension() {
-        return extension;
-    }
+//    public Optional<Class<? extends Extension>> extension() {
+//        return extension;
+//    }
 
     static RuntimeComponentModel of(ComponentNodeConfiguration context) {
         return new RuntimeComponentModel(context);
