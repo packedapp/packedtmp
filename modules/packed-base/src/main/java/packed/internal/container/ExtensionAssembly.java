@@ -71,7 +71,7 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
     /** A model of the extension. */
     private final ExtensionModel model;
 
-    /** The component node of the extension. */
+    /** The component configuration of this extension. */
     private final ComponentNodeConfiguration compConf;
 
     /**
@@ -172,7 +172,7 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
 
     @Override
     public <C, I> C wire(FactoryComponentDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
-        return container.compConf.wire(driver.bindToFactory(realm(), implementation), wirelets);
+        return container.compConf.wire(driver.bindToFactory(compConf.realm(), implementation), wirelets);
     }
 
     /**
@@ -248,15 +248,6 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
     @Override
     public TreePath path() {
         return compConf.path();
-    }
-
-    /**
-     * Returns the realm this extension belongs to.
-     * 
-     * @return the realm this extension belongs to
-     */
-    public PackedRealm realm() {
-        return compConf.realm();
     }
 
     /** {@inheritDoc} */
