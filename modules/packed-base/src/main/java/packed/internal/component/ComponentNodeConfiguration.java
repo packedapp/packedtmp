@@ -60,6 +60,7 @@ import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.container.ExtensionAssembly;
+import packed.internal.container.ExtensionModel;
 import packed.internal.container.PackedRealm;
 import packed.internal.inject.various.ConfigSiteInjectOperations;
 import packed.internal.service.InjectionManager;
@@ -98,7 +99,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
 
     /** Any extension that is attached to this component. */
     @Nullable
-    public ExtensionAssembly extension;
+    public final ExtensionAssembly extension;
 
     /** Any source that is attached to this component. */
     @Nullable
@@ -173,6 +174,13 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
             this.source.model.invokeOnHookOnInstall(this);
         } else {
             this.source = null;
+        }
+
+        // Setup Extension
+        if (modifiers().isExtension()) {
+            extension = new ExtensionAssembly(this, (ExtensionModel) driver.data);
+        } else {
+            extension = null;
         }
 
         // Setup default name

@@ -58,11 +58,9 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
-    // compConf.parent.container
-    /** The container this extension belongs to. */
     private final ContainerAssembly container;
 
-    /** The extension instance this configuration wraps, initialized in {@link #of(ContainerAssembly, Class)}. */
+    /** The extension instance this assembly wraps, instantiated in {@link #of(ContainerAssembly, Class)}. */
     @Nullable
     private Extension instance;
 
@@ -73,25 +71,20 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
     private final ExtensionModel model;
 
     /** The component node of the extension. */
-    final ComponentNodeConfiguration compConf;
-
-    // If it has a private realm why not store it in compConf???
-    /** The realm of this extension. */
-    private final PackedRealm realm;
+    private final ComponentNodeConfiguration compConf;
 
     /**
-     * Creates a new configuration.
+     * Creates a new extension assembly.
      * 
-     * @param container
-     *            the configuration of the container that uses the extension
+     * @param compConf
+     *            the component configuration that this extension belongs to
      * @param model
      *            a model of the extension.
      */
-    private ExtensionAssembly(ComponentNodeConfiguration compConf, PackedRealm realm, ContainerAssembly container, ExtensionModel model) {
-        this.container = requireNonNull(container);
-        this.model = requireNonNull(model);
-        this.realm = requireNonNull(realm);
+    public ExtensionAssembly(ComponentNodeConfiguration compConf, ExtensionModel model) {
         this.compConf = requireNonNull(compConf);
+        this.container = requireNonNull(compConf.container());
+        this.model = requireNonNull(model);
     }
 
     /** {@inheritDoc} */
@@ -177,7 +170,7 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
 
     @Override
     public <C, I> C wire(FactoryComponentDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
-        return container.compConf.wire(driver.bindToFactory(realm, implementation), wirelets);
+        return container.compConf.wire(driver.bindToFactory(realm(), implementation), wirelets);
     }
 
     /**
@@ -252,7 +245,6 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
     /** {@inheritDoc} */
     @Override
     public ComponentPath path() {
-        // TODO return path of this component.
         return compConf.path();
     }
 
@@ -262,7 +254,7 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
      * @return the realm this extension belongs to
      */
     public PackedRealm realm() {
-        return realm;
+        return compConf.realm();
     }
 
     /** {@inheritDoc} */
@@ -315,23 +307,18 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
      * @return the new extension context
      */
     static ExtensionAssembly of(ContainerAssembly container, Class<? extends Extension> extensionType) {
-        // I think move to the constructor of this context??? Then extension can be final...
         // Create extension context and instantiate extension
         ExtensionModel model = ExtensionModel.of(extensionType);
-
         PackedRealm realm = PackedRealm.fromExtension(model.extensionType());
         ComponentNodeConfiguration compConf = container.compConf.newChild(model.driver(), container.compConf.configSite(), realm, null);
 
-        ExtensionAssembly pec = new ExtensionAssembly(compConf, realm, container, model);
-
-        compConf.extension = pec;
-
-        pec.checkState(ExtensionSetup.INSTANTIATING);
-        Extension e = pec.instance = model.newInstance(pec); // Creates a new XXExtension instance
-        pec.checkState(ExtensionSetup.NORMAL_USAGE);
+        ExtensionAssembly ea = compConf.extension;
+        ea.checkState(ExtensionSetup.INSTANTIATING);
+        Extension e = ea.instance = model.newInstance(ea); // Creates a new XXExtension instance
+        ea.checkState(ExtensionSetup.NORMAL_USAGE);
 
         // Sets Extension.configuration = pec
-        VH_EXTENSION_CONFIGURATION.set(e, pec); // field is package-private in a public package
+        VH_EXTENSION_CONFIGURATION.set(e, ea); // field is package-private in a public package
 
         // Add a component configuration node
 
@@ -359,7 +346,7 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
                 // If not just parent link keep checking up until root/
                 if (parentExtension != null) {
                     try {
-                        model.extensionLinkedToAncestorExtension.invokeExact(parentExtension.instance, pec, e);
+                        model.extensionLinkedToAncestorExtension.invokeExact(parentExtension.instance, ea, e);
                     } catch (Throwable e1) {
                         throw ThrowableUtil.orUndeclared(e1);
                     }
@@ -374,7 +361,7 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
             }
 
             // 2. Invoke all methods on the extension annotated with @When(Normal)
-            model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_0_INSTANTIATION, e, pec);
+            model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_0_INSTANTIATION, e, ea);
 
             // 3. Finally initialize any pipeline (??swap step 2 and 3??)
 //            if (container.node.wirelets != null) {
@@ -383,6 +370,6 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
         } finally {
             // container.activeExtension = existing;
         }
-        return pec; // Return extension to users
+        return ea; // Return extension to users
     }
 }
