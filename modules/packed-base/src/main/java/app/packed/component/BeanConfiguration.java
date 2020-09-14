@@ -94,4 +94,8 @@ public class BeanConfiguration<T> extends AbstractComponentConfiguration {
     public static <T> InstanceComponentDriver<BeanConfiguration<T>, T> driver() {
         return ICD;
     }
+
+    public static <T> ComponentDriver<BeanConfiguration<T>> driver(Class<T> implementation) {
+        return BeanConfiguration.<T>driver().bindToClass(implementation);
+    }
 }

@@ -101,11 +101,8 @@ public abstract class ContainerBundle extends ComponentBundle<ContainerConfigura
      *            the type of instantiate and use as the component instance
      * @return the configuration of the component
      */
-    // Den eneste grund for at de her metoder ikke er paa ComponentConfiguration er actors
-    // Eller i andre situation hvor man ikke vil have at man installere alm componenter..
-    // Men okay. Maaske skal man wrappe det saa. Det er jo let nok at simulere med useParent
     protected final <T> BeanConfiguration<T> install(Class<T> implementation) {
-        return wire(BeanConfiguration.driver(), implementation);
+        return configuration().wire(BeanConfiguration.driver(implementation));
     }
 
     /**

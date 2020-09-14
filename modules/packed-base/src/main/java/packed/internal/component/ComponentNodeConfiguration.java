@@ -35,7 +35,6 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.TreePath;
 import app.packed.component.Bundle;
-import app.packed.component.ClassComponentDriver;
 import app.packed.component.Component;
 import app.packed.component.ComponentAttributes;
 import app.packed.component.ComponentConfigurationContext;
@@ -44,12 +43,9 @@ import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
-import app.packed.component.FactoryComponentDriver;
-import app.packed.component.InstanceComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
-import app.packed.inject.Factory;
 import app.packed.service.ExportedServiceConfiguration;
 import packed.internal.base.attribute.DefaultAttributeMap;
 import packed.internal.base.attribute.PackedAttribute;
@@ -138,6 +134,8 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         this.driver = requireNonNull(driver);
         this.configSite = requireNonNull(configSite);
         this.wirelets = wirelets;
+
+        new Exception().printStackTrace();
 
         int mod = driver.modifiers;
 
@@ -529,16 +527,6 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         name = n;
     }
 
-    @Override
-    public <C, I> C wire(ClassComponentDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
-        return wire(driver.bindToClass(implementation), wirelets);
-    }
-
-    @Override
-    public <C, I> C wire(FactoryComponentDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
-        return wire(driver.bindToFactory(implementation), wirelets);
-    }
-
     /** {@inheritDoc} */
     @Override
     public <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
@@ -547,15 +535,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         WireletPack wp = WireletPack.from(d, wirelets);
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         ComponentNodeConfiguration conf = newChild(d, configSite, realm, wp);
-        C c = d.toConfiguration(conf);
-
-        return c;
-    }
-
-    @Override
-    public <C, I> C wireInstance(InstanceComponentDriver<C, I> driver, I instance, Wirelet... wirelets) {
-        ComponentDriver<C> wcd = driver.bindToInstance(instance);
-        return wire(wcd, wirelets);
+        return d.toConfiguration(conf);
     }
 
     public static ComponentNodeConfiguration newAssembly(PackedAssemblyContext assembly, PackedComponentDriver<?> driver, ConfigSite configSite,
