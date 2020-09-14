@@ -109,9 +109,18 @@ public interface ComponentConfiguration {
      */
     <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
 
-    <C, I> C wire(ClassComponentDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets);
+    default <C, I> C wire(ClassComponentDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
+        ComponentDriver<C> cd = driver.bindToClass(implementation);
+        return wire(cd, wirelets);
+    }
 
-    <C, I> C wire(FactoryComponentDriver<C, I> driver, Factory<I> implementation, Wirelet... wirelets);
+    default <C, I> C wire(FactoryComponentDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
+        ComponentDriver<C> cd = driver.bindToFactory(implementation);
+        return wire(cd, wirelets);
+    }
 
-    <C, I> C wireInstance(InstanceComponentDriver<C, I> driver, I instance, Wirelet... wirelets);
+    default <C, I> C wireInstance(InstanceComponentDriver<C, I> driver, I instance, Wirelet... wirelets) {
+        ComponentDriver<C> cd = driver.bindToInstance(instance);
+        return wire(cd, wirelets);
+    }
 }

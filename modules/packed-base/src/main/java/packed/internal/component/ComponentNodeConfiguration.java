@@ -135,8 +135,6 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         this.configSite = requireNonNull(configSite);
         this.wirelets = wirelets;
 
-        new Exception().printStackTrace();
-
         int mod = driver.modifiers;
 
         if (parent == null) {
@@ -166,7 +164,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
             region.reserve(); // reserve a slot to an instance of PackedGuest
         }
 
-        // Setup source
+        // Setup Source
         if (modifiers().isSource()) {
             this.source = new SourceAssembly(this, region, realm, driver.data);
             this.source.model.invokeOnHookOnInstall(this);
