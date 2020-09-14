@@ -59,7 +59,7 @@ public final class RegionAssembly {
     }
 
     public void assemblyClosed() {
-        InjectionManager se = compConf.container.im;
+        InjectionManager se = compConf.injectionManager();
         se.buildTree(this);
     }
 

@@ -73,7 +73,7 @@ public final class PackedRealm {
      *            the extension
      * @return a new realm
      */
-    public static PackedRealm fromExtension(PackedExtensionConfiguration pec) {
+    public static PackedRealm fromExtension(ExtensionAssembly pec) {
         return new PackedRealm(pec.extensionType());
     }
 

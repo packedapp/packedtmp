@@ -36,7 +36,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.Provide;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletList;
-import packed.internal.container.PackedExtensionConfiguration;
+import packed.internal.container.ExtensionAssembly;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.inject.sidecar.AtProvides;
 import packed.internal.inject.sidecar.AtProvidesHook;
@@ -87,7 +87,7 @@ public final class ServiceExtension extends Extension {
      *            the configuration of the extension
      */
     /* package-private */ ServiceExtension(ExtensionConfiguration configuration) {
-        this.im = ((PackedExtensionConfiguration) configuration).container().im;
+        this.im = ((ExtensionAssembly) configuration).container().im;
     }
 
     // Skal vi ogsaa supportere noget paa tvaers af bundles???
@@ -336,7 +336,7 @@ public final class ServiceExtension extends Extension {
     // Spoergmaalet er om vi ikke bare skal have en driver...
     // og en metode paa BaseBundle...
     public <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {
-        return im.container.component.wire(prototype(), factory);
+        return im.container.compConf.wire(prototype(), factory);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })

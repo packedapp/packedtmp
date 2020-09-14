@@ -43,7 +43,7 @@ import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** Implementation of {@link ExtensionConfiguration}. */
-public final class PackedExtensionConfiguration implements ExtensionConfiguration, Comparable<PackedExtensionConfiguration> {
+public final class ExtensionAssembly implements ExtensionConfiguration, Comparable<ExtensionAssembly> {
 
     /** A MethodHandle for invoking {@link #lifecycle()} used by {@link ExtensionModel}. */
     private static final MethodHandle MH_EXTENSION_ADDED = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), Extension.class, "add", void.class);
@@ -58,6 +58,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
+    // compConf.parent.container
     /** The container this extension belongs to. */
     private final ContainerAssembly container;
 
@@ -72,8 +73,9 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     private final ExtensionModel model;
 
     /** The component node of the extension. */
-    final ComponentNodeConfiguration node;
+    final ComponentNodeConfiguration compConf;
 
+    // If it has a private realm why not store it in compConf???
     /** The realm of this extension. */
     private final PackedRealm realm;
 
@@ -85,18 +87,18 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
      * @param model
      *            a model of the extension.
      */
-    private PackedExtensionConfiguration(ContainerAssembly container, ExtensionModel model) {
+    private ExtensionAssembly(ContainerAssembly container, ExtensionModel model) {
         this.container = requireNonNull(container);
         this.model = requireNonNull(model);
         this.realm = PackedRealm.fromExtension(this);
-        this.node = container.component.newChild(model.driver(), container.component.configSite(), realm, null);
-        this.node.extension = this;
+        this.compConf = container.compConf.newChild(model.driver(), container.compConf.configSite(), realm, null);
+        this.compConf.extension = this;
     }
 
     /** {@inheritDoc} */
     @Override
     public AssemblyContext assembly() {
-        return node.assembly();
+        return compConf.assembly();
     }
 
     /** {@inheritDoc} */
@@ -120,7 +122,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
 
     /** {@inheritDoc} */
     @Override
-    public int compareTo(PackedExtensionConfiguration c) {
+    public int compareTo(ExtensionAssembly c) {
         return -model.compareTo(c.model);
     }
 
@@ -136,7 +138,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     /** {@inheritDoc} */
     @Override
     public ConfigSite containerConfigSite() {
-        return container.component.configSite();
+        return container.compConf.configSite();
     }
 
     /** {@inheritDoc} */
@@ -154,29 +156,29 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
      */
     @Nullable
     Object findWirelet(Class<? extends Wirelet> wireletType) {
-        return container.component.receiveWirelet(wireletType).orElse(null);
+        return container.compConf.receiveWirelet(wireletType).orElse(null);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T> BeanConfiguration<T> install(Factory<T> factory) {
-        return container.component.wire(BeanConfiguration.driver(), factory);
+        return container.compConf.wire(BeanConfiguration.driver(), factory);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T> BeanConfiguration<T> installInstance(T instance) {
-        return container.component.wireInstance(BeanConfiguration.driver(), instance);
+        return container.compConf.wireInstance(BeanConfiguration.driver(), instance);
     }
 
     @Override
     public <C, I> C wire(ClassComponentDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
-        return container.component.wire(driver, implementation);
+        return container.compConf.wire(driver, implementation);
     }
 
     @Override
     public <C, I> C wire(FactoryComponentDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
-        return container.component.wire(driver.bindToFactory(realm, implementation), wirelets);
+        return container.compConf.wire(driver.bindToFactory(realm, implementation), wirelets);
     }
 
     /**
@@ -218,7 +220,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     /** {@inheritDoc} */
     @Override
     public void link(Bundle<?> bundle, Wirelet... wirelets) {
-        node.link(bundle, wirelets);
+        compConf.link(bundle, wirelets);
     }
 
     public ExtensionModel model() {
@@ -252,7 +254,7 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
     @Override
     public ComponentPath path() {
         // TODO return path of this component.
-        return node.path();
+        return compConf.path();
     }
 
     /**
@@ -313,11 +315,11 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
      *            the type of extension to initialize
      * @return the new extension context
      */
-    static PackedExtensionConfiguration of(ContainerAssembly container, Class<? extends Extension> extensionType) {
+    static ExtensionAssembly of(ContainerAssembly container, Class<? extends Extension> extensionType) {
         // I think move to the constructor of this context??? Then extension can be final...
         // Create extension context and instantiate extension
         ExtensionModel model = ExtensionModel.of(extensionType);
-        PackedExtensionConfiguration pec = new PackedExtensionConfiguration(container, model);
+        ExtensionAssembly pec = new ExtensionAssembly(container, model);
         pec.checkState(ExtensionSetup.INSTANTIATING);
         Extension e = pec.instance = model.newInstance(pec); // Creates a new XXExtension instance
         pec.checkState(ExtensionSetup.NORMAL_USAGE);
@@ -336,15 +338,15 @@ public final class PackedExtensionConfiguration implements ExtensionConfiguratio
 
             // Should we also set the active extension in the parent???
             if (model.extensionLinkedToAncestorExtension != null) {
-                PackedExtensionConfiguration parentExtension = null;
-                ContainerAssembly parent = container.component.container();
+                ExtensionAssembly parentExtension = null;
+                ContainerAssembly parent = container.compConf.container();
                 if (!model.extensionLinkedDirectChildrenOnly) {
                     while (parentExtension == null && parent != null) {
-                        parentExtension = parent.getContext(extensionType);
-                        parent = parent.component.container();
+                        parentExtension = parent.getExtensionContext(extensionType);
+                        parent = parent.compConf.container();
                     }
                 } else if (parent != null) {
-                    parentExtension = parent.getContext(extensionType);
+                    parentExtension = parent.getExtensionContext(extensionType);
                 }
 
                 // set activate extension???

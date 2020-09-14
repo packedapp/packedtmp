@@ -22,11 +22,9 @@ import java.lang.StackWalker.StackFrame;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
@@ -61,14 +59,14 @@ import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ContainerAssembly;
-import packed.internal.container.PackedExtensionConfiguration;
+import packed.internal.container.ExtensionAssembly;
 import packed.internal.container.PackedRealm;
 import packed.internal.inject.various.ConfigSiteInjectOperations;
 import packed.internal.service.InjectionManager;
 import packed.internal.util.ThrowableUtil;
 
 /** The build time representation of a component. */
-public final class ComponentNodeConfiguration implements ComponentConfigurationContext {
+public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNodeConfiguration> implements ComponentConfigurationContext {
 
     /** A stack walker used from {@link #captureStackFrame(String)}. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
@@ -76,23 +74,20 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     /** The assembly this configuration is a part of. */
     private final PackedAssemblyContext assembly;
 
-    /** The driver used to create this component. */
-    final PackedComponentDriver<?> driver;
-
-    /** The name of the component. */
-    String name;
+    /** The driver used to create this configuration. */
+    private final PackedComponentDriver<?> driver;
 
     /** The realm the component belongs to. */
-    final PackedRealm realm;
+    private final PackedRealm realm;
 
     /** Any wirelets that was specified by the user when creating this configuration. */
     @Nullable
-    public final WireletPack wirelets;
+    final WireletPack wirelets;
 
-    /**************** ASSEMBLIES AND MODIFIERS. *****************/
-
-    /** The modifiers for this component. */
+    /** The modifiers of this configuration. */
     final int modifiers;
+
+    /**************** ASSEMBLIES *****************/
 
     /** The region this component is a part of. */
     public final RegionAssembly region;
@@ -102,40 +97,12 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     public final ContainerAssembly container;
 
     @Nullable
+    public ExtensionAssembly extension;
+
+    @Nullable
     public final SourceAssembly source;
 
-    /**************** TREE SUPPORT. *****************/
-
-    /** The depth of the component in the hierarchy (including any parent artifacts). */
-    final int treeDepth;
-
-    /** Children of this node (lazily initialized). Insertion order maintained by {@link #treeNextSibling} and friends. */
-    @Nullable
-    Map<String, ComponentNodeConfiguration> treeChildren;
-
-    /** The first child of this component. */
-    @Nullable
-    public ComponentNodeConfiguration treeFirstChild;
-
-    /**
-     * The latest inserted child of this component. Or null if this component has no children. Is exclusively used to help
-     * maintain {@link #treeNextSibling}.
-     */
-    @Nullable
-    private ComponentNodeConfiguration treeLastChild;
-
-    /** The next sibling, in insertion order */
-    @Nullable
-    public ComponentNodeConfiguration treeNextSibling;
-
-    /** The parent of this component, or null for a root component. */
-    @Nullable
-    final ComponentNodeConfiguration treeParent;
-
     /**************** See how much of this we can get rid of. *****************/
-
-    @Nullable
-    public PackedExtensionConfiguration extension;
 
     /** The configuration site of this component. */
     private final ConfigSite configSite;
@@ -162,17 +129,16 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
      */
     private ComponentNodeConfiguration(PackedAssemblyContext assembly, PackedRealm realm, PackedComponentDriver<?> driver, ConfigSite configSite,
             @Nullable ComponentNodeConfiguration parent, @Nullable WireletPack wirelets) {
+        super(parent);
         this.assembly = requireNonNull(assembly);
         this.realm = requireNonNull(realm);
         this.driver = requireNonNull(driver);
         this.configSite = requireNonNull(configSite);
         this.wirelets = wirelets;
 
-        this.treeParent = parent;
         int mod = driver.modifiers;
 
         if (parent == null) {
-            this.treeDepth = 0;
             this.region = new RegionAssembly(this); // Root always needs a nodestore
 
             mod = mod | assembly.modifiers;
@@ -182,7 +148,6 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
                 mod = PackedComponentModifierSet.add(mod, ComponentModifier.GUEST);
             }
         } else {
-            this.treeDepth = parent.treeDepth + 1;
             this.region = driver.modifiers().isGuest() ? new RegionAssembly(this) : parent.region;
         }
         this.modifiers = mod;
@@ -282,7 +247,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             dam.addValue(ComponentAttributes.SHELL_TYPE, assembly.shellDriver().rawType());
         }
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.EXTENSION)) {
-            PackedExtensionConfiguration pec = extension;
+            ExtensionAssembly pec = extension;
             if (pec != null) {
                 dam.addValue(ComponentAttributes.EXTENSION_MEMBER, pec.extensionType());
             }
@@ -334,6 +299,13 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         return this;
     }
 
+    public void bundleDone() {
+        finalState = true;
+        for (ComponentNodeConfiguration compConf = treeFirstChild; compConf != null; compConf = compConf.treeNextSibling) {
+            compConf.bundleDone();
+        }
+    }
+
     /** {@inheritDoc} */
     @Override
     public ConfigSite configSite() {
@@ -350,24 +322,6 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         return container;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Set<Class<? extends Extension>> containerExtensions() {
-        if (container == null || container.component != this) {
-            throw new UnsupportedOperationException("This method can only be used by a component has ComponentDriver.Option.container() enabled");
-        }
-        return container.extensions();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T extends Extension> T containerUse(Class<T> extensionType) {
-        if (container == null || container.component != this) {
-            throw new UnsupportedOperationException("This method can only be used by a component has ComponentDriver.Option.container() enabled");
-        }
-        return container.use(extensionType);
-    }
-
     /**
      * Returns the driver of this component.
      * 
@@ -379,6 +333,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
 
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Extension>> extension() {
+        System.out.println("J<<<<");
         return Extension.class.isAssignableFrom(realm.type()) ? Optional.empty() : Optional.of((Class<? extends Extension>) realm.type());
     }
 
@@ -440,7 +395,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
     }
 
     @Nullable
-    public ComponentNodeConfiguration parentOrNull() {
+    public ComponentNodeConfiguration getParent() {
         return treeParent;
     }
 
@@ -608,24 +563,19 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             throw new IllegalStateException("This method must be called before a component is instantiated");
         }
         ComponentAdaptor cc = (ComponentAdaptor) component;
-        return cc.conf;
+        return cc.compConf;
     }
 
     @Override
     public void sourceProvide() {
-        // TODO check not stateless
         checkConfigurable();
-        if (source == null) {
-            throw new UnsupportedOperationException();
-        }
+        checkHasSource();
         source.provide();
     }
 
     @Override
     public Optional<Key<?>> sourceProvideAsKey() {
-        if (source == null) {
-            throw new UnsupportedOperationException();
-        }
+        checkHasSource();
         return source.service == null ? Optional.empty() : Optional.of(source.service.key());
     }
 
@@ -648,79 +598,101 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         source.provide().as((Key) key);
     }
 
+    /* public methods */
+
+    /** Checks that this component has a source. */
+    private void checkHasSource() {
+        if (source == null) {
+            throw new UnsupportedOperationException(
+                    "This method can only be called component that has the " + ComponentModifier.class.getSimpleName() + ".SOURCE modifier set");
+        }
+    }
+
+    /** Checks that this component has a source. */
+    private void checkHasContainer() {
+        if (container == null || container.compConf != this) {
+            throw new UnsupportedOperationException(
+                    "This method can only be called component that has the " + ComponentModifier.class.getSimpleName() + ".CONTAINER modifier set");
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<Class<? extends Extension>> containerExtensions() {
+        checkHasContainer();
+        return container.extensionView();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T extends Extension> T containerUse(Class<T> extensionType) {
+        checkHasContainer();
+        return container.useExtension(extensionType);
+    }
+
     /** An adaptor of the {@link Component} interface from a {@link ComponentNodeConfiguration}. */
     private static final class ComponentAdaptor implements Component {
 
         /** The component configuration to wrap. */
-        private final ComponentNodeConfiguration conf;
+        private final ComponentNodeConfiguration compConf;
 
-        private ComponentAdaptor(ComponentNodeConfiguration c) {
-            this.conf = requireNonNull(c);
+        private ComponentAdaptor(ComponentNodeConfiguration compConf) {
+            this.compConf = requireNonNull(compConf);
         }
 
         /** {@inheritDoc} */
         @Override
         public AttributeMap attributes() {
-            return conf.attributes();
+            return compConf.attributes();
         }
 
         /** {@inheritDoc} */
         @Override
         public Collection<Component> children() {
-            int size = conf.treeChildren == null ? 0 : conf.treeChildren.size();
-            if (size == 0) {
-                return List.of();
-            } else {
-                ArrayList<Component> result = new ArrayList<>(size);
-                for (ComponentNodeConfiguration acc = conf.treeFirstChild; acc != null; acc = acc.treeNextSibling) {
-                    result.add(acc.adaptToComponent());
-                }
-                return result;
-            }
+            return compConf.toList(ComponentNodeConfiguration::adaptToComponent);
         }
 
         /** {@inheritDoc} */
         @Override
         public ConfigSite configSite() {
-            return conf.configSite(); // We might need to rewrite this for image...
+            return compConf.configSite(); // We might need to rewrite this for image...
         }
 
         /** {@inheritDoc} */
         @Override
         public int depth() {
-            return conf.treeDepth;
+            return compConf.treeDepth;
         }
 
         /** {@inheritDoc} */
         @Override
-        public boolean hasModifier(ComponentModifier property) {
-            return PackedComponentModifierSet.isSet(conf.modifiers, property);
-
+        public boolean hasModifier(ComponentModifier modifier) {
+            return PackedComponentModifierSet.isSet(compConf.modifiers, modifier);
         }
 
         /** {@inheritDoc} */
         @Override
         public ComponentModifierSet modifiers() {
-            return new PackedComponentModifierSet(conf.modifiers);
+            return compConf.modifiers();
         }
 
         /** {@inheritDoc} */
         @Override
         public String name() {
-            return conf.getName();
+            return compConf.getName();
         }
 
         /** {@inheritDoc} */
         @Override
         public Optional<Component> parent() {
-            ComponentNodeConfiguration p = conf.treeParent;
-            return p == null ? Optional.empty() : Optional.of(p.adaptToComponent());
+            ComponentNodeConfiguration cc = compConf.treeParent;
+            return cc == null ? Optional.empty() : Optional.of(cc.adaptToComponent());
         }
 
         /** {@inheritDoc} */
         @Override
         public ComponentPath path() {
-            return conf.path();
+            return compConf.path();
         }
 
         /** {@inheritDoc} */
@@ -738,7 +710,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
         /** {@inheritDoc} */
         @Override
         public ComponentStream stream(ComponentStream.Option... options) {
-            return new PackedComponentStream(stream0(conf, true, PackedComponentStreamOption.of(options)));
+            return new PackedComponentStream(stream0(compConf, true, PackedComponentStreamOption.of(options)));
         }
 
         private Stream<Component> stream0(ComponentNodeConfiguration origin, boolean isRoot, PackedComponentStreamOption option) {
@@ -747,7 +719,7 @@ public final class ComponentNodeConfiguration implements ComponentConfigurationC
             @SuppressWarnings({ "unchecked", "rawtypes" })
             List<ComponentAdaptor> c = (List) children();
             if (c != null && !c.isEmpty()) {
-                if (option.processThisDeeper(origin, this.conf)) {
+                if (option.processThisDeeper(origin, this.compConf)) {
                     Stream<Component> s = c.stream().flatMap(co -> co.stream0(origin, false, option));
                     return isRoot && option.excludeOrigin() ? s : Stream.concat(Stream.of(this), s);
                 }

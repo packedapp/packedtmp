@@ -111,7 +111,7 @@ public final class SourceModel extends Model {
             for (ExtensionRequestPair he : extensionHooks) {
                 // Finds (possible installing) the extension with @OnHook methods
                 // Maybe null, but this code will be refactored out.
-                Extension extension = acc.container.use(he.extensionType);
+                Extension extension = acc.container.useExtension(he.extensionType);
 
                 // Invoke each method annotated with @OnHook on the extension instance
                 he.request.invoke(extension, acc);

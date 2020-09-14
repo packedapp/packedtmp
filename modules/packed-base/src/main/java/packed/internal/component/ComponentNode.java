@@ -80,7 +80,7 @@ public final class ComponentNode implements Component {
         Map<String, ComponentNode> children = null;
         if (configuration.treeFirstChild != null) {
             // Maybe ordered is the default...
-            LinkedHashMap<String, ComponentNode> result = new LinkedHashMap<>(configuration.treeChildren.size());
+            LinkedHashMap<String, ComponentNode> result = new LinkedHashMap<>(configuration.numberOfChildren());
 
             for (ComponentNodeConfiguration cc = configuration.treeFirstChild; cc != null; cc = cc.treeNextSibling) {
                 if (!cc.driver().modifiers().isExtension()) {

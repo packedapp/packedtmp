@@ -40,24 +40,31 @@ public final class ContainerAssembly {
 
     public static final int LS_3_FINISHED = 3;
 
+    /** The component this container is a part of. */
+    public final ComponentNodeConfiguration compConf;
+
     public int containerState;
 
     /** All used extensions, in order of registration. */
-    public final LinkedHashMap<Class<? extends Extension>, PackedExtensionConfiguration> extensions = new LinkedHashMap<>();
+    public final LinkedHashMap<Class<? extends Extension>, ExtensionAssembly> extensions = new LinkedHashMap<>();
 
-    private TreeSet<PackedExtensionConfiguration> extensionsOrdered;
-
-    /** The component this container is a part of. */
-    public final ComponentNodeConfiguration component;
-
-    @Nullable
-    public final ContainerAssembly parent;
+    private TreeSet<ExtensionAssembly> extensionsOrdered;
 
     public final InjectionManager im;
 
-    public ContainerAssembly(ComponentNodeConfiguration component) {
-        this.component = requireNonNull(component);
-        this.parent = component.parentOrNull() == null ? null : component.parentOrNull().container();
+    /** Any parent container this container might have */
+    @Nullable
+    public final ContainerAssembly parent;
+
+    /**
+     * Creates a new container
+     * 
+     * @param compConf
+     *            the configuration of the component the container is a part of
+     */
+    public ContainerAssembly(ComponentNodeConfiguration compConf) {
+        this.compConf = requireNonNull(compConf);
+        this.parent = compConf.getParent() == null ? null : compConf.getParent().container();
         this.im = new InjectionManager(this);
     }
 
@@ -66,34 +73,30 @@ public final class ContainerAssembly {
             // We need to sort all extensions that are used. To make sure
             // they progress in their lifecycle in the right order.
             extensionsOrdered = new TreeSet<>(extensions.values());
-            for (PackedExtensionConfiguration pec : extensionsOrdered) {
+            for (ExtensionAssembly pec : extensionsOrdered) {
                 pec.onConfigured();
             }
             containerState = LS_1_LINKING;
         }
 
         if (containerState == LS_1_LINKING && newState > LS_1_LINKING) {
-            for (ComponentNodeConfiguration cc = component.treeFirstChild; cc != null; cc = cc.treeNextSibling) {
+            for (ComponentNodeConfiguration cc = compConf.treeFirstChild; cc != null; cc = cc.treeNextSibling) {
                 if (cc.driver().modifiers().isContainer()) {
                     cc.container().advanceTo(LS_3_FINISHED);
                 }
             }
-            for (PackedExtensionConfiguration pec : extensionsOrdered) {
+            for (ExtensionAssembly pec : extensionsOrdered) {
                 pec.onChildrenConfigured();
             }
         }
     }
 
-//    public void buildDescriptor(ContainerDescriptor.Builder builder) {
-//        builder.setName(node.getName());
-//        for (PackedExtensionConfiguration e : extensions.values()) {
-//            e.buildDescriptor(builder);
-//        }
-//        builder.extensions.addAll(extensions.keySet());
-//    }
-
-    // A View not a copy
-    public Set<Class<? extends Extension>> extensions() {
+    /**
+     * Returns a set view of the extension registered with this container.
+     * 
+     * @return a set view of the extension registered with this container
+     */
+    public Set<Class<? extends Extension>> extensionView() {
         return Collections.unmodifiableSet(extensions.keySet());
     }
 
@@ -104,11 +107,11 @@ public final class ContainerAssembly {
      * @param extensionType
      *            the type of extension to return a context for
      * @return an extension's context, iff the specified extension type has already been added
-     * @see #use(Class)
-     * @see #useExtension(Class, PackedExtensionConfiguration)
+     * @see #useExtension(Class)
+     * @see #useExtension(Class, ExtensionAssembly)
      */
     @Nullable
-    public PackedExtensionConfiguration getContext(Class<? extends Extension> extensionType) {
+    public ExtensionAssembly getExtensionContext(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         return extensions.get(extensionType);
     }
@@ -118,13 +121,8 @@ public final class ContainerAssembly {
         // As it is not installed just for missing requiremeents
         // see ServiceContractTCKTest
         if (!extensions.containsKey(ServiceExtension.class)) {
-            extensions.put(ServiceExtension.class, PackedExtensionConfiguration.of(this, ServiceExtension.class));
+            extensions.put(ServiceExtension.class, ExtensionAssembly.of(this, ServiceExtension.class));
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T extends Extension> T use(Class<T> extensionType) {
-        return (T) useExtension(extensionType, null).instance();
     }
 
     /**
@@ -141,9 +139,9 @@ public final class ContainerAssembly {
      * @throws InternalExtensionException
      *             if the
      */
-    PackedExtensionConfiguration useExtension(Class<? extends Extension> extensionType, @Nullable PackedExtensionConfiguration caller) {
+    ExtensionAssembly useExtension(Class<? extends Extension> extensionType, @Nullable ExtensionAssembly caller) {
         requireNonNull(extensionType, "extensionType is null");
-        PackedExtensionConfiguration pec = extensions.get(extensionType);
+        ExtensionAssembly pec = extensions.get(extensionType);
 
         // We do not use #computeIfAbsent, because extensions might install other extensions via Extension#onAdded.
         // Which will fail with ConcurrentModificationException (see ExtensionDependenciesTest)
@@ -154,15 +152,20 @@ public final class ContainerAssembly {
                     // Cannot perform this operation
                     throw new IllegalStateException("Cannot install new extensions at this point, extensionType = " + extensionType);
                 }
-                component.checkConfigurable();
+                compConf.checkConfigurable();
             } else {
                 caller.checkConfigurable();
             }
 
             // Tror lige vi skal have gennemtaenkt den lifecycle...
             // Taenker om vi
-            extensions.put(extensionType, pec = PackedExtensionConfiguration.of(this, extensionType));
+            extensions.put(extensionType, pec = ExtensionAssembly.of(this, extensionType));
         }
         return pec;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Extension> T useExtension(Class<T> extensionType) {
+        return (T) useExtension(extensionType, null).instance();
     }
 }

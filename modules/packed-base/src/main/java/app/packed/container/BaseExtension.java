@@ -53,7 +53,7 @@ public final class BaseExtension extends Extension {
      */
     // ExtensionSet is never a view???
     public ExtensionSet extensions() {
-        return ExtensionSet.of(container.extensions()); // view/not-view?
+        return ExtensionSet.of(container.extensionView()); // view/not-view?
     }
 
     /**

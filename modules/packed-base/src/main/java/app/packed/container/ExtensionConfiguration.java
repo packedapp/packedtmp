@@ -35,7 +35,7 @@ import app.packed.container.Extension.Subtension;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.container.ContainerAssembly;
-import packed.internal.container.PackedExtensionConfiguration;
+import packed.internal.container.ExtensionAssembly;
 
 /**
  * An instance of this interface is available via {@link Extension#configuration()} or via constructor injection into
@@ -191,12 +191,12 @@ public interface ExtensionConfiguration {
             throw new IllegalArgumentException("The specified lookup object must match the specified extensionType " + extensionType + " as lookupClass()");
         }
         @Nullable
-        PackedExtensionConfiguration pec = pa(lookup, component);
+        ExtensionAssembly pec = pa(lookup, component);
         return pec == null ? Optional.empty() : Optional.of((T) pec.instance());
     }
 
     @Nullable
-    private static PackedExtensionConfiguration pa(MethodHandles.Lookup lookup, Component component) {
+    private static ExtensionAssembly pa(MethodHandles.Lookup lookup, Component component) {
         requireNonNull(lookup, "component is null");
 
         // lookup.lookupClass() must point to the extension that should be extracted
@@ -215,6 +215,6 @@ public interface ExtensionConfiguration {
 
         ComponentNodeConfiguration node = ComponentNodeConfiguration.unadapt(lookup, component);
         ContainerAssembly container = node.container();
-        return container == null ? null : container.getContext(extensionType);
+        return container == null ? null : container.getExtensionContext(extensionType);
     }
 }
