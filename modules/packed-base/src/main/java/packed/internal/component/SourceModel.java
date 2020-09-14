@@ -95,7 +95,7 @@ public final class SourceModel extends Model {
     String defaultPrefix() {
         String s = simpleName;
         if (s == null) {
-            s = simpleName = type().getSimpleName();
+            s = simpleName = modelType().getSimpleName();
         }
         return s;
     }

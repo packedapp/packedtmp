@@ -129,6 +129,9 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
 
     final MethodHandle bundleBuilderMethod;
 
+    /** This extension's direct dependencies (on other extensions). */
+    private final ExtensionSet dependencies;
+
     /**
      * The depth of this extension in a global . Defined as 0 if no dependencies otherwise max(all dependencies depth) + 1.
      */
@@ -138,9 +141,6 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
     // Det er jo ikke et trae... Men en graph. Giver depth mening?
     // Man kan argumentere med at man laver en masse hylder, hvor de enkelte extensions saa er.
     private final int depth;
-
-    /** This extension's direct dependencies (on other extensions). */
-    private final ExtensionSet directDependencies;
 
     /** The component driver used when creating a component for the extension. */
     final PackedComponentDriver<?> driver;
@@ -161,11 +161,12 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
     final int id; // We don't currently use it...
 
     /** The default component name of the extension. */
-    public final String nameForComponent;
+    public final String nameComponent;
 
     /** The canonical name of the extension. Used when needing to deterministically sort extensions. */
-    private final String nameForSorting;
+    final String nameFull;
 
+    /** The simple name of the extension, as returned by {@link Class#getSimpleName()}. */
     final String nameSimple;
 
     /** An optional containing the extension type. To avoid excessive creation of them at runtime. */
@@ -184,12 +185,16 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         this.id = builder.id;
         this.depth = builder.depth;
         this.bundleBuilderMethod = builder.builderMethod;
-        this.directDependencies = ExtensionSet.of(builder.dependenciesDirect);// Set.copyOf(builder.dependenciesDirect);
+        this.dependencies = ExtensionSet.of(builder.dependenciesDirect);// Set.copyOf(builder.dependenciesDirect);
         this.optional = Optional.of(extensionType()); // No need to create an optional every time we need this
-        this.nameForSorting = requireNonNull(extensionType().getCanonicalName());
+
         this.driver = PackedComponentDriver.extensionDriver(this);
-        this.nameSimple = extensionType().getSimpleName();
-        this.nameForComponent = "." + nameSimple;
+
+        // Set names
+        this.nameFull = type.getCanonicalName();
+        this.nameSimple = type.getSimpleName();
+        this.nameComponent = "." + nameSimple;
+
         this.extensionLinkedToAncestorExtension = builder.li;
         this.extensionLinkedDirectChildrenOnly = builder.callbackOnlyDirectChildren;
         this.pam = builder.pam;
@@ -205,7 +210,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         // otherwise non base extension
         int d = depth - m.depth;
         if (d == 0) {
-            int c = nameForSorting.compareTo(m.nameForSorting);
+            int c = nameFull.compareTo(m.nameFull);
             if (c == 0) {
                 // Cannot use two extension with the same name. But loaded via two different
                 // classloaders
@@ -219,17 +224,17 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
 //        return d == 0 ? nameUsedForSorting.compareTo(m.nameUsedForSorting) : d;
     }
 
-    public int depth() {
-        return depth;
-    }
-
     /**
      * Returns a set of all the direct dependencies of this extension as specified via {@link ExtensionSetup}.
      * 
      * @return a set of all the direct dependencies of this extension
      */
-    public ExtensionSet directDependencies() {
-        return directDependencies;
+    public ExtensionSet dependencies() {
+        return dependencies;
+    }
+
+    public int depth() {
+        return depth;
     }
 
     /**
@@ -238,8 +243,8 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
      * @return the extension type of this model
      */
     @SuppressWarnings("unchecked")
-    public Class<? extends Extension> extensionType() {
-        return (Class<? extends Extension>) type();
+    Class<? extends Extension> extensionType() {
+        return (Class<? extends Extension>) type;
     }
 
     /**
@@ -253,7 +258,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         try {
             return (Extension) constructor.invokeExact(context);
         } catch (Throwable e) {
-            throw new InternalExtensionException("Extension (" + type().getSimpleName() + ")  could not be created", e);
+            throw new InternalExtensionException("Extension (" + nameSimple + ")  could not be created", e);
         }
     }
 
@@ -438,7 +443,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         }
     }
 
-    /** An (extension) loader is responsible for loading an extension and all of its (unloaded) dependencies. */
+    /** This loader is responsible for loading an extension and any dependencies that have not already been loaded. */
     private static final class Loader {
 
         // Maaske skal vi baade have id, og depth... Eller er depth ligegyldigt???
@@ -516,5 +521,4 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
             }
         }
     }
-
 }

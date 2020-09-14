@@ -24,7 +24,7 @@ import static java.util.Objects.requireNonNull;
 public abstract class Model {
 
     /** The type this is a model for. */
-    private final Class<?> type;
+    protected final Class<?> type;
 
     protected Model(Class<?> type) {
         this.type = requireNonNull(type);
@@ -35,7 +35,7 @@ public abstract class Model {
      * 
      * @return the type this is a model for
      */
-    public final Class<?> type() {
+    public final Class<?> modelType() {
         return type;
     }
 }

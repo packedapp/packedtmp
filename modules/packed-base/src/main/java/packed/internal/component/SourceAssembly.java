@@ -105,7 +105,7 @@ public final class SourceAssembly implements DependencyProvider {
         if (s == null) {
             Key<?> key;
             if (instance != null) {
-                key = Key.of(model.type()); // Move to model?? What if instance has Qualifier???
+                key = Key.of(model.modelType()); // Move to model?? What if instance has Qualifier???
             } else {
                 key = factory.key();
             }

@@ -76,7 +76,7 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
             }
             // TODO think it should be named Artifact type, for example, app, injector, ...
         } else if (modifiers().isExtension()) {
-            return ((ExtensionModel) data).nameForComponent;
+            return ((ExtensionModel) data).nameComponent;
         }
         return "Unknown";
     }

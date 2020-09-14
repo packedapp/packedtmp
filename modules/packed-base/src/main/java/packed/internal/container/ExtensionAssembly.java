@@ -185,7 +185,7 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
     public Extension instance() {
         Extension e = instance;
         if (e == null) {
-            throw new IllegalStateException("Cannot call this method from the constructor of " + model.type().getSimpleName());
+            throw new IllegalStateException("Cannot call this method from the constructor of " + model.nameSimple);
         }
         return e;
     }
@@ -278,14 +278,14 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
         // We can use a simple bitmap here as well... But we need to move this method to PEC.
         // And then look up the context before we can check.
 
-        if (!model.directDependencies().contains(extensionType)) {
+        if (!model.dependencies().contains(extensionType)) {
             // We allow an extension to use itself, alternative would be to throw an exception, but for what reason?
             if (extensionType == instance().getClass()) { // extension() checks for constructor
                 return (T) instance;
             }
 
             throw new UnsupportedOperationException("The specified extension type is not among " + model.extensionType().getSimpleName()
-                    + " dependencies, extensionType = " + extensionType + ", valid dependencies = " + model.directDependencies());
+                    + " dependencies, extensionType = " + extensionType + ", valid dependencies = " + model.dependencies());
         }
         return (T) container.useExtension(extensionType, this).instance;
     }

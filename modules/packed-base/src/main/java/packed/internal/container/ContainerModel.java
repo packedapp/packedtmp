@@ -144,7 +144,7 @@ public final class ContainerModel extends Model implements ComponentLookup {
         // There are two classes in a lookup object.
         if (lookup == null) {
             return this;
-        } else if (lookup.lookupClass() == type() && LookupUtil.isLookupDefault(lookup)) {
+        } else if (lookup.lookupClass() == modelType() && LookupUtil.isLookupDefault(lookup)) {
             // The default lookup is just BundleImpl { MethodHandles.lookup()}
             ComponentLookup cl = defaultLookup;
             if (cl != null) {

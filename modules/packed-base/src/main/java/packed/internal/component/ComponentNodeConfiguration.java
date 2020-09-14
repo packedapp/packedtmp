@@ -251,7 +251,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
             }
         }
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.SOURCED)) {
-            dam.addValue(ComponentAttributes.SOURCE_TYPE, source.model.type());
+            dam.addValue(ComponentAttributes.SOURCE_TYPE, source.model.modelType());
         }
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.SHELL)) {
             dam.addValue(ComponentAttributes.SHELL_TYPE, assembly.shellDriver().rawType());
