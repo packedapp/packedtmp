@@ -13,24 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import app.packed.container.Extension;
+import app.packed.container.ExtensionSet;
 
 /**
  *
  */
-final class PackedExtensionSet implements ExtensionSet {
+public final class PackedExtensionSet implements ExtensionSet {
 
-    static final PackedExtensionSet EMPTY = new PackedExtensionSet(List.of());
+    public static final PackedExtensionSet EMPTY = new PackedExtensionSet(List.of());
 
     private final List<Class<? extends Extension>> extensions;
 
-    PackedExtensionSet(List<Class<? extends Extension>> extensions) {
+    public PackedExtensionSet(List<Class<? extends Extension>> extensions) {
         this.extensions = requireNonNull(extensions);
     }
 
@@ -67,5 +72,17 @@ final class PackedExtensionSet implements ExtensionSet {
     @Override
     public String toString() {
         return extensions.toString();
+    }
+
+    /**
+     * @param extensions
+     * @return a new ordered extension set
+     * @throws IllegalArgumentException
+     *             if trying to add BaseExtension
+     */
+    @SuppressWarnings("unchecked")
+    public static PackedExtensionSet of(Collection<Class<? extends Extension>> extensions) {
+        List<?> l = extensions.stream().map(c -> ExtensionModel.of(c)).sorted().map(m -> m.modelType()).collect(Collectors.toList());
+        return new PackedExtensionSet((List<Class<? extends Extension>>) l);
     }
 }

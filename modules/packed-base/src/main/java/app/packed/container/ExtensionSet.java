@@ -17,10 +17,9 @@ package app.packed.container;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import packed.internal.container.ExtensionModel;
+import packed.internal.container.PackedExtensionSet;
 
 /**
  *
@@ -117,9 +116,7 @@ public interface ExtensionSet extends Iterable<Class<? extends Extension>> {
      * @throws IllegalArgumentException
      *             if trying to add BaseExtension
      */
-    @SuppressWarnings("unchecked")
     static ExtensionSet of(Collection<Class<? extends Extension>> extensions) {
-        List<?> l = extensions.stream().map(c -> ExtensionModel.of(c)).sorted().map(m -> m.modelType()).collect(Collectors.toList());
-        return new PackedExtensionSet((List<Class<? extends Extension>>) l);
+        return PackedExtensionSet.of(extensions);
     }
 }
