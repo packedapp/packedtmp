@@ -24,9 +24,8 @@ import org.junit.jupiter.api.Test;
 import app.packed.base.Attribute;
 import app.packed.base.AttributeProvide;
 import app.packed.base.Contract;
-import packed.internal.container.PackedExtensionDescriptor;
 
-/** Tests {@link PackedExtensionDescriptor}. */
+/** Tests {@link ExtensionDescriptor}. */
 public class ExtensionDescriptorTest {
 
     public static final Attribute<String> DESC = Attribute.of(MethodHandles.lookup(), "description", String.class);

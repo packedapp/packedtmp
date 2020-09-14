@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.container.Extension.Subtension;
-import packed.internal.container.PackedExtensionDescriptor;
+import packed.internal.container.ExtensionModel;
 
 /**
  * An extension descriptor.
@@ -135,7 +135,7 @@ public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
      *             if a descriptor for the specified extension type could not be generated
      */
     static ExtensionDescriptor of(Class<? extends Extension> extensionType) {
-        return PackedExtensionDescriptor.of(extensionType);
+        return ExtensionModel.of(extensionType);
     }
 }
 // 
