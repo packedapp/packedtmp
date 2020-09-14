@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
-import java.util.Optional;
 
 import app.packed.base.Nullable;
 import app.packed.base.TreePath;
@@ -233,15 +232,6 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
         model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_1_MAIN, instance, this);
         isConfigured = true;
         checkState(ExtensionSetup.CHILD_LINKING);
-    }
-
-    /**
-     * Returns an optional representing this extension. This is mainly to avoid allocation, as we can have a lot of them
-     * 
-     * @return an optional representing this extension
-     */
-    public Optional<Class<? extends Extension>> optional() {
-        return model.optional;
     }
 
     /** {@inheritDoc} */

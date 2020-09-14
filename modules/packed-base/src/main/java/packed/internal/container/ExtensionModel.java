@@ -23,7 +23,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantLock;
@@ -129,9 +128,6 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
     /** The simple name of the extension, as returned by {@link Class#getSimpleName()}. */
     final String nameSimple;
 
-    /** An optional containing the extension type. To avoid excessive creation of them at runtime. */
-    public final Optional<Class<? extends Extension>> optional; // can go away with Valhalla
-
     private final ProvidableAttributeModel pam;
 
     /**
@@ -146,7 +142,6 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         this.depth = builder.depth;
         this.bundleBuilderMethod = builder.builderMethod;
         this.dependencies = PackedExtensionSet.of(builder.dependencies);
-        this.optional = Optional.of(type()); // No need to create an optional every time we need this
 
         // Set all names that needs to cached
         this.nameFull = type.getCanonicalName();
