@@ -86,6 +86,8 @@ public interface ExtensionConfiguration {
      */
     Class<? extends Extension> extensionType(); // replace with descriptor???
 
+    <T> BeanConfiguration<T> install(Class<T> factory);
+
     <T> BeanConfiguration<T> install(Factory<T> factory);
 
     /**

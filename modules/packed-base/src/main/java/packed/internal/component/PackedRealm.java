@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,7 +24,8 @@ import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
 import app.packed.container.Extension;
-import packed.internal.component.SourceModel;
+import packed.internal.container.ComponentLookup;
+import packed.internal.container.ContainerModel;
 import packed.internal.inject.factory.FactoryHandle;
 
 /**
@@ -41,6 +42,8 @@ public final class PackedRealm {
 
     /** A container model. */
     private final ContainerModel model;
+
+    ComponentNodeConfiguration compConf;
 
     private PackedRealm(Class<?> type) {
         this.type = requireNonNull(type);

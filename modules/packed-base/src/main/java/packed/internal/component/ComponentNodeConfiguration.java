@@ -57,7 +57,6 @@ import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.container.ExtensionAssembly;
 import packed.internal.container.ExtensionModel;
-import packed.internal.container.PackedRealm;
 import packed.internal.inject.various.ConfigSiteInjectOperations;
 import packed.internal.service.InjectionManager;
 import packed.internal.util.ThrowableUtil;
@@ -92,6 +91,10 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     /** Any container this component is part of. A container is part of it self */
     @Nullable
     public final ContainerAssembly container;
+
+    // public final ContainerAssembly containerUser -> a container uses itself
+
+    // public final RealmAssemly realmUser -> a realm component uses itself
 
     /** Any extension that is attached to this component. */
     @Nullable
@@ -130,13 +133,12 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
             @Nullable ComponentNodeConfiguration parent, @Nullable WireletPack wirelets) {
         super(parent);
         this.assembly = requireNonNull(assembly);
-        this.realm = requireNonNull(realm);
+
         this.driver = requireNonNull(driver);
         this.configSite = requireNonNull(configSite);
         this.wirelets = wirelets;
 
         int mod = driver.modifiers;
-
         if (parent == null) {
             this.region = new RegionAssembly(this); // Root always needs a nodestore
 
@@ -150,6 +152,12 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
             this.region = driver.modifiers().isGuest() ? new RegionAssembly(this) : parent.region;
         }
         this.modifiers = mod;
+
+        // Setup Realm
+        this.realm = requireNonNull(realm);
+        if (realm.compConf == null) {
+            realm.compConf = this;
+        }
 
         // Setup Container
         if (modifiers().isContainer()) {

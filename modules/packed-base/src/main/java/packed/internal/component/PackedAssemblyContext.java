@@ -29,7 +29,6 @@ import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.container.PackedRealm;
 import packed.internal.errorhandling.ErrorMessage;
 import packed.internal.inject.various.ConfigSiteInjectOperations;
 

@@ -137,7 +137,7 @@ public final class ContainerModel extends Model implements ComponentLookup {
         return factory;
     }
 
-    ComponentLookup withLookup(Lookup lookup) {
+    public ComponentLookup withLookup(Lookup lookup) {
         // Use default access (this) if we specify null lookup
 
         // We need to check this in a separate class. Because from Java 13.

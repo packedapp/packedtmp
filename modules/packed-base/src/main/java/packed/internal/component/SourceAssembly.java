@@ -22,7 +22,6 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentModifier;
 import app.packed.inject.Factory;
-import packed.internal.container.PackedRealm;
 import packed.internal.inject.DependencyProvider;
 import packed.internal.inject.Injectable;
 import packed.internal.inject.factory.BaseFactory;

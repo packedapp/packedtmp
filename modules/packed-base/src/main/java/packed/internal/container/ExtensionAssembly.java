@@ -27,6 +27,7 @@ import app.packed.component.AssemblyContext;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
 import app.packed.component.ClassComponentDriver;
+import app.packed.component.ComponentDriver;
 import app.packed.component.FactoryComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
@@ -37,6 +38,7 @@ import app.packed.container.ExtensionSetup;
 import app.packed.inject.Factory;
 import app.packed.statemachine.LifecycleContext;
 import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.PackedRealm;
 import packed.internal.lifecycle.old.LifecycleContextHelper;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -149,29 +151,38 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
      */
     @Nullable
     Object findWirelet(Class<? extends Wirelet> wireletType) {
-        return container.compConf.receiveWirelet(wireletType).orElse(null);
+        return compConf.receiveWirelet(wireletType).orElse(null);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T> BeanConfiguration<T> install(Class<T> implementation) {
+        ComponentDriver<BeanConfiguration<T>> cd = BeanConfiguration.driver(implementation);
+        return compConf.wire(cd);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T> BeanConfiguration<T> install(Factory<T> factory) {
-        return container.compConf.wire(BeanConfiguration.driver(), factory);
+        ComponentDriver<BeanConfiguration<T>> cd = BeanConfiguration.driver(factory);
+        return compConf.wire(cd);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T> BeanConfiguration<T> installInstance(T instance) {
-        return container.compConf.wireInstance(BeanConfiguration.driver(), instance);
+        ComponentDriver<BeanConfiguration<T>> cd = BeanConfiguration.driverInstance(instance);
+        return compConf.wire(cd);
     }
 
     @Override
     public <C, I> C wire(ClassComponentDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
-        return container.compConf.wire(driver, implementation);
+        return compConf.wire(driver, implementation);
     }
 
     @Override
     public <C, I> C wire(FactoryComponentDriver<C, I> driver, Factory<? extends I> factory, Wirelet... wirelets) {
-        return container.compConf.wire(driver.bindToFactory(factory), wirelets);
+        return compConf.wire(driver.bindToFactory(factory), wirelets);
     }
 
     /**
