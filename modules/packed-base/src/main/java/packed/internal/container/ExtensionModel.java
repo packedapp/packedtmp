@@ -63,13 +63,16 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         @SuppressWarnings("unchecked")
         @Override
         protected ExtensionModel computeValue(Class<?> type) {
-            // First, check that the user has specified an actual sub type of Extension to ExtensionModel.of()
+            // We have a number of checks here that the requested extension type is actually valid.
+            // We do them here, because it is faster then checking the type every time it is requested.
+
             if (type == Extension.class) {
                 throw new IllegalArgumentException(Extension.class.getSimpleName() + ".class is not a valid argument to this method.");
             } else if (!Extension.class.isAssignableFrom(type)) {
                 throw new IllegalArgumentException(
                         "The specified type '" + StringFormatter.format(type) + "' must extend '" + StringFormatter.format(Extension.class) + "'");
             }
+
             if (type.isAnnotationPresent(ExtensionMember.class)) {
                 throw new IllegalArgumentException("An extension is trivially member of itself, so cannot use @" + ExtensionMember.class.getSimpleName()
                         + " annotation, for  '" + StringFormatter.format(type));
@@ -139,6 +142,9 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
     /** This extension's direct dependencies (on other extensions). */
     private final ExtensionSet directDependencies;
 
+    /** The component driver used when creating a component for the extension. */
+    final PackedComponentDriver<?> driver;
+
     /** Whether or not is is only any immediately parent that will be linked. */
     final boolean extensionLinkedDirectChildrenOnly;
 
@@ -152,18 +158,16 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
     private final OnHookModel hooksOnHookModel;
 
     /** A unique id of the extension. */
-    final int id; //
+    final int id; // We don't currently use it...
+
+    /** The default component name of the extension. */
+    public final String nameForComponent;
 
     /** The canonical name of the extension. Used when needing to deterministically sort extensions. */
-    private final String nameUsedForSorting;
+    private final String nameForSorting;
 
     /** An optional containing the extension type. To avoid excessive creation of them at runtime. */
     public final Optional<Class<? extends Extension>> optional; // can go away with Valhalla
-
-    /** The default component name of the extension. */
-    public final String defaultComponentName;
-
-    final PackedComponentDriver<?> driver;
 
     private final ProvidableAttributeModel pam;
 
@@ -180,19 +184,15 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         this.bundleBuilderMethod = builder.builderMethod;
         this.directDependencies = ExtensionSet.of(builder.dependenciesDirect);// Set.copyOf(builder.dependenciesDirect);
         this.optional = Optional.of(extensionType()); // No need to create an optional every time we need this
-        this.nameUsedForSorting = requireNonNull(extensionType().getCanonicalName());
+        this.nameForSorting = requireNonNull(extensionType().getCanonicalName());
         this.driver = PackedComponentDriver.extensionDriver(this);
-        this.defaultComponentName = "." + extensionType().getSimpleName();
+        this.nameForComponent = "." + extensionType().getSimpleName();
         this.extensionLinkedToAncestorExtension = builder.li;
         this.extensionLinkedDirectChildrenOnly = builder.callbackOnlyDirectChildren;
         this.pam = builder.pam;
 
         this.hooksOnHookModel = builder.onHookModel;
         this.hooksNonActivating = hooksOnHookModel == null ? null : LazyExtensionActivationMap.findNonExtending(hooksOnHookModel);
-    }
-
-    public ProvidableAttributeModel pam() {
-        return pam;
     }
 
     /** {@inheritDoc} */
@@ -202,7 +202,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         // otherwise non base extension
         int d = depth - m.depth;
         if (d == 0) {
-            int c = nameUsedForSorting.compareTo(m.nameUsedForSorting);
+            int c = nameForSorting.compareTo(m.nameForSorting);
             if (c == 0) {
                 // Cannot use two extension with the same name. But loaded via two different
                 // classloaders
@@ -252,6 +252,10 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         } catch (Throwable e) {
             throw new InternalExtensionException("Extension (" + type().getSimpleName() + ")  could not be created", e);
         }
+    }
+
+    public ProvidableAttributeModel pam() {
+        return pam;
     }
 
     /**
