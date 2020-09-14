@@ -37,7 +37,6 @@ public final class FieldSidecarModel extends SidecarModel {
     protected FieldSidecarModel(Builder builder) {
         super(builder);
         this.instanceId = builder.instanceId;
-        // MethodHandles.insertArguments(target, pos, values)
     }
 
     public static class Builder extends SidecarModel.Builder {

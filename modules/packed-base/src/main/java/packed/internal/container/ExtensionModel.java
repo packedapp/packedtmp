@@ -185,7 +185,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         this.id = builder.id;
         this.depth = builder.depth;
         this.bundleBuilderMethod = builder.builderMethod;
-        this.dependencies = ExtensionSet.of(builder.dependenciesDirect);// Set.copyOf(builder.dependenciesDirect);
+        this.dependencies = ExtensionSet.of(builder.dependencies);// Set.copyOf(builder.dependenciesDirect);
         this.optional = Optional.of(type()); // No need to create an optional every time we need this
 
         this.driver = PackedComponentDriver.extensionDriver(this);
@@ -277,7 +277,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
      *             {@link ExtensionMember#value()}
      */
     @Nullable
-    public static Class<? extends Extension> findAnyExtensionMember(Class<?> type) {
+    public static Class<? extends Extension> getAnyExtensionMember(Class<?> type) {
         ExtensionMember ue = type.getAnnotation(ExtensionMember.class);
         if (ue != null) {
             Class<? extends Extension> eType = ue.value();
@@ -335,7 +335,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
         private boolean callbackOnlyDirectChildren;
 
         /** A list of dependencies on other extensions. */
-        private Set<Class<? extends Extension>> dependenciesDirect = new HashSet<>();
+        private Set<Class<? extends Extension>> dependencies = new HashSet<>();
 
         /** The depth of the extension relative to other extensions. */
         private int depth;
@@ -372,7 +372,7 @@ public final class ExtensionModel extends SidecarModel implements Comparable<Ext
             }
             ExtensionModel model = Loader.load(dependencyType, loader);
             depth = Math.max(depth, model.depth + 1);
-            dependenciesDirect.add(dependencyType);
+            dependencies.add(dependencyType);
         }
 
         protected void addExtensionContextElements(MethodHandleBuilder builder, int index) {

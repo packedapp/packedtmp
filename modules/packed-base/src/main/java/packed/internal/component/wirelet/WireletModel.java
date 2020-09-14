@@ -46,7 +46,7 @@ public final class WireletModel extends Model {
      */
     private WireletModel(Class<? extends Wirelet> type) {
         super(type);
-        this.extension = ExtensionModel.findAnyExtensionMember(type);
+        this.extension = ExtensionModel.getAnyExtensionMember(type);
     }
 
     /**
