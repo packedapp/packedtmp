@@ -227,6 +227,10 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     @SuppressWarnings({ "unchecked", "rawtypes" })
     AttributeMap attributes() {
         // Det er ikke super vigtigt at den her er hurtig paa configurations tidspunktet...
+
+        // Maaske er det simpelthen et view...
+        // Hvor vi lazily fx calculere EntrySet (og gemmer i et felt)
+
         DefaultAttributeMap dam = new DefaultAttributeMap();
 
         if (source != null) {
@@ -527,12 +531,12 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
 
     @Override
     public <C, I> C wire(ClassComponentDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
-        return wire(driver.bindToClass(realm, implementation), wirelets);
+        return wire(driver.bindToClass(implementation), wirelets);
     }
 
     @Override
     public <C, I> C wire(FactoryComponentDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
-        return wire(driver.bindToFactory(realm, implementation), wirelets);
+        return wire(driver.bindToFactory(implementation), wirelets);
     }
 
     /** {@inheritDoc} */
@@ -550,7 +554,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
 
     @Override
     public <C, I> C wireInstance(InstanceComponentDriver<C, I> driver, I instance, Wirelet... wirelets) {
-        ComponentDriver<C> wcd = driver.bindToInstance(realm, instance);
+        ComponentDriver<C> wcd = driver.bindToInstance(instance);
         return wire(wcd, wirelets);
     }
 

@@ -15,12 +15,9 @@
  */
 package app.packed.component;
 
-import packed.internal.container.PackedRealm;
-
 /**
  *
  */
-@SuppressWarnings("exports")
 public interface ClassComponentDriver<C, I> {
-    ComponentDriver<C> bindToClass(PackedRealm realm, Class<? extends I> implementation);
+    ComponentDriver<C> bindToClass(Class<? extends I> implementation);
 }

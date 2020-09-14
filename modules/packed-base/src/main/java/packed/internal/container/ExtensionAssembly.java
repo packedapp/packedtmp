@@ -170,8 +170,8 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
     }
 
     @Override
-    public <C, I> C wire(FactoryComponentDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
-        return container.compConf.wire(driver.bindToFactory(compConf.realm(), implementation), wirelets);
+    public <C, I> C wire(FactoryComponentDriver<C, I> driver, Factory<? extends I> factory, Wirelet... wirelets) {
+        return container.compConf.wire(driver.bindToFactory(factory), wirelets);
     }
 
     /**

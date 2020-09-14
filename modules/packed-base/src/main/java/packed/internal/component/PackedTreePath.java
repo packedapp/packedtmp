@@ -26,8 +26,8 @@ import app.packed.base.TreePath;
 
 /** The default implementation of {@link TreePath}. */
 public final class PackedTreePath implements TreePath {
+
     /** A component path representing the root of a hierarchy. */
-    //
     public static final TreePath ROOT = new PackedTreePath();
 
     private final String[] elements;
