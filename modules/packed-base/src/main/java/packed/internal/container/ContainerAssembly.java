@@ -33,18 +33,8 @@ import packed.internal.service.InjectionManager;
 /** The default container context. */
 public final class ContainerAssembly {
 
-    public static final int LS_0_MAINL = 0;
-
-    public static final int LS_1_LINKING = 1;
-
-    public static final int LS_2_HOSTING = 2;
-
-    public static final int LS_3_FINISHED = 3;
-
     /** The component this container is a part of. */
     public final ComponentNodeConfiguration compConf;
-
-    public int containerState;
 
     /** All used extensions, in order of registration. */
     public final LinkedHashMap<Class<? extends Extension>, ExtensionAssembly> extensions = new LinkedHashMap<>();
@@ -122,32 +112,6 @@ public final class ContainerAssembly {
         }
     }
 
-//    public void advanceTo(int newState) {
-//        if (true) {
-//            return;
-//        }
-//        if (containerState == 0) {
-//            // We need to sort all extensions that are used. To make sure
-//            // they progress in their lifecycle in the right order.
-//            extensionsOrdered = new TreeSet<>(extensions.values());
-//            for (ExtensionAssembly pec : extensionsOrdered) {
-//                pec.onConfigured();
-//            }
-//            containerState = LS_1_LINKING;
-//        }
-//
-//        if (containerState == LS_1_LINKING && newState > LS_1_LINKING) {
-//            for (ComponentNodeConfiguration cc = compConf.treeFirstChild; cc != null; cc = cc.treeNextSibling) {
-//                if (cc.container != null) {
-//                    cc.container.advanceTo(LS_3_FINISHED);
-//                }
-//            }
-//            for (ExtensionAssembly pec : extensionsOrdered) {
-//                pec.onChildrenConfigured();
-//            }
-//        }
-//    }
-
     /**
      * Returns a set view of the extension registered with this container.
      * 
@@ -210,10 +174,6 @@ public final class ContainerAssembly {
 
             // Checks that we are still configurable
             if (caller == null) {
-                if (containerState != 0) {
-                    // Cannot perform this operation
-                    throw new IllegalStateException("Cannot install new extensions at this point, extensionType = " + extensionType);
-                }
                 compConf.checkConfigurable();
             } else {
                 caller.checkConfigurable();
