@@ -70,7 +70,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     /** The assembly this configuration is a part of. */
     private final PackedAssemblyContext assembly;
 
-    /** The realm the component belongs to. */
+    /** The realm this component is a member of. */
     private final PackedRealm realm;
 
     /** Any wirelets that was specified by the user when creating this configuration. */
@@ -87,15 +87,11 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
 
     /** Any container this component is part of. A container is part of it self */
     @Nullable
-    public final ContainerAssembly memberOfContainer;
+    public final ContainerAssembly container;
 
     /** Any container this component is part of. A container is part of it self */
     @Nullable
-    public final ContainerAssembly container;
-
-    // public final ContainerAssembly memberOfContainer-> a container uses itself
-
-    // public final RealmAssemly realmUser -> a realm component uses itself
+    public final ContainerAssembly memberOfContainer;
 
     /** Any extension that is attached to this component. */
     @Nullable
@@ -202,7 +198,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         this.memberOfContainer = parent.container;
         this.extension = new ExtensionAssembly(this, model);
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
-        this.realm = PackedRealm.fromExtension(this, model);
+        this.realm = parent.realm.fromExtension(this, model);
         this.region = parent.region;
         this.source = null;
         this.wirelets = null;

@@ -77,7 +77,7 @@ public final class PackedRealm {
      *            the extension model
      * @return a new realm
      */
-    public static PackedRealm fromExtension(ComponentNodeConfiguration compConf, ExtensionModel model) {
+    public PackedRealm fromExtension(ComponentNodeConfiguration compConf, ExtensionModel model) {
         return new PackedRealm(model.type());
     }
 
