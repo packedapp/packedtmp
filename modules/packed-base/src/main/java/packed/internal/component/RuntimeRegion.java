@@ -28,14 +28,14 @@ import packed.internal.util.MethodHandleUtil;
 // Passive System -> 1 NodeStore
 // Active System -> 1 NodeStore per guest
 // Long term, this might just be an Object[] array. But for now its a class, in case we need stuff that isn't stored in the array. 
-public final class Region {
+public final class RuntimeRegion {
 
     /** A method handle for calling {@link #getSingletonInstance(int)} at runtime. */
     static final MethodHandle MH_GET_SINGLETON_INSTANCE = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "getSingletonInstance", Object.class, int.class);
 
     public final Object[] store;
 
-    public Region(int i) {
+    public RuntimeRegion(int i) {
         store = new Object[i];
     }
 

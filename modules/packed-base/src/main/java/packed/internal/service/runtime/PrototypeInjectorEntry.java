@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.inject.ProvideContext;
 import app.packed.inject.ProvisionException;
-import packed.internal.component.Region;
+import packed.internal.component.RuntimeRegion;
 import packed.internal.service.buildtime.BuildtimeService;
 import packed.internal.util.ThrowableUtil;
 
@@ -32,12 +32,12 @@ public class PrototypeInjectorEntry<T> extends RuntimeService<T> {
     private final MethodHandle mh;
 
     /** The region used when creating new instances. */
-    private final Region region;
+    private final RuntimeRegion region;
 
     /**
      * @param service
      */
-    public PrototypeInjectorEntry(BuildtimeService<T> service, Region region, MethodHandle mh) {
+    public PrototypeInjectorEntry(BuildtimeService<T> service, RuntimeRegion region, MethodHandle mh) {
         super(service);
         this.region = requireNonNull(region);
         this.mh = requireNonNull(mh);

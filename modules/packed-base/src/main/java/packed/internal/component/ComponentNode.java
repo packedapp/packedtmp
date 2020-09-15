@@ -54,7 +54,7 @@ public final class ComponentNode implements Component {
     final ComponentNode parent;
 
     /** The region this component is part of. */
-    final Region region;
+    final RuntimeRegion region;
 
     /**
      * Creates a new component node.

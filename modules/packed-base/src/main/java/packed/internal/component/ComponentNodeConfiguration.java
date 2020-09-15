@@ -103,7 +103,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     /** The configuration site of this component. */
     private final ConfigSite configSite;
 
-    private boolean finalState = false;
+    boolean finalState = false;
 
     int nameState;
 
@@ -371,6 +371,9 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     public void link(Bundle<?> bundle, Wirelet... wirelets) {
         // Get the driver from the bundle
         PackedComponentDriver<?> driver = BundleHelper.getDriver(bundle);
+        WireletPack wp = WireletPack.from(driver, wirelets);
+        // ConfigSite cs = ConfigSiteSupport.captureStackFrame(configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
+        ConfigSite cs = ConfigSite.UNKNOWN;
 
         if (container != null) {
             // IDK do we want to progress to next stage just in case...
@@ -382,19 +385,15 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
                 throw new IllegalStateException("Was Assembled");
             }
         }
-        // Create the child node
-        // ConfigSite cs = ConfigSiteSupport.captureStackFrame(configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
-        WireletPack wp = WireletPack.from(driver, wirelets);
-        ConfigSite cs = ConfigSite.UNKNOWN;
 
+        RealmAssembly r = realm.linkBundle(bundle);
         ComponentNodeConfiguration parent = extension == null ? this : treeParent;
-
-        ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(realm.linkBundle(bundle), driver, cs, parent, wp);
+        ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(r, driver, cs, parent, wp);
 
         // Invoke Bundle::configure
         BundleHelper.configure(bundle, driver.toConfiguration(compConf));
 
-        compConf.finalState = true;
+        r.close();
     }
 
     /** {@inheritDoc} */

@@ -34,7 +34,7 @@ import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceRegistry;
 import packed.internal.component.ComponentNode;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.Region;
+import packed.internal.component.RuntimeRegion;
 import packed.internal.component.RegionAssembly;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.component.wirelet.WireletPack;
@@ -163,7 +163,7 @@ public final class InjectionManager {
         return e;
     }
 
-    public ServiceRegistry newServiceRegistry(ComponentNode comp, Region region, WireletPack wc) {
+    public ServiceRegistry newServiceRegistry(ComponentNode comp, RuntimeRegion region, WireletPack wc) {
         LinkedHashMap<Key<?>, RuntimeService<?>> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext(region);
         for (var e : exports()) {

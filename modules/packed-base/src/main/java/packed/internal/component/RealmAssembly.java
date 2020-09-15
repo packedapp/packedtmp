@@ -23,9 +23,9 @@ import java.lang.invoke.MethodHandles.Lookup;
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
-import packed.internal.container.SourceModelLookup;
-import packed.internal.container.RealmModel;
 import packed.internal.container.ExtensionModel;
+import packed.internal.container.RealmModel;
+import packed.internal.container.SourceModelLookup;
 import packed.internal.inject.factory.FactoryHandle;
 
 /**
@@ -66,6 +66,10 @@ public final class RealmAssembly {
     public MethodHandle fromFactoryHandle(FactoryHandle<?> handle) {
         MethodHandle mh = lookup.readable(handle).toMethodHandle();
         return mh;
+    }
+
+    public void close() {
+        compConf.finalState = true;
     }
 
     public SourceModel componentModelOf(Class<?> componentType) {

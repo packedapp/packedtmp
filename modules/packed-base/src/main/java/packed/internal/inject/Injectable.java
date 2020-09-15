@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.base.Nullable;
-import packed.internal.component.Region;
+import packed.internal.component.RuntimeRegion;
 import packed.internal.component.SourceAssembly;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
@@ -119,7 +119,7 @@ public final class Injectable {
         }
         // Does not have have dependencies.
         if (resolved.length == 0) {
-            buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, Region.class);
+            buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, RuntimeRegion.class);
             return buildMethodHandle;
         }
         MethodHandle mh = directMethodHandle;
@@ -131,7 +131,7 @@ public final class Injectable {
             mh = MethodHandles.collectArguments(mh, i, dep);
         }
 
-        MethodType mt = MethodType.methodType(mh.type().returnType(), Region.class);
+        MethodType mt = MethodType.methodType(mh.type().returnType(), RuntimeRegion.class);
         int[] ar = new int[mh.type().parameterCount()];
         buildMethodHandle = MethodHandles.permuteArguments(mh, mt, ar);
         if (buildMethodHandle.type().parameterCount() != 1) {

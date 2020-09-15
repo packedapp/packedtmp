@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.IdentityHashMap;
 
-import packed.internal.component.Region;
+import packed.internal.component.RuntimeRegion;
 import packed.internal.service.buildtime.BuildtimeService;
 
 /** A special instantiation context that is created */
@@ -27,12 +27,12 @@ import packed.internal.service.buildtime.BuildtimeService;
 // laver aendringer, hvis vi bare sender Region+IHM rundt
 public class ServiceInstantiationContext {
 
-    public final Region region;
+    public final RuntimeRegion region;
 
     // Translates from BuildEntry->RuntimeEntry
     public final IdentityHashMap<BuildtimeService<?>, RuntimeService<?>> transformers = new IdentityHashMap<>();
 
-    public ServiceInstantiationContext(Region ns) {
+    public ServiceInstantiationContext(RuntimeRegion ns) {
         this.region = requireNonNull(ns);
     }
 }

@@ -65,8 +65,8 @@ public final class RegionAssembly {
 
     // Vi bliver noedt til at kalde ned recursivt saa vi kan finde raekkefolgen af service inst
 
-    Region newRegion(PackedInitializationContext pic, ComponentNode root) {
-        Region region = new Region(nextIndex);
+    RuntimeRegion newRegion(PackedInitializationContext pic, ComponentNode root) {
+        RuntimeRegion region = new RuntimeRegion(nextIndex);
 
         // I don't now if we create the guest here??? We do for now though
         if (root.modifiers().isGuest()) {

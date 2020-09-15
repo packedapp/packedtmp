@@ -21,7 +21,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ProvideContext;
-import packed.internal.component.Region;
+import packed.internal.component.RuntimeRegion;
 import packed.internal.service.buildtime.BuildtimeService;
 
 /** An entry holding a constant. */
@@ -37,7 +37,7 @@ public final class ConstantInjectorEntry<T> extends RuntimeService<T> {
      *            the build entry to create this entry from
      */
     @SuppressWarnings("unchecked")
-    public ConstantInjectorEntry(BuildtimeService<T> service, Region region, int index) {
+    public ConstantInjectorEntry(BuildtimeService<T> service, RuntimeRegion region, int index) {
         super(service);
         this.constant = requireNonNull((T) region.getSingletonInstance(index));
     }

@@ -117,13 +117,13 @@ public final class SourceAssembly implements DependencyProvider {
     public MethodHandle toMethodHandle() {
         if (instance != null) {
             MethodHandle mh = MethodHandles.constant(instance.getClass(), instance);
-            return MethodHandles.dropArguments(mh, 0, Region.class); // MethodHandle()T -> MethodHandle(Region)T
+            return MethodHandles.dropArguments(mh, 0, RuntimeRegion.class); // MethodHandle()T -> MethodHandle(Region)T
         } else if (isPrototype()) { // injectable != null
             MethodHandle mh = injectable.buildMethodHandle();
             return mh;
             // Taenker vi kun bruger den her... Hvis vi har lyst til genbrug
         } else {
-            return Region.readSingletonAs(regionIndex, injectable.rawType());
+            return RuntimeRegion.readSingletonAs(regionIndex, injectable.rawType());
         }
     }
 }

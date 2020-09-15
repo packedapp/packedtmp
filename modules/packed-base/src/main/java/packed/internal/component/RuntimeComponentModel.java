@@ -43,9 +43,6 @@ public final class RuntimeComponentModel {
     // Depth kan have 8 bit-> full depth, 8 bit, container depth, 8 bit artifact depth.
     final int depth;
 
-    /** Any extension the component belongs to. */ // Generic Extension Table?
-    // final Optional<Class<? extends Extension>> extension;
-
     final int modifiers;
 
     RuntimeComponentModel(ComponentNodeConfiguration compConf) {
@@ -61,12 +58,7 @@ public final class RuntimeComponentModel {
         return PackedComponentModifierSet.isSet(modifiers, ComponentModifier.CONTAINER);
     }
 
-//    public Optional<Class<? extends Extension>> extension() {
-//        return extension;
-//    }
-
     static RuntimeComponentModel of(ComponentNodeConfiguration context) {
         return new RuntimeComponentModel(context);
     }
-
 }
