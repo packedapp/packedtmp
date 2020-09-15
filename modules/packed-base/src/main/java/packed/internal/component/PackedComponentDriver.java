@@ -205,7 +205,7 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
 
         /** {@inheritDoc} */
         @Override
-        public ComponentDriver<C> bindToClass(Class<? extends I> implementation) {
+        public ComponentDriver<C> bind(Class<? extends I> implementation) {
             requireNonNull(implementation, "implementation is null");
             return new PackedComponentDriver<>(meta, implementation);
         }
@@ -219,7 +219,7 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
 
         /** {@inheritDoc} */
         @Override
-        public ComponentDriver<C> bindToFactory(Factory<? extends I> factory) {
+        public ComponentDriver<C> bind(Factory<? extends I> factory) {
             requireNonNull(factory, "factory is null");
             return new PackedComponentDriver<>(meta, factory);
         }
@@ -233,7 +233,7 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
 
         /** {@inheritDoc} */
         @Override
-        public ComponentDriver<C> bindToInstance(I instance) {
+        public ComponentDriver<C> bindInstance(I instance) {
             requireNonNull(instance, "instance is null");
             if (instance instanceof Class) {
                 throw new IllegalStateException("Cannot specify a Class instance, was " + instance);

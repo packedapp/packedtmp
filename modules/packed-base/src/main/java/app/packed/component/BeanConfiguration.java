@@ -97,14 +97,14 @@ public class BeanConfiguration<T> extends AbstractComponentConfiguration {
     }
 
     public static <T> ComponentDriver<BeanConfiguration<T>> driver(Class<T> implementation) {
-        return BeanConfiguration.<T>driver().bindToClass(implementation);
+        return BeanConfiguration.<T>driver().bind(implementation);
     }
 
     public static <T> ComponentDriver<BeanConfiguration<T>> driver(Factory<T> factory) {
-        return BeanConfiguration.<T>driver().bindToFactory(factory);
+        return BeanConfiguration.<T>driver().bind(factory);
     }
 
     public static <T> ComponentDriver<BeanConfiguration<T>> driverInstance(T instance) {
-        return BeanConfiguration.<T>driver().bindToInstance(instance);
+        return BeanConfiguration.<T>driver().bindInstance(instance);
     }
 }

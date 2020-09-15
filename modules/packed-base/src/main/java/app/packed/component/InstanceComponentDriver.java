@@ -29,7 +29,7 @@ import packed.internal.component.PackedComponentDriver;
 
 public interface InstanceComponentDriver<C, I> extends FactoryComponentDriver<C, I> {
 
-    ComponentDriver<C> bindToInstance(I instance);
+    ComponentDriver<C> bindInstance(I instance);
 
     static <C, I> InstanceComponentDriver<C, I> of(MethodHandles.Lookup lookup, Class<? extends C> driverType, Option... options) {
         return PackedComponentDriver.ofInstance(lookup, driverType, options);

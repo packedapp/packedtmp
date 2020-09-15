@@ -23,9 +23,9 @@ import app.packed.inject.Factory;
 public interface FactoryComponentDriver<C, I> extends ClassComponentDriver<C, I> {
 
     @Override
-    default ComponentDriver<C> bindToClass(Class<? extends I> implementation) {
-        return bindToFactory(Factory.find(implementation));
+    default ComponentDriver<C> bind(Class<? extends I> implementation) {
+        return bind(Factory.find(implementation));
     }
 
-    ComponentDriver<C> bindToFactory(Factory<? extends I> factory);
+    ComponentDriver<C> bind(Factory<? extends I> factory);
 }

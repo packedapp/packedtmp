@@ -19,5 +19,11 @@ package app.packed.component;
  *
  */
 public interface ClassComponentDriver<C, I> {
-    ComponentDriver<C> bindToClass(Class<? extends I> implementation);
+
+    /**
+     * @param implementation
+     *            the implementation to bind
+     * @return a new bound component driver
+     */
+    ComponentDriver<C> bind(Class<? extends I> implementation);
 }

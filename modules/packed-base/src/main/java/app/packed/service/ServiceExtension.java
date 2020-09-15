@@ -83,11 +83,11 @@ public final class ServiceExtension extends Extension {
     /**
      * Should never be initialized by users.
      * 
-     * @param configuration
+     * @param extension
      *            the configuration of the extension
      */
-    /* package-private */ ServiceExtension(ExtensionConfiguration configuration) {
-        this.im = ((ExtensionAssembly) configuration).container().im;
+    /* package-private */ ServiceExtension(ExtensionConfiguration extension) {
+        this.im = ((ExtensionAssembly) extension).container().im;
     }
 
     // Skal vi ogsaa supportere noget paa tvaers af bundles???
@@ -276,6 +276,12 @@ public final class ServiceExtension extends Extension {
      * 
      */
     // Will never export services that are requirements...
+
+    // One of 3 models...
+    // Fails on other exports
+    // Ignores other exports
+    // interacts with other exports in some way
+
     public void exportAll() {
         // export all _services_.. Also those that are already exported as something else???
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
