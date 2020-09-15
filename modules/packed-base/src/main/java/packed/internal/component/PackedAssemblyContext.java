@@ -103,7 +103,8 @@ public final class PackedAssemblyContext implements AssemblyContext {
 
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
 
-        ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(PackedRealm.fromBundle(pac, bundle), componentDriver, cs, null, wp);
+        ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(RealmAssembly.fromBundle(pac, bundle), componentDriver, cs, null, wp);
+        // We should do realm.compConf = compConf here...
 
         Object conf = componentDriver.toConfiguration(compConf);
         BundleHelper.configure(bundle, conf); // in-try-finally. So we can call PAC.fail() and have them run callbacks for dynamic nodes
@@ -119,7 +120,7 @@ public final class PackedAssemblyContext implements AssemblyContext {
 
         PackedAssemblyContext pac = new PackedAssemblyContext(0, ad);
 
-        ComponentNodeConfiguration node = new ComponentNodeConfiguration(PackedRealm.fromConfigurator(pac, consumer), driver, cs, null, wp);
+        ComponentNodeConfiguration node = new ComponentNodeConfiguration(RealmAssembly.fromConfigurator(pac, consumer), driver, cs, null, wp);
 
         D conf = driver.toConfiguration(node);
         C cc = requireNonNull(factory.apply(conf));

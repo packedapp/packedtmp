@@ -24,14 +24,14 @@ import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
 import packed.internal.container.ComponentLookup;
-import packed.internal.container.ContainerModel;
+import packed.internal.container.RealmModel;
 import packed.internal.container.ExtensionModel;
 import packed.internal.inject.factory.FactoryHandle;
 
 /**
  *
  */
-public final class PackedRealm {
+public final class RealmAssembly {
 
     private final Class<?> type;
 
@@ -41,14 +41,14 @@ public final class PackedRealm {
     private ComponentLookup lookup;
 
     /** A container model. */
-    private final ContainerModel model;
+    private final RealmModel model;
 
     final PackedAssemblyContext pac;
     ComponentNodeConfiguration compConf;
 
-    private PackedRealm(PackedAssemblyContext pac, Class<?> type) {
+    private RealmAssembly(PackedAssemblyContext pac, Class<?> type) {
         this.type = requireNonNull(type);
-        this.lookup = this.model = ContainerModel.of(type);
+        this.lookup = this.model = RealmModel.of(type);
         this.pac = requireNonNull(pac);
     }
 
@@ -79,21 +79,21 @@ public final class PackedRealm {
      *            the extension model
      * @return a new realm
      */
-    public PackedRealm linkExtension(ComponentNodeConfiguration compConf, ExtensionModel model) {
-        PackedRealm realm = new PackedRealm(pac, model.type());
+    public RealmAssembly linkExtension(ComponentNodeConfiguration compConf, ExtensionModel model) {
+        RealmAssembly realm = new RealmAssembly(pac, model.type());
         realm.compConf = requireNonNull(compConf);
         return realm;
     }
 
-    public PackedRealm linkBundle(Bundle<?> bundle) {
-        return new PackedRealm(pac, bundle.getClass());
+    public RealmAssembly linkBundle(Bundle<?> bundle) {
+        return new RealmAssembly(pac, bundle.getClass());
     }
 
-    public static PackedRealm fromBundle(PackedAssemblyContext pac, Bundle<?> bundle) {
-        return new PackedRealm(pac, bundle.getClass());
+    public static RealmAssembly fromBundle(PackedAssemblyContext pac, Bundle<?> bundle) {
+        return new RealmAssembly(pac, bundle.getClass());
     }
 
-    public static PackedRealm fromConfigurator(PackedAssemblyContext pac, CustomConfigurator<?> consumer) {
-        return new PackedRealm(pac, consumer.getClass());
+    public static RealmAssembly fromConfigurator(PackedAssemblyContext pac, CustomConfigurator<?> consumer) {
+        return new RealmAssembly(pac, consumer.getClass());
     }
 }

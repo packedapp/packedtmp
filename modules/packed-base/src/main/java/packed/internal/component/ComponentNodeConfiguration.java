@@ -67,9 +67,6 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     /** A stack walker used from {@link #captureStackFrame(String)}. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
-    /** The realm this component is a member of. */
-    private final PackedRealm realm;
-
     /** Any wirelets that was specified by the user when creating this configuration. */
     @Nullable
     final WireletPack wirelets;
@@ -78,9 +75,6 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     final int modifiers;
 
     /**************** ASSEMBLIES *****************/
-
-    /** The region this component is a part of. */
-    public final RegionAssembly region;
 
     /** Any container this component is part of. A container is part of it self */
     @Nullable
@@ -93,6 +87,12 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     /** Any extension that is attached to this component. */
     @Nullable
     public final ExtensionAssembly extension;
+
+    /** The region this component is a part of. */
+    public final RegionAssembly region;
+
+    /** The realm this component is a member of. */
+    public final RealmAssembly realm;
 
     /** Any source that is attached to this component. */
     @Nullable
@@ -123,7 +123,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
      * @param parent
      *            the parent of the component
      */
-    ComponentNodeConfiguration(PackedRealm realm, PackedComponentDriver<?> driver, ConfigSite configSite, @Nullable ComponentNodeConfiguration parent,
+    ComponentNodeConfiguration(RealmAssembly realm, PackedComponentDriver<?> driver, ConfigSite configSite, @Nullable ComponentNodeConfiguration parent,
             @Nullable WireletPack wirelets) {
         super(parent);
         this.configSite = requireNonNull(configSite);
@@ -388,11 +388,8 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         ConfigSite cs = ConfigSite.UNKNOWN;
 
         ComponentNodeConfiguration parent = extension == null ? this : treeParent;
-        PackedRealm pr = realm.linkBundle(bundle);
 
-        ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(pr, driver, cs, parent, wp);
-
-        pr.compConf = compConf;
+        ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(realm.linkBundle(bundle), driver, cs, parent, wp);
 
         // Invoke Bundle::configure
         BundleHelper.configure(bundle, driver.toConfiguration(compConf));
@@ -423,10 +420,6 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         }
         nameState = (nameState & ~NAME_GETSET_MASK) | NAME_GET_PATH;
         return PackedTreePath.of(this); // show we weak intern them????
-    }
-
-    public PackedRealm realm() {
-        return realm;
     }
 
     public <W extends Wirelet> Optional<W> receiveWirelet(Class<W> type) {
@@ -474,7 +467,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         setName0(name);
     }
 
-    String defaultName(PackedRealm realm) {
+    String defaultName(RealmAssembly realm) {
         if (container != null) {
             // I think try and move some of this to ComponentNameWirelet
             @Nullable

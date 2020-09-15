@@ -52,7 +52,7 @@ final class PackedContainerConfiguration extends AbstractComponentConfiguration 
     /** {@inheritDoc} */
     @Override
     public void lookup(@Nullable Lookup lookup) {
-        ((ComponentNodeConfiguration) super.context).realm().lookup(lookup);
+        ((ComponentNodeConfiguration) super.context).realm.lookup(lookup);
     }
 
     /** {@inheritDoc} */

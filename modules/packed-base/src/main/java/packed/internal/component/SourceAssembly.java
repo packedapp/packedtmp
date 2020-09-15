@@ -54,7 +54,7 @@ public final class SourceAssembly implements DependencyProvider {
     @Nullable
     public BuildtimeService<?> service;
 
-    SourceAssembly(ComponentNodeConfiguration compConf, RegionAssembly region, PackedRealm realm, Object source) {
+    SourceAssembly(ComponentNodeConfiguration compConf, RegionAssembly region, RealmAssembly realm, Object source) {
         this.compConf = compConf;
         this.regionIndex = compConf.modifiers().isSingleton() ? region.reserve() : -1;
 

@@ -37,17 +37,17 @@ import packed.internal.util.LookupUtil;
 import packed.internal.util.LookupValue;
 
 /** A model of a container, typically a subclass of {@link Bundle}. */
-public final class ContainerModel extends Model implements ComponentLookup {
+public final class RealmModel extends Model implements ComponentLookup {
 
     /** A cache of model. */
-    private static final ClassValue<ContainerModel> MODEL_CACHE = new ClassValue<>() {
+    private static final ClassValue<RealmModel> MODEL_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
         @Override
-        protected ContainerModel computeValue(Class<?> type) {
+        protected RealmModel computeValue(Class<?> type) {
             // Is either a bundle, or a ContainerConfigurator subclass
-            return new ContainerModel((Class<? extends Bundle<?>>) type);
+            return new RealmModel((Class<? extends Bundle<?>>) type);
         }
     };
 
@@ -60,7 +60,7 @@ public final class ContainerModel extends Model implements ComponentLookup {
 
         @Override
         protected SourceModel computeValue(Class<?> type) {
-            return SourceModel.newInstance(ContainerModel.this, ContainerModel.this.newClassProcessor(type, true));
+            return SourceModel.newInstance(RealmModel.this, RealmModel.this.newClassProcessor(type, true));
         }
     };
 
@@ -72,7 +72,7 @@ public final class ContainerModel extends Model implements ComponentLookup {
 
         @Override
         protected PerLookup computeValue(Lookup lookup) {
-            return new PerLookup(ContainerModel.this, lookup);
+            return new PerLookup(RealmModel.this, lookup);
         }
     };
 
@@ -85,20 +85,20 @@ public final class ContainerModel extends Model implements ComponentLookup {
     /**
      * Creates a new container source model.
      * 
-     * @param sourceType
+     * @param realmType
      *            the source type
      */
-    private ContainerModel(Class<? extends Bundle<?>> sourceType) {
-        super(sourceType);
-        if (Hook.class.isAssignableFrom(sourceType)) {
-            throw new InvalidDeclarationException(sourceType + " must not implement/extend " + Hook.class);
+    private RealmModel(Class<? extends Bundle<?>> realmType) {
+        super(realmType);
+        if (Hook.class.isAssignableFrom(realmType)) {
+            throw new InvalidDeclarationException(realmType + " must not implement/extend " + Hook.class);
         }
 
-        psm = PackletMotherShip.of(sourceType);
+        psm = PackletMotherShip.of(realmType);
 
-        this.onHookModel = OnHookModel.newModel(new OpenClass(MethodHandles.lookup(), sourceType, true), false,
+        this.onHookModel = OnHookModel.newModel(new OpenClass(MethodHandles.lookup(), realmType, true), false,
                 UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-        this.activatorMap = LazyExtensionActivationMap.of(sourceType);
+        this.activatorMap = LazyExtensionActivationMap.of(realmType);
     }
 
     /** {@inheritDoc} */
@@ -163,7 +163,7 @@ public final class ContainerModel extends Model implements ComponentLookup {
      *            the container source type
      * @return a container source model for the specified type
      */
-    public static ContainerModel of(Class<?> sourceType) {
+    public static RealmModel of(Class<?> sourceType) {
         return MODEL_CACHE.get(sourceType);
     }
 
@@ -182,9 +182,9 @@ public final class ContainerModel extends Model implements ComponentLookup {
         /** The actual lookup object we are wrapping. */
         private final Lookup lookup;
 
-        private final ContainerModel parent;
+        private final RealmModel parent;
 
-        private PerLookup(ContainerModel parent, Lookup lookup) {
+        private PerLookup(RealmModel parent, Lookup lookup) {
             this.parent = requireNonNull(parent);
             this.lookup = requireNonNull(lookup);
         }

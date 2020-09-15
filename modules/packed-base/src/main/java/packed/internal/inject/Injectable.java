@@ -101,7 +101,7 @@ public final class Injectable {
         this.source = requireNonNull(source);
 
         FactoryHandle<?> handle = factory.factory.handle;
-        MethodHandle mh = source.compConf.realm().fromFactoryHandle(handle);
+        MethodHandle mh = source.compConf.realm.fromFactoryHandle(handle);
         this.im = source.compConf.injectionManager();
         this.dependencies = factory.factory.dependencies;
         this.directMethodHandle = requireNonNull(mh);

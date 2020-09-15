@@ -27,7 +27,7 @@ import java.util.Set;
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.hook.OnHook;
-import packed.internal.container.ContainerModel;
+import packed.internal.container.RealmModel;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.LazyExtensionActivationMap;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
@@ -40,7 +40,7 @@ import packed.internal.util.ThrowableUtil;
 
 /**
  * A model of a container, a cached instance of this class is acquired via
- * {@link ContainerModel#componentModelOf(Class)}.
+ * {@link RealmModel#componentModelOf(Class)}.
  */
 public final class SourceModel extends Model {
 
@@ -131,7 +131,7 @@ public final class SourceModel extends Model {
      *            a class processor usable by hooks
      * @return a model of the component
      */
-    public static SourceModel newInstance(ContainerModel csm, OpenClass cp) {
+    public static SourceModel newInstance(RealmModel csm, OpenClass cp) {
         return new Builder(csm, cp).build();
     }
 
@@ -142,7 +142,7 @@ public final class SourceModel extends Model {
 
         HookRequestBuilder csb;
 
-        final ContainerModel csm;
+        final RealmModel csm;
 
         /** A map of builders for every activated extension. */
         private final IdentityHashMap<Class<? extends Extension>, HookRequestBuilder> extensionBuilders = new IdentityHashMap<>();
@@ -154,7 +154,7 @@ public final class SourceModel extends Model {
          *            a class processor usable by hooks
          * 
          */
-        private Builder(ContainerModel csm, OpenClass cp) {
+        private Builder(RealmModel csm, OpenClass cp) {
             this.csm = requireNonNull(csm);
             this.cp = requireNonNull(cp);
         }
