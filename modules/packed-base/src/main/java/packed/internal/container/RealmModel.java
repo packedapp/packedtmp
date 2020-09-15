@@ -36,8 +36,8 @@ import packed.internal.sidecar.packlet.PackletMotherShip;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.LookupValue;
 
-/** A model of a container, typically a subclass of {@link Bundle}. */
-public final class RealmModel extends Model implements ComponentLookup {
+/** A model of a realm, typically based on a subclass of {@link Bundle}. */
+public final class RealmModel extends Model implements SourceModelLookup {
 
     /** A cache of model. */
     private static final ClassValue<RealmModel> MODEL_CACHE = new ClassValue<>() {
@@ -65,7 +65,7 @@ public final class RealmModel extends Model implements ComponentLookup {
     };
 
     /** The default lookup object, if using MethodHandles.lookup() from inside a bundle. */
-    private volatile ComponentLookup defaultLookup;
+    private volatile SourceModelLookup defaultLookup;
 
     /** A cache of lookup values, in 99 % of all cases this will hold no more than 1 value. */
     private final LookupValue<PerLookup> lookups = new LookupValue<>() {
@@ -103,7 +103,7 @@ public final class RealmModel extends Model implements ComponentLookup {
 
     /** {@inheritDoc} */
     @Override
-    public SourceModel componentModelOf(Class<?> componentType) {
+    public SourceModel modelOf(Class<?> componentType) {
         return componentsNoLookup.get(componentType);
     }
 
@@ -137,7 +137,7 @@ public final class RealmModel extends Model implements ComponentLookup {
         return factory;
     }
 
-    public ComponentLookup withLookup(Lookup lookup) {
+    public SourceModelLookup withLookup(Lookup lookup) {
         // Use default access (this) if we specify null lookup
 
         // We need to check this in a separate class. Because from Java 13.
@@ -146,7 +146,7 @@ public final class RealmModel extends Model implements ComponentLookup {
             return this;
         } else if (lookup.lookupClass() == modelType() && LookupUtil.isLookupDefault(lookup)) {
             // The default lookup is just BundleImpl { MethodHandles.lookup()}
-            ComponentLookup cl = defaultLookup;
+            SourceModelLookup cl = defaultLookup;
             if (cl != null) {
                 return cl;
             }
@@ -168,7 +168,7 @@ public final class RealmModel extends Model implements ComponentLookup {
     }
 
     /** A component lookup class wrapping a {@link Lookup} object. */
-    private static final class PerLookup implements ComponentLookup {
+    private static final class PerLookup implements SourceModelLookup {
 
         /** A cache of component class descriptors. */
         private final ClassValue<SourceModel> components = new ClassValue<>() {
@@ -191,7 +191,7 @@ public final class RealmModel extends Model implements ComponentLookup {
 
         /** {@inheritDoc} */
         @Override
-        public SourceModel componentModelOf(Class<?> componentType) {
+        public SourceModel modelOf(Class<?> componentType) {
             return components.get(componentType);
         }
 

@@ -40,7 +40,7 @@ import packed.internal.util.ThrowableUtil;
 
 /**
  * A model of a container, a cached instance of this class is acquired via
- * {@link RealmModel#componentModelOf(Class)}.
+ * {@link RealmModel#modelOf(Class)}.
  */
 public final class SourceModel extends Model {
 

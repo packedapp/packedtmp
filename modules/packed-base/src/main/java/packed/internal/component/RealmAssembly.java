@@ -23,7 +23,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
-import packed.internal.container.ComponentLookup;
+import packed.internal.container.SourceModelLookup;
 import packed.internal.container.RealmModel;
 import packed.internal.container.ExtensionModel;
 import packed.internal.inject.factory.FactoryHandle;
@@ -38,7 +38,7 @@ public final class RealmAssembly {
     /** The current component lookup object, updated via {@link #lookup(Lookup)} */
     // useFor future components...
     // We need to support some way to
-    private ComponentLookup lookup;
+    private SourceModelLookup lookup;
 
     /** A container model. */
     private final RealmModel model;
@@ -69,7 +69,7 @@ public final class RealmAssembly {
     }
 
     public SourceModel componentModelOf(Class<?> componentType) {
-        return lookup.componentModelOf(componentType);
+        return lookup.modelOf(componentType);
     }
 
     /**
