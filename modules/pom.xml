@@ -29,7 +29,7 @@
     <!-- Test Dependencies Versions -->
     <version.test.assertj>3.17.0</version.test.assertj>
     <version.test.junit>5.7.0</version.test.junit>
-    <version.test.jmh>1.25.1</version.test.jmh>
+    <version.test.jmh>1.25.2</version.test.jmh>
     
     <!-- Pluging Versions -->
     <version.plugin.jacoco>0.8.6</version.plugin.jacoco>
