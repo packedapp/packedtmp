@@ -26,9 +26,7 @@ import app.packed.base.TreePath;
 import app.packed.component.AssemblyContext;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
-import app.packed.component.ClassComponentDriver;
 import app.packed.component.ComponentDriver;
-import app.packed.component.FactoryComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
@@ -59,7 +57,10 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
-    /** The container this extension is a part of */
+    /** This extension's component configuration. */
+    private final ComponentNodeConfiguration compConf;
+
+    /** The container this extension belongs to. */
     private final ContainerAssembly container;
 
     /** The extension instance this assembly wraps, instantiated in {@link #of(ContainerAssembly, Class)}. */
@@ -69,11 +70,11 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
     /** Whether or not the extension has been configured. */
     private boolean isConfigured;
 
+    @Nullable
+    private Boolean isImage;
+
     /** A model of the extension. */
     private final ExtensionModel model;
-
-    /** The component configuration of this extension. */
-    private final ComponentNodeConfiguration compConf;
 
     /**
      * Creates a new extension assembly.
@@ -175,16 +176,6 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
         return compConf.wire(cd);
     }
 
-    @Override
-    public <C, I> C wire(ClassComponentDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
-        return compConf.wire(driver, implementation);
-    }
-
-    @Override
-    public <C, I> C wire(FactoryComponentDriver<C, I> driver, Factory<? extends I> factory, Wirelet... wirelets) {
-        return compConf.wire(driver.bindToFactory(factory), wirelets);
-    }
-
     /**
      * Returns the extension instance this configuration wraps.
      * 
@@ -198,6 +189,23 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
             throw new IllegalStateException("Cannot call this method from the constructor of " + model.nameSimple);
         }
         return e;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isInImage() {
+        Boolean b = isImage;
+        if (b != null) {
+            return b;
+        }
+        ComponentNodeConfiguration cc = compConf.getParent();
+        while (cc != null) {
+            if (cc.modifiers().isImage()) {
+                return isImage = Boolean.TRUE;
+            }
+            cc = cc.getParent();
+        }
+        return isImage = Boolean.FALSE;
     }
 
     /**
@@ -289,6 +297,12 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
                     + " dependencies, extensionType = " + extensionType + ", valid dependencies = " + model.dependencies());
         }
         return (T) container.useExtension(extensionType, this).instance;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
+        return compConf.wire(driver, wirelets);
     }
 
     /**

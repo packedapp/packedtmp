@@ -100,6 +100,20 @@ public abstract class Extension {
      */
     protected void add() {}
 
+    // When creating an image.
+    // This can be used to clean up data structures that was only
+    // remember that people might still inspect the image
+    // The default implementation does nothing
+
+    // Der er ikke rigtig en let maade at finde ud af om man er et image???
+    // AssemblyContext viser jo bare hvad roden er....
+    // Men hvis man nu er deployet paa configurations tidspunktet
+    // paa en eller anden host... SessionImage er et godt eksempel
+
+    // Maaske skal vi hellere have en isImage()....
+    // og saa kan folk selv trimme ting i en onFinish() callback metode
+    void imageTrim() {}
+
     /**
      * Returns the assembly context the extension is a part of.
      * 

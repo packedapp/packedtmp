@@ -28,7 +28,9 @@ import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
 import app.packed.component.ClassComponentDriver;
 import app.packed.component.Component;
+import app.packed.component.ComponentDriver;
 import app.packed.component.FactoryComponentDriver;
+import app.packed.component.InstanceComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension.Subtension;
@@ -119,6 +121,17 @@ public interface ExtensionConfiguration {
      */
     TreePath path();
 
+    /**
+     * Returns whether or not
+     * 
+     * @return ssdsd
+     */
+    // isPartOfImage
+    // isImageParticipant
+    // Maybe Image is viral...
+    // But then how to check image in image
+    boolean isInImage();
+
     <E extends Subtension> E use(Class<E> extensionType);
 
     /**
@@ -144,9 +157,33 @@ public interface ExtensionConfiguration {
      */
     <E extends Extension> E useOld(Class<E> extensionType);
 
-    <C, I> C wire(ClassComponentDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets);
+    default <C, I> C wire(ClassComponentDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
+        ComponentDriver<C> cd = driver.bindToClass(implementation);
+        return wire(cd, wirelets);
+    }
 
-    <C, I> C wire(FactoryComponentDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets);
+    default <C, I> C wire(FactoryComponentDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
+        ComponentDriver<C> cd = driver.bindToFactory(implementation);
+        return wire(cd, wirelets);
+    }
+
+    default <C, I> C wireInstance(InstanceComponentDriver<C, I> driver, I instance, Wirelet... wirelets) {
+        ComponentDriver<C> cd = driver.bindToInstance(instance);
+        return wire(cd, wirelets);
+    }
+
+    /**
+     * Wires a new child component using the specified driver
+     * 
+     * @param <C>
+     *            the type of configuration returned by the driver
+     * @param driver
+     *            the driver to use for creating the component
+     * @param wirelets
+     *            any wirelets that should be used when creating the component
+     * @return a configuration for the component
+     */
+    <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
 
     @Nullable
     private static ExtensionAssembly pa(MethodHandles.Lookup lookup, Component component) {
