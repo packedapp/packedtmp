@@ -75,6 +75,7 @@ public final class RegionAssembly {
 
         // All services that must be instantiated and stored
         for (Injectable ii : constantServices) {
+            requireNonNull(ii.entry());
             int index = ii.entry().regionIndex();
 
             // Should never have been added if index==-1

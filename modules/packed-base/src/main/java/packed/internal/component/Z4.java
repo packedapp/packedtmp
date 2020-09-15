@@ -17,6 +17,8 @@ package packed.internal.component;
 
 import app.packed.cli.Main;
 import app.packed.container.BaseBundle;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionSetup;
 
 /**
  *
@@ -27,6 +29,7 @@ public class Z4 extends BaseBundle {
     @Override
     protected void configure() {
         install(Doo.class);
+        use(F.class);
     }
 
     public static void main(String[] args) {
@@ -34,8 +37,44 @@ public class Z4 extends BaseBundle {
     }
 
     public static class Doo {
-        public Doo() {
-            new Exception().printStackTrace();
+        public Doo() {}
+    }
+
+    public static class E extends Extension {
+
+        @Override
+        protected void add() {
+            System.out.println("E-ADDED");
+        }
+
+        @Override
+        protected void complete() {
+            System.out.println("E-Complete");
+        }
+
+        @Override
+        protected void preChildContainers() {
+            System.out.println("E-PreChildContainers");
+        }
+    }
+
+    @ExtensionSetup(dependencies = E.class)
+    public static class F extends Extension {
+
+        @Override
+        protected void add() {
+            System.out.println("F-ADDED");
+        }
+
+        @Override
+        protected void complete() {
+            System.out.println("F-Complete");
+        }
+
+        @Override
+        protected void preChildContainers() {
+            System.out.println("F-PreChildContainers");
+            useOld(E.class);
         }
     }
 }

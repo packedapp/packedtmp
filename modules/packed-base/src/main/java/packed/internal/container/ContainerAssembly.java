@@ -84,17 +84,41 @@ public final class ContainerAssembly {
     }
 
     void runPredContainerChildren() {
+        hasRunPreContainerChildren = true;
+        // We have a problem here... We need to
+        // keep track of extensions that are added in this step..
+        // And run ea.preContainerChildren on them...
+        // And then repeat until some list/set has not been touched...
         if (!extensions.isEmpty()) {
             for (ExtensionAssembly ea : extensions.values()) {
                 ea.preContainerChildren();
             }
         }
-        hasRunPreContainerChildren = true;
+        while (tmpExtension != null) {
+            ArrayList<ExtensionAssembly> te = tmpExtension;
+            tmpExtension = null;
+            for (ExtensionAssembly ea : te) {
+                ea.preContainerChildren();
+            }
+        }
+
     }
+
+    ArrayList<ExtensionAssembly> tmpExtension;
 
     public void checkNoChildContainers() {
         if (children != null) {
             throw new IllegalStateException();
+        }
+    }
+
+    public void finish() {
+        if (!hasRunPreContainerChildren) {
+            runPredContainerChildren();
+        }
+        extensionsOrdered = new TreeSet<>(extensions.values());
+        for (ExtensionAssembly pec : extensionsOrdered) {
+            pec.completed();
         }
     }
 
@@ -190,10 +214,16 @@ public final class ContainerAssembly {
             } else {
                 caller.checkConfigurable();
             }
-
             // Tror lige vi skal have gennemtaenkt den lifecycle...
             // Taenker om vi
             extensions.put(extensionType, pec = ExtensionAssembly.of(this, extensionType));
+            if (hasRunPreContainerChildren) {
+                ArrayList<ExtensionAssembly> l = tmpExtension;
+                if (l == null) {
+                    l = tmpExtension = new ArrayList<>();
+                }
+                l.add(pec);
+            }
         }
         return pec;
     }

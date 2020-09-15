@@ -253,6 +253,14 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
         }
     }
 
+    void completed() {
+        try {
+            MH_EXTENSION_COMPLETE.invoke(instance);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+    }
+
     /** Invoked by the container configuration, whenever the extension is configured. */
     void onChildrenConfigured() {
         checkState(ExtensionSetup.CHILD_LINKING);
@@ -307,8 +315,8 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
                 return (T) instance;
             }
 
-            throw new UnsupportedOperationException("The specified extension type is not among " + model.type().getSimpleName()
-                    + " dependencies, extensionType = " + extensionType + ", valid dependencies = " + model.dependencies());
+            throw new UnsupportedOperationException("The specified extension type is not among the dependencies of " + model.type().getSimpleName()
+                    + ", extensionType = " + extensionType + ", valid dependencies = " + model.dependencies());
         }
         return (T) container.useExtension(extensionType, this).instance;
     }
