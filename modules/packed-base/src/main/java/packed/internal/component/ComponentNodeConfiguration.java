@@ -70,9 +70,6 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     /** The assembly this configuration is a part of. */
     private final PackedAssemblyContext assembly;
 
-    /** The driver used to create this configuration. */
-    private final PackedComponentDriver<?> driver;
-
     /** The realm the component belongs to. */
     private final PackedRealm realm;
 
@@ -137,10 +134,8 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
             @Nullable ComponentNodeConfiguration parent, @Nullable WireletPack wirelets) {
         super(parent);
         this.assembly = requireNonNull(assembly);
-        this.driver = requireNonNull(driver);
         this.configSite = requireNonNull(configSite);
         this.wirelets = wirelets;
-
         int mod = driver.modifiers;
         if (parent == null) {
             this.region = new RegionAssembly(this); // Root always needs a nodestore
@@ -192,6 +187,8 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     }
 
     /**
+     * Create a new node representing an extension.
+     * 
      * @param parent
      *            the parent (container) of the extension
      * @param model
@@ -200,16 +197,15 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     public ComponentNodeConfiguration(ComponentNodeConfiguration parent, ExtensionModel model) {
         super(parent);
         this.assembly = parent.assembly;
-        this.driver = model.driver;
         this.configSite = parent.configSite();
-        this.wirelets = null;
-        this.modifiers = PackedComponentModifierSet.I_EXTENSION;
-        this.region = parent.region;
-        this.realm = PackedRealm.fromExtension(model.type());
         this.container = null;
         this.memberOfContainer = parent.container;
-        this.source = null;
         this.extension = new ExtensionAssembly(this, model);
+        this.modifiers = PackedComponentModifierSet.I_EXTENSION;
+        this.realm = PackedRealm.fromExtension(this, model);
+        this.region = parent.region;
+        this.source = null;
+        this.wirelets = null;
         setName0(null /* model.nameComponent */); // setName0(String) does not work currently
     }
 
@@ -361,15 +357,6 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         return memberOfContainer;
     }
 
-    /**
-     * Returns the driver of this component.
-     * 
-     * @return the driver of this component
-     */
-    public PackedComponentDriver<?> driver() {
-        return driver;
-    }
-
     /** {@inheritDoc} */
     @Override
     public String getName() {
@@ -495,6 +482,32 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         setName0(name);
     }
 
+    String defaultName(PackedRealm realm) {
+        if (container != null) {
+            // I think try and move some of this to ComponentNameWirelet
+            @Nullable
+            Class<?> source = realm.type();
+            if (Bundle.class.isAssignableFrom(source)) {
+                String nnn = source.getSimpleName();
+                if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
+                    nnn = nnn.substring(0, nnn.length() - 6);
+                }
+                if (nnn.length() > 0) {
+                    // checkName, if not just App
+                    // TODO need prefix
+                    return nnn;
+                }
+                if (nnn.length() == 0) {
+                    return "Container";
+                }
+            }
+            // TODO think it should be named Artifact type, for example, app, injector, ...
+        } else if (extension != null) {
+            return extension.model().nameComponent;
+        }
+        return "Unknown";
+    }
+
     private void setName0(String newName) {
         String n = newName;
         if (newName == null) {
@@ -513,7 +526,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
             if (source != null) {
                 n = source.model.defaultPrefix();
             } else {
-                n = driver.defaultName(realm);
+                n = defaultName(realm);
             }
             isFree = true;
         } else if (n.endsWith("?")) {

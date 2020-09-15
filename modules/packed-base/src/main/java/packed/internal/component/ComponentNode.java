@@ -83,7 +83,8 @@ public final class ComponentNode implements Component {
             LinkedHashMap<String, ComponentNode> result = new LinkedHashMap<>(configuration.numberOfChildren());
 
             for (ComponentNodeConfiguration cc = configuration.treeFirstChild; cc != null; cc = cc.treeNextSibling) {
-                if (!cc.driver().modifiers().isExtension()) {
+                // We never carry over extensions into the runtime
+                if (cc.extension == null) {
                     ComponentNode ac = new ComponentNode(this, cc, pic);
                     result.put(ac.name(), ac);
                 }

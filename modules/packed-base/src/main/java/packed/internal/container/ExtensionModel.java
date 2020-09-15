@@ -41,7 +41,6 @@ import app.packed.container.InternalExtensionException;
 import app.packed.hook.OnHook;
 import app.packed.statemachine.LifecycleContext;
 import packed.internal.base.attribute.ProvidableAttributeModel;
-import packed.internal.component.PackedComponentDriver;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
@@ -101,9 +100,6 @@ public final class ExtensionModel extends SidecarModel implements ExtensionDescr
     // Det er jo ikke et trae... Men en graph. Giver depth mening?
     // Man kan argumentere med at man laver en masse hylder, hvor de enkelte extensions saa er.
     private final int depth;
-
-    /** A component driver that is used when creating a new component for this extension. */
-    public final PackedComponentDriver<?> driver = PackedComponentDriver.extensionDriver(this);
 
     /** Whether or not is is only any immediately parent that will be linked. */
     final boolean extensionLinkedDirectChildrenOnly;

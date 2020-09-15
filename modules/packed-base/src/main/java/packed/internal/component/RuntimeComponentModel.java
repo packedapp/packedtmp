@@ -46,22 +46,19 @@ public final class RuntimeComponentModel {
     /** Any extension the component belongs to. */ // Generic Extension Table?
     // final Optional<Class<? extends Extension>> extension;
 
-    final PackedComponentDriver<?> driver; // tmp
-
     final int modifiers;
 
-    RuntimeComponentModel(ComponentNodeConfiguration context) {
-        this.depth = context.treeDepth;
-        this.configSite = requireNonNull(context.configSite());
+    RuntimeComponentModel(ComponentNodeConfiguration compConf) {
+        this.depth = compConf.treeDepth;
+        this.configSite = requireNonNull(compConf.configSite());
         // this.extension = context.extension();
-        this.driver = context.driver();
-        int p = context.modifiers;
+        int p = compConf.modifiers;
         p = PackedComponentModifierSet.removeIf(p, depth == 0, ComponentModifier.IMAGE);
         this.modifiers = p;
     }
 
     public boolean isContainer() {
-        return driver.modifiers().isContainer();
+        return PackedComponentModifierSet.isSet(modifiers, ComponentModifier.CONTAINER);
     }
 
 //    public Optional<Class<? extends Extension>> extension() {

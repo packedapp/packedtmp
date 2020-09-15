@@ -21,15 +21,13 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Nullable;
-import app.packed.component.Bundle;
 import app.packed.component.ComponentClassDriver;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
-import app.packed.component.ComponentModifierSet;
 import app.packed.component.ComponentFactoryDriver;
 import app.packed.component.ComponentInstanceDriver;
+import app.packed.component.ComponentModifierSet;
 import app.packed.inject.Factory;
-import packed.internal.container.ExtensionModel;
 import packed.internal.inject.various.InstantiatorBuilder;
 import packed.internal.util.ThrowableUtil;
 
@@ -54,32 +52,6 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
         }
     }
 
-    String defaultName(PackedRealm realm) {
-        if (modifiers().isContainer()) {
-            // I think try and move some of this to ComponentNameWirelet
-            @Nullable
-            Class<?> source = realm.type();
-            if (Bundle.class.isAssignableFrom(source)) {
-                String nnn = source.getSimpleName();
-                if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
-                    nnn = nnn.substring(0, nnn.length() - 6);
-                }
-                if (nnn.length() > 0) {
-                    // checkName, if not just App
-                    // TODO need prefix
-                    return nnn;
-                }
-                if (nnn.length() == 0) {
-                    return "Container";
-                }
-            }
-            // TODO think it should be named Artifact type, for example, app, injector, ...
-        } else if (modifiers().isExtension()) {
-            return ((ExtensionModel) data).nameComponent;
-        }
-        return "Unknown";
-    }
-
     /** {@inheritDoc} */
     @Override
     public ComponentModifierSet modifiers() {
@@ -93,13 +65,6 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
-    }
-
-    public static PackedComponentDriver<Void> extensionDriver(ExtensionModel em) {
-        // AN EXTENSION DOES NOT HAVE A SOURCE. Sources are to be analyzed
-        // And is available at runtime
-        Meta meta = new Meta(null, PackedComponentModifierSet.I_EXTENSION);
-        return new PackedComponentDriver<>(meta, em);
     }
 
     public static Meta newMeta(MethodHandles.Lookup caller, boolean isSource, Class<?> driverType, Option... options) {
