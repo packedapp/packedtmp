@@ -60,6 +60,8 @@ public final class ContainerAssembly {
     @Nullable
     private ArrayList<ContainerAssembly> children;
 
+    boolean hasRunPreContainerChildren;
+
     /**
      * Creates a new container
      * 
@@ -70,6 +72,7 @@ public final class ContainerAssembly {
         this.compConf = requireNonNull(compConf);
         this.parent = compConf.getParent() == null ? null : compConf.getParent().container();
         if (parent != null) {
+            parent.runPredContainerChildren();
 
             ArrayList<ContainerAssembly> c = parent.children;
             if (c == null) {
@@ -78,6 +81,15 @@ public final class ContainerAssembly {
             c.add(this);
         }
         this.im = new InjectionManager(this);
+    }
+
+    void runPredContainerChildren() {
+        if (!extensions.isEmpty()) {
+            for (ExtensionAssembly ea : extensions.values()) {
+                ea.preContainerChildren();
+            }
+        }
+        hasRunPreContainerChildren = true;
     }
 
     public void checkNoChildContainers() {

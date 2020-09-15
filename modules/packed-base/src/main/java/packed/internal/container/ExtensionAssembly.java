@@ -43,8 +43,15 @@ import packed.internal.util.ThrowableUtil;
 /** Implementation of {@link ExtensionConfiguration}. */
 public final class ExtensionAssembly implements ExtensionConfiguration, Comparable<ExtensionAssembly> {
 
-    /** A MethodHandle for invoking {@link #lifecycle()} used by {@link ExtensionModel}. */
+    /** A MethodHandle for invoking {@link Extension#add()}. */
     private static final MethodHandle MH_EXTENSION_ADD = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), Extension.class, "add", void.class);
+
+    /** A MethodHandle for invoking {@link Extension#add()}. */
+    static final MethodHandle MH_EXTENSION_PRE_CHILD_CONTAINERS = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), Extension.class, "preChildContainers",
+            void.class);
+
+    /** A MethodHandle for invoking {@link Extension#add()}. */
+    static final MethodHandle MH_EXTENSION_COMPLETE = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), Extension.class, "complete", void.class);
 
     /** A MethodHandle for invoking {@link #findWirelet(Class)} used by {@link ExtensionModel}. */
     static final MethodHandle MH_FIND_WIRELET = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "findWirelet", Object.class, Class.class);
@@ -236,6 +243,14 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
 
     public ExtensionModel model() {
         return model;
+    }
+
+    void preContainerChildren() {
+        try {
+            MH_EXTENSION_PRE_CHILD_CONTAINERS.invoke(instance);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
     }
 
     /** Invoked by the container configuration, whenever the extension is configured. */
