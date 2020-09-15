@@ -30,10 +30,21 @@ public class Z4 extends BaseBundle {
     protected void configure() {
         install(Doo.class);
         use(F.class);
+        link(new MyChild());
     }
 
     public static void main(String[] args) {
         Main.execute(new Z4());
+    }
+
+    static class MyChild extends BaseBundle {
+
+        /** {@inheritDoc} */
+        @Override
+        protected void configure() {
+            use(E.class);
+        }
+
     }
 
     public static class Doo {

@@ -368,16 +368,16 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         // ConfigSite cs = ConfigSiteSupport.captureStackFrame(configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
         ConfigSite cs = ConfigSite.UNKNOWN;
 
-        if (container != null) {
-            // IDK do we want to progress to next stage just in case...
-            if (container.containerState == ContainerAssembly.LS_0_MAINL) {
-                container.advanceTo(ContainerAssembly.LS_1_LINKING);
-            } else if (container.containerState == ContainerAssembly.LS_2_HOSTING) {
-                throw new IllegalStateException("Was hosting");
-            } else if (container.containerState == ContainerAssembly.LS_3_FINISHED) {
-                throw new IllegalStateException("Was Assembled");
-            }
-        }
+//        if (container != null) {
+//            // IDK do we want to progress to next stage just in case...
+//            if (container.containerState == ContainerAssembly.LS_0_MAINL) {
+//                container.advanceTo(ContainerAssembly.LS_1_LINKING);
+//            } else if (container.containerState == ContainerAssembly.LS_2_HOSTING) {
+//                throw new IllegalStateException("Was hosting");
+//            } else if (container.containerState == ContainerAssembly.LS_3_FINISHED) {
+//                throw new IllegalStateException("Was Assembled");
+//            }
+//        }
 
         RealmAssembly r = realm.linkBundle(bundle);
         ComponentNodeConfiguration parent = extension == null ? this : treeParent;

@@ -105,13 +105,16 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
     /** {@inheritDoc} */
     @Override
     public void checkConfigurable() {
+
+        // TODO FIXIXIXI
+
         // TODO, jeg syntes det skal vaere component vi henviser til...
-        if (container.containerState != 0) {
-            throw new IllegalStateException("This extension (" + instance().getClass().getSimpleName() + ") is no longer configurable");
-        }
-        if (isConfigured) {
-            throw new IllegalStateException("This extension (" + instance().getClass().getSimpleName() + ") is no longer configurable");
-        }
+//        if (container.containerState != 0) {
+//            throw new IllegalStateException("This extension (" + instance().getClass().getSimpleName() + ") is no longer configurable");
+//        }
+//        if (isConfigured) {
+//            throw new IllegalStateException("This extension (" + instance().getClass().getSimpleName() + ") is no longer configurable");
+//        }
     }
 
     private void checkState(String expected) {

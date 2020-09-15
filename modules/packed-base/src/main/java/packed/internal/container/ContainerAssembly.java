@@ -122,28 +122,31 @@ public final class ContainerAssembly {
         }
     }
 
-    public void advanceTo(int newState) {
-        if (containerState == 0) {
-            // We need to sort all extensions that are used. To make sure
-            // they progress in their lifecycle in the right order.
-            extensionsOrdered = new TreeSet<>(extensions.values());
-            for (ExtensionAssembly pec : extensionsOrdered) {
-                pec.onConfigured();
-            }
-            containerState = LS_1_LINKING;
-        }
-
-        if (containerState == LS_1_LINKING && newState > LS_1_LINKING) {
-            for (ComponentNodeConfiguration cc = compConf.treeFirstChild; cc != null; cc = cc.treeNextSibling) {
-                if (cc.container != null) {
-                    cc.container.advanceTo(LS_3_FINISHED);
-                }
-            }
-            for (ExtensionAssembly pec : extensionsOrdered) {
-                pec.onChildrenConfigured();
-            }
-        }
-    }
+//    public void advanceTo(int newState) {
+//        if (true) {
+//            return;
+//        }
+//        if (containerState == 0) {
+//            // We need to sort all extensions that are used. To make sure
+//            // they progress in their lifecycle in the right order.
+//            extensionsOrdered = new TreeSet<>(extensions.values());
+//            for (ExtensionAssembly pec : extensionsOrdered) {
+//                pec.onConfigured();
+//            }
+//            containerState = LS_1_LINKING;
+//        }
+//
+//        if (containerState == LS_1_LINKING && newState > LS_1_LINKING) {
+//            for (ComponentNodeConfiguration cc = compConf.treeFirstChild; cc != null; cc = cc.treeNextSibling) {
+//                if (cc.container != null) {
+//                    cc.container.advanceTo(LS_3_FINISHED);
+//                }
+//            }
+//            for (ExtensionAssembly pec : extensionsOrdered) {
+//                pec.onChildrenConfigured();
+//            }
+//        }
+//    }
 
     /**
      * Returns a set view of the extension registered with this container.
@@ -200,12 +203,13 @@ public final class ContainerAssembly {
         // We do not use #computeIfAbsent, because extensions might install other extensions via Extension#onAdded.
         // Which will fail with ConcurrentModificationException (see ExtensionDependenciesTest)
         if (pec == null) {
+            if (children != null) {
+                throw new IllegalStateException(
+                        "Cannot install new extensions after child containers have been added to this container, extensionType = " + extensionType);
+            }
+
             // Checks that we are still configurable
             if (caller == null) {
-                if (children != null) {
-                    throw new IllegalStateException(
-                            "Cannot install new extensions after child containers have been added to this container, extensionType = " + extensionType);
-                }
                 if (containerState != 0) {
                     // Cannot perform this operation
                     throw new IllegalStateException("Cannot install new extensions at this point, extensionType = " + extensionType);
