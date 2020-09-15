@@ -32,13 +32,17 @@ import packed.internal.service.InjectionManager;
 /** The default container context. */
 public final class ContainerAssembly {
 
+    /** Child containers, lazy initialized */
+    @Nullable
+    private ArrayList<ContainerAssembly> children;
+
     /** The component this container is a part of. */
     public final ComponentNodeConfiguration compConf;
 
     /** All used extensions, in order of registration. */
     public final LinkedHashMap<Class<? extends Extension>, ExtensionAssembly> extensions = new LinkedHashMap<>();
 
-    private TreeSet<ExtensionAssembly> extensionsOrdered;
+    boolean hasRunPreContainerChildren;
 
     public final InjectionManager im;
 
@@ -46,10 +50,7 @@ public final class ContainerAssembly {
     @Nullable
     public final ContainerAssembly parent;
 
-    @Nullable
-    private ArrayList<ContainerAssembly> children;
-
-    boolean hasRunPreContainerChildren;
+    ArrayList<ExtensionAssembly> tmpExtension;
 
     /**
      * Creates a new container
@@ -72,7 +73,48 @@ public final class ContainerAssembly {
         this.im = new InjectionManager(this);
     }
 
-    void runPredContainerChildren() {
+    public void checkNoChildContainers() {
+        if (children != null) {
+            throw new IllegalStateException();
+        }
+    }
+
+    /**
+     * Returns a set view of the extension registered with this container.
+     * 
+     * @return a set view of the extension registered with this container
+     */
+    public Set<Class<? extends Extension>> extensionView() {
+        return Collections.unmodifiableSet(extensions.keySet());
+    }
+
+    public void finish() {
+        if (!hasRunPreContainerChildren) {
+            runPredContainerChildren();
+        }
+        TreeSet<ExtensionAssembly> extensionsOrdered = new TreeSet<>(extensions.values());
+        for (ExtensionAssembly pec : extensionsOrdered) {
+            pec.completed();
+        }
+    }
+
+    /**
+     * Returns the context for the specified extension type. Or null if no extension of the specified type has already been
+     * added.
+     * 
+     * @param extensionType
+     *            the type of extension to return a context for
+     * @return an extension's context, iff the specified extension type has already been added
+     * @see #useExtension(Class)
+     * @see #useExtension(Class, ExtensionAssembly)
+     */
+    @Nullable
+    public ExtensionAssembly getExtensionContext(Class<? extends Extension> extensionType) {
+        requireNonNull(extensionType, "extensionType is null");
+        return extensions.get(extensionType);
+    }
+
+    private void runPredContainerChildren() {
         if (hasRunPreContainerChildren) {
             return;
         }
@@ -94,49 +136,6 @@ public final class ContainerAssembly {
             }
         }
 
-    }
-
-    ArrayList<ExtensionAssembly> tmpExtension;
-
-    public void checkNoChildContainers() {
-        if (children != null) {
-            throw new IllegalStateException();
-        }
-    }
-
-    public void finish() {
-        if (!hasRunPreContainerChildren) {
-            runPredContainerChildren();
-        }
-        extensionsOrdered = new TreeSet<>(extensions.values());
-        for (ExtensionAssembly pec : extensionsOrdered) {
-            pec.completed();
-        }
-    }
-
-    /**
-     * Returns a set view of the extension registered with this container.
-     * 
-     * @return a set view of the extension registered with this container
-     */
-    public Set<Class<? extends Extension>> extensionView() {
-        return Collections.unmodifiableSet(extensions.keySet());
-    }
-
-    /**
-     * Returns the context for the specified extension type. Or null if no extension of the specified type has already been
-     * added.
-     * 
-     * @param extensionType
-     *            the type of extension to return a context for
-     * @return an extension's context, iff the specified extension type has already been added
-     * @see #useExtension(Class)
-     * @see #useExtension(Class, ExtensionAssembly)
-     */
-    @Nullable
-    public ExtensionAssembly getExtensionContext(Class<? extends Extension> extensionType) {
-        requireNonNull(extensionType, "extensionType is null");
-        return extensions.get(extensionType);
     }
 
     /**
@@ -174,6 +173,7 @@ public final class ContainerAssembly {
             // Tror lige vi skal have gennemtaenkt den lifecycle...
             // Taenker om vi
             extensions.put(extensionType, pec = ExtensionAssembly.of(this, extensionType));
+
             if (hasRunPreContainerChildren) {
                 ArrayList<ExtensionAssembly> l = tmpExtension;
                 if (l == null) {

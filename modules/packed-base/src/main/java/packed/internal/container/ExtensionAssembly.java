@@ -383,20 +383,13 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
                 }
             }
 
-            // Invoke Extension#added() (should we run this before we link???)
+            // Invoke Extension#add() (should we run this before we link???)
             try {
                 MH_EXTENSION_ADD.invoke(e);
             } catch (Throwable t) {
                 throw ThrowableUtil.orUndeclared(t);
             }
 
-            // 2. Invoke all methods on the extension annotated with @When(Normal)
-            model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_0_INSTANTIATION, e, ea);
-
-            // 3. Finally initialize any pipeline (??swap step 2 and 3??)
-//            if (container.node.wirelets != null) {
-//                container.node.wirelets.extensionInitialized(pec);
-//            }
         } finally {
             // container.activeExtension = existing;
         }
