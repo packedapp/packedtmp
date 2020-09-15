@@ -66,12 +66,15 @@ public final class Injectable {
     /** The source (component) this injectable belongs to. */
     public final SourceAssembly source;
 
+    public final InjectionManager im;
+
     public Injectable(BuildtimeService<?> buildEntry, SourceAssembly source, AtProvides ap) {
         this.source = requireNonNull(source);
         this.dependencies = ap.dependencies;
         this.directMethodHandle = ap.methodHandle;
         this.buildEntry = requireNonNull(buildEntry);
         this.resolved = new DependencyProvider[directMethodHandle.type().parameterCount()];
+        this.im = source.compConf.injectionManager();
         if (resolved.length != dependencies.size()) {
             resolved[0] = source;
         }
@@ -83,10 +86,10 @@ public final class Injectable {
         // Down into the dependency cycle check.
         detectForCycles = true;
         if (detectForCycles) {
-            source.compConf.container.im.dependencies().detectCyclesFor.add(this);
+            im.dependencies().detectCyclesFor.add(this);
         }
         if (!ap.isStaticMember && source.injectable() != null) {
-            ArrayList<Injectable> al = source.compConf.container.im.dependencies().detectCyclesFor;
+            ArrayList<Injectable> al = im.dependencies().detectCyclesFor;
             if (!al.contains(source.injectable())) {
                 al.add(source.injectable());
                 source.injectable().detectForCycles = true;
@@ -99,13 +102,13 @@ public final class Injectable {
 
         FactoryHandle<?> handle = factory.factory.handle;
         MethodHandle mh = source.compConf.realm().fromFactoryHandle(handle);
-
+        this.im = source.compConf.injectionManager();
         this.dependencies = factory.factory.dependencies;
         this.directMethodHandle = requireNonNull(mh);
         this.resolved = new DependencyProvider[dependencies.size()];
         this.detectForCycles = true;// resolved.length > 0;
         if (detectForCycles) {
-            source.compConf.container.im.dependencies().detectCyclesFor.add(this);
+            im.dependencies().detectCyclesFor.add(this);
         }
         buildEntry = null; // Any build entry is stored in SourceAssembly#service
     }
@@ -162,12 +165,11 @@ public final class Injectable {
     }
 
     public void resolve() {
-        InjectionManager se = source.compConf.container.im;
         int startIndex = resolved.length != dependencies.size() ? 1 : 0;
         for (int i = 0; i < dependencies.size(); i++) {
             ServiceDependency sd = dependencies.get(i);
-            BuildtimeService<?> e = se.resolvedServices.get(sd.key());
-            se.dependencies().recordResolvedDependency(se, this, sd, e, false);
+            BuildtimeService<?> e = im.resolvedServices.get(sd.key());
+            im.dependencies().recordResolvedDependency(im, this, sd, e, false);
             resolved[i + startIndex] = e;
         }
     }

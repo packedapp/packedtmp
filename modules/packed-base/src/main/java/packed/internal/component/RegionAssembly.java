@@ -112,7 +112,7 @@ public final class RegionAssembly {
             }
         }
 
-        ContainerAssembly container = compConf.container;
+        ContainerAssembly container = compConf.memberOfContainer;
 
         int registryIndex = root.modifiers().isGuest() ? 1 : 0;
         InjectionManager node = container.im;

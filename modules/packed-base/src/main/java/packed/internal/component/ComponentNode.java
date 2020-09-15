@@ -51,7 +51,7 @@ public final class ComponentNode implements Component {
 
     /** The parent component if it has one. */
     @Nullable
-    final ComponentNode parent; // Parent is always stored as the first object in NodeStore...
+    final ComponentNode parent;
 
     /** The region this component is part of. */
     final Region region;

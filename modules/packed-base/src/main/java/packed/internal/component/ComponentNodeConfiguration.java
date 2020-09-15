@@ -90,9 +90,13 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
 
     /** Any container this component is part of. A container is part of it self */
     @Nullable
+    public final ContainerAssembly memberOfContainer;
+
+    /** Any container this component is part of. A container is part of it self */
+    @Nullable
     public final ContainerAssembly container;
 
-    // public final ContainerAssembly containerUser -> a container uses itself
+    // public final ContainerAssembly memberOfContainer-> a container uses itself
 
     // public final RealmAssemly realmUser -> a realm component uses itself
 
@@ -133,7 +137,6 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
             @Nullable ComponentNodeConfiguration parent, @Nullable WireletPack wirelets) {
         super(parent);
         this.assembly = requireNonNull(assembly);
-
         this.driver = requireNonNull(driver);
         this.configSite = requireNonNull(configSite);
         this.wirelets = wirelets;
@@ -162,9 +165,10 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         // Setup Container
         if (modifiers().isContainer()) {
             region.reserve();
-            this.container = new ContainerAssembly(this);
+            this.memberOfContainer = this.container = new ContainerAssembly(this);
         } else {
-            this.container = parent == null ? null : parent.container;
+            this.container = null;
+            this.memberOfContainer = parent == null ? null : parent.memberOfContainer;
         }
 
         // Setup Guest
@@ -336,7 +340,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
      */
     @Nullable
     public ContainerAssembly container() {
-        return container;
+        return memberOfContainer;
     }
 
     /**
@@ -357,7 +361,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     }
 
     public InjectionManager injectionManager() {
-        return container.im;
+        return memberOfContainer.im;
     }
 
     // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
@@ -372,7 +376,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         // Get the driver from the bundle
         PackedComponentDriver<?> driver = BundleHelper.getDriver(bundle);
 
-        if (driver.modifiers().isContainer()) {
+        if (container != null) {
             // IDK do we want to progress to next stage just in case...
             if (container.containerState == ContainerAssembly.LS_0_MAINL) {
                 container.advanceTo(ContainerAssembly.LS_1_LINKING);
@@ -610,7 +614,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
 
     /** Checks that this component has a source. */
     private void checkHasContainer() {
-        if (container == null || container.compConf != this) {
+        if (container == null) {
             throw new UnsupportedOperationException(
                     "This method can only be called component that has the " + ComponentModifier.class.getSimpleName() + ".CONTAINER modifier set");
         }
