@@ -315,18 +315,18 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         }
     }
 
-    public void realmDone(RealmAssembly realm) {
+    void onRealmClose(RealmAssembly realm) {
         for (ComponentNodeConfiguration compConf = treeFirstChild; compConf != null; compConf = compConf.treeNextSibling) {
             // child components with a different realm, has either already been closed, or will be closed elsewhere
             if (compConf.realm == realm) {
-                compConf.realmDone(realm);
+                compConf.onRealmClose(realm);
             }
         }
+
         if (container != null) {
             container.finish();
         }
         if (getParent() == null) {
-
             InjectionManager im = injectionManager();
             im.buildTree(region);
         }

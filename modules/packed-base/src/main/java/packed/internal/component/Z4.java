@@ -35,29 +35,42 @@ public class Z4 extends BaseBundle {
     protected void configure() {
         install(Doo.class);
         use(E.class);
-        link(new MyChild());
-        link(new MyChild());
-        link(new MyChild());
-        link(new MyChild());
+        link(new MyChild(20));
+        link(new MyChild(20));
+        link(new MyChild(6));
+        link(new MyChild(6));
         System.out.println("Bye");
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
+        long s = System.currentTimeMillis();
         Image<App> img = App.imageOf(new Z4());
-        img.stream().forEach(e -> System.out.println(e.path()));
+        System.out.println(System.currentTimeMillis() - s);
+        System.out.println(img.stream().count());
+        Thread.sleep(10000);
     }
 
     static class MyChild extends BaseBundle {
+
+        final int maxDepth;
+
+        MyChild(int maxDepth) {
+            this.maxDepth = maxDepth;
+        }
 
         /** {@inheritDoc} */
         @Override
         protected void configure() {
             use(E.class);
-            int ni = ThreadLocalRandom.current().nextInt(10);
-            System.out.println(ni);
-            if (ni != 0) {
-                System.out.println("LINKING");
-                link(new MyChild());
+            if (maxDepth > 0) {
+                int ni = ThreadLocalRandom.current().nextInt(6);
+                if (ni != 0) {
+                    link(new MyChild(maxDepth - 1));
+                }
+                ni = ThreadLocalRandom.current().nextInt(6);
+                if (ni != 0) {
+                    link(new MyChild(maxDepth - 1));
+                }
             }
         }
     }
@@ -74,22 +87,22 @@ public class Z4 extends BaseBundle {
 
         @ComponentLinked
         public void linked(E child) {
-            System.out.println("Linked child " + child);
+            // System.out.println("Linked child " + child);
         }
 
         @Override
         protected void add() {
-            System.out.println(ai + "E-ADDED");
+            // System.out.println(ai + "E-ADDED");
         }
 
         @Override
         protected void complete() {
-            System.out.println(ai + "E-Complete");
+            // System.out.println(ai + "E-Complete");
         }
 
         @Override
         protected void preChildContainers() {
-            System.out.println(ai + "E-PreChildContainers");
+            // System.out.println(ai + "E-PreChildContainers");
         }
     }
 

@@ -30,7 +30,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 
 // Problemet er lidt sidecars....
-
 public @interface ComponentLinked {
 
     // Only children not anything farther removed...

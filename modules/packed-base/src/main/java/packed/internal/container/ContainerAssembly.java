@@ -29,7 +29,7 @@ import app.packed.container.InternalExtensionException;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.service.InjectionManager;
 
-/** The default container context. */
+/** Contains data and logic relevant for containers. */
 public final class ContainerAssembly {
 
     /** Child containers, lazy initialized */

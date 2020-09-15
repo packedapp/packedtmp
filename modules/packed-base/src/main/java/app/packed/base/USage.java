@@ -26,12 +26,12 @@ public class USage extends BaseBundle {
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-        installInstance("HelloWorld").export();
+        installInstance("World").export();
     }
 
     public static void main(String[] args) {
         try (App app = App.of(new USage())) {
-            System.out.println(app.use(String.class));
+            System.out.println("Hello " + app.use(String.class));
         }
     }
 }
