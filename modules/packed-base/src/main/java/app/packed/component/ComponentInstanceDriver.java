@@ -23,15 +23,11 @@ import packed.internal.component.PackedComponentDriver;
 /**
  *
  */
-
-// Maybe you make a 
-// ComponentDriverDriver???
-
-public interface InstanceComponentDriver<C, I> extends FactoryComponentDriver<C, I> {
+public interface ComponentInstanceDriver<C, I> extends ComponentFactoryDriver<C, I> {
 
     ComponentDriver<C> bindInstance(I instance);
 
-    static <C, I> InstanceComponentDriver<C, I> of(MethodHandles.Lookup lookup, Class<? extends C> driverType, Option... options) {
+    static <C, I> ComponentInstanceDriver<C, I> of(MethodHandles.Lookup lookup, Class<? extends C> driverType, Option... options) {
         return PackedComponentDriver.ofInstance(lookup, driverType, options);
     }
 
@@ -39,7 +35,7 @@ public interface InstanceComponentDriver<C, I> extends FactoryComponentDriver<C,
 
     // Altsaa vi vil have folk til at kalde den her
 
-    static <C, I> InstanceComponentDriver<C, I> of(Object stuff) {
+    static <C, I> ComponentInstanceDriver<C, I> of(Object stuff) {
         throw new UnsupportedOperationException();
     }
 }

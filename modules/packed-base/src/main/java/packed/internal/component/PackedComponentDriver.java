@@ -22,12 +22,12 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
-import app.packed.component.ClassComponentDriver;
+import app.packed.component.ComponentClassDriver;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentModifierSet;
-import app.packed.component.FactoryComponentDriver;
-import app.packed.component.InstanceComponentDriver;
+import app.packed.component.ComponentFactoryDriver;
+import app.packed.component.ComponentInstanceDriver;
 import app.packed.inject.Factory;
 import packed.internal.container.ExtensionModel;
 import packed.internal.inject.various.InstantiatorBuilder;
@@ -196,7 +196,7 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
         }
     }
 
-    static class PackedClassComponentDriver<C, I> implements ClassComponentDriver<C, I> {
+    static class PackedClassComponentDriver<C, I> implements ComponentClassDriver<C, I> {
         final Meta meta;
 
         public PackedClassComponentDriver(Meta meta) {
@@ -211,7 +211,7 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
         }
     }
 
-    static class PackedFactoryComponentDriver<C, I> extends PackedClassComponentDriver<C, I> implements FactoryComponentDriver<C, I> {
+    static class PackedFactoryComponentDriver<C, I> extends PackedClassComponentDriver<C, I> implements ComponentFactoryDriver<C, I> {
 
         public PackedFactoryComponentDriver(Meta meta) {
             super(meta);
@@ -225,7 +225,7 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
         }
     }
 
-    private static class PackedInstanceComponentDriver<C, I> extends PackedFactoryComponentDriver<C, I> implements InstanceComponentDriver<C, I> {
+    private static class PackedInstanceComponentDriver<C, I> extends PackedFactoryComponentDriver<C, I> implements ComponentInstanceDriver<C, I> {
 
         private PackedInstanceComponentDriver(Meta meta) {
             super(meta);

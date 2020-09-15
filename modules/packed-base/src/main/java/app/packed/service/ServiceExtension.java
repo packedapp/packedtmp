@@ -24,8 +24,8 @@ import app.packed.base.AttributeProvide;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.component.FactoryComponentDriver;
-import app.packed.component.InstanceComponentDriver;
+import app.packed.component.ComponentFactoryDriver;
+import app.packed.component.ComponentInstanceDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ComponentLinked;
@@ -347,8 +347,8 @@ public final class ServiceExtension extends Extension {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     // javac wants the cast
-    public static <T> FactoryComponentDriver<PrototypeConfiguration<T>, T> prototype() {
-        return (FactoryComponentDriver) InstanceComponentDriver.of(MethodHandles.lookup(), PackedPrototypeConfiguration.class);
+    public static <T> ComponentFactoryDriver<PrototypeConfiguration<T>, T> prototype() {
+        return (ComponentFactoryDriver) ComponentInstanceDriver.of(MethodHandles.lookup(), PackedPrototypeConfiguration.class);
     }
 
     public void require(Class<?>... keys) {

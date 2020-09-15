@@ -44,7 +44,7 @@ public interface StatelessConfiguration extends ComponentConfiguration {
      *            the type
      * @return a driver
      */
-    static <T> ClassComponentDriver<StatelessConfiguration, T> driver() {
+    static <T> ComponentClassDriver<StatelessConfiguration, T> driver() {
         return PackedComponentDriver.ofClass(MethodHandles.lookup(), PackedStatelessComponentConfiguration.class, ComponentDriver.Option.statelessSource());
     }
 }

@@ -159,17 +159,17 @@ public interface ComponentConfigurationContext {
 
     Optional<Key<?>> sourceProvideAsKey();
 
-    default <C, I> C wire(ClassComponentDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
+    default <C, I> C wire(ComponentClassDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
         ComponentDriver<C> cd = driver.bind(implementation);
         return wire(cd, wirelets);
     }
 
-    default <C, I> C wire(FactoryComponentDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
+    default <C, I> C wire(ComponentFactoryDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
         ComponentDriver<C> cd = driver.bind(implementation);
         return wire(cd, wirelets);
     }
 
-    default <C, I> C wireInstance(InstanceComponentDriver<C, I> driver, I instance, Wirelet... wirelets) {
+    default <C, I> C wireInstance(ComponentInstanceDriver<C, I> driver, I instance, Wirelet... wirelets) {
         ComponentDriver<C> cd = driver.bindInstance(instance);
         return wire(cd, wirelets);
     }

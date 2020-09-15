@@ -18,7 +18,7 @@ package app.packed.component;
 /**
  *
  */
-public interface ClassComponentDriver<C, I> {
+public interface ComponentClassDriver<C, I> {
 
     /**
      * @param implementation

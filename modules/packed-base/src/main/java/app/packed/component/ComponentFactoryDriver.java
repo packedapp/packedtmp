@@ -20,7 +20,7 @@ import app.packed.inject.Factory;
 /**
  *
  */
-public interface FactoryComponentDriver<C, I> extends ClassComponentDriver<C, I> {
+public interface ComponentFactoryDriver<C, I> extends ComponentClassDriver<C, I> {
 
     @Override
     default ComponentDriver<C> bind(Class<? extends I> implementation) {

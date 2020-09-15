@@ -33,7 +33,7 @@ import app.packed.service.ExportedServiceConfiguration;
 public class BeanConfiguration<T> extends AbstractComponentConfiguration {
 
     @SuppressWarnings("rawtypes")
-    private static final InstanceComponentDriver ICD = InstanceComponentDriver.of(MethodHandles.lookup(), BeanConfiguration.class, Option.constantSource());
+    private static final ComponentInstanceDriver ICD = ComponentInstanceDriver.of(MethodHandles.lookup(), BeanConfiguration.class, Option.constantSource());
 
     private BeanConfiguration(ComponentConfigurationContext context) {
         super(context);
@@ -92,7 +92,7 @@ public class BeanConfiguration<T> extends AbstractComponentConfiguration {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> InstanceComponentDriver<BeanConfiguration<T>, T> driver() {
+    public static <T> ComponentInstanceDriver<BeanConfiguration<T>, T> driver() {
         return ICD;
     }
 
