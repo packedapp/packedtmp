@@ -44,7 +44,7 @@ import packed.internal.util.ThrowableUtil;
 public final class ExtensionAssembly implements ExtensionConfiguration, Comparable<ExtensionAssembly> {
 
     /** A MethodHandle for invoking {@link #lifecycle()} used by {@link ExtensionModel}. */
-    private static final MethodHandle MH_EXTENSION_ADDED = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), Extension.class, "add", void.class);
+    private static final MethodHandle MH_EXTENSION_ADD = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), Extension.class, "add", void.class);
 
     /** A MethodHandle for invoking {@link #findWirelet(Class)} used by {@link ExtensionModel}. */
     static final MethodHandle MH_FIND_WIRELET = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "findWirelet", Object.class, Class.class);
@@ -359,7 +359,7 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
 
             // Invoke Extension#added() (should we run this before we link???)
             try {
-                MH_EXTENSION_ADDED.invoke(e);
+                MH_EXTENSION_ADD.invoke(e);
             } catch (Throwable t) {
                 throw ThrowableUtil.orUndeclared(t);
             }
@@ -375,5 +375,11 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
             // container.activeExtension = existing;
         }
         return ea; // Return extension to users
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void checkNoChildContainers() {
+        container.checkNoChildContainers();
     }
 }

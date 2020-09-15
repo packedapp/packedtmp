@@ -100,7 +100,16 @@ public abstract class Extension {
      */
     protected void add() {}
 
+    // Invoked before the first child container
+    // Invoke always, even if no child containers
+    // If you have configuration that
+    protected void preChildContainers() {}
+
     protected void complete() {}
+
+    protected final void checkNoChildContainers() {
+        configuration().checkNoChildContainers();
+    }
 
     // When creating an image.
     // This can be used to clean up data structures that was only

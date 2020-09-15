@@ -26,8 +26,8 @@ import app.packed.base.TreePath;
 import app.packed.component.AssemblyContext;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
-import app.packed.component.ComponentClassDriver;
 import app.packed.component.Component;
+import app.packed.component.ComponentClassDriver;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentFactoryDriver;
 import app.packed.component.ComponentInstanceDriver;
@@ -66,6 +66,8 @@ public interface ExtensionConfiguration {
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
     void checkConfigurable();
+
+    void checkNoChildContainers();
 
     default void checkPreemble() {
         // Ideen er at man kan checke at der ikke er blevet installeret boern...

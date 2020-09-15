@@ -58,7 +58,7 @@ public final class ContainerAssembly {
     public final ContainerAssembly parent;
 
     @Nullable
-    public ArrayList<ContainerAssembly> children;
+    private ArrayList<ContainerAssembly> children;
 
     /**
      * Creates a new container
@@ -70,6 +70,7 @@ public final class ContainerAssembly {
         this.compConf = requireNonNull(compConf);
         this.parent = compConf.getParent() == null ? null : compConf.getParent().container();
         if (parent != null) {
+
             ArrayList<ContainerAssembly> c = parent.children;
             if (c == null) {
                 c = parent.children = new ArrayList<>();
@@ -77,6 +78,12 @@ public final class ContainerAssembly {
             c.add(this);
         }
         this.im = new InjectionManager(this);
+    }
+
+    public void checkNoChildContainers() {
+        if (children != null) {
+            throw new IllegalStateException();
+        }
     }
 
     public void advanceTo(int newState) {
