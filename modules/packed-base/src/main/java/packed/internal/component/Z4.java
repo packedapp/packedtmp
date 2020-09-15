@@ -15,6 +15,8 @@
  */
 package packed.internal.component;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import app.packed.cli.Main;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
@@ -29,8 +31,9 @@ public class Z4 extends BaseBundle {
     @Override
     protected void configure() {
         install(Doo.class);
-        use(F.class);
+        use(E.class);
         link(new MyChild());
+        System.out.println("Bye");
     }
 
     public static void main(String[] args) {
@@ -44,28 +47,36 @@ public class Z4 extends BaseBundle {
         protected void configure() {
             use(E.class);
         }
-
     }
 
     public static class Doo {
         public Doo() {}
     }
 
+    static AtomicInteger i = new AtomicInteger();
+
     public static class E extends Extension {
+
+        final int ai = i.getAndIncrement();
+
+        // @ComponentLinked
+        public void linked(E child) {
+            System.out.println("Linked child " + child);
+        }
 
         @Override
         protected void add() {
-            System.out.println("E-ADDED");
+            System.out.println(ai + "E-ADDED");
         }
 
         @Override
         protected void complete() {
-            System.out.println("E-Complete");
+            System.out.println(ai + "E-Complete");
         }
 
         @Override
         protected void preChildContainers() {
-            System.out.println("E-PreChildContainers");
+            System.out.println(ai + "E-PreChildContainers");
         }
     }
 

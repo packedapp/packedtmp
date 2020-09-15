@@ -39,7 +39,5 @@ public class Zzz extends BaseBundle {
         });
     }
 
-    static class MyEx extends Extension {
-
-    }
+    static class MyEx extends Extension {}
 }

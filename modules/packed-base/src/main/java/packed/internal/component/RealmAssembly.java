@@ -27,7 +27,6 @@ import packed.internal.container.ExtensionModel;
 import packed.internal.container.RealmModel;
 import packed.internal.container.SourceModelLookup;
 import packed.internal.inject.factory.FactoryHandle;
-import packed.internal.service.InjectionManager;
 
 /**
  *
@@ -70,17 +69,9 @@ public final class RealmAssembly {
     }
 
     public void close() {
-        compConf.finalState = true;
+        compConf.realmDone(this);
 
-        // Life nu kalder vi den kun op fra assembly...
-        // Det syntes ikke vi behoever
-        if (compConf.getParent() == null) {
-            if (compConf.container != null) {
-                compConf.container.finish();
-            }
-            InjectionManager im = compConf.injectionManager();
-            im.buildTree(compConf.region);
-        }
+        compConf.finalState = true;
     }
 
     public SourceModel componentModelOf(Class<?> componentType) {

@@ -362,11 +362,11 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
             // Should we also set the active extension in the parent???
             if (model.extensionLinkedToAncestorExtension != null) {
                 ExtensionAssembly parentExtension = null;
-                ContainerAssembly parent = container.compConf.container();
+                ContainerAssembly parent = container.parent;
                 if (!model.extensionLinkedDirectChildrenOnly) {
                     while (parentExtension == null && parent != null) {
                         parentExtension = parent.getExtensionContext(extensionType);
-                        parent = parent.compConf.container();
+                        parent = parent.parent;
                     }
                 } else if (parent != null) {
                     parentExtension = parent.getExtensionContext(extensionType);
