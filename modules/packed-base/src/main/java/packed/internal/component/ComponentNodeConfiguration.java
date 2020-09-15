@@ -74,7 +74,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     /** The modifiers of this configuration. */
     final int modifiers;
 
-    /**************** ASSEMBLIES *****************/
+    /* *************** ASSEMBLIES **************** */
 
     /** Any container this component is part of. A container is part of it self */
     @Nullable
@@ -316,13 +316,12 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         }
     }
 
-    public ComponentNodeConfiguration assembledSuccesfully() {
+    public void assembledSuccesfully() {
         finalState = true;
         if (container != null) {
             container.advanceTo(ContainerAssembly.LS_3_FINISHED);
         }
         region.assemblyClosed();
-        return this;
     }
 
     public void bundleDone() {
@@ -393,6 +392,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         // Invoke Bundle::configure
         BundleHelper.configure(bundle, driver.toConfiguration(compConf));
 
+        // Close the realm
         r.close();
     }
 

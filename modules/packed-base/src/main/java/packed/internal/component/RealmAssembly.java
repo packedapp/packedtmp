@@ -23,6 +23,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
+import packed.internal.container.ContainerAssembly;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.RealmModel;
 import packed.internal.container.SourceModelLookup;
@@ -70,6 +71,12 @@ public final class RealmAssembly {
 
     public void close() {
         compConf.finalState = true;
+        if (compConf.getParent() == null) {
+            if (compConf.container != null) {
+                compConf.container.advanceTo(ContainerAssembly.LS_3_FINISHED);
+            }
+            compConf.region.assemblyClosed();
+        }
     }
 
     public SourceModel componentModelOf(Class<?> componentType) {
