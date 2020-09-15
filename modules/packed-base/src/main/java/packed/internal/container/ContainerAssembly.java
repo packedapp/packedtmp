@@ -26,7 +26,6 @@ import java.util.TreeSet;
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
-import app.packed.service.ServiceExtension;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.service.InjectionManager;
 
@@ -74,6 +73,9 @@ public final class ContainerAssembly {
     }
 
     void runPredContainerChildren() {
+        if (hasRunPreContainerChildren) {
+            return;
+        }
         hasRunPreContainerChildren = true;
         // We have a problem here... We need to
         // keep track of extensions that are added in this step..
@@ -135,15 +137,6 @@ public final class ContainerAssembly {
     public ExtensionAssembly getExtensionContext(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         return extensions.get(extensionType);
-    }
-
-    public void hackServiceExtension() {
-        // A hack to allow ServiceContract to ServiceExtension
-        // As it is not installed just for missing requiremeents
-        // see ServiceContractTCKTest
-        if (!extensions.containsKey(ServiceExtension.class)) {
-            extensions.put(ServiceExtension.class, ExtensionAssembly.of(this, ServiceExtension.class));
-        }
     }
 
     /**

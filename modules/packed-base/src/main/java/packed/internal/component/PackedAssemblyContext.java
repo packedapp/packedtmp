@@ -121,7 +121,6 @@ public final class PackedAssemblyContext implements AssemblyContext {
         BundleHelper.configure(bundle, conf); // in-try-finally. So we can call PAC.fail() and have them run callbacks for dynamic nodes
 
         realm.close();
-
         return compConf;
     }
 

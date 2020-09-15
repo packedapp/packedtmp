@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -30,6 +29,7 @@ import app.packed.component.Component;
 import app.packed.component.ComponentAnalyzer;
 import app.packed.component.ComponentSystem;
 import app.packed.container.ExtensionMember;
+import packed.internal.component.ComponentNodeConfiguration;
 
 /**
  * A service contract details of a contractee.
@@ -236,12 +236,13 @@ public final class ServiceContract {
         return b.build();
     }
 
-    public static ServiceContract of(ComponentSystem bundle) {
-        Optional<Component> o = ComponentAnalyzer.findExtension(bundle, ServiceAttributes.SERVICE_CONTRACT);
-        if (o.isEmpty()) {
-            return ServiceContract.EMPTY;
+    public static ServiceContract of(ComponentSystem s) {
+        Component c = ComponentAnalyzer.analyze(s);
+        if (!c.modifiers().isContainer()) {
+            throw new IllegalArgumentException("Can only specify a system where the root component is a container, was " + c);
         }
-        return o.get().attribute(ServiceAttributes.SERVICE_CONTRACT);
+        ComponentNodeConfiguration compConf = ComponentNodeConfiguration.unadapt(null, c);
+        return compConf.injectionManager().newServiceContract();
     }
 
     /**

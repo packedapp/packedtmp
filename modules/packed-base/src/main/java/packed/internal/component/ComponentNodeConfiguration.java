@@ -364,6 +364,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
     // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return
     // type. Maybe in the future LinkedBundle<- (LinkableContainerSource)
+
     // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
     // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
     // loop situations, for example, if a bundle recursively links itself which fails by throwing
@@ -372,18 +373,26 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     public void link(Bundle<?> bundle, Wirelet... wirelets) {
         // Get the driver from the bundle
         PackedComponentDriver<?> driver = BundleHelper.getDriver(bundle);
+
         WireletPack wp = WireletPack.from(driver, wirelets);
+
         // ConfigSite cs = ConfigSiteSupport.captureStackFrame(configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
         ConfigSite cs = ConfigSite.UNKNOWN;
 
+        // Create a new realm, since the bundle is 'foreign' code
         RealmAssembly r = realm.linkBundle(bundle);
+
+        // If this component is an extension, we add it to the extension's container instead of the extension
+        // itself, as the extension component is not retained at runtime
         ComponentNodeConfiguration parent = extension == null ? this : treeParent;
+
+        // Create the new component
         ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(r, driver, cs, parent, wp);
 
         // Invoke Bundle::configure
         BundleHelper.configure(bundle, driver.toConfiguration(compConf));
 
-        // Close the realm
+        // Close the realm, no further configuration of it is possible after Bundle::configure has been invoked
         r.close();
     }
 

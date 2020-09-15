@@ -195,7 +195,6 @@ public final class DependencyManager {
         if (resolvedTo != null) {
             return;
         }
-        im.container.hackServiceExtension();
         ArrayList<DependencyRequirement> m = missingDependencies;
         if (m == null) {
             m = missingDependencies = new ArrayList<>();

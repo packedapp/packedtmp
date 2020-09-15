@@ -206,6 +206,8 @@ public interface ExtensionConfiguration {
         }
 
         ComponentNodeConfiguration node = ComponentNodeConfiguration.unadapt(lookup, component);
+
+        // TODO, do allow ask for this on none component instances???
         ContainerAssembly container = node.container();
         return container == null ? null : container.getExtensionContext(extensionType);
     }

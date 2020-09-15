@@ -15,10 +15,13 @@
  */
 package packed.internal.component;
 
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import app.packed.cli.Main;
+import app.packed.component.App;
+import app.packed.component.Image;
 import app.packed.container.BaseBundle;
+import app.packed.container.ComponentLinked;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionSetup;
 
@@ -33,11 +36,15 @@ public class Z4 extends BaseBundle {
         install(Doo.class);
         use(E.class);
         link(new MyChild());
+        link(new MyChild());
+        link(new MyChild());
+        link(new MyChild());
         System.out.println("Bye");
     }
 
     public static void main(String[] args) {
-        Main.execute(new Z4());
+        Image<App> img = App.imageOf(new Z4());
+        img.stream().forEach(e -> System.out.println(e.path()));
     }
 
     static class MyChild extends BaseBundle {
@@ -46,6 +53,12 @@ public class Z4 extends BaseBundle {
         @Override
         protected void configure() {
             use(E.class);
+            int ni = ThreadLocalRandom.current().nextInt(10);
+            System.out.println(ni);
+            if (ni != 0) {
+                System.out.println("LINKING");
+                link(new MyChild());
+            }
         }
     }
 
@@ -59,7 +72,7 @@ public class Z4 extends BaseBundle {
 
         final int ai = i.getAndIncrement();
 
-        // @ComponentLinked
+        @ComponentLinked
         public void linked(E child) {
             System.out.println("Linked child " + child);
         }
