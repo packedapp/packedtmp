@@ -67,9 +67,6 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     /** A stack walker used from {@link #captureStackFrame(String)}. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
-    /** The assembly this configuration is a part of. */
-    private final PackedAssemblyContext assembly;
-
     /** The realm this component is a member of. */
     private final PackedRealm realm;
 
@@ -126,19 +123,18 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
      * @param parent
      *            the parent of the component
      */
-    private ComponentNodeConfiguration(PackedAssemblyContext assembly, PackedRealm realm, PackedComponentDriver<?> driver, ConfigSite configSite,
-            @Nullable ComponentNodeConfiguration parent, @Nullable WireletPack wirelets) {
+    private ComponentNodeConfiguration(PackedRealm realm, PackedComponentDriver<?> driver, ConfigSite configSite, @Nullable ComponentNodeConfiguration parent,
+            @Nullable WireletPack wirelets) {
         super(parent);
-        this.assembly = requireNonNull(assembly);
         this.configSite = requireNonNull(configSite);
         this.wirelets = wirelets;
         int mod = driver.modifiers;
         if (parent == null) {
             this.region = new RegionAssembly(this); // Root always needs a nodestore
 
-            mod = mod | assembly.modifiers;
+            mod = mod | realm.pac.modifiers;
             mod = PackedComponentModifierSet.add(mod, ComponentModifier.SYSTEM);
-            if (assembly.modifiers().isGuest()) {
+            if (realm.pac.modifiers().isGuest()) {
                 // Is it a guest if we are analyzing??? Well we want the information...
                 mod = PackedComponentModifierSet.add(mod, ComponentModifier.GUEST);
             }
@@ -192,7 +188,6 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
      */
     public ComponentNodeConfiguration(ComponentNodeConfiguration parent, ExtensionModel model) {
         super(parent);
-        this.assembly = parent.assembly;
         this.configSite = parent.configSite();
         this.container = null;
         this.memberOfContainer = parent.container;
@@ -409,7 +404,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     }
 
     public ComponentNodeConfiguration newChild(PackedComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm, @Nullable WireletPack wp) {
-        return new ComponentNodeConfiguration(assembly, realm, driver, configSite, this, wp);
+        return new ComponentNodeConfiguration(realm, driver, configSite, this, wp);
     }
 
     @Nullable
@@ -584,9 +579,8 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         return d.toConfiguration(conf);
     }
 
-    public static ComponentNodeConfiguration newAssembly(PackedAssemblyContext assembly, PackedComponentDriver<?> driver, ConfigSite configSite,
-            PackedRealm realm, WireletPack wirelets) {
-        return new ComponentNodeConfiguration(assembly, realm, driver, configSite, null, wirelets);
+    public static ComponentNodeConfiguration newAssembly(PackedComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm, WireletPack wirelets) {
+        return new ComponentNodeConfiguration(realm, driver, configSite, null, wirelets);
     }
 
     // This should only be called by special methods

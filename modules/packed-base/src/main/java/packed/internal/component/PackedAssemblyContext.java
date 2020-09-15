@@ -102,7 +102,7 @@ public final class PackedAssemblyContext implements AssemblyContext {
         WireletPack wp = WireletPack.from(componentDriver, wirelets);
 
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
-        ComponentNodeConfiguration node = ComponentNodeConfiguration.newAssembly(pac, componentDriver, cs, PackedRealm.fromBundle(pac, bundle), wp);
+        ComponentNodeConfiguration node = ComponentNodeConfiguration.newAssembly(componentDriver, cs, PackedRealm.fromBundle(pac, bundle), wp);
 
         Object conf = componentDriver.toConfiguration(node);
         BundleHelper.configure(bundle, conf); // in-try-finally. So we can call PAC.fail() and have them run callbacks for dynamic nodes
@@ -117,7 +117,7 @@ public final class PackedAssemblyContext implements AssemblyContext {
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
 
         PackedAssemblyContext pac = new PackedAssemblyContext(0, ad);
-        ComponentNodeConfiguration node = ComponentNodeConfiguration.newAssembly(pac, driver, cs, PackedRealm.fromConfigurator(pac, consumer), wp);
+        ComponentNodeConfiguration node = ComponentNodeConfiguration.newAssembly(driver, cs, PackedRealm.fromConfigurator(pac, consumer), wp);
 
         D conf = driver.toConfiguration(node);
         C cc = requireNonNull(factory.apply(conf));
