@@ -191,19 +191,25 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         setName0(null);
     }
 
+    /**
+     * @param parent
+     *            the parent (container) of the extension
+     * @param model
+     *            the extension model
+     */
     public ComponentNodeConfiguration(ComponentNodeConfiguration parent, ExtensionModel model) {
         super(parent);
-        this.assembly = requireNonNull(parent.assembly);
-        this.driver = requireNonNull(model.driver);
+        this.assembly = parent.assembly;
+        this.driver = model.driver;
         this.configSite = parent.configSite();
         this.wirelets = null;
-        this.modifiers = PackedComponentModifierSet.add(0, ComponentModifier.EXTENSION);
+        this.modifiers = PackedComponentModifierSet.I_EXTENSION;
         this.region = parent.region;
         this.realm = PackedRealm.fromExtension(model.type());
         this.container = null;
         this.memberOfContainer = parent.container;
         this.source = null;
-        this.extension = new ExtensionAssembly(this, (ExtensionModel) driver.data);
+        this.extension = new ExtensionAssembly(this, model);
         setName0(null /* model.nameComponent */); // setName0(String) does not work currently
     }
 
@@ -402,7 +408,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         // ConfigSite cs = ConfigSiteSupport.captureStackFrame(configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
         WireletPack wp = WireletPack.from(driver, wirelets);
         ConfigSite cs = ConfigSite.UNKNOWN;
-        ComponentNodeConfiguration p = driver().modifiers().isExtension() ? treeParent : this;
+        ComponentNodeConfiguration p = driver.modifiers().isExtension() ? treeParent : this;
         ComponentNodeConfiguration newNode = p.newChild(driver, cs, PackedRealm.fromBundle(bundle), wp);
 
         // Invoke Bundle::configure

@@ -316,18 +316,15 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
     static ExtensionAssembly of(ContainerAssembly container, Class<? extends Extension> extensionType) {
         // Create extension context and instantiate extension
         ExtensionModel model = ExtensionModel.of(extensionType);
-
         ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(container.compConf, model);
-
         ExtensionAssembly ea = compConf.extension;
+
         ea.checkState(ExtensionSetup.INSTANTIATING);
-        Extension e = ea.instance = model.newInstance(ea); // Creates a new XXExtension instance
+        Extension e = ea.instance = model.newInstance(ea); // Creates a new instance of the extension
         ea.checkState(ExtensionSetup.NORMAL_USAGE);
 
-        // Sets Extension.configuration = pec
+        // Set app.packed.container.Extension.configuration = ea
         VH_EXTENSION_CONFIGURATION.set(e, ea); // field is package-private in a public package
-
-        // Add a component configuration node
 
         // Run the following 3 steps before the extension is handed back to the user.
         // PackedExtensionConfiguration existing = container.activeExtension;

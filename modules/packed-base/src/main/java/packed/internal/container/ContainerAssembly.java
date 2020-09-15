@@ -81,8 +81,8 @@ public final class ContainerAssembly {
 
         if (containerState == LS_1_LINKING && newState > LS_1_LINKING) {
             for (ComponentNodeConfiguration cc = compConf.treeFirstChild; cc != null; cc = cc.treeNextSibling) {
-                if (cc.driver().modifiers().isContainer()) {
-                    cc.container().advanceTo(LS_3_FINISHED);
+                if (cc.container != null) {
+                    cc.container.advanceTo(LS_3_FINISHED);
                 }
             }
             for (ExtensionAssembly pec : extensionsOrdered) {
