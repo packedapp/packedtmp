@@ -70,8 +70,6 @@ public final class RealmAssembly {
 
     public void close() {
         compConf.realmDone(this);
-
-        compConf.finalState = true;
     }
 
     public SourceModel componentModelOf(Class<?> componentType) {
