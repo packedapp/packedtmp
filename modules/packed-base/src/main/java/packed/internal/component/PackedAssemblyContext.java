@@ -91,6 +91,17 @@ public final class PackedAssemblyContext implements AssemblyContext {
         return wirelets;
     }
 
+    /**
+     * @param bundle
+     *            the root bundle
+     * @param modifiers
+     *            any modifiers
+     * @param shellDriver
+     *            if the component is to be run in a shell
+     * @param wirelets
+     *            optional wirelets
+     * @return the root component configuration node
+     */
     public static ComponentNodeConfiguration assemble(Bundle<?> bundle, int modifiers, @Nullable ShellDriver<?> shellDriver, Wirelet... wirelets) {
 
         // First we extract the component driver from the bundle
@@ -106,12 +117,11 @@ public final class PackedAssemblyContext implements AssemblyContext {
         RealmAssembly realm = RealmAssembly.fromBundle(pac, bundle);
 
         ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(realm, componentDriver, cs, null, wp);
-        // We should do realm.compConf = compConf here...
-
         Object conf = componentDriver.toConfiguration(compConf);
         BundleHelper.configure(bundle, conf); // in-try-finally. So we can call PAC.fail() and have them run callbacks for dynamic nodes
 
         realm.close();
+
         return compConf;
     }
 
