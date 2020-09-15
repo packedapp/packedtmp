@@ -185,14 +185,26 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         }
 
         // Setup Extension
-        if (modifiers().isExtension()) {
-            extension = new ExtensionAssembly(this, (ExtensionModel) driver.data);
-        } else {
-            extension = null;
-        }
+        this.extension = null; // Extensions uses another constructor
 
         // Setup default name
         setName0(null);
+    }
+
+    public ComponentNodeConfiguration(ComponentNodeConfiguration parent, ExtensionModel model) {
+        super(parent);
+        this.assembly = requireNonNull(parent.assembly);
+        this.driver = requireNonNull(model.driver);
+        this.configSite = parent.configSite();
+        this.wirelets = null;
+        this.modifiers = PackedComponentModifierSet.add(0, ComponentModifier.EXTENSION);
+        this.region = parent.region;
+        this.realm = PackedRealm.fromExtension(model.type());
+        this.container = null;
+        this.memberOfContainer = parent.container;
+        this.source = null;
+        this.extension = new ExtensionAssembly(this, (ExtensionModel) driver.data);
+        setName0(null /* model.nameComponent */); // setName0(String) does not work currently
     }
 
     /**

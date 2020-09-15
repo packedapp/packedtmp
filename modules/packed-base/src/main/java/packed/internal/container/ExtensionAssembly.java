@@ -36,7 +36,6 @@ import app.packed.container.ExtensionSetup;
 import app.packed.inject.Factory;
 import app.packed.statemachine.LifecycleContext;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.PackedRealm;
 import packed.internal.lifecycle.old.LifecycleContextHelper;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -317,8 +316,8 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
     static ExtensionAssembly of(ContainerAssembly container, Class<? extends Extension> extensionType) {
         // Create extension context and instantiate extension
         ExtensionModel model = ExtensionModel.of(extensionType);
-        PackedRealm realm = PackedRealm.fromExtension(model.type());
-        ComponentNodeConfiguration compConf = container.compConf.newChild(model.driver, container.compConf.configSite(), realm, null);
+
+        ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(container.compConf, model);
 
         ExtensionAssembly ea = compConf.extension;
         ea.checkState(ExtensionSetup.INSTANTIATING);

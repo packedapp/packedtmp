@@ -103,7 +103,7 @@ public final class ExtensionModel extends SidecarModel implements ExtensionDescr
     private final int depth;
 
     /** A component driver that is used when creating a new component for this extension. */
-    final PackedComponentDriver<?> driver = PackedComponentDriver.extensionDriver(this);
+    public final PackedComponentDriver<?> driver = PackedComponentDriver.extensionDriver(this);
 
     /** Whether or not is is only any immediately parent that will be linked. */
     final boolean extensionLinkedDirectChildrenOnly;

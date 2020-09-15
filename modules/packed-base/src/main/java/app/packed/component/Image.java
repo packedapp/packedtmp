@@ -52,11 +52,11 @@ public interface Image<A> extends ComponentDelegate {
     }
 
     /**
-     * Creates a new artifact using this image.
+     * Uses the image.
      * 
      * @param wirelets
-     *            wirelets used to create the artifact
-     * @return the new artifact
+     *            optional wirelets
+     * @return the result of using the image
      */
     A use(Wirelet... wirelets);
 }
