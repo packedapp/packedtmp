@@ -466,32 +466,6 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         setName0(name);
     }
 
-    String defaultName(RealmAssembly realm) {
-        if (container != null) {
-            // I think try and move some of this to ComponentNameWirelet
-            @Nullable
-            Class<?> source = realm.type();
-            if (Bundle.class.isAssignableFrom(source)) {
-                String nnn = source.getSimpleName();
-                if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
-                    nnn = nnn.substring(0, nnn.length() - 6);
-                }
-                if (nnn.length() > 0) {
-                    // checkName, if not just App
-                    // TODO need prefix
-                    return nnn;
-                }
-                if (nnn.length() == 0) {
-                    return "Container";
-                }
-            }
-            // TODO think it should be named Artifact type, for example, app, injector, ...
-        } else if (extension != null) {
-            return extension.model().nameComponent;
-        }
-        return "Unknown";
-    }
-
     private void setName0(String newName) {
         String n = newName;
         if (newName == null) {
@@ -509,8 +483,30 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         if (n == null) {
             if (source != null) {
                 n = source.model.defaultPrefix();
-            } else {
-                n = defaultName(realm);
+            } else if (container != null) {
+                // I think try and move some of this to ComponentNameWirelet
+                @Nullable
+                Class<?> source = realm.type();
+                if (Bundle.class.isAssignableFrom(source)) {
+                    String nnn = source.getSimpleName();
+                    if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
+                        nnn = nnn.substring(0, nnn.length() - 6);
+                    }
+                    if (nnn.length() > 0) {
+                        // checkName, if not just App
+                        // TODO need prefix
+                        n = nnn;
+                    }
+                    if (nnn.length() == 0) {
+                        n = "Container";
+                    }
+                }
+                // TODO think it should be named Artifact type, for example, app, injector, ...
+            } else if (extension != null) {
+                n = extension.model().nameComponent;
+            }
+            if (n == null) {
+                n = "Unknown";
             }
             isFree = true;
         } else if (n.endsWith("?")) {
