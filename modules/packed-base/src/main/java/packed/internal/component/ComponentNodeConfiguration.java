@@ -198,7 +198,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         this.memberOfContainer = parent.container;
         this.extension = new ExtensionAssembly(this, model);
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
-        this.realm = parent.realm.fromExtension(this, model);
+        this.realm = parent.realm.linkExtension(this, model);
         this.region = parent.region;
         this.source = null;
         this.wirelets = null;
@@ -281,7 +281,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         }
 
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.SHELL)) {
-            dam.addValue(ComponentAttributes.SHELL_TYPE, assembly.shellDriver().rawType());
+            dam.addValue(ComponentAttributes.SHELL_TYPE, realm.pac.shellDriver().rawType());
         }
         return dam;
     }
@@ -310,7 +310,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     /** {@inheritDoc} */
     @Override
     public PackedAssemblyContext assembly() {
-        return assembly;
+        return realm.pac;
     }
 
     /** {@inheritDoc} */
@@ -392,7 +392,9 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         WireletPack wp = WireletPack.from(driver, wirelets);
         ConfigSite cs = ConfigSite.UNKNOWN;
         ComponentNodeConfiguration p = driver.modifiers().isExtension() ? treeParent : this;
-        ComponentNodeConfiguration newNode = p.newChild(driver, cs, PackedRealm.fromBundle(bundle), wp);
+        PackedRealm pr = realm.linkBundle(bundle);
+        ComponentNodeConfiguration newNode = p.newChild(driver, cs, pr, wp);
+        pr.compConf = newNode;
 
         // Invoke Bundle::configure
         BundleHelper.configure(bundle, driver.toConfiguration(newNode));

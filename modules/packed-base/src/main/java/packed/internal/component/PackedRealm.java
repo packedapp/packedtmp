@@ -43,11 +43,13 @@ public final class PackedRealm {
     /** A container model. */
     private final ContainerModel model;
 
+    final PackedAssemblyContext pac;
     ComponentNodeConfiguration compConf;
 
-    private PackedRealm(Class<?> type) {
+    private PackedRealm(PackedAssemblyContext pac, Class<?> type) {
         this.type = requireNonNull(type);
         this.lookup = this.model = ContainerModel.of(type);
+        this.pac = requireNonNull(pac);
     }
 
     public Class<?> type() {
@@ -77,15 +79,21 @@ public final class PackedRealm {
      *            the extension model
      * @return a new realm
      */
-    public PackedRealm fromExtension(ComponentNodeConfiguration compConf, ExtensionModel model) {
-        return new PackedRealm(model.type());
+    public PackedRealm linkExtension(ComponentNodeConfiguration compConf, ExtensionModel model) {
+        PackedRealm realm = new PackedRealm(pac, model.type());
+        realm.compConf = requireNonNull(compConf);
+        return realm;
     }
 
-    public static PackedRealm fromBundle(Bundle<?> bundle) {
-        return new PackedRealm(bundle.getClass());
+    public PackedRealm linkBundle(Bundle<?> bundle) {
+        return new PackedRealm(pac, bundle.getClass());
     }
 
-    public static PackedRealm fromConfigurator(CustomConfigurator<?> consumer) {
-        return new PackedRealm(consumer.getClass());
+    public static PackedRealm fromBundle(PackedAssemblyContext pac, Bundle<?> bundle) {
+        return new PackedRealm(pac, bundle.getClass());
+    }
+
+    public static PackedRealm fromConfigurator(PackedAssemblyContext pac, CustomConfigurator<?> consumer) {
+        return new PackedRealm(pac, consumer.getClass());
     }
 }
