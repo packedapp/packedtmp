@@ -123,7 +123,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
      * @param parent
      *            the parent of the component
      */
-    private ComponentNodeConfiguration(PackedRealm realm, PackedComponentDriver<?> driver, ConfigSite configSite, @Nullable ComponentNodeConfiguration parent,
+    ComponentNodeConfiguration(PackedRealm realm, PackedComponentDriver<?> driver, ConfigSite configSite, @Nullable ComponentNodeConfiguration parent,
             @Nullable WireletPack wirelets) {
         super(parent);
         this.configSite = requireNonNull(configSite);
@@ -386,25 +386,24 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         // ConfigSite cs = ConfigSiteSupport.captureStackFrame(configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
         WireletPack wp = WireletPack.from(driver, wirelets);
         ConfigSite cs = ConfigSite.UNKNOWN;
-        ComponentNodeConfiguration p = driver.modifiers().isExtension() ? treeParent : this;
+
+        ComponentNodeConfiguration parent = extension == null ? this : treeParent;
         PackedRealm pr = realm.linkBundle(bundle);
-        ComponentNodeConfiguration newNode = p.newChild(driver, cs, pr, wp);
-        pr.compConf = newNode;
+
+        ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(pr, driver, cs, parent, wp);
+
+        pr.compConf = compConf;
 
         // Invoke Bundle::configure
-        BundleHelper.configure(bundle, driver.toConfiguration(newNode));
+        BundleHelper.configure(bundle, driver.toConfiguration(compConf));
 
-        newNode.finalState = true;
+        compConf.finalState = true;
     }
 
     /** {@inheritDoc} */
     @Override
     public PackedComponentModifierSet modifiers() {
         return new PackedComponentModifierSet(modifiers);
-    }
-
-    public ComponentNodeConfiguration newChild(PackedComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm, @Nullable WireletPack wp) {
-        return new ComponentNodeConfiguration(realm, driver, configSite, this, wp);
     }
 
     @Nullable
@@ -568,19 +567,11 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         WireletPack wp = WireletPack.from(d, wirelets);
         ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
 
-        ComponentNodeConfiguration conf;
-        if (extension == null) {
-            conf = newChild(d, configSite, realm, wp);
-        } else {
-            // When an extension adds new components they are added to the container (the extension's parent)
-            // Instead of the extension, because the extension itself is removed at runtime.
-            conf = treeParent.newChild(d, configSite, /* The extension's realm */ realm, wp);
-        }
-        return d.toConfiguration(conf);
-    }
-
-    public static ComponentNodeConfiguration newAssembly(PackedComponentDriver<?> driver, ConfigSite configSite, PackedRealm realm, WireletPack wirelets) {
-        return new ComponentNodeConfiguration(realm, driver, configSite, null, wirelets);
+        // When an extension adds new components they are added to the container (the extension's parent)
+        // Instead of the extension, because the extension itself is removed at runtime.
+        ComponentNodeConfiguration parent = extension == null ? this : treeParent;
+        ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(realm, d, configSite, parent, wp);
+        return d.toConfiguration(compConf);
     }
 
     // This should only be called by special methods
