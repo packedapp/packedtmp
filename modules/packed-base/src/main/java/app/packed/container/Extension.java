@@ -100,6 +100,8 @@ public abstract class Extension {
      */
     protected void add() {}
 
+    protected void complete() {}
+
     // When creating an image.
     // This can be used to clean up data structures that was only
     // remember that people might still inspect the image

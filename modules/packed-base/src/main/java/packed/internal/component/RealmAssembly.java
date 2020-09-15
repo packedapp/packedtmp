@@ -28,6 +28,7 @@ import packed.internal.container.ExtensionModel;
 import packed.internal.container.RealmModel;
 import packed.internal.container.SourceModelLookup;
 import packed.internal.inject.factory.FactoryHandle;
+import packed.internal.service.InjectionManager;
 
 /**
  *
@@ -75,7 +76,8 @@ public final class RealmAssembly {
             if (compConf.container != null) {
                 compConf.container.advanceTo(ContainerAssembly.LS_3_FINISHED);
             }
-            compConf.region.assemblyClosed();
+            InjectionManager im = compConf.injectionManager();
+            im.buildTree(compConf.region);
         }
     }
 

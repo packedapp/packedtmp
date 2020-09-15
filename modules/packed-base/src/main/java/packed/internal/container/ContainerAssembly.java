@@ -17,6 +17,7 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Set;
@@ -56,6 +57,9 @@ public final class ContainerAssembly {
     @Nullable
     public final ContainerAssembly parent;
 
+    @Nullable
+    public ArrayList<ContainerAssembly> children;
+
     /**
      * Creates a new container
      * 
@@ -65,6 +69,13 @@ public final class ContainerAssembly {
     public ContainerAssembly(ComponentNodeConfiguration compConf) {
         this.compConf = requireNonNull(compConf);
         this.parent = compConf.getParent() == null ? null : compConf.getParent().container();
+        if (parent != null) {
+            ArrayList<ContainerAssembly> c = parent.children;
+            if (c == null) {
+                c = parent.children = new ArrayList<>();
+            }
+            c.add(this);
+        }
         this.im = new InjectionManager(this);
     }
 
@@ -148,6 +159,10 @@ public final class ContainerAssembly {
         if (pec == null) {
             // Checks that we are still configurable
             if (caller == null) {
+                if (children != null) {
+                    throw new IllegalStateException(
+                            "Cannot install new extensions after child containers have been added to this container, extensionType = " + extensionType);
+                }
                 if (containerState != 0) {
                     // Cannot perform this operation
                     throw new IllegalStateException("Cannot install new extensions at this point, extensionType = " + extensionType);

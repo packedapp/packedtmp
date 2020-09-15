@@ -58,11 +58,6 @@ public final class RegionAssembly {
         this.compConf = requireNonNull(compConf);
     }
 
-    public void assemblyClosed() {
-        InjectionManager se = compConf.injectionManager();
-        se.buildTree(this);
-    }
-
     // Vi bliver noedt til at kalde ned recursivt saa vi kan finde raekkefolgen af service inst
 
     RuntimeRegion newRegion(PackedInitializationContext pic, ComponentNode root) {

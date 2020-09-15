@@ -127,6 +127,8 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
             @Nullable WireletPack wirelets) {
         super(parent);
         this.configSite = requireNonNull(configSite);
+        this.extension = null; // Extensions uses another constructor
+
         this.wirelets = wirelets;
         int mod = driver.modifiers;
         if (parent == null) {
@@ -170,9 +172,6 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         } else {
             this.source = null;
         }
-
-        // Setup Extension
-        this.extension = null; // Extensions uses another constructor
 
         // Setup default name
         setName0(null);
@@ -316,19 +315,14 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         }
     }
 
-    public void assembledSuccesfully() {
-        finalState = true;
-        if (container != null) {
-            container.advanceTo(ContainerAssembly.LS_3_FINISHED);
-        }
-        region.assemblyClosed();
-    }
-
-    public void bundleDone() {
-        finalState = true;
+    public void realmDone(RealmAssembly realm) {
         for (ComponentNodeConfiguration compConf = treeFirstChild; compConf != null; compConf = compConf.treeNextSibling) {
-            compConf.bundleDone();
+            // child components with a different realm, has either already been closed, or will be closed elsewhere
+            if (compConf.realm == realm) {
+                compConf.realmDone(realm);
+            }
         }
+        finalState = true;
     }
 
     /** {@inheritDoc} */
@@ -572,38 +566,6 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         return cc.compConf;
     }
 
-    @Override
-    public void sourceProvide() {
-        checkConfigurable();
-        checkHasSource();
-        source.provide();
-    }
-
-    @Override
-    public Optional<Key<?>> sourceProvideAsKey() {
-        checkHasSource();
-        return source.service == null ? Optional.empty() : Optional.of(source.service.key());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> ExportedServiceConfiguration<T> sourceExport() {
-        sourceProvide();
-        return (ExportedServiceConfiguration<T>) injectionManager().exports().export(source.service,
-                captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    @Override
-    public void sourceProvideAs(Key<?> key) {
-        requireNonNull(key, "key is null");
-        checkConfigurable();
-        if (source == null) {
-            throw new UnsupportedOperationException();
-        }
-        source.provide().as((Key) key);
-    }
-
     /* public methods */
 
     /** Checks that this component has a source. */
@@ -634,6 +596,41 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     public <T extends Extension> T containerUse(Class<T> extensionType) {
         checkHasContainer();
         return container.useExtension(extensionType);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void sourceProvide() {
+        checkConfigurable();
+        checkHasSource();
+        source.provide();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<Key<?>> sourceProvideAsKey() {
+        checkHasSource();
+        return source.service == null ? Optional.empty() : Optional.of(source.service.key());
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> ExportedServiceConfiguration<T> sourceExport() {
+        sourceProvide();
+        return (ExportedServiceConfiguration<T>) injectionManager().exports().export(source.service,
+                captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Override
+    public void sourceProvideAs(Key<?> key) {
+        requireNonNull(key, "key is null");
+        checkConfigurable();
+        if (source == null) {
+            throw new UnsupportedOperationException();
+        }
+        source.provide().as((Key) key);
     }
 
     /** An adaptor of the {@link Component} interface from a {@link ComponentNodeConfiguration}. */
