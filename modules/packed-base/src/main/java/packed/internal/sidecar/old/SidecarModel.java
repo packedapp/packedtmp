@@ -31,6 +31,7 @@ import app.packed.statemachine.StateTransition;
 import packed.internal.invoke.MethodHandleBuilder;
 import packed.internal.invoke.OpenClass;
 import packed.internal.lifecycle.old.DefaultLifecycleTransition;
+import packed.internal.sidecar.model.Model;
 import packed.internal.util.ThrowableUtil;
 
 /**

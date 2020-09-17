@@ -28,6 +28,8 @@ import packed.internal.util.MethodHandleUtil;
 // Passive System -> 1 NodeStore
 // Active System -> 1 NodeStore per guest
 // Long term, this might just be an Object[] array. But for now its a class, in case we need stuff that isn't stored in the array. 
+
+// MemoryRegion????
 public final class RuntimeRegion {
 
     /** A method handle for calling {@link #getSingletonInstance(int)} at runtime. */

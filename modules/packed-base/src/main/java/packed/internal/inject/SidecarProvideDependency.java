@@ -13,26 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
+package packed.internal.inject;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static java.util.Objects.requireNonNull;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import java.lang.invoke.MethodHandle;
+
+import app.packed.base.Nullable;
 
 /**
- * An annotation indicating that the method should be invoked when a hook is xxxx as detailed by the first parameter of
- * the method..
- * 
- * The first parameter of any method annotated with {@code @OnHook} must a subtype of Hook.
+ *
  */
-@Target(ElementType.METHOD)
-@Retention(RUNTIME)
-@Documented
-//Describe...
-@Deprecated
-public @interface Expose {}
+public class SidecarProvideDependency implements DependencyProvider {
 
-// Contracts
+    private final MethodHandle mh;
+
+    public SidecarProvideDependency(MethodHandle mh) {
+        this.mh = requireNonNull(mh);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    @Nullable
+    public Injectable injectable() {
+        return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle toMethodHandle() {
+        return mh;
+    }
+}

@@ -13,33 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.sidecar;
+package packed.internal.sidecar;
 
-import java.lang.invoke.MethodHandle;
+import java.time.LocalDateTime;
 
-import app.packed.base.Nullable;
+import app.packed.inject.Provide;
+import app.packed.sidecar.MethodSidecar;
 
 /**
  *
  */
-public interface Getter<T> {
+public class TestIt extends MethodSidecar {
 
-    /**
-     * Gets the value.
-     * 
-     * @return the value
-     */
-    @Nullable
-    T get(); // getNullable
+    @Override
+    protected void configure() {
+        debug();
+    }
 
-    Class<?> rawType();
+    @Provide
+    public static LocalDateTime now() {
+        return LocalDateTime.now();
+    }
 
-    /**
-     * Returns a new parameter-less method handle. The return type of the method handle will be the exact return type of the
-     * underlying executable.
-     * 
-     * @return the method handle
-     */
-    // Same problem as
-    MethodHandle toMethodHandle();
+    public static void main(String[] args) {
+        SidecarModel.of(TestIt.class);
+    }
 }

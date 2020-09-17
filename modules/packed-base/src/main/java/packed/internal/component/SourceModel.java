@@ -18,29 +18,35 @@ package packed.internal.component;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.Set;
 
+import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.hook.OnHook;
-import packed.internal.container.RealmModel;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.LazyExtensionActivationMap;
+import packed.internal.container.RealmModel;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.HookRequest;
 import packed.internal.hook.HookRequestBuilder;
 import packed.internal.hook.MemberUnreflector;
 import packed.internal.invoke.OpenClass;
-import packed.internal.sidecar.old.Model;
+import packed.internal.sidecar.MethodSidecarModel;
+import packed.internal.sidecar.model.MethodSidecarHelper;
+import packed.internal.sidecar.model.Model;
 import packed.internal.util.ThrowableUtil;
 
 /**
- * A model of a container, a cached instance of this class is acquired via
- * {@link RealmModel#modelOf(Class)}.
+ * A model of a container, a cached instance of this class is acquired via {@link RealmModel#modelOf(Class)}.
  */
 public final class SourceModel extends Model {
 
@@ -54,6 +60,8 @@ public final class SourceModel extends Model {
     /** Any methods annotated with {@link OnHook} on the container source. */
     @Nullable
     private final HookRequest sourceHook;
+
+    public final Map<Key<?>, MethodHandle> sourceServices;
 
     /**
      * Creates a new descriptor.
@@ -85,6 +93,7 @@ public final class SourceModel extends Model {
             }
             return new ExtensionRequestPair(e.getKey(), r);
         }).toArray(i -> new ExtensionRequestPair[i]);
+        this.sourceServices = Map.copyOf(builder.globalServices);
     }
 
     /**
@@ -146,6 +155,10 @@ public final class SourceModel extends Model {
 
         /** A map of builders for every activated extension. */
         private final IdentityHashMap<Class<? extends Extension>, HookRequestBuilder> extensionBuilders = new IdentityHashMap<>();
+
+        private final ArrayList<MethodSidecarModel> methodModels = new ArrayList<>();
+
+        private final HashMap<Key<?>, MethodHandle> globalServices = new HashMap<>();
 
         /**
          * Creates a new component model builder
@@ -245,6 +258,14 @@ public final class SourceModel extends Model {
                 }
                 if (csb != null) {
                     csb.onAnnotatedMethod(method, a);
+                }
+                MethodSidecarModel tryGet = MethodSidecarHelper.tryGet(a.annotationType());
+                if (tryGet != null) {
+                    Map<Key<?>, MethodHandle> keys = tryGet.keys;
+                    if (keys != null) {
+                        globalServices.putAll(keys);
+                    }
+                    methodModels.add(tryGet);
                 }
             }
         }

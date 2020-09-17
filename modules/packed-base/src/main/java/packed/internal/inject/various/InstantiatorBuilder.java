@@ -45,6 +45,10 @@ public final class InstantiatorBuilder {
         this.executable = requireNonNull(executable);
     }
 
+    public Class<?> type() {
+        return oc.type();
+    }
+
     public void addKey(Class<?> key, int index) {
         mh.addKey(key, index);
     }
@@ -63,6 +67,10 @@ public final class InstantiatorBuilder {
 
     public MethodHandle build() {
         return mh.build(oc, executable);
+    }
+
+    public OpenClass oc() {
+        return oc;
     }
 
     public static InstantiatorBuilder of(MethodHandles.Lookup lookup, Class<?> implementation, Class<?>... parameterTypes) {

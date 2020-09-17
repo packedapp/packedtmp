@@ -31,7 +31,7 @@ import packed.internal.hook.OnHookModel;
 import packed.internal.inject.factory.ExecutableFactoryHandle;
 import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.invoke.OpenClass;
-import packed.internal.sidecar.old.Model;
+import packed.internal.sidecar.model.Model;
 import packed.internal.sidecar.packlet.PackletMotherShip;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.LookupValue;

@@ -45,7 +45,7 @@ public final class SourceAssembly implements DependencyProvider {
     final Object instance;
 
     /** The source model. */
-    final SourceModel model;
+    public final SourceModel model;
 
     /** The index at which to store the runtime instance, or -1 if it should not be stored. */
     public final int regionIndex;

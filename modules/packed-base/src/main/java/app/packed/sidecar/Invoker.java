@@ -15,8 +15,6 @@
  */
 package app.packed.sidecar;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Nullable;
@@ -39,28 +37,32 @@ public interface Invoker {
      *             anything thrown by the underlying executable propagates unchanged through the method handle call
      */
     @Nullable
+    Object invokeNullable() throws Throwable;
+
     Object invoke() throws Throwable;
 
-    /**
-     * Returns a new parameter-less method handle. The return type of the method handle will be the exact return type of the
-     * underlying executable.
-     * 
-     * @return the method handle
-     */
-    // Kan ikke se hvordan den kan virke med graal....
-    // Da vi ikke kan binde paa runtime...
-    MethodHandle toMethodHandle();
+    Class<?> returnType();
+
 }
 
+///**
+//* Returns a new parameter-less method handle. The return type of the method handle will be the exact return type of the
+//* underlying executable.
+//* 
+//* @return the method handle
+//*/
+//// Kan ikke se hvordan den kan virke med graal....
+//// Da vi ikke kan binde paa runtime...
+//MethodHandle toMethodHandle();
 //Always only available at runtime
-@Target(ElementType.TYPE)
-@interface InjectInvoker {
-    Class<?> type();
-
-    Class<?>[] typeParameters() default {}; // if left empty = Lower bound everywhere. If filled out. All type parameters must be filled out
-
-    Class<?>[] typeTemplates() default {}; //
-}
+//@Target(ElementType.TYPE)
+//@interface InjectInvoker {
+//    Class<?> type();
+//
+//    Class<?>[] typeParameters() default {}; // if left empty = Lower bound everywhere. If filled out. All type parameters must be filled out
+//
+//    Class<?>[] typeTemplates() default {}; //
+//}
 //@InjectInvoker(type = MethodHandle.class) <--- will be bound to any component instance. 
 //@InjectInvoker(type = Invoker1.class, typeParameters=SomeTemplate.class, typeTemplates = SomeTemplate.class). not a big fan...
 

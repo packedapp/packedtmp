@@ -13,11 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.sidecar;
+package app.packed.sidecar;
+
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
  *
+ * @apiNote this interface is not {@link Documented}. Because we believe that how an extension chooses to xxx is
+ *          implementation dependent
  */
-public class Doo {
+@Target(ElementType.TYPE)
+@Retention(RUNTIME)
+public @interface ActivateSidecar {
 
+    // Tmp MethodSidecar
+    Class<? extends MethodSidecar> value();
 }

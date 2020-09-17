@@ -13,28 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.sidecar;
-
-import java.util.Map;
-import java.util.function.Supplier;
-
-import app.packed.component.Bundle;
-import app.packed.component.Wirelet;
+package app.packed.component;
 
 /**
  *
  */
-interface BootstrapSidecarContext {
 
-    void singleton(Class<?> cl);
+// Hvad kan den anden end at registrere en function???
+// Ser det ihvertfald ikke som en sidecar...
+// Og heller ikke som noget hvor man skulle kunne angive.
+// En klasse/
 
-    void link(Supplier<Map.Entry<Bundle<?>, Wirelet[]>> e);// ugly.. Need a delaylink
+// Er det en source????
+// Nej vil jeg ikke mene:)
+// Packed holder ikke nogen reference til den...
+// Vi scanner den ikke
+// Vi instantiere den ikke
+public interface ComponentFunctionDriver<C, F> {
+
+    ComponentDriver<C> bindFunction(F function);
 }
-
-// 3 levels of runtime sidecars
-
-// via @SomeSidecar(runtimeSingletons = X.class)
-
-// via BootstrapSidecarContext.install(Foo.class) <- per annotation... For extensions it would be constants
-
-// at runtime via SidecarContext

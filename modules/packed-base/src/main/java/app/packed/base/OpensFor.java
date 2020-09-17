@@ -13,33 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.sidecar;
+package app.packed.base;
 
-import java.lang.invoke.MethodHandle;
-
-import app.packed.base.Nullable;
+import app.packed.container.Extension;
 
 /**
  *
  */
-public interface Getter<T> {
+public @interface OpensFor {
 
-    /**
-     * Gets the value.
-     * 
-     * @return the value
-     */
-    @Nullable
-    T get(); // getNullable
+    boolean all() default false;
 
-    Class<?> rawType();
+    Class<? extends Extension>[] extension() default {};
 
-    /**
-     * Returns a new parameter-less method handle. The return type of the method handle will be the exact return type of the
-     * underlying executable.
-     * 
-     * @return the method handle
-     */
-    // Same problem as
-    MethodHandle toMethodHandle();
+    String[] modules() default {};
+
+    boolean thisModule() default false;
+
+    OpenMode[] mode();
 }

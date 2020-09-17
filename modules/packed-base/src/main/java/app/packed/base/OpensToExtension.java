@@ -20,7 +20,9 @@ import app.packed.container.Extension;
 /**
  *
  */
-public @interface OpensForExtension {
+// AccessibleByExtension?
+public @interface OpensToExtension {
+
     Class<? extends Extension> extension();
 
     OpenMode[] mode();

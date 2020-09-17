@@ -162,6 +162,10 @@ public interface App extends AutoCloseable, ComponentDelegate {
     static App of(Bundle<?> bundle, Wirelet... wirelets) {
         return driver().newShell(bundle, wirelets);
     }
+
+    static App of(Bundle<?> bundle) {
+        return driver().newShell(bundle);
+    }
 }
 //
 ///**

@@ -13,33 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.sidecar;
-
-import java.lang.invoke.MethodHandle;
-
-import app.packed.base.Nullable;
+package packed.internal.sidecar.model;
 
 /**
  *
  */
-public interface Getter<T> {
+public class ClassModel {
 
-    /**
-     * Gets the value.
-     * 
-     * @return the value
-     */
-    @Nullable
-    T get(); // getNullable
-
-    Class<?> rawType();
-
-    /**
-     * Returns a new parameter-less method handle. The return type of the method handle will be the exact return type of the
-     * underlying executable.
-     * 
-     * @return the method handle
-     */
-    // Same problem as
-    MethodHandle toMethodHandle();
 }

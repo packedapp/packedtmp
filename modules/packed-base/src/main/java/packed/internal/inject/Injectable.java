@@ -26,6 +26,7 @@ import java.util.List;
 import app.packed.base.Nullable;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.SourceAssembly;
+import packed.internal.component.SourceModel;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.inject.sidecar.AtProvides;
@@ -168,7 +169,19 @@ public final class Injectable {
         int startIndex = resolved.length != dependencies.size() ? 1 : 0;
         for (int i = 0; i < dependencies.size(); i++) {
             ServiceDependency sd = dependencies.get(i);
-            BuildtimeService<?> e = im.resolvedServices.get(sd.key());
+            DependencyProvider e = null;
+            if (source != null) {
+                SourceModel sm = source.model;
+                if (sm.sourceServices != null) {
+                    MethodHandle mh = sm.sourceServices.get(sd.key());
+                    if (mh != null) {
+                        e = new SidecarProvideDependency(mh);
+                    }
+                }
+            }
+            if (e == null) {
+                e = im.resolvedServices.get(sd.key());
+            }
             im.dependencies().recordResolvedDependency(im, this, sd, e, false);
             resolved[i + startIndex] = e;
         }
