@@ -54,6 +54,9 @@ public class ServiceManager {
     @Nullable
     private ServiceExportManager exporter;
 
+    /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
+    public final LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices = new LinkedHashMap<>();
+
     public final InjectionManager im;
 
     /** All injectors added via {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
@@ -82,7 +85,7 @@ public class ServiceManager {
         p.add(pi);
     }
 
-    public LinkedHashMap<Key<?>, ServiceAssembly<?>> resolve(LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices) {
+    public LinkedHashMap<Key<?>, ServiceAssembly<?>> resolve() {
 
         // First process provided entries, then any entries added via provideAll
         resolve0(im, resolvedServices, buildEntries);

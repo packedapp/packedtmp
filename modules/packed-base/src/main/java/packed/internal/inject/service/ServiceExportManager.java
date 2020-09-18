@@ -188,7 +188,7 @@ public final class ServiceExportManager implements Iterable<ExportedServiceAssem
                 ServiceAssembly<?> entryToExport = entry.exportedEntry;
                 boolean export = true;
                 if (entryToExport == null) {
-                    entryToExport = im.resolvedServices.get(entry.keyToExport);
+                    entryToExport = im.getServiceManager().resolvedServices.get(entry.keyToExport);
                     if (entryToExport == null) {
                         im.errorManager().failingUnresolvedKeyedExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>()).add(entry);
                         export = false;
@@ -217,7 +217,7 @@ public final class ServiceExportManager implements Iterable<ExportedServiceAssem
         }
 
         if (exportAll != null) {
-            for (ServiceAssembly<?> e : im.resolvedServices.values()) {
+            for (ServiceAssembly<?> e : im.getServiceManager().resolvedServices.values()) {
                 if (!e.key().equals(KeyBuilder.INJECTOR_KEY)) {
                     if (!resolvedExports.containsKey(e.key())) {
                         resolvedExports.put(e.key(), new ExportedServiceAssembly<>(im.getServiceManager(), e, exportAll));

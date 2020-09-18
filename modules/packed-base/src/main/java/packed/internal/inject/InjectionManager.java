@@ -33,7 +33,6 @@ import packed.internal.inject.dependency.Injectable;
 import packed.internal.inject.service.ServiceDependencyManager;
 import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.assembly.ExportedServiceAssembly;
-import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
@@ -45,7 +44,7 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 public final class InjectionManager {
 
     /** All injectables that needs to be resolved. */
-    final ArrayList<Injectable> allInjectables = new ArrayList<>();
+    private final ArrayList<Injectable> allInjectables = new ArrayList<>();
 
     /** The container this injection manager belongs to. */
     public final ContainerAssembly container;
@@ -56,15 +55,12 @@ public final class InjectionManager {
     /** An error manager that is lazily initialized. */
     private InjectionErrorManager em;
 
-    /** A service exporter handles everything to do with exports of services. */
-    @Nullable
-    private ServiceManager services;
-
-    /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
-    public final LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices = new LinkedHashMap<>();
-
     /** A list of nodes to use when detecting dependency cycles. */
     public final ArrayList<Injectable> postProcessingInjectables = new ArrayList<>();
+
+    /** A service manager that handles everything to do with services, is lazily initialized. */
+    @Nullable
+    private ServiceManager services;
 
     /**
      * Creates a new injection manager.
@@ -87,7 +83,7 @@ public final class InjectionManager {
     }
 
     public void buildTree(RegionAssembly resolver) {
-        services().resolve(resolvedServices);
+        services().resolve();
 
         if (em != null) {
             InjectionErrorManagerMessages.addDuplicateNodes(em.failingDuplicateProviders);
@@ -131,19 +127,6 @@ public final class InjectionManager {
         return e;
     }
 
-    /**
-     * Returns the {@link ServiceManager} for this builder.
-     * 
-     * @return the service exporter for this builder
-     */
-    public ServiceManager services() {
-        ServiceManager e = services;
-        if (e == null) {
-            e = services = new ServiceManager(this);
-        }
-        return e;
-    }
-
     @Nullable
     public ServiceManager getServiceManager() {
         return services;
@@ -167,6 +150,20 @@ public final class InjectionManager {
             runtimeEntries.put(e.key(), e.toRuntimeEntry(con));
         }
         return new PackedInjector(comp.configSite(), runtimeEntries);
+    }
+
+    /**
+     * Returns the {@link ServiceManager} for this builder.
+     * 
+     * @return the service exporter for this builder
+     */
+    public ServiceManager services() {
+        ServiceManager e = services;
+        if (e == null) {
+            // Vi skal faktisk aktivere ServiceExtension her...
+            e = services = new ServiceManager(this);
+        }
+        return e;
     }
 
 }
