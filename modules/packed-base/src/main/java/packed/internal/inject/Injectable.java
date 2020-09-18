@@ -50,7 +50,7 @@ import packed.internal.service.buildtime.BuildtimeService;
 // Vi skal have noget PackletModel. Tilhoere @Get. De her 3 AOP ting skal vikles rundt om MHs
 
 // Something with dependencis
-public final class Injectable {
+public class Injectable {
 
     private final BuildtimeService<?> buildEntry;
 
@@ -164,8 +164,16 @@ public final class Injectable {
         return buildMethodHandle;
     }
 
+    public int regionIndex() {
+        return entry().regionIndex();
+    }
+
+    public boolean isConstant() {
+        return entry() != null;
+    }
+
     @Nullable
-    public BuildtimeService<?> entry() {
+    private BuildtimeService<?> entry() {
         // buildEntry is null if it this Injectable is created from a source and not @AtProvides
         // In which case we store the build entry (if available) in the source instead
         if (buildEntry == null) {

@@ -110,7 +110,7 @@ final class DependencyCycleDetector {
         }
 
         stack.pop(); // assert stack.pop() == node
-        if (node.entry() != null) {
+        if (node.isConstant()) {
             resolver.constantServices.add(node);
         }
 //        BuildEntry<?> entry = node.entry();
