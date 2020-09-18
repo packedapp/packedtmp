@@ -105,11 +105,11 @@ public class Injectable {
         this.source = requireNonNull(source);
         this.im = source.compConf.injectionManager();
         this.sourceMember = requireNonNull(smm);
+        this.buildEntry = null;
 
-        buildEntry = null;
         dependencies = null;
-        directMethodHandle = null;
-        resolved = null;
+        this.directMethodHandle = smm.directMethodHandle;
+        this.resolved = new DependencyProvider[directMethodHandle.type().parameterCount()];
     }
 
     public Injectable(SourceAssembly source, BaseFactory<?> factory) {
@@ -158,36 +158,29 @@ public class Injectable {
         return buildEntry.regionIndex();
     }
 
-    public boolean hasUnresolved() {
-        for (int i = 0; i < resolved.length; i++) {
-            if (resolved[i] == null) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public void resolve() {
         int startIndex = resolved.length != dependencies.size() ? 1 : 0;
         for (int i = 0; i < dependencies.size(); i++) {
-            DependencyDescriptor sd = dependencies.get(i);
-            DependencyProvider e = null;
-            if (source != null) {
-                SourceModel sm = source.model;
-                if (sm.sourceServices != null) {
-                    MethodHandle mh = sm.sourceServices.get(sd.key());
-                    if (mh != null) {
-                        e = new SidecarProvideDependency(mh);
+            if (resolved[i + startIndex] == null) {
+                DependencyDescriptor sd = dependencies.get(i);
+                DependencyProvider e = null;
+                if (source != null) {
+                    SourceModel sm = source.model;
+                    if (sm.sourceServices != null) {
+                        MethodHandle mh = sm.sourceServices.get(sd.key());
+                        if (mh != null) {
+                            e = new SidecarProvideDependency(mh);
+                        }
                     }
                 }
+                if (e == null) {
+                    e = im.services().resolvedServices.get(sd.key());
+                }
+                im.services().dependencies().recordResolvedDependency(im, this, sd, e, false);
+                // may be null, in which case it is a required service that must be provided.
+                // By the user
+                resolved[i + startIndex] = e;
             }
-            if (e == null) {
-                e = im.services().resolvedServices.get(sd.key());
-            }
-            im.services().dependencies().recordResolvedDependency(im, this, sd, e, false);
-            // may be null, in which case it is a required service that must be provided.
-            // By the user
-            resolved[i + startIndex] = e;
         }
     }
 }

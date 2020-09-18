@@ -15,7 +15,13 @@
  */
 package packed.internal.component;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.reflect.Method;
+import java.util.List;
+
 import app.packed.base.Nullable;
+import app.packed.introspection.MethodDescriptor;
+import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.sidecar.MethodSidecarModel;
 
@@ -37,6 +43,15 @@ public class SourceModelMethod extends SourceModelMember {
     DependencyProvider[] resolved;
 
     MethodSidecarModel msm;
+
+    public MethodHandle directMethodHandle;
+
+    List<DependencyDescriptor> dependencies;
+
+    public static void main(Method method) {
+        MethodDescriptor m = MethodDescriptor.from(method);
+        List<DependencyDescriptor> fromExecutable = DependencyDescriptor.fromExecutable(m);
+    }
 
     @Nullable
     RunAt runAt;

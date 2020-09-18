@@ -52,22 +52,42 @@ import packed.internal.util.LookupUtil;
 /**
  *
  */
-public class ServiceManager {
+public final class ServiceManager {
 
-    /** A VarHandle that can access ServiceExtension#im. */
+    /** A VarHandle that can access ServiceExtension#sm. */
     private static final VarHandle VH_SERVICE_EXTENSION_NODE = LookupUtil.vhPrivateOther(MethodHandles.lookup(), ServiceExtension.class, "sm",
             ServiceManager.class);
+
+    /** All explicit added build entries. */
+    public final ArrayList<ServiceAssembly<?>> buildEntries = new ArrayList<>();
+
+    /** Handles everything to do with dependencies, for example, explicit requirements. */
+    public ServiceDependencyManager dependencies;
 
     /** A service exporter handles everything to do with exports of services. */
     @Nullable
     private ServiceExportManager exporter;
 
+    /** The injection manager this service manager is a part of. */
+    public final InjectionManager im;
+
+    /** All injectors added via {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
+    private ArrayList<ProvideAllFromOtherInjector> provideAll;
+
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices = new LinkedHashMap<>();
 
-    /** Handles everything to do with dependencies, for example, explicit requirements. */
-    public ServiceDependencyManager dependencies;
-    public final InjectionManager im;
+    /**
+     * @param im
+     */
+    public ServiceManager(InjectionManager im) {
+        this.im = requireNonNull(im);
+    }
+
+    public void checkExportConfigurable() {
+        // when processing wirelets
+        // We should make sure some stuff is no longer configurable...
+    }
 
     /**
      * Returns the dependency manager for this builder.
@@ -82,11 +102,22 @@ public class ServiceManager {
         return d;
     }
 
-    /** All injectors added via {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
-    private ArrayList<ProvideAllFromOtherInjector> provideAll;
+    /**
+     * Returns the {@link ServiceExportManager} for this builder.
+     * 
+     * @return the service exporter for this builder
+     */
+    public ServiceExportManager exports() {
+        ServiceExportManager e = exporter;
+        if (e == null) {
+            e = exporter = new ServiceExportManager(this);
+        }
+        return e;
+    }
 
-    /** All explicit added build entries. */
-    public final ArrayList<ServiceAssembly<?>> buildEntries = new ArrayList<>();
+    public boolean hasExports() {
+        return exporter != null;
+    }
 
     public ServiceContract newServiceContract() {
         return ServiceContract.newContract(c -> {
@@ -106,15 +137,19 @@ public class ServiceManager {
         });
     }
 
-    /**
-     * @param injectionManager
-     */
-    public ServiceManager(InjectionManager injectionManager) {
-        this.im = requireNonNull(injectionManager);
+    public ServiceRegistry newServiceRegistry(ComponentNode comp, RuntimeRegion region) {
+        LinkedHashMap<Key<?>, RuntimeService<?>> runtimeEntries = new LinkedHashMap<>();
+        ServiceInstantiationContext con = new ServiceInstantiationContext(region);
+        for (var e : exports()) {
+            runtimeEntries.put(e.key(), e.toRuntimeEntry(con));
+        }
+        return new PackedInjector(comp.configSite(), runtimeEntries);
     }
 
-    public boolean hasExports() {
-        return exporter != null;
+    public void provideFromAtProvides(ComponentNodeConfiguration compConf, AtProvides atProvides) {
+        ServiceAssembly<?> e = new AtProvideServiceAssembly<>(this, compConf, atProvides);
+        buildEntries.add(e);
+        im.addInjectable(e.getInjectable());
     }
 
     public void provideFromInjector(AbstractInjector injector, ConfigSite configSite, WireletList wirelets) {
@@ -126,13 +161,10 @@ public class ServiceManager {
         p.add(pi);
     }
 
-    public ServiceRegistry newServiceRegistry(ComponentNode comp, RuntimeRegion region) {
-        LinkedHashMap<Key<?>, RuntimeService<?>> runtimeEntries = new LinkedHashMap<>();
-        ServiceInstantiationContext con = new ServiceInstantiationContext(region);
-        for (var e : exports()) {
-            runtimeEntries.put(e.key(), e.toRuntimeEntry(con));
-        }
-        return new PackedInjector(comp.configSite(), runtimeEntries);
+    public <T> ServiceAssembly<T> provideFromSource(ComponentNodeConfiguration compConf, Key<T> key) {
+        ServiceAssembly<T> e = new ComponentSourceServiceAssembly<>(this, compConf, key);
+        buildEntries.add(e);
+        return e;
     }
 
     public LinkedHashMap<Key<?>, ServiceAssembly<?>> resolve() {
@@ -154,43 +186,6 @@ public class ServiceManager {
         return resolvedServices;
     }
 
-    private static void resolve0(InjectionManager im, LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices,
-            Collection<? extends ServiceAssembly<?>> buildEntries) {
-        for (ServiceAssembly<?> entry : buildEntries) {
-            ServiceAssembly<?> existing = resolvedServices.putIfAbsent(entry.key(), entry);
-            if (existing != null) {
-                LinkedHashSet<ServiceAssembly<?>> hs = im.errorManager().failingDuplicateProviders.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
-                hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
-                hs.add(entry);
-            }
-        }
-    }
-
-    /**
-     * Returns the {@link ServiceExportManager} for this builder.
-     * 
-     * @return the service exporter for this builder
-     */
-    public ServiceExportManager exports() {
-        ServiceExportManager e = exporter;
-        if (e == null) {
-            e = exporter = new ServiceExportManager(this);
-        }
-        return e;
-    }
-
-    public void checkExportConfigurable() {
-        // when processing wirelets
-        // We should make sure some stuff is no longer configurable...
-    }
-
-    public void resolveExports() {
-        if (exporter != null) {
-            exporter.resolve();
-        }
-    }
-    // En InjectionManager kan have en service manager...
-
     // Vi smide alt omkring services der...
 
     // Lazy laver den...
@@ -198,6 +193,13 @@ public class ServiceManager {
     // Altsaa det er taenkt tll naar vi skal f.eks. slaa Wirelets op...
     // Saa det der med at resolve. Det er ikke services...
     // men injection...
+
+    public void resolveExports() {
+        if (exporter != null) {
+            exporter.resolve();
+        }
+    }
+    // En InjectionManager kan have en service manager...
 
     /**
      * Extracts the service node from a service extension.
@@ -210,15 +212,15 @@ public class ServiceManager {
         return (ServiceManager) VH_SERVICE_EXTENSION_NODE.get(extension);
     }
 
-    public void provideFromAtProvides(ComponentNodeConfiguration compConf, AtProvides atProvides) {
-        ServiceAssembly<?> e = new AtProvideServiceAssembly<>(this, compConf, atProvides);
-        buildEntries.add(e);
-        im.addInjectable(e.getInjectable());
-    }
-
-    public <T> ServiceAssembly<T> provideFromSource(ComponentNodeConfiguration compConf, Key<T> key) {
-        ServiceAssembly<T> e = new ComponentSourceServiceAssembly<>(this, compConf, key);
-        buildEntries.add(e);
-        return e;
+    private static void resolve0(InjectionManager im, LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices,
+            Collection<? extends ServiceAssembly<?>> buildEntries) {
+        for (ServiceAssembly<?> entry : buildEntries) {
+            ServiceAssembly<?> existing = resolvedServices.putIfAbsent(entry.key(), entry);
+            if (existing != null) {
+                LinkedHashSet<ServiceAssembly<?>> hs = im.errorManager().failingDuplicateProviders.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
+                hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
+                hs.add(entry);
+            }
+        }
     }
 }
