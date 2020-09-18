@@ -44,8 +44,8 @@ public final class PostProcesser {
      */
 
     // detect cycles for -> detect cycle or needs to be instantited at initialization time
-    public static void dependencyCyclesDetect(RegionAssembly resolver, ArrayList<Injectable> detectCyclesFor) {
-        DependencyCycle c = dependencyCyclesFind(resolver, detectCyclesFor);
+    public static void dependencyCyclesDetect(RegionAssembly resolver, InjectionManager im) {
+        DependencyCycle c = dependencyCyclesFind(resolver, im.postProcessingInjectables);
         if (c != null) {
             throw new CyclicDependencyGraphException("Dependency cycle detected: " + c);
         }

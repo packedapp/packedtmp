@@ -17,6 +17,8 @@ package packed.internal.inject.service;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -33,11 +35,16 @@ import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.assembly.ProvideAllFromOtherInjector;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.inject.service.runtime.AbstractInjector;
+import packed.internal.util.LookupUtil;
 
 /**
  *
  */
 public class ServiceManager {
+
+    /** A VarHandle that can access ServiceExtension#im. */
+    private static final VarHandle VH_SERVICE_EXTENSION_NODE = LookupUtil.vhPrivateOther(MethodHandles.lookup(), ServiceExtension.class, "sm",
+            ServiceManager.class);
 
     /** A service exporter handles everything to do with exports of services. */
     @Nullable
@@ -131,4 +138,15 @@ public class ServiceManager {
     // Altsaa det er taenkt tll naar vi skal f.eks. slaa Wirelets op...
     // Saa det der med at resolve. Det er ikke services...
     // men injection...
+
+    /**
+     * Extracts the service node from a service extension.
+     * 
+     * @param extension
+     *            the extension to extract from
+     * @return the service node
+     */
+    public static ServiceManager fromExtension(ServiceExtension extension) {
+        return (ServiceManager) VH_SERVICE_EXTENSION_NODE.get(extension);
+    }
 }

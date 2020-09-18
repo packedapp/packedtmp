@@ -17,15 +17,12 @@ package packed.internal.inject;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.service.ServiceContract;
-import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceRegistry;
 import packed.internal.component.ComponentNode;
 import packed.internal.component.ComponentNodeConfiguration;
@@ -44,17 +41,12 @@ import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 import packed.internal.inject.sidecar.AtProvides;
-import packed.internal.util.LookupUtil;
 
 /**
  * Since the logic for the service extension is quite complex. Especially with cross-container integration. We spread it
  * over multiple classes. With this class being the main one.
  */
 public final class InjectionManager {
-
-    /** A VarHandle that can access ServiceExtension#im. */
-    private static final VarHandle VH_SERVICE_EXTENSION_NODE = LookupUtil.vhPrivateOther(MethodHandles.lookup(), ServiceExtension.class, "im",
-            InjectionManager.class);
 
     /** All injectables that needs to be resolved. */
     final ArrayList<Injectable> allInjectables = new ArrayList<>();
@@ -117,7 +109,7 @@ public final class InjectionManager {
         }
 
         dependencies().checkForMissingDependencies(this);
-        PostProcesser.dependencyCyclesDetect(resolver, postProcessingInjectables);
+        PostProcesser.dependencyCyclesDetect(resolver, this);
     }
 
     /**
@@ -186,20 +178,9 @@ public final class InjectionManager {
     }
 
     public <T> ServiceAssembly<T> provideFromSource(ComponentNodeConfiguration compConf, Key<T> key) {
-
         ServiceAssembly<T> e = new ComponentSourceServiceAssembly<>(this, compConf, key);
         buildEntries.add(e);
         return e;
     }
 
-    /**
-     * Extracts the service node from a service extension.
-     * 
-     * @param extension
-     *            the extension to extract from
-     * @return the service node
-     */
-    public static InjectionManager fromExtension(ServiceExtension extension) {
-        return (InjectionManager) VH_SERVICE_EXTENSION_NODE.get(extension);
-    }
 }
