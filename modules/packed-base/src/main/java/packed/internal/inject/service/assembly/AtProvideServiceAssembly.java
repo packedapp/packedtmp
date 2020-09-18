@@ -20,8 +20,8 @@ import java.lang.invoke.MethodHandle;
 import app.packed.base.Key;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.config.ConfigSiteInjectOperations;
-import packed.internal.inject.InjectionManager;
 import packed.internal.inject.dependency.Injectable;
+import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.runtime.ConstantInjectorEntry;
 import packed.internal.inject.service.runtime.PrototypeInjectorEntry;
 import packed.internal.inject.service.runtime.RuntimeService;
@@ -42,7 +42,7 @@ public class AtProvideServiceAssembly<T> extends ServiceAssembly<T> {
      * 
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public AtProvideServiceAssembly(InjectionManager im, ComponentNodeConfiguration compConf, AtProvides ap) {
+    public AtProvideServiceAssembly(ServiceManager im, ComponentNodeConfiguration compConf, AtProvides ap) {
         super(im, compConf.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, ap.provides, ap.member), (Key) ap.key);
         this.injectable = new Injectable(this, compConf.source, ap);
         this.regionIndex = ap.isConstant ? compConf.region.reserve() : -1;

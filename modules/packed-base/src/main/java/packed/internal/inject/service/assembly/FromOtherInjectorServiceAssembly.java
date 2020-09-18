@@ -34,7 +34,7 @@ final class FromOtherInjectorServiceAssembly<T> extends ServiceAssembly<T> {
     final ProvideAllFromOtherInjector fromInjector; // not used currently
 
     FromOtherInjectorServiceAssembly(ProvideAllFromOtherInjector fromInjector, RuntimeService<T> entry) {
-        super(fromInjector.node, fromInjector.configSite.withParent(entry.configSite()), entry.key());
+        super(fromInjector.node.services(), fromInjector.configSite.withParent(entry.configSite()), entry.key());
         this.entry = entry;
         this.fromInjector = fromInjector;
     }

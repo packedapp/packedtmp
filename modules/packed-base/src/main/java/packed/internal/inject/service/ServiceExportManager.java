@@ -94,7 +94,7 @@ public final class ServiceExportManager implements Iterable<ExportedServiceAssem
         // if (entryToExport.node != node) {
         // throw new IllegalArgumentException("The specified configuration was created by another injector extension");
         // }
-        return export0(new ExportedServiceAssembly<>(im, entryToExport, configSite));
+        return export0(new ExportedServiceAssembly<>(im.getServiceManager(), entryToExport, configSite));
     }
 
     /**
@@ -111,7 +111,7 @@ public final class ServiceExportManager implements Iterable<ExportedServiceAssem
      * @see ServiceExtension#export(Key)
      */
     public <T> ExportedServiceConfiguration<T> export(Key<T> key, ConfigSite configSite) {
-        return export0(new ExportedServiceAssembly<>(im, key, configSite));
+        return export0(new ExportedServiceAssembly<>(im.getServiceManager(), key, configSite));
     }
 
     /**
@@ -220,7 +220,7 @@ public final class ServiceExportManager implements Iterable<ExportedServiceAssem
             for (ServiceAssembly<?> e : im.resolvedServices.values()) {
                 if (!e.key().equals(KeyBuilder.INJECTOR_KEY)) {
                     if (!resolvedExports.containsKey(e.key())) {
-                        resolvedExports.put(e.key(), new ExportedServiceAssembly<>(im, e, exportAll));
+                        resolvedExports.put(e.key(), new ExportedServiceAssembly<>(im.getServiceManager(), e, exportAll));
                     }
                 }
             }

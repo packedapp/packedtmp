@@ -307,7 +307,7 @@ public final class ServiceExtension extends Extension {
         }
         // Add each @Provide as children of the parent node
         for (AtProvides atProvides : hook.members) {
-            im.provideFromAtProvides(compConf, atProvides);
+            im.services().provideFromAtProvides(compConf, atProvides);
         }
     }
 

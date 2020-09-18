@@ -94,7 +94,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ServiceWirelet {
                 // FAIL -> WireletProcessingException????
                 throw new RuntimeException();
             }
-            ServiceAssembly newE = new MappingServiceAssembly(ii.node, ii.configSite, e, to, function);
+            ServiceAssembly newE = new MappingServiceAssembly(ii.node.getServiceManager(), ii.configSite, e, to, function);
             ii.entries.put(to, newE);
         }
 

@@ -30,11 +30,15 @@ import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
+import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.inject.InjectionManager;
+import packed.internal.inject.service.assembly.AtProvideServiceAssembly;
+import packed.internal.inject.service.assembly.ComponentSourceServiceAssembly;
 import packed.internal.inject.service.assembly.ProvideAllFromOtherInjector;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.inject.service.runtime.AbstractInjector;
+import packed.internal.inject.sidecar.AtProvides;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -54,6 +58,9 @@ public class ServiceManager {
 
     /** All injectors added via {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
     private ArrayList<ProvideAllFromOtherInjector> provideAll;
+
+    /** All explicit added build entries. */
+    public final ArrayList<ServiceAssembly<?>> buildEntries = new ArrayList<>();
 
     /**
      * @param injectionManager
@@ -78,7 +85,7 @@ public class ServiceManager {
     public LinkedHashMap<Key<?>, ServiceAssembly<?>> resolve(LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices) {
 
         // First process provided entries, then any entries added via provideAll
-        resolve0(im, resolvedServices, im.buildEntries);
+        resolve0(im, resolvedServices, buildEntries);
 
         if (provideAll != null) {
             // All injectors have already had wirelets transform and filter
@@ -148,5 +155,17 @@ public class ServiceManager {
      */
     public static ServiceManager fromExtension(ServiceExtension extension) {
         return (ServiceManager) VH_SERVICE_EXTENSION_NODE.get(extension);
+    }
+
+    public void provideFromAtProvides(ComponentNodeConfiguration compConf, AtProvides atProvides) {
+        ServiceAssembly<?> e = new AtProvideServiceAssembly<>(this, compConf, atProvides);
+        buildEntries.add(e);
+        im.addInjectable(e.getInjectable());
+    }
+
+    public <T> ServiceAssembly<T> provideFromSource(ComponentNodeConfiguration compConf, Key<T> key) {
+        ServiceAssembly<T> e = new ComponentSourceServiceAssembly<>(this, compConf, key);
+        buildEntries.add(e);
+        return e;
     }
 }

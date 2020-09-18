@@ -25,7 +25,6 @@ import app.packed.base.Nullable;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceRegistry;
 import packed.internal.component.ComponentNode;
-import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.RegionAssembly;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.wirelet.WireletPack;
@@ -33,14 +32,11 @@ import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.dependency.Injectable;
 import packed.internal.inject.service.ServiceDependencyManager;
 import packed.internal.inject.service.ServiceManager;
-import packed.internal.inject.service.assembly.AtProvideServiceAssembly;
-import packed.internal.inject.service.assembly.ComponentSourceServiceAssembly;
 import packed.internal.inject.service.assembly.ExportedServiceAssembly;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
-import packed.internal.inject.sidecar.AtProvides;
 
 /**
  * Since the logic for the service extension is quite complex. Especially with cross-container integration. We spread it
@@ -50,9 +46,6 @@ public final class InjectionManager {
 
     /** All injectables that needs to be resolved. */
     final ArrayList<Injectable> allInjectables = new ArrayList<>();
-
-    /** All explicit added build entries. */
-    public final ArrayList<ServiceAssembly<?>> buildEntries = new ArrayList<>();
 
     /** The container this injection manager belongs to. */
     public final ContainerAssembly container;
@@ -151,6 +144,11 @@ public final class InjectionManager {
         return e;
     }
 
+    @Nullable
+    public ServiceManager getServiceManager() {
+        return services;
+    }
+
     public ServiceContract newServiceContract() {
         return ServiceContract.newContract(c -> {
             if (services().hasExports()) {
@@ -169,18 +167,6 @@ public final class InjectionManager {
             runtimeEntries.put(e.key(), e.toRuntimeEntry(con));
         }
         return new PackedInjector(comp.configSite(), runtimeEntries);
-    }
-
-    public void provideFromAtProvides(ComponentNodeConfiguration compConf, AtProvides atProvides) {
-        ServiceAssembly<?> e = new AtProvideServiceAssembly<>(this, compConf, atProvides);
-        buildEntries.add(e);
-        allInjectables.add(e.getInjectable());
-    }
-
-    public <T> ServiceAssembly<T> provideFromSource(ComponentNodeConfiguration compConf, Key<T> key) {
-        ServiceAssembly<T> e = new ComponentSourceServiceAssembly<>(this, compConf, key);
-        buildEntries.add(e);
-        return e;
     }
 
 }
