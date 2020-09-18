@@ -31,7 +31,6 @@ import app.packed.introspection.ExecutableDescriptor;
 import app.packed.introspection.MethodDescriptor;
 import app.packed.introspection.ParameterDescriptor;
 import app.packed.introspection.VariableDescriptor;
-import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import packed.internal.inject.InjectionManager;
 import packed.internal.inject.dependency.DependencyProvider;
@@ -75,21 +74,6 @@ public final class ServiceDependencyManager {
 
     /** A map of all dependencies that could not be resolved */
     IdentityHashMap<ServiceAssembly<?>, List<ServiceDependency>> unresolvedDependencies;
-
-    /**
-     * Helps build an {@link ServiceContract}.
-     * 
-     * @param builder
-     *            the contract builder
-     */
-    public void buildContract(ServiceContract.Builder builder) {
-        if (requiredOptionally != null) {
-            requiredOptionally.forEach(k -> builder.optional(k));
-        }
-        if (required != null) {
-            required.forEach(k -> builder.requires(k));
-        }
-    }
 
     public void checkForMissingDependencies(InjectionManager node) {
         if (missingDependencies != null) {

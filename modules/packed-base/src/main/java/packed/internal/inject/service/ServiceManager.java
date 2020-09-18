@@ -95,7 +95,14 @@ public class ServiceManager {
                     c.provides(n.key());
                 }
             }
-            dependencies().buildContract(c);
+            if (dependencies != null) {
+                if (dependencies.requiredOptionally != null) {
+                    dependencies.requiredOptionally.forEach(k -> c.optional(k));
+                }
+                if (dependencies.required != null) {
+                    dependencies.required.forEach(k -> c.requires(k));
+                }
+            }
         });
     }
 
