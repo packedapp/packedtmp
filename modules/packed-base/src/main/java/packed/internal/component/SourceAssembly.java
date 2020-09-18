@@ -98,7 +98,7 @@ public final class SourceAssembly implements DependencyProvider {
     }
 
     BuildtimeService<?> provide() {
-        // Not sure we should allow for calling provide multiple times...
+        // Maybe we should throw an exception, if the user tries to provide an entry multiple times??
         BuildtimeService<?> s = service;
         if (s == null) {
             Key<?> key;
@@ -117,10 +117,10 @@ public final class SourceAssembly implements DependencyProvider {
         if (instance != null) {
             MethodHandle mh = MethodHandles.constant(instance.getClass(), instance);
             return MethodHandles.dropArguments(mh, 0, RuntimeRegion.class); // MethodHandle()T -> MethodHandle(Region)T
-        } else if (isPrototype()) { // injectable != null
-            return injectable.buildMethodHandle();
-        } else {
+        } else if (regionIndex > -1) {
             return RuntimeRegion.readSingletonAs(regionIndex, model.modelType());
+        } else {
+            return injectable.buildMethodHandle();
         }
     }
 }
