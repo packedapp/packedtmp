@@ -22,8 +22,8 @@ import java.util.ArrayList;
 
 import app.packed.service.CyclicDependencyGraphException;
 import packed.internal.component.RegionAssembly;
-import packed.internal.inject.Injectable;
-import packed.internal.inject.spi.DependencyProvider;
+import packed.internal.inject.dependency.DependencyProvider;
+import packed.internal.inject.dependency.Injectable;
 
 /** A utility class that can find cycles in a dependency graph. */
 
@@ -118,8 +118,8 @@ final class PostProcesser {
         // We do this here because the the cycle detection algorithm explorers the dependency BFS. So
         // we add each node on exit when all of its dependency have already been added. In this way
         // guarantee that all dependencies have already been visited
-        if (node.isConstant()) {
-            resolver.constants.add(node);
+        if (node.regionIndex() > -1) {
+            resolver.singletons.add(node);
         }
         node.detectForCycles = false;
         return null;

@@ -15,12 +15,10 @@
  */
 package packed.internal.component;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 
-import packed.internal.inject.Injectable;
+import packed.internal.inject.dependency.Injectable;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -39,17 +37,7 @@ public final class RegionAssembly {
     // List of services that must be instantiated and stored in the region
     // They are ordered in the order they should be initialized
     // For now written by DependencyCycleDetector via BFS
-    public final ArrayList<Injectable> constants = new ArrayList<>();
-
-    /** Everything that needs to be injected and store, but which is not a service. */
-    final ArrayList<SourceAssembly> sourceInjectables = new ArrayList<>();
-
-    /*---***************************/
-
-    // Taenker den her er paa injection manager
-    public final ArrayList<Injectable> allInjectables = new ArrayList<>();
-
-    // Vi bliver noedt til at kalde ned recursivt saa vi kan finde raekkefolgen af service inst
+    public final ArrayList<Injectable> singletons = new ArrayList<>();
 
     RuntimeRegion newRegion(PackedInitializationContext pic, ComponentNode root) {
         RuntimeRegion region = new RuntimeRegion(nextIndex);
@@ -67,7 +55,7 @@ public final class RegionAssembly {
         // All constants that must be instantiated and stored
         // Order here is very important. As for every constant.
         // Its dependencies are guaranteed to have been already stored
-        for (Injectable injectable : constants) {
+        for (Injectable injectable : singletons) {
             MethodHandle mh = injectable.buildMethodHandle();
 
             Object instance;
@@ -83,24 +71,6 @@ public final class RegionAssembly {
 
             int index = injectable.regionIndex();
             region.store(index, instance);
-        }
-
-        // Last all source singletons that have not already been used as services
-        // These can really invoked in any order
-        for (SourceAssembly i : sourceInjectables) {
-            if (i.regionIndex > -1 && !region.isSet(i.regionIndex)) {
-                Injectable injectable = i.injectable;
-
-                MethodHandle mh = injectable.buildMethodHandle();
-                Object instance;
-                try {
-                    instance = mh.invoke(region);
-                } catch (Throwable e1) {
-                    throw ThrowableUtil.orUndeclared(e1);
-                }
-                requireNonNull(instance);
-                region.store(i.regionIndex, instance);
-            }
         }
 
         return region;

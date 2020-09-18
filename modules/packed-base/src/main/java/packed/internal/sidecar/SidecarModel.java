@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 
 import app.packed.sidecar.MethodSidecar;
-import packed.internal.inject.various.InstantiatorBuilder;
+import packed.internal.inject.util.InstantiatorBuilder;
 import packed.internal.util.ThrowableUtil;
 
 /**

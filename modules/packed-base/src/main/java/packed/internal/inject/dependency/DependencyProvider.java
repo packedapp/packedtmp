@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.spi;
+package packed.internal.inject.dependency;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -22,8 +22,6 @@ import app.packed.base.Nullable;
 import app.packed.inject.Provide;
 import packed.internal.component.RegionAssembly;
 import packed.internal.component.SourceAssembly;
-import packed.internal.inject.Injectable;
-import packed.internal.inject.SidecarProvideDependency;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 
 /**

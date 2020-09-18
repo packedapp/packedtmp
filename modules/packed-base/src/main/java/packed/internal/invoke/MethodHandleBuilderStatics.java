@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.Optional;
 
-import packed.internal.inject.ServiceDependency;
+import packed.internal.inject.dependency.ServiceDependency;
 import packed.internal.util.LookupUtil;
 
 /**

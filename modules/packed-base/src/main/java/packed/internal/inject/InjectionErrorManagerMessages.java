@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.service;
+package packed.internal.inject;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
@@ -37,7 +37,7 @@ import packed.internal.util.StringFormatter;
 // Compose -> ErrorMessage
 // Instantiation/Injection -> Exception
 
-public final class ErrorMessages {
+public final class InjectionErrorManagerMessages {
 
     public static void addDuplicateNodes(HashMap<Key<?>, LinkedHashSet<ServiceAssembly<?>>> dublicateNodes) {
         ConfigSiteJoiner csj = new ConfigSiteJoiner();
@@ -73,7 +73,7 @@ public final class ErrorMessages {
         throw new IllegalStateException(sb.toString());
     }
 
-    public static void addUnresolvedExports(InjectionManager node, HashMap<Key<?>, LinkedHashSet<ExportedServiceAssembly<?>>> dublicateNodes) {
+    public static void addUnresolvedExports(ContainerInjectionManager node, HashMap<Key<?>, LinkedHashSet<ExportedServiceAssembly<?>>> dublicateNodes) {
         // ArtifactBuildContext abc = node.context().buildContext();
         // System.out.println(abc);
     }

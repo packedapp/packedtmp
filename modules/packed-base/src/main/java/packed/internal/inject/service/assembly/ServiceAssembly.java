@@ -22,12 +22,12 @@ import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Provide;
 import app.packed.service.Service;
-import packed.internal.inject.Injectable;
-import packed.internal.inject.service.InjectionManager;
+import packed.internal.inject.ContainerInjectionManager;
+import packed.internal.inject.dependency.DependencyProvider;
+import packed.internal.inject.dependency.Injectable;
 import packed.internal.inject.service.runtime.PackedService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
-import packed.internal.inject.spi.DependencyProvider;
 
 /**
  * Build service entries ...node is used at configuration time, to make sure that multiple services with the same key
@@ -44,7 +44,7 @@ public abstract class ServiceAssembly<T> implements DependencyProvider {
 
     /** The service no this entry belongs to. Or null for wirelets */
     @Nullable // Is nullable for stages for now
-    public final InjectionManager im;
+    public final ContainerInjectionManager im;
 
     /**
      * The key of the node (optional). Can be null, for example, for a class that is not exposed as a service but has
@@ -53,7 +53,7 @@ public abstract class ServiceAssembly<T> implements DependencyProvider {
      */
     private Key<T> key;
 
-    public ServiceAssembly(@Nullable InjectionManager im, ConfigSite configSite, Key<T> key) {
+    public ServiceAssembly(@Nullable ContainerInjectionManager im, ConfigSite configSite, Key<T> key) {
         this.im = requireNonNull(im);
         this.configSite = requireNonNull(configSite);
         this.key = requireNonNull(key);

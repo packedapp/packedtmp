@@ -36,14 +36,14 @@ import app.packed.inject.Factory;
 import app.packed.inject.Provide;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletList;
+import packed.internal.config.ConfigSiteInjectOperations;
 import packed.internal.container.ExtensionAssembly;
-import packed.internal.inject.ServiceDependency;
-import packed.internal.inject.service.InjectionManager;
+import packed.internal.inject.ContainerInjectionManager;
+import packed.internal.inject.dependency.ServiceDependency;
 import packed.internal.inject.service.assembly.PackedPrototypeConfiguration;
 import packed.internal.inject.service.runtime.AbstractInjector;
 import packed.internal.inject.sidecar.AtProvides;
 import packed.internal.inject.sidecar.AtProvidesHook;
-import packed.internal.inject.various.ConfigSiteInjectOperations;
 
 /**
  * This extension provides functionality for service management and dependency injection.
@@ -78,7 +78,7 @@ import packed.internal.inject.various.ConfigSiteInjectOperations;
 public final class ServiceExtension extends Extension {
 
     /** The containers injection manager which controls all service functionality. */
-    private final InjectionManager im;
+    private final ContainerInjectionManager im;
 
     /**
      * Should never be initialized by users.

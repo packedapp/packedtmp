@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.various;
+package packed.internal.inject.util;
 
 import static java.util.Objects.requireNonNull;
 

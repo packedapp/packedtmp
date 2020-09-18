@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject;
+package packed.internal.inject.dependency;
 
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Nullable;
-import packed.internal.inject.spi.DependencyProvider;
 
 /**
  *

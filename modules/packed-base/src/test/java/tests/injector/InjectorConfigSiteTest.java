@@ -31,7 +31,7 @@ import app.packed.component.BeanConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 import app.packed.service.Injector;
-import packed.internal.inject.various.ConfigSiteInjectOperations;
+import packed.internal.config.ConfigSiteInjectOperations;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
 import testutil.stubs.Letters.D;

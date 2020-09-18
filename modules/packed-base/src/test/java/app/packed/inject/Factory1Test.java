@@ -23,7 +23,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
-import packed.internal.inject.ServiceDependency;
+import packed.internal.inject.dependency.ServiceDependency;
 import packed.internal.inject.factory.BaseFactory;
 
 /** Tests {@link Factory1}. */

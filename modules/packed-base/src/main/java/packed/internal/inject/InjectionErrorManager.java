@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.service;
+package packed.internal.inject;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -28,11 +28,11 @@ import packed.internal.inject.service.assembly.ServiceAssembly;
 public class InjectionErrorManager {
 
     /** A map of multiple exports of the same key. */
-    final LinkedHashMap<Key<?>, LinkedHashSet<ExportedServiceAssembly<?>>> failingDuplicateExports = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, LinkedHashSet<ExportedServiceAssembly<?>>> failingDuplicateExports = new LinkedHashMap<>();
 
     /** A map of all keyed exports where an entry matching the key could not be found. */
-    final LinkedHashMap<Key<?>, LinkedHashSet<ExportedServiceAssembly<?>>> failingUnresolvedKeyedExports = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, LinkedHashSet<ExportedServiceAssembly<?>>> failingUnresolvedKeyedExports = new LinkedHashMap<>();
 
     /** A map of build entries that provide services with the same key. */
-    final LinkedHashMap<Key<?>, LinkedHashSet<ServiceAssembly<?>>> failingDuplicateProviders = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, LinkedHashSet<ServiceAssembly<?>>> failingDuplicateProviders = new LinkedHashMap<>();
 }

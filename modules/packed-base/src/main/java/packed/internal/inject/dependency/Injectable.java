@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject;
+package packed.internal.inject.dependency;
 
 import static java.util.Objects.requireNonNull;
 
@@ -29,12 +29,11 @@ import packed.internal.component.SourceAssembly;
 import packed.internal.component.SourceModel;
 import packed.internal.component.SourceModelMember;
 import packed.internal.component.SourceModelMethod;
+import packed.internal.inject.ContainerInjectionManager;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
-import packed.internal.inject.service.InjectionManager;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.inject.sidecar.AtProvides;
-import packed.internal.inject.spi.DependencyProvider;
 
 /**
  *
@@ -70,7 +69,7 @@ public class Injectable {
     /** The source (component) this injectable belongs to. */
     public final SourceAssembly source;
 
-    public final InjectionManager im;
+    public final ContainerInjectionManager im;
 
     @Nullable
     public final SourceModelMember sourceMember;
@@ -165,6 +164,9 @@ public class Injectable {
     }
 
     public int regionIndex() {
+        if (buildEntry == null) {
+            return source.regionIndex;
+        }
         return entry().regionIndex();
     }
 

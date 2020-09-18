@@ -22,7 +22,7 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.config.ConfigSite;
-import packed.internal.inject.service.InjectionManager;
+import packed.internal.inject.ContainerInjectionManager;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.inject.service.runtime.MappingInjectorEntry;
 import packed.internal.inject.service.runtime.RuntimeService;
@@ -39,7 +39,7 @@ final class MappingServiceAssembly<F, T> extends ServiceAssembly<T> {
     /** The function to apply on the */
     private final Function<? super F, T> function;
 
-    MappingServiceAssembly(InjectionManager node, ConfigSite configSite, ServiceAssembly<F> entryToMap, Key<T> toKey, Function<F, T> function) {
+    MappingServiceAssembly(ContainerInjectionManager node, ConfigSite configSite, ServiceAssembly<F> entryToMap, Key<T> toKey, Function<F, T> function) {
         super(node, configSite, toKey);
         this.entryToMap = entryToMap;
         this.function = requireNonNull(function, "function is null");

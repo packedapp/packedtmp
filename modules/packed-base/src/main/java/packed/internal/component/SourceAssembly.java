@@ -22,10 +22,10 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentModifier;
 import app.packed.inject.Factory;
-import packed.internal.inject.Injectable;
+import packed.internal.inject.dependency.DependencyProvider;
+import packed.internal.inject.dependency.Injectable;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.service.assembly.ServiceAssembly;
-import packed.internal.inject.spi.DependencyProvider;
 
 /** All components with a {@link ComponentModifier#SOURCED} modifier has an instance of this class. */
 public final class SourceAssembly implements DependencyProvider {
@@ -68,16 +68,12 @@ public final class SourceAssembly implements DependencyProvider {
                 this.injectable = null;
             } else {
                 this.injectable = new Injectable(this, factory);
-                region.sourceInjectables.add(this);
-                region.allInjectables.add(injectable);
             }
         } else if (source instanceof Factory) {
             this.factory = (BaseFactory<?>) source;
             this.instance = null;
             this.model = compConf.realm.componentModelOf(factory.rawType());
             this.injectable = new Injectable(this, factory);
-            region.sourceInjectables.add(this);
-            region.allInjectables.add(injectable);
         } else {
             this.model = compConf.realm.componentModelOf(source.getClass());
             this.instance = source;

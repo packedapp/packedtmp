@@ -29,15 +29,22 @@ public class Zzz extends BaseBundle {
     @Override
     protected void configure() {
         service();
+        install(Foo.class);
         use(MyEx.class);
     }
 
     public static void main(String[] args) {
-        App.of(new Z4());
+        App.of(new Zzz());
         ComponentAnalyzer.stream(new Zzz()).forEach(c -> {
             System.out.println(c.path() + "  " + c.modifiers() + "  " + c.attributes());
         });
     }
 
     static class MyEx extends Extension {}
+
+    public static class Foo {
+        public Foo() {
+            System.out.println("OK");
+        }
+    }
 }

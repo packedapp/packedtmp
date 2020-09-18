@@ -28,9 +28,9 @@ import app.packed.component.ShellDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import packed.internal.component.wirelet.WireletPack;
+import packed.internal.config.ConfigSiteInjectOperations;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.errorhandling.ErrorMessage;
-import packed.internal.inject.various.ConfigSiteInjectOperations;
 
 /** The default implementation of {@link AssemblyContext} */
 public final class PackedAssemblyContext implements AssemblyContext {

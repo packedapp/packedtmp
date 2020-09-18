@@ -34,10 +34,11 @@ import app.packed.introspection.VariableDescriptor;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import packed.internal.component.RegionAssembly;
-import packed.internal.inject.Injectable;
-import packed.internal.inject.ServiceDependency;
+import packed.internal.inject.ContainerInjectionManager;
+import packed.internal.inject.dependency.DependencyProvider;
+import packed.internal.inject.dependency.Injectable;
+import packed.internal.inject.dependency.ServiceDependency;
 import packed.internal.inject.service.assembly.ServiceAssembly;
-import packed.internal.inject.spi.DependencyProvider;
 
 /**
  * This class manages everything to do with dependencies of components and service for an {@link ServiceExtension}.
@@ -80,7 +81,7 @@ public final class DependencyManager {
     IdentityHashMap<ServiceAssembly<?>, List<ServiceDependency>> unresolvedDependencies;
 
     /** Also used for descriptors. */
-    public void analyze(RegionAssembly resolver, InjectionManager node) {
+    public void analyze(RegionAssembly resolver, ContainerInjectionManager node) {
         checkForMissingDependencies(node);
         PostProcesser.dependencyCyclesDetect(resolver, detectCyclesFor);
     }
@@ -100,7 +101,7 @@ public final class DependencyManager {
         }
     }
 
-    public void checkForMissingDependencies(InjectionManager node) {
+    public void checkForMissingDependencies(ContainerInjectionManager node) {
         boolean manualRequirementsManagement = node.dependencies != null && node.dependencies.manualRequirementsManagement;
         if (missingDependencies != null) {
             // if (!box.source.unresolvedServicesAllowed()) {
@@ -189,7 +190,7 @@ public final class DependencyManager {
      * @param entry
      * @param dependency
      */
-    public void recordResolvedDependency(InjectionManager im, Injectable entry, ServiceDependency dependency, @Nullable DependencyProvider resolvedTo,
+    public void recordResolvedDependency(ContainerInjectionManager im, Injectable entry, ServiceDependency dependency, @Nullable DependencyProvider resolvedTo,
             boolean fromParent) {
         requireNonNull(entry);
         requireNonNull(dependency);

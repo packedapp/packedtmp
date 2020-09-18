@@ -16,7 +16,7 @@
 package packed.internal.component;
 
 import app.packed.base.Nullable;
-import packed.internal.inject.spi.DependencyProvider;
+import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.sidecar.MethodSidecarModel;
 
 /**

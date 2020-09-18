@@ -14,7 +14,7 @@ module app.packed.base {
 
     exports packed.internal.invoke to app.packed.sidecar2;
     exports packed.internal.util to app.packed.sidecar2;
-    exports packed.internal.inject.various to app.packed.sidecar2;
+    exports packed.internal.inject.util to app.packed.sidecar2;
 
     // Temporary...
 //    exports packed.internal.invoke to app.packed.banana, app.packed.function, app.packed.conta;

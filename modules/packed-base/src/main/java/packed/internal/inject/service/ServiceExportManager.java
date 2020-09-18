@@ -30,6 +30,8 @@ import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.Service;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceMap;
+import packed.internal.inject.InjectionErrorManagerMessages;
+import packed.internal.inject.ContainerInjectionManager;
 import packed.internal.inject.service.assembly.ExportedServiceAssembly;
 import packed.internal.inject.service.assembly.PackedExportedServiceConfiguration;
 import packed.internal.inject.service.assembly.ServiceAssembly;
@@ -43,7 +45,7 @@ import packed.internal.util.KeyBuilder;
  * @see ServiceExtension#export(Key)
  * @see ServiceExtension#exportAll()
  */
-public final class ExportManager implements Iterable<ExportedServiceAssembly<?>> {
+public final class ServiceExportManager implements Iterable<ExportedServiceAssembly<?>> {
 
     /** The config site, if we export all entries. */
     @Nullable
@@ -57,7 +59,7 @@ public final class ExportManager implements Iterable<ExportedServiceAssembly<?>>
     private ArrayList<ExportedServiceAssembly<?>> exportedEntries;
 
     /** The extension node this exporter is a part of. */
-    private final InjectionManager im;
+    private final ContainerInjectionManager im;
 
     /** All resolved exports. Is null until {@link #resolve()} has finished (successfully or just finished?). */
     @Nullable
@@ -69,7 +71,7 @@ public final class ExportManager implements Iterable<ExportedServiceAssembly<?>>
      * @param im
      *            the extension node this export manager belongs to
      */
-    public ExportManager(InjectionManager im) {
+    public ServiceExportManager(ContainerInjectionManager im) {
         this.im = requireNonNull(im);
     }
 
@@ -208,7 +210,7 @@ public final class ExportManager implements Iterable<ExportedServiceAssembly<?>>
         }
 
         if (im.errorManager().failingUnresolvedKeyedExports != null) {
-            ErrorMessages.addUnresolvedExports(im, im.errorManager().failingUnresolvedKeyedExports);
+            InjectionErrorManagerMessages.addUnresolvedExports(im, im.errorManager().failingUnresolvedKeyedExports);
         }
         if (im.errorManager().failingDuplicateExports != null) {
             // TODO add error messages

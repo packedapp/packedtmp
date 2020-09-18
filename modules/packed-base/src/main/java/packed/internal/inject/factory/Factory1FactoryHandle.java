@@ -26,7 +26,7 @@ import java.util.function.Function;
 
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory1;
-import packed.internal.inject.ServiceDependency;
+import packed.internal.inject.dependency.ServiceDependency;
 import packed.internal.util.LookupUtil;
 
 /** An internal factory for {@link Factory1}. */

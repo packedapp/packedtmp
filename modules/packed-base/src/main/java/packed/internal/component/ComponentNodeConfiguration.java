@@ -53,12 +53,12 @@ import packed.internal.base.attribute.ProvidableAttributeModel;
 import packed.internal.base.attribute.ProvidableAttributeModel.Attt;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletPack;
+import packed.internal.config.ConfigSiteInjectOperations;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.container.ExtensionAssembly;
 import packed.internal.container.ExtensionModel;
-import packed.internal.inject.service.InjectionManager;
-import packed.internal.inject.various.ConfigSiteInjectOperations;
+import packed.internal.inject.ContainerInjectionManager;
 import packed.internal.util.ThrowableUtil;
 
 /** The build time representation of a component. */
@@ -167,6 +167,9 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         // Setup Source
         if (modifiers().isSource()) {
             this.source = new SourceAssembly(this, region, driver.data);
+            if (source.injectable != null) {
+                injectionManager().allInjectables.add(source.injectable);
+            }
             this.source.model.invokeOnHookOnInstall(this);
         } else {
             this.source = null;
@@ -326,7 +329,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
             container.finish();
         }
         if (getParent() == null) {
-            InjectionManager im = injectionManager();
+            ContainerInjectionManager im = injectionManager();
             im.buildTree(region);
         }
         finalState = true;
@@ -356,7 +359,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         return name;
     }
 
-    public InjectionManager injectionManager() {
+    public ContainerInjectionManager injectionManager() {
         return memberOfContainer.im;
     }
 
