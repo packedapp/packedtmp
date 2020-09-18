@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.IdentityHashMap;
 
 import packed.internal.component.RuntimeRegion;
-import packed.internal.service.buildtime.BuildtimeService;
+import packed.internal.service.buildtime.ServiceAssembly;
 
 /** A special instantiation context that is created */
 // Vi beholder den lidt endnu, det saa traels hver gang vi
@@ -30,7 +30,7 @@ public class ServiceInstantiationContext {
     public final RuntimeRegion region;
 
     // Translates from BuildEntry->RuntimeEntry
-    public final IdentityHashMap<BuildtimeService<?>, RuntimeService<?>> transformers = new IdentityHashMap<>();
+    public final IdentityHashMap<ServiceAssembly<?>, RuntimeService<?>> transformers = new IdentityHashMap<>();
 
     public ServiceInstantiationContext(RuntimeRegion ns) {
         this.region = requireNonNull(ns);

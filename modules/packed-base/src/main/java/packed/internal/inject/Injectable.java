@@ -34,7 +34,7 @@ import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.inject.sidecar.AtProvides;
 import packed.internal.inject.spi.DependencyProvider;
 import packed.internal.service.InjectionManager;
-import packed.internal.service.buildtime.BuildtimeService;
+import packed.internal.service.buildtime.ServiceAssembly;
 
 /**
  *
@@ -52,7 +52,7 @@ import packed.internal.service.buildtime.BuildtimeService;
 // Something with dependencis
 public class Injectable {
 
-    private final BuildtimeService<?> buildEntry;
+    private final ServiceAssembly<?> buildEntry;
 
     MethodHandle buildMethodHandle;
 
@@ -75,7 +75,7 @@ public class Injectable {
     @Nullable
     public final SourceModelMember sourceMember;
 
-    public Injectable(BuildtimeService<?> buildEntry, SourceAssembly source, AtProvides ap) {
+    public Injectable(ServiceAssembly<?> buildEntry, SourceAssembly source, AtProvides ap) {
         this.source = requireNonNull(source);
         this.dependencies = ap.dependencies;
         this.directMethodHandle = ap.methodHandle;
@@ -173,7 +173,7 @@ public class Injectable {
     }
 
     @Nullable
-    private BuildtimeService<?> entry() {
+    private ServiceAssembly<?> entry() {
         // buildEntry is null if it this Injectable is created from a source and not @AtProvides
         // In which case we store the build entry (if available) in the source instead
         if (buildEntry == null) {

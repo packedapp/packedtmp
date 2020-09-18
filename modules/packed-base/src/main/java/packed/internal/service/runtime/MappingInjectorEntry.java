@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Function;
 
 import app.packed.inject.ProvideContext;
-import packed.internal.service.buildtime.BuildtimeService;
+import packed.internal.service.buildtime.ServiceAssembly;
 
 /** A runtime service entry that uses a {@link Function} to map an existing service. */
 public final class MappingInjectorEntry<F, T> extends RuntimeService<T> {
@@ -37,7 +37,7 @@ public final class MappingInjectorEntry<F, T> extends RuntimeService<T> {
      * @param delegate
      *            the build time alias node to create a runtime node from
      */
-    public MappingInjectorEntry(BuildtimeService<T> buildNode, RuntimeService<F> delegate, Function<? super F, ? extends T> function) {
+    public MappingInjectorEntry(ServiceAssembly<T> buildNode, RuntimeService<F> delegate, Function<? super F, ? extends T> function) {
         super(buildNode);
         this.delegate = requireNonNull(delegate);
         this.function = requireNonNull(function);

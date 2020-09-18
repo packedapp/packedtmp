@@ -42,7 +42,7 @@ public final class ProvideAllFromOtherInjector {
 
     /** All entries that was imported, any wirelets that was specified when importing the injector may modify this map. */
     // Is not ProvideABE because we might transform some of the entries...
-    public final LinkedHashMap<Key<?>, BuildtimeService<?>> entries = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, ServiceAssembly<?>> entries = new LinkedHashMap<>();
 
     /** The injector that provides the services. */
     final AbstractInjector injector;
@@ -67,7 +67,7 @@ public final class ProvideAllFromOtherInjector {
 
         injector.forEachEntry(e -> {
             if (!e.key().equals(KeyBuilder.INJECTOR_KEY)) { // ignores Injector, and other
-                entries.put(e.key(), new FromOtherInjectorBuildEntry<>(this, (RuntimeService<Object>) e));
+                entries.put(e.key(), new FromOtherInjectorServiceAssembly<>(this, (RuntimeService<Object>) e));
             }
         });
 

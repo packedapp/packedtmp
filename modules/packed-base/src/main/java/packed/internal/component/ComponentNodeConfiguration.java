@@ -166,7 +166,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
 
         // Setup Source
         if (modifiers().isSource()) {
-            this.source = new SourceAssembly(this, region, realm, driver.data);
+            this.source = new SourceAssembly(this, region, driver.data);
             this.source.model.invokeOnHookOnInstall(this);
         } else {
             this.source = null;

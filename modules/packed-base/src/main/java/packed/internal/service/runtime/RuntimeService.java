@@ -22,7 +22,7 @@ import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ProvideContext;
 import app.packed.service.Service;
-import packed.internal.service.buildtime.BuildtimeService;
+import packed.internal.service.buildtime.ServiceAssembly;
 
 /** An entry that represents a service at runtime. */
 public abstract class RuntimeService<T> implements Service {
@@ -39,7 +39,7 @@ public abstract class RuntimeService<T> implements Service {
      * @param buildEntry
      *            the build node to create the runtime node from
      */
-    RuntimeService(BuildtimeService<T> buildEntry) {
+    RuntimeService(ServiceAssembly<T> buildEntry) {
         this(buildEntry.configSite(), buildEntry.key());
     }
 

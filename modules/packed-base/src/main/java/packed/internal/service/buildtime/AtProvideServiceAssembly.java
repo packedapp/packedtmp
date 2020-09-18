@@ -31,7 +31,7 @@ import packed.internal.service.runtime.ServiceInstantiationContext;
 /**
  *
  */
-public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
+public class AtProvideServiceAssembly<T> extends ServiceAssembly<T> {
 
     private final Injectable injectable;
 
@@ -42,7 +42,7 @@ public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
      * 
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public AtProvideBuildEntry(InjectionManager im, ComponentNodeConfiguration compConf, AtProvides ap) {
+    public AtProvideServiceAssembly(InjectionManager im, ComponentNodeConfiguration compConf, AtProvides ap) {
         super(im, compConf.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, ap.provides, ap.member), (Key) ap.key);
         this.injectable = new Injectable(this, compConf.source, ap);
         this.regionIndex = ap.isConstant ? compConf.region.reserve() : -1;

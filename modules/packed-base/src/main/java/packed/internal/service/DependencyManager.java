@@ -37,7 +37,7 @@ import packed.internal.component.RegionAssembly;
 import packed.internal.inject.Injectable;
 import packed.internal.inject.ServiceDependency;
 import packed.internal.inject.spi.DependencyProvider;
-import packed.internal.service.buildtime.BuildtimeService;
+import packed.internal.service.buildtime.ServiceAssembly;
 
 /**
  * This class manages everything to do with dependencies of components and service for an {@link ServiceExtension}.
@@ -77,7 +77,7 @@ public final class DependencyManager {
     final HashSet<Key<?>> requiredOptionally = new HashSet<>();
 
     /** A map of all dependencies that could not be resolved */
-    IdentityHashMap<BuildtimeService<?>, List<ServiceDependency>> unresolvedDependencies;
+    IdentityHashMap<ServiceAssembly<?>, List<ServiceDependency>> unresolvedDependencies;
 
     /** Also used for descriptors. */
     public void analyze(RegionAssembly resolver, InjectionManager node) {
@@ -179,7 +179,7 @@ public final class DependencyManager {
         manualRequirementsManagement = true;
     }
 
-    public void recordMissingDependency(BuildtimeService<?> entry, ServiceDependency dependency, boolean fromParent) {
+    public void recordMissingDependency(ServiceAssembly<?> entry, ServiceDependency dependency, boolean fromParent) {
 
     }
 

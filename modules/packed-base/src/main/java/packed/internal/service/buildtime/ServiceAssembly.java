@@ -37,7 +37,7 @@ import packed.internal.service.runtime.ServiceInstantiationContext;
  * <p>
  * Instances of this class are never exposed to end users. But instead wrapped.
  */
-public abstract class BuildtimeService<T> implements DependencyProvider {
+public abstract class ServiceAssembly<T> implements DependencyProvider {
 
     /** The configuration site of this object. */
     private final ConfigSite configSite;
@@ -53,7 +53,7 @@ public abstract class BuildtimeService<T> implements DependencyProvider {
      */
     private Key<T> key;
 
-    public BuildtimeService(@Nullable InjectionManager im, ConfigSite configSite, Key<T> key) {
+    public ServiceAssembly(@Nullable InjectionManager im, ConfigSite configSite, Key<T> key) {
         this.im = requireNonNull(im);
         this.configSite = requireNonNull(configSite);
         this.key = requireNonNull(key);

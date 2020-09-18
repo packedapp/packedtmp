@@ -41,10 +41,10 @@ import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.Injectable;
 import packed.internal.inject.sidecar.AtProvides;
-import packed.internal.service.buildtime.AtProvideBuildEntry;
-import packed.internal.service.buildtime.BuildtimeService;
-import packed.internal.service.buildtime.ComponentSourceBuildEntry;
-import packed.internal.service.buildtime.ExportedBuildEntry;
+import packed.internal.service.buildtime.AtProvideServiceAssembly;
+import packed.internal.service.buildtime.ServiceAssembly;
+import packed.internal.service.buildtime.ComponentSourceServiceAssembly;
+import packed.internal.service.buildtime.ExportedServiceAssembly;
 import packed.internal.service.buildtime.ProvideAllFromOtherInjector;
 import packed.internal.service.runtime.AbstractInjector;
 import packed.internal.service.runtime.PackedInjector;
@@ -76,7 +76,7 @@ public final class InjectionManager {
     private ExportManager exporter;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
-    public final LinkedHashMap<Key<?>, BuildtimeService<?>> resolvedServices = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices = new LinkedHashMap<>();
 
     InjectionErrorManager em;
 
@@ -98,15 +98,15 @@ public final class InjectionManager {
         return e;
     }
 
-    public <T> BuildtimeService<T> provideFromSource(ComponentNodeConfiguration compConf, Key<T> key) {
+    public <T> ServiceAssembly<T> provideFromSource(ComponentNodeConfiguration compConf, Key<T> key) {
 
-        BuildtimeService<T> e = new ComponentSourceBuildEntry<>(this, compConf, key);
+        ServiceAssembly<T> e = new ComponentSourceServiceAssembly<>(this, compConf, key);
         buildEntries.add(e);
         return e;
     }
 
     public void provideFromAtProvides(ComponentNodeConfiguration compConf, AtProvides atProvides) {
-        BuildtimeService<?> e = new AtProvideBuildEntry<>(this, compConf, atProvides);
+        ServiceAssembly<?> e = new AtProvideServiceAssembly<>(this, compConf, atProvides);
         buildEntries.add(e);
         container.compConf.region.allInjectables.add(e.injectable());
     }
@@ -183,7 +183,7 @@ public final class InjectionManager {
     public ServiceContract newServiceContract() {
         return ServiceContract.newContract(c -> {
             if (exporter != null) {
-                for (ExportedBuildEntry<?> n : exporter) {
+                for (ExportedServiceAssembly<?> n : exporter) {
                     c.provides(n.key());
                 }
             }
@@ -206,7 +206,7 @@ public final class InjectionManager {
     private ArrayList<ProvideAllFromOtherInjector> provideAll;
 
     /** All explicit added build entries. */
-    public final ArrayList<BuildtimeService<?>> buildEntries = new ArrayList<>();
+    public final ArrayList<ServiceAssembly<?>> buildEntries = new ArrayList<>();
 
     public void provideFromInjector(AbstractInjector injector, ConfigSite configSite, WireletList wirelets) {
         ProvideAllFromOtherInjector pi = new ProvideAllFromOtherInjector(this, configSite, injector, wirelets);
@@ -217,7 +217,7 @@ public final class InjectionManager {
         p.add(pi);
     }
 
-    public LinkedHashMap<Key<?>, BuildtimeService<?>> resolve(InjectionManager im, LinkedHashMap<Key<?>, BuildtimeService<?>> resolvedServices) {
+    public LinkedHashMap<Key<?>, ServiceAssembly<?>> resolve(InjectionManager im, LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices) {
 
         // First process provided entries, then any entries added via provideAll
         resolve0(im, resolvedServices, buildEntries);
@@ -236,12 +236,12 @@ public final class InjectionManager {
         return resolvedServices;
     }
 
-    private void resolve0(InjectionManager im, LinkedHashMap<Key<?>, BuildtimeService<?>> resolvedServices,
-            Collection<? extends BuildtimeService<?>> buildEntries) {
-        for (BuildtimeService<?> entry : buildEntries) {
-            BuildtimeService<?> existing = resolvedServices.putIfAbsent(entry.key(), entry);
+    private void resolve0(InjectionManager im, LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices,
+            Collection<? extends ServiceAssembly<?>> buildEntries) {
+        for (ServiceAssembly<?> entry : buildEntries) {
+            ServiceAssembly<?> existing = resolvedServices.putIfAbsent(entry.key(), entry);
             if (existing != null) {
-                LinkedHashSet<BuildtimeService<?>> hs = im.errorManager().failingDuplicateProviders.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
+                LinkedHashSet<ServiceAssembly<?>> hs = im.errorManager().failingDuplicateProviders.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
                 hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
                 hs.add(entry);
             }

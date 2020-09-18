@@ -21,9 +21,9 @@ import app.packed.base.AttributeMap;
 import app.packed.base.Key;
 import app.packed.config.ConfigSite;
 import app.packed.service.Service;
-import packed.internal.service.buildtime.BuildtimeService;
+import packed.internal.service.buildtime.ServiceAssembly;
 
-/** An implementation of {@link Service} because {@link BuildtimeService} is not immutable. */
+/** An implementation of {@link Service} because {@link ServiceAssembly} is not immutable. */
 public final class PackedService implements Service {
 
     /** The configuration site of the service. */

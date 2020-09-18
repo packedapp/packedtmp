@@ -25,7 +25,7 @@ import app.packed.inject.Factory;
 import packed.internal.inject.Injectable;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.spi.DependencyProvider;
-import packed.internal.service.buildtime.BuildtimeService;
+import packed.internal.service.buildtime.ServiceAssembly;
 
 /** All components with a {@link ComponentModifier#SOURCED} modifier has an instance of this class. */
 public final class SourceAssembly implements DependencyProvider {
@@ -52,9 +52,9 @@ public final class SourceAssembly implements DependencyProvider {
 
     /** Whether or not this source is provided as a service. */
     @Nullable
-    public BuildtimeService<?> service;
+    public ServiceAssembly<?> service;
 
-    SourceAssembly(ComponentNodeConfiguration compConf, RegionAssembly region, RealmAssembly realm, Object source) {
+    SourceAssembly(ComponentNodeConfiguration compConf, RegionAssembly region, Object source) {
         this.compConf = compConf;
         this.regionIndex = compConf.modifiers().isSingleton() ? region.reserve() : -1;
 
@@ -63,7 +63,7 @@ public final class SourceAssembly implements DependencyProvider {
             Class<?> c = (Class<?>) source;
             this.factory = (BaseFactory<?>) Factory.find(c);
             this.instance = null;
-            this.model = realm.componentModelOf(factory.rawType());
+            this.model = compConf.realm.componentModelOf(factory.rawType());
             if (compConf.modifiers().isStateless()) {
                 this.injectable = null;
             } else {
@@ -74,12 +74,12 @@ public final class SourceAssembly implements DependencyProvider {
         } else if (source instanceof Factory) {
             this.factory = (BaseFactory<?>) source;
             this.instance = null;
-            this.model = realm.componentModelOf(factory.rawType());
+            this.model = compConf.realm.componentModelOf(factory.rawType());
             this.injectable = new Injectable(this, factory);
             region.sourceInjectables.add(this);
             region.allInjectables.add(injectable);
         } else {
-            this.model = realm.componentModelOf(source.getClass());
+            this.model = compConf.realm.componentModelOf(source.getClass());
             this.instance = source;
             this.injectable = null;
             this.factory = null;
@@ -88,26 +88,6 @@ public final class SourceAssembly implements DependencyProvider {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public Injectable injectable() {
-        return injectable;
-    }
-
-    BuildtimeService<?> provide() {
-        // Maybe we should throw an exception, if the user tries to provide an entry multiple times??
-        BuildtimeService<?> s = service;
-        if (s == null) {
-            Key<?> key;
-            if (instance != null) {
-                key = Key.of(model.modelType()); // Move to model?? What if instance has Qualifier???
-            } else {
-                key = factory.key();
-            }
-            s = service = compConf.injectionManager().provideFromSource(compConf, key);
-        }
-        return s;
-    }
-
     @Override
     public MethodHandle dependencyAccessor() {
         if (instance != null) {
@@ -118,5 +98,26 @@ public final class SourceAssembly implements DependencyProvider {
         } else {
             return injectable.buildMethodHandle();
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Injectable injectable() {
+        return injectable;
+    }
+
+    ServiceAssembly<?> provide() {
+        // Maybe we should throw an exception, if the user tries to provide an entry multiple times??
+        ServiceAssembly<?> s = service;
+        if (s == null) {
+            Key<?> key;
+            if (instance != null) {
+                key = Key.of(model.modelType()); // Move to model?? What if instance has Qualifier???
+            } else {
+                key = factory.key();
+            }
+            s = service = compConf.injectionManager().provideFromSource(compConf, key);
+        }
+        return s;
     }
 }

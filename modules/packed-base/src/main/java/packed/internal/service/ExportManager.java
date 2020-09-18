@@ -30,8 +30,8 @@ import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.Service;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceMap;
-import packed.internal.service.buildtime.BuildtimeService;
-import packed.internal.service.buildtime.ExportedBuildEntry;
+import packed.internal.service.buildtime.ServiceAssembly;
+import packed.internal.service.buildtime.ExportedServiceAssembly;
 import packed.internal.service.buildtime.PackedExportedServiceConfiguration;
 import packed.internal.service.runtime.SimpleServiceSet;
 import packed.internal.util.KeyBuilder;
@@ -43,7 +43,7 @@ import packed.internal.util.KeyBuilder;
  * @see ServiceExtension#export(Key)
  * @see ServiceExtension#exportAll()
  */
-public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
+public final class ExportManager implements Iterable<ExportedServiceAssembly<?>> {
 
     /** The config site, if we export all entries. */
     @Nullable
@@ -54,14 +54,14 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
      * {@link ServiceExtension#export(Key)}.
      */
     @Nullable
-    private ArrayList<ExportedBuildEntry<?>> exportedEntries;
+    private ArrayList<ExportedServiceAssembly<?>> exportedEntries;
 
     /** The extension node this exporter is a part of. */
     private final InjectionManager im;
 
     /** All resolved exports. Is null until {@link #resolve()} has finished (successfully or just finished?). */
     @Nullable
-    private LinkedHashMap<Key<?>, ExportedBuildEntry<?>> resolvedExports;
+    private LinkedHashMap<Key<?>, ExportedServiceAssembly<?>> resolvedExports;
 
     /**
      * Creates a new export manager.
@@ -86,13 +86,13 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
      */
     // I think exporting an entry locks its any providing key it might have...
 
-    public <T> ExportedServiceConfiguration<T> export(BuildtimeService<T> entryToExport, ConfigSite configSite) {
+    public <T> ExportedServiceConfiguration<T> export(ServiceAssembly<T> entryToExport, ConfigSite configSite) {
         // I'm not sure we need the check after, we have put export() directly on a component configuration..
         // Perviously you could specify any entry, even something from another bundle.
         // if (entryToExport.node != node) {
         // throw new IllegalArgumentException("The specified configuration was created by another injector extension");
         // }
-        return export0(new ExportedBuildEntry<>(im, entryToExport, configSite));
+        return export0(new ExportedServiceAssembly<>(im, entryToExport, configSite));
     }
 
     /**
@@ -109,7 +109,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
      * @see ServiceExtension#export(Key)
      */
     public <T> ExportedServiceConfiguration<T> export(Key<T> key, ConfigSite configSite) {
-        return export0(new ExportedBuildEntry<>(im, key, configSite));
+        return export0(new ExportedServiceAssembly<>(im, key, configSite));
     }
 
     /**
@@ -121,8 +121,8 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
      *            the build entry to export
      * @return a configuration object that can be exposed to the user
      */
-    private <T> PackedExportedServiceConfiguration<T> export0(ExportedBuildEntry<T> entry) {
-        ArrayList<ExportedBuildEntry<?>> e = exportedEntries;
+    private <T> PackedExportedServiceConfiguration<T> export0(ExportedServiceAssembly<T> entry) {
+        ArrayList<ExportedServiceAssembly<?>> e = exportedEntries;
         if (e == null) {
             e = exportedEntries = new ArrayList<>(5);
         }
@@ -151,7 +151,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
             return null;
         }
         List<Service> l = new ArrayList<>();
-        for (ExportedBuildEntry<?> e : this) {
+        for (ExportedServiceAssembly<?> e : this) {
             l.add(e.toDescriptor());
         }
         return new SimpleServiceSet(l);
@@ -159,9 +159,9 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
 
     /** {@inheritDoc} */
     @Override
-    public Iterator<ExportedBuildEntry<?>> iterator() {
+    public Iterator<ExportedServiceAssembly<?>> iterator() {
         if (resolvedExports == null) {
-            List<ExportedBuildEntry<?>> l = List.of();
+            List<ExportedServiceAssembly<?>> l = List.of();
             return l.iterator();
         }
         return resolvedExports.values().iterator();
@@ -177,13 +177,13 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
         // We could move unresolvedKeyedExports and duplicateExports in here. But keep them as fields
         // to have identical structure to ServiceProvidingManager
 
-        LinkedHashMap<Key<?>, ExportedBuildEntry<?>> resolvedExports = new LinkedHashMap<>();
+        LinkedHashMap<Key<?>, ExportedServiceAssembly<?>> resolvedExports = new LinkedHashMap<>();
         // Process every exported build entry
         if (exportedEntries != null) {
-            for (ExportedBuildEntry<?> entry : exportedEntries) {
+            for (ExportedServiceAssembly<?> entry : exportedEntries) {
                 // try and find a matching service entry for key'ed exports via
                 // exportedEntry != null for entries added via InjectionExtension#export(ProvidedComponentConfiguration)
-                BuildtimeService<?> entryToExport = entry.exportedEntry;
+                ServiceAssembly<?> entryToExport = entry.exportedEntry;
                 boolean export = true;
                 if (entryToExport == null) {
                     entryToExport = im.resolvedServices.get(entry.keyToExport);
@@ -191,14 +191,14 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
                         im.errorManager().failingUnresolvedKeyedExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>()).add(entry);
                         export = false;
                     } else {
-                        entry.exportedEntry = (BuildtimeService) entryToExport;
+                        entry.exportedEntry = (ServiceAssembly) entryToExport;
                     }
                 }
 
                 if (export) {
-                    ExportedBuildEntry<?> existing = resolvedExports.putIfAbsent(entry.key(), entry);
+                    ExportedServiceAssembly<?> existing = resolvedExports.putIfAbsent(entry.key(), entry);
                     if (existing != null) {
-                        LinkedHashSet<ExportedBuildEntry<?>> hs = im.errorManager().failingDuplicateExports.computeIfAbsent(entry.key(),
+                        LinkedHashSet<ExportedServiceAssembly<?>> hs = im.errorManager().failingDuplicateExports.computeIfAbsent(entry.key(),
                                 m -> new LinkedHashSet<>());
                         hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
                         hs.add(entry);
@@ -215,10 +215,10 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
         }
 
         if (exportAll != null) {
-            for (BuildtimeService<?> e : im.resolvedServices.values()) {
+            for (ServiceAssembly<?> e : im.resolvedServices.values()) {
                 if (!e.key().equals(KeyBuilder.INJECTOR_KEY)) {
                     if (!resolvedExports.containsKey(e.key())) {
-                        resolvedExports.put(e.key(), new ExportedBuildEntry<>(im, e, exportAll));
+                        resolvedExports.put(e.key(), new ExportedServiceAssembly<>(im, e, exportAll));
                     }
                 }
             }

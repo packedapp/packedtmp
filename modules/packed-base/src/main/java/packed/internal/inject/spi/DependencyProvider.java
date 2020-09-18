@@ -24,7 +24,7 @@ import packed.internal.component.RegionAssembly;
 import packed.internal.component.SourceAssembly;
 import packed.internal.inject.Injectable;
 import packed.internal.inject.SidecarProvideDependency;
-import packed.internal.service.buildtime.BuildtimeService;
+import packed.internal.service.buildtime.ServiceAssembly;
 
 /**
  * Something that
@@ -33,7 +33,7 @@ import packed.internal.service.buildtime.BuildtimeService;
  * 
  * {@link SidecarProvideDependency} for methods annotated with {@link Provide}
  * 
- * {@link BuildtimeService} a service of some kind
+ * {@link ServiceAssembly} a service of some kind
  */
 public interface DependencyProvider {
 

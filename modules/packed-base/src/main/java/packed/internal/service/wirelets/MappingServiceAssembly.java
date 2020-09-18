@@ -23,7 +23,7 @@ import java.util.function.Function;
 import app.packed.base.Key;
 import app.packed.config.ConfigSite;
 import packed.internal.service.InjectionManager;
-import packed.internal.service.buildtime.BuildtimeService;
+import packed.internal.service.buildtime.ServiceAssembly;
 import packed.internal.service.runtime.MappingInjectorEntry;
 import packed.internal.service.runtime.RuntimeService;
 import packed.internal.service.runtime.ServiceInstantiationContext;
@@ -31,15 +31,15 @@ import packed.internal.service.runtime.ServiceInstantiationContext;
 /**
  * A build entry that that takes an existing entry and uses a {@link Function} to map the service provided by the entry.
  */
-final class MappingBuildEntry<F, T> extends BuildtimeService<T> {
+final class MappingServiceAssembly<F, T> extends ServiceAssembly<T> {
 
     /** The entry that should be mapped. */
-    final BuildtimeService<F> entryToMap;
+    final ServiceAssembly<F> entryToMap;
 
     /** The function to apply on the */
     private final Function<? super F, T> function;
 
-    MappingBuildEntry(InjectionManager node, ConfigSite configSite, BuildtimeService<F> entryToMap, Key<T> toKey, Function<F, T> function) {
+    MappingServiceAssembly(InjectionManager node, ConfigSite configSite, ServiceAssembly<F> entryToMap, Key<T> toKey, Function<F, T> function) {
         super(node, configSite, toKey);
         this.entryToMap = entryToMap;
         this.function = requireNonNull(function, "function is null");

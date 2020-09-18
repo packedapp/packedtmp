@@ -33,7 +33,7 @@ import app.packed.service.ServiceExtension;
 public final class PackedExportedServiceConfiguration<T> implements ExportedServiceConfiguration<T> {
 
     /** The entry that is exported. */
-    private final ExportedBuildEntry<T> entry;
+    private final ExportedServiceAssembly<T> entry;
 
     /**
      * Creates a new service configuration object.
@@ -41,7 +41,7 @@ public final class PackedExportedServiceConfiguration<T> implements ExportedServ
      * @param entry
      *            the entry to export
      */
-    public PackedExportedServiceConfiguration(ExportedBuildEntry<T> entry) {
+    public PackedExportedServiceConfiguration(ExportedServiceAssembly<T> entry) {
         this.entry = requireNonNull(entry);
     }
 
