@@ -60,7 +60,7 @@ public final class ContainerAssembly {
      */
     public ContainerAssembly(ComponentNodeConfiguration compConf) {
         this.compConf = requireNonNull(compConf);
-        this.parent = compConf.getParent() == null ? null : compConf.getParent().container();
+        this.parent = compConf.getParent() == null ? null : compConf.getParent().memberOfContainer();
         if (parent != null) {
             parent.runPredContainerChildren();
 

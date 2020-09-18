@@ -357,7 +357,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
      * @return the container this component is a part of
      */
     @Nullable
-    public ContainerAssembly container() {
+    public ContainerAssembly memberOfContainer() {
         return memberOfContainer;
     }
 
