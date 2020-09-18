@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.service;
+package packed.internal.inject;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 
+import app.packed.base.Nullable;
 import app.packed.service.CyclicDependencyGraphException;
 import packed.internal.component.RegionAssembly;
 import packed.internal.inject.dependency.DependencyProvider;
@@ -33,7 +34,7 @@ import packed.internal.inject.dependency.Injectable;
 
 // https://algs4.cs.princeton.edu/42digraph/TarjanSCC.java.html
 // https://www.youtube.com/watch?v=TyWtx7q2D7Y
-final class PostProcesser {
+public final class PostProcesser {
 
     /**
      * Tries to find a dependency cycle.
@@ -43,7 +44,7 @@ final class PostProcesser {
      */
 
     // detect cycles for -> detect cycle or needs to be instantited at initialization time
-    static void dependencyCyclesDetect(RegionAssembly resolver, ArrayList<Injectable> detectCyclesFor) {
+    public static void dependencyCyclesDetect(RegionAssembly resolver, ArrayList<Injectable> detectCyclesFor) {
         DependencyCycle c = dependencyCyclesFind(resolver, detectCyclesFor);
         if (c != null) {
             throw new CyclicDependencyGraphException("Dependency cycle detected: " + c);
@@ -82,12 +83,14 @@ final class PostProcesser {
      * @throws CyclicDependencyGraphException
      *             if there is a cycle in the graph
      */
+    @Nullable
     private static DependencyCycle detectCycle(RegionAssembly resolver, Injectable node, ArrayDeque<Injectable> stack, ArrayDeque<Injectable> dependencies) {
-        if (node.resolved.length > 0) {
+        DependencyProvider[] deps = node.resolved;
+        if (deps.length > 0) {
             stack.push(node);
+            for (int i = 0; i < deps.length; i++) {
+                DependencyProvider dependency = deps[i];
 
-            for (int i = 0; i < node.resolved.length; i++) {
-                DependencyProvider dependency = node.resolved[i];
                 if (dependency != null) {
                     Injectable injectable = dependency.injectable();
                     if (injectable != null) {
@@ -111,6 +114,7 @@ final class PostProcesser {
                     }
                 }
             }
+
             stack.pop();
         }
 
@@ -119,7 +123,7 @@ final class PostProcesser {
         // we add each node on exit when all of its dependency have already been added. In this way
         // guarantee that all dependencies have already been visited
         if (node.regionIndex() > -1) {
-            resolver.singletons.add(node);
+            resolver.injectables.add(node);
         }
         node.detectForCycles = false;
         return null;

@@ -166,13 +166,20 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
 
         // Setup Source
         if (modifiers().isSource()) {
+            // Reserve a place in the regions runtime memory, if the component is a singleton
             int regionIndex = modifiers().isSingleton() ? region.reserve() : -1;
+
+            // Create the source
             this.source = new SourceAssembly(this, regionIndex, driver.data);
+
             if (source.instance != null) {
-                region.runtimeInstances.add(source); // All instances are always stored in its region at runtime.
+                // Add the source to the regions constant lists
+                region.constants.add(source);
             } else if (source.injectable != null) {
-                injectionManager().allInjectables.add(source.injectable);
+                injectionManager().addInjectable(source.injectable);
             }
+
+            // Tmp
             this.source.model.invokeOnHookOnInstall(this);
         } else {
             this.source = null;

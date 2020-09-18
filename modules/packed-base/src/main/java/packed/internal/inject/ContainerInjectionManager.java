@@ -88,8 +88,9 @@ public final class ContainerInjectionManager {
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices = new LinkedHashMap<>();
+
     // Taenker den her er paa injection manager
-    public final ArrayList<Injectable> allInjectables = new ArrayList<>();
+    final ArrayList<Injectable> allInjectables = new ArrayList<>();
 
     /**
      * Creates a new injection manager.
@@ -192,6 +193,10 @@ public final class ContainerInjectionManager {
             runtimeEntries.put(e.key(), e.toRuntimeEntry(con));
         }
         return new PackedInjector(comp.configSite(), runtimeEntries);
+    }
+
+    public void addInjectable(Injectable injectable) {
+        allInjectables.add(injectable);
     }
 
     public void provideFromAtProvides(ComponentNodeConfiguration compConf, AtProvides atProvides) {

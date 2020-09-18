@@ -35,6 +35,7 @@ import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import packed.internal.component.RegionAssembly;
 import packed.internal.inject.ContainerInjectionManager;
+import packed.internal.inject.PostProcesser;
 import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.inject.dependency.Injectable;
 import packed.internal.inject.dependency.ServiceDependency;

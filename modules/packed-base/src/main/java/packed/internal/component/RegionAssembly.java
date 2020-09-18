@@ -30,14 +30,14 @@ import packed.internal.util.ThrowableUtil;
 public final class RegionAssembly {
 
     /** Components that contains constants that should be stored in a region. Is only written by {@link SourceAssembly}. */
-    final ArrayList<SourceAssembly> runtimeInstances = new ArrayList<>();
-
-    int nextIndex;
+    final ArrayList<SourceAssembly> constants = new ArrayList<>();
 
     // List of services that must be instantiated and stored in the region
     // They are ordered in the order they should be initialized
     // For now written by DependencyCycleDetector via BFS
-    public final ArrayList<Injectable> singletons = new ArrayList<>();
+    public final ArrayList<Injectable> injectables = new ArrayList<>();
+
+    int nextIndex;
 
     RuntimeRegion newRegion(PackedInitializationContext pic, ComponentNode root) {
         RuntimeRegion region = new RuntimeRegion(nextIndex);
@@ -48,14 +48,14 @@ public final class RegionAssembly {
         }
 
         // We start by storing all constant instances in the region array
-        for (SourceAssembly sa : runtimeInstances) {
+        for (SourceAssembly sa : constants) {
             region.store(sa.regionIndex, sa.instance);
         }
 
         // All constants that must be instantiated and stored
         // Order here is very important. As for every constant.
         // Its dependencies are guaranteed to have been already stored
-        for (Injectable injectable : singletons) {
+        for (Injectable injectable : injectables) {
             MethodHandle mh = injectable.buildMethodHandle();
 
             Object instance;
