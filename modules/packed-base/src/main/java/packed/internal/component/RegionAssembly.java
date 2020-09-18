@@ -44,7 +44,7 @@ public final class RegionAssembly {
     // List of services that must be instantiated and stored in the region
     // They are ordered in the order they should be initialized
     // For now written by DependencyCycleDetector via BFS
-    public final ArrayList<Injectable> constantServices = new ArrayList<>();
+    public final ArrayList<Injectable> constants = new ArrayList<>();
 
     /** Everything that needs to be injected and store, but which is not a service. */
     final ArrayList<SourceAssembly> sourceInjectables = new ArrayList<>();
@@ -68,34 +68,37 @@ public final class RegionAssembly {
             region.store(0, new PackedGuest(null));
         }
 
-        // We start by storing all constants in the region array
+        // We start by storing all constant instances in the region array
         for (SourceAssembly sa : runtimeInstances) {
             region.store(sa.regionIndex, sa.instance);
         }
 
-        // All services that must be instantiated and stored
-        for (Injectable ii : constantServices) {
-            MethodHandle mh = ii.buildMethodHandle();
+        // All constants that must be instantiated and stored
+        for (Injectable injectable : constants) {
+            MethodHandle mh = injectable.buildMethodHandle();
 
             Object instance;
             try {
                 instance = mh.invoke(region);
-            } catch (Throwable e1) {
-                throw ThrowableUtil.orUndeclared(e1);
+            } catch (Throwable e) {
+                throw ThrowableUtil.orUndeclared(e);
             }
 
             if (instance == null) {
-                throw new NullPointerException(ii + " returned null");
+                throw new NullPointerException(injectable + " returned null");
             }
-            int index = ii.regionIndex();
+
+            int index = injectable.regionIndex();
             region.store(index, instance);
         }
 
-        // Last all singletons that have not already been used as services
+        // Last all source singletons that have not already been used as services
         for (SourceAssembly i : sourceInjectables) {
             if (i.regionIndex > -1 && !region.isSet(i.regionIndex)) {
+                Injectable injectable = i.injectable;
+
+                MethodHandle mh = injectable.buildMethodHandle();
                 Object instance;
-                MethodHandle mh = i.injectable.buildMethodHandle();
                 try {
                     instance = mh.invoke(region);
                 } catch (Throwable e1) {

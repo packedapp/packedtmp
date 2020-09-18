@@ -119,7 +119,7 @@ final class DependencyCycleDetector {
         // we add each node on exit when all of its dependency have already been added. In this way
         // guarantee that all dependencies have already been visited
         if (node.isConstant()) {
-            resolver.constantServices.add(node);
+            resolver.constants.add(node);
         }
         node.detectForCycles = false;
         return null;
