@@ -127,26 +127,26 @@ public class Injectable {
     }
 
     public final MethodHandle buildMethodHandle() {
-        if (buildMethodHandle != null) {
-            return buildMethodHandle;
-        }
-        if (resolved.length == 0) {
-            buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, RuntimeRegion.class);
-        } else if (resolved.length == 1) {
-            buildMethodHandle = MethodHandles.collectArguments(directMethodHandle, 0, resolved[0].dependencyAccessor());
-        } else {
-            MethodHandle mh = directMethodHandle;
-            MethodType mt = MethodType.methodType(directMethodHandle.type().returnType(), RuntimeRegion.class);
+        MethodHandle mh = buildMethodHandle;
+        if (mh == null) {
+            if (resolved.length == 0) {
+                mh = buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, RuntimeRegion.class);
+            } else if (resolved.length == 1) {
+                mh = buildMethodHandle = MethodHandles.collectArguments(directMethodHandle, 0, resolved[0].dependencyAccessor());
+            } else {
+                mh = directMethodHandle;
+                MethodType mt = MethodType.methodType(directMethodHandle.type().returnType(), RuntimeRegion.class);
 
-            // We create a new method that a
-            for (int i = 0; i < resolved.length; i++) {
-                DependencyProvider dp = resolved[i];
-                mh = MethodHandles.collectArguments(mh, i, dp.dependencyAccessor());
+                // We create a new method that a
+                for (int i = 0; i < resolved.length; i++) {
+                    DependencyProvider dp = resolved[i];
+                    mh = MethodHandles.collectArguments(mh, i, dp.dependencyAccessor());
+                }
+                // reduce (RuntimeRegion, *)X -> (RuntimeRegion)X
+                mh = buildMethodHandle = MethodHandles.permuteArguments(mh, mt, new int[resolved.length]);
             }
-            // reduce (RuntimeRegion, *)X -> (RuntimeRegion)X
-            buildMethodHandle = MethodHandles.permuteArguments(mh, mt, new int[resolved.length]);
         }
-        return buildMethodHandle;
+        return mh;
     }
 
     public int regionIndex() {
