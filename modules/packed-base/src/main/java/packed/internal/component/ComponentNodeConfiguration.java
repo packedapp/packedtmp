@@ -167,7 +167,9 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         // Setup Source
         if (modifiers().isSource()) {
             this.source = new SourceAssembly(this, region, driver.data);
-            if (source.injectable != null) {
+            if (source.instance != null) {
+                region.runtimeInstances.add(source); // All instances are always stored in its region at runtime.
+            } else if (source.injectable != null) {
                 injectionManager().allInjectables.add(source.injectable);
             }
             this.source.model.invokeOnHookOnInstall(this);
