@@ -69,9 +69,9 @@ public final class SourceAssembly implements DependencyProvider {
             this.factory = (BaseFactory<?>) source;
             this.model = compConf.realm.componentModelOf(factory.rawType());
         } else {
-            this.model = compConf.realm.componentModelOf(source.getClass());
             this.instance = source;
             this.factory = null;
+            this.model = compConf.realm.componentModelOf(source.getClass());
         }
 
         if (factory == null) {

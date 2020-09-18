@@ -54,7 +54,8 @@ import packed.internal.inject.sidecar.AtProvides;
 // Something with dependencis
 public class Injectable {
 
-    private final ServiceAssembly<?> buildEntry;
+    @Nullable
+    private final ServiceAssembly<?> service;
 
     MethodHandle buildMethodHandle;
 
@@ -79,7 +80,7 @@ public class Injectable {
         this.source = requireNonNull(source);
         this.sourceMember = null;
 
-        this.buildEntry = null; // Any build entry is stored in SourceAssembly#service
+        this.service = null; // Any build entry is stored in SourceAssembly#service
         this.dependencies = dependencies;
         this.directMethodHandle = mh;
 
@@ -90,7 +91,7 @@ public class Injectable {
         this.source = requireNonNull(source);
         this.sourceMember = null;
 
-        this.buildEntry = requireNonNull(buildEntry);
+        this.service = requireNonNull(buildEntry);
         this.dependencies = ap.dependencies;
         this.directMethodHandle = ap.methodHandle;
 
@@ -105,7 +106,7 @@ public class Injectable {
         this.source = requireNonNull(source);
         this.sourceMember = requireNonNull(smm);
 
-        this.buildEntry = null;
+        this.service = null;
         this.dependencies = smm.dependencies;
         this.directMethodHandle = smm.directMethodHandle;
 
@@ -141,10 +142,10 @@ public class Injectable {
         // In which case we store the build entry (if available) in the source instead
         if (sourceMember != null) {
             throw new UnsupportedOperationException();
-        } else if (buildEntry == null) {
+        } else if (service == null) {
             return source.regionIndex;
         }
-        return buildEntry.regionIndex();
+        return service.regionIndex();
     }
 
     public void resolve() {

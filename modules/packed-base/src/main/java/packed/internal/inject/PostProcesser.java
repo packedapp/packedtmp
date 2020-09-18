@@ -77,35 +77,35 @@ final class PostProcesser {
      *            the stack of all visited dependencies so far
      * @param dependencies
      *            the stack of locally visited dependencies so far
-     * @param node
+     * @param injectable
      *            the node to visit
      * @return stuff
      * @throws CyclicDependencyGraphException
      *             if there is a cycle in the graph
      */
     @Nullable
-    private static DependencyCycle detectCycle(RegionAssembly region, Injectable node, ArrayDeque<Injectable> stack, ArrayDeque<Injectable> dependencies) {
-        DependencyProvider[] deps = node.resolved;
+    private static DependencyCycle detectCycle(RegionAssembly region, Injectable injectable, ArrayDeque<Injectable> stack, ArrayDeque<Injectable> dependencies) {
+        DependencyProvider[] deps = injectable.resolved;
         if (deps.length > 0) {
-            stack.push(node);
+            stack.push(injectable);
             for (int i = 0; i < deps.length; i++) {
                 DependencyProvider dependency = deps[i];
 
                 if (dependency != null) {
-                    Injectable injectable = dependency.getInjectable();
-                    if (injectable != null) {
-                        if (injectable.needsPostProcessing) {
-                            dependencies.push(injectable);
+                    Injectable next = dependency.getInjectable();
+                    if (next != null) {
+                        if (next.needsPostProcessing) {
+                            dependencies.push(next);
                             // See if the component is already on the stack -> A cycle has been detected
-                            if (stack.contains(injectable)) {
+                            if (stack.contains(next)) {
                                 // clear links not part of the circle, for example, for A->B->C->B we want to remove A
-                                while (stack.peekLast() != injectable) {
+                                while (stack.peekLast() != next) {
                                     stack.pollLast();
                                     dependencies.pollLast();
                                 }
                                 return new DependencyCycle(dependencies);
                             }
-                            DependencyCycle cycle = detectCycle(region, injectable, stack, dependencies);
+                            DependencyCycle cycle = detectCycle(region, next, stack, dependencies);
                             if (cycle != null) {
                                 return cycle;
                             }
@@ -122,10 +122,10 @@ final class PostProcesser {
         // We do this here because the the cycle detection algorithm explorers the dependency BFS. So
         // we add each node on exit when all of its dependency have already been added. In this way
         // guarantee that all dependencies have already been visited
-        if (node.regionIndex() > -1) {
-            region.injectables.add(node);
+        if (injectable.regionIndex() > -1) {
+            region.injectables.add(injectable);
         }
-        node.needsPostProcessing = false;
+        injectable.needsPostProcessing = false;
         return null;
     }
 
