@@ -62,24 +62,23 @@ public final class SourceAssembly implements DependencyProvider {
         if (source instanceof Class) {
             Class<?> c = (Class<?>) source;
             this.instance = null;
+            this.factory = compConf.modifiers().isStateless() ? null : (BaseFactory<?>) Factory.find(c);
             this.model = compConf.realm.componentModelOf(c);
-            if (compConf.modifiers().isStateless()) {
-                this.injectable = null;
-                this.factory = null;
-            } else {
-                this.factory = (BaseFactory<?>) Factory.find(c);
-                this.injectable = new Injectable(this, factory.factory);
-            }
         } else if (source instanceof Factory) {
+            this.instance = null;
             this.factory = (BaseFactory<?>) source;
             this.model = compConf.realm.componentModelOf(factory.rawType());
-            this.instance = null;
-            this.injectable = new Injectable(this, factory.factory);
         } else {
             this.model = compConf.realm.componentModelOf(source.getClass());
             this.instance = source;
-            this.injectable = null;
             this.factory = null;
+        }
+
+        if (factory == null) {
+            this.injectable = null;
+        } else {
+            MethodHandle mh = compConf.realm.fromFactoryHandle(factory.factory.handle);
+            this.injectable = new Injectable(this, factory.factory.dependencies, mh);
         }
     }
 

@@ -29,7 +29,6 @@ import packed.internal.component.SourceModel;
 import packed.internal.component.SourceModelMember;
 import packed.internal.component.SourceModelMethod;
 import packed.internal.inject.InjectionManager;
-import packed.internal.inject.factory.FactorySupport;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.inject.sidecar.AtProvides;
 
@@ -76,14 +75,15 @@ public class Injectable {
     @Nullable
     public final SourceModelMember sourceMember;
 
-    public Injectable(SourceAssembly source, FactorySupport<?> factory) {
+    public Injectable(SourceAssembly source, List<DependencyDescriptor> dependencies, MethodHandle mh) {
         this.source = requireNonNull(source);
         this.sourceMember = null;
 
         this.buildEntry = null; // Any build entry is stored in SourceAssembly#service
-        this.dependencies = factory.dependencies;
-        this.directMethodHandle = source.compConf.realm.fromFactoryHandle(factory.handle);
-        this.resolved = new DependencyProvider[dependencies.size()];
+        this.dependencies = dependencies;
+        this.directMethodHandle = mh;
+
+        this.resolved = new DependencyProvider[directMethodHandle.type().parameterCount()];
     }
 
     public Injectable(SourceAssembly source, ServiceAssembly<?> buildEntry, AtProvides ap) {
@@ -93,6 +93,7 @@ public class Injectable {
         this.buildEntry = requireNonNull(buildEntry);
         this.dependencies = ap.dependencies;
         this.directMethodHandle = ap.methodHandle;
+
         this.resolved = new DependencyProvider[directMethodHandle.type().parameterCount()];
 
         if (resolved.length != dependencies.size()) {
@@ -107,30 +108,32 @@ public class Injectable {
         this.buildEntry = null;
         this.dependencies = smm.dependencies;
         this.directMethodHandle = smm.directMethodHandle;
+
         this.resolved = new DependencyProvider[directMethodHandle.type().parameterCount()];
     }
 
     public final MethodHandle buildMethodHandle() {
         MethodHandle mh = buildMethodHandle;
-        if (mh == null) {
-            if (resolved.length == 0) {
-                mh = buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, RuntimeRegion.class);
-            } else if (resolved.length == 1) {
-                mh = buildMethodHandle = MethodHandles.collectArguments(directMethodHandle, 0, resolved[0].dependencyAccessor());
-            } else {
-                mh = directMethodHandle;
-
-                // We create a new method that a
-                for (int i = 0; i < resolved.length; i++) {
-                    DependencyProvider dp = resolved[i];
-                    mh = MethodHandles.collectArguments(mh, i, dp.dependencyAccessor());
-                }
-                // reduce (RuntimeRegion, *)X -> (RuntimeRegion)X
-                MethodType mt = MethodType.methodType(directMethodHandle.type().returnType(), RuntimeRegion.class);
-                mh = buildMethodHandle = MethodHandles.permuteArguments(mh, mt, new int[resolved.length]);
-            }
+        if (mh != null) {
+            return mh;
         }
-        return mh;
+
+        if (resolved.length == 0) {
+            return buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, RuntimeRegion.class);
+        } else if (resolved.length == 1) {
+            return buildMethodHandle = MethodHandles.collectArguments(directMethodHandle, 0, resolved[0].dependencyAccessor());
+        } else {
+            mh = directMethodHandle;
+
+            // We create a new method that a
+            for (int i = 0; i < resolved.length; i++) {
+                DependencyProvider dp = resolved[i];
+                mh = MethodHandles.collectArguments(mh, i, dp.dependencyAccessor());
+            }
+            // reduce (RuntimeRegion, *)X -> (RuntimeRegion)X
+            MethodType mt = MethodType.methodType(directMethodHandle.type().returnType(), RuntimeRegion.class);
+            return buildMethodHandle = MethodHandles.permuteArguments(mh, mt, new int[resolved.length]);
+        }
     }
 
     public int regionIndex() {
