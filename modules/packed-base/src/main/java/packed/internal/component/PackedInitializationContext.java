@@ -23,7 +23,7 @@ import app.packed.component.ComponentModifier;
 import app.packed.guest.Guest;
 import app.packed.service.ServiceRegistry;
 import packed.internal.component.wirelet.WireletPack;
-import packed.internal.inject.InjectionManager;
+import packed.internal.inject.service.ServiceManager;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -93,8 +93,8 @@ public final class PackedInitializationContext {
     }
 
     public ServiceRegistry services() {
-        InjectionManager im = root.injectionManager();
-        return im.newServiceRegistry(component, component.region, wirelets);
+        ServiceManager sm = root.injectionManager().getServiceManager();
+        return sm == null ? ServiceRegistry.empty() : sm.newServiceRegistry(component, component.region);
 //                
 //        /// Create a service registry...
 //        // We do not stored this in the region but outside...

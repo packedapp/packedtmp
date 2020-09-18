@@ -30,7 +30,10 @@ import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
+import app.packed.service.ServiceRegistry;
+import packed.internal.component.ComponentNode;
 import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.RuntimeRegion;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.assembly.AtProvideServiceAssembly;
@@ -38,6 +41,9 @@ import packed.internal.inject.service.assembly.ComponentSourceServiceAssembly;
 import packed.internal.inject.service.assembly.ProvideAllFromOtherInjector;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.inject.service.runtime.AbstractInjector;
+import packed.internal.inject.service.runtime.PackedInjector;
+import packed.internal.inject.service.runtime.RuntimeService;
+import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 import packed.internal.inject.sidecar.AtProvides;
 import packed.internal.util.LookupUtil;
 
@@ -83,6 +89,15 @@ public class ServiceManager {
             p = provideAll = new ArrayList<>(1);
         }
         p.add(pi);
+    }
+
+    public ServiceRegistry newServiceRegistry(ComponentNode comp, RuntimeRegion region) {
+        LinkedHashMap<Key<?>, RuntimeService<?>> runtimeEntries = new LinkedHashMap<>();
+        ServiceInstantiationContext con = new ServiceInstantiationContext(region);
+        for (var e : exports()) {
+            runtimeEntries.put(e.key(), e.toRuntimeEntry(con));
+        }
+        return new PackedInjector(comp.configSite(), runtimeEntries);
     }
 
     public LinkedHashMap<Key<?>, ServiceAssembly<?>> resolve() {

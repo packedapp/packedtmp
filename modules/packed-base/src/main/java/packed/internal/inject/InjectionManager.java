@@ -18,24 +18,15 @@ package packed.internal.inject;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
-import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.service.ServiceContract;
-import app.packed.service.ServiceRegistry;
-import packed.internal.component.ComponentNode;
 import packed.internal.component.RegionAssembly;
-import packed.internal.component.RuntimeRegion;
-import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.dependency.Injectable;
 import packed.internal.inject.service.ServiceDependencyManager;
 import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.assembly.ExportedServiceAssembly;
-import packed.internal.inject.service.runtime.PackedInjector;
-import packed.internal.inject.service.runtime.RuntimeService;
-import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 
 /**
  * Since the logic for the service extension is quite complex. Especially with cross-container integration. We spread it
@@ -141,15 +132,6 @@ public final class InjectionManager {
             }
             dependencies().buildContract(c);
         });
-    }
-
-    public ServiceRegistry newServiceRegistry(ComponentNode comp, RuntimeRegion region, WireletPack wc) {
-        LinkedHashMap<Key<?>, RuntimeService<?>> runtimeEntries = new LinkedHashMap<>();
-        ServiceInstantiationContext con = new ServiceInstantiationContext(region);
-        for (var e : services().exports()) {
-            runtimeEntries.put(e.key(), e.toRuntimeEntry(con));
-        }
-        return new PackedInjector(comp.configSite(), runtimeEntries);
     }
 
     /**
