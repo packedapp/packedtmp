@@ -47,11 +47,6 @@ public final class ComponentSourceServiceAssembly<T> extends ServiceAssembly<T> 
         this.source = requireNonNull(compConf.source);
     }
 
-    @Override
-    public int regionIndex() {
-        return source.regionIndex;
-    }
-
     /** {@inheritDoc} */
     @Override
     @Nullable
@@ -62,7 +57,7 @@ public final class ComponentSourceServiceAssembly<T> extends ServiceAssembly<T> 
     /** {@inheritDoc} */
     @Override
     protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
-        if (regionIndex() > -1) {
+        if (source.regionIndex > -1) {
             return new ConstantInjectorEntry<>(this, context.region, source.regionIndex);
         } else {
             return new PrototypeInjectorEntry<>(this, context.region, dependencyAccessor());

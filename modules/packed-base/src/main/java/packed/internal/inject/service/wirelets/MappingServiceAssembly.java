@@ -21,7 +21,9 @@ import java.lang.invoke.MethodHandle;
 import java.util.function.Function;
 
 import app.packed.base.Key;
+import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
+import packed.internal.inject.dependency.Injectable;
 import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.inject.service.runtime.MappingInjectorEntry;
@@ -49,6 +51,12 @@ final class MappingServiceAssembly<F, T> extends ServiceAssembly<T> {
     @Override
     protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
         return new MappingInjectorEntry<>(this, entryToMap.toRuntimeEntry(context), function);
+    }
+
+    @Override
+    @Nullable
+    public Injectable getInjectable() {
+        throw new UnsupportedOperationException();
     }
 
     @Override

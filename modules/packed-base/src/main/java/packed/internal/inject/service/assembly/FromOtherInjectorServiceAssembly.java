@@ -17,9 +17,11 @@ package packed.internal.inject.service.assembly;
 
 import java.lang.invoke.MethodHandle;
 
+import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
+import packed.internal.inject.dependency.Injectable;
 import packed.internal.inject.service.runtime.DelegatingInjectorEntry;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
@@ -43,6 +45,12 @@ final class FromOtherInjectorServiceAssembly<T> extends ServiceAssembly<T> {
     @Override
     protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
         return new DelegatingInjectorEntry<T>(this, entry);
+    }
+
+    @Override
+    @Nullable
+    public Injectable getInjectable() {
+        throw new UnsupportedOperationException();
     }
 
     @Override

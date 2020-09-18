@@ -83,8 +83,10 @@ final class PostProcesser {
      * @throws CyclicDependencyGraphException
      *             if there is a cycle in the graph
      */
+    // We could move this to Injectable...
     @Nullable
-    private static DependencyCycle detectCycle(RegionAssembly region, Injectable injectable, ArrayDeque<Injectable> stack, ArrayDeque<Injectable> dependencies) {
+    private static DependencyCycle detectCycle(RegionAssembly region, Injectable injectable, ArrayDeque<Injectable> stack,
+            ArrayDeque<Injectable> dependencies) {
         DependencyProvider[] deps = injectable.resolved;
         if (deps.length > 0) {
             stack.push(injectable);

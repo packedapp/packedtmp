@@ -23,7 +23,6 @@ import app.packed.config.ConfigSite;
 import app.packed.inject.Provide;
 import app.packed.service.Service;
 import packed.internal.inject.dependency.DependencyProvider;
-import packed.internal.inject.dependency.Injectable;
 import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.runtime.PackedService;
 import packed.internal.inject.service.runtime.RuntimeService;
@@ -43,8 +42,7 @@ public abstract class ServiceAssembly<T> implements DependencyProvider {
     private final ConfigSite configSite;
 
     /** The service no this entry belongs to. Or null for wirelets */
-    @Nullable // Is nullable for stages for now
-    public final ServiceManager im;
+    public final ServiceManager sm;
 
     /**
      * The key of the node (optional). Can be null, for example, for a class that is not exposed as a service but has
@@ -54,7 +52,7 @@ public abstract class ServiceAssembly<T> implements DependencyProvider {
     private Key<T> key;
 
     public ServiceAssembly(@Nullable ServiceManager im, ConfigSite configSite, Key<T> key) {
-        this.im = requireNonNull(im);
+        this.sm = requireNonNull(im);
         this.configSite = requireNonNull(configSite);
         this.key = requireNonNull(key);
     }
@@ -75,16 +73,6 @@ public abstract class ServiceAssembly<T> implements DependencyProvider {
      */
     public final ConfigSite configSite() {
         return configSite;
-    }
-
-    @Override
-    @Nullable
-    public Injectable getInjectable() {
-        throw new UnsupportedOperationException();
-    }
-
-    public int regionIndex() {
-        throw new UnsupportedOperationException();
     }
 
     public final Key<T> key() {

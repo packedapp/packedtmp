@@ -35,7 +35,7 @@ public class AtProvideServiceAssembly<T> extends ServiceAssembly<T> {
 
     private final Injectable injectable;
 
-    private final int regionIndex;
+    public final int regionIndex;
 
     /**
      * Creates a new node from an instance.
@@ -61,11 +61,6 @@ public class AtProvideServiceAssembly<T> extends ServiceAssembly<T> {
         } else {
             return new ConstantInjectorEntry<>(this, context.region, regionIndex);
         }
-    }
-
-    @Override
-    public int regionIndex() {
-        return regionIndex;
     }
 
     @Override

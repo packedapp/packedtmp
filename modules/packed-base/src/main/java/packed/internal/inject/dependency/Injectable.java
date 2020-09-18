@@ -29,7 +29,7 @@ import packed.internal.component.SourceModel;
 import packed.internal.component.SourceModelMember;
 import packed.internal.component.SourceModelMethod;
 import packed.internal.inject.InjectionManager;
-import packed.internal.inject.service.assembly.ServiceAssembly;
+import packed.internal.inject.service.assembly.AtProvideServiceAssembly;
 import packed.internal.inject.sidecar.AtProvides;
 
 /**
@@ -55,7 +55,7 @@ import packed.internal.inject.sidecar.AtProvides;
 public class Injectable {
 
     @Nullable
-    private final ServiceAssembly<?> service;
+    private final AtProvideServiceAssembly<?> service;
 
     MethodHandle buildMethodHandle;
 
@@ -87,7 +87,7 @@ public class Injectable {
         this.resolved = new DependencyProvider[directMethodHandle.type().parameterCount()];
     }
 
-    public Injectable(SourceAssembly source, ServiceAssembly<?> buildEntry, AtProvides ap) {
+    public Injectable(SourceAssembly source, AtProvideServiceAssembly<?> buildEntry, AtProvides ap) {
         this.source = requireNonNull(source);
         this.sourceMember = null;
 
@@ -145,7 +145,7 @@ public class Injectable {
         } else if (service == null) {
             return source.regionIndex;
         }
-        return service.regionIndex();
+        return service.regionIndex;
     }
 
     public void resolve() {

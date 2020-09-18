@@ -23,6 +23,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.service.ServiceExtension;
+import packed.internal.inject.dependency.Injectable;
 import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.runtime.DelegatingInjectorEntry;
 import packed.internal.inject.service.runtime.RuntimeService;
@@ -55,6 +56,12 @@ public final class ExportedServiceAssembly<T> extends ServiceAssembly<T> {
     public ExportedServiceAssembly(ServiceManager builder, Key<T> key, ConfigSite configSite) {
         super(builder, configSite, key);
         this.keyToExport = requireNonNull(key);
+    }
+
+    @Override
+    @Nullable
+    public Injectable getInjectable() {
+        throw new UnsupportedOperationException();
     }
 
     /**
