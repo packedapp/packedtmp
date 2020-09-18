@@ -38,7 +38,7 @@ import packed.internal.component.wirelet.WireletList;
 import packed.internal.config.ConfigSiteInjectOperations;
 import packed.internal.container.ExtensionAssembly;
 import packed.internal.inject.InjectionManager;
-import packed.internal.inject.dependency.ServiceDependency;
+import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.assembly.PackedPrototypeConfiguration;
 import packed.internal.inject.service.runtime.AbstractInjector;
@@ -351,7 +351,7 @@ public final class ServiceExtension extends Extension {
         checkConfigurable();
         ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Class<?> key : keys) {
-            sm.dependencies().require(ServiceDependency.of(key), cs);
+            sm.dependencies().require(DependencyDescriptor.of(key), cs);
         }
     }
 
@@ -376,7 +376,7 @@ public final class ServiceExtension extends Extension {
         checkConfigurable();
         ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Key<?> key : keys) {
-            sm.dependencies().require(ServiceDependency.of(key), cs);
+            sm.dependencies().require(DependencyDescriptor.of(key), cs);
         }
     }
 
@@ -398,7 +398,7 @@ public final class ServiceExtension extends Extension {
         checkConfigurable();
         ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
         for (Key<?> key : keys) {
-            sm.dependencies().require(ServiceDependency.ofOptional(key), cs);
+            sm.dependencies().require(DependencyDescriptor.ofOptional(key), cs);
         }
     }
 

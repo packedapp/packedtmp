@@ -35,7 +35,7 @@ import app.packed.inject.UnsatisfiableDependencyException;
 import app.packed.introspection.ParameterDescriptor;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.inject.context.PackedInjectionContext;
-import packed.internal.inject.dependency.ServiceDependency;
+import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.invoke.MethodHandleBuilder.Entry;
 import packed.internal.util.MethodHandleUtil;
 
@@ -111,7 +111,7 @@ class MethodHandleBuilderHelper {
 
         for (int i = 0; i < parameters.size(); i++) {
             Parameter p = parameters.get(i);
-            ServiceDependency sd = ServiceDependency.fromVariable(ParameterDescriptor.from(p));
+            DependencyDescriptor sd = DependencyDescriptor.fromVariable(ParameterDescriptor.from(p));
             Class<?> askingForType = sd.key().typeLiteral().rawType();
             MethodHandleBuilder.AnnoClassEntry anno = find(aa, p);
 
@@ -119,7 +119,7 @@ class MethodHandleBuilderHelper {
                 Key<?> kk = sd.key();
 
                 // Injection Context
-                if (kk.equals(Key.of(InjectionContext.class))) {
+                if (kk.isClassKey(InjectionContext.class)) {
                     // TODO we have a non-constant injection context, when we have a dynamic injector
 
                     // Vi just add it as a normal entry with no indexes, will be picked up in the next section

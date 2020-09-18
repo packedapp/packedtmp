@@ -8,7 +8,7 @@ import java.util.List;
 import app.packed.base.Key;
 import app.packed.inject.Provide;
 import app.packed.statemachine.OnStart;
-import packed.internal.inject.dependency.ServiceDependency;
+import packed.internal.inject.dependency.DependencyDescriptor;
 
 /** An factory support class. */
 public final class FactorySupport<T> {
@@ -17,12 +17,12 @@ public final class FactorySupport<T> {
     public final Key<T> key;
 
     /** A list of all of this factory's dependencies. */
-    public final List<ServiceDependency> dependencies;
+    public final List<DependencyDescriptor> dependencies;
 
     /** The function used to create a new instance. */
     public final FactoryHandle<T> handle;
 
-    public FactorySupport(FactoryHandle<T> function, List<ServiceDependency> dependencies) {
+    public FactorySupport(FactoryHandle<T> function, List<DependencyDescriptor> dependencies) {
         this.dependencies = requireNonNull(dependencies, "dependencies is null");
         this.handle = requireNonNull(function);
         this.key = Key.fromTypeLiteral(function.typeLiteral);

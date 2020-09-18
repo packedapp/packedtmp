@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
 import app.packed.base.TypeLiteral;
-import packed.internal.inject.dependency.ServiceDependency;
+import packed.internal.inject.dependency.DependencyDescriptor;
 
 /**
  *
@@ -48,7 +48,7 @@ public class DependencyTest {
 
         @Test
         public void fromTypeAttribute() {
-            ServiceDependency opString = ServiceDependency.fromTypeVariable(new TypeLiteral<Optional<String>>() {}.getClass(), TypeLiteral.class, 0);
+            DependencyDescriptor opString = DependencyDescriptor.fromTypeVariable(new TypeLiteral<Optional<String>>() {}.getClass(), TypeLiteral.class, 0);
             assertThat(opString).keyIs(String.class);
         }
     }
@@ -58,12 +58,12 @@ public class DependencyTest {
 
         @Test
         public void fromTypeParameter() {
-            assertThat(ServiceDependency.of(OptionalInt.class)).isOptionalInt();
+            assertThat(DependencyDescriptor.of(OptionalInt.class)).isOptionalInt();
             // assertThat(new Dependency<OptionalInt>() {}).isOptionalInt();
             // assertThat(new Dependency<OptionalInt>() {}).keyIs(new Dependency<Optional<Integer>>() {}.getKey());
 
             // fromTypeParameter
-            ServiceDependency opInt = ServiceDependency.fromTypeVariable(new TypeLiteral<OptionalInt>() {}.getClass(), TypeLiteral.class, 0);
+            DependencyDescriptor opInt = DependencyDescriptor.fromTypeVariable(new TypeLiteral<OptionalInt>() {}.getClass(), TypeLiteral.class, 0);
             assertThat(opInt).isOptionalInt();
 
             // Annotated
@@ -73,16 +73,16 @@ public class DependencyTest {
 
     @Test
     public void ofClass() {
-        assertThatNullPointerException().isThrownBy(() -> ServiceDependency.of((Class<?>) null));
+        assertThatNullPointerException().isThrownBy(() -> DependencyDescriptor.of((Class<?>) null));
 
-        assertThatIllegalArgumentException().isThrownBy(() -> ServiceDependency.of(Optional.class))
+        assertThatIllegalArgumentException().isThrownBy(() -> DependencyDescriptor.of(Optional.class))
                 .withMessage("Cannot determine type variable <T> for type Optional<T>");
 
-        ServiceDependency opLong = ServiceDependency.of(OptionalLong.class);
+        DependencyDescriptor opLong = DependencyDescriptor.of(OptionalLong.class);
         assertThat(opLong).isOptional(OptionalLong.class);
         assertThat(opLong).keyIs(Long.class);
 
-        ServiceDependency opDouble = ServiceDependency.of(OptionalDouble.class);
+        DependencyDescriptor opDouble = DependencyDescriptor.of(OptionalDouble.class);
         assertThat(opDouble).isOptional(OptionalDouble.class);
         assertThat(opDouble).keyIs(Double.class);
     }

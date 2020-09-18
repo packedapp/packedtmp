@@ -26,7 +26,7 @@ import java.util.function.Function;
 
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory1;
-import packed.internal.inject.dependency.ServiceDependency;
+import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.util.LookupUtil;
 
 /** An internal factory for {@link Factory1}. */
@@ -36,14 +36,14 @@ public final class Factory1FactoryHandle<T, R> extends FactoryHandle<R> {
     private static final MethodHandle APPLY = LookupUtil.mhVirtualPublic(Function.class, "apply", Object.class, Object.class);
 
     /** A cache of extracted type variables and dependencies from subclasses of this class. */
-    private static final ClassValue<Entry<TypeLiteral<?>, List<ServiceDependency>>> CACHE = new ClassValue<>() {
+    private static final ClassValue<Entry<TypeLiteral<?>, List<DependencyDescriptor>>> CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
-        protected Entry<TypeLiteral<?>, List<ServiceDependency>> computeValue(Class<?> type) {
+        protected Entry<TypeLiteral<?>, List<DependencyDescriptor>> computeValue(Class<?> type) {
             return new SimpleImmutableEntry<>(TypeLiteral.fromTypeVariable((Class) type, BaseFactory.class, 0),
-                    ServiceDependency.fromTypeVariables((Class) type, Factory1.class, 0));
+                    DependencyDescriptor.fromTypeVariables((Class) type, Factory1.class, 0));
         }
     };
 
@@ -78,7 +78,7 @@ public final class Factory1FactoryHandle<T, R> extends FactoryHandle<R> {
      */
     @SuppressWarnings("unchecked")
     public static <T, R> FactorySupport<R> create(Class<?> implementation, Function<?, ? extends T> function) {
-        Entry<TypeLiteral<?>, List<ServiceDependency>> fs = CACHE.get(implementation);
+        Entry<TypeLiteral<?>, List<DependencyDescriptor>> fs = CACHE.get(implementation);
         return new FactorySupport<>(new Factory1FactoryHandle<>((TypeLiteral<R>) fs.getKey(), (Function<? super T, ? extends R>) function), fs.getValue());
     }
 }

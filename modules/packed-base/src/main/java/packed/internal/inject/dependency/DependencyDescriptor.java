@@ -92,24 +92,24 @@ import packed.internal.util.TypeUtil;
 //Dependency er flyttet til en intern klasse. Fordi den er begyndt at blive lidt for kompleks.
 // Naar vi tilfoere composites. Hvor der ikke rigtig laengere er en parameter til en service mapning.
 
-public final class ServiceDependency {
+public final class DependencyDescriptor {
 
     /** A cache of service dependencies. */
-    private static final ClassValue<ServiceDependency> CLASS_CACHE = new ClassValue<>() {
+    private static final ClassValue<DependencyDescriptor> CLASS_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @Override
-        protected ServiceDependency computeValue(Class<?> type) {
+        protected DependencyDescriptor computeValue(Class<?> type) {
             if (type == Optional.class) {
                 throw new IllegalArgumentException("Cannot determine type variable <T> for type Optional<T>");
             } else if (type == OptionalInt.class) {
-                return new ServiceDependency(Key.of(Integer.class), Optionality.OPTIONAL_INT, null);
+                return new DependencyDescriptor(Key.of(Integer.class), Optionality.OPTIONAL_INT, null);
             } else if (type == OptionalLong.class) {
-                return new ServiceDependency(Key.of(Long.class), Optionality.OPTIONAL_LONG, null);
+                return new DependencyDescriptor(Key.of(Long.class), Optionality.OPTIONAL_LONG, null);
             } else if (type == OptionalDouble.class) {
-                return new ServiceDependency(Key.of(Double.class), Optionality.OPTIONAL_DOUBLE, null);
+                return new DependencyDescriptor(Key.of(Double.class), Optionality.OPTIONAL_DOUBLE, null);
             }
-            return new ServiceDependency(Key.of(type), Optionality.REQUIRED, null);
+            return new DependencyDescriptor(Key.of(type), Optionality.REQUIRED, null);
         }
     };
 
@@ -133,7 +133,7 @@ public final class ServiceDependency {
      * @param variable
      *            an optional field or parameter
      */
-    private ServiceDependency(Key<?> key, Optionality optionality, @Nullable VariableDescriptor variable) {
+    private DependencyDescriptor(Key<?> key, Optionality optionality, @Nullable VariableDescriptor variable) {
         this.key = requireNonNull(key, "key is null");
         this.optionality = requireNonNull(optionality);
         this.variable = variable;
@@ -165,10 +165,10 @@ public final class ServiceDependency {
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
-        } else if (obj.getClass() != ServiceDependency.class) {
+        } else if (obj.getClass() != DependencyDescriptor.class) {
             return false;
         }
-        ServiceDependency other = (ServiceDependency) obj;
+        DependencyDescriptor other = (DependencyDescriptor) obj;
         // Hmm hashcode and equals for optional????
         return Objects.equals(key, other.key) && optionality == other.optionality && Objects.equals(variable, other.variable);
     }
@@ -279,7 +279,7 @@ public final class ServiceDependency {
      *            the executable to return a list of dependencies for
      * @return a list of dependencies from the specified executable
      */
-    public static List<ServiceDependency> fromExecutable(ExecutableDescriptor executable) {
+    public static List<DependencyDescriptor> fromExecutable(ExecutableDescriptor executable) {
         ParameterDescriptor[] parameters = executable.getParametersUnsafe();
         switch (parameters.length) {
         case 0:
@@ -289,7 +289,7 @@ public final class ServiceDependency {
         case 2:
             return List.of(fromVariable(parameters[0]), fromVariable(parameters[1]));
         default:
-            ServiceDependency[] sd = new ServiceDependency[parameters.length];
+            DependencyDescriptor[] sd = new DependencyDescriptor[parameters.length];
             for (int i = 0; i < sd.length; i++) {
                 sd[i] = fromVariable(parameters[i]);
             }
@@ -305,11 +305,11 @@ public final class ServiceDependency {
      * @return the type literal for the field
      * @see Field#getGenericType()
      */
-    public static ServiceDependency fromField(FieldDescriptor field) {
+    public static DependencyDescriptor fromField(FieldDescriptor field) {
         return fromVariable(field);
     }
 
-    public static <T> ServiceDependency fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
+    public static <T> DependencyDescriptor fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
         Type type = TypeVariableExtractor.of(baseClass, baseClassTypeVariableIndex).extract(actualClass);
 
         // Find any qualifier annotation that might be present
@@ -339,18 +339,18 @@ public final class ServiceDependency {
             optionalType = Optionality.REQUIRED;
         }
         // TODO check that there are no qualifier annotations on the type.
-        return new ServiceDependency(ModuleAccess.base().toKeyNullableQualifier(type, qa), optionalType, null);
+        return new DependencyDescriptor(ModuleAccess.base().toKeyNullableQualifier(type, qa), optionalType, null);
     }
 
-    public static <T> List<ServiceDependency> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass, int... baseClassTypeVariableIndexes) {
-        ArrayList<ServiceDependency> result = new ArrayList<>();
+    public static <T> List<DependencyDescriptor> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass, int... baseClassTypeVariableIndexes) {
+        ArrayList<DependencyDescriptor> result = new ArrayList<>();
         for (int i = 0; i < baseClassTypeVariableIndexes.length; i++) {
             result.add(fromTypeVariable(actualClass, baseClass, baseClassTypeVariableIndexes[i]));
         }
         return List.copyOf(result);
     }
 
-    public static <T> ServiceDependency fromVariable(VariableDescriptor desc) {
+    public static <T> DependencyDescriptor fromVariable(VariableDescriptor desc) {
         requireNonNull(desc, "variable is null");
         TypeLiteral<?> tl = desc.getTypeLiteral();
 
@@ -404,7 +404,7 @@ public final class ServiceDependency {
         // TL is free from Optional
         Key<?> key = Key.fromTypeLiteralNullableAnnotation(desc, tl, qualifier);
 
-        return new ServiceDependency(key, optionallaity, desc);
+        return new DependencyDescriptor(key, optionallaity, desc);
     }
 
     /**
@@ -414,12 +414,12 @@ public final class ServiceDependency {
      *            the class to return a dependency for
      * @return a service dependency for the specified class
      */
-    public static ServiceDependency of(Class<?> key) {
+    public static DependencyDescriptor of(Class<?> key) {
         requireNonNull(key, "key is null");
         return CLASS_CACHE.get(key);
     }
 
-    public static ServiceDependency of(Key<?> key) {
+    public static DependencyDescriptor of(Key<?> key) {
         requireNonNull(key, "key is null");
         if (!key.hasQualifier()) {
             TypeLiteral<?> tl = key.typeLiteral();
@@ -427,14 +427,10 @@ public final class ServiceDependency {
                 return CLASS_CACHE.get(tl.rawType());
             }
         }
-        return new ServiceDependency(key, Optionality.REQUIRED, null);
+        return new DependencyDescriptor(key, Optionality.REQUIRED, null);
     }
 
-    public static ServiceDependency ofOptional(Class<?> key) {
-        return ofOptional(Key.of(key));
-    }
-
-    public static ServiceDependency ofOptional(Key<?> key) {
+    public static DependencyDescriptor ofOptional(Key<?> key) {
         requireNonNull(key, "key is null");
         if (!key.hasQualifier()) {
             TypeLiteral<?> tl = key.typeLiteral();
@@ -442,19 +438,19 @@ public final class ServiceDependency {
                 return CLASS_CACHE.get(tl.rawType());
             }
         }
-        return new ServiceDependency(key, Optionality.OPTIONAL_NULLABLE, null);
+        return new DependencyDescriptor(key, Optionality.OPTIONAL_NULLABLE, null);
     }
 
     private enum Optionality {
         REQUIRED {
             @Override
-            public Object empty(ServiceDependency dependency) {
+            public Object empty(DependencyDescriptor dependency) {
                 throw new UnsupportedOperationException("This dependency is not optional, dependency = " + dependency);
             }
         },
         OPTIONAL {
             @Override
-            public Object empty(ServiceDependency dependency) {
+            public Object empty(DependencyDescriptor dependency) {
                 return Optional.empty();
             }
 
@@ -465,7 +461,7 @@ public final class ServiceDependency {
         },
         OPTIONAL_INT {
             @Override
-            public Object empty(ServiceDependency dependency) {
+            public Object empty(DependencyDescriptor dependency) {
                 return OptionalInt.empty();
             }
 
@@ -476,7 +472,7 @@ public final class ServiceDependency {
         },
         OPTIONAL_LONG {
             @Override
-            public Object empty(ServiceDependency dependency) {
+            public Object empty(DependencyDescriptor dependency) {
                 return OptionalLong.empty();
             }
 
@@ -487,7 +483,7 @@ public final class ServiceDependency {
         },
         OPTIONAL_DOUBLE {
             @Override
-            public Object empty(ServiceDependency dependency) {
+            public Object empty(DependencyDescriptor dependency) {
                 return OptionalDouble.empty();
             }
 
@@ -498,12 +494,12 @@ public final class ServiceDependency {
         },
         OPTIONAL_NULLABLE {
             @Override
-            public Object empty(ServiceDependency dependency) {
+            public Object empty(DependencyDescriptor dependency) {
                 return null;
             }
         };
 
-        public abstract Object empty(ServiceDependency dependency);
+        public abstract Object empty(DependencyDescriptor dependency);
 
         public Object wrapIfOptional(Object object) {
             return null;

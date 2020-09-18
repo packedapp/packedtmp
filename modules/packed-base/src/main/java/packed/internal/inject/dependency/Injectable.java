@@ -38,6 +38,12 @@ import packed.internal.inject.sidecar.AtProvides;
  *
  */
 
+// Types....
+
+// Source Factory/Class
+// @Provides
+// Other Method
+
 // Limitations
 // Everything must have a source
 // Injectable...
@@ -55,7 +61,7 @@ public class Injectable {
     MethodHandle buildMethodHandle;
 
     /** The dependencies that must be resolved. */
-    public final List<ServiceDependency> dependencies;
+    public final List<DependencyDescriptor> dependencies;
 
     public boolean needsPostProcessing;
 
@@ -129,18 +135,22 @@ public class Injectable {
             return buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, RuntimeRegion.class);
         }
 
+        // We create a new method that a
         MethodHandle mh = directMethodHandle;
         for (int i = 0; i < resolved.length; i++) {
             DependencyProvider dp = resolved[i];
-            requireNonNull(dp);
             MethodHandle dep = dp.dependencyAccessor();
-
             mh = MethodHandles.collectArguments(mh, i, dep);
         }
+        // We may e
 
-        MethodType mt = MethodType.methodType(mh.type().returnType(), RuntimeRegion.class);
-        int[] ar = new int[mh.type().parameterCount()];
-        buildMethodHandle = MethodHandles.permuteArguments(mh, mt, ar);
+        // We may need to reduce (RuntimeRegion, RuntimeRegion*)X -> (RuntimeRegion)X
+        if (resolved.length > 1) {
+            MethodType mt = MethodType.methodType(mh.type().returnType(), RuntimeRegion.class);
+            buildMethodHandle = MethodHandles.permuteArguments(mh, mt, new int[resolved.length]);
+        } else {
+            buildMethodHandle = mh;
+        }
         if (buildMethodHandle.type().parameterCount() != 1) {
             throw new IllegalStateException();
         }
@@ -168,7 +178,7 @@ public class Injectable {
     public void resolve() {
         int startIndex = resolved.length != dependencies.size() ? 1 : 0;
         for (int i = 0; i < dependencies.size(); i++) {
-            ServiceDependency sd = dependencies.get(i);
+            DependencyDescriptor sd = dependencies.get(i);
             DependencyProvider e = null;
             if (source != null) {
                 SourceModel sm = source.model;

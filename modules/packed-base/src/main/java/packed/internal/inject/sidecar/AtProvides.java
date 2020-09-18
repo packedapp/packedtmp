@@ -27,7 +27,7 @@ import app.packed.inject.Provide;
 import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.MethodDescriptor;
-import packed.internal.inject.dependency.ServiceDependency;
+import packed.internal.inject.dependency.DependencyDescriptor;
 
 /** A descriptor for a field or method (member) annotated with {@link Provide}. */
 public final class AtProvides {
@@ -52,12 +52,12 @@ public final class AtProvides {
     public final Provide provides;
 
     /** The dependencies (parameters) of the member. */
-    public final List<ServiceDependency> dependencies;
+    public final List<DependencyDescriptor> dependencies;
 
     /** An unbound method handle to the underlying field or method. */
     public final MethodHandle methodHandle;
 
-    AtProvides(MethodHandle mh, MemberDescriptor member, Key<?> key, Provide provides, List<ServiceDependency> dependencies) {
+    AtProvides(MethodHandle mh, MemberDescriptor member, Key<?> key, Provide provides, List<DependencyDescriptor> dependencies) {
         this.methodHandle = requireNonNull(mh);
         this.dependencies = requireNonNull(dependencies);
         this.provides = requireNonNull(provides);

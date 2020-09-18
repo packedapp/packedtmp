@@ -65,7 +65,7 @@ public final class InjectionManager {
         allInjectables.add(requireNonNull(injectable));
     }
 
-    public void buildTree(RegionAssembly resolver) {
+    public void build(RegionAssembly region) {
         if (services != null) {
             services.resolve();
         }
@@ -85,7 +85,7 @@ public final class InjectionManager {
         if (services != null) {
             services.dependencies().checkForMissingDependencies(this);
         }
-        PostProcesser.dependencyCyclesDetect(resolver, this);
+        PostProcesser.dependencyCyclesDetect(region, this);
 
     }
 

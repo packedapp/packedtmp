@@ -30,7 +30,7 @@ import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.MethodDescriptor;
 import packed.internal.errorhandling.ErrorMessageBuilder;
-import packed.internal.inject.dependency.ServiceDependency;
+import packed.internal.inject.dependency.DependencyDescriptor;
 
 /** Information about fields and methods annotated with {@link Provide}. */
 public final class AtProvidesHook implements Hook {
@@ -96,10 +96,10 @@ public final class AtProvidesHook implements Hook {
         void onMethodProvide(AnnotatedMethodHook<Provide> methodHook) {
             MethodDescriptor method = methodHook.method();
 
-            tryAdd0(methodHook.methodHandle(), method, Key.fromMethodReturnType(method), methodHook.annotation(), ServiceDependency.fromExecutable(method));
+            tryAdd0(methodHook.methodHandle(), method, Key.fromMethodReturnType(method), methodHook.annotation(), DependencyDescriptor.fromExecutable(method));
         }
 
-        private AtProvides tryAdd0(MethodHandle mh, MemberDescriptor descriptor, Key<?> key, Provide provides, List<ServiceDependency> dependencies) {
+        private AtProvides tryAdd0(MethodHandle mh, MemberDescriptor descriptor, Key<?> key, Provide provides, List<DependencyDescriptor> dependencies) {
             AtProvides ap = new AtProvides(mh, descriptor, key, provides, dependencies);
             hasInstanceMembers |= !ap.isStaticMember;
             // Check this

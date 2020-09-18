@@ -35,7 +35,7 @@ import app.packed.service.ServiceExtension;
 import packed.internal.inject.InjectionManager;
 import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.inject.dependency.Injectable;
-import packed.internal.inject.dependency.ServiceDependency;
+import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 
 /**
@@ -73,7 +73,7 @@ public final class ServiceDependencyManager {
     final HashSet<Key<?>> requiredOptionally = new HashSet<>();
 
     /** A map of all dependencies that could not be resolved */
-    IdentityHashMap<ServiceAssembly<?>, List<ServiceDependency>> unresolvedDependencies;
+    IdentityHashMap<ServiceAssembly<?>, List<DependencyDescriptor>> unresolvedDependencies;
 
     public void checkForMissingDependencies(InjectionManager node) {
         if (missingDependencies != null) {
@@ -84,12 +84,12 @@ public final class ServiceDependencyManager {
                     StringBuilder sb = new StringBuilder();
                     sb.append("Cannot resolve dependency for ");
                     // Has at least on dependency, so a source is present
-                    List<ServiceDependency> dependencies = e.entry.dependencies;
+                    List<DependencyDescriptor> dependencies = e.entry.dependencies;
 
                     if (dependencies.size() == 1) {
                         sb.append("single ");
                     }
-                    ServiceDependency dependency = e.dependency;
+                    DependencyDescriptor dependency = e.dependency;
                     sb.append("parameter on ");
                     if (dependency.variable() != null) {
 
@@ -153,7 +153,7 @@ public final class ServiceDependencyManager {
         manualRequirementsManagement = true;
     }
 
-    public void recordMissingDependency(ServiceAssembly<?> entry, ServiceDependency dependency, boolean fromParent) {
+    public void recordMissingDependency(ServiceAssembly<?> entry, DependencyDescriptor dependency, boolean fromParent) {
 
     }
 
@@ -163,7 +163,7 @@ public final class ServiceDependencyManager {
      * @param entry
      * @param dependency
      */
-    public void recordResolvedDependency(InjectionManager im, Injectable entry, ServiceDependency dependency, @Nullable DependencyProvider resolvedTo,
+    public void recordResolvedDependency(InjectionManager im, Injectable entry, DependencyDescriptor dependency, @Nullable DependencyProvider resolvedTo,
             boolean fromParent) {
         requireNonNull(entry);
         requireNonNull(dependency);
@@ -196,7 +196,7 @@ public final class ServiceDependencyManager {
      * @see ServiceExtension#require(Key...)
      * @see ServiceExtension#requireOptionally(Key...)
      */
-    public void require(ServiceDependency dependency, ConfigSite configSite) {
+    public void require(DependencyDescriptor dependency, ConfigSite configSite) {
         explicitRequirements.add(new ServiceDependencyRequirement(dependency, configSite));
     }
 }

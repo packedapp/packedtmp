@@ -98,6 +98,7 @@ public final class SourceAssembly implements DependencyProvider {
 
     /** {@inheritDoc} */
     @Override
+    @Nullable
     public Injectable getInjectable() {
         return injectable;
     }

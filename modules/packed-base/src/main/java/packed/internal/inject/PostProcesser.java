@@ -34,7 +34,7 @@ import packed.internal.inject.dependency.Injectable;
 
 // https://algs4.cs.princeton.edu/42digraph/TarjanSCC.java.html
 // https://www.youtube.com/watch?v=TyWtx7q2D7Y
-public final class PostProcesser {
+final class PostProcesser {
 
     /**
      * Tries to find a dependency cycle.
@@ -44,14 +44,14 @@ public final class PostProcesser {
      */
 
     // detect cycles for -> detect cycle or needs to be instantited at initialization time
-    public static void dependencyCyclesDetect(RegionAssembly resolver, InjectionManager im) {
-        DependencyCycle c = dependencyCyclesFind(resolver, im.allInjectables);
+    static void dependencyCyclesDetect(RegionAssembly region, InjectionManager im) {
+        DependencyCycle c = dependencyCyclesFind(region, im.allInjectables);
         if (c != null) {
             throw new CyclicDependencyGraphException("Dependency cycle detected: " + c);
         }
     }
 
-    private static DependencyCycle dependencyCyclesFind(RegionAssembly resolver, ArrayList<Injectable> detectCyclesFor) {
+    private static DependencyCycle dependencyCyclesFind(RegionAssembly region, ArrayList<Injectable> detectCyclesFor) {
         if (detectCyclesFor == null) {
             throw new IllegalStateException("Must resolve nodes before detecting cycles");
         }
@@ -61,7 +61,7 @@ public final class PostProcesser {
         for (Injectable node : detectCyclesFor) {
             // System.out.println("Detect for " + node.directMethodHandle + " " + node.detectForCycles);
             if (node.needsPostProcessing) { // only process those nodes that have not been visited yet
-                DependencyCycle dc = PostProcesser.detectCycle(resolver, node, stack, dependencies);
+                DependencyCycle dc = PostProcesser.detectCycle(region, node, stack, dependencies);
                 if (dc != null) {
                     return dc;
                 }
@@ -84,7 +84,7 @@ public final class PostProcesser {
      *             if there is a cycle in the graph
      */
     @Nullable
-    private static DependencyCycle detectCycle(RegionAssembly resolver, Injectable node, ArrayDeque<Injectable> stack, ArrayDeque<Injectable> dependencies) {
+    private static DependencyCycle detectCycle(RegionAssembly region, Injectable node, ArrayDeque<Injectable> stack, ArrayDeque<Injectable> dependencies) {
         DependencyProvider[] deps = node.resolved;
         if (deps.length > 0) {
             stack.push(node);
@@ -105,7 +105,7 @@ public final class PostProcesser {
                                 }
                                 return new DependencyCycle(dependencies);
                             }
-                            DependencyCycle cycle = detectCycle(resolver, injectable, stack, dependencies);
+                            DependencyCycle cycle = detectCycle(region, injectable, stack, dependencies);
                             if (cycle != null) {
                                 return cycle;
                             }
@@ -123,7 +123,7 @@ public final class PostProcesser {
         // we add each node on exit when all of its dependency have already been added. In this way
         // guarantee that all dependencies have already been visited
         if (node.regionIndex() > -1) {
-            resolver.injectables.add(node);
+            region.injectables.add(node);
         }
         node.needsPostProcessing = false;
         return null;

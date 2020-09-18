@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.Optional;
 
-import packed.internal.inject.dependency.ServiceDependency;
+import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -30,7 +30,7 @@ import packed.internal.util.LookupUtil;
  */
 final class MethodHandleBuilderStatics {
 
-    static final MethodHandle WRAP_OPTIONAL = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), ServiceDependency.class, "wrapIfOptional", Object.class,
+    static final MethodHandle WRAP_OPTIONAL = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), DependencyDescriptor.class, "wrapIfOptional", Object.class,
             Object.class);
 
     static final MethodHandle OPTIONAL_EMPTY = LookupUtil.mhStaticPublic(Optional.class, "empty", Optional.class);

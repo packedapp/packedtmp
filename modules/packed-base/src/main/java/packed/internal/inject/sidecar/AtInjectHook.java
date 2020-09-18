@@ -25,7 +25,7 @@ import app.packed.hook.OnHook;
 import app.packed.inject.Inject;
 import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.MethodDescriptor;
-import packed.internal.inject.dependency.ServiceDependency;
+import packed.internal.inject.dependency.DependencyDescriptor;
 
 /**
  *
@@ -66,13 +66,13 @@ public final class AtInjectHook implements Hook {
         void onFieldInject(AnnotatedFieldHook<Inject> hook) {
             hook.checkNotFinal().checkNotStatic();
             FieldDescriptor field = hook.field();
-            members.add(new AtInject(hook.setter(), field, List.of(ServiceDependency.fromField(field))));
+            members.add(new AtInject(hook.setter(), field, List.of(DependencyDescriptor.fromField(field))));
         }
 
         @OnHook
         void onMethodProvide(AnnotatedMethodHook<Inject> hook) {
             MethodDescriptor method = hook.method();
-            List<ServiceDependency> dependencies = ServiceDependency.fromExecutable(method);
+            List<DependencyDescriptor> dependencies = DependencyDescriptor.fromExecutable(method);
 
             // TestNotStatic... Hmm kan ikke kalde hook.checkNotStatic mere...
 

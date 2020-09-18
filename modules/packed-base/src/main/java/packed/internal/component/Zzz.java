@@ -29,6 +29,7 @@ public class Zzz extends BaseBundle {
     @Override
     protected void configure() {
         service();
+        provideInstance("sdasd");
         install(Foo.class);
         use(MyEx.class);
     }
@@ -43,7 +44,7 @@ public class Zzz extends BaseBundle {
     static class MyEx extends Extension {}
 
     public static class Foo {
-        public Foo() {
+        public Foo(String s1, String s2, String s3) {
             System.out.println("OK");
         }
     }

@@ -26,7 +26,7 @@ import java.util.function.BiFunction;
 
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory2;
-import packed.internal.inject.dependency.ServiceDependency;
+import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.util.LookupUtil;
 
 /** An internal factory for {@link Factory2}. */
@@ -36,14 +36,14 @@ public class Factory2FactoryHandle<T, U, R> extends FactoryHandle<R> {
     private static final MethodHandle APPLY = LookupUtil.mhVirtualPublic(BiFunction.class, "apply", Object.class, Object.class, Object.class);
 
     /** A cache of extracted type variables and dependencies from subclasses of this class. */
-    private static final ClassValue<Entry<TypeLiteral<?>, List<ServiceDependency>>> CACHE = new ClassValue<>() {
+    private static final ClassValue<Entry<TypeLiteral<?>, List<DependencyDescriptor>>> CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
-        protected Entry<TypeLiteral<?>, List<ServiceDependency>> computeValue(Class<?> type) {
+        protected Entry<TypeLiteral<?>, List<DependencyDescriptor>> computeValue(Class<?> type) {
             return new SimpleImmutableEntry<>(TypeLiteral.fromTypeVariable((Class) type, BaseFactory.class, 0),
-                    ServiceDependency.fromTypeVariables((Class) type, Factory2.class, 0, 1));
+                    DependencyDescriptor.fromTypeVariables((Class) type, Factory2.class, 0, 1));
         }
     };
 
@@ -78,7 +78,7 @@ public class Factory2FactoryHandle<T, U, R> extends FactoryHandle<R> {
      */
     @SuppressWarnings("unchecked")
     public static <T, U, R> FactorySupport<R> create(Class<?> implementation, BiFunction<?, ?, ? extends R> function) {
-        Entry<TypeLiteral<?>, List<ServiceDependency>> fs = CACHE.get(implementation);
+        Entry<TypeLiteral<?>, List<DependencyDescriptor>> fs = CACHE.get(implementation);
         return new FactorySupport<>(new Factory2FactoryHandle<>((TypeLiteral<R>) fs.getKey(), (BiFunction<? super T, ? super U, ? extends R>) function),
                 fs.getValue());
     }

@@ -340,7 +340,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         }
         if (getParent() == null) {
             InjectionManager im = injectionManager();
-            im.buildTree(region);
+            im.build(region);
         }
         finalState = true;
     }

@@ -167,6 +167,10 @@ public abstract class Key<T> {
         return Objects.equals(qualifier, other.qualifier) && typeLiteral.equals(other.typeLiteral);
     }
 
+    public final boolean isClassKey(Class<?> c) {
+        return qualifier == null && typeLiteral.type() == c;
+    }
+
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
