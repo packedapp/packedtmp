@@ -119,7 +119,6 @@ public class Injectable {
                 mh = buildMethodHandle = MethodHandles.collectArguments(directMethodHandle, 0, resolved[0].dependencyAccessor());
             } else {
                 mh = directMethodHandle;
-                MethodType mt = MethodType.methodType(directMethodHandle.type().returnType(), RuntimeRegion.class);
 
                 // We create a new method that a
                 for (int i = 0; i < resolved.length; i++) {
@@ -127,6 +126,7 @@ public class Injectable {
                     mh = MethodHandles.collectArguments(mh, i, dp.dependencyAccessor());
                 }
                 // reduce (RuntimeRegion, *)X -> (RuntimeRegion)X
+                MethodType mt = MethodType.methodType(directMethodHandle.type().returnType(), RuntimeRegion.class);
                 mh = buildMethodHandle = MethodHandles.permuteArguments(mh, mt, new int[resolved.length]);
             }
         }
@@ -136,7 +136,9 @@ public class Injectable {
     public int regionIndex() {
         // buildEntry is null if it this Injectable is created from a source and not @AtProvides
         // In which case we store the build entry (if available) in the source instead
-        if (buildEntry == null) {
+        if (sourceMember != null) {
+            throw new UnsupportedOperationException();
+        } else if (buildEntry == null) {
             return source.regionIndex;
         }
         return buildEntry.regionIndex();
