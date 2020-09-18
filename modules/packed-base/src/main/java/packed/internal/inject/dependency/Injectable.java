@@ -148,25 +148,12 @@ public class Injectable {
     }
 
     public int regionIndex() {
-        if (buildEntry == null) {
-            return source.regionIndex;
-        }
-        return entry().regionIndex();
-    }
-
-    public boolean isConstant() {
-        return entry() != null && entry().regionIndex() > -1;
-    }
-
-    @Nullable
-    private ServiceAssembly<?> entry() {
         // buildEntry is null if it this Injectable is created from a source and not @AtProvides
         // In which case we store the build entry (if available) in the source instead
         if (buildEntry == null) {
-            return source.service;
+            return source.regionIndex;
         }
-        // created from @Provide
-        return buildEntry;
+        return buildEntry.regionIndex();
     }
 
     public boolean hasUnresolved() {
