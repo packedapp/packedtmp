@@ -54,9 +54,9 @@ public final class SourceAssembly implements DependencyProvider {
     @Nullable
     public ServiceAssembly<?> service;
 
-    SourceAssembly(ComponentNodeConfiguration compConf, RegionAssembly region, Object source) {
+    SourceAssembly(ComponentNodeConfiguration compConf, int regionIndex, Object source) {
         this.compConf = compConf;
-        this.regionIndex = compConf.modifiers().isSingleton() ? region.reserve() : -1;
+        this.regionIndex = regionIndex;
 
         // The specified source is either a Class, a Factory, or an instance
         if (source instanceof Class) {
