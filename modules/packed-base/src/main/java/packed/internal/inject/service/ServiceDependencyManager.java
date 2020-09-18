@@ -92,7 +92,7 @@ public final class ServiceDependencyManager {
     }
 
     public void checkForMissingDependencies(InjectionManager node) {
-        boolean manualRequirementsManagement = node.dependencies != null && node.dependencies.manualRequirementsManagement;
+        boolean manualRequirementsManagement = node.services().dependencies != null && node.services().dependencies.manualRequirementsManagement;
         if (missingDependencies != null) {
             // if (!box.source.unresolvedServicesAllowed()) {
             for (ServiceDependencyRequirement e : missingDependencies) {
@@ -193,7 +193,7 @@ public final class ServiceDependencyManager {
         }
         m.add(new ServiceDependencyRequirement(dependency, entry));
 
-        if (im.dependencies == null || !im.dependencies.manualRequirementsManagement) {
+        if (!manualRequirementsManagement) {
             if (dependency.isOptional()) {
                 requiredOptionally.add(dependency.key());
             } else {

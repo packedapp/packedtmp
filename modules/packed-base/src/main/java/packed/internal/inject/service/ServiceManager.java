@@ -29,6 +29,7 @@ import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.service.Injector;
+import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceRegistry;
 import packed.internal.component.ComponentNode;
@@ -38,6 +39,7 @@ import packed.internal.component.wirelet.WireletList;
 import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.assembly.AtProvideServiceAssembly;
 import packed.internal.inject.service.assembly.ComponentSourceServiceAssembly;
+import packed.internal.inject.service.assembly.ExportedServiceAssembly;
 import packed.internal.inject.service.assembly.ProvideAllFromOtherInjector;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.inject.service.runtime.AbstractInjector;
@@ -63,13 +65,39 @@ public class ServiceManager {
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices = new LinkedHashMap<>();
 
+    /** Handles everything to do with dependencies, for example, explicit requirements. */
+    public ServiceDependencyManager dependencies;
     public final InjectionManager im;
+
+    /**
+     * Returns the dependency manager for this builder.
+     * 
+     * @return the dependency manager for this builder
+     */
+    public ServiceDependencyManager dependencies() {
+        ServiceDependencyManager d = dependencies;
+        if (d == null) {
+            d = dependencies = new ServiceDependencyManager();
+        }
+        return d;
+    }
 
     /** All injectors added via {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
     private ArrayList<ProvideAllFromOtherInjector> provideAll;
 
     /** All explicit added build entries. */
     public final ArrayList<ServiceAssembly<?>> buildEntries = new ArrayList<>();
+
+    public ServiceContract newServiceContract() {
+        return ServiceContract.newContract(c -> {
+            if (hasExports()) {
+                for (ExportedServiceAssembly<?> n : exports()) {
+                    c.provides(n.key());
+                }
+            }
+            dependencies().buildContract(c);
+        });
+    }
 
     /**
      * @param injectionManager

@@ -132,8 +132,8 @@ public final class ServiceExtension extends Extension {
     @AttributeProvide(by = ServiceAttributes.class, name = "exported-services")
     @Nullable
     /* package-private */ ServiceMap attributesExports() {
-        if (im.services().hasExports()) {
-            return im.services().exports().exports();
+        if (sm.hasExports()) {
+            return sm.exports().exports();
         }
         return null;
     }
@@ -145,7 +145,7 @@ public final class ServiceExtension extends Extension {
      */
     @AttributeProvide(by = ServiceAttributes.class, name = "contract")
     /* package-private */ ServiceContract attributesContract() {
-        return im.newServiceContract();
+        return sm.newServiceContract();
     }
 
     <S, U> void breakCycle(Key<S> key1, Key<U> key2, BiConsumer<S, U> consumer) {
@@ -307,7 +307,7 @@ public final class ServiceExtension extends Extension {
         }
         // Add each @Provide as children of the parent node
         for (AtProvides atProvides : hook.members) {
-            im.services().provideFromAtProvides(compConf, atProvides);
+            sm.provideFromAtProvides(compConf, atProvides);
         }
     }
 
@@ -351,7 +351,7 @@ public final class ServiceExtension extends Extension {
         checkConfigurable();
         ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Class<?> key : keys) {
-            im.dependencies().require(ServiceDependency.of(key), cs);
+            sm.dependencies().require(ServiceDependency.of(key), cs);
         }
     }
 
@@ -376,7 +376,7 @@ public final class ServiceExtension extends Extension {
         checkConfigurable();
         ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Key<?> key : keys) {
-            im.dependencies().require(ServiceDependency.of(key), cs);
+            sm.dependencies().require(ServiceDependency.of(key), cs);
         }
     }
 
@@ -398,7 +398,7 @@ public final class ServiceExtension extends Extension {
         checkConfigurable();
         ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
         for (Key<?> key : keys) {
-            im.dependencies().require(ServiceDependency.ofOptional(key), cs);
+            sm.dependencies().require(ServiceDependency.ofOptional(key), cs);
         }
     }
 

@@ -20,13 +20,10 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 
 import app.packed.base.Nullable;
-import app.packed.service.ServiceContract;
 import packed.internal.component.RegionAssembly;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.dependency.Injectable;
-import packed.internal.inject.service.ServiceDependencyManager;
 import packed.internal.inject.service.ServiceManager;
-import packed.internal.inject.service.assembly.ExportedServiceAssembly;
 
 /**
  * Since the logic for the service extension is quite complex. Especially with cross-container integration. We spread it
@@ -40,10 +37,8 @@ public final class InjectionManager {
     /** The container this injection manager belongs to. */
     public final ContainerAssembly container;
 
-    /** Handles everything to do with dependencies, for example, explicit requirements. */
-    public ServiceDependencyManager dependencies;
-
     /** An error manager that is lazily initialized. */
+    @Nullable
     private InjectionErrorManager em;
 
     /** A list of nodes to use when detecting dependency cycles. */
@@ -88,21 +83,8 @@ public final class InjectionManager {
             i.resolve();
         }
 
-        dependencies().checkForMissingDependencies(this);
+        services().dependencies().checkForMissingDependencies(this);
         PostProcesser.dependencyCyclesDetect(resolver, this);
-    }
-
-    /**
-     * Returns the dependency manager for this builder.
-     * 
-     * @return the dependency manager for this builder
-     */
-    public ServiceDependencyManager dependencies() {
-        ServiceDependencyManager d = dependencies;
-        if (d == null) {
-            d = dependencies = new ServiceDependencyManager();
-        }
-        return d;
     }
 
     /**
@@ -121,17 +103,6 @@ public final class InjectionManager {
     @Nullable
     public ServiceManager getServiceManager() {
         return services;
-    }
-
-    public ServiceContract newServiceContract() {
-        return ServiceContract.newContract(c -> {
-            if (services().hasExports()) {
-                for (ExportedServiceAssembly<?> n : services().exports()) {
-                    c.provides(n.key());
-                }
-            }
-            dependencies().buildContract(c);
-        });
     }
 
     /**
