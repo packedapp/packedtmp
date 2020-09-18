@@ -97,17 +97,17 @@ import app.packed.service.ServiceExtension;
 @Opens(to = { OpenMode.METHOD_INVOKE, OpenMode.FIELD_SET })
 public @interface Provide {
 
-    /**
-     * Returns a description of the service provided by the providing method, field or type.
-     * <p>
-     * The default value is the empty string, indicating that there is no description for the provided service
-     * 
-     * @return a description of the service provided by the providing method, field or type
-     */
-    // how does this relate to description on component??? description on component???
-    // Same on both ->
-    // Service 1, Component another -> each have different
-    String description() default "";
+//    /**
+//     * Returns a description of the service provided by the providing method, field or type.
+//     * <p>
+//     * The default value is the empty string, indicating that there is no description for the provided service
+//     * 
+//     * @return a description of the service provided by the providing method, field or type
+//     */
+//    // how does this relate to description on component??? description on component???
+//    // Same on both ->
+//    // Service 1, Component another -> each have different
+//    String description() default "";
 
     /**
      * Indicates whether or not the provided value is a constant.

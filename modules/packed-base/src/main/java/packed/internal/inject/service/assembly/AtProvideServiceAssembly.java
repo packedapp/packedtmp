@@ -46,7 +46,7 @@ public class AtProvideServiceAssembly<T> extends ServiceAssembly<T> {
     public AtProvideServiceAssembly(ServiceManager im, ComponentNodeConfiguration compConf, AtProvides ap) {
         super(im, compConf.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, ap.provides, ap.member), (Key) ap.key);
         this.injectable = new Injectable(compConf.source, this, ap);
-        this.regionIndex = ap.isConstant ? compConf.region.reserve() : -1;
+        this.regionIndex = ap.isConstant() ? compConf.region.reserve() : -1;
     }
 
     @Override
