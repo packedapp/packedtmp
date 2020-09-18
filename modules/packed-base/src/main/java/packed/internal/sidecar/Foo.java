@@ -20,7 +20,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import java.time.LocalDateTime;
 
 import app.packed.component.App;
 import app.packed.container.BaseBundle;
@@ -43,9 +42,7 @@ public class Foo extends BaseBundle {
 
     public static class MyComp {
 
-        public MyComp(LocalDateTime ldt) {
-            System.out.println("INIT " + ldt);
-        }
+        public MyComp() {}
 
         @Hej
         public void foo() {

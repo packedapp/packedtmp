@@ -15,6 +15,8 @@
  */
 package packed.internal.component;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -42,19 +44,24 @@ public class SourceModelMethod extends SourceModelMember {
 
     public DependencyProvider[] resolved;
 
-    public MethodSidecarModel msm;
+    public final MethodHandle directMethodHandle;
 
-    public MethodHandle directMethodHandle;
+    public final List<DependencyDescriptor> dependencies;
 
-    public List<DependencyDescriptor> dependencies;
+    public final MethodSidecarModel model;
 
-    public static void main(Method method) {
+    public final Method method;
+
+    SourceModelMethod(Method method, MethodSidecarModel model, MethodHandle mh) {
+        this.method = requireNonNull(method);
+        this.model = requireNonNull(model);
         MethodDescriptor m = MethodDescriptor.from(method);
-        List<DependencyDescriptor> fromExecutable = DependencyDescriptor.fromExecutable(m);
+        this.dependencies = DependencyDescriptor.fromExecutable(m);
+        this.directMethodHandle = requireNonNull(mh);
     }
 
     @Nullable
-    RunAt runAt;
+    RunAt runAt = RunAt.INITIALIZATION;
 
     enum RunAt {
         INITIALIZATION;

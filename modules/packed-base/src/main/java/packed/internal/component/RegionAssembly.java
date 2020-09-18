@@ -37,7 +37,9 @@ public final class RegionAssembly {
     // For now written by DependencyCycleDetector via BFS
     public final ArrayList<Injectable> injectables = new ArrayList<>();
 
-    int nextIndex;
+    private int nextIndex;
+
+    public final ArrayList<MethodHandle> initializers = new ArrayList<>();
 
     RuntimeRegion newRegion(PackedInitializationContext pic, ComponentNode root) {
         RuntimeRegion region = new RuntimeRegion(nextIndex);
@@ -73,6 +75,15 @@ public final class RegionAssembly {
             region.store(index, instance);
         }
 
+        // Initialize
+        for (MethodHandle mh : initializers) {
+            try {
+                mh.invoke(region);
+            } catch (Throwable e) {
+                throw ThrowableUtil.orUndeclared(e);
+            }
+        }
+        System.out.println(initializers);
         return region;
     }
 

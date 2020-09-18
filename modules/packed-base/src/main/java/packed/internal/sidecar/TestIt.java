@@ -18,7 +18,9 @@ package packed.internal.sidecar;
 import java.time.LocalDateTime;
 
 import app.packed.inject.Provide;
+import app.packed.sidecar.Invoker;
 import app.packed.sidecar.MethodSidecar;
+import app.packed.statemachine.OnInitialize;
 
 /**
  *
@@ -28,6 +30,12 @@ public class TestIt extends MethodSidecar {
     @Override
     protected void configure() {
         debug();
+    }
+
+    @OnInitialize
+    public static void foo(Invoker i) throws Throwable {
+        i.invoke();
+        i.invoke();
     }
 
     @Provide

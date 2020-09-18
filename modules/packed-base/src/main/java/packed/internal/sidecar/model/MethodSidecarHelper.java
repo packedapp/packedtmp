@@ -28,7 +28,7 @@ import packed.internal.sidecar.SidecarModel;
 public final class MethodSidecarHelper {
 
     @Nullable
-    public static MethodSidecarModel tryGet(Class<? extends Annotation> c) {
+    public static MethodSidecarModel getModel(Class<? extends Annotation> c) {
         return METHOD_SIDECARS.get(c);
     }
 

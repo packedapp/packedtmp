@@ -25,7 +25,9 @@ import java.util.Map;
 import app.packed.base.Key;
 import app.packed.inject.Provide;
 import app.packed.sidecar.MethodSidecar;
+import app.packed.statemachine.OnInitialize;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
+import packed.internal.invoke.OpenClass;
 import packed.internal.util.LookupUtil;
 
 /** A model of a {@link MethodSidecar}. */
@@ -41,6 +43,9 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
 
     public final Map<Key<?>, MethodHandle> keys;
 
+    // Must take an invoker...
+    public final MethodHandle onInitialize;
+
     /**
      * Creates a new model.
      * 
@@ -50,6 +55,7 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
     private MethodSidecarModel(Builder builder) {
         super(builder);
         this.keys = builder.map.size() == 0 ? null : Map.copyOf(builder.map);
+        this.onInitialize = builder.onInitialize;
     }
 
     /** {@inheritDoc} */
@@ -63,6 +69,8 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
 
         private final HashMap<Key<?>, MethodHandle> map = new HashMap<>();
 
+        private MethodHandle onInitialize;
+
         Builder(Class<?> implementation) {
             super(VH_METHOD_SIDECAR_CONFIGURATION, MH_METHOD_SIDECAR_CONFIGURE, implementation, new MethodSidecarConfiguration());
         }
@@ -70,15 +78,28 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
         /** {@inheritDoc} */
         @Override
         protected MethodSidecarModel build() {
-            ib.oc().findMethods(m -> {
+            OpenClass oc = ib.oc();
+            oc.findMethods(m -> {
                 Provide ap = m.getAnnotation(Provide.class);
                 if (ap != null) {
                     if (!Modifier.isStatic(m.getModifiers())) {
                         throw new IllegalStateException("Methods annotated with @Provide must be static, method = " + m);
                     }
                     Key<?> k = Key.fromMethodReturnType(m);
-                    MethodHandle mh = ib.oc().unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                    MethodHandle mh = oc.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
                     map.put(k, mh);
+                }
+
+                OnInitialize oi = m.getAnnotation(OnInitialize.class);
+                if (oi != null) {
+                    if (onInitialize != null) {
+                        throw new IllegalStateException(oc.type() + " defines more than one method with " + OnInitialize.class.getSimpleName());
+                    }
+                    if (!Modifier.isStatic(m.getModifiers())) {
+                        throw new IllegalStateException("Methods annotated with @Provide must be static, method = " + m);
+                    }
+                    MethodHandle mh = oc.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                    onInitialize = mh;
                 }
             });
 

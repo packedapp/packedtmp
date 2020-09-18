@@ -70,6 +70,15 @@ public final class LookupUtil {
         }
     }
 
+    public static MethodHandle mhConstructorSelf(MethodHandles.Lookup caller, Class<?>... parameterTypes) {
+        MethodType mt = MethodType.methodType(void.class, parameterTypes);
+        try {
+            return caller.findConstructor(caller.lookupClass(), mt);
+        } catch (ReflectiveOperationException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
     public static MethodHandle mhStaticPublic(Class<?> refc, String name, Class<?> returnType, Class<?>... parameterTypes) {
         MethodType mt = MethodType.methodType(returnType, parameterTypes);
         try {
@@ -139,4 +148,5 @@ public final class LookupUtil {
             throw new ExceptionInInitializerError(e);
         }
     }
+
 }

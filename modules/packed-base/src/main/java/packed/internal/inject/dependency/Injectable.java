@@ -141,7 +141,8 @@ public class Injectable {
         // buildEntry is null if it this Injectable is created from a source and not @AtProvides
         // In which case we store the build entry (if available) in the source instead
         if (sourceMember != null) {
-            throw new UnsupportedOperationException();
+            // AAhhhh vi bliver jo ogsaa noedt til at lave sidecars
+            return -1;
         } else if (service == null) {
             return source.regionIndex;
         }

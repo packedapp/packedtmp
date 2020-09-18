@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -61,6 +62,8 @@ public final class SourceModel extends Model {
     @Nullable
     private final HookRequest sourceHook;
 
+    public final List<SourceModelMethod> methods;
+
     public final Map<Key<?>, MethodHandle> sourceServices;
 
     /**
@@ -71,7 +74,7 @@ public final class SourceModel extends Model {
      */
     private SourceModel(SourceModel.Builder builder) {
         super(builder.cp.type());
-
+        this.methods = List.copyOf(builder.methods);
         try {
             this.sourceHook = builder.csb == null ? null : builder.csb.build();
         } catch (Throwable ee) {
@@ -156,7 +159,9 @@ public final class SourceModel extends Model {
         /** A map of builders for every activated extension. */
         private final IdentityHashMap<Class<? extends Extension>, HookRequestBuilder> extensionBuilders = new IdentityHashMap<>();
 
-        private final ArrayList<MethodSidecarModel> methodModels = new ArrayList<>();
+        private final ArrayList<MethodSidecarModel> oldMethodModels = new ArrayList<>();
+
+        private final ArrayList<SourceModelMethod> methods = new ArrayList<>();
 
         private final HashMap<Key<?>, MethodHandle> globalServices = new HashMap<>();
 
@@ -259,13 +264,18 @@ public final class SourceModel extends Model {
                 if (csb != null) {
                     csb.onAnnotatedMethod(method, a);
                 }
-                MethodSidecarModel tryGet = MethodSidecarHelper.tryGet(a.annotationType());
-                if (tryGet != null) {
-                    Map<Key<?>, MethodHandle> keys = tryGet.keys;
+
+                MethodSidecarModel model = MethodSidecarHelper.getModel(a.annotationType());
+                if (model != null) {
+                    MethodHandle mh = htp.unreflect(method);
+                    SourceModelMethod smm = new SourceModelMethod(method, model, mh);
+                    methods.add(smm);
+
+                    Map<Key<?>, MethodHandle> keys = model.keys;
                     if (keys != null) {
                         globalServices.putAll(keys);
                     }
-                    methodModels.add(tryGet);
+                    oldMethodModels.add(model);
                 }
             }
         }

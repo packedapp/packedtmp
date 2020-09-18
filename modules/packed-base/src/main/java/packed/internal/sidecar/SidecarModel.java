@@ -68,15 +68,15 @@ public abstract class SidecarModel<T> {
         return CACHE.get(implementation);
     }
 
-    public static MethodSidecarModel ofMethod(Class<?> implementation) {
-        return (MethodSidecarModel) CACHE.get(implementation);
-    }
-
     static <T extends SidecarModel<T>> T of(Class<T> sidecarType, Class<?> implementation) {
 
         // Er der nogengang vi ved
         // hellere Maaske hellere <T extends SidecarModel> of (Class<T> sidecarType, Class<?> implementation)
         throw new UnsupportedOperationException();
+    }
+
+    public static MethodSidecarModel ofMethod(Class<?> implementation) {
+        return (MethodSidecarModel) CACHE.get(implementation);
     }
 
     /** A builder for a sidecar model. */
@@ -85,13 +85,13 @@ public abstract class SidecarModel<T> {
         /** The configuration object that the sidecar implementation can use. */
         private final C configuration;
 
+        final InstantiatorBuilder ib;
+
         /** A method handle that can call the sidecar's configure method. */
         private final MethodHandle mhConfigure;
 
         /** A var handle */
         private final VarHandle vhConfiguration;
-
-        final InstantiatorBuilder ib;
 
         // If we get a shared Sidecar we can have a single MethodHandle configure
         Builder(VarHandle vh, MethodHandle configure, Class<?> implementation, C context) {
