@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.base.Nullable;
@@ -58,7 +57,7 @@ public class Injectable {
     /** The dependencies that must be resolved. */
     public final List<ServiceDependency> dependencies;
 
-    public boolean detectForCycles;
+    public boolean needsPostProcessing;
 
     /** A direct method handle. */
     public final MethodHandle directMethodHandle;
@@ -90,21 +89,9 @@ public class Injectable {
         // Det er jo faktisk helt ned til en sidecar vi skal instantiere det foer
         // selve servicen...
 
-        this.detectForCycles = resolved.length > 0;// dependencies.size() > 0;
-
         // We have moved all the logic for adding some to various list.
         // Down into the dependency cycle check.
-        detectForCycles = true;
-        if (detectForCycles) {
-            im.postProcessingInjectables.add(this);
-        }
-        if (!ap.isStaticMember && source.getInjectable() != null) {
-            ArrayList<Injectable> al = im.postProcessingInjectables;
-            if (!al.contains(source.getInjectable())) {
-                al.add(source.getInjectable());
-                source.getInjectable().detectForCycles = true;
-            }
-        }
+        needsPostProcessing = true;
         this.sourceMember = null;
     }
 
@@ -128,10 +115,7 @@ public class Injectable {
         this.dependencies = factory.factory.dependencies;
         this.directMethodHandle = requireNonNull(mh);
         this.resolved = new DependencyProvider[dependencies.size()];
-        this.detectForCycles = true;// resolved.length > 0;
-        if (detectForCycles) {
-            im.postProcessingInjectables.add(this);
-        }
+        this.needsPostProcessing = true;// resolved.length > 0;
         buildEntry = null; // Any build entry is stored in SourceAssembly#service
         this.sourceMember = null;
     }

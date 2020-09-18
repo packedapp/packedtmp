@@ -32,7 +32,7 @@ import packed.internal.inject.service.ServiceManager;
 public final class InjectionManager {
 
     /** All injectables that needs to be resolved. */
-    private final ArrayList<Injectable> allInjectables = new ArrayList<>();
+    final ArrayList<Injectable> allInjectables = new ArrayList<>();
 
     /** The container this injection manager belongs to. */
     public final ContainerAssembly container;
@@ -40,9 +40,6 @@ public final class InjectionManager {
     /** An error manager that is lazily initialized. */
     @Nullable
     private InjectionErrorManager em;
-
-    /** A list of nodes to use when detecting dependency cycles. */
-    public final ArrayList<Injectable> postProcessingInjectables = new ArrayList<>();
 
     /** A service manager that handles everything to do with services, is lazily initialized. */
     @Nullable
@@ -85,6 +82,7 @@ public final class InjectionManager {
 
         services().dependencies().checkForMissingDependencies(this);
         PostProcesser.dependencyCyclesDetect(resolver, this);
+
     }
 
     /**

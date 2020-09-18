@@ -45,7 +45,7 @@ public final class PostProcesser {
 
     // detect cycles for -> detect cycle or needs to be instantited at initialization time
     public static void dependencyCyclesDetect(RegionAssembly resolver, InjectionManager im) {
-        DependencyCycle c = dependencyCyclesFind(resolver, im.postProcessingInjectables);
+        DependencyCycle c = dependencyCyclesFind(resolver, im.allInjectables);
         if (c != null) {
             throw new CyclicDependencyGraphException("Dependency cycle detected: " + c);
         }
@@ -60,7 +60,7 @@ public final class PostProcesser {
 
         for (Injectable node : detectCyclesFor) {
             // System.out.println("Detect for " + node.directMethodHandle + " " + node.detectForCycles);
-            if (node.detectForCycles) { // only process those nodes that have not been visited yet
+            if (node.needsPostProcessing) { // only process those nodes that have not been visited yet
                 DependencyCycle dc = PostProcesser.detectCycle(resolver, node, stack, dependencies);
                 if (dc != null) {
                     return dc;
@@ -94,7 +94,7 @@ public final class PostProcesser {
                 if (dependency != null) {
                     Injectable injectable = dependency.getInjectable();
                     if (injectable != null) {
-                        if (injectable.detectForCycles) {
+                        if (injectable.needsPostProcessing) {
                             dependencies.push(injectable);
                             // See if the component is already on the stack -> A cycle has been detected
                             if (stack.contains(injectable)) {
@@ -125,7 +125,7 @@ public final class PostProcesser {
         if (node.regionIndex() > -1) {
             resolver.injectables.add(node);
         }
-        node.detectForCycles = false;
+        node.needsPostProcessing = false;
         return null;
     }
 
