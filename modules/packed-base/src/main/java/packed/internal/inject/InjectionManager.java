@@ -62,11 +62,13 @@ public final class InjectionManager {
      *            the injectable to add
      */
     public void addInjectable(Injectable injectable) {
-        allInjectables.add(injectable);
+        allInjectables.add(requireNonNull(injectable));
     }
 
     public void buildTree(RegionAssembly resolver) {
-        services().resolve();
+        if (services != null) {
+            services.resolve();
+        }
 
         if (em != null) {
             InjectionErrorManagerMessages.addDuplicateNodes(em.failingDuplicateProviders);
@@ -80,7 +82,9 @@ public final class InjectionManager {
             i.resolve();
         }
 
-        services().dependencies().checkForMissingDependencies(this);
+        if (services != null) {
+            services.dependencies().checkForMissingDependencies(this);
+        }
         PostProcesser.dependencyCyclesDetect(resolver, this);
 
     }

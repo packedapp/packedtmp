@@ -92,7 +92,6 @@ public final class ServiceDependencyManager {
     }
 
     public void checkForMissingDependencies(InjectionManager node) {
-        boolean manualRequirementsManagement = node.services().dependencies != null && node.services().dependencies.manualRequirementsManagement;
         if (missingDependencies != null) {
             // if (!box.source.unresolvedServicesAllowed()) {
             for (ServiceDependencyRequirement e : missingDependencies) {

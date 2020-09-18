@@ -111,7 +111,7 @@ public class ServiceManager {
     }
 
     public void provideFromInjector(AbstractInjector injector, ConfigSite configSite, WireletList wirelets) {
-        ProvideAllFromOtherInjector pi = new ProvideAllFromOtherInjector(im, configSite, injector, wirelets);
+        ProvideAllFromOtherInjector pi = new ProvideAllFromOtherInjector(this, configSite, injector, wirelets);
         ArrayList<ProvideAllFromOtherInjector> p = provideAll;
         if (provideAll == null) {
             p = provideAll = new ArrayList<>(1);

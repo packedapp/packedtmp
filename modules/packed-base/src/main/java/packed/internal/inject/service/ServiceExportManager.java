@@ -217,10 +217,10 @@ public final class ServiceExportManager implements Iterable<ExportedServiceAssem
         }
 
         if (exportAll != null) {
-            for (ServiceAssembly<?> e : im.getServiceManager().resolvedServices.values()) {
+            for (ServiceAssembly<?> e : sm.resolvedServices.values()) {
                 if (!e.key().equals(KeyBuilder.INJECTOR_KEY)) {
                     if (!resolvedExports.containsKey(e.key())) {
-                        resolvedExports.put(e.key(), new ExportedServiceAssembly<>(im.getServiceManager(), e, exportAll));
+                        resolvedExports.put(e.key(), new ExportedServiceAssembly<>(sm, e, exportAll));
                     }
                 }
             }
