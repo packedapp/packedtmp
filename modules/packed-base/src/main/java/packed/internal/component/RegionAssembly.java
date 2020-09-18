@@ -75,21 +75,20 @@ public final class RegionAssembly {
 
         // All services that must be instantiated and stored
         for (Injectable ii : constantServices) {
-            int index = ii.regionIndex();
+            MethodHandle mh = ii.buildMethodHandle();
 
-            // Should never have been added if index==-1
-            if (index > -1) {
-                requireNonNull(ii);
-                Object instance;
-                MethodHandle mh = ii.buildMethodHandle();
-                try {
-                    instance = mh.invoke(region);
-                } catch (Throwable e1) {
-                    throw ThrowableUtil.orUndeclared(e1);
-                }
-                requireNonNull(instance);
-                region.store(index, instance);
+            Object instance;
+            try {
+                instance = mh.invoke(region);
+            } catch (Throwable e1) {
+                throw ThrowableUtil.orUndeclared(e1);
             }
+
+            if (instance == null) {
+                throw new NullPointerException(ii + " returned null");
+            }
+            int index = ii.regionIndex();
+            region.store(index, instance);
         }
 
         // Last all singletons that have not already been used as services

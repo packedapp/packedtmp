@@ -169,7 +169,7 @@ public class Injectable {
     }
 
     public boolean isConstant() {
-        return entry() != null;
+        return entry() != null && entry().regionIndex() > -1;
     }
 
     @Nullable

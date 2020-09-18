@@ -41,6 +41,8 @@ final class DependencyCycleDetector {
      * @throws CyclicDependencyGraphException
      *             if a dependency cycle was detected
      */
+
+    // detect cycles for -> detect cycle or needs to be instantited at initialization time
     static void dependencyCyclesDetect(RegionAssembly resolver, ArrayList<Injectable> detectCyclesFor) {
         DependencyCycle c = dependencyCyclesFind(resolver, detectCyclesFor);
         if (c != null) {
@@ -81,47 +83,44 @@ final class DependencyCycleDetector {
      *             if there is a cycle in the graph
      */
     private static DependencyCycle detectCycle(RegionAssembly resolver, Injectable node, ArrayDeque<Injectable> stack, ArrayDeque<Injectable> dependencies) {
-        stack.push(node);
+        if (node.resolved.length > 0) {
+            stack.push(node);
 
-        for (int i = 0; i < node.resolved.length; i++) {
-            DependencyProvider dependency = node.resolved[i];
-            if (dependency != null) {
-                Injectable injectable = dependency.injectable();
-                if (injectable != null) {
-                    if (injectable.detectForCycles) {
-                        dependencies.push(injectable);
-                        // See if the component is already on the stack -> A cycle has been detected
-                        if (stack.contains(injectable)) {
-                            // clear links not part of the circle, for example, for A->B->C->B we want to remove A
-                            while (stack.peekLast() != injectable) {
-                                stack.pollLast();
-                                dependencies.pollLast();
+            for (int i = 0; i < node.resolved.length; i++) {
+                DependencyProvider dependency = node.resolved[i];
+                if (dependency != null) {
+                    Injectable injectable = dependency.injectable();
+                    if (injectable != null) {
+                        if (injectable.detectForCycles) {
+                            dependencies.push(injectable);
+                            // See if the component is already on the stack -> A cycle has been detected
+                            if (stack.contains(injectable)) {
+                                // clear links not part of the circle, for example, for A->B->C->B we want to remove A
+                                while (stack.peekLast() != injectable) {
+                                    stack.pollLast();
+                                    dependencies.pollLast();
+                                }
+                                return new DependencyCycle(dependencies);
                             }
-                            return new DependencyCycle(dependencies);
+                            DependencyCycle cycle = detectCycle(resolver, injectable, stack, dependencies);
+                            if (cycle != null) {
+                                return cycle;
+                            }
+                            dependencies.pop();
                         }
-                        DependencyCycle cycle = detectCycle(resolver, injectable, stack, dependencies);
-                        if (cycle != null) {
-                            return cycle;
-                        }
-                        dependencies.pop();
                     }
                 }
             }
+            stack.pop();
         }
 
-        stack.pop(); // assert stack.pop() == node
+        // If the injectable is a constant we need should to store an instance of it in the runtime region.
+        // We do this here because the the cycle detection algorithm explorers the dependency BFS. So
+        // we add each node on exit when all of its dependency have already been added. In this way
+        // guarantee that all dependencies have already been visited
         if (node.isConstant()) {
             resolver.constantServices.add(node);
         }
-//        BuildEntry<?> entry = node.entry();
-//        System.out.println();
-//        if (entry != null) {
-//            System.out.println("Adding entry " + entry.key());
-//            
-//        } else {
-//            System.out.println("No service for " + node.directMethodHandle);
-//        }
-
         node.detectForCycles = false;
         return null;
     }
