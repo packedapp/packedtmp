@@ -59,7 +59,7 @@ public final class ServiceExportManager implements Iterable<ExportedServiceAssem
     private ArrayList<ExportedServiceAssembly<?>> exportedEntries;
 
     /** The extension node this exporter is a part of. */
-    private final InjectionManager im;
+    private final ServiceManager sm;
 
     /** All resolved exports. Is null until {@link #resolve()} has finished (successfully or just finished?). */
     @Nullable
@@ -68,11 +68,11 @@ public final class ServiceExportManager implements Iterable<ExportedServiceAssem
     /**
      * Creates a new export manager.
      * 
-     * @param im
+     * @param sm
      *            the extension node this export manager belongs to
      */
-    public ServiceExportManager(ServiceManager im) {
-        this.im = requireNonNull(im.im);
+    public ServiceExportManager(ServiceManager sm) {
+        this.sm = requireNonNull(sm);
     }
 
     /**
@@ -94,7 +94,7 @@ public final class ServiceExportManager implements Iterable<ExportedServiceAssem
         // if (entryToExport.node != node) {
         // throw new IllegalArgumentException("The specified configuration was created by another injector extension");
         // }
-        return export0(new ExportedServiceAssembly<>(im.getServiceManager(), entryToExport, configSite));
+        return export0(new ExportedServiceAssembly<>(sm, entryToExport, configSite));
     }
 
     /**
@@ -111,7 +111,7 @@ public final class ServiceExportManager implements Iterable<ExportedServiceAssem
      * @see ServiceExtension#export(Key)
      */
     public <T> ExportedServiceConfiguration<T> export(Key<T> key, ConfigSite configSite) {
-        return export0(new ExportedServiceAssembly<>(im.getServiceManager(), key, configSite));
+        return export0(new ExportedServiceAssembly<>(sm, key, configSite));
     }
 
     /**
@@ -178,7 +178,7 @@ public final class ServiceExportManager implements Iterable<ExportedServiceAssem
     public void resolve() {
         // We could move unresolvedKeyedExports and duplicateExports in here. But keep them as fields
         // to have identical structure to ServiceProvidingManager
-
+        InjectionManager im = sm.im;
         LinkedHashMap<Key<?>, ExportedServiceAssembly<?>> resolvedExports = new LinkedHashMap<>();
         // Process every exported build entry
         if (exportedEntries != null) {
@@ -188,7 +188,7 @@ public final class ServiceExportManager implements Iterable<ExportedServiceAssem
                 ServiceAssembly<?> entryToExport = entry.exportedEntry;
                 boolean export = true;
                 if (entryToExport == null) {
-                    entryToExport = im.getServiceManager().resolvedServices.get(entry.keyToExport);
+                    entryToExport = sm.resolvedServices.get(entry.keyToExport);
                     if (entryToExport == null) {
                         im.errorManager().failingUnresolvedKeyedExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>()).add(entry);
                         export = false;

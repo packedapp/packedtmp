@@ -118,5 +118,4 @@ public final class InjectionManager {
         }
         return e;
     }
-
 }
