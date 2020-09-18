@@ -192,10 +192,6 @@ public class Injectable {
         return false;
     }
 
-    public Class<?> rawType() {
-        return directMethodHandle.type().returnType();
-    }
-
     public void resolve() {
         int startIndex = resolved.length != dependencies.size() ? 1 : 0;
         for (int i = 0; i < dependencies.size(); i++) {

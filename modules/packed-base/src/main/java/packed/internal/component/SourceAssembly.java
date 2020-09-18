@@ -121,7 +121,7 @@ public final class SourceAssembly implements DependencyProvider {
         } else if (isPrototype()) { // injectable != null
             return injectable.buildMethodHandle();
         } else {
-            return RuntimeRegion.readSingletonAs(regionIndex, injectable.rawType());
+            return RuntimeRegion.readSingletonAs(regionIndex, model.modelType());
         }
     }
 }
