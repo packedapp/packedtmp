@@ -29,8 +29,7 @@ import packed.internal.component.SourceModel;
 import packed.internal.component.SourceModelMember;
 import packed.internal.component.SourceModelMethod;
 import packed.internal.inject.InjectionManager;
-import packed.internal.inject.factory.BaseFactory;
-import packed.internal.inject.factory.FactoryHandle;
+import packed.internal.inject.factory.FactorySupport;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.inject.sidecar.AtProvides;
 
@@ -63,10 +62,10 @@ public class Injectable {
     /** The dependencies that must be resolved. */
     public final List<DependencyDescriptor> dependencies;
 
-    public boolean needsPostProcessing = true;
-
     /** A direct method handle. */
     public final MethodHandle directMethodHandle;
+
+    public boolean needsPostProcessing = true;
 
     /** Resolved dependencies. */
     public final DependencyProvider[] resolved;
@@ -77,40 +76,38 @@ public class Injectable {
     @Nullable
     public final SourceModelMember sourceMember;
 
+    public Injectable(SourceAssembly source, FactorySupport<?> factory) {
+        this.source = requireNonNull(source);
+        this.sourceMember = null;
+
+        this.buildEntry = null; // Any build entry is stored in SourceAssembly#service
+        this.dependencies = factory.dependencies;
+        this.directMethodHandle = source.compConf.realm.fromFactoryHandle(factory.handle);
+        this.resolved = new DependencyProvider[dependencies.size()];
+    }
+
     public Injectable(SourceAssembly source, ServiceAssembly<?> buildEntry, AtProvides ap) {
         this.source = requireNonNull(source);
+        this.sourceMember = null;
 
+        this.buildEntry = requireNonNull(buildEntry);
         this.dependencies = ap.dependencies;
         this.directMethodHandle = ap.methodHandle;
-        this.buildEntry = requireNonNull(buildEntry);
         this.resolved = new DependencyProvider[directMethodHandle.type().parameterCount()];
 
         if (resolved.length != dependencies.size()) {
             resolved[0] = source;
         }
-        this.sourceMember = null;
     }
 
     public Injectable(SourceAssembly source, SourceModelMethod smm) {
         this.source = requireNonNull(source);
-
         this.sourceMember = requireNonNull(smm);
+
         this.buildEntry = null;
         this.dependencies = smm.dependencies;
         this.directMethodHandle = smm.directMethodHandle;
         this.resolved = new DependencyProvider[directMethodHandle.type().parameterCount()];
-    }
-
-    public Injectable(SourceAssembly source, BaseFactory<?> factory) {
-        this.source = requireNonNull(source);
-
-        FactoryHandle<?> handle = factory.factory.handle;
-        MethodHandle mh = source.compConf.realm.fromFactoryHandle(handle);
-        this.dependencies = factory.factory.dependencies;
-        this.directMethodHandle = requireNonNull(mh);
-        this.resolved = new DependencyProvider[dependencies.size()];
-        buildEntry = null; // Any build entry is stored in SourceAssembly#service
-        this.sourceMember = null;
     }
 
     public final MethodHandle buildMethodHandle() {

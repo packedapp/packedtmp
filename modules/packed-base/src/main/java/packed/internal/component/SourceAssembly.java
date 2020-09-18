@@ -68,13 +68,13 @@ public final class SourceAssembly implements DependencyProvider {
                 this.factory = null;
             } else {
                 this.factory = (BaseFactory<?>) Factory.find(c);
-                this.injectable = new Injectable(this, factory);
+                this.injectable = new Injectable(this, factory.factory);
             }
         } else if (source instanceof Factory) {
             this.factory = (BaseFactory<?>) source;
             this.model = compConf.realm.componentModelOf(factory.rawType());
             this.instance = null;
-            this.injectable = new Injectable(this, factory);
+            this.injectable = new Injectable(this, factory.factory);
         } else {
             this.model = compConf.realm.componentModelOf(source.getClass());
             this.instance = source;
