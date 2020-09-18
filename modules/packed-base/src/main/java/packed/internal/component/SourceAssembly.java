@@ -93,10 +93,6 @@ public final class SourceAssembly implements DependencyProvider {
         return injectable;
     }
 
-    public boolean isPrototype() {
-        return !compConf.modifiers().isSingleton();
-    }
-
     BuildtimeService<?> provide() {
         // Maybe we should throw an exception, if the user tries to provide an entry multiple times??
         BuildtimeService<?> s = service;

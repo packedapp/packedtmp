@@ -306,7 +306,7 @@ public final class ServiceExtension extends Extension {
      */
     @OnHook
     void onHook(AtProvidesHook hook, ComponentNodeConfiguration compConf) {
-        if (hook.hasInstanceMembers && compConf.source.isPrototype()) {
+        if (hook.hasInstanceMembers && compConf.source.regionIndex == -1) {
             throw new InvalidDeclarationException("Not okay)");
         }
         // Add each @Provide as children of the parent node

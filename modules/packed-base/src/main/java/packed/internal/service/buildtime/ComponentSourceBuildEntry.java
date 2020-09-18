@@ -62,10 +62,10 @@ public final class ComponentSourceBuildEntry<T> extends BuildtimeService<T> {
     /** {@inheritDoc} */
     @Override
     protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
-        if (source.isPrototype()) {
-            return new PrototypeInjectorEntry<>(this, context.region, dependencyAccessor());
-        } else {
+        if (regionIndex() > -1) {
             return new ConstantInjectorEntry<>(this, context.region, source.regionIndex);
+        } else {
+            return new PrototypeInjectorEntry<>(this, context.region, dependencyAccessor());
         }
     }
 
