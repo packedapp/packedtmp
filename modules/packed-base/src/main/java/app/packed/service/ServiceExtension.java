@@ -331,7 +331,7 @@ public final class ServiceExtension extends Extension {
                     "Custom implementations of Injector are currently not supported, injector type = " + injector.getClass().getName());
         }
         checkConfigurable();
-        im.provideFromInjector((AbstractInjector) injector, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL), WireletList.ofAll(wirelets));
+        sm.provideFromInjector((AbstractInjector) injector, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL), WireletList.ofAll(wirelets));
     }
 
     // Will install a ServiceStatelessConfiguration...

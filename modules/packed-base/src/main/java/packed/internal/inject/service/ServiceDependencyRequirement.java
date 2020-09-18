@@ -26,7 +26,7 @@ import packed.internal.inject.sidecar.AtInject;
 /**
  *
  */
-class DependencyRequirement {
+class ServiceDependencyRequirement {
 
     final ConfigSite configSite;
 
@@ -37,13 +37,13 @@ class DependencyRequirement {
 
     AtInject atInject;// ???
 
-    DependencyRequirement(ServiceDependency dependency, ConfigSite configSite) {
+    ServiceDependencyRequirement(ServiceDependency dependency, ConfigSite configSite) {
         this.dependency = requireNonNull(dependency, "dependency is null");
         this.configSite = requireNonNull(configSite);
         this.entry = null;
     }
 
-    DependencyRequirement(ServiceDependency dependency, Injectable entry) {
+    ServiceDependencyRequirement(ServiceDependency dependency, Injectable entry) {
         this.dependency = requireNonNull(dependency, "dependency is null");
         this.configSite = null;
         this.entry = entry;

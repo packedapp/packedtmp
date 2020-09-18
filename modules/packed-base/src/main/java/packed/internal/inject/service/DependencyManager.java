@@ -33,9 +33,7 @@ import app.packed.introspection.ParameterDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
-import packed.internal.component.RegionAssembly;
 import packed.internal.inject.InjectionManager;
-import packed.internal.inject.PostProcesser;
 import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.inject.dependency.Injectable;
 import packed.internal.inject.dependency.ServiceDependency;
@@ -53,7 +51,7 @@ public final class DependencyManager {
      * Explicit requirements, typically added via {@link ServiceExtension#require(Key...)} or
      * {@link ServiceExtension#requireOptionally(Key...)}.
      */
-    final ArrayList<DependencyRequirement> explicitRequirements = new ArrayList<>();
+    final ArrayList<ServiceDependencyRequirement> explicitRequirements = new ArrayList<>();
 
     /**
      * Whether or not the user must explicitly specify all required services. Via {@link ServiceExtension#require(Key...)},
@@ -67,7 +65,7 @@ public final class DependencyManager {
     boolean manualRequirementsManagement;
 
     /** A list of all dependencies that have not been resolved */
-    private ArrayList<DependencyRequirement> missingDependencies;
+    private ArrayList<ServiceDependencyRequirement> missingDependencies;
 
     /** A set of all explicitly registered required service keys. */
     final HashSet<Key<?>> required = new HashSet<>();
@@ -77,12 +75,6 @@ public final class DependencyManager {
 
     /** A map of all dependencies that could not be resolved */
     IdentityHashMap<ServiceAssembly<?>, List<ServiceDependency>> unresolvedDependencies;
-
-    /** Also used for descriptors. */
-    public void analyze(RegionAssembly resolver, InjectionManager node) {
-        checkForMissingDependencies(node);
-        PostProcesser.dependencyCyclesDetect(resolver, node.postProcessingInjectables);
-    }
 
     /**
      * Helps build an {@link ServiceContract}.
@@ -103,7 +95,7 @@ public final class DependencyManager {
         boolean manualRequirementsManagement = node.dependencies != null && node.dependencies.manualRequirementsManagement;
         if (missingDependencies != null) {
             // if (!box.source.unresolvedServicesAllowed()) {
-            for (DependencyRequirement e : missingDependencies) {
+            for (ServiceDependencyRequirement e : missingDependencies) {
                 if (!e.dependency.isOptional() && manualRequirementsManagement) {
                     // Long long error message
                     StringBuilder sb = new StringBuilder();
@@ -195,11 +187,11 @@ public final class DependencyManager {
         if (resolvedTo != null) {
             return;
         }
-        ArrayList<DependencyRequirement> m = missingDependencies;
+        ArrayList<ServiceDependencyRequirement> m = missingDependencies;
         if (m == null) {
             m = missingDependencies = new ArrayList<>();
         }
-        m.add(new DependencyRequirement(dependency, entry));
+        m.add(new ServiceDependencyRequirement(dependency, entry));
 
         if (im.dependencies == null || !im.dependencies.manualRequirementsManagement) {
             if (dependency.isOptional()) {
@@ -222,6 +214,6 @@ public final class DependencyManager {
      * @see ServiceExtension#requireOptionally(Key...)
      */
     public void require(ServiceDependency dependency, ConfigSite configSite) {
-        explicitRequirements.add(new DependencyRequirement(dependency, configSite));
+        explicitRequirements.add(new ServiceDependencyRequirement(dependency, configSite));
     }
 }

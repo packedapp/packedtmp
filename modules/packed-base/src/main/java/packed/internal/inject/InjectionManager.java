@@ -20,15 +20,10 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.component.Wirelet;
-import app.packed.config.ConfigSite;
-import app.packed.service.Injector;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceRegistry;
@@ -36,7 +31,6 @@ import packed.internal.component.ComponentNode;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.RegionAssembly;
 import packed.internal.component.RuntimeRegion;
-import packed.internal.component.wirelet.WireletList;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.dependency.Injectable;
@@ -45,9 +39,7 @@ import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.assembly.AtProvideServiceAssembly;
 import packed.internal.inject.service.assembly.ComponentSourceServiceAssembly;
 import packed.internal.inject.service.assembly.ExportedServiceAssembly;
-import packed.internal.inject.service.assembly.ProvideAllFromOtherInjector;
 import packed.internal.inject.service.assembly.ServiceAssembly;
-import packed.internal.inject.service.runtime.AbstractInjector;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
@@ -83,9 +75,6 @@ public final class InjectionManager {
     @Nullable
     private ServiceManager services;
 
-    /** All injectors added via {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
-    private ArrayList<ProvideAllFromOtherInjector> provideAll;
-
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices = new LinkedHashMap<>();
 
@@ -113,7 +102,7 @@ public final class InjectionManager {
     }
 
     public void buildTree(RegionAssembly resolver) {
-        resolve(this, resolvedServices);
+        services().resolve(resolvedServices);
 
         if (em != null) {
             InjectionErrorManagerMessages.addDuplicateNodes(em.failingDuplicateProviders);
@@ -196,51 +185,11 @@ public final class InjectionManager {
         allInjectables.add(e.injectable());
     }
 
-    public void provideFromInjector(AbstractInjector injector, ConfigSite configSite, WireletList wirelets) {
-        ProvideAllFromOtherInjector pi = new ProvideAllFromOtherInjector(this, configSite, injector, wirelets);
-        ArrayList<ProvideAllFromOtherInjector> p = provideAll;
-        if (provideAll == null) {
-            p = provideAll = new ArrayList<>(1);
-        }
-        p.add(pi);
-    }
-
     public <T> ServiceAssembly<T> provideFromSource(ComponentNodeConfiguration compConf, Key<T> key) {
 
         ServiceAssembly<T> e = new ComponentSourceServiceAssembly<>(this, compConf, key);
         buildEntries.add(e);
         return e;
-    }
-
-    public LinkedHashMap<Key<?>, ServiceAssembly<?>> resolve(InjectionManager im, LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices) {
-
-        // First process provided entries, then any entries added via provideAll
-        resolve0(im, resolvedServices, buildEntries);
-
-        if (provideAll != null) {
-            // All injectors have already had wirelets transform and filter
-            for (ProvideAllFromOtherInjector fromInjector : provideAll) {
-                resolve0(im, resolvedServices, fromInjector.entries.values());
-            }
-        }
-
-        // Run through all linked containers...
-        // Apply any wirelets to exports, and take
-
-        // Add error messages if any nodes with the same key have been added multiple times
-        return resolvedServices;
-    }
-
-    private void resolve0(InjectionManager im, LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices,
-            Collection<? extends ServiceAssembly<?>> buildEntries) {
-        for (ServiceAssembly<?> entry : buildEntries) {
-            ServiceAssembly<?> existing = resolvedServices.putIfAbsent(entry.key(), entry);
-            if (existing != null) {
-                LinkedHashSet<ServiceAssembly<?>> hs = im.errorManager().failingDuplicateProviders.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
-                hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
-                hs.add(entry);
-            }
-        }
     }
 
     /**
