@@ -58,12 +58,6 @@ public final class ExportedServiceAssembly<T> extends ServiceAssembly<T> {
         this.keyToExport = requireNonNull(key);
     }
 
-    @Override
-    @Nullable
-    public Injectable getInjectable() {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * Exports an existing entry.
      * 
@@ -82,14 +76,20 @@ public final class ExportedServiceAssembly<T> extends ServiceAssembly<T> {
         // Slaar det igennem i hele vejen ned.
     }
 
+    @Override
+    public MethodHandle dependencyAccessor() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    @Nullable
+    public Injectable getInjectable() {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@inheritDoc} */
     @Override
     protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
         return new DelegatingInjectorEntry<>(this, exportedEntry.toRuntimeEntry(context));
-    }
-
-    @Override
-    public MethodHandle dependencyAccessor() {
-        throw new UnsupportedOperationException();
     }
 }

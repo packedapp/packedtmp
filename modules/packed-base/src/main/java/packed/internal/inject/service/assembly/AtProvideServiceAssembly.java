@@ -35,6 +35,7 @@ public class AtProvideServiceAssembly<T> extends ServiceAssembly<T> {
 
     private final Injectable injectable;
 
+    /** If constant, the region index to store it in */
     public final int regionIndex;
 
     /**
@@ -56,10 +57,10 @@ public class AtProvideServiceAssembly<T> extends ServiceAssembly<T> {
     /** {@inheritDoc} */
     @Override
     protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
-        if (regionIndex == -1) {
-            return new PrototypeInjectorEntry<>(this, context.region, dependencyAccessor());
-        } else {
+        if (regionIndex > -1) {
             return new ConstantInjectorEntry<>(this, context.region, regionIndex);
+        } else {
+            return new PrototypeInjectorEntry<>(this, context.region, dependencyAccessor());
         }
     }
 
