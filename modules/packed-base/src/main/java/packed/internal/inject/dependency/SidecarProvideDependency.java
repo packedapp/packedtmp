@@ -35,7 +35,7 @@ public class SidecarProvideDependency implements DependencyProvider {
     /** {@inheritDoc} */
     @Override
     @Nullable
-    public Injectable injectable() {
+    public Injectable getInjectable() {
         return null;
     }
 

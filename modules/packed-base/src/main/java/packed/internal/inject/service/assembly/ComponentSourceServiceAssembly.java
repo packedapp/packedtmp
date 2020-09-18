@@ -55,8 +55,8 @@ public final class ComponentSourceServiceAssembly<T> extends ServiceAssembly<T> 
     /** {@inheritDoc} */
     @Override
     @Nullable
-    public Injectable injectable() {
-        return source.injectable();
+    public Injectable getInjectable() {
+        return source.getInjectable();
     }
 
     /** {@inheritDoc} */

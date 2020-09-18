@@ -92,7 +92,7 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
      */
     public ExtensionAssembly(ComponentNodeConfiguration compConf, ExtensionModel model) {
         this.compConf = requireNonNull(compConf);
-        this.container = requireNonNull(compConf.memberOfContainer());
+        this.container = requireNonNull(compConf.getMemberOfContainer());
         this.model = requireNonNull(model);
     }
 

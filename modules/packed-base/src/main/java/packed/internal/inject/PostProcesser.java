@@ -92,7 +92,7 @@ public final class PostProcesser {
                 DependencyProvider dependency = deps[i];
 
                 if (dependency != null) {
-                    Injectable injectable = dependency.injectable();
+                    Injectable injectable = dependency.getInjectable();
                     if (injectable != null) {
                         if (injectable.detectForCycles) {
                             dependencies.push(injectable);

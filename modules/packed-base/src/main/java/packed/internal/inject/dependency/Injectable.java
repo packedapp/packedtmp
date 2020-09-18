@@ -98,11 +98,11 @@ public class Injectable {
         if (detectForCycles) {
             im.postProcessingInjectables.add(this);
         }
-        if (!ap.isStaticMember && source.injectable() != null) {
+        if (!ap.isStaticMember && source.getInjectable() != null) {
             ArrayList<Injectable> al = im.postProcessingInjectables;
-            if (!al.contains(source.injectable())) {
-                al.add(source.injectable());
-                source.injectable().detectForCycles = true;
+            if (!al.contains(source.getInjectable())) {
+                al.add(source.getInjectable());
+                source.getInjectable().detectForCycles = true;
             }
         }
         this.sourceMember = null;

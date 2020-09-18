@@ -79,7 +79,7 @@ public abstract class ServiceAssembly<T> implements DependencyProvider {
 
     @Override
     @Nullable
-    public Injectable injectable() {
+    public Injectable getInjectable() {
         throw new UnsupportedOperationException();
     }
 

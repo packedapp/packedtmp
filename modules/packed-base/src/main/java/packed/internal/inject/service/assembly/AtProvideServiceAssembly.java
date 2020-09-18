@@ -49,7 +49,7 @@ public class AtProvideServiceAssembly<T> extends ServiceAssembly<T> {
     }
 
     @Override
-    public Injectable injectable() {
+    public Injectable getInjectable() {
         return injectable;
     }
 

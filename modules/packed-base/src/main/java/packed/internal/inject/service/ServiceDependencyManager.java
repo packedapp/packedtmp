@@ -45,7 +45,7 @@ import packed.internal.inject.service.assembly.ServiceAssembly;
  * @see ServiceExtension#require(Key...)
  * @see ServiceExtension#requireOptionally(Key...)
  */
-public final class DependencyManager {
+public final class ServiceDependencyManager {
 
     /**
      * Explicit requirements, typically added via {@link ServiceExtension#require(Key...)} or

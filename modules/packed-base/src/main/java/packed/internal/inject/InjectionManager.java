@@ -31,7 +31,7 @@ import packed.internal.component.RuntimeRegion;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.dependency.Injectable;
-import packed.internal.inject.service.DependencyManager;
+import packed.internal.inject.service.ServiceDependencyManager;
 import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.assembly.AtProvideServiceAssembly;
 import packed.internal.inject.service.assembly.ComponentSourceServiceAssembly;
@@ -58,7 +58,7 @@ public final class InjectionManager {
     public final ContainerAssembly container;
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
-    public DependencyManager dependencies;
+    public ServiceDependencyManager dependencies;
 
     /** An error manager that is lazily initialized. */
     private InjectionErrorManager em;
@@ -117,10 +117,10 @@ public final class InjectionManager {
      * 
      * @return the dependency manager for this builder
      */
-    public DependencyManager dependencies() {
-        DependencyManager d = dependencies;
+    public ServiceDependencyManager dependencies() {
+        ServiceDependencyManager d = dependencies;
         if (d == null) {
-            d = dependencies = new DependencyManager();
+            d = dependencies = new ServiceDependencyManager();
         }
         return d;
     }
@@ -174,7 +174,7 @@ public final class InjectionManager {
     public void provideFromAtProvides(ComponentNodeConfiguration compConf, AtProvides atProvides) {
         ServiceAssembly<?> e = new AtProvideServiceAssembly<>(this, compConf, atProvides);
         buildEntries.add(e);
-        allInjectables.add(e.injectable());
+        allInjectables.add(e.getInjectable());
     }
 
     public <T> ServiceAssembly<T> provideFromSource(ComponentNodeConfiguration compConf, Key<T> key) {
