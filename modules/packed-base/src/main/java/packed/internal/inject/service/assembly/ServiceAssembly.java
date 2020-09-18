@@ -18,7 +18,6 @@ package packed.internal.inject.service.assembly;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Key;
-import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Provide;
 import app.packed.service.Service;
@@ -41,9 +40,6 @@ public abstract class ServiceAssembly<T> implements DependencyProvider {
     /** The configuration site of this object. */
     private final ConfigSite configSite;
 
-    /** The service no this entry belongs to. Or null for wirelets */
-    public final ServiceManager sm;
-
     /**
      * The key of the node (optional). Can be null, for example, for a class that is not exposed as a service but has
      * instance methods annotated with {@link Provide}. In which the case the declaring class needs to be constructor
@@ -51,8 +47,11 @@ public abstract class ServiceAssembly<T> implements DependencyProvider {
      */
     private Key<T> key;
 
-    public ServiceAssembly(@Nullable ServiceManager im, ConfigSite configSite, Key<T> key) {
-        this.sm = requireNonNull(im);
+    /** The service manager that this service belongs to. */
+    public final ServiceManager sm;
+
+    public ServiceAssembly(ServiceManager sm, ConfigSite configSite, Key<T> key) {
+        this.sm = requireNonNull(sm);
         this.configSite = requireNonNull(configSite);
         this.key = requireNonNull(key);
     }

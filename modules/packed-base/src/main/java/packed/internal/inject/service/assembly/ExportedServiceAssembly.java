@@ -41,7 +41,7 @@ public final class ExportedServiceAssembly<T> extends ServiceAssembly<T> {
 
     /** The key under which to export the entry, is null for entry exports. */
     @Nullable
-    public final Key<?> keyToExport;
+    public final Key<?> exportAsKey;
 
     /**
      * Exports an entry via its key.
@@ -53,9 +53,9 @@ public final class ExportedServiceAssembly<T> extends ServiceAssembly<T> {
      * @see ServiceExtension#export(Class)
      * @see ServiceExtension#export(Key)
      */
-    public ExportedServiceAssembly(ServiceManager builder, Key<T> key, ConfigSite configSite) {
-        super(builder, configSite, key);
-        this.keyToExport = requireNonNull(key);
+    public ExportedServiceAssembly(ServiceManager builder, Key<T> exportAsKey, ConfigSite configSite) {
+        super(builder, configSite, exportAsKey);
+        this.exportAsKey = requireNonNull(exportAsKey);
     }
 
     /**
@@ -70,7 +70,7 @@ public final class ExportedServiceAssembly<T> extends ServiceAssembly<T> {
     public ExportedServiceAssembly(ServiceManager builder, ServiceAssembly<T> entryToExport, ConfigSite configSite) {
         super(builder, configSite, entryToExport.key());
         this.exportedEntry = entryToExport;
-        this.keyToExport = null;
+        this.exportAsKey = null;
         // Export of export, of export????
         // Hvad hvis en eller anden aendrer en key midt i chainen.
         // Slaar det igennem i hele vejen ned.
