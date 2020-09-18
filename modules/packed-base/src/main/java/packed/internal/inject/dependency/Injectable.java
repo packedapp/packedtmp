@@ -130,29 +130,21 @@ public class Injectable {
         if (buildMethodHandle != null) {
             return buildMethodHandle;
         }
-        // Does not have have dependencies.
         if (resolved.length == 0) {
-            return buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, RuntimeRegion.class);
-        }
-
-        // We create a new method that a
-        MethodHandle mh = directMethodHandle;
-        for (int i = 0; i < resolved.length; i++) {
-            DependencyProvider dp = resolved[i];
-            MethodHandle dep = dp.dependencyAccessor();
-            mh = MethodHandles.collectArguments(mh, i, dep);
-        }
-        // We may e
-
-        // We may need to reduce (RuntimeRegion, RuntimeRegion*)X -> (RuntimeRegion)X
-        if (resolved.length > 1) {
-            MethodType mt = MethodType.methodType(mh.type().returnType(), RuntimeRegion.class);
-            buildMethodHandle = MethodHandles.permuteArguments(mh, mt, new int[resolved.length]);
+            buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, RuntimeRegion.class);
+        } else if (resolved.length == 1) {
+            buildMethodHandle = MethodHandles.collectArguments(directMethodHandle, 0, resolved[0].dependencyAccessor());
         } else {
-            buildMethodHandle = mh;
-        }
-        if (buildMethodHandle.type().parameterCount() != 1) {
-            throw new IllegalStateException();
+            MethodHandle mh = directMethodHandle;
+            MethodType mt = MethodType.methodType(directMethodHandle.type().returnType(), RuntimeRegion.class);
+
+            // We create a new method that a
+            for (int i = 0; i < resolved.length; i++) {
+                DependencyProvider dp = resolved[i];
+                mh = MethodHandles.collectArguments(mh, i, dp.dependencyAccessor());
+            }
+            // reduce (RuntimeRegion, *)X -> (RuntimeRegion)X
+            buildMethodHandle = MethodHandles.permuteArguments(mh, mt, new int[resolved.length]);
         }
         return buildMethodHandle;
     }
