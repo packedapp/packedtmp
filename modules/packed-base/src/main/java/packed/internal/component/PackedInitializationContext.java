@@ -23,7 +23,7 @@ import app.packed.component.ComponentModifier;
 import app.packed.guest.Guest;
 import app.packed.service.ServiceRegistry;
 import packed.internal.component.wirelet.WireletPack;
-import packed.internal.service.InjectionManager;
+import packed.internal.inject.service.InjectionManager;
 import packed.internal.util.LookupUtil;
 
 /**

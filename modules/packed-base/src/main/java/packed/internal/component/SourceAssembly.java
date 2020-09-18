@@ -24,8 +24,8 @@ import app.packed.component.ComponentModifier;
 import app.packed.inject.Factory;
 import packed.internal.inject.Injectable;
 import packed.internal.inject.factory.BaseFactory;
+import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.inject.spi.DependencyProvider;
-import packed.internal.service.buildtime.ServiceAssembly;
 
 /** All components with a {@link ComponentModifier#SOURCED} modifier has an instance of this class. */
 public final class SourceAssembly implements DependencyProvider {

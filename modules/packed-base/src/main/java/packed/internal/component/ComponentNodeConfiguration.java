@@ -57,8 +57,8 @@ import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.container.ExtensionAssembly;
 import packed.internal.container.ExtensionModel;
+import packed.internal.inject.service.InjectionManager;
 import packed.internal.inject.various.ConfigSiteInjectOperations;
-import packed.internal.service.InjectionManager;
 import packed.internal.util.ThrowableUtil;
 
 /** The build time representation of a component. */

@@ -31,10 +31,10 @@ import packed.internal.component.SourceModelMember;
 import packed.internal.component.SourceModelMethod;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
+import packed.internal.inject.service.InjectionManager;
+import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.inject.sidecar.AtProvides;
 import packed.internal.inject.spi.DependencyProvider;
-import packed.internal.service.InjectionManager;
-import packed.internal.service.buildtime.ServiceAssembly;
 
 /**
  *

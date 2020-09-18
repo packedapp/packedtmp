@@ -24,7 +24,7 @@ import packed.internal.component.RegionAssembly;
 import packed.internal.component.SourceAssembly;
 import packed.internal.inject.Injectable;
 import packed.internal.inject.SidecarProvideDependency;
-import packed.internal.service.buildtime.ServiceAssembly;
+import packed.internal.inject.service.assembly.ServiceAssembly;
 
 /**
  * Something that

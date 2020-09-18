@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.Test;
 
 import app.packed.service.Injector;
+import packed.internal.inject.service.runtime.RuntimeService;
 import testutil.stubs.Letters.A;
 
 /**

@@ -38,12 +38,12 @@ import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.container.ExtensionAssembly;
 import packed.internal.inject.ServiceDependency;
+import packed.internal.inject.service.InjectionManager;
+import packed.internal.inject.service.assembly.PackedPrototypeConfiguration;
+import packed.internal.inject.service.runtime.AbstractInjector;
 import packed.internal.inject.sidecar.AtProvides;
 import packed.internal.inject.sidecar.AtProvidesHook;
 import packed.internal.inject.various.ConfigSiteInjectOperations;
-import packed.internal.service.InjectionManager;
-import packed.internal.service.buildtime.PackedPrototypeConfiguration;
-import packed.internal.service.runtime.AbstractInjector;
 
 /**
  * This extension provides functionality for service management and dependency injection.

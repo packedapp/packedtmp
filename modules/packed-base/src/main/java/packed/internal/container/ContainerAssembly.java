@@ -27,7 +27,7 @@ import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.service.InjectionManager;
+import packed.internal.inject.service.InjectionManager;
 
 /** Contains data and logic relevant for containers. */
 public final class ContainerAssembly {
