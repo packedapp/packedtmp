@@ -63,7 +63,7 @@ public class Injectable {
     /** The dependencies that must be resolved. */
     public final List<DependencyDescriptor> dependencies;
 
-    public boolean needsPostProcessing;
+    public boolean needsPostProcessing = true;
 
     /** A direct method handle. */
     public final MethodHandle directMethodHandle;
@@ -74,40 +74,29 @@ public class Injectable {
     /** The source (component) this injectable belongs to. */
     public final SourceAssembly source;
 
-    public final InjectionManager im;
-
     @Nullable
     public final SourceModelMember sourceMember;
 
-    public Injectable(ServiceAssembly<?> buildEntry, SourceAssembly source, AtProvides ap) {
+    public Injectable(SourceAssembly source, ServiceAssembly<?> buildEntry, AtProvides ap) {
         this.source = requireNonNull(source);
+
         this.dependencies = ap.dependencies;
         this.directMethodHandle = ap.methodHandle;
         this.buildEntry = requireNonNull(buildEntry);
         this.resolved = new DependencyProvider[directMethodHandle.type().parameterCount()];
-        this.im = source.compConf.injectionManager();
+
         if (resolved.length != dependencies.size()) {
             resolved[0] = source;
         }
-        // Vi detecter altid circle lige nu. Fordi circle detectionen.
-        // ogsaa gemmer service instantierings raekkefoelgen
-
-        // Det er jo faktisk helt ned til en sidecar vi skal instantiere det foer
-        // selve servicen...
-
-        // We have moved all the logic for adding some to various list.
-        // Down into the dependency cycle check.
-        needsPostProcessing = true;
         this.sourceMember = null;
     }
 
     public Injectable(SourceAssembly source, SourceModelMethod smm) {
         this.source = requireNonNull(source);
-        this.im = source.compConf.injectionManager();
+
         this.sourceMember = requireNonNull(smm);
         this.buildEntry = null;
-
-        dependencies = null;
+        this.dependencies = smm.dependencies;
         this.directMethodHandle = smm.directMethodHandle;
         this.resolved = new DependencyProvider[directMethodHandle.type().parameterCount()];
     }
@@ -117,11 +106,9 @@ public class Injectable {
 
         FactoryHandle<?> handle = factory.factory.handle;
         MethodHandle mh = source.compConf.realm.fromFactoryHandle(handle);
-        this.im = source.compConf.injectionManager();
         this.dependencies = factory.factory.dependencies;
         this.directMethodHandle = requireNonNull(mh);
         this.resolved = new DependencyProvider[dependencies.size()];
-        this.needsPostProcessing = true;// resolved.length > 0;
         buildEntry = null; // Any build entry is stored in SourceAssembly#service
         this.sourceMember = null;
     }
@@ -159,6 +146,7 @@ public class Injectable {
     }
 
     public void resolve() {
+        InjectionManager im = source.compConf.injectionManager();
         int startIndex = resolved.length != dependencies.size() ? 1 : 0;
         for (int i = 0; i < dependencies.size(); i++) {
             if (resolved[i + startIndex] == null) {

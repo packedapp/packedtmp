@@ -40,13 +40,13 @@ public class SourceModelMethod extends SourceModelMember {
 
     // Dependencies that have already been resolved
 
-    DependencyProvider[] resolved;
+    public DependencyProvider[] resolved;
 
-    MethodSidecarModel msm;
+    public MethodSidecarModel msm;
 
     public MethodHandle directMethodHandle;
 
-    List<DependencyDescriptor> dependencies;
+    public List<DependencyDescriptor> dependencies;
 
     public static void main(Method method) {
         MethodDescriptor m = MethodDescriptor.from(method);
